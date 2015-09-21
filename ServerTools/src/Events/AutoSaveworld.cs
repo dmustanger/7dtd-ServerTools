@@ -11,10 +11,7 @@ namespace ServerTools
 
         public static void Init()
         {
-            if (IsEnabled)
-            {
-                StartSave();
-            }
+            StartSave();
         }
 
         private static void StartSave()
@@ -26,15 +23,18 @@ namespace ServerTools
 
         private static void Save()
         {
-            while (IsEnabled)
+            while (true)
             {
-                int _playerCount = ConnectionManager.Instance.ClientCount();
-                if (_playerCount > 0)
+                if (IsEnabled)
                 {
-                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                    ClientInfo _cInfo = _cInfoList.RandomObject();
-                    SdtdConsole.Instance.ExecuteSync("saveworld", _cInfo);
-                    Log.Out("[SERVERTOOLS] World Saved.");
+                    int _playerCount = ConnectionManager.Instance.ClientCount();
+                    if (_playerCount > 0)
+                    {
+                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                        ClientInfo _cInfo = _cInfoList.RandomObject();
+                        SdtdConsole.Instance.ExecuteSync("saveworld", _cInfo);
+                        Log.Out("[SERVERTOOLS] World Saved.");
+                    }
                 }
                 Thread.Sleep(60000 * DelayBetweenWorldSaves);
             }

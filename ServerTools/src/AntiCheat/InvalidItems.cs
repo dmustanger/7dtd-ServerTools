@@ -21,15 +21,12 @@ namespace ServerTools
 
         public static void Init()
         {
-            if (IsEnabled)
+            if (!Utils.FileExists(_filepath))
             {
-                if (!Utils.FileExists(_filepath))
-                {
-                    UpdateInvalidItemsXml();
-                }
-                InitFileWatcher();
-                LoadInvalidItemsXml();
+                UpdateInvalidItemsXml();
             }
+            InitFileWatcher();
+            LoadInvalidItemsXml();
         }
 
         private static void LoadInvalidItemsXml()

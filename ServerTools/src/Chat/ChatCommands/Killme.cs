@@ -19,11 +19,8 @@ namespace ServerTools
         }
 
         public static void Init()
-        {
-            if (IsEnabled)
-            {
-                LoadKillmeXml();
-            }
+        { 
+            LoadKillmeXml();
         }
 
         private static void LoadKillmeXml()

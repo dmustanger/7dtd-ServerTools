@@ -10,7 +10,10 @@ namespace ServerTools
 
         public static void Send(ClientInfo _cInfo)
         {
-            _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{0}{1}[-]", CustomCommands._chatcolor, _message), "Server"));
+            if (IsEnabled)
+            {
+                _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{0}{1}[-]", CustomCommands._chatcolor, _message), "Server"));
+            }
         }
     }
 }

@@ -21,16 +21,13 @@ namespace ServerTools
 
         public static void Init()
         {
-            if (IsEnabled)
+            if (!Utils.FileExists(_filepath))
             {
-                if (!Utils.FileExists(_filepath))
-                {
-                    UpdateXml();
-                }
-                LoadMessages();
-                InitFileWatcher();
-                Start();
+                UpdateXml();
             }
+            LoadMessages();
+            InitFileWatcher();
+            Start();
         }
 
         private static void UpdateXml()
@@ -162,15 +159,18 @@ namespace ServerTools
 
         private static void StatusCheck()
         {
-            while (IsEnabled)
+            while (true)
             {
-                int _playerCount = ConnectionManager.Instance.ClientCount();
-                if (_playerCount > 0)
+                if (IsEnabled)
                 {
-                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                    ClientInfo _cInfo = _cInfoList.RandomObject();
-                    string _message = Messages.RandomObject();
-                    GameManager.Instance.GameMessageServer(_cInfo, string.Format("{0}{1}[-]", CustomCommands._chatcolor, _message), "Server");
+                    int _playerCount = ConnectionManager.Instance.ClientCount();
+                    if (_playerCount > 0)
+                    {
+                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                        ClientInfo _cInfo = _cInfoList.RandomObject();
+                        string _message = Messages.RandomObject();
+                        GameManager.Instance.GameMessageServer(_cInfo, string.Format("{0}{1}[-]", CustomCommands._chatcolor, _message), "Server");
+                    }
                 }
                 Thread.Sleep(60000 * DelayBetweenMessages);
             }

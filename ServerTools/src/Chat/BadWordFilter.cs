@@ -19,15 +19,12 @@ namespace ServerTools
 
         public static void Init()
         {
-            if (IsEnabled)
+            if (!Utils.FileExists(_filepath))
             {
-                if (!Utils.FileExists(_filepath))
-                {
-                    UpdateXml();
-                }
-                LoadBadWords();
-                InitFileWatcher();
+                UpdateXml();
             }
+            LoadBadWords();
+            InitFileWatcher();
         }
 
         private static void UpdateXml()

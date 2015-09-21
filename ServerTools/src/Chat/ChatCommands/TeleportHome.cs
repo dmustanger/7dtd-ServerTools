@@ -17,10 +17,7 @@ namespace ServerTools
 
         public static void Init()
         {
-            if (IsEnabled)
-            {
-                LoadSavedHomesXml();
-            }
+            LoadSavedHomesXml();
         }
 
         public static void LoadSavedHomesXml()
