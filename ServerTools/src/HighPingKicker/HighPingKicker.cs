@@ -185,8 +185,8 @@ namespace ServerTools
 
         private static void KickPlayer(ClientInfo _cInfo)
         {
-            string _phrase1 = null;
-            string _phrase2 = null;
+            string _phrase1 = "Auto Kicking {0} for high ping. ({1}) Maxping is {2}.";
+            string _phrase2 = "Auto Kicked: Ping To High. ({0}) Max Ping is {1}.";
             if (Phrases._Phrases.TryGetValue(1, out _phrase1) && Phrases._Phrases.TryGetValue(2, out _phrase2))
             {
                 _phrase1 = _phrase1.Replace("{0}", _cInfo.playerName);
@@ -195,7 +195,7 @@ namespace ServerTools
                 _phrase2 = _phrase2.Replace("{0}", _cInfo.ping.ToString());
                 _phrase2 = _phrase2.Replace("{1}", MAXPING.ToString());
             }
-            Log.Out(_phrase1);
+            Log.Out(string.Format("[SERVERTOOLS] {0}", _phrase1));
             GameManager.Instance.GameMessageServer(_cInfo, string.Format("[FF8000]{0}[-]", _phrase1), "Server");
             SdtdConsole.Instance.ExecuteSync(string.Format("Kick {0} \"{1}\"", _cInfo.entityId, _phrase2), _cInfo);
         }

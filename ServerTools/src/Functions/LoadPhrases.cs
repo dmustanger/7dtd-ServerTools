@@ -38,6 +38,7 @@ namespace ServerTools
                 return;
             }
             XmlNode _PhrasesXml = xmlDoc.DocumentElement;
+            _Phrases.Clear();
             foreach (XmlNode childNode in _PhrasesXml.ChildNodes)
             {
                 if (childNode.Name == "Phrases")
@@ -160,7 +161,6 @@ namespace ServerTools
             {
                 UpdatePhrases();
             }
-            _Phrases.Clear();
             LoadPhrases();
         }
     }
