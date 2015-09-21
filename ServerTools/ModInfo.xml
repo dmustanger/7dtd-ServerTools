@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<xml>
+  <ModInfo>
+    <Name value="Server Tools" />
+    <Description value="Server tools for dedicated servers" />
+    <Author value="Dmustanger" />
+    <Version value="1.0" />
+    <Website value="http://thewickedclowns.net" />
+  </ModInfo>
+</xml>

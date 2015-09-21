@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1E6E981C-73D1-4AAB-8312-3E0819B565D6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ServerTools</RootNamespace>
+    <AssemblyName>ServerTools</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Mods\ServerTools\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Mods\ServerTools\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Chat\ChatCommands\Pvp.cs" />
+    <Compile Include="src\Chat\ChatCommands\CustomCommands.cs" />
+    <Compile Include="src\Chat\ChatCommands\day7.cs" />
+    <Compile Include="src\Chat\ChatFlood.cs" />
+    <Compile Include="src\AntiCheat\InvalidItems.cs" />
+    <Compile Include="src\api.cs" />
+    <Compile Include="src\Chat\ChatHooks.cs" />
+    <Compile Include="src\Chat\ChatCommands\TeleportHome.cs" />
+    <Compile Include="src\Chat\ChatCommands\Gimme.cs" />
+    <Compile Include="src\Chat\ChatCommands\Killme.cs" />
+    <Compile Include="src\Chat\ChatLog.cs" />
+    <Compile Include="src\Chat\ChatMessages\InfoTicker.cs" />
+    <Compile Include="src\Chat\ChatMessages\Motd.cs" />
+    <Compile Include="src\Chat\BadWordFilter.cs" />
+    <Compile Include="src\Events\AutoSaveworld.cs" />
+    <Compile Include="src\Events\AirDrops.cs" />
+    <Compile Include="src\Functions\LoadPhrases.cs" />
+    <Compile Include="src\Functions\GetMinutes.cs" />
+    <Compile Include="src\Functions\LoadMods.cs" />
+    <Compile Include="src\Functions\GetGameItems.cs" />
+    <Compile Include="src\HighPingKicker\CommandMaxPing.cs" />
+    <Compile Include="src\HighPingKicker\CommandPingImmunity.cs" />
+    <Compile Include="src\HighPingKicker\HighPingKicker.cs" />
+    <Compile Include="src\Functions\LoadConfig.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\7dtd-binaries\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>..\7dtd-binaries\Assembly-CSharp-firstpass.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="LogLibrary">
+      <HintPath>..\7dtd-binaries\LogLibrary.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\7dtd-binaries\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ModInfo.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
