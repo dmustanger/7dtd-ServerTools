@@ -37,7 +37,6 @@ namespace ServerTools
             if (!Utils.FileExists(_filepath))
             {
                 UpdateInvalidItemsXml();
-                return;
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
