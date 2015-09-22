@@ -15,6 +15,7 @@ namespace ServerTools
         private static SortedDictionary<string, string> _message = new SortedDictionary<string, string>();
         public static Thread th;
         public static bool IsRunning = false;
+        public static bool IsConfigLoaded = false;
         private static List<string> Messages
         {
             get { return new List<string>(_message.Keys); }
@@ -22,20 +23,27 @@ namespace ServerTools
 
         public static void Init()
         {
+            if (Motd.IsEnabled || IsEnabled)
+            {
+                if (!IsConfigLoaded)
+                {
+                    if (!Utils.FileExists(_filepath))
+                    {
+                        UpdateXml();
+                    }
+                    LoadMessages();
+                    InitFileWatcher();
+                    IsConfigLoaded = true;
+                }
+            }
             if (IsEnabled && !IsRunning)
             {
-                if (!Utils.FileExists(_filepath))
-                {
-                    UpdateXml();
-                }
-                LoadMessages();
-                InitFileWatcher();
                 IsRunning = true;
                 Start();
             }
         }
 
-        private static void UpdateXml()
+        public static void UpdateXml()
         {
             _fileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(_filepath))

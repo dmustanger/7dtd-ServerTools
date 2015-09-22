@@ -28,7 +28,7 @@ namespace ServerTools
 
         public static void Init()
         {
-            if (IsEnabled)
+            if (IsEnabled && !IsRunning)
             {
                 if (!Utils.FileExists(_filepath))
                 {

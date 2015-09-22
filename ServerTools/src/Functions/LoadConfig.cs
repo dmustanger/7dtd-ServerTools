@@ -302,9 +302,13 @@ namespace ServerTools
                                 if (InfoTicker.IsRunning && !InfoTicker.IsEnabled)
                                 {
                                     InfoTicker.th.Abort();
-                                    InfoTicker._fileWatcher.Dispose();
                                     InfoTicker.IsRunning = false;
                                 }
+                                if (!InfoTicker.IsEnabled && !Motd.IsEnabled && InfoTicker.IsConfigLoaded)
+                                    {
+                                        InfoTicker._fileWatcher.Dispose();
+                                        InfoTicker.IsConfigLoaded = false;
+                                    }
                                 if (!InfoTicker.IsRunning && InfoTicker.IsEnabled)
                                 {
                                     InfoTicker.Init();
@@ -351,6 +355,15 @@ namespace ServerTools
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
+                                }
+                                if (!InfoTicker.IsEnabled && !Motd.IsEnabled && InfoTicker.IsConfigLoaded)
+                                {
+                                    InfoTicker._fileWatcher.Dispose();
+                                    InfoTicker.IsConfigLoaded = false;
+                                }
+                                if (!InfoTicker.IsConfigLoaded && Motd.IsEnabled)
+                                {
+                                    InfoTicker.Init();
                                 }
                                 break;
                         }
