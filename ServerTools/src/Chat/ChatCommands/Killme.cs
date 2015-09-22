@@ -111,7 +111,7 @@ namespace ServerTools
         public static void KillPlayer(ClientInfo _cInfo, bool _announce, string _message, string _playerName)
         {
             DateTime _datetime;
-            if (_Players.TryGetValue(_cInfo.playerId, out _datetime))
+            if (DelayBetweenUses > 0 && _Players.TryGetValue(_cInfo.playerId, out _datetime))
             {
                 int _timepassed = time.GetMinutes(_datetime);
                 if (_timepassed < DelayBetweenUses)
