@@ -175,7 +175,7 @@ namespace ServerTools
             while (IsEnabled)
             {
                 int _playerCount = ConnectionManager.Instance.ClientCount();
-                if (_playerCount > 0)
+                if (_playerCount > 0 && Messages.Count > 0)
                 {
                     List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                     ClientInfo _cInfo = _cInfoList.RandomObject();
