@@ -219,6 +219,10 @@ namespace ServerTools
                 else
                 {
                     _cInfo.SendPackage(pkg);
+                    if(_lastused.ContainsKey(_cInfo.playerId))
+                    {
+                        _lastused.Remove(_cInfo.playerId);
+                    }
                     _lastused.Add(_cInfo.playerId, DateTime.Now);
                     UpdateXml();
                 }
