@@ -143,6 +143,7 @@ namespace ServerTools
             }
             else
             {
+                _Players.Remove(_cInfo.playerId);
                 SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.entityId), _cInfo);
                 _Players.Add(_cInfo.playerId, DateTime.Now);
                 UpdateKillmeXml();
