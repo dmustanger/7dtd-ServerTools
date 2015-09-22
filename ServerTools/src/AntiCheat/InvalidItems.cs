@@ -13,7 +13,7 @@ namespace ServerTools
         private static string _file = "InvalidItems.xml";
         private static string _filepath = string.Format("{0}/{1}", Config._configpath, _file);
         public static FileSystemWatcher _fileWatcher = new FileSystemWatcher(Config._configpath, _file);
-
+        public static bool IsRunning = false;
         private static List<string> InvalidItems
         {
             get { return new List<string>(_invaliditems.Keys); }
@@ -21,12 +21,16 @@ namespace ServerTools
 
         public static void Init()
         {
-            if (!Utils.FileExists(_filepath))
+            if (IsEnabled)
             {
-                UpdateInvalidItemsXml();
+                if (!Utils.FileExists(_filepath))
+                {
+                    UpdateInvalidItemsXml();
+                }
+                InitFileWatcher();
+                IsRunning = true;
+                LoadInvalidItemsXml();
             }
-            InitFileWatcher();
-            LoadInvalidItemsXml();
         }
 
         private static void LoadInvalidItemsXml()

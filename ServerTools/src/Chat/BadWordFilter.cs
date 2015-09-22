@@ -11,6 +11,7 @@ namespace ServerTools
         private static string _file = "BadWords.xml";
         private static string _filepath = string.Format("{0}/{1}", Config._configpath, _file);
         public static FileSystemWatcher _fileWatcher = new FileSystemWatcher(Config._configpath, _file);
+        public static bool IsRunning = false;
 
         public static List<string> BadWordslist
         {
@@ -19,12 +20,16 @@ namespace ServerTools
 
         public static void Init()
         {
-            if (!Utils.FileExists(_filepath))
+            if (IsEnabled)
             {
-                UpdateXml();
+                if (!Utils.FileExists(_filepath))
+                {
+                    UpdateXml();
+                }
+                LoadBadWords();
+                InitFileWatcher();
+                IsRunning = true;
             }
-            LoadBadWords();
-            InitFileWatcher();
         }
 
         private static void UpdateXml()

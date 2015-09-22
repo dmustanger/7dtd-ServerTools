@@ -8,10 +8,15 @@ namespace ServerTools
         public static int DelayBetweenWorldSaves = 15;
         public static bool IsEnabled = false;
         public static Thread th;
+        public static bool IsRunning = false;
 
         public static void Init()
         {
-            StartSave();
+            if (IsEnabled)
+            {
+                IsRunning = true;
+                StartSave();
+            }
         }
 
         private static void StartSave()
@@ -23,18 +28,15 @@ namespace ServerTools
 
         private static void Save()
         {
-            while (true)
+            while (IsEnabled)
             {
-                if (IsEnabled)
+                int _playerCount = ConnectionManager.Instance.ClientCount();
+                if (_playerCount > 0)
                 {
-                    int _playerCount = ConnectionManager.Instance.ClientCount();
-                    if (_playerCount > 0)
-                    {
-                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                        ClientInfo _cInfo = _cInfoList.RandomObject();
-                        SdtdConsole.Instance.ExecuteSync("saveworld", _cInfo);
-                        Log.Out("[SERVERTOOLS] World Saved.");
-                    }
+                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                    ClientInfo _cInfo = _cInfoList.RandomObject();
+                    SdtdConsole.Instance.ExecuteSync("saveworld", _cInfo);
+                    Log.Out("[SERVERTOOLS] World Saved.");
                 }
                 Thread.Sleep(60000 * DelayBetweenWorldSaves);
             }

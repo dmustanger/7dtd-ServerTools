@@ -192,28 +192,37 @@ namespace ServerTools
                 _player.position.y = y;
                 _player.position.z = z;
                 NetPackageEntityTeleport pkg = new NetPackageEntityTeleport(_player);
-                DateTime _datetime;
-                if (_lastused.TryGetValue(_cInfo.playerId, out _datetime))
+                if (DelayBetweenUses > 0)
                 {
-                    int _passedtime = time.GetMinutes(_datetime);
-                    if (_passedtime > DelayBetweenUses)
+                    DateTime _datetime;
+                    if (_lastused.TryGetValue(_cInfo.playerId, out _datetime))
                     {
-                        _lastused.Remove(_cInfo.playerId);
-                        _cInfo.SendPackage(pkg);
-                        _lastused.Add(_cInfo.playerId, DateTime.Now);
-                        UpdateXml();
+                        int _passedtime = time.GetMinutes(_datetime);
+                        if (_passedtime > DelayBetweenUses)
+                        {
+                            _lastused.Remove(_cInfo.playerId);
+                            _cInfo.SendPackage(pkg);
+                            _lastused.Add(_cInfo.playerId, DateTime.Now);
+                            UpdateXml();
+                        }
+                        else
+                        {
+                            int _timeleft = DelayBetweenUses - _passedtime;
+                            string _phrase13 = "{0} you can only use /home once every {1} minutes. Time remaining: {2} minutes.";
+                            if (Phrases._Phrases.TryGetValue(13, out _phrase13))
+                            {
+                                _phrase13 = _phrase13.Replace("{0}", _cInfo.playerName);
+                                _phrase13 = _phrase13.Replace("{1}", DelayBetweenUses.ToString());
+                                _phrase13 = _phrase13.Replace("{2}", _timeleft.ToString());
+                            }
+                            _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}{0}[-]", _phrase13, CustomCommands._chatcolor), "Server"));
+                        }
                     }
                     else
                     {
-                        int _timeleft = DelayBetweenUses - _passedtime;
-                        string _phrase13 = "{0} you can only use /home once every {1} minutes. Time remaining: {2} minutes.";
-                        if (Phrases._Phrases.TryGetValue(13, out _phrase13))
-                        {
-                            _phrase13 = _phrase13.Replace("{0}", _cInfo.playerName);
-                            _phrase13 = _phrase13.Replace("{1}", DelayBetweenUses.ToString());
-                            _phrase13 = _phrase13.Replace("{2}", _timeleft.ToString());
-                        }
-                        _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}{0}[-]", _phrase13, CustomCommands._chatcolor), "Server"));
+                        _cInfo.SendPackage(pkg);
+                        _lastused.Add(_cInfo.playerId, DateTime.Now);
+                        UpdateXml();
                     }
                 }
                 else

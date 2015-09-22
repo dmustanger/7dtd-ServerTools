@@ -14,6 +14,7 @@ namespace ServerTools
         public static FileSystemWatcher _fileWatcher = new FileSystemWatcher(Config._configpath, _file);
         public static SortedDictionary<string, string> _whiteListPlayers = new SortedDictionary<string, string>();
         private static Dictionary<string, int> _sameples = new Dictionary<string, int>();
+        public static bool IsRunning = false;
 
         public static List<string> SteamId
         {
@@ -27,12 +28,16 @@ namespace ServerTools
 
         public static void Init()
         {
-            if (!Utils.FileExists(_filepath))
+            if (IsEnabled)
             {
-                UpdateXml();
+                if (!Utils.FileExists(_filepath))
+                {
+                    UpdateXml();
+                }
+                Loadxml();
+                InitFileWatcher();
+                IsRunning = true;
             }
-            Loadxml();
-            InitFileWatcher();
         }
 
         public static void UpdateXml()

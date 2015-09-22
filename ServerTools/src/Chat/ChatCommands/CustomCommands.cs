@@ -12,6 +12,8 @@ namespace ServerTools
         private static string _file = "CustomChatCommands.xml";
         private static string _filepath = string.Format("{0}/{1}", Config._configpath, _file);
         public static FileSystemWatcher _fileWatcher = new FileSystemWatcher(Config._configpath, _file);
+        public static bool IsRunning = false;
+
         public static List<string> Commands
         {
             get { return new List<string>(_customCommands.Keys); }
@@ -19,12 +21,16 @@ namespace ServerTools
 
         public static void Init()
         {
-            if (!Utils.FileExists(_filepath))
+            if (IsEnabled)
             {
-                UpdateXml();
+                if (!Utils.FileExists(_filepath))
+                {
+                    UpdateXml();
+                }
+                LoadCustomCommandsXml();
+                InitFileWatcher();
+                IsRunning = true;
             }
-            LoadCustomCommandsXml();
-            InitFileWatcher();
         }
 
         private static void LoadCustomCommandsXml()

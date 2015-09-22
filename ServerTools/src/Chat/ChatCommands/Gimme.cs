@@ -18,6 +18,7 @@ namespace ServerTools
         private static string _datafilepath = string.Format("{0}/{1}", Config._datapath, _datafile);
         private static Dictionary<string, DateTime> Players = new Dictionary<string, DateTime>();
         private static System.Random _random = new System.Random();
+        public static bool IsRunning = false;
         
         private static List<string> ItemsList
         {
@@ -31,13 +32,17 @@ namespace ServerTools
 
         public static void Init()
         {
-            if (!Utils.FileExists(_filepath))
+            if (IsEnabled)
             {
-                UpdateXml();
+                if (!Utils.FileExists(_filepath))
+                {
+                    UpdateXml();
+                }
+                LoadGimmeItems();
+                LoadPlayers();
+                InitFileWatcher();
+                IsRunning = true;
             }
-            LoadGimmeItems();
-            LoadPlayers();
-            InitFileWatcher();
         }
 
         private static void UpdateXml()

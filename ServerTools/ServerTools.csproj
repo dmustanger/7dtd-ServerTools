@@ -48,7 +48,6 @@
     <Compile Include="src\Chat\ChatMessages\Motd.cs" />
     <Compile Include="src\Chat\BadWordFilter.cs" />
     <Compile Include="src\Events\AutoSaveworld.cs" />
-    <Compile Include="src\Events\AirDrops.cs" />
     <Compile Include="src\Functions\LoadPhrases.cs" />
     <Compile Include="src\Functions\GetMinutes.cs" />
     <Compile Include="src\Functions\LoadMods.cs" />
