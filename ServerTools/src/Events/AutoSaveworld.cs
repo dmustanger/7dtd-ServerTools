@@ -12,7 +12,7 @@ namespace ServerTools
 
         public static void Init()
         {
-            if (IsEnabled)
+            if (IsEnabled && !IsRunning)
             {
                 IsRunning = true;
                 StartSave();

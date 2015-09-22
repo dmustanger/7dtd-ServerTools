@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace ServerTools
+﻿namespace ServerTools
 {
     public class Motd
     {
