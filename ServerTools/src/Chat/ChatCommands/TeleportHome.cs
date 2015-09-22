@@ -193,7 +193,7 @@ namespace ServerTools
                 _player.position.z = z;
                 NetPackageEntityTeleport pkg = new NetPackageEntityTeleport(_player);
                 DateTime _datetime;
-                if (DelayBetweenUses > 0 && !_lastused.TryGetValue(_cInfo.playerId, out _datetime))
+                if (DelayBetweenUses > 0 && _lastused.TryGetValue(_cInfo.playerId, out _datetime))
                 {
                     int _passedtime = time.GetMinutes(_datetime);
                     if (_passedtime > DelayBetweenUses)
