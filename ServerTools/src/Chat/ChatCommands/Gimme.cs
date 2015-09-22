@@ -223,7 +223,7 @@ namespace ServerTools
         public static void Checkplayer(ClientInfo _cInfo, bool _announce, string _playerName)
         {
             DateTime _datetime;
-            if (Players.TryGetValue(_cInfo.playerId, out _datetime))
+            if (DelayBetweenUses > 0 && Players.TryGetValue(_cInfo.playerId, out _datetime))
             {
                 int _timepassed = time.GetMinutes(_datetime);
                 if (_timepassed < DelayBetweenUses)
