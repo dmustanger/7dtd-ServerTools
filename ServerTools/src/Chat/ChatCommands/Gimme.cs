@@ -253,6 +253,10 @@ namespace ServerTools
             }
             else
             {
+                if(PlayersList.Contains(_cInfo.playerId))
+                {
+                    Players.Remove(_cInfo.playerId);
+                }
                 _GiveItem(_cInfo, _announce);
             }
         }
