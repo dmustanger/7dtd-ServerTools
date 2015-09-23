@@ -102,15 +102,6 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (true/false) value for 'Enable' attribute: {0}" + subChild.OuterXml));
                                     continue;
                                 }
-                                if (Gimme.IsRunning && !Gimme.IsEnabled)
-                                {
-                                    Gimme._fileWatcher.Dispose();
-                                    Gimme.IsRunning = false;
-                                }
-                                if (!Gimme.IsRunning && Gimme.IsEnabled)
-                                {
-                                    Gimme.Init();
-                                }
                                 break;
                             case "HighPingKicker":
                                 if (!_line.HasAttribute("SamplesNeeded"))
@@ -143,15 +134,6 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring HighPingKicker entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (HighPingKicker.IsRunning && !HighPingKicker.IsEnabled)
-                                {
-                                    HighPingKicker._fileWatcher.Dispose();
-                                    HighPingKicker.IsRunning = false;
-                                }
-                                if (!HighPingKicker.IsRunning && HighPingKicker.IsEnabled)
-                                {
-                                    HighPingKicker.Init();
-                                }
                                 break;
                             case "InvalidItemKicker":
                                 if (!_line.HasAttribute("Enable"))
@@ -173,15 +155,6 @@ namespace ServerTools
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring InvalidItemKicker entry because of invalid (true/false) value for 'Ban' attribute: {0}", subChild.OuterXml));
                                     continue;
-                                }
-                                if (InventoryCheck.IsRunning && !InventoryCheck.IsEnabled)
-                                {
-                                    InventoryCheck._fileWatcher.Dispose();
-                                    InventoryCheck.IsRunning = false;
-                                }
-                                if(!InventoryCheck.IsRunning && InventoryCheck.IsEnabled)
-                                {
-                                    InventoryCheck.Init();
                                 }
                                 break;
                             case "AnnounceInvalidItemStack":
@@ -246,15 +219,6 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring CustomCommands entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (CustomCommands.IsRunning && !CustomCommands.IsEnabled)
-                                {
-                                    CustomCommands._fileWatcher.Dispose();
-                                    CustomCommands.IsRunning = false;
-                                }
-                                if (!CustomCommands.IsRunning && CustomCommands.IsEnabled)
-                                {
-                                    CustomCommands.Init();
-                                }
                                 break;
                             case "BadWordFilter":
                                 if (!_line.HasAttribute("Enable"))
@@ -266,15 +230,6 @@ namespace ServerTools
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring BadWordFilter entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
-                                }
-                                if (Badwords.IsRunning && !Badwords.IsEnabled)
-                                {
-                                    Badwords._fileWatcher.Dispose();
-                                    Badwords.IsRunning = false;
-                                }
-                                if (!Badwords.IsRunning && Badwords.IsEnabled)
-                                {
-                                    Badwords.Init();
                                 }
                                 break;
                             case "InfoTicker":
@@ -299,20 +254,6 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring InfoTicker entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (InfoTicker.IsRunning && !InfoTicker.IsEnabled)
-                                {
-                                    InfoTicker.th.Abort();
-                                    InfoTicker.IsRunning = false;
-                                }
-                                if (!InfoTicker.IsEnabled && !Motd.IsEnabled && InfoTicker.IsConfigLoaded)
-                                    {
-                                        InfoTicker._fileWatcher.Dispose();
-                                        InfoTicker.IsConfigLoaded = false;
-                                    }
-                                if (!InfoTicker.IsRunning && InfoTicker.IsEnabled)
-                                {
-                                    InfoTicker.Init();
-                                }
                                 break;
                             case "AutoSaveWorld":
                                 if (!_line.HasAttribute("DelayBetweenWorldSaves"))
@@ -335,15 +276,6 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring AutoSaveWorld entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (SaveWorld.IsRunning && !SaveWorld.IsEnabled)
-                                {
-                                    SaveWorld.th.Abort();
-                                    SaveWorld.IsRunning = false;
-                                }
-                                if (!SaveWorld.IsRunning && SaveWorld.IsEnabled)
-                                {
-                                    SaveWorld.Init();
-                                }
                                 break;
                             case "Motd":
                                 if (!_line.HasAttribute("Enable"))
@@ -356,18 +288,10 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!InfoTicker.IsEnabled && !Motd.IsEnabled && InfoTicker.IsConfigLoaded)
-                                {
-                                    InfoTicker._fileWatcher.Dispose();
-                                    InfoTicker.IsConfigLoaded = false;
-                                }
-                                if (!InfoTicker.IsConfigLoaded && Motd.IsEnabled)
-                                {
-                                    InfoTicker.Init();
-                                }
                                 break;
                         }
                     }
+                    Mods.Init();
                 }
             }
         }

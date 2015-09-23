@@ -33,7 +33,7 @@ namespace ServerTools
                 GameManager.Instance.GameMessageServer(_cInfo, string.Format("{1}Server FPS: {0}[-]", _fps, CustomCommands._chatcolor), "Server");
                 GameManager.Instance.GameMessageServer(_cInfo, string.Format("{1}Next 7th day is in {0} days[-]", daysUntil7, CustomCommands._chatcolor), "Server");
                 GameManager.Instance.GameMessageServer(_cInfo, string.Format("{1}Total Players: {0}.[-]", _playerCount, CustomCommands._chatcolor), "Server");
-                GameManager.Instance.GameMessageServer(_cInfo, string.Format("{1}Total Zombies: {0}-]", Zombies, CustomCommands._chatcolor), "Server");
+                GameManager.Instance.GameMessageServer(_cInfo, string.Format("{1}Total Zombies: {0}[-]", Zombies, CustomCommands._chatcolor), "Server");
                 GameManager.Instance.GameMessageServer(_cInfo, string.Format("{1}Total Animals: {0}[-]", Animals, CustomCommands._chatcolor), "Server");
             }
             else

@@ -11,7 +11,6 @@ namespace ServerTools
                 Directory.CreateDirectory(string.Format("{0}/ServerTools", GamePrefs.GetString(EnumGamePrefs.SaveGameFolder)));
             }
             Config.Init();
-            Mods.Init();
         }
         public override void SavePlayerData(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
         {

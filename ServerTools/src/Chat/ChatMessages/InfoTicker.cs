@@ -16,6 +16,7 @@ namespace ServerTools
         public static Thread th;
         public static bool IsRunning = false;
         public static bool IsConfigLoaded = false;
+
         private static List<string> Messages
         {
             get { return new List<string>(_message.Keys); }
