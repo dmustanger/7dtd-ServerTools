@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-namespace ServerTools
+﻿namespace ServerTools
 {
     public class ChatHook
     {
@@ -29,7 +28,7 @@ namespace ServerTools
                         }
                     }
                 }
-                if (_message.StartsWith("/") || _message.StartsWith("!"))
+                if (_message.StartsWith("/") || _message.StartsWith("!") || _message.StartsWith("@"))
                 {
                     bool _announce = false;
                     if (_message.StartsWith("!"))
@@ -37,14 +36,35 @@ namespace ServerTools
                         _announce = true;
                         _message = _message.Replace("!", "");
                     }
-                    else
+                    if (_message.StartsWith("/"))
                     {
                         _message = _message.Replace("/", "");
                     }
                     _message = _message.ToLower();
+                    if (_message.StartsWith("@admins ") || _message.StartsWith("@all "))
+                    {
+                        if (!AdminChat.IsEnabled)
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{0}AdminChat is not enabled.[-]", CustomCommands._chatcolor), "Server"));
+                        }
+                        else
+                        {
+                            if (_message.StartsWith("@admins "))
+                            {
+                                _message = _message.Replace("@admins ", "");
+                                AdminChat.SendAdmins(_cInfo, _message);
+                            }
+                            if (_message.StartsWith("@all "))
+                            {
+                                _message = _message.Replace("@all ", "");
+                                AdminChat.SendAll(_cInfo, _message);
+                            }
+                        }
+                        return false;
+                    }
                     if (_message == "info" || _message == "help" || _message == "commands")
                     {
-                        string _commands = CustomCommands.GetChatCommands();
+                        string _commands = CustomCommands.GetChatCommands(_cInfo);
                         if (_announce)
                         {
                             GameManager.Instance.GameMessageServer(_cInfo, string.Format("!{0}", _message), _playerName);

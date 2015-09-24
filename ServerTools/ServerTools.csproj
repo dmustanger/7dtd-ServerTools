@@ -36,7 +36,7 @@
     <Compile Include="src\Chat\ChatCommands\Pvp.cs" />
     <Compile Include="src\Chat\ChatCommands\CustomCommands.cs" />
     <Compile Include="src\Chat\ChatCommands\day7.cs" />
-    <Compile Include="src\Chat\ChatFlood.cs" />
+    <Compile Include="src\Chat\ChatCommands\AdminChatCommands.cs" />
     <Compile Include="src\AntiCheat\InvalidItems.cs" />
     <Compile Include="src\api.cs" />
     <Compile Include="src\Chat\ChatHooks.cs" />

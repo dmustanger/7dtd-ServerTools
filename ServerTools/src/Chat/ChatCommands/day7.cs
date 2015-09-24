@@ -4,7 +4,7 @@ namespace ServerTools
 {
     public class Day7
     {
-        public static bool IsEnabled = true;
+        public static bool IsEnabled = false;
 
         public static void GetInfo(ClientInfo _cInfo, bool _announce)
         {
@@ -17,7 +17,6 @@ namespace ServerTools
             int daysUntil7 = 7 - GameUtils.WorldTimeToDays(_worldTime) % 7;
             foreach (Entity _e in _entities)
             {
-                int _c = _e.entityClass;
                 
                 if (_e.entityType.ToString() == "Zombie")
                 {

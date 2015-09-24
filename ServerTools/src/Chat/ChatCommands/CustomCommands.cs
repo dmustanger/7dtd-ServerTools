@@ -134,7 +134,7 @@ namespace ServerTools
             LoadCustomCommandsXml();
         }
 
-        public static string GetChatCommands()
+        public static string GetChatCommands(ClientInfo _cInfo)
         {
             string _commands = string.Format("{0}Commands are:", _chatcolor);
             if (Gimme.IsEnabled)
@@ -149,7 +149,7 @@ namespace ServerTools
             {
                 _commands = string.Format("{0} /killme", _commands);
             }
-            if(Day7.IsEnabled)
+            if (Day7.IsEnabled)
             {
                 _commands = string.Format("{0} /day7", _commands);
             }
@@ -159,6 +159,10 @@ namespace ServerTools
                 {
                     _commands = string.Format("{0} /{1}", _commands, _command);
                 }
+            }
+            if (AdminChat.IsEnabled && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
+            {
+                _commands = string.Format("{0} @admins @all", _commands);
             }
             _commands = string.Format("{0}[-]", _commands);
             return _commands;

@@ -147,9 +147,17 @@ namespace ServerTools
             string _steamid = _cInfo.playerId;
             if (_cInfo.ping > MAXPING && !_whiteListPlayers.ContainsKey(_steamid) && !GameManager.Instance.adminTools.IsAdmin(_steamid))
             {
-                if (SamplesNeeded > 0)
+                if (SamplesNeeded < 1)
                 {
-                    if (Samples.Contains(_steamid))
+                    KickPlayer(_cInfo);
+                }
+                else
+                {
+                    if (!Samples.Contains(_steamid))
+                    {
+                        _sameples.Add(_steamid, 1);
+                    }
+                    else
                     {
                         int _savedsamples = 0;
                         if (_sameples.TryGetValue(_steamid, out _savedsamples))
@@ -166,14 +174,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    else
-                    {
-                        _sameples.Add(_steamid, 1);
-                    }
-                }
-                else
-                {
-                    KickPlayer(_cInfo);
+                    
                 }
             }
             else
