@@ -33,7 +33,7 @@ namespace ServerTools
             }
             else
             {
-                SdtdConsole.Instance.ExecuteSync(string.Format("[FF8000]{0}[-]", _message), _sender);
+                SdtdConsole.Instance.ExecuteSync(string.Format("say \"[FF8000]{0}[-]\"", _message), _sender);
             }
         }
     }
