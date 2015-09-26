@@ -98,6 +98,10 @@
                         {
                             GameManager.Instance.GameMessageServer(_cInfo, string.Format("!{0}", _message), _playerName);
                         }
+                        if (Gimme.AlwaysShowResponse && !_announce)
+                        {
+                            GameManager.Instance.GameMessageServer(_cInfo, string.Format("/{0}", _message), _playerName);
+                        }
                         if (Gimme.IsEnabled)
                         {
                             Gimme.Checkplayer(_cInfo, _announce, _playerName);

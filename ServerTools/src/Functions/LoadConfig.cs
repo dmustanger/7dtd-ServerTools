@@ -81,28 +81,6 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
-                            case "Gimme":
-                                if (!_line.HasAttribute("DelayBetweenGimmeUses"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring gimme entry because of missing 'DelayBetweenGimmeUses' attribute: {0}" + subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("DelayBetweenGimmeUses"), out Gimme.DelayBetweenUses))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring gimme entry because of invalid (non-numeric) value for 'DelayBetweenGimmeUses' attribute: {0}" + subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Enable"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing 'Enable' attribute: {0}" + subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Gimme.IsEnabled))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (true/false) value for 'Enable' attribute: {0}" + subChild.OuterXml));
-                                    continue;
-                                }
-                                break;
                             case "HighPingKicker":
                                 if (!_line.HasAttribute("SamplesNeeded"))
                                 {
@@ -289,6 +267,38 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
+                            case "Gimme":
+                                if (!_line.HasAttribute("DelayBetweenGimmeUses"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring gimme entry because of missing 'DelayBetweenGimmeUses' attribute: {0}" + subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("DelayBetweenGimmeUses"), out Gimme.DelayBetweenUses))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring gimme entry because of invalid (non-numeric) value for 'DelayBetweenGimmeUses' attribute: {0}" + subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing 'Enable' attribute: {0}" + subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Gimme.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (true/false) value for 'Enable' attribute: {0}" + subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("AlwaysShowResponse"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing 'AlwaysShowResponse' attribute: {0}" + subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("AlwaysShowResponse"), out Gimme.AlwaysShowResponse))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (true/false) value for 'AlwaysShowResponse' attribute: {0}" + subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                         }
                     }
                     Mods.Init();
@@ -306,7 +316,7 @@ namespace ServerTools
                 sw.WriteLine("    <Tools>");
                 sw.WriteLine(string.Format("        <Tool Name=\"CustomCommands\" Enable=\"{0}\" ChatColor=\"{1}\" />", CustomCommands.IsEnabled, CustomCommands._chatcolor));
                 sw.WriteLine(string.Format("        <Tool Name=\"Killme\" Enable=\"{0}\" DelayBetweenKillmeUses=\"{1}\" />", KillMe.IsEnabled, KillMe.DelayBetweenUses));
-                sw.WriteLine(string.Format("        <Tool Name=\"Gimme\" Enable=\"{0}\" DelayBetweenGimmeUses=\"{1}\" />", Gimme.IsEnabled, Gimme.DelayBetweenUses));
+                sw.WriteLine(string.Format("        <Tool Name=\"Gimme\" Enable=\"{0}\" DelayBetweenGimmeUses=\"{1}\" AlwaysShowResponse=\"{2}\" />", Gimme.IsEnabled, Gimme.DelayBetweenUses, Gimme.AlwaysShowResponse));
                 sw.WriteLine(string.Format("        <Tool Name=\"SetHome\" Enable=\"{0}\" DelayBetweenSetHomeUses=\"{1}\" />", TeleportHome.IsEnabled, TeleportHome.DelayBetweenUses));
                 sw.WriteLine(string.Format("        <Tool Name=\"HighPingKicker\" Enable=\"{0}\" Maxping=\"{1}\" SamplesNeeded=\"{2}\" />", HighPingKicker.IsEnabled, HighPingKicker.MAXPING, HighPingKicker.SamplesNeeded));
                 sw.WriteLine(string.Format("        <Tool Name=\"InvalidItemKicker\" Enable=\"{0}\" Ban=\"{1}\" />", InventoryCheck.IsEnabled, InventoryCheck.BanPlayer));

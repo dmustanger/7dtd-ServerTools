@@ -8,6 +8,7 @@ namespace ServerTools
 {
     public class Gimme
     {
+        public static bool AlwaysShowResponse = false;
         public static bool IsEnabled = false;
         public static int DelayBetweenUses = 60;
         private static string _file = "GimmeItems.xml";
@@ -311,7 +312,7 @@ namespace ServerTools
                         _phrase7 = _phrase7.Replace("{1}", _count.ToString());
                         _phrase7 = _phrase7.Replace("{2}", _randomItem);
                     }
-                    if (_announce)
+                    if (_announce || AlwaysShowResponse)
                     {
                         GameManager.Instance.GameMessageServer(_cInfo, string.Format("{0}{1}[-]", CustomCommands._chatcolor, _phrase7), "Server");
                     }
