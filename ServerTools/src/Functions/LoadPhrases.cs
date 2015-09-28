@@ -92,7 +92,7 @@ namespace ServerTools
                 {
                     foreach (KeyValuePair<int, string> kvp in _Phrases)
                     {
-                        sw.WriteLine(string.Format("        <Phrase id=\"{1}\" Phrase=\"{1}\" />", kvp.Key, kvp.Value));
+                        sw.WriteLine(string.Format("        <Phrase id=\"{0}\" Phrase=\"{1}\" />", kvp.Key, kvp.Value));
                     }
                 }
                 else
