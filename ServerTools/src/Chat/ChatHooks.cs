@@ -62,6 +62,50 @@
                         }
                         return false;
                     }
+                    if (_message.StartsWith("clanadd ") || _message == "clandel" || _message.StartsWith("claninvite ") || _message == "clanaccept" || _message == "clandecline" || _message.StartsWith("clanremove ") || _message.StartsWith("clanpromote ") || _message.StartsWith("clandemote "))
+                    {
+                        if (ClanManager.IsEnabled)
+                        {
+                            if (_message.StartsWith("clanadd "))
+                            {
+                                _message = _message.Replace("clanadd ", "");
+                                ClanManager.AddClan(_cInfo, _message);
+                            }
+                            if (_message == "clandel")
+                            {
+                                ClanManager.RemoveClan(_cInfo);
+                            }
+                            if (_message.StartsWith("claninvite "))
+                            {
+                                _message = _message.Replace("claninvite ", "");
+                                ClanManager.InviteMember(_cInfo, _message);
+                            }
+                            if (_message == "clanaccept")
+                            {
+                                ClanManager.InviteAccept(_cInfo);
+                            }
+                            if (_message == "clandecline")
+                            {
+                                ClanManager.InviteDecline(_cInfo);
+                            }
+                            if (_message.StartsWith("clanremove "))
+                            {
+                                _message = _message.Replace("clanremove ", "");
+                                ClanManager.RemoveMember(_cInfo, _message);
+                            }
+                            if (_message.StartsWith("clanpromote "))
+                            {
+                                _message = _message.Replace("clanpromote ", "");
+                                ClanManager.PromoteMember(_cInfo, _message);
+                            }
+                            if (_message.StartsWith("clandemote "))
+                            {
+                                _message = _message.Replace("clandemote ", "");
+                                ClanManager.DemoteMember(_cInfo, _message);
+                            }
+                        }
+                        return false;
+                    }
                     if (_message == "info" || _message == "help" || _message == "commands")
                     {
                         string _commands = CustomCommands.GetChatCommands(_cInfo);

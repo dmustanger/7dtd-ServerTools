@@ -29,6 +29,10 @@ namespace ServerTools
             {
                 Motd.Send(_cInfo);
             }
+            if (ClanManager.IsEnabled)
+            {
+                ClanManager.CheckforClantag(_cInfo);
+            }
         }
         public override bool ChatMessage(ClientInfo _cInfo, string _message, string _playerName)
         {

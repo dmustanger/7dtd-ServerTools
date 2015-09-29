@@ -95,6 +95,11 @@
             {
                 InfoTicker.Init();
             }
+            
+            if(ClanManager.IsEnabled)
+            {
+                ClanData.Init();
+            }
         }
     }
 }

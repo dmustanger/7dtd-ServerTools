@@ -11,6 +11,7 @@ namespace ServerTools
         private static string _file = "ServerToolsConfig.xml";
         private static string _filepath = string.Format("{0}/{1}", _configpath, _file);
         private static FileSystemWatcher _fileWatcher = new FileSystemWatcher(_configpath, _file);
+
         public static void Init()
         {
             Phrases.Init();
@@ -299,6 +300,18 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
+                            case "ClanManager":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ClanManager entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ClanManager.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ClanManager entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                         }
                     }
                     Mods.Init();
@@ -326,6 +339,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"InfoTicker\" Enable=\"{0}\" DelayBetweenMessages=\"{1}\" />", InfoTicker.IsEnabled, InfoTicker.DelayBetweenMessages));
                 sw.WriteLine(string.Format("        <Tool Name=\"Motd\" Enable=\"{0}\" />", Motd.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"AutoSaveWorld\" Enable=\"{0}\" DelayBetweenWorldSaves=\"{1}\" />", SaveWorld.IsEnabled, SaveWorld.DelayBetweenWorldSaves));
+                sw.WriteLine(string.Format("        <Tool Name=\"ClanManager\" Enable=\"{0}\" />", ClanManager.IsEnabled));
                 sw.WriteLine("    </Tools>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();
