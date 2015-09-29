@@ -114,6 +114,10 @@ namespace ServerTools
 
         public static void UpdateInviteData()
         {
+            if (!Directory.Exists(Config._datapath))
+            {
+                Directory.CreateDirectory(Config._datapath);
+            }
             using (StreamWriter sw = new StreamWriter(_Invitedatafilepath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -185,6 +189,10 @@ namespace ServerTools
 
         public static void UpdateOfficerData()
         {
+            if (!Directory.Exists(Config._datapath))
+            {
+                Directory.CreateDirectory(Config._datapath);
+            }
             using (StreamWriter sw = new StreamWriter(_Officerdatafilepath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -256,6 +264,10 @@ namespace ServerTools
 
         public static void UpdateClanData()
         {
+            if (!Directory.Exists(Config._datapath))
+            {
+                Directory.CreateDirectory(Config._datapath);
+            }
             using (StreamWriter sw = new StreamWriter(_Clandatafilepath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -327,6 +339,10 @@ namespace ServerTools
 
         public static void UpdatePlayerData()
         {
+            if (!Directory.Exists(Config._datapath))
+            {
+                Directory.CreateDirectory(Config._datapath);
+            }
             using (StreamWriter sw = new StreamWriter(_Playerdatafilepath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -398,6 +414,10 @@ namespace ServerTools
 
         public static void UpdateOwnerData()
         {
+            if (!Directory.Exists(Config._datapath))
+            {
+                Directory.CreateDirectory(Config._datapath);
+            }
             using (StreamWriter sw = new StreamWriter(_Ownerdatafilepath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
