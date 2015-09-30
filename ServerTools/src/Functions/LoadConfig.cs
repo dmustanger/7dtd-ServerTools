@@ -312,6 +312,28 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
+                            case "AdminChatCommands":
+                                if (!_line.HasAttribute("PermissionLevelForMute"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminChatCommands entry because of missing 'PermissionLevelForMute' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("PermissionLevelForMute"), out AdminChat.PermLevelNeededforMute))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminChatCommands entry because of invalid (non-numeric) value for 'PermissionLevelForMute' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminChatCommands entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out AdminChat.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminChatCommands entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                         }
                     }
                     Mods.Init();
@@ -340,6 +362,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Motd\" Enable=\"{0}\" />", Motd.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"AutoSaveWorld\" Enable=\"{0}\" DelayBetweenWorldSaves=\"{1}\" />", SaveWorld.IsEnabled, SaveWorld.DelayBetweenWorldSaves));
                 sw.WriteLine(string.Format("        <Tool Name=\"ClanManager\" Enable=\"{0}\" />", ClanManager.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"AdminChatCommands\" Enable=\"{0}\" PermissionLevelForMute=\"{1}\" />", AdminChat.IsEnabled, AdminChat.PermLevelNeededforMute));
                 sw.WriteLine("    </Tools>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();

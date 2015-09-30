@@ -6,6 +6,11 @@
         {
             if (!string.IsNullOrEmpty(_message) && _cInfo != null && _playerName != "" && _playerName != "Server")
             {
+                if(AdminChat.MutedPlayersList.Contains(_cInfo.playerId))
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{0}You are currently muted.[-]", CustomCommands._chatcolor), "Server"));
+                    return false;
+                }
                 string _filter = "[ffffffff][/url][/b][/i][/u][/s][/sub][/sup][ff]";
                 if (_message.EndsWith(_filter + _filter))
                 {
@@ -40,25 +45,24 @@
                     {
                         _message = _message.Replace("/", "");
                     }
-                    _message = _message.ToLower();
-                    if (_message.StartsWith("@admins ") || _message.StartsWith("@all "))
+                    if (_message.StartsWith("mute ") || _message.StartsWith("unmute "))
                     {
-                        if (!AdminChat.IsEnabled)
+                        if (AdminChat.IsEnabled)
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{0}AdminChat is not enabled.[-]", CustomCommands._chatcolor), "Server"));
+                            if (_message.StartsWith("mute "))
+                            {
+                                _message = _message.Replace("mute ", "");
+                                AdminChat.MutePlayer(_cInfo, _message);
+                            }
+                            if(_message.StartsWith("unmute "))
+                            {
+                                _message = _message.Replace("unmute ", "");
+                                AdminChat.UnMutePlayer(_cInfo, _message);
+                            }
                         }
                         else
                         {
-                            if (_message.StartsWith("@admins "))
-                            {
-                                _message = _message.Replace("@admins ", "");
-                                AdminChat.SendAdmins(_cInfo, _message);
-                            }
-                            if (_message.StartsWith("@all "))
-                            {
-                                _message = _message.Replace("@all ", "");
-                                AdminChat.SendAll(_cInfo, _message);
-                            }
+                            _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{0}AdminChat is not enabled.[-]", CustomCommands._chatcolor), "Server"));
                         }
                         return false;
                     }
@@ -102,6 +106,32 @@
                             {
                                 _message = _message.Replace("clandemote ", "");
                                 ClanManager.DemoteMember(_cInfo, _message);
+                            }
+                        }
+                        else
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{0}ClanManager is not enabled.[-]", CustomCommands._chatcolor), "Server"));
+                        }
+                        return false;
+                    }
+                    _message = _message.ToLower();
+                    if (_message.StartsWith("@admins ") || _message.StartsWith("@all "))
+                    {
+                        if (!AdminChat.IsEnabled)
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{0}AdminChat is not enabled.[-]", CustomCommands._chatcolor), "Server"));
+                        }
+                        else
+                        {
+                            if (_message.StartsWith("@admins "))
+                            {
+                                _message = _message.Replace("@admins ", "");
+                                AdminChat.SendAdmins(_cInfo, _message);
+                            }
+                            if (_message.StartsWith("@all "))
+                            {
+                                _message = _message.Replace("@all ", "");
+                                AdminChat.SendAll(_cInfo, _message);
                             }
                         }
                         return false;
