@@ -114,7 +114,6 @@
                         }
                         return false;
                     }
-                    _message = _message.ToLower();
                     if (_message.StartsWith("@admins ") || _message.StartsWith("@all "))
                     {
                         if (!AdminChat.IsEnabled)
@@ -136,6 +135,7 @@
                         }
                         return false;
                     }
+                    _message = _message.ToLower();
                     if (_message == "info" || _message == "help" || _message == "commands")
                     {
                         string _commands = CustomCommands.GetChatCommands(_cInfo);
