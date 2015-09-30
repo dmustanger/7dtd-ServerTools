@@ -47,6 +47,8 @@
     <Compile Include="src\Chat\ChatMessages\InfoTicker.cs" />
     <Compile Include="src\Chat\ChatMessages\Motd.cs" />
     <Compile Include="src\Chat\BadWordFilter.cs" />
+    <Compile Include="src\Chat\ClanManager\ClanManager.cs" />
+    <Compile Include="src\Chat\ClanManager\Data.cs" />
     <Compile Include="src\Events\AutoSaveworld.cs" />
     <Compile Include="src\Functions\LoadPhrases.cs" />
     <Compile Include="src\Functions\GetMinutes.cs" />
