@@ -277,7 +277,7 @@ namespace ServerTools
                 {
                     sw.WriteLine(string.Format("        <Clan clan=\"{0}\" steamId=\"{1}\" />", kvp.Key, kvp.Value));
                 }
-                sw.WriteLine("    </Clan>");
+                sw.WriteLine("    </Clans>");
                 sw.WriteLine("</ClanData>");
                 sw.Flush();
                 sw.Close();
