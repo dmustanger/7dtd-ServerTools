@@ -5,7 +5,7 @@ namespace ServerTools
 {
     public class AdminChat
     {
-        public static bool IsEnabled = true;
+        public static bool IsEnabled = false;
         public static int PermLevelNeededforMute = 0;
         private static SortedDictionary<string, DateTime> MutedPlayers = new SortedDictionary<string, DateTime>();
 
