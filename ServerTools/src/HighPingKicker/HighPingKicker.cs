@@ -188,15 +188,20 @@ namespace ServerTools
 
         private static void KickPlayer(ClientInfo _cInfo)
         {
-            string _phrase1 = "Auto Kicking {0} for high ping. ({1}) Maxping is {2}.";
-            string _phrase2 = "Auto Kicked: Ping To High. ({0}) Max Ping is {1}.";
+            string _phrase1 = "Auto Kicking {PlayerName} for high ping. ({PlayerPing}) Maxping is {MaxPing}.";
+            string _phrase2 = "Auto Kicked: Ping To High. ({PlayerPing}) Max Ping is {MaxPing}.";
             if (Phrases._Phrases.TryGetValue(1, out _phrase1) && Phrases._Phrases.TryGetValue(2, out _phrase2))
             {
                 _phrase1 = _phrase1.Replace("{0}", _cInfo.playerName);
                 _phrase1 = _phrase1.Replace("{1}", _cInfo.ping.ToString());
                 _phrase1 = _phrase1.Replace("{2}", MAXPING.ToString());
+                _phrase1 = _phrase1.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase1 = _phrase1.Replace("{PlayerPing}", _cInfo.ping.ToString());
+                _phrase1 = _phrase1.Replace("{MaxPing}", MAXPING.ToString());
                 _phrase2 = _phrase2.Replace("{0}", _cInfo.ping.ToString());
                 _phrase2 = _phrase2.Replace("{1}", MAXPING.ToString());
+                _phrase2 = _phrase2.Replace("{PlayerPing}", _cInfo.ping.ToString());
+                _phrase2 = _phrase2.Replace("{MaxPing}", MAXPING.ToString());
             }
             Log.Out(string.Format("[SERVERTOOLS] {0}", _phrase1));
             GameManager.Instance.GameMessageServer(_cInfo, string.Format("[FF8000]{0}[-]", _phrase1), "Server");

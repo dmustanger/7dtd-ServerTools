@@ -230,12 +230,15 @@ namespace ServerTools
                 if (_timepassed < DelayBetweenUses)
                 {
                     int _timeleft = DelayBetweenUses - _timepassed;
-                    string _phrase6 = "{0} you can only use Gimme once every {1} minutes.Time remaining: {2} minutes.";
+                    string _phrase6 = "{PlayerName} you can only use Gimme once every {1} minutes.Time remaining: {2} minutes.";
                     if (Phrases._Phrases.TryGetValue(6, out _phrase6))
                     {
                         _phrase6 = _phrase6.Replace("{0}", _playerName);
                         _phrase6 = _phrase6.Replace("{1}", DelayBetweenUses.ToString());
                         _phrase6 = _phrase6.Replace("{2}", _timeleft.ToString());
+                        _phrase6 = _phrase6.Replace("{PlayerName}", _playerName);
+                        _phrase6 = _phrase6.Replace("{DelayBetweenUses}", DelayBetweenUses.ToString());
+                        _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
                     }
                     if (_announce)
                     {
@@ -305,12 +308,15 @@ namespace ServerTools
                     int _count = _random.Next(_min, _max);
                     ItemStack _itemDrop = new ItemStack(_itemValue, _count);
                     GameManager.Instance.ItemDropServer(_itemDrop, _player.GetPosition(), Vector3.zero, -1, 60);
-                    string _phrase7 = "{0} has received {1} {2}.";
+                    string _phrase7 = "{PlayerName} has received {ItemCount} {ItemName}.";
                     if (Phrases._Phrases.TryGetValue(7, out _phrase7))
                     {
                         _phrase7 = _phrase7.Replace("{0}", _cInfo.playerName);
                         _phrase7 = _phrase7.Replace("{1}", _count.ToString());
                         _phrase7 = _phrase7.Replace("{2}", _randomItem);
+                        _phrase7 = _phrase7.Replace("{PlayerName}", _cInfo.playerName);
+                        _phrase7 = _phrase7.Replace("{ItemCount}", _count.ToString());
+                        _phrase7 = _phrase7.Replace("{ItemName}", _randomItem);
                     }
                     if (_announce || AlwaysShowResponse)
                     {

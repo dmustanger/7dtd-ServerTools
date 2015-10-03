@@ -116,10 +116,11 @@ namespace ServerTools
         {
             if (_savedHomes.ContainsKey(_cInfo.playerId))
             {
-                string _phrase9 = "You already have a home set.";
+                string _phrase9 = "{PlayerName} you already have a home set.";
                 if (Phrases._Phrases.TryGetValue(9, out _phrase9))
                 {
                     _phrase9 = _phrase9.Replace("{0}", _cInfo.playerName);
+                    _phrase9 = _phrase9.Replace("{PlayerName}", _cInfo.playerName);
                 }
                 _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}{0}[-]", _phrase9 , CustomCommands._chatcolor), "Server"));
             }
@@ -132,10 +133,11 @@ namespace ServerTools
                 string z = _position.z.ToString();
                 string _sposition = x + "," + y + "," + z;
                 _savedHomes.Add(_cInfo.playerId, _sposition);
-                string _phrase10 = "Your home has been saved.";
+                string _phrase10 = "{PlayerName} your home has been saved.";
                 if (Phrases._Phrases.TryGetValue(10, out _phrase10))
                 {
                     _phrase10 = _phrase10.Replace("{0}", _cInfo.playerName);
+                    _phrase10 = _phrase10.Replace("{PlayerName}", _cInfo.playerName);
                 }
                 _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}{0}[-]", _phrase10, CustomCommands._chatcolor), "Server"));
                 UpdateXml();
@@ -146,20 +148,22 @@ namespace ServerTools
         {
             if (!_savedHomes.ContainsKey(_cInfo.playerId))
             {
-                string _phrase11 = "You do not have a home saved.";
+                string _phrase11 = "{PlayerName} you do not have a home saved.";
                 if (Phrases._Phrases.TryGetValue(11, out _phrase11))
                 {
                     _phrase11 = _phrase11.Replace("{0}", _cInfo.playerName);
+                    _phrase11 = _phrase11.Replace("{PlayerName}", _cInfo.playerName);
                 }
                 _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}{0}[-]", _phrase11, CustomCommands._chatcolor), "Server"));
             }
             else
             {
                 _savedHomes.Remove(_cInfo.playerId);
-                string _phrase12 = "Your home has been removed.";
+                string _phrase12 = "{PlayerName} your home has been removed.";
                 if (Phrases._Phrases.TryGetValue(12, out _phrase12))
                 {
                     _phrase12 = _phrase12.Replace("{0}", _cInfo.playerName);
+                    _phrase12 = _phrase12.Replace("{PlayerName}", _cInfo.playerName);
                 }
                 _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}{0}[-]", _phrase12, CustomCommands._chatcolor), "Server"));
                 UpdateXml();
@@ -171,10 +175,11 @@ namespace ServerTools
             string _position;
             if (!_savedHomes.TryGetValue(_cInfo.playerId, out _position))
             {
-                string _phrase11 = "You do not have a home saved.";
+                string _phrase11 = "{PlayerName} you do not have a home saved.";
                 if (Phrases._Phrases.TryGetValue(11, out _phrase11))
                 {
                     _phrase11 = _phrase11.Replace("{0}", _cInfo.playerName);
+                    _phrase11 = _phrase11.Replace("{PlayerName}", _cInfo.playerName);
                 }
                 _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}{0}[-]", _phrase11, CustomCommands._chatcolor), "Server"));
             }
@@ -206,12 +211,15 @@ namespace ServerTools
                     else
                     {
                         int _timeleft = DelayBetweenUses - _passedtime;
-                        string _phrase13 = "{0} you can only use /home once every {1} minutes. Time remaining: {2} minutes.";
+                        string _phrase13 = "{PlayerName} you can only use /home once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                         if (Phrases._Phrases.TryGetValue(13, out _phrase13))
                         {
                             _phrase13 = _phrase13.Replace("{0}", _cInfo.playerName);
                             _phrase13 = _phrase13.Replace("{1}", DelayBetweenUses.ToString());
                             _phrase13 = _phrase13.Replace("{2}", _timeleft.ToString());
+                            _phrase13 = _phrase13.Replace("{PlayerName}", _cInfo.playerName);
+                            _phrase13 = _phrase13.Replace("{DelayBetweenUses}", DelayBetweenUses.ToString());
+                            _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
                         }
                         _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}{0}[-]", _phrase13, CustomCommands._chatcolor), "Server"));
                     }

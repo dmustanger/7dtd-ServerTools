@@ -117,12 +117,15 @@ namespace ServerTools
                 if (_timepassed < DelayBetweenUses)
                 {
                     int _timeleft = DelayBetweenUses - _timepassed;
-                    string _phrase8 = "{0} you can only use /killme once every {1} minutes. Time remaining: {2} minutes.";
+                    string _phrase8 = "{PlayerName} you can only use /killme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                     if (Phrases._Phrases.TryGetValue(8, out _phrase8))
                     {
                         _phrase8 = _phrase8.Replace("{0}", _playerName);
                         _phrase8 = _phrase8.Replace("{1}", DelayBetweenUses.ToString());
                         _phrase8 = _phrase8.Replace("{2}", _timeleft.ToString());
+                        _phrase8 = _phrase8.Replace("{PlayerName}", _playerName);
+                        _phrase8 = _phrase8.Replace("{DelayBetweenUses}", DelayBetweenUses.ToString());
+                        _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeleft.ToString());
                     }
                     if (_announce)
                     {
