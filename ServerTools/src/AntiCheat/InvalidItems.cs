@@ -258,7 +258,6 @@ namespace ServerTools
                         }
                         if (_invaliditems.ContainsKey(_name))
                         {
-                            string _playername = _cInfo.playerName;
                             if (BanPlayer)
                             {
                                 string _phrase4 = "Cheat Detected: Auto banned {PlayerName} for having a invalid item: {ItemName}.";
@@ -318,7 +317,6 @@ namespace ServerTools
                         }
                         if (_invaliditems.ContainsKey(_name))
                         {
-                            string _playername = _cInfo.playerName;
                             if (BanPlayer)
                             {
                                 string _phrase4 = "Cheat Detected: Auto banned {PlayerName} for having a invalid item: {ItemName}.";
