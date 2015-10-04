@@ -49,7 +49,7 @@ namespace ServerTools
                 }
                 else if (_name == "fatzombiecop")
                 {
-                    Animals = Animals + 1;
+                    Zombies = Zombies + 1;
                     Cop = Cop + 1;
                 }
                 else if (_name == "animalStag")
