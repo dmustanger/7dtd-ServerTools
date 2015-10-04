@@ -316,10 +316,10 @@ namespace ServerTools
                             }
                             _cInfo.SendPackage(new NetPackageGameMessage(string.Format("[FF8000]{0}[-]", _phrase3), "Server"));
                         }
+                        if (_invaliditems.ContainsKey(_name))
                         {
-                             string _playername = _cInfo.playerName;
-                            if (BanPlayer)                        if (_invaliditems.ContainsKey(_name))
-
+                            string _playername = _cInfo.playerName;
+                            if (BanPlayer)
                             {
                                 string _phrase4 = "Cheat Detected: Auto banned {PlayerName} for having a invalid item: {ItemName}.";
                                 if (Phrases._Phrases.TryGetValue(4, out _phrase4))
