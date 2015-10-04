@@ -89,25 +89,19 @@ namespace ServerTools
             {
                 GameManager.Instance.GameMessageServer(_cInfo, string.Format("{1}Server FPS: {0}[-]", _fps, CustomCommands._chatcolor), "Server");
                 GameManager.Instance.GameMessageServer(_cInfo, string.Format("{1}Next 7th day is in {0} days[-]", daysUntil7, CustomCommands._chatcolor), "Server");
-                GameManager.Instance.GameMessageServer(_cInfo, string.Format("{1}Total Players: {0}.[-]", _playerCount, CustomCommands._chatcolor), "Server");
-                GameManager.Instance.GameMessageServer(_cInfo, string.Format("{1}Total Zombies: {0}[-]", Zombies, CustomCommands._chatcolor), "Server");
+                GameManager.Instance.GameMessageServer(_cInfo, string.Format("{3}Total Players:{0} Total Zombies:{1} Total Animals:{2}[-]", _playerCount, Zombies, Animals, CustomCommands._chatcolor), "Server");
                 GameManager.Instance.GameMessageServer(_cInfo, string.Format("{4}Feral Zombies:{0} Cops:{1} Dogs:{2} Bees:{3}[-]", FeralZombies, Cop, Dog, Hornet, CustomCommands._chatcolor), "Server");
-                GameManager.Instance.GameMessageServer(_cInfo, string.Format("{1}Total Animals: {0}[-]", Animals, CustomCommands._chatcolor), "Server");
                 GameManager.Instance.GameMessageServer(_cInfo, string.Format("{4}Bears:{0} Stags:{1} Pigs:{2} Rabbits:{3}[-]", Bear, Stag, Pig, Rabbit, CustomCommands._chatcolor), "Server");
-                GameManager.Instance.GameMessageServer(_cInfo, string.Format("{1}Total Supply Crates: {0}[-]", SupplyCrates, CustomCommands._chatcolor), "Server");
-                GameManager.Instance.GameMessageServer(_cInfo, string.Format("{1}Total Mini Bikes: {0}[-]", MiniBikes, CustomCommands._chatcolor), "Server");
+                GameManager.Instance.GameMessageServer(_cInfo, string.Format("{2}Total Supply Crates:{0} Total Mini Bikes:{1}[-]", SupplyCrates, MiniBikes, CustomCommands._chatcolor), "Server");
             }
             else
             {
                 _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}Server FPS: {0}[-]", _fps, CustomCommands._chatcolor), "Server"));
                 _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}Next 7th day is in {0} days[-]", daysUntil7, CustomCommands._chatcolor), "Server"));
-                _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}Total Players: {0}[-]", _playerCount, CustomCommands._chatcolor), "Server"));
-                _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}Total Zombies: {0}[-]", Zombies, CustomCommands._chatcolor), "Server"));
+                _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{3}Total Players:{0} Total Zombies:{1} Total Animals:{2}[-]", _playerCount, Zombies, Animals, CustomCommands._chatcolor), "Server"));
                 _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{4}Feral Zombies:{0} Cops:{1} Dogs:{2} Bees:{3}[-]", FeralZombies, Cop, Dog, Hornet, CustomCommands._chatcolor), "Server"));
-                _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}Total Animals: {0}[-]", Animals, CustomCommands._chatcolor), "Server"));
                 _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{4}Bears:{0} Stags:{1} Pigs:{2} Rabbits:{3}[-]", Bear, Stag, Pig, Rabbit, CustomCommands._chatcolor), "Server"));
-                _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}Total Supply Crates: {0}[-]", SupplyCrates, CustomCommands._chatcolor), "Server"));
-                _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}Total Mini Bikes: {0}[-]", MiniBikes, CustomCommands._chatcolor), "Server"));
+                _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{2}Total Supply Crates:{0} Total Mini Bikes:{1}[-]", SupplyCrates, MiniBikes, CustomCommands._chatcolor), "Server"));
             }
         }
     }
