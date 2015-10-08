@@ -114,7 +114,7 @@
                         }
                         return false;
                     }
-                    if (_message.StartsWith("@admins ") || _message.StartsWith("@all "))
+                    if (_message.StartsWith("@admins ") || _message.StartsWith("@all ") || _message.StartsWith("@ADMINS ") || _message.StartsWith("@ALL "))
                     {
                         if (!AdminChat.IsEnabled)
                         {
@@ -122,10 +122,20 @@
                         }
                         else
                         {
+                            if  (_message.StartsWith("@ADMINS "))
+                            {
+                                _message = _message.Replace("@ADMINS ", "");
+                                AdminChat.SendAdmins(_cInfo, _message);
+                            }
                             if (_message.StartsWith("@admins "))
                             {
                                 _message = _message.Replace("@admins ", "");
                                 AdminChat.SendAdmins(_cInfo, _message);
+                            }
+                            if (_message.StartsWith("@ALL "))
+                            {
+                                _message = _message.Replace("@ALL ", "");
+                                AdminChat.SendAll(_cInfo, _message);
                             }
                             if (_message.StartsWith("@all "))
                             {
@@ -133,6 +143,27 @@
                                 AdminChat.SendAll(_cInfo, _message);
                             }
                         }
+                        return false;
+                    }
+                    if (_message .StartsWith("w ") || _message.StartsWith("W ") || _message.StartsWith("pm ") || _message.StartsWith("PM "))
+                    {
+                        if (_message.StartsWith("PM "))
+                        {
+                            _message = _message.Replace("PM ", "");
+                        }
+                        if (_message.StartsWith("pm "))
+                        {
+                            _message = _message.Replace("pm ", "");
+                        }
+                        if (_message.StartsWith("W "))
+                        {
+                            _message = _message.Replace("W ", "");
+                        }
+                        if (_message.StartsWith("w "))
+                        {
+                            _message = _message.Replace("w ", "");
+                        }
+                        Whisper.Send(_cInfo, _message);
                         return false;
                     }
                     _message = _message.ToLower();
