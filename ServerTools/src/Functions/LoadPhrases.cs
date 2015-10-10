@@ -146,7 +146,7 @@ namespace ServerTools
                     sw.WriteLine("        <Phrase id=\"111\" Phrase=\"{PlayerName} you have been invited to join the clan {ClanName}. Type /clanaccept to join or /clandecline to decline the offer.\" />");
                     sw.WriteLine("        <Phrase id=\"112\" Phrase=\"{PlayerName} you have invited {InvitedPlayerName} to the clan {ClanName}.\" />");
                     sw.WriteLine("        <Phrase id=\"113\" Phrase=\"{PlayerName} you have not been invited to any clans.\" />");
-                    sw.WriteLine("        <Phrase id=\"114\" Phrase=\"{PlayerName} the clan ould not be found.\" />");
+                    sw.WriteLine("        <Phrase id=\"114\" Phrase=\"{PlayerName} the clan could not be found.\" />");
                     sw.WriteLine("        <Phrase id=\"115\" Phrase=\"{PlayerName} has joined the clan.\" />");
                     sw.WriteLine("        <Phrase id=\"116\" Phrase=\"{PlayerName} you have declined the invite to the clan.\" />");
                     sw.WriteLine("        <Phrase id=\"117\" Phrase=\"{PlayerName} is not a member of your clan.\" />");
