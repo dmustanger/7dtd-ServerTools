@@ -166,6 +166,15 @@ namespace ServerTools
                     sw.WriteLine("        <Phrase id=\"203\" Phrase=\"{AdminPlayerName} you have muted {MutedPlayerName}.\" />");
                     sw.WriteLine("        <Phrase id=\"204\" Phrase=\"{AdminPlayerName} player {PlayerName} is not muted.\" />");
                     sw.WriteLine("        <Phrase id=\"205\" Phrase=\"{AdminPlayerName} you have unmuted {UnMutedPlayerName}.\" />");
+                    sw.WriteLine("        <!-- ******************************************************** -->");
+                    sw.WriteLine("        <!-- ************************** Day7 ************************ -->");
+                    sw.WriteLine("        <!-- ******************************************************** -->");
+                    sw.WriteLine("        <Phrase id=\"300\" Phrase=\"Server FPS: {Fps}\" />");
+                    sw.WriteLine("        <Phrase id=\"301\" Phrase=\"Next 7th day is in {DaysUntil7} days\" />");
+                    sw.WriteLine("        <Phrase id=\"302\" Phrase=\"Total Players:{Players} Total Zombies:{Zombies} Total Animals:{Animals}\" />");
+                    sw.WriteLine("        <Phrase id=\"303\" Phrase=\"Feral Zombies:{Ferals} Cops:{Cops} Dogs:{Dogs} Bees:{Bees}\" />");
+                    sw.WriteLine("        <Phrase id=\"304\" Phrase=\"Bears:{Bears} Stags:{Stags} Pigs:{Pigs} Rabbits:{Rabbits}\" />");
+                    sw.WriteLine("        <Phrase id=\"305\" Phrase=\"Total Supply Crates:{SupplyCrates} Total Mini Bikes:{MiniBikes}\" />");
                 }
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
