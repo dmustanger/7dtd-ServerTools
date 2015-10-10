@@ -11,12 +11,17 @@
             ClientInfo _targetInfo = ConsoleHelper.ParseParamIdOrName(_strings[0]);
             if (_targetInfo == null)
             {
-                string _phrase23 = "Player not found.";
-                _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}{0}[-]", _phrase23, CustomCommands._chatcolor), "Server"));
+                string _phrase14 = "{SenderName} player {TargetName} was not found.";
+                if (Phrases._Phrases.TryGetValue(14, out _phrase14))
+                {
+                    _phrase14 = _phrase14.Replace("{SenderName}", _cInfo.playerName);
+                    _phrase14 = _phrase14.Replace("{TargetName}", _strings[0]);
+                }
+                _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}{0}[-]", _phrase14, CustomCommands._chatcolor), "Server"));
             }
             else
             {
-                _targetInfo.SendPackage(new NetPackageGameMessage(_strings[1], _cInfo.playerName + " (PM)"));
+                _targetInfo.SendPackage(new NetPackageGameMessage(_strings[1], string.Format("{0} (PM)", _cInfo.playerName)));
             }
         }
     }

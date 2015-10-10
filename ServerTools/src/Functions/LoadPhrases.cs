@@ -126,6 +126,10 @@ namespace ServerTools
                     sw.WriteLine("        <Phrase id=\"12\" Phrase=\"{PlayerName} your home has been removed.\" />");
                     sw.WriteLine("        <Phrase id=\"13\" Phrase=\"{PlayerName} you can only use /home once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.\" />");
                     sw.WriteLine("        <!-- ******************************************************** -->");
+                    sw.WriteLine("        <!-- *********************** Whisper ************************ -->");
+                    sw.WriteLine("        <!-- ******************************************************** -->");
+                    sw.WriteLine("        <Phrase id=\"14\" Phrase=\"{SenderName} player {TargetName} was not found.\" />");
+                    sw.WriteLine("        <!-- ******************************************************** -->");
                     sw.WriteLine("        <!-- ****************** Clan Tag Protection ***************** -->");
                     sw.WriteLine("        <!-- ******************************************************** -->");
                     sw.WriteLine("        <Phrase id=\"14\" Phrase=\"You do not belong to the clan {ClanName}. Please remove the clan tag and rejoin.\" />");
