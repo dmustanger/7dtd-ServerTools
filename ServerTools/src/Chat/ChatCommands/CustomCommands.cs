@@ -14,7 +14,7 @@ namespace ServerTools
         public static FileSystemWatcher _fileWatcher = new FileSystemWatcher(Config._configpath, _file);
         public static bool IsRunning = false;
 
-        public static List<string> Commands
+        public static List<string> list
         {
             get { return new List<string>(_customCommands.Keys); }
         }
@@ -153,9 +153,13 @@ namespace ServerTools
             {
                 _commands = string.Format("{0} /day7", _commands);
             }
-            if (Commands.Count > 0)
+            if (Whisper.IsEnabled)
             {
-                foreach (string _command in Commands)
+                _commands = string.Format("{0} /pm", _commands);
+            }
+            if (list.Count > 0)
+            {
+                foreach (string _command in list)
                 {
                     _commands = string.Format("{0} /{1}", _commands, _command);
                 }
