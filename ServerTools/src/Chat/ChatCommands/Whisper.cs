@@ -2,7 +2,8 @@
 {
     public class Whisper
     {
-        private static bool IsEnabled = true;
+        public static bool IsEnabled = true;
+
         public static void Send(ClientInfo _cInfo, string _message)
         {
             string[] _strings = _message.Split(new char[] { ' ' }, 2);
