@@ -130,8 +130,8 @@ namespace ServerTools
                     sw.WriteLine("        <!-- ******************************************************** -->");
                     sw.WriteLine("        <Phrase id=\"14\" Phrase=\"You do not belong to the clan {ClanName}. Please remove the clan tag and rejoin.\" />");
                     sw.WriteLine("        <Phrase id=\"15\" Phrase=\"{PlayerName} you have already created the clan {ClanName}.\" />");
-                    sw.WriteLine("        <Phrase id=\"16\" Phrase=\"The clan {ClanName} already exist.\" />");
-                    sw.WriteLine("        <Phrase id=\"17\" Phrase=\"You are currently a member of the clan {ClanName}.\" />");
+                    sw.WriteLine("        <Phrase id=\"16\" Phrase=\"{PlayerName} can not add the clan {ClanName} because it already exist.\" />");
+                    sw.WriteLine("        <Phrase id=\"17\" Phrase=\"{PlayerName} you are currently a member of the clan {ClanName}.\" />");
                     sw.WriteLine("        <Phrase id=\"18\" Phrase=\"The clan {ClanName} has been added.\" />");
                     sw.WriteLine("        <Phrase id=\"19\" Phrase=\"Something went wrong, could not add the clan {ClanName}.\" />");
                     sw.WriteLine("        <Phrase id=\"20\" Phrase=\"You are not the owner of any clans.\" />");
@@ -150,11 +150,22 @@ namespace ServerTools
                     sw.WriteLine("        <Phrase id=\"33\" Phrase=\"Only the clan owner can remove officers.\" />");
                     sw.WriteLine("        <Phrase id=\"34\" Phrase=\"Clan owners can not be removed.\" />");
                     sw.WriteLine("        <Phrase id=\"35\" Phrase=\"You have removed {PlayerName} from clan {ClanName}.\" />");
-                    sw.WriteLine("        <Phrase id=\"36\" Phrase=\"You have been removed from clan {ClanName}.\" />");
+                    sw.WriteLine("        <Phrase id=\"36\" Phrase=\"{PlayerName} you have been removed from the clan {ClanName}.\" />");
                     sw.WriteLine("        <Phrase id=\"37\" Phrase=\"{PlayerName} is already a officer.\" />");
                     sw.WriteLine("        <Phrase id=\"38\" Phrase=\"{PlayerName} has been promoted to an officer.\" />");
                     sw.WriteLine("        <Phrase id=\"39\" Phrase=\"{PlayerName} is not an officer.\" />");
                     sw.WriteLine("        <Phrase id=\"40\" Phrase=\"{PlayerName} has been demoted.\" />");
+                    sw.WriteLine("        <Phrase id=\"41\" Phrase=\"{PlayerName} you can not leave the clan because you are the owner. You can only delete the clan.\" />");
+                    sw.WriteLine("        <Phrase id=\"42\" Phrase=\"{PlayerName} you do not belong to any clans.\" />");
+                    sw.WriteLine("        <!-- ******************************************************** -->");
+                    sw.WriteLine("        <!-- ****************** Admins Chat Commands **************** -->");
+                    sw.WriteLine("        <!-- ******************************************************** -->");
+                    sw.WriteLine("        <Phrase id=\"200\" Phrase=\"{PlayerName} you do not have permissions to use this command.\" />");
+                    sw.WriteLine("        <Phrase id=\"201\" Phrase=\"{AdminPlayerName} player {PlayerName} was not found.\" />");
+                    sw.WriteLine("        <Phrase id=\"202\" Phrase=\"{AdminPlayerName} player {MutedPlayerName} is already muted.\" />");
+                    sw.WriteLine("        <Phrase id=\"203\" Phrase=\"{AdminPlayerName} you have muted {MutedPlayerName}.\" />");
+                    sw.WriteLine("        <Phrase id=\"204\" Phrase=\"{AdminPlayerName} player {PlayerName} is not muted.\" />");
+                    sw.WriteLine("        <Phrase id=\"205\" Phrase=\"{AdminPlayerName} you have unmuted {UnMutedPlayerName}.\" />");
                 }
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
