@@ -6,7 +6,7 @@
         {
             if (!string.IsNullOrEmpty(_message) && _cInfo != null && _playerName != "" && _playerName != "Server")
             {
-                if(AdminChat.MutedPlayersList.Contains(_cInfo.playerId))
+                if (AdminChat.MutedPlayersList.Contains(_cInfo.playerId))
                 {
                     _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{0}You are currently muted.[-]", CustomCommands._chatcolor), "Server"));
                     return false;
@@ -20,7 +20,7 @@
                 {
                     ChatLog.Send(_message, _playerName);
                 }
-                if(Badwords.IsEnabled && !_message.EndsWith(_filter))
+                if (Badwords.IsEnabled && !_message.EndsWith(_filter))
                 {
                     string _message1 = _message.ToLower();
                     foreach (string _word in Badwords.BadWordslist)
@@ -54,7 +54,7 @@
                                 _message = _message.Replace("mute ", "");
                                 AdminChat.MutePlayer(_cInfo, _message);
                             }
-                            if(_message.StartsWith("unmute "))
+                            if (_message.StartsWith("unmute "))
                             {
                                 _message = _message.Replace("unmute ", "");
                                 AdminChat.UnMutePlayer(_cInfo, _message);
@@ -107,6 +107,10 @@
                                 _message = _message.Replace("clandemote ", "");
                                 ClanManager.DemoteMember(_cInfo, _message);
                             }
+                            if (_message == "clanleave")
+                            {
+                                ClanManager.LeaveClan(_cInfo);
+                            }
                         }
                         else
                         {
@@ -122,7 +126,7 @@
                         }
                         else
                         {
-                            if  (_message.StartsWith("@ADMINS "))
+                            if (_message.StartsWith("@ADMINS "))
                             {
                                 _message = _message.Replace("@ADMINS ", "");
                                 AdminChat.SendAdmins(_cInfo, _message);
@@ -274,6 +278,14 @@
                         if (Day7.IsEnabled)
                         {
                             Day7.GetInfo(_cInfo, _announce);
+                        }
+                        return false;
+                    }
+                    if (_message == "clancommands")
+                    {
+                        if (ClanManager.IsEnabled)
+                        {
+                            ClanManager.GetChatCommands(_cInfo);
                         }
                         return false;
                     }

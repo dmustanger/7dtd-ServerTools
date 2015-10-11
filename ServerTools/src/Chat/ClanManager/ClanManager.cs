@@ -472,7 +472,7 @@ namespace ServerTools
             }
         }
 
-        private static void LeaveClan(ClientInfo _cInfo)
+        public static void LeaveClan(ClientInfo _cInfo)
         {
             if (ClanData.OwnersList.Contains(_cInfo.playerId))
             {
@@ -483,7 +483,7 @@ namespace ServerTools
                 }
                 _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}{0}[-]", _phrase126, CustomCommands._chatcolor), "Server"));
             }
-            else if(!ClanData.PlayersList.Contains(_cInfo.playerId))
+            else if (!ClanData.PlayersList.Contains(_cInfo.playerId))
             {
                 string _phrase127 = "{PlayerName} you do not belong to any clans.";
                 if (Phrases._Phrases.TryGetValue(127, out _phrase127))
@@ -507,6 +507,32 @@ namespace ServerTools
                     _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{1}{0}[-]", _phrase121, CustomCommands._chatcolor), "Server"));
                 }
             }
+        }
+
+        public static void GetChatCommands(ClientInfo _cInfo)
+        {
+            string _commands = string.Format("{0}Clan commands are:", CustomCommands._chatcolor); ;
+            if (!ClanData.OwnersList.Contains(_cInfo.playerId) && !ClanData.OfficersList.Contains(_cInfo.playerId) && !ClanData.PlayersList.Contains(_cInfo.playerId) && !ClanData.InvitesList.Contains(_cInfo.playerId))
+            {
+                _commands = string.Format("{0} /clanadd", _commands);
+            }
+            if (ClanData.OwnersList.Contains(_cInfo.playerId))
+            {
+                _commands = string.Format("{0} /clanpromote /clandemote /clandel", _commands);
+            }
+            if (ClanData.OwnersList.Contains(_cInfo.playerId) || ClanData.OfficersList.Contains(_cInfo.playerId))
+            {
+                _commands = string.Format("{0} /claninvite /clanremove", _commands);
+            }
+            if (ClanData.InvitesList.Contains(_cInfo.playerId))
+            {
+                _commands = string.Format("{0} /clanaccept /clandecline", _commands);
+            }
+            if (!ClanData.OwnersList.Contains(_cInfo.playerId) && ClanData.PlayersList.Contains(_cInfo.playerId))
+            {
+                _commands = string.Format("{0} /clanleave", _commands);
+            }
+            _commands = string.Format("{0}[-]", _commands);
         }
     }
 }

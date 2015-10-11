@@ -157,12 +157,9 @@ namespace ServerTools
             {
                 _commands = string.Format("{0} /pm", _commands);
             }
-            if (list.Count > 0)
+            if (ClanManager.IsEnabled)
             {
-                foreach (string _command in list)
-                {
-                    _commands = string.Format("{0} /{1}", _commands, _command);
-                }
+                _commands = string.Format("{0} /clancommands", _commands);
             }
             if (AdminChat.IsEnabled && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
             {
@@ -171,6 +168,13 @@ namespace ServerTools
                 if (GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo.playerId))
                 {
                     _commands = string.Format("{0} @all", _commands);
+                }
+            }
+            if (list.Count > 0)
+            {
+                foreach (string _command in list)
+                {
+                    _commands = string.Format("{0} /{1}", _commands, _command);
                 }
             }
             _commands = string.Format("{0}[-]", _commands);
