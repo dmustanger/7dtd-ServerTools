@@ -533,6 +533,7 @@ namespace ServerTools
                 _commands = string.Format("{0} /clanleave", _commands);
             }
             _commands = string.Format("{0}[-]", _commands);
+            _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{0}", _commands), "Server"));
         }
     }
 }
