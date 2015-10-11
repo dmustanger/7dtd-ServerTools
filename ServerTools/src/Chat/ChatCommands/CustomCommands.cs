@@ -166,7 +166,12 @@ namespace ServerTools
             }
             if (AdminChat.IsEnabled && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
             {
-                _commands = string.Format("{0} @admins @all", _commands);
+                _commands = string.Format("{0} @admins", _commands);
+                string[] _command = { "say" };
+                if (GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo.playerId))
+                {
+                    _commands = string.Format("{0} @all", _commands);
+                }
             }
             _commands = string.Format("{0}[-]", _commands);
             return _commands;
