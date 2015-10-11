@@ -33,10 +33,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\Chat\ChatCommands\Pvp.cs" />
+    <Compile Include="src\AntiCheat\Checks.cs" />
+    <Compile Include="src\Chat\AdminChatCommands\Watchlist.cs" />
+    <Compile Include="src\Chat\AdminChatCommands\Pvp.cs" />
+    <Compile Include="src\Chat\ChatCommands\Whisper.cs" />
     <Compile Include="src\Chat\ChatCommands\CustomCommands.cs" />
     <Compile Include="src\Chat\ChatCommands\day7.cs" />
-    <Compile Include="src\Chat\ChatCommands\AdminChatCommands.cs" />
+    <Compile Include="src\Chat\AdminChatCommands\AdminChatCommands.cs" />
     <Compile Include="src\AntiCheat\InvalidItems.cs" />
     <Compile Include="src\api.cs" />
     <Compile Include="src\Chat\ChatHooks.cs" />
@@ -80,6 +83,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Changelog.txt" />
     <Content Include="ModInfo.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
