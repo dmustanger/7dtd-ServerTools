@@ -103,11 +103,11 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine("        <!-- {0}=entityId {1}=steamId {2}=Player Name -->");
+                    sw.WriteLine("        <!-- possible variables {EntityId} {SteamId} {PlayerName} -->");
                     sw.WriteLine("        <!-- <Command Command=\"rules\" Response=\"say &quot;[00FF00]Visit YourSiteHere to see the rules.[-]&quot;\" /> -->");
                     sw.WriteLine("        <!-- <Command Command=\"website\" Response =\"say &quot;[00FF00]Visit YourSiteHere.[-]&quot;\" /> -->");
                     sw.WriteLine("        <!-- <Command Command=\"teamspeak\" Response=\"say &quot;[00FF00]The Teamspeak3 info is YourInfoHere.[-]&quot;\" /> -->");
-                    sw.WriteLine("        <!-- <Command Command=\"kickme\" Response=\"kick {0} &quot;You said kick me&quot;\" /> -->");
+                    sw.WriteLine("        <!-- <Command Command=\"kickme\" Response=\"kick {EntityId} &quot;You said kick me&quot;\" /> -->");
                 }
                 sw.WriteLine("    </Commands>");
                 sw.WriteLine("</CustomCommands>");

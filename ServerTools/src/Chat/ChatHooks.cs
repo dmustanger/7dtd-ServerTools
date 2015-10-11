@@ -295,6 +295,9 @@
                         _response = _response.Replace("{0}", _cInfo.entityId.ToString());
                         _response = _response.Replace("{1}", _cInfo.playerId);
                         _response = _response.Replace("{2}", _playerName);
+                        _response = _response.Replace("{EntityId}", _cInfo.entityId.ToString());
+                        _response = _response.Replace("{SteamId}", _cInfo.playerId);
+                        _response = _response.Replace("{PlayerName}", _playerName);
                         if (_announce)
                         {
                             GameManager.Instance.GameMessageServer(_cInfo, string.Format("!{0}", _message), _playerName);
