@@ -80,6 +80,10 @@ namespace ServerTools
                 {
                     _miniBikes = _miniBikes + 1;
                 }
+                else if (_name == "item" || _name == "playerMale" || _name == "playerFemale" || _name.StartsWith("car_"))
+                {
+                    continue;
+                }
                 else
                 {
                     Log.Out(string.Format("[SERVERTOOLS] Entity Class Name is: {0}", _name));
