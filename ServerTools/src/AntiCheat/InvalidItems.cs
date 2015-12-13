@@ -197,8 +197,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"lootCrateShamway\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"mountainManStorageChest\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"apacheArtifactChest\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"m136\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"m136Rocket\" />"));
                 }
                 sw.WriteLine("    </Items>");
                 sw.WriteLine("</InvalidItems>");
