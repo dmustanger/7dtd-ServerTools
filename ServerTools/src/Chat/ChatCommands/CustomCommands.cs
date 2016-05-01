@@ -7,54 +7,53 @@ namespace ServerTools
     public class CustomCommands
     {
         public static bool IsEnabled = false;
-        public static string _chatcolor = "[00FF00]";
-        public static SortedDictionary<string, string> _customCommands = new SortedDictionary<string, string>();
-        private static string _file = "CustomChatCommands.xml";
-        private static string _filepath = string.Format("{0}/{1}", Config._configpath, _file);
-        public static FileSystemWatcher _fileWatcher = new FileSystemWatcher(Config._configpath, _file);
         public static bool IsRunning = false;
-
-        public static List<string> list
-        {
-            get { return new List<string>(_customCommands.Keys); }
-        }
-
-        public static void Init()
+        public static string ChatColor = "[00FF00]";
+        public static SortedDictionary<string, string[]> Dict = new SortedDictionary<string, string[]>();
+        private const string file = "CustomChatCommands.xml";
+        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        
+        public static void Load()
         {
             if (IsEnabled && !IsRunning)
             {
-                if (!Utils.FileExists(_filepath))
-                {
-                    UpdateXml();
-                }
                 LoadCustomCommandsXml();
                 InitFileWatcher();
-                IsRunning = true;
+            }
+        }
+
+        public static void Unload()
+        {
+            if (IsRunning && !IsEnabled)
+            {
+                fileWatcher.Dispose();
+                IsRunning = false;
             }
         }
 
         private static void LoadCustomCommandsXml()
         {
-            if (!Utils.FileExists(_filepath))
+            if (!Utils.FileExists(filePath))
             {
                 UpdateXml();
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(_filepath);
+                xmlDoc.Load(filePath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _file, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            XmlNode _CommandsXml = xmlDoc.DocumentElement;
-            _customCommands.Clear();
-            foreach (XmlNode childNode in _CommandsXml.ChildNodes)
+            XmlNode _configXml = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _configXml.ChildNodes)
             {
                 if (childNode.Name == "Commands")
                 {
+                    Dict.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -77,9 +76,20 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Commands entry because of missing a Response attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_customCommands.ContainsKey(_line.GetAttribute("Command")))
+                        int _delay = 0;
+                        if (_line.HasAttribute("DelayBetweenUses"))
                         {
-                            _customCommands.Add(_line.GetAttribute("Command"), _line.GetAttribute("Response"));
+                            if (!int.TryParse(_line.GetAttribute("DelayBetweenUses"), out _delay))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Using default value of 0 for DelayBetweenUses for command entry {1} because of invalid (non-numeric) value: {0}", subChild.OuterXml, _line.GetAttribute("Command")));
+                            }
+                        }
+                        string _command = _line.GetAttribute("Command");
+                        _command = _command.ToLower();
+                        if (!Dict.ContainsKey(_command))
+                        {
+                            string[] _response = new string[] { _line.GetAttribute("Response"), _delay.ToString() };
+                            Dict.Add(_command, _response);
                         }
                     }
                 }
@@ -88,46 +98,49 @@ namespace ServerTools
 
         private static void UpdateXml()
         {
-            _fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(_filepath))
+            fileWatcher.EnableRaisingEvents = false;
+            using (StreamWriter sw = new StreamWriter(filePath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<CustomCommands>");
                 sw.WriteLine("    <Commands>");
-                if (_customCommands.Count > 0)
+                sw.WriteLine("        <!-- possible variables {EntityId} {SteamId} {PlayerName} -->");
+                if (Dict.Count > 0)
                 {
-                    foreach (KeyValuePair<string, string> kvp in _customCommands)
+                    foreach (KeyValuePair<string, string[]> kvp in Dict)
                     {
-                        sw.WriteLine(string.Format("        <Command Command=\"{0}\" Response=\"{1}\" />", kvp.Key, kvp.Value));
+                        sw.WriteLine(string.Format("        <Command Command=\"{0}\" Response=\"{1}\" DelayBetweenUses=\"{2}\" />", kvp.Key, kvp.Value[0], kvp.Value[1]));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <!-- possible variables {EntityId} {SteamId} {PlayerName} -->");
-                    sw.WriteLine("        <!-- <Command Command=\"rules\" Response=\"say &quot;[00FF00]Visit YourSiteHere to see the rules.[-]&quot;\" /> -->");
-                    sw.WriteLine("        <!-- <Command Command=\"website\" Response =\"say &quot;[00FF00]Visit YourSiteHere.[-]&quot;\" /> -->");
-                    sw.WriteLine("        <!-- <Command Command=\"teamspeak\" Response=\"say &quot;[00FF00]The Teamspeak3 info is YourInfoHere.[-]&quot;\" /> -->");
-                    sw.WriteLine("        <!-- <Command Command=\"kickme\" Response=\"kick {EntityId} &quot;You said kick me&quot;\" /> -->");
+                    sw.WriteLine("        <Command Command=\"help\" Response=\"say &quot;[00FF00]Type /commands for a list of chat commands.[-]&quot;\" DelayBetweenUses=\"0\" />");
+                    sw.WriteLine("        <Command Command=\"info\" Response=\"say &quot;[00FF00]Type /commands for a list of chat commands.[-]&quot;\" DelayBetweenUses=\"0\" />");
+                    sw.WriteLine("        <Command Command=\"rules\" Response=\"say &quot;[00FF00]Visit YourSiteHere to see the rules.[-]&quot;\" DelayBetweenUses=\"0\" />");
+                    sw.WriteLine("        <Command Command=\"website\" Response =\"say &quot;[00FF00]Visit YourSiteHere.[-]&quot;\" DelayBetweenUses=\"0\" />");
+                    sw.WriteLine("        <Command Command=\"teamspeak\" Response=\"say &quot;[00FF00]The Teamspeak3 info is YourInfoHere.[-]&quot;\" DelayBetweenUses=\"0\" />");
+                    sw.WriteLine("        <Command Command=\"kickme\" Response=\"kick {EntityId} &quot;You said kick me&quot;\" DelayBetweenUses=\"60\" />");
                 }
                 sw.WriteLine("    </Commands>");
                 sw.WriteLine("</CustomCommands>");
                 sw.Flush();
                 sw.Close();
             }
-            _fileWatcher.EnableRaisingEvents = true;
+            fileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            _fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            _fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            _fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            _fileWatcher.EnableRaisingEvents = true;
+            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            fileWatcher.EnableRaisingEvents = true;
+            IsRunning = true;
         }
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(_filepath))
+            if (!Utils.FileExists(filePath))
             {
                 UpdateXml();
             }
@@ -136,26 +149,22 @@ namespace ServerTools
 
         public static string GetChatCommands(ClientInfo _cInfo)
         {
-            string _commands = string.Format("{0}Commands are:", _chatcolor);
+            string _commands = string.Format("{0}Commands are:", ChatColor);
             if (Gimme.IsEnabled)
             {
                 _commands = string.Format("{0} /gimme", _commands);
             }
-            if (TeleportHome.IsEnabled)
-            {
-                _commands = string.Format("{0} /sethome /delhome /home", _commands);
-            }
+            //if (TeleportHome.IsEnabled)
+            //{
+                //_commands = string.Format("{0} /sethome /delhome /home", _commands);
+            //}
             if (KillMe.IsEnabled)
             {
                 _commands = string.Format("{0} /killme", _commands);
             }
-            if (Day7.IsEnabled)
+            if (IsEnabled)
             {
-                _commands = string.Format("{0} /day7", _commands);
-            }
-            if (Whisper.IsEnabled)
-            {
-                _commands = string.Format("{0} /pm", _commands);
+                _commands = string.Format("{0} /day7 /pm", _commands);
             }
             if (ClanManager.IsEnabled)
             {
@@ -170,12 +179,17 @@ namespace ServerTools
                     _commands = string.Format("{0} @all", _commands);
                 }
             }
-            if (list.Count > 0)
+            if (Dict.Count > 0)
             {
-                foreach (string _command in list)
+                foreach (KeyValuePair<string, string[]> kvp in Dict)
                 {
-                    _commands = string.Format("{0} /{1}", _commands, _command);
+                    string _c = kvp.Key;
+                    _commands = string.Format("{0} /{1}", _commands, _c);
                 }
+            }
+            if (_commands.EndsWith("Commands are:") )
+            {
+                _commands = string.Format("{0}Sorry, there are no custom chat commands.", ChatColor);
             }
             _commands = string.Format("{0}[-]", _commands);
             return _commands;

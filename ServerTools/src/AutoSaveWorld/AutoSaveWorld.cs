@@ -3,27 +3,30 @@ using System.Threading;
 
 namespace ServerTools
 {
-    public class SaveWorld
+    public class AutoSaveWorld
     {
-        public static int DelayBetweenWorldSaves = 15;
         public static bool IsEnabled = false;
-        public static Thread th;
         public static bool IsRunning = false;
+        public static int DelayBetweenWorldSaves = 15;
+        private static Thread th;
 
-        public static void Init()
-        {
-            if (IsEnabled && !IsRunning)
-            {
-                IsRunning = true;
-                StartSave();
-            }
-        }
-
-        private static void StartSave()
+        public static void Start()
         {
             th = new Thread(new ThreadStart(Save));
             th.IsBackground = true;
             th.Start();
+            IsRunning = true;
+            Log.Out("[SERVERTOOLS] AutoSaveWorld has started.");
+        }
+
+        public static void Stop()
+        {
+            if (!IsEnabled)
+            {
+                th.Abort();
+                IsRunning = false;
+                Log.Out("[SERVERTOOLS] AutoSaveWorld has stopped.");
+            }
         }
 
         private static void Save()
@@ -40,6 +43,7 @@ namespace ServerTools
                 }
                 Thread.Sleep(60000 * DelayBetweenWorldSaves);
             }
+            Stop();
         }
     }
 }

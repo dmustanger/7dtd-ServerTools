@@ -7,42 +7,93 @@ namespace ServerTools
     public class Badwords
     {
         public static bool IsEnabled = false;
-        private static SortedDictionary<string, string> _badWords = new SortedDictionary<string, string>();
-        private static string _file = "BadWords.xml";
-        private static string _filepath = string.Format("{0}/{1}", Config._configpath, _file);
-        public static FileSystemWatcher _fileWatcher = new FileSystemWatcher(Config._configpath, _file);
         public static bool IsRunning = false;
+        private const string file = "BadWords.xml";
+        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static SortedDictionary<string, string> dict = new SortedDictionary<string, string>();
+        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
-        public static List<string> BadWordslist
+        public static List<string> List
         {
-            get { return new List<string>(_badWords.Keys); }
+            get { return new List<string>(dict.Keys); }
         }
 
-        public static void Init()
+        public static void Load()
         {
             if (IsEnabled && !IsRunning)
             {
-                if (!Utils.FileExists(_filepath))
-                {
-                    UpdateXml();
-                }
                 LoadBadWords();
                 InitFileWatcher();
-                IsRunning = true;
+            }
+        }
+
+        public static void Unload()
+        {
+            fileWatcher.Dispose();
+            IsRunning = false;
+        }
+
+        private static void LoadBadWords()
+        {
+            if (!Utils.FileExists(filePath))
+            {
+                UpdateXml();
+            }
+            XmlDocument xmlDoc = new XmlDocument();
+            try
+            {
+                xmlDoc.Load(filePath);
+            }
+            catch (XmlException e)
+            {
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                return;
+            }
+            XmlNode _BadWordsXml = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _BadWordsXml.ChildNodes)
+            {
+                if (childNode.Name == "BadWords")
+                {
+                    dict.Clear();
+                    foreach (XmlNode subChild in childNode.ChildNodes)
+                    {
+                        if (subChild.NodeType == XmlNodeType.Comment)
+                        {
+                            continue;
+                        }
+                        if (subChild.NodeType != XmlNodeType.Element)
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'BadWords' section: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        XmlElement _line = (XmlElement)subChild;
+                        if (!_line.HasAttribute("Word"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring BadWord entry because of missing a Word attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        string _word = _line.GetAttribute("Word");
+                        _word = _word.ToLower();
+                        if (!dict.ContainsKey(_word))
+                        {
+                            dict.Add(_word, null);
+                        }
+                    }
+                }
             }
         }
 
         private static void UpdateXml()
         {
-            _fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(_filepath))
+            fileWatcher.EnableRaisingEvents = false;
+            using (StreamWriter sw = new StreamWriter(filePath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<BadWordFilter>");
                 sw.WriteLine("    <BadWords>");
-                if (BadWordslist.Count > 0)
+                if (dict.Count > 0)
                 {
-                    foreach (string _word in BadWordslist)
+                    foreach (string _word in List)
                     {
                         sw.WriteLine(string.Format("        <BadWord Word=\"{0}\" />", _word));
                     }
@@ -63,74 +114,21 @@ namespace ServerTools
                 sw.Flush();
                 sw.Close();
             }
-            _fileWatcher.EnableRaisingEvents = true;
+            fileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            _fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            _fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            _fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            _fileWatcher.EnableRaisingEvents = true;
+            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            fileWatcher.EnableRaisingEvents = true;
+            IsRunning = true;
         }
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(_filepath))
-            {
-                UpdateXml();
-            }
             LoadBadWords();
-        }
-
-        private static void LoadBadWords()
-        {
-            if (!Utils.FileExists(_filepath))
-            {
-                UpdateXml();
-            }
-            XmlDocument xmlDoc = new XmlDocument();
-            try
-            {
-                xmlDoc.Load(_filepath);
-            }
-            catch (XmlException e)
-            {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _file, e.Message));
-                return;
-            }
-            XmlNode _BadWordsXml = xmlDoc.DocumentElement;
-            _badWords.Clear();
-            foreach (XmlNode childNode in _BadWordsXml.ChildNodes)
-            {
-                if (childNode.Name == "BadWords")
-                {
-                    foreach (XmlNode subChild in childNode.ChildNodes)
-                    {
-                        if (subChild.NodeType == XmlNodeType.Comment)
-                        {
-                            continue;
-                        }
-                        if (subChild.NodeType != XmlNodeType.Element)
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'BadWords' section: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("Word"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring BadWord entry because of missing a Word attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        string _word = _line.GetAttribute("Word");
-                        _word = _word.ToLower();
-                        if (!_badWords.ContainsKey(_word))
-                        {
-                            _badWords.Add(_word, null);
-                        }
-                    }
-                }
-            }
         }
     }
 }

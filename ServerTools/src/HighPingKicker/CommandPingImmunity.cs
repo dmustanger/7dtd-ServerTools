@@ -44,19 +44,19 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2 or 3, found {0}.", _params.Count));
                         return;
                     }
-                    if (HighPingKicker._whiteListPlayers.ContainsKey(_params[1]))
+                    if (HighPingKicker.Dict.ContainsKey(_params[1]))
                     {
                         SdtdConsole.Instance.Output(string.Format("Can not add SteamId. {0} is already in the Ping Immunity list.", _params[1]));
                         return;
                     }
                     if (_params.Count == 2)
                     {
-                        HighPingKicker._whiteListPlayers.Add(_params[1], null);
+                        HighPingKicker.Dict.Add(_params[1], null);
                         SdtdConsole.Instance.Output(string.Format("Added SteamId {0} to the Ping Immunity list.", _params[1]));
                     }
                     else
                     {
-                        HighPingKicker._whiteListPlayers.Add(_params[1], _params[2]);
+                        HighPingKicker.Dict.Add(_params[1], _params[2]);
                         SdtdConsole.Instance.Output(string.Format("Added SteamId {0} with the name {1} the Ping Immunity list.", _params[1], _params[2]));
                     }
                     HighPingKicker.UpdateXml();
@@ -68,12 +68,12 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
-                    if (!HighPingKicker._whiteListPlayers.ContainsKey(_params[1]))
+                    if (!HighPingKicker.Dict.ContainsKey(_params[1]))
                     {
                         SdtdConsole.Instance.Output(string.Format("SteamId {0} was not found.", _params[1]));
                         return;
                     }
-                    HighPingKicker._whiteListPlayers.Remove(_params[1]);
+                    HighPingKicker.Dict.Remove(_params[1]);
                     SdtdConsole.Instance.Output(string.Format("Removed SteamId {0} from Ping Immunity list.", _params[1]));
                     HighPingKicker.UpdateXml();
                 }
@@ -84,14 +84,15 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
                         return;
                     }
-                    if (HighPingKicker.SteamId.Count < 1)
+                    if (HighPingKicker.Dict.Count < 1)
                     {
                         SdtdConsole.Instance.Output("There are no steamIds on the Ping Immunity list.");
                         return;
                     }
-                    foreach (string _steamid in HighPingKicker.SteamId)
+                    foreach (KeyValuePair<string, string> _key in HighPingKicker.Dict)
                     {
-                        SdtdConsole.Instance.Output(_steamid);
+                        string _output = string.Format("{0} {1}", _key.Key, _key.Value);
+                        SdtdConsole.Instance.Output(_output);
                     }
                 }
                 else

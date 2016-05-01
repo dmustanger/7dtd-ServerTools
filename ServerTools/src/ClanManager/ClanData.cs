@@ -6,81 +6,77 @@ namespace ServerTools
 {
     public class ClanData
     {
-        public static SortedDictionary<string, string> Owners = new SortedDictionary<string, string>();
-        private static string _Ownerdatafile = "OwnersData.xml";
-        private static string _Ownerdatafilepath = string.Format("{0}/{1}", Config._datapath, _Ownerdatafile);
-        public static SortedDictionary<string, string> Players = new SortedDictionary<string, string>();
-        private static string _Playerdatafile = "PlayersData.xml";
-        private static string _Playerdatafilepath = string.Format("{0}/{1}", Config._datapath, _Playerdatafile);
-        public static SortedDictionary<string, string> Clans = new SortedDictionary<string, string>();
+        public static SortedDictionary<string, string> Cdict = new SortedDictionary<string, string>();
         private static string _Clandatafile = "ClansData.xml";
-        private static string _Clandatafilepath = string.Format("{0}/{1}", Config._datapath, _Clandatafile);
-        public static SortedDictionary<string, string> Officers = new SortedDictionary<string, string>();
+        private static string _Clandatafilepath = string.Format("{0}/{1}", API.DataPath, _Clandatafile);
+        private static SortedDictionary<string, string> odict = new SortedDictionary<string, string>();
         private static string _Officerdatafile = "OfficersData.xml";
-        private static string _Officerdatafilepath = string.Format("{0}/{1}", Config._datapath, _Officerdatafile);
-        public static SortedDictionary<string, string> Invites = new SortedDictionary<string, string>();
+        private static string _Officerdatafilepath = string.Format("{0}/{1}", API.DataPath, _Officerdatafile);
+        public static SortedDictionary<string, string> Pdict = new SortedDictionary<string, string>();
+        private static string _Playerdatafile = "PlayersData.xml";
+        private static string _Playerdatafilepath = string.Format("{0}/{1}", API.DataPath, _Playerdatafile);
+        public static SortedDictionary<string, string> idict = new SortedDictionary<string, string>();
         private static string _Invitedatafile = "InvitesData.xml";
-        private static string _Invitedatafilepath = string.Format("{0}/{1}", Config._datapath, _Invitedatafile);
+        private static string _Invitedatafilepath = string.Format("{0}/{1}", API.DataPath, _Invitedatafile);
 
         public static List<string> ClansList
         {
-            get { return new List<string>(Clans.Keys); }
+            get { return new List<string>(Cdict.Keys); }
         }
 
         public static List<string> OwnersList
         {
-            get { return new List<string>(Owners.Keys); }
-        }
-
-        public static List<string> PlayersList
-        {
-            get { return new List<string>(Players.Keys); }
+            get { return new List<string>(Cdict.Values); }
         }
 
         public static List<string> OfficersList
         {
-            get { return new List<string>(Officers.Keys); }
+            get { return new List<string>(odict.Keys); }
+        }
+
+        public static List<string> PlayersList
+        {
+            get { return new List<string>(Pdict.Keys); }
         }
 
         public static List<string> InvitesList
         {
-            get { return new List<string>(Invites.Keys); }
+            get { return new List<string>(idict.Keys); }
         }
 
         public static void Init()
         {
             if (ClanManager.IsEnabled)
             {
-                LoadInviteData();
-                LoadOfficerData();
                 LoadClanData();
+                LoadOfficerData();
                 LoadPlayerData();
-                LoadOwnerData();
+                LoadInviteData();
             }
         }
 
-        private static void LoadInviteData()
+        private static void LoadClanData()
         {
-            if (!Utils.FileExists(_Invitedatafilepath))
+            if (!Utils.FileExists(_Clandatafilepath))
             {
                 return;
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(_Invitedatafilepath);
+                xmlDoc.Load(_Clandatafilepath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _Invitedatafile, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _Clandatafile, e.Message));
                 return;
             }
             XmlNode _ClandataXml = xmlDoc.DocumentElement;
-            Invites.Clear();
             foreach (XmlNode childNode in _ClandataXml.ChildNodes)
             {
-                if (childNode.Name == "Invites")
+                if (childNode.Name == "Clans")
                 {
+                    Cdict.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -89,45 +85,41 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Invites' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Clans' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
                         if (!_line.HasAttribute("steamId"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invite entry because of missing a steamId attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clan entry because of missing a steamId attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("clan"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invite entry because of missing a clan attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clan entry because of missing a clan attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!Invites.ContainsKey(_line.GetAttribute("steamId")))
+                        if (!Cdict.ContainsKey(_line.GetAttribute("clan")))
                         {
-                            Invites.Add(_line.GetAttribute("steamId"), _line.GetAttribute("clan"));
+                            Cdict.Add(_line.GetAttribute("clan"), _line.GetAttribute("steamId"));
                         }
                     }
                 }
             }
         }
 
-        public static void UpdateInviteData()
+        private static void UpdateClanData()
         {
-            if (!Directory.Exists(Config._datapath))
-            {
-                Directory.CreateDirectory(Config._datapath);
-            }
-            using (StreamWriter sw = new StreamWriter(_Invitedatafilepath))
+            using (StreamWriter sw = new StreamWriter(_Clandatafilepath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ClanData>");
-                sw.WriteLine("    <Invites>");
-                foreach (KeyValuePair<string, string> kvp in Invites)
+                sw.WriteLine("    <Clans>");
+                foreach (KeyValuePair<string, string> kvp in Cdict)
                 {
-                    sw.WriteLine(string.Format("        <Invite steamId=\"{0}\" clan=\"{1}\" />", kvp.Key, kvp.Value));
+                    sw.WriteLine(string.Format("        <Clan clan=\"{0}\" steamId=\"{1}\" />", kvp.Key, kvp.Value));
                 }
-                sw.WriteLine("    </Invites>");
+                sw.WriteLine("    </Clans>");
                 sw.WriteLine("</ClanData>");
                 sw.Flush();
                 sw.Close();
@@ -151,11 +143,11 @@ namespace ServerTools
                 return;
             }
             XmlNode _ClandataXml = xmlDoc.DocumentElement;
-            Officers.Clear();
             foreach (XmlNode childNode in _ClandataXml.ChildNodes)
             {
                 if (childNode.Name == "Officers")
                 {
+                    odict.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -178,106 +170,27 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Officer entry because of missing a clan attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!Officers.ContainsKey(_line.GetAttribute("steamId")))
+                        if (!odict.ContainsKey(_line.GetAttribute("steamId")))
                         {
-                            Officers.Add(_line.GetAttribute("steamId"), _line.GetAttribute("clan"));
+                            odict.Add(_line.GetAttribute("steamId"), _line.GetAttribute("clan"));
                         }
                     }
                 }
             }
         }
 
-        public static void UpdateOfficerData()
+        private static void UpdateOfficerData()
         {
-            if (!Directory.Exists(Config._datapath))
-            {
-                Directory.CreateDirectory(Config._datapath);
-            }
             using (StreamWriter sw = new StreamWriter(_Officerdatafilepath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ClanData>");
                 sw.WriteLine("    <Officers>");
-                foreach (KeyValuePair<string, string> kvp in Officers)
+                foreach (KeyValuePair<string, string> kvp in odict)
                 {
                     sw.WriteLine(string.Format("        <Officer steamId=\"{0}\" clan=\"{1}\" />", kvp.Key, kvp.Value));
                 }
                 sw.WriteLine("    </Officers>");
-                sw.WriteLine("</ClanData>");
-                sw.Flush();
-                sw.Close();
-            }
-        }
-
-        private static void LoadClanData()
-        {
-            if (!Utils.FileExists(_Clandatafilepath))
-            {
-                return;
-            }
-            XmlDocument xmlDoc = new XmlDocument();
-            try
-            {
-                xmlDoc.Load(_Clandatafilepath);
-            }
-            catch (XmlException e)
-            {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _Clandatafile, e.Message));
-                return;
-            }
-            XmlNode _ClandataXml = xmlDoc.DocumentElement;
-            Clans.Clear();
-            foreach (XmlNode childNode in _ClandataXml.ChildNodes)
-            {
-                if (childNode.Name == "Clans")
-                {
-                    foreach (XmlNode subChild in childNode.ChildNodes)
-                    {
-                        if (subChild.NodeType == XmlNodeType.Comment)
-                        {
-                            continue;
-                        }
-                        if (subChild.NodeType != XmlNodeType.Element)
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Clans' section: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("steamId"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clan entry because of missing a steamId attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("clan"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clan entry because of missing a clan attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!Clans.ContainsKey(_line.GetAttribute("steamId")))
-                        {
-                            Clans.Add(_line.GetAttribute("clan"), _line.GetAttribute("steamId"));
-                        }
-                    }
-                }
-            }
-        }
-
-        public static void UpdateClanData()
-        {
-            if (!Directory.Exists(Config._datapath))
-            {
-                Directory.CreateDirectory(Config._datapath);
-            }
-            using (StreamWriter sw = new StreamWriter(_Clandatafilepath))
-            {
-                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                sw.WriteLine("<ClanData>");
-                sw.WriteLine("    <Clans>");
-                foreach (KeyValuePair<string, string> kvp in Clans)
-                {
-                    sw.WriteLine(string.Format("        <Clan clan=\"{0}\" steamId=\"{1}\" />", kvp.Key, kvp.Value));
-                }
-                sw.WriteLine("    </Clans>");
                 sw.WriteLine("</ClanData>");
                 sw.Flush();
                 sw.Close();
@@ -301,11 +214,11 @@ namespace ServerTools
                 return;
             }
             XmlNode _ClandataXml = xmlDoc.DocumentElement;
-            Players.Clear();
             foreach (XmlNode childNode in _ClandataXml.ChildNodes)
             {
                 if (childNode.Name == "Players")
                 {
+                    Pdict.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -328,27 +241,23 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player entry because of missing a clan attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!Players.ContainsKey(_line.GetAttribute("steamId")))
+                        if (!Pdict.ContainsKey(_line.GetAttribute("steamId")))
                         {
-                            Players.Add(_line.GetAttribute("steamId"), _line.GetAttribute("clan"));
+                            Pdict.Add(_line.GetAttribute("steamId"), _line.GetAttribute("clan"));
                         }
                     }
                 }
             }
         }
 
-        public static void UpdatePlayerData()
+        private static void UpdatePlayerData()
         {
-            if (!Directory.Exists(Config._datapath))
-            {
-                Directory.CreateDirectory(Config._datapath);
-            }
             using (StreamWriter sw = new StreamWriter(_Playerdatafilepath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ClanData>");
                 sw.WriteLine("    <Players>");
-                foreach (KeyValuePair<string, string> kvp in Players)
+                foreach (KeyValuePair<string, string> kvp in Pdict)
                 {
                     sw.WriteLine(string.Format("        <Officer steamId=\"{0}\" clan=\"{1}\" />", kvp.Key, kvp.Value));
                 }
@@ -359,28 +268,28 @@ namespace ServerTools
             }
         }
 
-        private static void LoadOwnerData()
+        private static void LoadInviteData()
         {
-            if (!Utils.FileExists(_Ownerdatafilepath))
+            if (!Utils.FileExists(_Invitedatafilepath))
             {
                 return;
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(_Ownerdatafilepath);
+                xmlDoc.Load(_Invitedatafilepath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _Ownerdatafile, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _Invitedatafile, e.Message));
                 return;
             }
             XmlNode _ClandataXml = xmlDoc.DocumentElement;
-            Owners.Clear();
             foreach (XmlNode childNode in _ClandataXml.ChildNodes)
             {
-                if (childNode.Name == "Owners")
+                if (childNode.Name == "Invites")
                 {
+                    idict.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -389,45 +298,41 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Owners' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Invites' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
                         if (!_line.HasAttribute("steamId"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Owner entry because of missing a steamId attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invite entry because of missing a steamId attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("clan"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Owner entry because of missing a clan attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invite entry because of missing a clan attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!Owners.ContainsKey(_line.GetAttribute("steamId")))
+                        if (!idict.ContainsKey(_line.GetAttribute("steamId")))
                         {
-                            Owners.Add(_line.GetAttribute("steamId"), _line.GetAttribute("clan"));
+                            idict.Add(_line.GetAttribute("steamId"), _line.GetAttribute("clan"));
                         }
                     }
                 }
             }
         }
 
-        public static void UpdateOwnerData()
+        public static void UpdateInviteData()
         {
-            if (!Directory.Exists(Config._datapath))
-            {
-                Directory.CreateDirectory(Config._datapath);
-            }
-            using (StreamWriter sw = new StreamWriter(_Ownerdatafilepath))
+            using (StreamWriter sw = new StreamWriter(_Invitedatafilepath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ClanData>");
-                sw.WriteLine("    <Owners>");
-                foreach (KeyValuePair<string, string> kvp in Owners)
+                sw.WriteLine("    <Invites>");
+                foreach (KeyValuePair<string, string> kvp in idict)
                 {
-                    sw.WriteLine(string.Format("        <Owner steamId=\"{0}\" clan=\"{1}\" />", kvp.Key, kvp.Value));
+                    sw.WriteLine(string.Format("        <Invite steamId=\"{0}\" clan=\"{1}\" />", kvp.Key, kvp.Value));
                 }
-                sw.WriteLine("    </Owners>");
+                sw.WriteLine("    </Invites>");
                 sw.WriteLine("</ClanData>");
                 sw.Flush();
                 sw.Close();
@@ -436,79 +341,99 @@ namespace ServerTools
 
         public static void AddClan(string _clanName, string _steamId)
         {
-            if (Invites.ContainsKey(_steamId))
+            if (idict.ContainsKey(_steamId))
             {
-                Invites.Remove(_steamId);
+                idict.Remove(_steamId);
                 UpdateInviteData();
             }
-            Owners.Add(_steamId, _clanName);
-            Clans.Add(_clanName, _steamId);
-            Players.Add(_steamId, _clanName);
-            Officers.Add(_steamId, _clanName);
+            Cdict.Add(_clanName, _steamId);
+            odict.Add(_steamId, _clanName);
+            Pdict.Add(_steamId, _clanName);
             UpdateClanData();
             UpdatePlayerData();
             UpdateOfficerData();
-            UpdateOwnerData();
         }
 
         public static void RemoveClan(string _clanName, string _steamId)
         {
-            Owners.Remove(_steamId);
-            Clans.Remove(_clanName);
+            Cdict.Remove(_clanName);
+            odict.Remove(_steamId);
             foreach (string _player in PlayersList)
             {
                 string _cName;
-                if (Players.TryGetValue(_player, out _cName))
+                if (Pdict.TryGetValue(_player, out _cName))
                 {
-                    if(_cName == _clanName)
+                    if (_cName == _clanName)
                     {
-                        Players.Remove(_player);
+                        Pdict.Remove(_player);
                     }
                 }
             }
             foreach (string _invite in InvitesList)
             {
                 string _cName;
-                if (Invites.TryGetValue(_invite, out _cName))
+                if (idict.TryGetValue(_invite, out _cName))
                 {
                     if (_cName == _clanName)
                     {
-                        Invites.Remove(_invite);
+                        idict.Remove(_invite);
                     }
                 }
             }
             foreach (string _officer in OfficersList)
             {
                 string _cName;
-                if (Officers.TryGetValue(_officer, out _cName))
+                if (odict.TryGetValue(_officer, out _cName))
                 {
                     if (_cName == _clanName)
                     {
-                        Officers.Remove(_officer);
+                        odict.Remove(_officer);
                     }
                 }
             }
-            UpdateInviteData();
             UpdateClanData();
-            UpdatePlayerData();
             UpdateOfficerData();
-            UpdateOwnerData();
+            UpdatePlayerData();
+            UpdateInviteData();
         }
 
         public static void AddMember(string _clanName, string _steamId)
         {
-            Invites.Remove(_steamId);
-            Players.Add(_steamId, _clanName);
+            idict.Remove(_steamId);
+            Pdict.Add(_steamId, _clanName);
             UpdateInviteData();
-            UpdatePlayerData();   
+            UpdatePlayerData();
         }
 
         public static void RemoveMember(string _steamId)
         {
-            Players.Remove(_steamId);
-            if (Officers.ContainsKey(_steamId))
+            Pdict.Remove(_steamId);
+            if (odict.ContainsKey(_steamId))
             {
-                Officers.Remove(_steamId);
+                odict.Remove(_steamId);
+            }
+            UpdatePlayerData();
+        }
+
+        public static void PromoteMember(string _steamId, string _clanName)
+        {
+            if (!odict.ContainsKey(_steamId))
+            {
+                odict.Add(_steamId, _clanName);
+                UpdateOfficerData();
+            }
+        }
+
+        public static void DemoteMember(string _steamId)
+        {
+        }
+
+        public static void InviteMember(string _steamId, string _clanName)
+        {
+            if (!idict.ContainsKey(_steamId))
+            {
+                idict.Add(_steamId, _clanName);
+                UpdateInviteData();
             }
         }
     }

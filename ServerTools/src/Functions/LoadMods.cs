@@ -2,103 +2,71 @@
 {
     public class Mods
     {
-        public static void Init()
+        public static void Load()
         {
-            GameItems.LoadGameItems();
-
-            if (CustomCommands.IsRunning && !CustomCommands.IsEnabled)
+            if (AutoSaveWorld.IsRunning && !AutoSaveWorld.IsEnabled)
             {
-                CustomCommands._fileWatcher.Dispose();
-                CustomCommands.IsRunning = false;
+                AutoSaveWorld.Stop();
             }
-            if (!CustomCommands.IsRunning && CustomCommands.IsEnabled)
+            if (!AutoSaveWorld.IsRunning && AutoSaveWorld.IsEnabled)
             {
-                CustomCommands.Init();
+                AutoSaveWorld.Start();
             }
-
-            if (KillMe.IsEnabled)
-            {
-                KillMe.Init();
-            }
-
-            if (Gimme.IsRunning && !Gimme.IsEnabled)
-            {
-                Gimme._fileWatcher.Dispose();
-                Gimme.IsRunning = false;
-            }
-            if (!Gimme.IsRunning && Gimme.IsEnabled)
-            {
-                Gimme.Init();
-            }
-
-            if (HighPingKicker.IsRunning && !HighPingKicker.IsEnabled)
-            {
-                HighPingKicker._fileWatcher.Dispose();
-                HighPingKicker.IsRunning = false;
-            }
-            if (!HighPingKicker.IsRunning && HighPingKicker.IsEnabled)
-            {
-                HighPingKicker.Init();
-            }
-
-            if (InventoryCheck.IsRunning && !InventoryCheck.IsEnabled)
-            {
-                InventoryCheck._fileWatcher.Dispose();
-                InventoryCheck.IsRunning = false;
-            }
-            if (!InventoryCheck.IsRunning && InventoryCheck.IsEnabled)
-            {
-                InventoryCheck.Init();
-            }
-
-            if (TeleportHome.IsEnabled)
-            {
-                TeleportHome.Init();
-            }
-
             if (Badwords.IsRunning && !Badwords.IsEnabled)
             {
-                Badwords._fileWatcher.Dispose();
-                Badwords.IsRunning = false;
+                Badwords.Unload();
             }
             if (!Badwords.IsRunning && Badwords.IsEnabled)
             {
-                Badwords.Init();
+                Badwords.Load();
             }
-
-            if (SaveWorld.IsRunning && !SaveWorld.IsEnabled)
+            if (ClanManager.IsEnabled)
             {
-                SaveWorld.th.Abort();
-                SaveWorld.IsRunning = false;
+                ClanData.Init();
             }
-            if (!SaveWorld.IsRunning && SaveWorld.IsEnabled)
+            if (CustomCommands.IsRunning && !CustomCommands.IsEnabled)
             {
-                SaveWorld.Init();
+                CustomCommands.Unload();
             }
-
+            if (!CustomCommands.IsRunning && CustomCommands.IsEnabled)
+            {
+                CustomCommands.Load();
+            }
+            if (Gimme.IsRunning && !Gimme.IsEnabled)
+            {
+                Gimme.Unload();
+            }
+            if (!Gimme.IsRunning && Gimme.IsEnabled)
+            {
+                Gimme.Load();
+            }
+            if (HighPingKicker.IsRunning && !HighPingKicker.IsEnabled)
+            {
+                HighPingKicker.Unload();
+            }
+            if (!HighPingKicker.IsRunning && HighPingKicker.IsEnabled)
+            {
+                HighPingKicker.Load();
+            }
             if (InfoTicker.IsRunning && !InfoTicker.IsEnabled)
             {
-                InfoTicker.th.Abort();
-                InfoTicker.IsRunning = false;
-            }
-            if (!InfoTicker.IsEnabled && !Motd.IsEnabled && InfoTicker.IsConfigLoaded)
-            {
-                InfoTicker._fileWatcher.Dispose();
-                InfoTicker.IsConfigLoaded = false;
+                InfoTicker.Unload();
             }
             if (!InfoTicker.IsRunning && InfoTicker.IsEnabled)
             {
-                InfoTicker.Init();
+                InfoTicker.Load();
             }
-
-            if (!InfoTicker.IsConfigLoaded && Motd.IsEnabled)
+            if (InventoryCheck.IsRunning && !InventoryCheck.IsEnabled)
             {
-                InfoTicker.Init();
+                InventoryCheck.Unload();
             }
-            
-            if(ClanManager.IsEnabled)
+            if (!InventoryCheck.IsRunning && InventoryCheck.IsEnabled)
             {
-                ClanData.Init();
+                InventoryCheck.Load();
+            }
+            if (KillMe.IsEnabled)
+            {
+                KillMe.Load();
             }
         }
     }

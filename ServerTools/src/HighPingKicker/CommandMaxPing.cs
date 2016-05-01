@@ -28,7 +28,7 @@ namespace ServerTools
                 SdtdConsole.Instance.Output("Maxping is not an integer.");
                 return;
             }
-            SdtdConsole.Instance.Output(string.Format("Max ping limit set to {0}",  HighPingKicker.MAXPING));
+            SdtdConsole.Instance.Output(string.Format("Max ping limit set to {0}", HighPingKicker.MAXPING));
             Config.UpdateConfig();
         }
     }

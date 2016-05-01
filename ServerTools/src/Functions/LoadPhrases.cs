@@ -6,43 +6,39 @@ namespace ServerTools
 {
     public class Phrases
     {
-        public static SortedDictionary<int, string> _Phrases = new SortedDictionary<int, string>();
-        private static string _file = "ServerToolsPhrases.xml";
-        private static string _filepath = string.Format("{0}/{1}", Config._configpath, _file);
-        private static FileSystemWatcher _fileWatcher = new FileSystemWatcher(Config._configpath, _file);
+        public static SortedDictionary<int, string> Dict = new SortedDictionary<int, string>();
+        private const string file = "ServerToolsPhrases.xml";
+        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
-        public static void Init()
+        public static void Load()
         {
-            if (!Utils.FileExists(_filepath))
-            {
-                UpdatePhrases();
-            }
             LoadPhrases();
             InitFileWatcher();
         }
 
         private static void LoadPhrases()
         {
-            if (!Utils.FileExists(_filepath))
+            if (!Utils.FileExists(filePath))
             {
                 UpdatePhrases();
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(_filepath);
+                xmlDoc.Load(filePath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _file, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            XmlNode _PhrasesXml = xmlDoc.DocumentElement;
-            _Phrases.Clear();
-            foreach (XmlNode childNode in _PhrasesXml.ChildNodes)
+            XmlNode _configXml = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _configXml.ChildNodes)
             {
                 if (childNode.Name == "Phrases")
                 {
+                    Dict.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -71,9 +67,9 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Phrase entry because of invalid (non-numeric) value for 'id' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_Phrases.ContainsKey(_id))
+                        if (!Dict.ContainsKey(_id))
                         {
-                            _Phrases.Add(_id, _line.GetAttribute("Phrase"));
+                            Dict.Add(_id, _line.GetAttribute("Phrase"));
                         }
                     }
                 }
@@ -82,15 +78,15 @@ namespace ServerTools
 
         public static void UpdatePhrases()
         {
-            _fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(_filepath))
+            fileWatcher.EnableRaisingEvents = false;
+            using (StreamWriter sw = new StreamWriter(filePath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ServerTools>");
                 sw.WriteLine("    <Phrases>");
-                if (_Phrases.Count > 0)
+                if (Dict.Count > 0)
                 {
-                    foreach (KeyValuePair<int, string> kvp in _Phrases)
+                    foreach (KeyValuePair<int, string> kvp in Dict)
                     {
                         sw.WriteLine(string.Format("        <Phrase id=\"{0}\" Phrase=\"{1}\" />", kvp.Key, kvp.Value));
                     }
@@ -111,7 +107,7 @@ namespace ServerTools
                     sw.WriteLine("        <!-- ******************************************************** -->");
                     sw.WriteLine("        <!-- ************************* Gimme ************************ -->");
                     sw.WriteLine("        <!-- ******************************************************** -->");
-                    sw.WriteLine("        <Phrase id=\"6\" Phrase=\"{PlayerName} you can only use Gimme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.\" />");
+                    sw.WriteLine("        <Phrase id=\"6\" Phrase=\"{PlayerName} you can only use /gimme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.\" />");
                     sw.WriteLine("        <Phrase id=\"7\" Phrase=\"{PlayerName} has received {ItemCount} {ItemName}.\" />");
                     sw.WriteLine("        <!-- ******************************************************** -->");
                     sw.WriteLine("        <!-- ************************ Killme ************************ -->");
@@ -129,6 +125,10 @@ namespace ServerTools
                     sw.WriteLine("        <!-- *********************** Whisper ************************ -->");
                     sw.WriteLine("        <!-- ******************************************************** -->");
                     sw.WriteLine("        <Phrase id=\"14\" Phrase=\"{SenderName} player {TargetName} was not found.\" />");
+                    sw.WriteLine("        <!-- ******************************************************** -->");
+                    sw.WriteLine("        <!-- ******************** ReservedSlots ********************* -->");
+                    sw.WriteLine("        <!-- ******************************************************** -->");
+                    sw.WriteLine("        <Phrase id=\"20\" Phrase=\"{PlayerName} this slot is reserved.\" />");
                     sw.WriteLine("        <!-- ******************************************************** -->");
                     sw.WriteLine("        <!-- ****************** Clan Tag Protection ***************** -->");
                     sw.WriteLine("        <!-- ******************************************************** -->");
@@ -160,6 +160,7 @@ namespace ServerTools
                     sw.WriteLine("        <Phrase id=\"125\" Phrase=\"{PlayerName} has been demoted.\" />");
                     sw.WriteLine("        <Phrase id=\"126\" Phrase=\"{PlayerName} you can not leave the clan because you are the owner. You can only delete the clan.\" />");
                     sw.WriteLine("        <Phrase id=\"127\" Phrase=\"{PlayerName} you do not belong to any clans.\" />");
+                    sw.WriteLine("        <Phrase id=\"128\" Phrase=\"{PlayerName} the clan {ClanName} was not found.\" />");
                     sw.WriteLine("        <!-- ******************************************************** -->");
                     sw.WriteLine("        <!-- ****************** Admins Chat Commands **************** -->");
                     sw.WriteLine("        <!-- ******************************************************** -->");
@@ -175,8 +176,8 @@ namespace ServerTools
                     sw.WriteLine("        <Phrase id=\"300\" Phrase=\"Server FPS: {Fps}\" />");
                     sw.WriteLine("        <Phrase id=\"301\" Phrase=\"Next 7th day is in {DaysUntil7} days\" />");
                     sw.WriteLine("        <Phrase id=\"302\" Phrase=\"Total Players:{Players} Total Zombies:{Zombies} Total Animals:{Animals}\" />");
-                    sw.WriteLine("        <Phrase id=\"303\" Phrase=\"Feral Zombies:{Ferals} Cops:{Cops} Dogs:{Dogs} Bees:{Bees}\" />");
-                    sw.WriteLine("        <Phrase id=\"304\" Phrase=\"Bears:{Bears} Stags:{Stags} Pigs:{Pigs} Rabbits:{Rabbits}\" />");
+                    sw.WriteLine("        <Phrase id=\"303\" Phrase=\"Feral Zombies:{Ferals} Cops:{Cops} Dogs:{Dogs} Bees:{Bees} Screamers:{Screamers}\" />");
+                    sw.WriteLine("        <Phrase id=\"304\" Phrase=\"Bears:{Bears} Stags:{Stags} Pigs:{Pigs} Rabbits:{Rabbits} Chickens:{Chickens}\" />");
                     sw.WriteLine("        <Phrase id=\"305\" Phrase=\"Total Supply Crates:{SupplyCrates} Total Mini Bikes:{MiniBikes}\" />");
                 }
                 sw.WriteLine("    </Phrases>");
@@ -184,20 +185,20 @@ namespace ServerTools
                 sw.Flush();
                 sw.Close();
             }
-            _fileWatcher.EnableRaisingEvents = true;
+            fileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            _fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            _fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            _fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            _fileWatcher.EnableRaisingEvents = true;
+            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            fileWatcher.EnableRaisingEvents = true;
         }
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(_filepath))
+            if (!Utils.FileExists(filePath))
             {
                 UpdatePhrases();
             }

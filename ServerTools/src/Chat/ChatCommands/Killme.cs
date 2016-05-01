@@ -9,18 +9,110 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int DelayBetweenUses = 60;
+        private static SortedDictionary<string, DateTime> dict = new SortedDictionary<string, DateTime>();
         private static string _file = "KillMeData.xml";
-        private static string _filepath = string.Format("{0}/{1}", Config._datapath, _file);
-        private static Dictionary<string, DateTime> _Players = new Dictionary<string, DateTime>();
+        private static string _filepath = string.Format("{0}/{1}", API.DataPath, _file);
 
-        private static List<string> _PlayersList
+        private static List<string> list
         {
-            get { return new List<string>(_Players.Keys); }
+            get { return new List<string>(dict.Keys); }
         }
 
-        public static void Init()
-        { 
+        public static void Load()
+        {
             LoadKillmeXml();
+        }
+
+        public static void CheckPlayer(ClientInfo _cInfo, bool _announce)
+        {
+            if (DelayBetweenUses < 1)
+            {
+                KillPlayer(_cInfo);
+            }
+            else
+            {
+                if (!dict.ContainsKey(_cInfo.playerId))
+                {
+                    KillPlayer(_cInfo);
+                }
+                else
+                {
+                    DateTime _datetime;
+                    if (dict.TryGetValue(_cInfo.playerId, out _datetime))
+                    {
+                        TimeSpan varTime = DateTime.Now - _datetime;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        int _timepassed = (int)fractionalMinutes;
+                        if (_timepassed > DelayBetweenUses)
+                        {
+                            KillPlayer(_cInfo);
+                        }
+                        else
+                        {
+                            int _timeremaining = DelayBetweenUses - _timepassed;
+                            string _phrase8 = "{PlayerName} you can only use /killme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                            if (!Phrases.Dict.TryGetValue(8, out _phrase8))
+                            {
+                                Log.Out("[SERVERTOOLS] Phrase 8 not found using default.");
+                            }
+                            _phrase8 = _phrase8.Replace("{PlayerName}", _cInfo.playerName);
+                            _phrase8 = _phrase8.Replace("{DelayBetweenUses}", DelayBetweenUses.ToString());
+                            _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeremaining.ToString());
+                            if (_announce)
+                            {
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _phrase8), "Server", false, "", false);
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _phrase8), "Server", false, "", false));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void KillPlayer(ClientInfo _cInfo)
+        {
+            SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.entityId), _cInfo);
+            if (dict.ContainsKey(_cInfo.playerId))
+            {
+                dict.Remove(_cInfo.playerId);
+            }
+            dict.Add(_cInfo.playerId, DateTime.Now);
+            UpdateKillmeXml();
+        }
+
+        private static void UpdateKillmeXml()
+        {
+            using (StreamWriter sw = new StreamWriter(_filepath))
+            {
+                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                sw.WriteLine("<Killme>");
+                sw.WriteLine("    <Players>");
+                foreach (string _id in list)
+                {
+                    DateTime _datetime;
+                    if (dict.TryGetValue(_id, out _datetime))
+                    {
+                        TimeSpan varTime = DateTime.Now - _datetime;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        int _timepassed = (int)fractionalMinutes;
+                        if (_timepassed > DelayBetweenUses)
+                        {
+                            dict.Remove(_id);
+                        }
+                        else
+                        {
+                            sw.WriteLine(string.Format("        <Player SteamId=\"{0}\" LastUsed=\"{1}\" />", _id, _datetime));
+                        }
+                    }
+                }
+                sw.WriteLine("    </Players>");
+                sw.WriteLine("</Killme>");
+                sw.Flush();
+                sw.Close();
+            }
         }
 
         private static void LoadKillmeXml()
@@ -40,11 +132,11 @@ namespace ServerTools
                 return;
             }
             XmlNode _KillmeXml = xmlDoc.DocumentElement;
-            _Players.Clear();
             foreach (XmlNode childNode in _KillmeXml.ChildNodes)
             {
                 if (childNode.Name == "Players")
                 {
+                    dict.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -68,91 +160,12 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring player entry because of invalid (date) value for 'LastUsed' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        _Players.Add(_line.GetAttribute("SteamId"), _datetime);
-                    }
-                }
-            }
-        }
-
-        private static void UpdateKillmeXml()
-        {
-            if (!Directory.Exists(Config._datapath))
-            {
-                Directory.CreateDirectory(Config._datapath);
-            }
-            using (StreamWriter sw = new StreamWriter(_filepath))
-            {
-                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                sw.WriteLine("<Killme>");
-                sw.WriteLine("    <Players>");
-                foreach (string _sid in _PlayersList)
-                {
-                    DateTime _datetime;
-                    if (_Players.TryGetValue(_sid, out _datetime))
-                    {
-                        int _timepassed = time.GetMinutes(_datetime);
-                        if (_timepassed > DelayBetweenUses)
+                        if (!dict.ContainsKey(_line.GetAttribute("SteamId")))
                         {
-                            _Players.Remove(_sid);
-                        }
-                        else
-                        {
-                            sw.WriteLine(string.Format("        <Player SteamId=\"{0}\" LastUsed=\"{1}\" />", _sid, _datetime));
+                            dict.Add(_line.GetAttribute("SteamId"), _datetime);
                         }
                     }
                 }
-                sw.WriteLine("    </Players>");
-                sw.WriteLine("</Killme>");
-                sw.Flush();
-                sw.Close();
-            }
-        }
-
-        public static void KillPlayer(ClientInfo _cInfo, bool _announce, string _message, string _playerName)
-        {
-            DateTime _datetime;
-            if (DelayBetweenUses > 0 && _Players.TryGetValue(_cInfo.playerId, out _datetime))
-            {
-                int _timepassed = time.GetMinutes(_datetime);
-                if (_timepassed < DelayBetweenUses)
-                {
-                    int _timeleft = DelayBetweenUses - _timepassed;
-                    string _phrase8 = "{PlayerName} you can only use /killme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                    if (Phrases._Phrases.TryGetValue(8, out _phrase8))
-                    {
-                        _phrase8 = _phrase8.Replace("{0}", _playerName);
-                        _phrase8 = _phrase8.Replace("{1}", DelayBetweenUses.ToString());
-                        _phrase8 = _phrase8.Replace("{2}", _timeleft.ToString());
-                        _phrase8 = _phrase8.Replace("{PlayerName}", _playerName);
-                        _phrase8 = _phrase8.Replace("{DelayBetweenUses}", DelayBetweenUses.ToString());
-                        _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeleft.ToString());
-                    }
-                    if (_announce)
-                    {
-                        GameManager.Instance.GameMessageServer(_cInfo, string.Format("{0}{1}[-]", CustomCommands._chatcolor, _phrase8), "Server");
-                    }
-                    else
-                    {
-                        _cInfo.SendPackage(new NetPackageGameMessage(string.Format("{0}{1}[-]", CustomCommands._chatcolor, _phrase8), "Server"));
-                    }
-                }
-                else
-                {
-                    _Players.Remove(_cInfo.playerId);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.entityId), _cInfo);
-                    _Players.Add(_cInfo.playerId, DateTime.Now);
-                    UpdateKillmeXml();
-                }
-            }
-            else
-            {
-                if (_PlayersList.Contains(_cInfo.playerId))
-                {
-                    _Players.Remove(_cInfo.playerId);
-                }
-                SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.entityId), _cInfo);
-                _Players.Add(_cInfo.playerId, DateTime.Now);
-                UpdateKillmeXml();
             }
         }
     }

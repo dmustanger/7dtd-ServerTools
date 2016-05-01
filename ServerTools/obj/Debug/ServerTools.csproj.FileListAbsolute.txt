@@ -1,0 +1,8 @@
+C:\Users\richa\Desktop\ServerTools\ServerTools\bin\Mods\ServerTools\ModInfo.xml
+C:\Users\richa\Desktop\ServerTools\ServerTools\bin\Mods\ServerTools\ServerTools.dll
+C:\Users\richa\Desktop\ServerTools\ServerTools\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache
+C:\Users\richa\Desktop\ServerTools\ServerTools\ServerTools\obj\Debug\ServerTools.dll
+\\READYSHARE\USB_Storage\Backups\Dmustanger\ServerTools\ServerTools\bin\Mods\ServerTools\ModInfo.xml
+\\READYSHARE\USB_Storage\Backups\Dmustanger\ServerTools\ServerTools\bin\Mods\ServerTools\ServerTools.dll
+\\READYSHARE\USB_Storage\Backups\Dmustanger\ServerTools\ServerTools\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache
+\\READYSHARE\USB_Storage\Backups\Dmustanger\ServerTools\ServerTools\ServerTools\obj\Debug\ServerTools.dll
