@@ -154,10 +154,10 @@ namespace ServerTools
             {
                 _commands = string.Format("{0} /gimme", _commands);
             }
-            //if (TeleportHome.IsEnabled)
-            //{
-                //_commands = string.Format("{0} /sethome /delhome /home", _commands);
-            //}
+            if (TeleportHome.IsEnabled)
+            {
+                _commands = string.Format("{0} /sethome /delhome /home", _commands);
+            }
             if (KillMe.IsEnabled)
             {
                 _commands = string.Format("{0} /killme", _commands);

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Xml;
 using UnityEngine;
 
 namespace ServerTools
@@ -10,6 +12,8 @@ namespace ServerTools
         public static int DelayBetweenUses = 60;
         private static SortedDictionary<string, string> dict = new SortedDictionary<string, string>();
         private static SortedDictionary<string, DateTime> dict1 = new SortedDictionary<string, DateTime>();
+        private static string _file = "TeleportHomeData.xml";
+        private static string _filepath = string.Format("{0}/{1}", API.DataPath, _file);
 
         public static void SetHome(ClientInfo _cInfo)
         {
@@ -38,6 +42,7 @@ namespace ServerTools
             string z = _position.z.ToString();
             string _sposition = x + "," + y + "," + z;
             dict.Add(_cInfo.playerId, _sposition);
+            UpdateXml();
             string _phrase10 = "{PlayerName} your home has been saved.";
             if (!Phrases.Dict.TryGetValue(10, out _phrase10))
             {
@@ -62,6 +67,11 @@ namespace ServerTools
             else
             {
                 dict.Remove(_cInfo.playerId);
+                if (dict1.ContainsKey(_cInfo.playerId))
+                {
+                    dict1.Remove(_cInfo.playerId);
+                }
+                UpdateXml();
                 string _phrase12 = "{PlayerName} your home has been removed.";
                 if (!Phrases.Dict.TryGetValue(12, out _phrase12))
                 {
@@ -146,7 +156,12 @@ namespace ServerTools
             destPos.z = z;
             NetPackageTeleportPlayer pkg = new NetPackageTeleportPlayer(destPos);
             _cInfo.SendPackage(pkg);
-            //update the configs here
+            if (dict1.ContainsKey(_cInfo.playerId))
+            {
+                dict1.Remove(_cInfo.playerId);
+            }
+            dict1.Add(_cInfo.playerId, DateTime.Now);
+            UpdateXml();
         }
 
         private static int GetMinutes(DateTime _datetime)
@@ -155,6 +170,96 @@ namespace ServerTools
             double fractionalMinutes = varTime.TotalMinutes;
             int wholeMinutes = (int)fractionalMinutes;
             return wholeMinutes;
+        }
+
+        private static void LoadKillmeXml()
+        {
+            if (!Utils.FileExists(_filepath))
+            {
+                return;
+            }
+            XmlDocument xmlDoc = new XmlDocument();
+            try
+            {
+                xmlDoc.Load(_filepath);
+            }
+            catch (XmlException e)
+            {
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _file, e.Message));
+                return;
+            }
+            XmlNode _TeleportHomeXml = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _TeleportHomeXml.ChildNodes)
+            {
+                if (childNode.Name == "Homes")
+                {
+                    dict.Clear();
+                    foreach (XmlNode subChild in childNode.ChildNodes)
+                    {
+                        if (subChild.NodeType == XmlNodeType.Comment)
+                        {
+                            continue;
+                        }
+                        if (subChild.NodeType != XmlNodeType.Element)
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'homes' section: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        XmlElement _line = (XmlElement)subChild;
+                        if (!_line.HasAttribute("SteamId"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring homes entry because of missing 'SteamId' attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        if (!_line.HasAttribute("Home"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring homes entry because of missing 'Home' attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        DateTime _datetime;
+                        if (!DateTime.TryParse(_line.GetAttribute("LastUsed"), out _datetime))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring home entry because of invalid (date) value for 'LastUsed' attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        string _steamid = _line.GetAttribute("SteamId");
+                        if (!dict.ContainsKey(_steamid))
+                        {
+                            dict.Add(_steamid, _line.GetAttribute("Home"));
+                        }
+                        if (!dict1.ContainsKey(_steamid))
+                        {
+                            dict1.Add(_steamid, _datetime);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void UpdateXml()
+        {
+            using (StreamWriter sw = new StreamWriter(_filepath))
+            {
+                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                sw.WriteLine("<SavedHomes>");
+                sw.WriteLine("    <Homes>");
+                foreach (KeyValuePair<string, string> kvp in dict)
+                {
+                    DateTime _datetime;
+                    if (dict1.TryGetValue(kvp.Key, out _datetime))
+                    {
+                        sw.WriteLine(string.Format("        <Home SteamId=\"{0}\" Home=\"{1}\" LastUsed=\"{2}\" />", kvp.Key, kvp.Value, _datetime));
+                    }
+                    else
+                    {
+                        sw.WriteLine(string.Format("        <Home SteamId=\"{0}\" Home=\"{1}\" LastUsed=\"\" />", kvp.Key, kvp.Value));
+                    }
+                }
+                sw.WriteLine("    </Homes>");
+                sw.WriteLine("</SavedHomes>");
+                sw.Flush();
+                sw.Close();
+            }
         }
     }
 }

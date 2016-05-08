@@ -44,7 +44,7 @@ namespace ServerTools
 
         public override bool ChatMessage(ClientInfo _cInfo, EnumGameMessages _type, string _message, string _playerName, bool _localizeMain, string _secondaryName, bool _localizeSecondary)
         {
-            return ChatHook.Hook(_cInfo, _type, _message, _playerName);
+            return ChatHook.Hook(_cInfo, _message, _playerName);
         }
     }
 }
