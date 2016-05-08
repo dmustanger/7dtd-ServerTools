@@ -4,9 +4,9 @@
     {
         public static bool ChatFlood = false;
 
-        public static bool Hook(ClientInfo _cInfo, string _message, string _playerName)
+        public static bool Hook(ClientInfo _cInfo, string _message, string _playerName, string _secondaryName, bool _localizeSecondary)
         {
-            if (!string.IsNullOrEmpty(_message) && _cInfo != null && _playerName != "Server")
+            if (!string.IsNullOrEmpty(_message) && _cInfo != null && _playerName != "Server" && _secondaryName != "ServerTools")
             {
                 if (ChatFlood)
                 {
@@ -77,6 +77,54 @@
                         }
                     }
                     _message = _message.ToLower();
+                    if (_message == "sethome")
+                    {
+                        if (_announce)
+                        {
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
+                        }
+                        if (TeleportHome.IsEnabled)
+                        {
+                            TeleportHome.SetHome(_cInfo);
+                        }
+                        else
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Sethome is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "", false));
+                        }
+                        return false;
+                    }
+                    if (_message == "delhome")
+                    {
+                        if (_announce)
+                        {
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
+                        }
+                        if (TeleportHome.IsEnabled)
+                        {
+                            TeleportHome.DelHome(_cInfo);
+                        }
+                        else
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Delhome is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "", false));
+                        }
+                        return false;
+                    }
+                    if (_message == "home")
+                    {
+                        if (_announce)
+                        {
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
+                        }
+                        if (TeleportHome.IsEnabled)
+                        {
+                            TeleportHome.TeleHome(_cInfo);
+                        }
+                        else
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Home is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "", false));
+                        }
+                        return false;
+                    }
                     if (AdminChat.IsEnabled)
                     {
                         if (_message.StartsWith("mute ") || _message.StartsWith("unmute "))
@@ -97,7 +145,7 @@
                         string _commands = CustomCommands.GetChatCommands(_cInfo);
                         if (_announce)
                         {
-                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), "Server", false, "", false);
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
                             GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _commands, "Server", false, "", false);
                         }
                         else
@@ -112,7 +160,7 @@
                         {
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), "Server", false, "", false);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
                             }
                             Day7.GetInfo(_cInfo, _announce);
                             return false;
@@ -122,7 +170,7 @@
                     {
                         if (_announce)
                         {
-                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), "Server", false, "", false);
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
                         }
                         if (KillMe.IsEnabled)
                         {
@@ -138,11 +186,11 @@
                     {
                         if (_announce)
                         {
-                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), "Server", false, "", false);
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
                         }
                         if (Gimme.AlwaysShowResponse && !_announce)
                         {
-                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("/{0}", _message), "Server", false, "", false);
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("/{0}", _message), _playerName, false, "ServerTools", true);
                         }
                         if (Gimme.IsEnabled)
                         {
@@ -227,7 +275,7 @@
                             _response = _response.Replace("{PlayerName}", _playerName);
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), "Server", false, "", false);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
                             }
                             if (_response.StartsWith("say "))
                             {
