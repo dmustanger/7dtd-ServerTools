@@ -64,9 +64,21 @@
             {
                 InventoryCheck.Load();
             }
-            if (KillMe.IsEnabled)
+            if (!KillMe.IsRunning && KillMe.IsEnabled)
             {
                 KillMe.Load();
+            }
+            if (KillMe.IsRunning && !KillMe.IsEnabled)
+            {
+                KillMe.Unload();
+            }
+            if (!TeleportHome.IsRunning && TeleportHome.IsEnabled)
+            {
+                TeleportHome.Load();
+            }
+            if (TeleportHome.IsRunning && !TeleportHome.IsEnabled)
+            {
+                TeleportHome.Unload();
             }
         }
     }
