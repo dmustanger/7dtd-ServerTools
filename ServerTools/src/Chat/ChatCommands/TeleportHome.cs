@@ -9,11 +9,25 @@ namespace ServerTools
     public class TeleportHome
     {
         public static bool IsEnabled = false;
+        public static bool IsRunning = false;
         public static int DelayBetweenUses = 60;
         private static SortedDictionary<string, string> dict = new SortedDictionary<string, string>();
         private static SortedDictionary<string, DateTime> dict1 = new SortedDictionary<string, DateTime>();
         private static string _file = "TeleportHomeData.xml";
         private static string _filepath = string.Format("{0}/{1}", API.DataPath, _file);
+
+        public static void Load()
+        {
+            LoadXml();
+            IsRunning = true;  
+        }
+
+        public static void Unload()
+        {
+            dict.Clear();
+            dict1.Clear();
+            IsRunning = false;
+        }
 
         public static void SetHome(ClientInfo _cInfo)
         {
@@ -172,7 +186,7 @@ namespace ServerTools
             return wholeMinutes;
         }
 
-        private static void LoadKillmeXml()
+        private static void LoadXml()
         {
             if (!Utils.FileExists(_filepath))
             {
@@ -194,6 +208,7 @@ namespace ServerTools
                 if (childNode.Name == "Homes")
                 {
                     dict.Clear();
+                    dict1.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)

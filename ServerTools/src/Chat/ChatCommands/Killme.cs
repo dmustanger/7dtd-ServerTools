@@ -8,6 +8,7 @@ namespace ServerTools
     public class KillMe
     {
         public static bool IsEnabled = false;
+        public static bool IsRunning = false;
         public static int DelayBetweenUses = 60;
         private static SortedDictionary<string, DateTime> dict = new SortedDictionary<string, DateTime>();
         private static string _file = "KillMeData.xml";
@@ -21,6 +22,13 @@ namespace ServerTools
         public static void Load()
         {
             LoadKillmeXml();
+            IsRunning = true;
+        }
+
+        public static void Unload()
+        {
+            dict.Clear();
+            IsRunning = false;
         }
 
         public static void CheckPlayer(ClientInfo _cInfo, bool _announce)
