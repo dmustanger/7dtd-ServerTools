@@ -6,3 +6,4 @@ System.dll
 System.Xml.dll
 UnityEngine.dll
 bin/**
+/ServerTools/obj/Debug

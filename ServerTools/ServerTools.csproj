@@ -58,10 +58,10 @@
     <Compile Include="src\HighPingKicker\HighPingKicker.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Changelog.txt" />
     <Content Include="ModInfo.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Changelog.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">

@@ -1,0 +1,66 @@
+﻿v3.2
+Fixed /sethome was not in the ServerToolsConfig.xml (Note: will need to delete ServerToolsConfig.xml)
+
+V3.1
+Fixed Custom cammands no longer crash the server
+Fixed /mute, was not muting players
+Fixed /sethome not saving data correct
+Fixed /day7 no longer requires custom commands to be enabled to work
+
+v3.0
+Updated to a14.6
+Changed Commands /info and /help have been moved to CustomChatCommands.xml and are not hard coded anymore.
+Changed CustomCommands now has DelayBetweenUses added to the config but not working yet
+Changed Moved motd message from InfoTicker.xml to server tools config
+Changed Motd can now contain the players name using the variable {PlayerName}
+Changed added chickens and screamer counts to /day7
+Changed Infoticker will now post any message with the same id at the same time
+Changed BadWordFilter now checks all words before returning the string
+Change annouce invalid item stacks will now enter a log entry into chat logs.
+Fixed Using /home will always spawn you at the highest point. thanks schwanz9000
+Fixed Anounce invalid item stack numbers not working unless invalid item kicker was enabled
+Added Chat flood protection. Will block anything with more then 500 characters
+
+v2.2
+Updated for a13
+
+v2.1
+Added /clancommands to /help so players can see what commands are available to them
+Added /clanleave so players can leave the clan
+Added chat command /pm or /w for players to pm other players usage: /w <playername> <message> or /pm <playername> <message>
+Added clan tag strings and admin chat command strings to the phrases xml (Must delete the xml.)
+Changed /day7 Animal counts are now correct and added more infos to the output
+Fixed xml error in clansdata.xml
+Cleaned up the phrases xml (Must delete the xml.)
+Clan members can be removed while offline using a steamid
+Removed a unused string from InvalidItems
+
+v2.0
+Added Clan tag protection
+Added Admin chat commands /mute /unmute @admins @all
+Added AlwaysShowResponse to the config for /gimme
+Changed day7 to not show the animal count at the moment
+Fixed a log error
+Fixed phrases not writing the id correctly
+
+v1.4
+Fixed Infoticker sending messages when there were none saved
+Fixed /home not observing DelayBetweenSetHomeUses time
+Fixed /home /gimme /killme error "key already present in dictionary" if DelayBetweenUses was set to 0
+Fixed parts of the mod loading more then once
+Fixed could not use /gimme /killme more then once if DelayBetweenUses was set to 0
+
+v1.3
+Fixed could not use /home more then once if DelayBetweenSetHomeUses was set to 0
+
+v1.2
+Fixed Object reference not set to an instance of an object
+
+v1.1
+Fixed Motd not loading
+Fixed invalid items not loading if the mod was not enabled at server start and there was no config present
+Fixed updating saved phrases
+Removed my admin hammer from the default invalid items list lol
+
+v1.0
+Initial release 
