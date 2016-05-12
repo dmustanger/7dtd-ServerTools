@@ -7,3 +7,4 @@ System.Xml.dll
 UnityEngine.dll
 bin/**
 /ServerTools/obj/Debug
+/ServerTools/obj/Release

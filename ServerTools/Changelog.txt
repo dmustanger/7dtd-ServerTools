@@ -1,4 +1,8 @@
-﻿v3.2
+﻿v3.3
+Fixed Motd not showing the correct player name
+Updated invalid items list
+
+v3.2
 Fixed /sethome was not in the ServerToolsConfig.xml (Note: will need to delete ServerToolsConfig.xml)
 
 V3.1
