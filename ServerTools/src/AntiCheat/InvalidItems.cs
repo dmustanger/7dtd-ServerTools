@@ -471,9 +471,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"whiteSidingWoodPanelBurnt5\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"whiteSidingWoodPanelBurnt6\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"whiteSidingWoodPanelBurnt7\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"faucet04\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"faucetBrass02\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"faucetBrass04\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntFileCabinet\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntCooler\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"schoolDesk\" />"));
