@@ -1023,8 +1023,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"cntStorageWeaponsInsecure\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"shoppingCartEmpty\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntShoppingCart\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"shoppingBasketEmpty\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"cntShoppingBasket\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"woodShinglesWedge\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"woodShinglesWedgeTip\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"furRugBlock\" />"));
