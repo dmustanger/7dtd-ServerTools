@@ -179,6 +179,10 @@ namespace ServerTools
                     sw.WriteLine("        <Phrase id=\"303\" Phrase=\"Feral Zombies:{Ferals} Cops:{Cops} Dogs:{Dogs} Bees:{Bees} Screamers:{Screamers}\" />");
                     sw.WriteLine("        <Phrase id=\"304\" Phrase=\"Bears:{Bears} Stags:{Stags} Pigs:{Pigs} Rabbits:{Rabbits} Chickens:{Chickens}\" />");
                     sw.WriteLine("        <Phrase id=\"305\" Phrase=\"Total Supply Crates:{SupplyCrates} Total Mini Bikes:{MiniBikes}\" />");
+                    sw.WriteLine("        <!-- ******************************************************** -->");
+                    sw.WriteLine("        <!-- *********************** Watchlist ********************** -->");
+                    sw.WriteLine("        <!-- ******************************************************** -->");
+                    sw.WriteLine("        <Phrase id=\"350\" Phrase=\"Player {PlayerName} is on the watchlist for {Reason}.\" />");
                 }
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");

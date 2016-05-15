@@ -80,6 +80,14 @@
             {
                 TeleportHome.Unload();
             }
+            if (!Watchlist.IsRunning && Watchlist.IsEnabled)
+            {
+                Watchlist.Load();
+            }
+            if (Watchlist.IsRunning && !Watchlist.IsEnabled)
+            {
+                Watchlist.Unload();
+            }
         }
     }
 }

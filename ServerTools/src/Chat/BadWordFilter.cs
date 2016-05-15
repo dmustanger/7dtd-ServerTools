@@ -29,6 +29,7 @@ namespace ServerTools
 
         public static void Unload()
         {
+            dict.Clear();
             fileWatcher.Dispose();
             IsRunning = false;
         }

@@ -19,22 +19,23 @@ namespace ServerTools
         {
             if (IsEnabled && !IsRunning)
             {
-                LoadInvalidItemsXml();
+                LoadXml();
                 InitFileWatcher();
             }
         }
 
         public static void Unload()
         {
+            dict.Clear();
             fileWatcher.Dispose();
             IsRunning = false;
         }
 
-        private static void LoadInvalidItemsXml()
+        private static void LoadXml()
         {
             if (!Utils.FileExists(filePath))
             {
-                UpdateInvalidItemsXml();
+                UpdateXml();
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
@@ -46,8 +47,8 @@ namespace ServerTools
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            XmlNode _ICheckXml = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _ICheckXml.ChildNodes)
+            XmlNode _XmlNode = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
                 if (childNode.Name == "Items")
                 {
@@ -78,7 +79,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpdateInvalidItemsXml()
+        private static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath))
@@ -470,7 +471,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"whiteSidingWoodPanelBurnt5\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"whiteSidingWoodPanelBurnt6\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"whiteSidingWoodPanelBurnt7\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"faucet02\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"faucet04\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"faucetBrass02\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"faucetBrass04\" />"));
@@ -1283,7 +1283,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            LoadInvalidItemsXml();
+            LoadXml();
         }
 
         public static void CheckInv(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
