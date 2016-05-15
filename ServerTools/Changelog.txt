@@ -1,6 +1,7 @@
 ﻿v3.3
 Fixed Motd not showing the correct player name
 Updated invalid items list (NOTE: will need to delete InvalidItems.xml)
+Changed ServerToolsConfig.xml & ServerToolsPhrases.xml will now update themselves if needed.
 
 v3.2
 Fixed /sethome was not in the ServerToolsConfig.xml (Note: will need to delete ServerToolsConfig.xml)

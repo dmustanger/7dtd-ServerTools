@@ -8,10 +8,11 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
+        private const double version = 3.3;
+        public static bool UpdateConfigs = true;
 
         public static void Load()
         {
-            Phrases.Load();
             LoadConfig();
             InitFileWatcher();
         }
@@ -33,9 +34,40 @@ namespace ServerTools
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", configFilePath, e.Message));
                 return;
             }
-            XmlNode _configXml = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _configXml.ChildNodes)
+            XmlNode _XmlNode = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
+                if (childNode.Name == "Version")
+                {
+                    foreach (XmlNode subChild in childNode.ChildNodes)
+                    {
+                        if (subChild.NodeType == XmlNodeType.Comment)
+                        {
+                            continue;
+                        }
+                        if (subChild.NodeType != XmlNodeType.Element)
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Tools' section: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        XmlElement _line = (XmlElement)subChild;
+                        if (!_line.HasAttribute("Version"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Version entry because of missing 'Version' attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        double _oldversion;
+                        if (!double.TryParse(_line.GetAttribute("Version"), out _oldversion))
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Version entry because of invalid (non-numeric) value for 'Version' attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        if (_oldversion == version)
+                        {
+                            UpdateConfigs = false;
+                        }
+                    }
+                }
                 if (childNode.Name == "Tools")
                 {
                     foreach (XmlNode subChild in childNode.ChildNodes)
@@ -381,7 +413,13 @@ namespace ServerTools
                     }
                 }
             }
+            if (UpdateConfigs)
+            {
+                UpdateConfig();
+            }
+            Phrases.Load();
             Mods.Load();
+            UpdateConfigs = true;
         }
 
         public static void UpdateConfig()
@@ -391,6 +429,9 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ServerTools>");
+                sw.WriteLine("    <Version>");
+                sw.WriteLine(string.Format("        <Version Version=\"{0}\" />", version.ToString()));
+                sw.WriteLine("    </Version>");
                 sw.WriteLine("    <Tools>");
                 sw.WriteLine(string.Format("        <Tool Name=\"AdminChatCommands\" Enable=\"{0}\" PermissionLevelForMute=\"{1}\" />", AdminChat.IsEnabled, MutePlayer.PermLevelNeededforMute));
                 sw.WriteLine(string.Format("        <Tool Name=\"AnnounceInvalidItemStack\" Enable=\"{0}\" />", InventoryCheck.AnounceInvalidStack));
