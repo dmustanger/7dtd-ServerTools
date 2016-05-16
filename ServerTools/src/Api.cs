@@ -32,6 +32,10 @@ namespace ServerTools
             {
                 InventoryCheck.CheckInv(_cInfo, _playerDataFile);
             }
+            if (Watchlist.IsEnabled)
+            {
+                Watchlist.CheckWatchlist(_cInfo);
+            }
         }
 
         public override void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)

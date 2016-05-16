@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static bool IsRunning = false;
-        private static SortedDictionary<string, string> dict = new SortedDictionary<string, string>();
+        public static SortedDictionary<string, string> Dict = new SortedDictionary<string, string>();
         private static string file = "Watchlist.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
@@ -24,7 +24,7 @@ namespace ServerTools
 
         public static void Unload()
         {
-            dict.Clear();
+            Dict.Clear();
             fileWatcher.Dispose();
             IsRunning = false;
         }
@@ -50,7 +50,7 @@ namespace ServerTools
             {
                 if (childNode.Name == "Players")
                 {
-                    dict.Clear();
+                    Dict.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -73,16 +73,16 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player entry because of missing 'Reason' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!dict.ContainsKey(_line.GetAttribute("SteamId")))
+                        if (!Dict.ContainsKey(_line.GetAttribute("SteamId")))
                         {
-                            dict.Add(_line.GetAttribute("SteamId"), _line.GetAttribute("Reason"));
+                            Dict.Add(_line.GetAttribute("SteamId"), _line.GetAttribute("Reason"));
                         }
                     }
                 }
             }
         }
 
-        private static void UpdateXml()
+        public static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath))
@@ -90,9 +90,9 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Watchlist>");
                 sw.WriteLine("    <Players>");
-                if (dict.Count > 0)
+                if (Dict.Count > 0)
                 {
-                    foreach (KeyValuePair<string, string> kvp in dict)
+                    foreach (KeyValuePair<string, string> kvp in Dict)
                     {
                         sw.WriteLine(string.Format("        <Player SteamId=\"{0}\" Reason=\"{1}\" />", kvp.Key, kvp.Value));
                     }
@@ -127,9 +127,9 @@ namespace ServerTools
             LoadXml();
         }
 
-        private static void CheckWatchlist(ClientInfo _cInfo)
+        public static void CheckWatchlist(ClientInfo _cInfo)
         {
-            if (dict.ContainsKey(_cInfo.playerId))
+            if (Dict.ContainsKey(_cInfo.playerId))
             {
                 List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                 foreach (ClientInfo _cInfo1 in _cInfoList)
@@ -142,7 +142,7 @@ namespace ServerTools
                             Log.Out("[SERVERTOOLS] Phrase 350 not found using default.");
                         }
                         string _reason = null;
-                        if (dict.TryGetValue(_cInfo.playerId, out _reason))
+                        if (Dict.TryGetValue(_cInfo.playerId, out _reason))
                         {
                             _phrase350 = _phrase350.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase350 = _phrase350.Replace("{Reason}", _reason);

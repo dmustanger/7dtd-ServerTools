@@ -1,7 +1,8 @@
 ﻿v3.3
+Added Watchlist to the mod. Will alert online admins when the watchlisted player is online. (Console Commads Usage: watchlist add <steamID> <reason>, watchlist remove <steamID>, watchlist list)
 Fixed Motd not showing the correct player name
-Updated invalid items list (NOTE: will need to delete InvalidItems.xml)
-Changed ServerToolsConfig.xml & ServerToolsPhrases.xml will now update themselves if needed.
+Updated invalid items list (NOTE: will need to delete InvalidItems.xml if you want the updated list if items)
+Changed ServerToolsConfig.xml & ServerToolsPhrases.xml will now update themselves if needed. No need to delete them anymore.
 
 v3.2
 Fixed /sethome was not in the ServerToolsConfig.xml (Note: will need to delete ServerToolsConfig.xml)
