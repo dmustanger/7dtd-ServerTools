@@ -1243,7 +1243,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"whiteMetalWall02Sheet2\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"whiteMetalWall03Sheet2\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"whiteMetalWall04Sheet2\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"burningBarrel\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"conduit01Corner\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"sandbag_1\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"sandbag_2\" />"));
