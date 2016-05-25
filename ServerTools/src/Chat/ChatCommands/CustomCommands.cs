@@ -18,7 +18,7 @@ namespace ServerTools
         {
             if (IsEnabled && !IsRunning)
             {
-                LoadCustomCommandsXml();
+                LoadXml();
                 InitFileWatcher();
             }
         }
@@ -32,7 +32,7 @@ namespace ServerTools
             }
         }
 
-        private static void LoadCustomCommandsXml()
+        private static void LoadXml()
         {
             if (!Utils.FileExists(filePath))
             {
@@ -48,8 +48,8 @@ namespace ServerTools
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            XmlNode _configXml = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _configXml.ChildNodes)
+            XmlNode _XmlNode = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
                 if (childNode.Name == "Commands")
                 {
@@ -144,7 +144,7 @@ namespace ServerTools
             {
                 UpdateXml();
             }
-            LoadCustomCommandsXml();
+            LoadXml();
         }
 
         public static string GetChatCommands(ClientInfo _cInfo)

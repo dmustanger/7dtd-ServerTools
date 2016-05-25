@@ -22,7 +22,7 @@ namespace ServerTools
         {
             if (IsEnabled && !IsRunning)
             {
-                LoadBadWords();
+                LoadXml();
                 InitFileWatcher();
             }
         }
@@ -34,7 +34,7 @@ namespace ServerTools
             IsRunning = false;
         }
 
-        private static void LoadBadWords()
+        private static void LoadXml()
         {
             if (!Utils.FileExists(filePath))
             {
@@ -50,8 +50,8 @@ namespace ServerTools
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            XmlNode _BadWordsXml = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _BadWordsXml.ChildNodes)
+            XmlNode _XmlNode = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
                 if (childNode.Name == "BadWords")
                 {
@@ -129,7 +129,7 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            LoadBadWords();
+            LoadXml();
         }
     }
 }

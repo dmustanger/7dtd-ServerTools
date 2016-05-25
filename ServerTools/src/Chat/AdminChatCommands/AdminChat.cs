@@ -10,10 +10,10 @@ namespace ServerTools
         {
             if (!GameManager.Instance.adminTools.IsAdmin(_sender.playerId))
             {
-                string _phrase200 = "{PlayerName} you do not have permissions to use this command.";
+                string _phrase200;
                 if (!Phrases.Dict.TryGetValue(200, out _phrase200))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 200 not found using default.");
+                    _phrase200 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase200 = _phrase200.Replace("{PlayerName}", _sender.playerName);
                 _sender.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _phrase200), "Server", false, "", false));
@@ -38,10 +38,10 @@ namespace ServerTools
             string[] _commands = { "say" };
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_commands, _cInfo.playerId))
             {
-                string _phrase200 = "{PlayerName} you do not have permissions to use this command.";
+                string _phrase200;
                 if (!Phrases.Dict.TryGetValue(200, out _phrase200))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 200 not found using default.");
+                    _phrase200 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase200 = _phrase200.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _phrase200), "Server", false, "", false));

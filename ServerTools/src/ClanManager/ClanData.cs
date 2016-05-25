@@ -7,17 +7,17 @@ namespace ServerTools
     public class ClanData
     {
         public static SortedDictionary<string, string> Cdict = new SortedDictionary<string, string>();
-        private static string _Clandatafile = "ClansData.xml";
-        private static string _Clandatafilepath = string.Format("{0}/{1}", API.DataPath, _Clandatafile);
+        private static string clandatafile = "ClansData.xml";
+        private static string clandatafilepath = string.Format("{0}/{1}", API.DataPath, clandatafile);
         private static SortedDictionary<string, string> odict = new SortedDictionary<string, string>();
-        private static string _Officerdatafile = "OfficersData.xml";
-        private static string _Officerdatafilepath = string.Format("{0}/{1}", API.DataPath, _Officerdatafile);
+        private static string officerdatafile = "OfficersData.xml";
+        private static string officerdatafilepath = string.Format("{0}/{1}", API.DataPath, officerdatafile);
         public static SortedDictionary<string, string> Pdict = new SortedDictionary<string, string>();
-        private static string _Playerdatafile = "PlayersData.xml";
-        private static string _Playerdatafilepath = string.Format("{0}/{1}", API.DataPath, _Playerdatafile);
-        public static SortedDictionary<string, string> idict = new SortedDictionary<string, string>();
-        private static string _Invitedatafile = "InvitesData.xml";
-        private static string _Invitedatafilepath = string.Format("{0}/{1}", API.DataPath, _Invitedatafile);
+        private static string playerdatafile = "PlayersData.xml";
+        private static string playerdatafilepath = string.Format("{0}/{1}", API.DataPath, playerdatafile);
+        public static SortedDictionary<string, string> Idict = new SortedDictionary<string, string>();
+        private static string invitedatafile = "InvitesData.xml";
+        private static string invitedatafilepath = string.Format("{0}/{1}", API.DataPath, invitedatafile);
 
         public static List<string> ClansList
         {
@@ -41,7 +41,7 @@ namespace ServerTools
 
         public static List<string> InvitesList
         {
-            get { return new List<string>(idict.Keys); }
+            get { return new List<string>(Idict.Keys); }
         }
 
         public static void Init()
@@ -57,18 +57,18 @@ namespace ServerTools
 
         private static void LoadClanData()
         {
-            if (!Utils.FileExists(_Clandatafilepath))
+            if (!Utils.FileExists(clandatafilepath))
             {
                 return;
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(_Clandatafilepath);
+                xmlDoc.Load(clandatafilepath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _Clandatafile, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", clandatafile, e.Message));
                 return;
             }
             XmlNode _ClandataXml = xmlDoc.DocumentElement;
@@ -110,7 +110,7 @@ namespace ServerTools
 
         private static void UpdateClanData()
         {
-            using (StreamWriter sw = new StreamWriter(_Clandatafilepath))
+            using (StreamWriter sw = new StreamWriter(clandatafilepath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ClanData>");
@@ -128,18 +128,18 @@ namespace ServerTools
 
         private static void LoadOfficerData()
         {
-            if (!Utils.FileExists(_Officerdatafilepath))
+            if (!Utils.FileExists(officerdatafilepath))
             {
                 return;
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(_Officerdatafilepath);
+                xmlDoc.Load(officerdatafilepath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _Officerdatafile, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", officerdatafile, e.Message));
                 return;
             }
             XmlNode _ClandataXml = xmlDoc.DocumentElement;
@@ -181,7 +181,7 @@ namespace ServerTools
 
         private static void UpdateOfficerData()
         {
-            using (StreamWriter sw = new StreamWriter(_Officerdatafilepath))
+            using (StreamWriter sw = new StreamWriter(officerdatafilepath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ClanData>");
@@ -199,18 +199,18 @@ namespace ServerTools
 
         private static void LoadPlayerData()
         {
-            if (!Utils.FileExists(_Playerdatafilepath))
+            if (!Utils.FileExists(playerdatafilepath))
             {
                 return;
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(_Playerdatafilepath);
+                xmlDoc.Load(playerdatafilepath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _Playerdatafile, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", playerdatafile, e.Message));
                 return;
             }
             XmlNode _ClandataXml = xmlDoc.DocumentElement;
@@ -252,7 +252,7 @@ namespace ServerTools
 
         private static void UpdatePlayerData()
         {
-            using (StreamWriter sw = new StreamWriter(_Playerdatafilepath))
+            using (StreamWriter sw = new StreamWriter(playerdatafilepath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ClanData>");
@@ -270,18 +270,18 @@ namespace ServerTools
 
         private static void LoadInviteData()
         {
-            if (!Utils.FileExists(_Invitedatafilepath))
+            if (!Utils.FileExists(invitedatafilepath))
             {
                 return;
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(_Invitedatafilepath);
+                xmlDoc.Load(invitedatafilepath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _Invitedatafile, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", invitedatafile, e.Message));
                 return;
             }
             XmlNode _ClandataXml = xmlDoc.DocumentElement;
@@ -289,7 +289,7 @@ namespace ServerTools
             {
                 if (childNode.Name == "Invites")
                 {
-                    idict.Clear();
+                    Idict.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -312,9 +312,9 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invite entry because of missing a clan attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!idict.ContainsKey(_line.GetAttribute("steamId")))
+                        if (!Idict.ContainsKey(_line.GetAttribute("steamId")))
                         {
-                            idict.Add(_line.GetAttribute("steamId"), _line.GetAttribute("clan"));
+                            Idict.Add(_line.GetAttribute("steamId"), _line.GetAttribute("clan"));
                         }
                     }
                 }
@@ -323,12 +323,12 @@ namespace ServerTools
 
         public static void UpdateInviteData()
         {
-            using (StreamWriter sw = new StreamWriter(_Invitedatafilepath))
+            using (StreamWriter sw = new StreamWriter(invitedatafilepath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ClanData>");
                 sw.WriteLine("    <Invites>");
-                foreach (KeyValuePair<string, string> kvp in idict)
+                foreach (KeyValuePair<string, string> kvp in Idict)
                 {
                     sw.WriteLine(string.Format("        <Invite steamId=\"{0}\" clan=\"{1}\" />", kvp.Key, kvp.Value));
                 }
@@ -341,9 +341,9 @@ namespace ServerTools
 
         public static void AddClan(string _clanName, string _steamId)
         {
-            if (idict.ContainsKey(_steamId))
+            if (Idict.ContainsKey(_steamId))
             {
-                idict.Remove(_steamId);
+                Idict.Remove(_steamId);
                 UpdateInviteData();
             }
             Cdict.Add(_clanName, _steamId);
@@ -372,11 +372,11 @@ namespace ServerTools
             foreach (string _invite in InvitesList)
             {
                 string _cName;
-                if (idict.TryGetValue(_invite, out _cName))
+                if (Idict.TryGetValue(_invite, out _cName))
                 {
                     if (_cName == _clanName)
                     {
-                        idict.Remove(_invite);
+                        Idict.Remove(_invite);
                     }
                 }
             }
@@ -399,7 +399,7 @@ namespace ServerTools
 
         public static void AddMember(string _clanName, string _steamId)
         {
-            idict.Remove(_steamId);
+            Idict.Remove(_steamId);
             Pdict.Add(_steamId, _clanName);
             UpdateInviteData();
             UpdatePlayerData();
@@ -430,9 +430,9 @@ namespace ServerTools
 
         public static void InviteMember(string _steamId, string _clanName)
         {
-            if (!idict.ContainsKey(_steamId))
+            if (!Idict.ContainsKey(_steamId))
             {
-                idict.Add(_steamId, _clanName);
+                Idict.Add(_steamId, _clanName);
                 UpdateInviteData();
             }
         }

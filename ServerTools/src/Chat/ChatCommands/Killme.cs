@@ -11,8 +11,8 @@ namespace ServerTools
         public static bool IsRunning = false;
         public static int DelayBetweenUses = 60;
         private static SortedDictionary<string, DateTime> dict = new SortedDictionary<string, DateTime>();
-        private static string _file = "KillMeData.xml";
-        private static string _filepath = string.Format("{0}/{1}", API.DataPath, _file);
+        private static string file = "KillMeData.xml";
+        private static string filepath = string.Format("{0}/{1}", API.DataPath, file);
 
         private static List<string> list
         {
@@ -21,7 +21,7 @@ namespace ServerTools
 
         public static void Load()
         {
-            LoadKillmeXml();
+            LoadXml();
             IsRunning = true;
         }
 
@@ -58,10 +58,10 @@ namespace ServerTools
                         else
                         {
                             int _timeremaining = DelayBetweenUses - _timepassed;
-                            string _phrase8 = "{PlayerName} you can only use /killme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                            string _phrase8;
                             if (!Phrases.Dict.TryGetValue(8, out _phrase8))
                             {
-                                Log.Out("[SERVERTOOLS] Phrase 8 not found using default.");
+                                _phrase8 = "{PlayerName} you can only use /killme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
                             _phrase8 = _phrase8.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase8 = _phrase8.Replace("{DelayBetweenUses}", DelayBetweenUses.ToString());
@@ -88,12 +88,12 @@ namespace ServerTools
                 dict.Remove(_cInfo.playerId);
             }
             dict.Add(_cInfo.playerId, DateTime.Now);
-            UpdateKillmeXml();
+            UpdateXml();
         }
 
-        private static void UpdateKillmeXml()
+        private static void UpdateXml()
         {
-            using (StreamWriter sw = new StreamWriter(_filepath))
+            using (StreamWriter sw = new StreamWriter(filepath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Killme>");
@@ -123,24 +123,24 @@ namespace ServerTools
             }
         }
 
-        private static void LoadKillmeXml()
+        private static void LoadXml()
         {
-            if (!Utils.FileExists(_filepath))
+            if (!Utils.FileExists(filepath))
             {
                 return;
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(_filepath);
+                xmlDoc.Load(filepath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _file, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            XmlNode _KillmeXml = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _KillmeXml.ChildNodes)
+            XmlNode _XmlNode = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
                 if (childNode.Name == "Players")
                 {

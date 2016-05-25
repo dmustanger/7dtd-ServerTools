@@ -13,8 +13,8 @@ namespace ServerTools
         public static int DelayBetweenUses = 60;
         private static SortedDictionary<string, string> dict = new SortedDictionary<string, string>();
         private static SortedDictionary<string, DateTime> dict1 = new SortedDictionary<string, DateTime>();
-        private static string _file = "TeleportHomeData.xml";
-        private static string _filepath = string.Format("{0}/{1}", API.DataPath, _file);
+        private static string file = "TeleportHomeData.xml";
+        private static string filepath = string.Format("{0}/{1}", API.DataPath, file);
 
         public static void Load()
         {
@@ -37,10 +37,10 @@ namespace ServerTools
             }
             else
             {
-                string _phrase9 = "{PlayerName} you already have a home set.";
+                string _phrase9;
                 if (!Phrases.Dict.TryGetValue(9, out _phrase9))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 9 not found using default.");
+                    _phrase9 = "{PlayerName} you already have a home set.";
                 }
                 _phrase9 = _phrase9.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase9, CustomCommands.ChatColor), "Server", false, "", false));
@@ -57,10 +57,10 @@ namespace ServerTools
             string _sposition = x + "," + y + "," + z;
             dict.Add(_cInfo.playerId, _sposition);
             UpdateXml();
-            string _phrase10 = "{PlayerName} your home has been saved.";
+            string _phrase10;
             if (!Phrases.Dict.TryGetValue(10, out _phrase10))
             {
-                Log.Out("[SERVERTOOLS] Phrase 10 not found using default.");
+                _phrase10 = "{PlayerName} your home has been saved.";
             }
             _phrase10 = _phrase10.Replace("{PlayerName}", _cInfo.playerName);
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, CustomCommands.ChatColor), "Server", false, "", false));
@@ -70,10 +70,10 @@ namespace ServerTools
         {
             if (!dict.ContainsKey(_cInfo.playerId))
             {
-                string _phrase11 = "{PlayerName} you do not have a home saved.";
+                string _phrase11;
                 if (!Phrases.Dict.TryGetValue(11, out _phrase11))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 11 not found using default.");
+                    _phrase11 = "{PlayerName} you do not have a home saved.";
                 }
                 _phrase11 = _phrase11.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase11, CustomCommands.ChatColor), "Server", false, "", false));
@@ -86,10 +86,10 @@ namespace ServerTools
                     dict1.Remove(_cInfo.playerId);
                 }
                 UpdateXml();
-                string _phrase12 = "{PlayerName} your home has been removed.";
+                string _phrase12;
                 if (!Phrases.Dict.TryGetValue(12, out _phrase12))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 12 not found using default.");
+                    _phrase12 = "{PlayerName} your home has been removed.";
                 }
                 _phrase12 = _phrase12.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase12, CustomCommands.ChatColor), "Server", false, "", false));
@@ -100,10 +100,10 @@ namespace ServerTools
         {
             if (!dict.ContainsKey(_cInfo.playerId))
             {
-                string _phrase11 = "{PlayerName} you do not have a home saved.";
+                string _phrase11;
                 if (!Phrases.Dict.TryGetValue(11, out _phrase11))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 11 not found using default.");
+                    _phrase11 = "{PlayerName} you do not have a home saved.";
                 }
                 _phrase11 = _phrase11.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase11, CustomCommands.ChatColor), "Server", false, "", false));
@@ -132,10 +132,10 @@ namespace ServerTools
                                 if (_passedtime < DelayBetweenUses)
                                 {
                                     int _timeleft = DelayBetweenUses - _passedtime;
-                                    string _phrase13 = "{PlayerName} you can only use /home once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                    string _phrase13;
                                     if (!Phrases.Dict.TryGetValue(13, out _phrase13))
                                     {
-                                        Log.Out("[SERVERTOOLS] Phrase 13 not found using default.");
+                                        _phrase13 = "{PlayerName} you can only use /home once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                     }
                                     _phrase13 = _phrase13.Replace("{PlayerName}", _cInfo.playerName);
                                     _phrase13 = _phrase13.Replace("{DelayBetweenUses}", DelayBetweenUses.ToString());
@@ -188,22 +188,22 @@ namespace ServerTools
 
         private static void LoadXml()
         {
-            if (!Utils.FileExists(_filepath))
+            if (!Utils.FileExists(filepath))
             {
                 return;
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(_filepath);
+                xmlDoc.Load(filepath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _file, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            XmlNode _TeleportHomeXml = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _TeleportHomeXml.ChildNodes)
+            XmlNode _XmlNode = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
                 if (childNode.Name == "Homes")
                 {
@@ -253,7 +253,7 @@ namespace ServerTools
 
         private static void UpdateXml()
         {
-            using (StreamWriter sw = new StreamWriter(_filepath))
+            using (StreamWriter sw = new StreamWriter(filepath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<SavedHomes>");

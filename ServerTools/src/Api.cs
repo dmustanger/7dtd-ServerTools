@@ -7,6 +7,8 @@ namespace ServerTools
         public static string GamePath = GamePrefs.GetString(EnumGamePrefs.SaveGameFolder);
         public static string ConfigPath = string.Format("{0}/ServerTools", GamePath);
         public static string DataPath = string.Format("{0}/Data", ConfigPath);
+        public static int MaxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
+        
 
         public override void GameAwake()
         {
@@ -35,6 +37,14 @@ namespace ServerTools
             if (Watchlist.IsEnabled)
             {
                 Watchlist.CheckWatchlist(_cInfo);
+            }
+        }
+
+        public override void PlayerLogin(ClientInfo _cInfo, string _compatibilityVersion)
+        {
+            if (ReservedSlots.IsEnabled)
+            {
+                ReservedSlots.CheckReservedSlot(_cInfo);
             }
         }
 

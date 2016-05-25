@@ -4,7 +4,7 @@ namespace ServerTools
 {
     public class GameItems
     {
-        public static SortedDictionary<string, ItemValue> _gameItems = new SortedDictionary<string, ItemValue>();
+        public static SortedDictionary<string, ItemValue> Dict = new SortedDictionary<string, ItemValue>();
 
         public static void LoadGameItems()
         {
@@ -13,18 +13,18 @@ namespace ServerTools
             {
                 ItemClass _itemClass = ItemClass.list[_itemStack.itemValue.type];
                 string name = _itemClass.GetItemName();
-                if (name != null && name.Length > 0 && !_gameItems.ContainsKey(name))
+                if (name != null && name.Length > 0 && !Dict.ContainsKey(name))
                 {
-                    _gameItems.Add(name, _itemStack.itemValue);
+                    Dict.Add(name, _itemStack.itemValue);
                 }
             }
             foreach (ItemStack _itemStack in _menu.GetAllBlocks())
             {
                 ItemClass _itemClass = ItemClass.list[_itemStack.itemValue.type];
                 string name = _itemClass.GetItemName();
-                if (name != null && name.Length > 0 && !_gameItems.ContainsKey(name))
+                if (name != null && name.Length > 0 && !Dict.ContainsKey(name))
                 {
-                    _gameItems.Add(name, _itemStack.itemValue);
+                    Dict.Add(name, _itemStack.itemValue);
                 }
             }
         }

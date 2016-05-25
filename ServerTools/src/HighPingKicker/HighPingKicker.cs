@@ -47,8 +47,8 @@ namespace ServerTools
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            XmlNode _HighPingKicker = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _HighPingKicker.ChildNodes)
+            XmlNode _XmlNode = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
                 if (childNode.Name == "immunePlayers")
                 {
@@ -166,15 +166,15 @@ namespace ServerTools
 
         private static void KickPlayer(ClientInfo _cInfo)
         {
-            string _phrase1 = "Auto Kicking {PlayerName} for high ping. ({PlayerPing}) Maxping is {MaxPing}.";
-            string _phrase2 = "Auto Kicked: Ping To High. ({PlayerPing}) Max Ping is {MaxPing}.";
+            string _phrase1;
+            string _phrase2;
             if (!Phrases.Dict.TryGetValue(1, out _phrase1))
             {
-                Log.Out("[SERVERTOOLS] Phrase 1 not found using default.");
+                _phrase1 = "Auto Kicking {PlayerName} for high ping. ({PlayerPing}) Maxping is {MaxPing}.";
             }
             if (!Phrases.Dict.TryGetValue(2, out _phrase2))
             {
-                Log.Out("[SERVERTOOLS] Phrase 2 not found using default.");
+                _phrase2 = "Auto Kicked: Ping To High. ({PlayerPing}) Max Ping is {MaxPing}.";
             }
             _phrase1 = _phrase1.Replace("{PlayerName}", _cInfo.playerName);
             _phrase1 = _phrase1.Replace("{PlayerPing}", _cInfo.ping.ToString());

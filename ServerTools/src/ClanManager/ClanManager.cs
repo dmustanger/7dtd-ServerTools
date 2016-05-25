@@ -15,10 +15,10 @@ namespace ServerTools
                 {
                     if (!ClanData.PlayersList.Contains(_cInfo.playerId))
                     {
-                        string _phrase100 = "You do not belong to the clan {ClanName}. Please remove the clan tag and rejoin.";
+                        string _phrase100;
                         if (!Phrases.Dict.TryGetValue(100, out _phrase100))
                         {
-                            Log.Out("[SERVERTOOLS] Phrase 100 not found using default.");
+                            _phrase100 = "You do not belong to the clan {ClanName}. Please remove the clan tag and rejoin.";
                         }
                         _phrase100 = _phrase100.Replace("{ClanName}", _clan);
                         KickPlayer(_cInfo, _phrase100);
@@ -30,10 +30,10 @@ namespace ServerTools
                         {
                             if (_clan != _c)
                             {
-                                string _phrase100 = "You do not belong to the clan {ClanName}. Please remove the clan tag and rejoin.";
+                                string _phrase100;
                                 if (!Phrases.Dict.TryGetValue(100, out _phrase100))
                                 {
-                                    Log.Out("[SERVERTOOLS] Phrase 100 not found using default.");
+                                    _phrase100 = "You do not belong to the clan {ClanName}. Please remove the clan tag and rejoin.";
                                 }
                                 _phrase100 = _phrase100.Replace("{ClanName}", _clan);
                                 KickPlayer(_cInfo, _phrase100);
@@ -57,10 +57,10 @@ namespace ServerTools
                 {
                     if (kvp.Value == _cInfo.playerId)
                     {
-                        string _phrase101 = "{PlayerName} you have already created the clan {ClanName}.";
+                        string _phrase101;
                         if (!Phrases.Dict.TryGetValue(101, out _phrase101))
                         {
-                            Log.Out("[SERVERTOOLS] Phrase 101 not found using default.");
+                            _phrase101 = "{PlayerName} you have already created the clan {ClanName}.";
                         }
                         _phrase101 = _phrase101.Replace("{PlayerName}", _cInfo.playerName);
                         _phrase101 = _phrase101.Replace("{ClanName}", kvp.Key);
@@ -76,10 +76,10 @@ namespace ServerTools
                     string _c = null;
                     if (ClanData.Pdict.TryGetValue(_cInfo.playerId, out _c))
                     {
-                        string _phrase103 = "{PlayerName} you are currently a member of the clan {ClanName}.";
+                        string _phrase103;
                         if (!Phrases.Dict.TryGetValue(103, out _phrase103))
                         {
-                            Log.Out("[SERVERTOOLS] Phrase 103 not found using default.");
+                            _phrase103 = "{PlayerName} you are currently a member of the clan {ClanName}.";
                         }
                         _phrase103 = _phrase103.Replace("{PlayerName}", _cInfo.playerName);
                         _phrase103 = _phrase103.Replace("{ClanName}", _c);
@@ -92,10 +92,10 @@ namespace ServerTools
                     _clanName = _clanName.ToLower();
                     if (ClanData.ClansList.Contains(_clanName))
                     {
-                        string _phrase102 = "{PlayerName} can not add the clan {ClanName} because it already exist.";
+                        string _phrase102;
                         if (!Phrases.Dict.TryGetValue(102, out _phrase102))
                         {
-                            Log.Out("[SERVERTOOLS] Phrase 102 not found using default.");
+                            _phrase102 = "{PlayerName} can not add the clan {ClanName} because it already exist.";
                         }
                         _phrase102 = _phrase102.Replace("{PlayerName}", _cInfo.playerName);
                         _phrase102 = _phrase102.Replace("{ClanName}", _clanName);
@@ -104,10 +104,10 @@ namespace ServerTools
                     else
                     {
                         ClanData.AddClan(_clanName, _cInfo.playerId);
-                        string _phrase104 = "{PlayerName} you have added the clan {ClanName}.";
+                        string _phrase104;
                         if (!Phrases.Dict.TryGetValue(104, out _phrase104))
                         {
-                            Log.Out("[SERVERTOOLS] Phrase 104 not found using default.");
+                            _phrase104 = "{PlayerName} you have added the clan {ClanName}.";
                         }
                         _phrase104 = _phrase104.Replace("{PlayerName}", _cInfo.playerName);
                         _phrase104 = _phrase104.Replace("{ClanName}", _clanName);
@@ -121,10 +121,10 @@ namespace ServerTools
         {
             if (!ClanData.OwnersList.Contains(_cInfo.playerId))
             {
-                string _phrase105 = "{PlayerName} you are not the owner of any clans.";
+                string _phrase105;
                 if (!Phrases.Dict.TryGetValue(105, out _phrase105))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 105 not found using default.");
+                    _phrase105 = "{PlayerName} you are not the owner of any clans.";
                 }
                 _phrase105 = _phrase105.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase105, CustomCommands.ChatColor), "Server", false, "", false));
@@ -136,10 +136,10 @@ namespace ServerTools
                     if (kvp.Value == _cInfo.playerId)
                     {
                         ClanData.RemoveClan(kvp.Key, _cInfo.playerId);
-                        string _phrase106 = "{PlayerName} you have removed the clan {ClanName}.";
+                        string _phrase106;
                         if (!Phrases.Dict.TryGetValue(106, out _phrase106))
                         {
-                            Log.Out("[SERVERTOOLS] Phrase 106 not found using default.");
+                            _phrase106 = "{PlayerName} you have removed the clan {ClanName}.";
                         }
                         _phrase106 = _phrase106.Replace("{PlayerName}", _cInfo.playerName);
                         _phrase106 = _phrase106.Replace("{ClanName}", kvp.Key);
@@ -154,10 +154,10 @@ namespace ServerTools
         {
             if (!ClanData.OwnersList.Contains(_cInfo.playerId) || !ClanData.OfficersList.Contains(_cInfo.playerId))
             {
-                string _phrase107 = "{PlayerName} you do not have permissions to use this command.";
+                string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 107 not found using default.");
+                    _phrase107 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase107, CustomCommands.ChatColor), "Server", false, "", false));
@@ -167,10 +167,10 @@ namespace ServerTools
                 ClientInfo _newMember = ConsoleHelper.ParseParamIdOrName(_playerName);
                 if (_newMember == null)
                 {
-                    string _phrase108 = "{PlayerName} the name {TargetPlayerName} was not found.";
+                    string _phrase108;
                     if (!Phrases.Dict.TryGetValue(108, out _phrase108))
                     {
-                        Log.Out("[SERVERTOOLS] Phrase 108 not found using default.");
+                        _phrase108 = "{PlayerName} the name {TargetPlayerName} was not found.";
                     }
                     _phrase108 = _phrase108.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase108 = _phrase108.Replace("{TargetPlayerName}", _playerName);
@@ -180,10 +180,10 @@ namespace ServerTools
                 {
                     if (ClanData.PlayersList.Contains(_newMember.playerId))
                     {
-                        string _phrase109 = "{PlayerName} is already a member of a clan.";
+                        string _phrase109;
                         if (!Phrases.Dict.TryGetValue(109, out _phrase109))
                         {
-                            Log.Out("[SERVERTOOLS] Phrase 109 not found using default.");
+                            _phrase109 = "{PlayerName} is already a member of a clan.";
                         }
                         _phrase109 = _phrase109.Replace("{PlayerName}", _playerName);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase109, CustomCommands.ChatColor), "Server", false, "", false));
@@ -192,26 +192,26 @@ namespace ServerTools
                     {
                         if (ClanData.InvitesList.Contains(_newMember.playerId))
                         {
-                            string _phrase110 = "{PlayerName} already has pending clan invites.";
+                            string _phrase110;
                             if (!Phrases.Dict.TryGetValue(110, out _phrase110))
                             {
-                                Log.Out("[SERVERTOOLS] Phrase 110 not found using default.");
+                                _phrase110 = "{PlayerName} already has pending clan invites.";
                             }
                             _phrase110 = _phrase110.Replace("{PlayerName}", _playerName);
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase110, CustomCommands.ChatColor), "Server", false, "", false));
                         }
                         else
                         {
-                            string _phrase111 = "{PlayerName} you have been invited to join the clan {ClanName}. Type /clanaccept to join or /clandecline to decline the offer.";
-                            string _phrase112 = "{PlayerName} you have invited {InvitedPlayerName} to the clan {ClanName}.";
+                            string _phrase111;
+                            string _phrase112;
                             if (!Phrases.Dict.TryGetValue(111, out _phrase111))
                             {
-                                Log.Out("[SERVERTOOLS] Phrase 111 not found using default.");
+                                _phrase111 = "{PlayerName} you have been invited to join the clan {ClanName}. Type /clanaccept to join or /clandecline to decline the offer.";
                             }
 
                             if (!Phrases.Dict.TryGetValue(112, out _phrase112))
                             {
-                                Log.Out("[SERVERTOOLS] Phrase 112 not found using default.");
+                                _phrase112 = "{PlayerName} you have invited {InvitedPlayerName} to the clan {ClanName}.";
                             }
                             string _clan = null;
                             if (ClanData.Pdict.TryGetValue(_cInfo.playerId, out _clan))
@@ -235,10 +235,10 @@ namespace ServerTools
         {
             if (!ClanData.InvitesList.Contains(_cInfo.playerId))
             {
-                string _phrase113 = "{PlayerName} you have not been invited to any clans.";
+                string _phrase113;
                 if (!Phrases.Dict.TryGetValue(113, out _phrase113))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 113 not found using default.");
+                    _phrase113 = "{PlayerName} you have not been invited to any clans.";
                 }
                 _phrase113 = _phrase113.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase113, CustomCommands.ChatColor), "Server", false, "", false));
@@ -246,12 +246,12 @@ namespace ServerTools
             else
             {
                 string _clan = null;
-                if (!ClanData.idict.TryGetValue(_cInfo.playerId, out _clan))
+                if (!ClanData.Idict.TryGetValue(_cInfo.playerId, out _clan))
                 {
-                    string _phrase114 = "{PlayerName} the clan could not be found.";
+                    string _phrase114;
                     if (!Phrases.Dict.TryGetValue(114, out _phrase114))
                     {
-                        Log.Out("[SERVERTOOLS] Phrase 114 not found using default.");
+                        _phrase114 = "{PlayerName} the clan could not be found.";
                     }
                     _phrase114 = _phrase114.Replace("{PlayerName}", _cInfo.playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase114, CustomCommands.ChatColor), "Server", false, "", false));
@@ -267,10 +267,10 @@ namespace ServerTools
                         {
                             if (_clan == _clan1)
                             {
-                                string _phrase115 = "{PlayerName} has joined the clan.";
+                                string _phrase115;
                                 if (!Phrases.Dict.TryGetValue(115, out _phrase115))
                                 {
-                                    Log.Out("[SERVERTOOLS] Phrase 115 not found using default.");
+                                    _phrase115 = "{PlayerName} has joined the clan.";
                                 }
                                 _phrase115 = _phrase115.Replace("{PlayerName}", _cInfo.playerName);
                                 _cInfop.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase115, CustomCommands.ChatColor), "Server", false, "", false));
@@ -285,22 +285,22 @@ namespace ServerTools
         {
             if (!ClanData.InvitesList.Contains(_cInfo.playerId))
             {
-                string _phrase113 = "{PlayerName} you have not been invited to any clans.";
+                string _phrase113;
                 if (!Phrases.Dict.TryGetValue(113, out _phrase113))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 113 not found using default.");
+                    _phrase113 = "{PlayerName} you have not been invited to any clans.";
                 }
                 _phrase113 = _phrase113.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase113, CustomCommands.ChatColor), "Server", false, "", false));
             }
             else
             {
-                ClanData.idict.Remove(_cInfo.playerId);
+                ClanData.Idict.Remove(_cInfo.playerId);
                 ClanData.UpdateInviteData();
-                string _phrase116 = "{PlayerName} you have declined the invite to the clan.";
+                string _phrase116;
                 if (!Phrases.Dict.TryGetValue(116, out _phrase116))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 116 not found using default.");
+                    _phrase116 = "{PlayerName} you have declined the invite to the clan.";
                 }
                 _phrase116 = _phrase116.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase116, CustomCommands.ChatColor), "Server", false, "", false));
@@ -311,10 +311,10 @@ namespace ServerTools
         {
             if (!ClanData.OfficersList.Contains(_cInfo.playerId))
             {
-                string _phrase107 = "{PlayerName} you do not have permissions to use this command.";
+                string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 107 not found using default.");
+                    _phrase107 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase107, CustomCommands.ChatColor), "Server", false, "", false));
@@ -335,10 +335,10 @@ namespace ServerTools
                     }
                     else
                     {
-                        string _phrase108 = "{PlayerName} the name {TargetPlayerName} was not found.";
+                        string _phrase108;
                         if (!Phrases.Dict.TryGetValue(108, out _phrase108))
                         {
-                            Log.Out("[SERVERTOOLS] Phrase 108 not found using default.");
+                            _phrase108 = "{PlayerName} the name {TargetPlayerName} was not found.";
                         }
                         _phrase108 = _phrase108.Replace("{PlayerName}", _cInfo.playerName);
                         _phrase108 = _phrase108.Replace("{TargetPlayerName}", _playerName);
@@ -351,10 +351,10 @@ namespace ServerTools
                 if (!ClanData.Pdict.TryGetValue(_cInfo.playerId, out _clan) || !ClanData.Pdict.TryGetValue(_steamId, out _clanName))
                 {
 
-                    string _phrase117 = "{PlayerName} is not a member of your clan.";
+                    string _phrase117;
                     if (!Phrases.Dict.TryGetValue(117, out _phrase117))
                     {
-                        Log.Out("[SERVERTOOLS] Phrase 117 not found using default.");
+                        _phrase117 = "{PlayerName} is not a member of your clan.";
                     }
                     _phrase117 = _phrase117.Replace("{PlayerName}", _playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase117, CustomCommands.ChatColor), "Server", false, "", false));
@@ -363,10 +363,10 @@ namespace ServerTools
                 {
                     if (_clanName != _clan)
                     {
-                        string _phrase117 = "{PlayerName} is not a member of your clan.";
+                        string _phrase117;
                         if (!Phrases.Dict.TryGetValue(117, out _phrase117))
                         {
-                            Log.Out("[SERVERTOOLS] Phrase 117 not found using default.");
+                            _phrase117 = "{PlayerName} is not a member of your clan.";
                         }
                         _phrase117 = _phrase117.Replace("{PlayerName}", _playerName);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase117, CustomCommands.ChatColor), "Server", false, "", false));
@@ -375,10 +375,10 @@ namespace ServerTools
                     {
                         if (ClanData.OfficersList.Contains(_steamId) || ClanData.OwnersList.Contains(_steamId))
                         {
-                            string _phrase118 = "{PlayerName} only the clan owner can remove officers.";
+                            string _phrase118;
                             if (!Phrases.Dict.TryGetValue(118, out _phrase118))
                             {
-                                Log.Out("[SERVERTOOLS] Phrase 118 not found using default.");
+                                _phrase118 = "{PlayerName} only the clan owner can remove officers.";
                             }
                             _phrase118 = _phrase118.Replace("{PlayerName}", _cInfo.playerName);
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase118, CustomCommands.ChatColor), "Server", false, "", false));
@@ -386,15 +386,15 @@ namespace ServerTools
                         else
                         {
                             ClanData.RemoveMember(_steamId);
-                            string _phrase120 = "{PlayerName} you have removed {PlayertoRemove} from clan {ClanName}.";
-                            string _phrase121 = "{PlayerName} you have been removed from the clan {ClanName}.";
+                            string _phrase120;
+                            string _phrase121;
                             if (!Phrases.Dict.TryGetValue(120, out _phrase120))
                             {
-                                Log.Out("[SERVERTOOLS] Phrase 120 not found using default.");
+                                _phrase120 = "{PlayerName} you have removed {PlayertoRemove} from clan {ClanName}.";
                             }
                             if (!Phrases.Dict.TryGetValue(121, out _phrase121))
                             {
-                                Log.Out("[SERVERTOOLS] Phrase 121 not found using default.");
+                                _phrase121 = "{PlayerName} you have been removed from the clan {ClanName}.";
                             }
                             _phrase120 = _phrase120.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase120 = _phrase120.Replace("{PlayertoRemove}", _playerName);
@@ -416,10 +416,10 @@ namespace ServerTools
         {
             if (!ClanData.OwnersList.Contains(_cInfo.playerId) )
             {
-                string _phrase107 = "{PlayerName} you do not have permissions to use this command.";
+                string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 107 not found using default.");
+                    _phrase107 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase107, CustomCommands.ChatColor), "Server", false, "", false));
@@ -429,10 +429,10 @@ namespace ServerTools
                 ClientInfo _playertoPromote = ConsoleHelper.ParseParamIdOrName(_playerName);
                 if (_playertoPromote == null)
                 {
-                    string _phrase108 = "{PlayerName} the name {TargetPlayerName} was not found.";
+                    string _phrase108;
                     if (!Phrases.Dict.TryGetValue(108, out _phrase108))
                     {
-                        Log.Out("[SERVERTOOLS] Phrase 108 not found using default.");
+                        _phrase108 = "{PlayerName} the name {TargetPlayerName} was not found.";
                     }
                     _phrase108 = _phrase108.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase108 = _phrase108.Replace("{TargetPlayerName}", _playerName);
@@ -442,10 +442,10 @@ namespace ServerTools
                 {
                     if (!ClanData.PlayersList.Contains(_playertoPromote.playerId))
                     {
-                        string _phrase117 = "{PlayerName} is not a member of your clan.";
+                        string _phrase117;
                         if (!Phrases.Dict.TryGetValue(117, out _phrase117))
                         {
-                            Log.Out("[SERVERTOOLS] Phrase 117 not found using default.");
+                            _phrase117 = "{PlayerName} is not a member of your clan.";
                         }
                         _phrase117 = _phrase117.Replace("{PlayerName}", _playerName);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase117, CustomCommands.ChatColor), "Server", false, "", false));
@@ -456,10 +456,10 @@ namespace ServerTools
                         string _clan1 = null;
                         if (!ClanData.Pdict.TryGetValue(_playertoPromote.playerId, out _clan) || !ClanData.Pdict.TryGetValue(_cInfo.playerId, out _clan1))
                         {
-                            string _phrase117 = "{PlayerName} is not a member of your clan.";
+                            string _phrase117;
                             if (!Phrases.Dict.TryGetValue(117, out _phrase117))
                             {
-                                Log.Out("[SERVERTOOLS] Phrase 117 not found using default.");
+                                _phrase117 = "{PlayerName} is not a member of your clan.";
                             }
                             _phrase117 = _phrase117.Replace("{PlayerName}", _playerName);
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase117, CustomCommands.ChatColor), "Server", false, "", false));    
@@ -468,10 +468,10 @@ namespace ServerTools
                         {
                             if (_clan1 != _clan)
                             {
-                                string _phrase117 = "{PlayerName} is not a member of your clan.";
+                                string _phrase117;
                                 if (!Phrases.Dict.TryGetValue(117, out _phrase117))
                                 {
-                                    Log.Out("[SERVERTOOLS] Phrase 117 not found using default.");
+                                    _phrase117 = "{PlayerName} is not a member of your clan.";
                                 }
                                 _phrase117 = _phrase117.Replace("{PlayerName}", _playerName);
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase117, CustomCommands.ChatColor), "Server", false, "", false));
@@ -480,10 +480,10 @@ namespace ServerTools
                             {
                                 if (ClanData.OfficersList.Contains(_playertoPromote.playerId))
                                 {
-                                    string _phrase122 = "{PlayerName} is already a officer.";
+                                    string _phrase122;
                                     if (!Phrases.Dict.TryGetValue(122, out _phrase122))
                                     {
-                                        Log.Out("[SERVERTOOLS] Phrase 122 not found using default.");
+                                        _phrase122 = "{PlayerName} is already a officer.";
                                     }
                                     _phrase122 = _phrase122.Replace("{PlayerName}", _playerName);
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase122, CustomCommands.ChatColor), "Server", false, "", false));
@@ -491,10 +491,10 @@ namespace ServerTools
                                 else
                                 {
                                     PromoteMember(_playertoPromote, _clan);
-                                    string _phrase123 = "{PlayerName} has been promoted to an officer.";
+                                    string _phrase123;
                                     if (!Phrases.Dict.TryGetValue(123, out _phrase123))
                                     {
-                                        Log.Out("[SERVERTOOLS] Phrase 123 not found using default.");
+                                        _phrase123 = "{PlayerName} has been promoted to an officer.";
                                     }
                                     _phrase123 = _phrase123.Replace("{PlayerName}", _playerName);
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase123, CustomCommands.ChatColor), "Server", false, "", false));
@@ -510,10 +510,10 @@ namespace ServerTools
         {
             if (!ClanData.OwnersList.Contains(_cInfo.playerId))
             {
-                string _phrase107 = "{PlayerName} you do not have permissions to use this command.";
+                string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 107 not found using default.");
+                    _phrase107 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase107, CustomCommands.ChatColor), "Server", false, "", false));
@@ -523,10 +523,10 @@ namespace ServerTools
                 ClientInfo _membertoDemote = ConsoleHelper.ParseParamIdOrName(_playerName);
                 if (_membertoDemote == null)
                 {
-                    string _phrase108 = "{PlayerName} the name {TargetPlayerName} was not found.";
+                    string _phrase108;
                     if (!Phrases.Dict.TryGetValue(108, out _phrase108))
                     {
-                        Log.Out("[SERVERTOOLS] Phrase 108 not found using default.");
+                        _phrase108 = "{PlayerName} the name {TargetPlayerName} was not found.";
                     }
                     _phrase108 = _phrase108.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase108 = _phrase108.Replace("{TargetPlayerName}", _playerName);
@@ -538,10 +538,10 @@ namespace ServerTools
                     string _clan1 = null;
                     if (!ClanData.Pdict.TryGetValue(_membertoDemote.playerId, out _clan) || !ClanData.Pdict.TryGetValue(_cInfo.playerId, out _clan1))
                     {
-                        string _phrase117 = "{PlayerName} is not a member of your clan.";
+                        string _phrase117;
                         if (!Phrases.Dict.TryGetValue(117, out _phrase117))
                         {
-                            Log.Out("[SERVERTOOLS] Phrase 117 not found using default.");
+                            _phrase117 = "{PlayerName} is not a member of your clan.";
                         }
                         _phrase117 = _phrase117.Replace("{PlayerName}", _playerName);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase117, CustomCommands.ChatColor), "Server", false, "", false));
@@ -550,10 +550,10 @@ namespace ServerTools
                     {
                         if (_clan1 != _clan)
                         {
-                            string _phrase117 = "{PlayerName} is not a member of your clan.";
+                            string _phrase117;
                             if (!Phrases.Dict.TryGetValue(117, out _phrase117))
                             {
-                                Log.Out("[SERVERTOOLS] Phrase 117 not found using default.");
+                                _phrase117 = "{PlayerName} is not a member of your clan.";
                             }
                             _phrase117 = _phrase117.Replace("{PlayerName}", _playerName);
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase117, CustomCommands.ChatColor), "Server", false, "", false));
@@ -562,10 +562,10 @@ namespace ServerTools
                         {
                             if (!ClanData.OfficersList.Contains(_membertoDemote.playerId))
                             {
-                                string _phrase124 = "{PlayerName} is not an officer.";
+                                string _phrase124;
                                 if (!Phrases.Dict.TryGetValue(124, out _phrase124))
                                 {
-                                    Log.Out("[SERVERTOOLS] Phrase 124 not found using default.");
+                                    _phrase124 = "{PlayerName} is not an officer.";
                                 }
                                 _phrase124 = _phrase124.Replace("{PlayerName}", _playerName);
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase124, CustomCommands.ChatColor), "Server", false, "", false));
@@ -573,10 +573,10 @@ namespace ServerTools
                             else
                             {
                                 ClanData.DemoteMember(_membertoDemote.playerId);
-                                string _phrase125 = "{PlayerName} has been demoted.";
+                                string _phrase125;
                                 if (!Phrases.Dict.TryGetValue(125, out _phrase125))
                                 {
-                                    Log.Out("[SERVERTOOLS] Phrase 125 not found using default.");
+                                    _phrase125 = "{PlayerName} has been demoted.";
                                 }
                                 _phrase125 = _phrase125.Replace("{PlayerName}", _playerName);
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase125, CustomCommands.ChatColor), "Server", false, "", false));
@@ -591,10 +591,10 @@ namespace ServerTools
         {
             if (ClanData.OwnersList.Contains(_cInfo.playerId))
             {
-                string _phrase126 = "{PlayerName} you can not leave the clan because you are the owner. You can only delete the clan.";
+                string _phrase126;
                 if (!Phrases.Dict.TryGetValue(126, out _phrase126))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 126 not found using default.");
+                    _phrase126 = "{PlayerName} you can not leave the clan because you are the owner. You can only delete the clan.";
                 }
                 _phrase126 = _phrase126.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase126, CustomCommands.ChatColor), "Server", false, "", false));
@@ -603,10 +603,10 @@ namespace ServerTools
             {
                 if (!ClanData.PlayersList.Contains(_cInfo.playerId))
                 {
-                    string _phrase127 = "{PlayerName} you do not belong to any clans.";
+                    string _phrase127;
                     if (!Phrases.Dict.TryGetValue(127, out _phrase127))
                     {
-                        Log.Out("[SERVERTOOLS] Phrase 127 not found using default.");
+                        _phrase127 = "{PlayerName} you do not belong to any clans.";
                     }
                     _phrase127 = _phrase127.Replace("{PlayerName}", _cInfo.playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase127, CustomCommands.ChatColor), "Server", false, "", false));
@@ -616,10 +616,10 @@ namespace ServerTools
                     string _clanName = null;
                     if (!ClanData.Pdict.TryGetValue(_cInfo.playerId, out _clanName))
                     {
-                        string _phrase127 = "{PlayerName} you do not belong to any clans.";
+                        string _phrase127;
                         if (!Phrases.Dict.TryGetValue(127, out _phrase127))
                         {
-                            Log.Out("[SERVERTOOLS] Phrase 127 not found using default.");
+                            _phrase127 = "{PlayerName} you do not belong to any clans.";
                         }
                         _phrase127 = _phrase127.Replace("{PlayerName}", _cInfo.playerName);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase127, CustomCommands.ChatColor), "Server", false, "", false));
@@ -627,10 +627,10 @@ namespace ServerTools
                     else
                     {
                         ClanData.RemoveMember(_cInfo.playerId);
-                        string _phrase121 = "{PlayerName} you have been removed from the clan {ClanName}.";
+                        string _phrase121;
                         if (!Phrases.Dict.TryGetValue(121, out _phrase121))
                         {
-                            Log.Out("[SERVERTOOLS] Phrase 121 not found using default.");
+                            _phrase121 = "{PlayerName} you have been removed from the clan {ClanName}.";
                         }
                         _phrase121 = _phrase121.Replace("{PlayerName}", _cInfo.playerName);
                         _phrase121 = _phrase121.Replace("{ClanName}", _clanName);

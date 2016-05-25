@@ -29,7 +29,7 @@ namespace ServerTools
                 return;
             }
             SdtdConsole.Instance.Output(string.Format("Max ping limit set to {0}", HighPingKicker.MAXPING));
-            Config.UpdateConfig();
+            Config.UpdateXml();
         }
     }
 }

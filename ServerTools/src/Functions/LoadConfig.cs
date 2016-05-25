@@ -13,15 +13,15 @@ namespace ServerTools
 
         public static void Load()
         {
-            LoadConfig();
+            LoadXml();
             InitFileWatcher();
         }
 
-        private static void LoadConfig()
+        private static void LoadXml()
         {
             if (!Utils.FileExists(configFilePath))
             {
-                UpdateConfig();
+                UpdateXml();
                 return;
             }
             XmlDocument xmlDoc = new XmlDocument();
@@ -372,7 +372,19 @@ namespace ServerTools
                                 }
                                 if (Motd.IsEnabled)
                                 {
-                                    Motd._message = _line.GetAttribute("Message");
+                                    Motd.Message = _line.GetAttribute("Message");
+                                }
+                                break;
+                            case "ReservedSlots":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ReservedSlots.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
                                 }
                                 break;
                             case "SetHome":
@@ -415,14 +427,14 @@ namespace ServerTools
             }
             if (UpdateConfigs)
             {
-                UpdateConfig();
+                UpdateXml();
             }
             Phrases.Load();
             Mods.Load();
             UpdateConfigs = true;
         }
 
-        public static void UpdateConfig()
+        public static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(configFilePath))
@@ -447,7 +459,8 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"InfoTicker\" Enable=\"{0}\" DelayBetweenMessages=\"{1}\" />", InfoTicker.IsEnabled, InfoTicker.DelayBetweenMessages));
                 sw.WriteLine(string.Format("        <Tool Name=\"InvalidItemKicker\" Enable=\"{0}\" Ban=\"{1}\" />", InventoryCheck.IsEnabled, InventoryCheck.BanPlayer));
                 sw.WriteLine(string.Format("        <Tool Name=\"Killme\" Enable=\"{0}\" DelayBetweenKillmeUses=\"{1}\" />", KillMe.IsEnabled, KillMe.DelayBetweenUses));
-                sw.WriteLine(string.Format("        <Tool Name=\"Motd\" Enable=\"{0}\" Message=\"{1}\" />", Motd.IsEnabled, Motd._message));
+                sw.WriteLine(string.Format("        <Tool Name=\"Motd\" Enable=\"{0}\" Message=\"{1}\" />", Motd.IsEnabled, Motd.Message));
+                sw.WriteLine(string.Format("        <Tool Name=\"ReservedSlots\" Enable=\"{0}\" />", ReservedSlots.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"SetHome\" Enable=\"{0}\" DelayBetweenSetHomeUses=\"{1}\" />", TeleportHome.IsEnabled, TeleportHome.DelayBetweenUses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Watchlist\" Enable=\"{0}\" />", Watchlist.IsEnabled));
                 sw.WriteLine("    </Tools>");
@@ -470,9 +483,9 @@ namespace ServerTools
         {
             if (!Utils.FileExists(configFilePath))
             {
-                UpdateConfig();
+                UpdateXml();
             }
-            LoadConfig();
+            LoadXml();
         }
     }
 }

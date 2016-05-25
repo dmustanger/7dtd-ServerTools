@@ -113,35 +113,35 @@ namespace ServerTools
                     Log.Out(string.Format("[SERVERTOOLS] Entity Class Name is: {0}", _name));
                 }  
             }
-            string _phrase300 = "Server FPS: {Fps}";
-            string _phrase301 = "Next 7th day is in {DaysUntil7} days";
-            string _phrase302 = "Total Players:{Players} Total Zombies:{Zombies} Total Animals:{Animals}";
-            string _phrase303 = "Feral Zombies:{Ferals} Cops:{Cops} Dogs:{Dogs} Bees:{Bees} Screamers:{Screamers}";
-            string _phrase304 = "Bears:{Bears} Stags:{Stags} Pigs:{Pigs} Rabbits:{Rabbits} Chickens:{Chickens}";
-            string _phrase305 = "Total Supply Crates:{SupplyCrates} Total Mini Bikes:{MiniBikes}";
+            string _phrase300;
+            string _phrase301;
+            string _phrase302;
+            string _phrase303;
+            string _phrase304;
+            string _phrase305;
             if (!Phrases.Dict.TryGetValue(300, out _phrase300))
             {
-                Log.Out("[SERVERTOOLS] Phrase 300 not found using default.");
+                _phrase300 = "Server FPS: {Fps}";
             }
             if (!Phrases.Dict.TryGetValue(301, out _phrase301))
             {
-                Log.Out("[SERVERTOOLS] Phrase 301 not found using default.");
+                _phrase301 = "Next 7th day is in {DaysUntil7} days";
             }
             if (!Phrases.Dict.TryGetValue(302, out _phrase302))
             {
-                Log.Out("[SERVERTOOLS] Phrase 302 not found using default.");
+                _phrase302 = "Total Players:{Players} Total Zombies:{Zombies} Total Animals:{Animals}";
             }
             if (!Phrases.Dict.TryGetValue(303, out _phrase303))
             {
-                Log.Out("[SERVERTOOLS] Phrase 303 not found using default.");
+                _phrase303 = "Feral Zombies:{Ferals} Cops:{Cops} Dogs:{Dogs} Bees:{Bees} Screamers:{Screamers}";
             }
             if (!Phrases.Dict.TryGetValue(304, out _phrase304))
             {
-                Log.Out("[SERVERTOOLS] Phrase 304 not found using default.");
+                _phrase304 = "Bears:{Bears} Stags:{Stags} Pigs:{Pigs} Rabbits:{Rabbits} Chickens:{Chickens}";
             }
             if (!Phrases.Dict.TryGetValue(305, out _phrase305))
             {
-                Log.Out("[SERVERTOOLS] Phrase 305 not found using default.");
+                _phrase305 = "Total Supply Crates:{SupplyCrates} Total Mini Bikes:{MiniBikes}";
             }
             _phrase300 = _phrase300.Replace("{Fps}", _fps);
             _phrase301 = _phrase301.Replace("{DaysUntil7}", _daysUntil7.ToString());

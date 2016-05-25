@@ -14,8 +14,8 @@ namespace ServerTools
         public static int DelayBetweenUses = 60;
         private const string file = "GimmeItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static string _datafile = "GimmeData.xml";
-        private static string _datafilepath = string.Format("{0}/{1}", API.DataPath, _datafile);
+        private static string datafile = "GimmeData.xml";
+        private static string datafilepath = string.Format("{0}/{1}", API.DataPath, datafile);
         private static SortedDictionary<string, int[]> dict = new SortedDictionary<string, int[]>();
         private static SortedDictionary<string, DateTime> dict1 = new SortedDictionary<string, DateTime>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
@@ -35,8 +35,8 @@ namespace ServerTools
         {
             if (IsEnabled && !IsRunning)
             {
-                LoadGimmeItems();
-                LoadPlayers();
+                LoadXml();
+                LoadData();
                 InitFileWatcher();
             }
         }
@@ -47,7 +47,7 @@ namespace ServerTools
             IsRunning = false;
         }
 
-        private static void LoadGimmeItems()
+        private static void LoadXml()
         {
             if (!Utils.FileExists(filePath))
             {
@@ -63,8 +63,8 @@ namespace ServerTools
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            XmlNode _configXml = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _configXml.ChildNodes)
+            XmlNode _XmlNode = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
                 if (childNode.Name == "items")
                 {
@@ -188,7 +188,7 @@ namespace ServerTools
             {
                 UpdateXml();
             }
-            LoadGimmeItems();
+            LoadXml();
         }
 
         public static void Checkplayer(ClientInfo _cInfo, bool _announce, string _playerName)
@@ -218,10 +218,10 @@ namespace ServerTools
                         else
                         {
                             int _timeleft = DelayBetweenUses - _timepassed;
-                            string _phrase6 = "{PlayerName} you can only use /gimme once every {DelayBetweenUses} minutes.Time remaining: {TimeRemaining} minutes.";
+                            string _phrase6;
                             if (!Phrases.Dict.TryGetValue(6, out _phrase6))
                             {
-                                Log.Out("[SERVERTOOLS] Phrase 6 not found using default.");
+                                _phrase6 = "{PlayerName} you can only use /gimme once every {DelayBetweenUses} minutes.Time remaining: {TimeRemaining} minutes.";
                             }
                             _phrase6 = _phrase6.Replace("{PlayerName}", _playerName);
                             _phrase6 = _phrase6.Replace("{DelayBetweenUses}", DelayBetweenUses.ToString());
@@ -244,14 +244,14 @@ namespace ServerTools
         {
             string _randomItem = list.RandomObject();
             ItemValue _itemValue = new ItemValue();
-            if (GameItems._gameItems.ContainsKey(_randomItem))
+            if (GameItems.Dict.ContainsKey(_randomItem))
             {
-                _itemValue = GameItems._gameItems[_randomItem].Clone();
+                _itemValue = GameItems.Dict[_randomItem].Clone();
             }
             else
             {
                 _randomItem = _randomItem.ToLower();
-                foreach (KeyValuePair<string, ItemValue> _key in GameItems._gameItems)
+                foreach (KeyValuePair<string, ItemValue> _key in GameItems.Dict)
                 {
                     if (_key.Key.ToLower().Equals(_randomItem))
                     {
@@ -271,10 +271,10 @@ namespace ServerTools
                 int _count = random.Next(_counts[0], _counts[1]);
                 ItemStack _itemDrop = new ItemStack(_itemValue, _count);
                 GameManager.Instance.ItemDropServer(_itemDrop, _player.GetPosition(), Vector3.zero, -1, 60);
-                string _phrase7 = "{PlayerName} has received {ItemCount} {ItemName}.";
+                string _phrase7;
                 if (!Phrases.Dict.TryGetValue(7, out _phrase7))
                 {
-                    Log.Out("[SERVERTOOLS] Phrase 7 not found using default.");
+                    _phrase7 = "{PlayerName} has received {ItemCount} {ItemName}.";
                 }
                 _phrase7 = _phrase7.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase7 = _phrase7.Replace("{ItemCount}", _count.ToString());
@@ -292,13 +292,13 @@ namespace ServerTools
                     dict1.Remove(_cInfo.playerId);
                 }
                 dict1.Add(_cInfo.playerId, DateTime.Now);
-                UpdatePlayerXml();
+                UpdateData();
             }
         }
 
-        private static void UpdatePlayerXml()
+        private static void UpdateData()
         {
-            using (StreamWriter swp = new StreamWriter(_datafilepath))
+            using (StreamWriter swp = new StreamWriter(datafilepath))
             {
                 swp.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 swp.WriteLine("<Gimme>");
@@ -328,24 +328,24 @@ namespace ServerTools
             }
         }
 
-        private static void LoadPlayers()
+        private static void LoadData()
         {
-            if (!Utils.FileExists(_datafilepath))
+            if (!Utils.FileExists(datafilepath))
             {
                 return;
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(_datafilepath);
+                xmlDoc.Load(datafilepath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", _datafile, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", datafile, e.Message));
                 return;
             }
-            XmlNode _GimmeXml = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _GimmeXml.ChildNodes)
+            XmlNode _XmlNode = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
                 if (childNode.Name == "players")
                 {

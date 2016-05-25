@@ -23,7 +23,7 @@ namespace ServerTools
 
         public static void Load()
         {
-            LoadMessages();
+            LoadXml();
             InitFileWatcher();
             Start();
             IsRunning = true;
@@ -36,7 +36,7 @@ namespace ServerTools
             IsRunning = false;
         }
 
-        private static void LoadMessages()
+        private static void LoadXml()
         {
             if (!Utils.FileExists(filePath))
             {
@@ -52,8 +52,8 @@ namespace ServerTools
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            XmlNode _configXml = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _configXml.ChildNodes)
+            XmlNode _XmlNode = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
                 if (childNode.Name == "Messages")
                 {
@@ -141,7 +141,7 @@ namespace ServerTools
             {
                 UpdateXml();
             }
-            LoadMessages();
+            LoadXml();
         }
 
         private static void Start()

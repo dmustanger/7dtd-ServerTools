@@ -1,4 +1,5 @@
 ﻿v3.3
+Added Reserved Slots to the mod. Will kick the player with the least amount of crafted items.
 Added Watchlist to the mod. Will alert online admins when the watchlisted player is online. 
 (Console Commads Usage: watchlist add <steamID> <reason>, watchlist remove <steamID>, watchlist list)
 Fixed Motd not showing the correct player name

@@ -13,15 +13,15 @@ namespace ServerTools
 
         public static void Load()
         {
-            LoadPhrases();
+            LoadXml();
             InitFileWatcher();
         }
 
-        private static void LoadPhrases()
+        private static void LoadXml()
         {
             if (!Utils.FileExists(filePath))
             {
-                UpdatePhrases();
+                UpdateXml();
                 return;
             }
             XmlDocument xmlDoc = new XmlDocument();
@@ -34,8 +34,8 @@ namespace ServerTools
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
-            XmlNode _configXml = xmlDoc.DocumentElement;
-            foreach (XmlNode childNode in _configXml.ChildNodes)
+            XmlNode _XmlNode = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
                 if (childNode.Name == "Phrases")
                 {
@@ -77,11 +77,11 @@ namespace ServerTools
             }
             if (Config.UpdateConfigs)
             {
-                UpdatePhrases();
+                UpdateXml();
             }
         }
 
-        public static void UpdatePhrases()
+        public static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath))
@@ -197,7 +197,7 @@ namespace ServerTools
                 string _phrase20;
                 if (!Dict.TryGetValue(20, out _phrase20))
                 {
-                    _phrase20 = "{PlayerName} this slot is reserved.";
+                    _phrase20 = "Sorry {PlayerName} this slot is reserved.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"20\" Phrase=\"{0}\" />", _phrase20));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -484,9 +484,9 @@ namespace ServerTools
         {
             if (!Utils.FileExists(filePath))
             {
-                UpdatePhrases();
+                UpdateXml();
             }
-            LoadPhrases();
+            LoadXml();
         }
     }
 }

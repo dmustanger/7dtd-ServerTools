@@ -1297,10 +1297,10 @@ namespace ServerTools
                         string _name = ItemClass.list[_itemValue.type].GetItemName();
                         if (AnounceInvalidStack && _count > _maxAllowed)
                         {
-                            string _phrase3 = "{PlayerName} you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
+                            string _phrase3;
                             if (!Phrases.Dict.TryGetValue(3, out _phrase3))
                             {
-                                Log.Out("[SERVERTOOLS] Phrase 3 not found using default.");
+                                _phrase3 = "{PlayerName} you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
                             }
                             _phrase3 = _phrase3.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase3 = _phrase3.Replace("{ItemName}", _name);
@@ -1313,10 +1313,10 @@ namespace ServerTools
                         {
                             if (BanPlayer)
                             {
-                                string _phrase4 = "Cheat Detected: Auto banned {PlayerName} for having a invalid item: {ItemName}.";
+                                string _phrase4;
                                 if (!Phrases.Dict.TryGetValue(4, out _phrase4))
                                 {
-                                    Log.Out("[SERVERTOOLS] Phrase 4 not found using default.");
+                                    _phrase4 = "Cheat Detected: Auto banned {PlayerName} for having a invalid item: {ItemName}.";
                                 }
                                 _phrase4 = _phrase4.Replace("{PlayerName}", _cInfo.playerName);
                                 _phrase4 = _phrase4.Replace("{ItemName}", _name);
@@ -1325,10 +1325,10 @@ namespace ServerTools
                             }
                             else
                             {
-                                string _phrase5 = "Cheat Detected: Auto kicked {PlayerName} for having a invalid item: {ItemName}.";
+                                string _phrase5;
                                 if (!Phrases.Dict.TryGetValue(5, out _phrase5))
                                 {
-                                    Log.Out("[SERVERTOOLS] Phrase 5 not found using default.");
+                                    _phrase5 = "Cheat Detected: Auto kicked {PlayerName} for having a invalid item: {ItemName}.";
                                 }
                                 _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
                                 _phrase5 = _phrase5.Replace("{ItemName}", _name);
@@ -1352,10 +1352,10 @@ namespace ServerTools
                         string _name = ItemClass.list[_itemValue.type].GetItemName();
                         if (AnounceInvalidStack && _count > _maxAllowed)
                         {
-                            string _phrase3 = "{PlayerName} you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
+                            string _phrase3;
                             if (!Phrases.Dict.TryGetValue(3, out _phrase3))
                             {
-                                Log.Out("[SERVERTOOLS] Phrase 3 not found using default.");
+                                _phrase3 = "{PlayerName} you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
                             }
                             _phrase3 = _phrase3.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase3 = _phrase3.Replace("{ItemName}", _name);
@@ -1368,10 +1368,10 @@ namespace ServerTools
                         {
                             if (BanPlayer)
                             {
-                                string _phrase4 = "Cheat Detected: Auto banned {PlayerName} for having a invalid item: {ItemName}.";
+                                string _phrase4;
                                 if (!Phrases.Dict.TryGetValue(4, out _phrase4))
                                 {
-                                    Log.Out("[SERVERTOOLS] Phrase 4 not found using default.");
+                                    _phrase4 = "Cheat Detected: Auto banned {PlayerName} for having a invalid item: {ItemName}.";
                                 }
                                 _phrase4 = _phrase4.Replace("{PlayerName}", _cInfo.playerName);
                                 _phrase4 = _phrase4.Replace("{ItemName}", _name);
@@ -1380,10 +1380,10 @@ namespace ServerTools
                             }
                             else
                             {
-                                string _phrase5 = "Cheat Detected: Auto kicked {PlayerName} for having a invalid item: {ItemName}.";
+                                string _phrase5;
                                 if (!Phrases.Dict.TryGetValue(5, out _phrase5))
                                 {
-                                    Log.Out("[SERVERTOOLS] Phrase 5 not found using default.");
+                                    _phrase5 = "Cheat Detected: Auto kicked {PlayerName} for having a invalid item: {ItemName}.";
                                 }
                                 _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
                                 _phrase5 = _phrase5.Replace("{ItemName}", _name);
