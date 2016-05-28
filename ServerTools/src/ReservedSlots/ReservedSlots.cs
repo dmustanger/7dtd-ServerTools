@@ -147,17 +147,30 @@ namespace ServerTools
                 { 
                     ClientInfo _playerToKick = null;
                     uint _itemsCrafted = 1999999999;
+                    float _distanceWalked = 9999999999.0f;
                     List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                     foreach (ClientInfo _cInfo1 in _cInfoList)
                     {
-                        if (_cInfo.playerId != _cInfo1.playerId)
+                        if (_cInfo.playerId != _cInfo1.playerId && !GameManager.Instance.adminTools.IsAdmin(_cInfo1.playerId))
                         {
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
                             uint _totalItemsCrafted = _player.totalItemsCrafted;
-                            if (_totalItemsCrafted < _itemsCrafted)
+                            if (_totalItemsCrafted <= _itemsCrafted)
                             {
-                                _itemsCrafted = _totalItemsCrafted;
-                                _playerToKick = _cInfo1;
+                                if (_totalItemsCrafted == _itemsCrafted)
+                                {
+                                    float _totalDistanceWalked = _player.distanceWalked;
+                                    if (_totalDistanceWalked < _distanceWalked)
+                                    {
+                                        _distanceWalked = _totalDistanceWalked;
+                                        _playerToKick = _cInfo1;
+                                    }
+                                }
+                                else
+                                {
+                                    _itemsCrafted = _totalItemsCrafted;
+                                    _playerToKick = _cInfo1;
+                                }
                             }
                         }  
                     }
