@@ -29,11 +29,11 @@ namespace ServerTools
             foreach (Entity _e in _entities)
             {
                 string _name = EntityClass.list[_e.entityClass].entityClassName;
-                if (_name == "playerMale" || _name == "playerFemale" || _name == "item" || _name == "fallingBlock")
+                if (_name == "playerMale" || _name == "playerFemale" || _name == "item" || _name == "fallingBlock" || _name == "Backpack")
                 {
                     continue;
                 }
-                else if (_name == "zombieMarlene" || _name == "zombieDarlene" || _name == "zombieArlene" || _name == "zombieBoe" || _name == "zombieYo" || _name == "zombieSteveCrawler" || _name == "zombieNurse" || _name == "zombieMoe" || _name == "zombieJoe" || _name == "burntzombie" || _name == "spiderzombie" || _name == "snowzombie" || _name == "zombieSteve")
+                else if (_name == "zombieMarlene" || _name == "zombieDarlene" || _name == "zombieArlene" || _name == "zombieBoe" || _name == "zombieYo" || _name == "zombieSteveCrawler" || _name == "zombieNurse" || _name == "zombieMoe" || _name == "zombieJoe" || _name == "burntzombie" || _name == "spiderzombie" || _name == "snowzombie" || _name == "zombieSteve" || _name == "ZombieStripper" || _name == "ZombieFarmer" || _name == "ZombieBiker")
                 {
                     _zombies = _zombies + 1;
                     continue;
