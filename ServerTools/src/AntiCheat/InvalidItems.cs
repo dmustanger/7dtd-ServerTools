@@ -875,7 +875,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"gravelWedgeTip\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"barnWoodWedgeTip\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"asphaltWedgeTip\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"woodWedgeTip\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"brickMetalWedgeTip\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"barnMetalRoofRamp\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"barnWoodRoofRamp\" />"));
