@@ -288,7 +288,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"adobeWhitePyramid\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntTrash_can01\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntBin\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"cntSuitcase\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntStorageChest\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntTrashPile01\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntTrashPile02\" />"));
@@ -548,7 +547,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"cremeDrywallBaseboard2SidesBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"scrapIronBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"rScrapIronBlock\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"cntBookcase\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"plantedCoffee1\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"plantedCoffee2\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"plantedCoffee3Harvest\" />"));
@@ -1217,7 +1215,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"greenRustyMetalWall02Sheet2\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"greenRustyMetalWall03Sheet2\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"greenRustyMetalWallBlock\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"woodStairsBoard\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"brickCNRRound\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"awningRedCNRRound\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"awningTanCNRRound\" />"));
