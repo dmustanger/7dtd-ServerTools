@@ -649,7 +649,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"water\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"asphaltShingleCNRInside\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"brickModernGable\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"woodHalf\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"tanStuccoBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"tanStuccoPlasterBaseboardBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"woodStairs50\" />"));
