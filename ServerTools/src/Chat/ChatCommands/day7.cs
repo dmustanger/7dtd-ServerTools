@@ -29,7 +29,7 @@ namespace ServerTools
             foreach (Entity _e in _entities)
             {
                 string _name = EntityClass.list[_e.entityClass].entityClassName;
-                if (_name == "playerMale" || _name == "playerFemale" || _name == "item" || _name == "fallingBlock" || _name == "Backpack")
+                if (_name == "playerMale" || _name == "playerFemale" || _name == "item" || _name == "fallingBlock" || _name == "Backpack" || _name == "traderBob") 
                 {
                     continue;
                 }
