@@ -412,7 +412,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"storeShelving01TopDouble\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cinderBlocks03\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntBirdnest\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"cntMunitionsBox\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"treeJuniper6m\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"treeMountainPine8m\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"treeMountainPine13m\" />"));
@@ -591,7 +590,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"water\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"asphaltShingleCNRInside\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"brickModernGable\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"woodHalf\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"tanStuccoBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"tanStuccoPlasterBaseboardBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"woodStairs50\" />"));

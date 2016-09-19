@@ -33,7 +33,7 @@ namespace ServerTools
                 {
                     continue;
                 }
-                else if (_name == "zombieMarlene" || _name == "zombieDarlene" || _name == "zombieArlene" || _name == "zombieBoe" || _name == "zombieYo" || _name == "zombieSteveCrawler" || _name == "zombieNurse" || _name == "zombieMoe" || _name == "zombieJoe" || _name == "burntzombie" || _name == "spiderzombie" || _name == "snowzombie" || _name == "zombieSteve" || _name == "ZombieStripper" || _name == "ZombieFarmer" || _name == "ZombieBiker" || _name == "ZombieFemaleUMA" || _name == "ZombieFemaleFatUMA" || _name == "ZombieMaleUMA" || _name == "zombieMaleHazmat" || _name == "ZombieCheerleader" || _name == "ZombieSoldier" || _name == "ZombieSkateboarder" || _name == "zombieFemaleHazmat" || _name == "ZombieMiner") 
+                else if (_name == "zombieMarlene" || _name == "zombieDarlene" || _name == "zombieArlene" || _name == "zombieBoe" || _name == "zombieYo" || _name == "zombieSteveCrawler" || _name == "zombieNurse" || _name == "zombieMoe" || _name == "zombieJoe" || _name == "burntzombie" || _name == "spiderzombie" || _name == "snowzombie" || _name == "zombieSteve" || _name == "ZombieStripper" || _name == "ZombieFarmer" || _name == "ZombieBiker" || _name == "ZombieFemaleUMA" || _name == "ZombieFemaleFatUMA" || _name == "ZombieMaleUMA" || _name == "zombieMaleHazmat" || _name == "ZombieCheerleader" || _name == "ZombieSoldier" || _name == "ZombieSkateboarder" || _name == "zombieFemaleHazmat" || _name == "ZombieMiner" || _name == "ZombieUtilityWorker" || _name == "ZombieFootballPlayer") 
                 {
                     _zombies = _zombies + 1;
                     continue;
