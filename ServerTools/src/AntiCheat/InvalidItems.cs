@@ -218,7 +218,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"pouredConcreteRamp\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"rConcreteRamp\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"rConcreteCNRFull\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"concreteSupport\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"pouredConcretePillar100\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"pouredConcreteCTRPlate\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"rConcreteCNRInside\" />"));
