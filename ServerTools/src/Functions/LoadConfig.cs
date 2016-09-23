@@ -22,6 +22,7 @@ namespace ServerTools
             if (!Utils.FileExists(configFilePath))
             {
                 UpdateXml();
+                Phrases.Load();
                 return;
             }
             XmlDocument xmlDoc = new XmlDocument();
