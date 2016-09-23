@@ -206,6 +206,10 @@
                     {
                         if (ClanManager.IsEnabled)
                         {
+                            if (_message == "clancommands")
+                            {
+                                ClanManager.GetChatCommands(_cInfo);
+                            }
                             if (_message.StartsWith("clanadd "))
                             {
                                 _message = _message.Replace("clanadd ", "");

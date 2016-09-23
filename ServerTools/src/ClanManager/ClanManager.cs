@@ -644,7 +644,7 @@ namespace ServerTools
         {
         }
 
-        private static void GetChatCommands(ClientInfo _cInfo)
+        public static void GetChatCommands(ClientInfo _cInfo)
         {
             string _commands = string.Format("{0}Clan commands are:", CustomCommands.ChatColor); ;
             if (!ClanData.OwnersList.Contains(_cInfo.playerId) && !ClanData.OfficersList.Contains(_cInfo.playerId) && !ClanData.PlayersList.Contains(_cInfo.playerId) && !ClanData.InvitesList.Contains(_cInfo.playerId))
