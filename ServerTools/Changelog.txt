@@ -1,5 +1,6 @@
 ﻿v3.4
 Fixed /clancommands not showing the clan commands
+Fixed ServerToolsPhrases.xml not creating on fresh installs
 
 v3.3
 Added Reserved Slots to the mod. Will kick the player with the least amount of crafted items.
