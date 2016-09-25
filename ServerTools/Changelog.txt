@@ -1,4 +1,7 @@
-﻿v3.4
+﻿v3.5
+Fixed /clancommands not working still
+
+v3.4
 Fixed /clancommands not showing the clan commands
 Fixed ServerToolsPhrases.xml not creating on fresh installs
 

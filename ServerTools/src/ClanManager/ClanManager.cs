@@ -6,7 +6,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
 
-        private static void CheckforClantag(ClientInfo _cInfo)
+        public static void CheckforClantag(ClientInfo _cInfo)
         {
             string _pName = _cInfo.playerName.ToLower();
             foreach (string _clan in ClanData.ClansList)

@@ -230,7 +230,7 @@ namespace ServerTools
                 string _phrase104;
                 if (!Dict.TryGetValue(104, out _phrase104))
                 {
-                    _phrase104 = "{PlayerName} you have add the clan {ClanName}.";
+                    _phrase104 = "{PlayerName} you have added the clan {ClanName}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"104\" Phrase=\"{0}\" />", _phrase104));
                 string _phrase105;

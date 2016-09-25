@@ -202,7 +202,7 @@
                         }
                         return false;
                     }
-                    if (_message.StartsWith("clanadd ") || _message == "clandel" || _message.StartsWith("claninvite ") || _message == "clanaccept" || _message == "clandecline" || _message.StartsWith("clanremove ") || _message.StartsWith("clanpromote ") || _message.StartsWith("clandemote ") || _message.StartsWith("clan ") || _message.StartsWith("c "))
+                    if (_message.StartsWith("clanadd ") || _message == "clandel" || _message.StartsWith("claninvite ") || _message == "clanaccept" || _message == "clandecline" || _message.StartsWith("clanremove ") || _message.StartsWith("clanpromote ") || _message.StartsWith("clandemote ") || _message.StartsWith("clan ") || _message.StartsWith("c ") || _message == "clancommands")
                     {
                         if (ClanManager.IsEnabled)
                         {

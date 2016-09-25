@@ -54,6 +54,10 @@ namespace ServerTools
             {
                 Motd.Send(_cInfo);
             }
+            if (ClanManager.IsEnabled)
+            {
+                ClanManager.CheckforClantag(_cInfo);
+            }
         }
 
         public override bool ChatMessage(ClientInfo _cInfo, EnumGameMessages _type, string _message, string _playerName, bool _localizeMain, string _secondaryName, bool _localizeSecondary)

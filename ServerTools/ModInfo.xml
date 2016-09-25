@@ -4,7 +4,7 @@
     <Name value="Server Tools" />
     <Description value="Server tools for dedicated servers" />
     <Author value="Dmustanger" />
-    <Version value="3.4" />
+    <Version value="3.5" />
     <Website value="https://github.com/dmustanger/7dtd-ServerTools" />
   </ModInfo>
 </xml>

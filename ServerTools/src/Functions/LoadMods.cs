@@ -22,7 +22,11 @@
             }
             if (ClanManager.IsEnabled)
             {
-                ClanData.Init();
+                ClanData.Load();
+            }
+            if (!ClanManager.IsEnabled)
+            {
+                ClanData.Unload();
             }
             if (CustomCommands.IsRunning && !CustomCommands.IsEnabled)
             {

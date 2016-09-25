@@ -44,7 +44,7 @@ namespace ServerTools
             get { return new List<string>(Idict.Keys); }
         }
 
-        public static void Init()
+        public static void Load()
         {
             if (ClanManager.IsEnabled)
             {
@@ -53,6 +53,14 @@ namespace ServerTools
                 LoadPlayerData();
                 LoadInviteData();
             }
+        }
+
+        public static void Unload()
+        {
+            Cdict.Clear();
+            odict.Clear();
+            Pdict.Clear();
+            Idict.Clear();
         }
 
         private static void LoadClanData()
