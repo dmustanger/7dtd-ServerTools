@@ -161,7 +161,7 @@ namespace ServerTools
                     sw.WriteLine("        <item item=\"canStock\" min=\"1\" max=\"5\" />");
                     sw.WriteLine("        <item item=\"canCatfood\" min=\"1\" max=\"5\" />");
                     sw.WriteLine("        <item item=\"scrapIron\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"goldenrod\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"goldenrodPlant\" min=\"1\" max=\"5\" />");
                     sw.WriteLine("        <item item=\"clayLump\" min=\"1\" max=\"5\" />");
                     sw.WriteLine("        <item item=\"rottingFlesh\" min=\"1\" max=\"5\" />");
                 }
