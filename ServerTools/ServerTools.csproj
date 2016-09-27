@@ -36,6 +36,7 @@
     <Compile Include="src\AutoSaveWorld\AutoSaveWorld.cs" />
     <Compile Include="src\Chat\AdminChatCommands\AdminChat.cs" />
     <Compile Include="src\Chat\AdminChatCommands\MutePlayer.cs" />
+    <Compile Include="src\Chat\AdminColors\AdminColors.cs" />
     <Compile Include="src\Chat\BadWordFilter.cs" />
     <Compile Include="src\Chat\ChatCommands\CustomCommands.cs" />
     <Compile Include="src\Chat\ChatCommands\day7.cs" />

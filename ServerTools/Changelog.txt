@@ -1,5 +1,6 @@
 ﻿v3.5
 Fixed /clancommands not working still
+Fixed gimme not dropping goldenrodPlant
 
 v3.4
 Fixed /clancommands not showing the clan commands
