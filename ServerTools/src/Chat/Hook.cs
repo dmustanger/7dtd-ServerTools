@@ -3,6 +3,9 @@
     public class ChatHook
     {
         public static bool ChatFlood = false;
+        public static bool AdminNameColoring = false;
+        public static string AdminColor = "[FF0000]";
+        public static string AdminPrefix = "(ADMIN)";
 
         public static bool Hook(ClientInfo _cInfo, string _message, string _playerName, string _secondaryName, bool _localizeSecondary)
         {
@@ -23,6 +26,12 @@
                 if (MutePlayer.Dict.ContainsKey(_cInfo.playerId))
                 {
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, "You are muted.", "Server", false, "", false));
+                    return false;
+                }
+                if (AdminNameColoring && !_message.StartsWith("/") && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
+                {
+                    _playerName = string.Format("{0}{1} {2}[-]", AdminColor, AdminPrefix, _playerName);
+                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                     return false;
                 }
                 if (Badwords.IsEnabled)

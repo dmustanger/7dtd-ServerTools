@@ -1,6 +1,8 @@
 ﻿v3.5
+Added admin prefixes and name coloring
 Fixed /clancommands not working still
-Fixed gimme not dropping goldenrodPlant
+Fixed default gimme item goldenrod not dropping goldenrodPlant
+Fixed Motd adding player name when {PlayerName} was not used
 
 v3.4
 Fixed /clancommands not showing the clan commands
