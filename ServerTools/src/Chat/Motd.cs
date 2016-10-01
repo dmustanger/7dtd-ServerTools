@@ -7,9 +7,17 @@
 
         public static void Send(ClientInfo _cInfo)
         {
-            Message = Message.Replace("{PlayerName}", _cInfo.playerName);
+            bool _replaceName = false;
+            if (Message.Contains("{PlayerName}"))
+            {
+                Message = Message.Replace("{PlayerName}", _cInfo.playerName);
+                _replaceName = true;
+            }
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, Message), "Server", false, "", false));
-            Message = Message.Replace(_cInfo.playerName, "{PlayerName}");
+            if (_replaceName)
+            {
+                Message = Message.Replace(_cInfo.playerName, "{PlayerName}");
+            }
         }
     }
 }
