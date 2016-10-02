@@ -469,7 +469,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"whiteSidingWoodPanelBurnt6\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"whiteSidingWoodPanelBurnt7\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntFileCabinet\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"cntCooler\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"schoolDesk\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntLockers\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"fountain\" />"));
@@ -997,7 +996,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"signShopToolStoreLargeLit\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"signShopToolStoreLargeWall\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"signShopToolStoreLargeWallLit\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"signShopColdBeer\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"candleTable\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"orangeDrywallBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"brickModernOrangeDrywallBlock\" />"));
@@ -1071,7 +1069,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"cntWallSafeInsecure\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntGunSafeInsecure\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"garageDoorMetal_v3\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"scrapIronLogSpike4\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"rScrapIronLogSpike5\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"chainLinkFenceBottomPole\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"chainLinkFenceTop\" />"));
