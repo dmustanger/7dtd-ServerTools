@@ -455,6 +455,12 @@ namespace ServerTools
                     _phrase305 = "Total Supply Crates:{SupplyCrates} Total Mini Bikes:{MiniBikes}";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"305\" Phrase=\"{0}\" />", _phrase305));
+                string _phrase306;
+                if (!Dict.TryGetValue(306, out _phrase306))
+                {
+                    _phrase306 = "Next 7th day is today";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"306\" Phrase=\"{0}\" />", _phrase306));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- *********************** Watchlist ********************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");

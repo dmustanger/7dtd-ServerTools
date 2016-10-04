@@ -119,6 +119,7 @@ namespace ServerTools
             string _phrase303;
             string _phrase304;
             string _phrase305;
+            string _phrase306;
             if (!Phrases.Dict.TryGetValue(300, out _phrase300))
             {
                 _phrase300 = "Server FPS: {Fps}";
@@ -143,6 +144,10 @@ namespace ServerTools
             {
                 _phrase305 = "Total Supply Crates:{SupplyCrates} Total Mini Bikes:{MiniBikes}";
             }
+            if (!Phrases.Dict.TryGetValue(306, out _phrase306))
+            {
+                _phrase306 = "Next 7th day is today";
+            }
             _phrase300 = _phrase300.Replace("{Fps}", _fps);
             _phrase301 = _phrase301.Replace("{DaysUntil7}", _daysUntil7.ToString());
             _phrase302 = _phrase302.Replace("{Players}", _playerCount.ToString());
@@ -163,7 +168,14 @@ namespace ServerTools
             if (_announce)
             {
                 GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase300, CustomCommands.ChatColor), "Server", false, "", false);
-                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, CustomCommands.ChatColor), "Server", false, "", false);
+                if (_daysUntil7 == 7)
+                {
+                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase306, CustomCommands.ChatColor), "Server", false, "", false);
+                }
+                else
+                {
+                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, CustomCommands.ChatColor), "Server", false, "", false);
+                }
                 GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase302, CustomCommands.ChatColor), "Server", false, "", false);
                 GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase303, CustomCommands.ChatColor), "Server", false, "", false);
                 GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase304, CustomCommands.ChatColor), "Server", false, "", false);
@@ -172,7 +184,14 @@ namespace ServerTools
             else
             {
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase300, CustomCommands.ChatColor), "Server", false, "", false));
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, CustomCommands.ChatColor), "Server", false, "", false));
+                if (_daysUntil7 == 7)
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase306, CustomCommands.ChatColor), "Server", false, "", false));
+                }
+                else
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, CustomCommands.ChatColor), "Server", false, "", false));
+                }  
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase302, CustomCommands.ChatColor), "Server", false, "", false));
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase303, CustomCommands.ChatColor), "Server", false, "", false));
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase304, CustomCommands.ChatColor), "Server", false, "", false));
