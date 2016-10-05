@@ -958,7 +958,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"brickModernBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"torchWallHolder\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntPillCase\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"cntBeerCooler\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"greenMetalRamp\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"greenMetalBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"orangeMetalRamp\" />"));
