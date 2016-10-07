@@ -95,12 +95,12 @@ namespace ServerTools
                 {
                     foreach (KeyValuePair<string, string> kvp in dict)
                     {
-                        sw.WriteLine(string.Format("        <Player SteamId=\"{0}\" Name=\"{1}\" />", kvp.Key, kvp.Value));
+                        sw.WriteLine(string.Format("        <Player SteamId=\"{0}\" Name=\"{1}\" Expires=\"\" />", kvp.Key, kvp.Value));
                     }
                 }
                 else
                 {
-                    sw.WriteLine(string.Format("        <!-- Player SteamId=\"123456\" Name=\"foobar.\" / -->"));
+                    sw.WriteLine(string.Format("        <!-- Player SteamId=\"123456\" Name=\"foobar.\" Expires=\"\" / -->"));
                 }
                 sw.WriteLine("    </Players>");
                 sw.WriteLine("</ReservedSlots>");
@@ -133,7 +133,7 @@ namespace ServerTools
             int _playerCount = ConnectionManager.Instance.ClientCount();
             if (_playerCount == API.MaxPlayers)
             {
-                if (!dict.ContainsKey(_cInfo.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
+                if (!dict.ContainsKey(_cInfo.playerId) || !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
                 {
                     string _phrase20;
                     if (!Phrases.Dict.TryGetValue(20, out _phrase20))
@@ -144,36 +144,46 @@ namespace ServerTools
                     SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase20), _cInfo);
                 }
                 else
-                { 
+                {
                     ClientInfo _playerToKick = null;
                     uint _itemsCrafted = 1999999999;
                     float _distanceWalked = 9999999999.0f;
+                    int _level = 1000;
                     List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                     foreach (ClientInfo _cInfo1 in _cInfoList)
                     {
-                        if (_cInfo.playerId != _cInfo1.playerId && !GameManager.Instance.adminTools.IsAdmin(_cInfo1.playerId))
+                        if (!dict.ContainsKey(_cInfo1.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo1.playerId))
                         {
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
-                            uint _totalItemsCrafted = _player.totalItemsCrafted;
-                            if (_totalItemsCrafted <= _itemsCrafted)
+                            if (_player.Level <= _level)
                             {
-                                if (_totalItemsCrafted == _itemsCrafted)
+                                if (_player.Level == _level)
                                 {
-                                    float _totalDistanceWalked = _player.distanceWalked;
-                                    if (_totalDistanceWalked < _distanceWalked)
+                                    if (_player.totalItemsCrafted <= _itemsCrafted)
                                     {
-                                        _distanceWalked = _totalDistanceWalked;
-                                        _playerToKick = _cInfo1;
+                                        if (_player.totalItemsCrafted == _itemsCrafted)
+                                        {
+                                            if (_player.distanceWalked < _distanceWalked)
+                                            {
+                                                _distanceWalked = _player.distanceWalked;
+                                                _playerToKick = _cInfo1;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            _itemsCrafted = _player.totalItemsCrafted;
+                                            _playerToKick = _cInfo1;
+                                        }
                                     }
                                 }
                                 else
                                 {
-                                    _itemsCrafted = _totalItemsCrafted;
+                                    _level = _player.Level;
                                     _playerToKick = _cInfo1;
                                 }
                             }
-                        }  
-                    }
+                        }
+                    }          
                     if (_playerToKick != null)
                     {
                         string _phrase20;
