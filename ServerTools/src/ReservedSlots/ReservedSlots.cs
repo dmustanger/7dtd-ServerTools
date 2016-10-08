@@ -130,10 +130,11 @@ namespace ServerTools
 
         public static void CheckReservedSlot(ClientInfo _cInfo)
         {
+            bool ischecking = false;
             int _playerCount = ConnectionManager.Instance.ClientCount();
             if (_playerCount == API.MaxPlayers)
             {
-                if (!dict.ContainsKey(_cInfo.playerId) || !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
+                if (!dict.ContainsKey(_cInfo.playerId))
                 {
                     string _phrase20;
                     if (!Phrases.Dict.TryGetValue(20, out _phrase20))
@@ -141,10 +142,11 @@ namespace ServerTools
                         _phrase20 = "Sorry {PlayerName} this slot is reserved.";
                     }
                     _phrase20 = _phrase20.Replace("{PlayerName}", _cInfo.playerName);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase20), _cInfo);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase20), _cInfo);
                 }
                 else
                 {
+                    ischecking = true;
                     ClientInfo _playerToKick = null;
                     uint _itemsCrafted = 1999999999;
                     float _distanceWalked = 9999999999.0f;
@@ -152,7 +154,7 @@ namespace ServerTools
                     List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                     foreach (ClientInfo _cInfo1 in _cInfoList)
                     {
-                        if (!dict.ContainsKey(_cInfo1.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo1.playerId))
+                        if (!dict.ContainsKey(_cInfo1.playerId) || !GameManager.Instance.adminTools.IsAdmin(_cInfo1.playerId))
                         {
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
                             if (_player.Level <= _level)
@@ -192,7 +194,7 @@ namespace ServerTools
                             _phrase20 = "Sorry {PlayerName} this slot is reserved.";
                         }
                         _phrase20 = _phrase20.Replace("{PlayerName}", _playerToKick.playerName);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _playerToKick.entityId, _phrase20), _playerToKick);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _playerToKick.playerId, _phrase20), _playerToKick);
                     }
                 }
             }
