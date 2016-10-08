@@ -248,8 +248,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"cabinWoodWedge\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cabinWoodWedgeTip\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntMedicineCabinet\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"awningGreenCNRFull\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"awningRedCNRInside\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"rWoodBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"rWoodMetalBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"steelPillar50\" />"));
@@ -265,7 +263,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"rock10\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"rock11\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"rock12\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"cntOven\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"porchLight01\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"porchLight04\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"porchLight04Brass\" />"));
@@ -285,8 +282,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"cntChest02\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"metalRivetSheet\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"adobeWhitePyramid\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"cntTrash_can01\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"cntBin\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntStorageChest\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntTrashPile01\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntTrashPile02\" />"));
@@ -312,7 +307,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"tanDrywallPillar100\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"poleTop01\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"streetLight01\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"airConditioner\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntCorpseLoot02\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"treasureChest\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cinderBlocks01\" />"));
@@ -355,8 +349,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"cntSportsBag02\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntPurse01\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"bed01Frame\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"mattress\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"mattressFlat\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"driftwood\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"driftwood2\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"signRoadArrowheadApache\" />"));
@@ -468,11 +460,8 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"whiteSidingWoodPanelBurnt5\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"whiteSidingWoodPanelBurnt6\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"whiteSidingWoodPanelBurnt7\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"cntFileCabinet\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"schoolDesk\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntLockers\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"fountain\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"cntGraniteSink\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"rockResource\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"blueMetalRamp1\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"blueMetalBlock\" />"));
@@ -489,7 +478,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"rockResource02Broke2\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"rockResource02Broke3\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"window02Frame\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"window02\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"treeCactus01\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"treeCactus02\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"treeCactus03\" />"));
@@ -560,7 +548,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"rustyIronPole\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"metalRivetBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"metalRivetRamp\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"curtain_top1Sheet3\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"sidingBluePlasterBaseboardBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"sidingGreenPlasterBaseboardBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"sidingWhitePlasterBaseboardBlock\" />"));
@@ -708,7 +695,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"whiteMetalPillar100\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"whiteMetalBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"whiteMetalRamp\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"chaulkboardPlate\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"concreteTrim2Ramp\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"concreteTrim3TanDrywallBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"gravelWedge\" />"));
@@ -716,7 +702,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"brickMetalWedge\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"woodGreenShinglesRamp\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"woodAsphaltShinglesRamp\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"cntCabinetOldSink\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"flagstoneDrywallBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"brickModernTanDrywallBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"brickModernTanBaseboardBlock\" />"));
@@ -769,7 +754,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"rustyIronBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"corrugatedMetalBlockDuplicate\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"rustyIronRamp\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"curtain_bottom1Sheet3\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"sidingBluePlasterMiddleBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"sidingBluePlasterTopBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"sidingBlueOldWoodBlock\" />"));
@@ -850,7 +834,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"garageDoor1Plate\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"panelingBurntPlate\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"fenceWoodSheet\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"shutters1Plate\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"plywoodOsbPlate\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"plywoodOsbCTRPlate\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"drywallBlock\" />"));
@@ -918,8 +901,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"window03Frame\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"glassIndustrial02Broken01CTRPlate\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"glassIndustrial02Broken02CTRPlate\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"miniblindTopSheet\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"miniblindBottomSheet\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"window04Frame\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"window04\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"doorFrameWhite1\" />"));
@@ -1003,13 +984,11 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"cobblestoneFrameRampQuarter\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cobblestoneFrameRampHalf\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cashRegisterEmpty\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"cntCashRegister\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntStorageAmmoInsecure\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntStorageBuildingInsecure\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntStorageExplosivesInsecure\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntStorageFoodInsecure\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntStorageWeaponsInsecure\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"shoppingCartEmpty\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntShoppingCart\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"woodShinglesWedge\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"woodShinglesWedgeTip\" />"));
@@ -1050,7 +1029,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"stalagmite04\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"artcube\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"treeHauntedTreeWasteland42\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"treeAzalea\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"emberPile1\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"emberPile2\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"emberPile3\" />"));
@@ -1139,14 +1117,7 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"steelPole\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"corrugatedDecayedBrickGable\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"corrugatedDecayedBrickQuarterGable\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"fusebox\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"metalPipeStraight\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"metalPipeCorner\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"metalPipeJoint\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"metalPipeCap\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"industrialLight01\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"metalPipeValve\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"metalPipeFlange\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"electricalBox01\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"asphaltCracked\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"conduit01\" />"));
