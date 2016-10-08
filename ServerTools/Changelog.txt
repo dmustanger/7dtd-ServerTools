@@ -4,6 +4,8 @@ Changed /day7 If the day is the 7th day it will respond that today is the 7th da
 Fixed /clancommands not working still
 Fixed default gimme item goldenrod not dropping goldenrodPlant
 Fixed Motd adding player name when {PlayerName} was not used
+Fixed reserved slots not working proper
+Updated invalid items list
 
 v3.4
 Fixed /clancommands not showing the clan commands
