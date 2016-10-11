@@ -130,7 +130,6 @@ namespace ServerTools
 
         public static void CheckReservedSlot(ClientInfo _cInfo)
         {
-            bool ischecking = false;
             int _playerCount = ConnectionManager.Instance.ClientCount();
             if (_playerCount == API.MaxPlayers)
             {
@@ -146,7 +145,6 @@ namespace ServerTools
                 }
                 else
                 {
-                    ischecking = true;
                     ClientInfo _playerToKick = null;
                     uint _itemsCrafted = 1999999999;
                     float _distanceWalked = 9999999999.0f;
@@ -154,7 +152,7 @@ namespace ServerTools
                     List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                     foreach (ClientInfo _cInfo1 in _cInfoList)
                     {
-                        if (!dict.ContainsKey(_cInfo1.playerId) || !GameManager.Instance.adminTools.IsAdmin(_cInfo1.playerId))
+                        if (!dict.ContainsKey(_cInfo1.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo1.playerId))
                         {
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
                             if (_player.Level <= _level)
