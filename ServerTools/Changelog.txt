@@ -1,4 +1,6 @@
 ﻿v3.6
+Added console command resetplayer. Will reset a players profile. If player is connected it will auto kick the player first. Usage: rp <steamid>
+Fixed if a player uses /sethome and then the server gets rebooted before the player uses their /home, that home data is ignored since it doesn't have a last used time stamp.
 
 v3.5
 Added admin prefixes and name coloring

@@ -470,6 +470,19 @@ namespace ServerTools
                     _phrase350 = "Player {PlayerName} is on the watchlist for {Reason}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"350\" Phrase=\"{0}\" />", _phrase350));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ********************** Reset Player********************* -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase400;
+                if (!Dict.TryGetValue(400, out _phrase400))
+                {
+                    _phrase400 = "Reseting your player profile.";
+                }
+                string _phrase401;
+                if (!Dict.TryGetValue(401, out _phrase401))
+                {
+                    _phrase401 = "You have reset the profile for player {SteamId}.";
+                }
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();
