@@ -148,6 +148,11 @@ namespace ServerTools
                                     Home(_cInfo, _cords);
                                 }
                             }
+                            else
+                            {
+                                dict1.Remove(_cInfo.playerId);
+                                Home(_cInfo, _cords);
+                            }
                         } 
                     }
                 } 

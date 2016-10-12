@@ -1,4 +1,6 @@
-﻿v3.5
+﻿v3.6
+
+v3.5
 Added admin prefixes and name coloring
 Changed /day7 If the day is the 7th day it will respond that today is the 7th day instead of 7 days from that day
 Fixed /clancommands not working still
