@@ -56,6 +56,7 @@
     <Compile Include="src\HighPingKicker\CommandMaxPing.cs" />
     <Compile Include="src\HighPingKicker\CommandPingImmunity.cs" />
     <Compile Include="src\HighPingKicker\HighPingKicker.cs" />
+    <Compile Include="src\RemoveEntity\EntityRemove.cs" />
     <Compile Include="src\ReservedSlots\ReservedSlots.cs" />
     <Compile Include="src\ResetPlayer\ResetPlayer.cs" />
     <Compile Include="src\Watchlist\CommandWatchlist.cs" />

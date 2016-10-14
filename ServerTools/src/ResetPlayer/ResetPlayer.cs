@@ -22,7 +22,7 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count < 1 || _params.Count > 1)
+                if (_params.Count != 1)
                 {
                     SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
