@@ -49,17 +49,18 @@
     <Compile Include="src\Chat\Motd.cs" />
     <Compile Include="src\ClanManager\ClanData.cs" />
     <Compile Include="src\ClanManager\ClanManager.cs" />
+    <Compile Include="src\ConsoleCommands\StopServer.cs" />
     <Compile Include="src\Functions\LoadConfig.cs" />
     <Compile Include="src\Functions\LoadGameItems.cs" />
     <Compile Include="src\Functions\LoadMods.cs" />
     <Compile Include="src\Functions\LoadPhrases.cs" />
-    <Compile Include="src\HighPingKicker\CommandMaxPing.cs" />
-    <Compile Include="src\HighPingKicker\CommandPingImmunity.cs" />
+    <Compile Include="src\ConsoleCommands\MaxPing.cs" />
+    <Compile Include="src\ConsoleCommands\PingImmunity.cs" />
     <Compile Include="src\HighPingKicker\HighPingKicker.cs" />
-    <Compile Include="src\ConsoleCommands\RemoveEntity\EntityRemove.cs" />
+    <Compile Include="src\ConsoleCommands\EntityRemove.cs" />
     <Compile Include="src\ReservedSlots\ReservedSlots.cs" />
-    <Compile Include="src\ConsoleCommands\ResetPlayer\ResetPlayer.cs" />
-    <Compile Include="src\Watchlist\CommandWatchlist.cs" />
+    <Compile Include="src\ConsoleCommands\ResetPlayer.cs" />
+    <Compile Include="src\ConsoleCommands\Watchlist.cs" />
     <Compile Include="src\Watchlist\Watchlist.cs" />
   </ItemGroup>
   <ItemGroup>

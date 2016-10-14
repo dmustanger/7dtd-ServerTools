@@ -471,18 +471,35 @@ namespace ServerTools
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"350\" Phrase=\"{0}\" />", _phrase350));
                 sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- ********************** Reset Player********************* -->");
+                sw.WriteLine("        <!-- ********************** Reset Player ******************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 string _phrase400;
                 if (!Dict.TryGetValue(400, out _phrase400))
                 {
                     _phrase400 = "Reseting your player profile.";
                 }
+                sw.WriteLine(string.Format("        <Phrase id=\"400\" Phrase=\"{0}\" />", _phrase400));
                 string _phrase401;
                 if (!Dict.TryGetValue(401, out _phrase401))
                 {
                     _phrase401 = "You have reset the profile for player {SteamId}.";
                 }
+                sw.WriteLine(string.Format("        <Phrase id=\"401\" Phrase=\"{0}\" />", _phrase401));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ********************** Stop Server ********************* -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase450;
+                if (!Dict.TryGetValue(450, out _phrase450))
+                {
+                    _phrase450 = "Server Restarting In {Minutes} Minutes.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"450\" Phrase=\"{0}\" />", _phrase450));
+                string _phrase451;
+                if (!Dict.TryGetValue(451, out _phrase451))
+                {
+                    _phrase451 = "Saving World Now.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"451\" Phrase=\"{0}\" />", _phrase451));
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();
