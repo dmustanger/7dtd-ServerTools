@@ -1,4 +1,8 @@
 ﻿v3.7
+Removed chat command /delhome
+Moved Gimme, Killme and Sethome data to a binary file
+Todo move clan data to binary file
+Add /re chat command to whisper
 
 v3.6
 Added console command stopserver. Will stop the game server with a chat warning countdown every minute. Usage: stopserver <minutes>

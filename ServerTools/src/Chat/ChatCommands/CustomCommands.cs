@@ -156,7 +156,7 @@ namespace ServerTools
             }
             if (TeleportHome.IsEnabled)
             {
-                _commands = string.Format("{0} /sethome /delhome /home", _commands);
+                _commands = string.Format("{0} /sethome /home", _commands);
             }
             if (KillMe.IsEnabled)
             {

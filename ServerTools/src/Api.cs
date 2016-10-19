@@ -17,10 +17,7 @@ namespace ServerTools
             {
                 Directory.CreateDirectory(ConfigPath);
             }
-            if (!Directory.Exists(DataPath))
-            {
-                Directory.CreateDirectory(DataPath);
-            }
+            StateManager.Awake();
             GameItems.LoadGameItems();
             Config.Load();
         }
@@ -64,6 +61,11 @@ namespace ServerTools
         public override bool ChatMessage(ClientInfo _cInfo, EnumGameMessages _type, string _message, string _playerName, bool _localizeMain, string _secondaryName, bool _localizeSecondary)
         {
             return ChatHook.Hook(_cInfo, _message, _playerName, _secondaryName, _localizeSecondary);
+        }
+
+        public override void GameShutdown()
+        {
+            StateManager.Shutdown();
         }
     }
 }
