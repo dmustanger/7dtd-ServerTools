@@ -102,22 +102,6 @@
                         }
                         return false;
                     }
-                    if (_message == "delhome")
-                    {
-                        if (_announce)
-                        {
-                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
-                        }
-                        if (TeleportHome.IsEnabled)
-                        {
-                            TeleportHome.DelHome(_cInfo);
-                        }
-                        else
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Delhome is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "", false));
-                        }
-                        return false;
-                    }
                     if (_message == "home")
                     {
                         if (_announce)
