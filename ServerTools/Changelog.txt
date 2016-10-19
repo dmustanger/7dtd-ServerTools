@@ -1,7 +1,9 @@
-﻿v3.6
-Added console command stopserver. Will stop the game server with a warning countdown every minute. Usage: stopserver <minutes>
+﻿v3.7
+
+v3.6
+Added console command stopserver. Will stop the game server with a chat warning countdown every minute. Usage: stopserver <minutes>
 Added console command entityremove. Will remove a entity from the game. Usage: entityremove <entityId>
-Added console command resetplayer. Will reset a players profile. If player is connected it will auto kick the player first. Usage: rp <steamId>
+Added console command resetplayer. Will reset a players profile. If player is connected it will auto kick the player first. Usage: rp <steamId> or resetplayer <steamId>
 Fixed if a player uses /sethome and then the server gets rebooted before the player uses their /home, that home data is ignored since it doesn't have a last used time stamp
 
 v3.5

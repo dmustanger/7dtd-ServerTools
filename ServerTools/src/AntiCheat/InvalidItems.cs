@@ -292,7 +292,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"cntTrashPile07\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntTrashPile08\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"cntTrashPile09\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"cntGasPump\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"wallTorch\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"graveStone01\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"graveStone02\" />"));
@@ -606,7 +605,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"rustyIronPole\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"metalRivetBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"metalRivetRamp\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"curtain_top1Sheet3\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"sidingBluePlasterBaseboardBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"sidingGreenPlasterBaseboardBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"sidingWhitePlasterBaseboardBlock\" />"));
@@ -678,7 +676,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"treePlantedGrass\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"oldStuccoWoodWedge\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"oldStuccoWoodWedgeTip\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"awningRedCNRFull\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"awningTanCNRFull\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"awningTanCNRInside\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"awningGreenCNRInside\" />"));
@@ -1179,7 +1176,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"greenRustyMetalWall03Sheet2\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"greenRustyMetalWallBlock\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"brickCNRRound\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"awningRedCNRRound\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"awningTanCNRRound\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"awningGreenCNRRound\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"greenRustyMetalCNRRound\" />"));
