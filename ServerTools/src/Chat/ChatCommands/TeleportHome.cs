@@ -30,7 +30,7 @@ namespace ServerTools
         public static void TeleHome(ClientInfo _cInfo)
         {
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p == null || p.HomePosition == null)
+            if (p == null || p.HomePosition ==null)
             {
                 string _phrase11;
                 if (!Phrases.Dict.TryGetValue(11, out _phrase11))
@@ -82,19 +82,18 @@ namespace ServerTools
 
         private static void Home(ClientInfo _cInfo, string _home)
         {
-            float x;
-            float z;
+            float xf;
+            float yf;
+            float zf;
             string[] _cords = _home.Split(',');
-            float.TryParse(_cords[0], out x);
-            float.TryParse(_cords[2], out z);
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            Vector3 destPos = new Vector3();
-            destPos.x = x;
-            destPos.y = -1;
-            destPos.z = z;
-            NetPackageTeleportPlayer pkg = new NetPackageTeleportPlayer(destPos);
-            _cInfo.SendPackage(pkg);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastSetHome = DateTime.Now;
+            float.TryParse(_cords[0], out xf);
+            float.TryParse(_cords[1], out yf);
+            float.TryParse(_cords[2], out zf);
+            int x = (int)xf;
+            int y = (int)yf;
+            int z = (int)zf;
+            SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, x, y, z), _cInfo);
+            PersistentContainer.Instance.Players[_cInfo.playerId, false].LastSetHome = DateTime.Now;
             PersistentContainer.Instance.Save();
         }
     }
