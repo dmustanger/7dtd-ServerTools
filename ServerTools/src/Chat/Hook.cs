@@ -15,7 +15,7 @@
                 {
                     if (_message.Length > 500)
                     {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Message to long.[-]", CustomCommands.ChatColor), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Message to long.[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
                         return false;
                     }
                 }
@@ -25,7 +25,7 @@
                 }
                 if (MutePlayer.Dict.ContainsKey(_cInfo.playerId))
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, "You are muted.", "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, "You are muted.", "Server", false, "ServerTools", false));
                     return false;
                 }
                 if (AdminNameColoring && !_message.StartsWith("/") && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
@@ -53,7 +53,7 @@
                     }
                     if (_hasBadWord)
                     {
-                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message1, _playerName, false, "", false);
+                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message1, _playerName, false, "ServerTools", false);
                         return false;
                     }
                 }
@@ -98,7 +98,7 @@
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Sethome is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Sethome is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
                         }
                         return false;
                     }
@@ -114,7 +114,7 @@
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Home is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Home is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
                         }
                         return false;
                     }
@@ -139,11 +139,11 @@
                         if (_announce)
                         {
                             GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
-                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _commands, "Server", false, "", false);
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _commands, "Server", false, "ServerTools", false);
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commands, "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commands, "Server", false, "ServerTools", false));
                         }
                         return false;
                     }
@@ -171,7 +171,7 @@
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Killme is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Killme is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
                         }
                         return false;
                     }
@@ -195,7 +195,7 @@
                         }
                         return false;
                     }
-                    if (_message.StartsWith("clanadd ") || _message == "clandel" || _message.StartsWith("claninvite ") || _message == "clanaccept" || _message == "clandecline" || _message.StartsWith("clanremove ") || _message.StartsWith("clanpromote ") || _message.StartsWith("clandemote ") || _message.StartsWith("clan ") || _message.StartsWith("c ") || _message == "clancommands")
+                    if (_message.StartsWith("clanadd") || _message == "clandel" || _message.StartsWith("claninvite") || _message == "clanaccept" || _message == "clandecline" || _message.StartsWith("clanremove") || _message.StartsWith("clanpromote") || _message.StartsWith("clandemote") || _message.StartsWith("clan") || _message.StartsWith("c") || _message == "clancommands")
                     {
                         if (ClanManager.IsEnabled)
                         {
@@ -203,19 +203,33 @@
                             {
                                 ClanManager.GetChatCommands(_cInfo);
                             }
-                            if (_message.StartsWith("clanadd "))
+                            if (_message.StartsWith("clandad"))
                             {
-                                _message = _message.Replace("clanadd ", "");
-                                ClanManager.AddClan(_cInfo, _message);
+                                if(_message == "clandad")
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clanadd clanName[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    _message = _message.Replace("clanadd ", "");
+                                    ClanManager.AddClan(_cInfo, _message);
+                                }
                             }
                             if (_message == "clandel")
                             {
                                 ClanManager.RemoveClan(_cInfo);
                             }
-                            if (_message.StartsWith("claninvite "))
+                            if (_message.StartsWith("claninvite"))
                             {
-                                _message = _message.Replace("claninvite ", "");
-                                ClanManager.InviteMember(_cInfo, _message);
+                                if(_message == "claninvite")
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /claninvite playerName[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    _message = _message.Replace("claninvite ", "");
+                                    ClanManager.InviteMember(_cInfo, _message);
+                                }
                             }
                             if (_message == "clanaccept")
                             {
@@ -225,39 +239,74 @@
                             {
                                 ClanManager.InviteDecline(_cInfo);
                             }
-                            if (_message.StartsWith("clanremove "))
+                            if (_message.StartsWith("clanremove"))
                             {
-                                _message = _message.Replace("clanremove ", "");
-                                ClanManager.RemoveMember(_cInfo, _message);
+                                if (_message == "clanremove")
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clanremove playerName[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    _message = _message.Replace("clanremove ", "");
+                                    ClanManager.RemoveMember(_cInfo, _message);
+                                }
                             }
-                            if (_message.StartsWith("clanpromote "))
+                            if (_message.StartsWith("clanpromote"))
                             {
-                                _message = _message.Replace("clanpromote ", "");
-                                ClanManager.PromoteMember(_cInfo, _message);
+                                if (_message == "clanpromote")
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clanpromote playerName[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    _message = _message.Replace("clanpromote ", "");
+                                    ClanManager.PromoteMember(_cInfo, _message);
+                                }
                             }
-                            if (_message.StartsWith("clandemote "))
+                            if (_message.StartsWith("clandemote"))
                             {
-                                _message = _message.Replace("clandemote ", "");
-                                ClanManager.DemoteMember(_cInfo, _message);
+                                if (_message == "clandemote")
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clandemote playerName[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    _message = _message.Replace("clandemote ", "");
+                                    ClanManager.DemoteMember(_cInfo, _message);
+                                }   
                             }
                             if (_message == "clanleave")
                             {
                                 ClanManager.LeaveClan(_cInfo);
                             }
-                            if (_message.StartsWith("clan "))
+                            if (_message.StartsWith("clan"))
                             {
-                                _message = _message.Replace("clan ", "");
-                                ClanManager.Clan(_cInfo, _message);
+                                if (_message == "clan")
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clan message[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    _message = _message.Replace("clan ", "");
+                                    ClanManager.Clan(_cInfo, _message);
+                                }
                             }
-                            if (_message.StartsWith("c "))
+                            if (_message.StartsWith("c"))
                             {
-                                _message = _message.Replace("c ", "");
-                                ClanManager.Clan(_cInfo, _message);
+                                if (_message == "c")
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /c message[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    _message = _message.Replace("c ", "");
+                                    ClanManager.Clan(_cInfo, _message);
+                                }
                             }
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}ClanManager is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}ClanManager is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
                         }
                         return false;
                     }
@@ -284,7 +333,7 @@
                                 {
                                     _response = _response.Replace("say ", "");
                                     _response = _response.Replace("\"", "");
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format(_response), "Server", false, "", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format(_response), "Server", false, "ServerTools", false));
                                 }
                             }
                             else
@@ -301,7 +350,7 @@
                     {
                         if (!AdminChat.IsEnabled)
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
                         }
                         else
                         {
@@ -313,7 +362,7 @@
                     {
                         if (!AdminChat.IsEnabled)
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
                         }
                         else
                         {
