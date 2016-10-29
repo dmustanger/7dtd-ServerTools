@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
@@ -8,7 +9,8 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static bool IsRunning = false;
-        private static SortedDictionary<string, string> dict = new SortedDictionary<string, string>();
+        private static SortedDictionary<string, DateTime> dict = new SortedDictionary<string, DateTime>();
+        private static SortedDictionary<string, string> dict1 = new SortedDictionary<string, string>();
         private static string file = "ReservedSlots.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
@@ -32,6 +34,7 @@ namespace ServerTools
 
         private static void LoadXml()
         {
+            bool _update = false;
             if (!Utils.FileExists(filePath))
             {
                 UpdateXml();
@@ -74,12 +77,40 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player entry because of missing 'Name' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
+                        if (!_line.HasAttribute("Expires"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player entry because of missing 'Expires' attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        DateTime _dt;
+                        if (_line.GetAttribute("Expires") == "")
+                        {
+                            _dt = DateTime.Parse("10/29/2050 7:30:00 AM");
+                            _update = true;
+                        }
+                        else
+                        {
+                            if (!DateTime.TryParse(_line.GetAttribute("Expires"), out _dt))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player entry because of invalid (date) value for 'Expires' attribute: {0}", subChild.OuterXml));
+                                continue;
+                            }
+                            
+                        }
                         if (!dict.ContainsKey(_line.GetAttribute("SteamId")))
                         {
-                            dict.Add(_line.GetAttribute("SteamId"), _line.GetAttribute("Name"));
+                            dict.Add(_line.GetAttribute("SteamId"), _dt);
+                        }
+                        if (!dict1.ContainsKey(_line.GetAttribute("SteamId")))
+                        {
+                            dict1.Add(_line.GetAttribute("SteamId"), _line.GetAttribute("Name"));
                         }
                     }
                 }
+            }
+            if (_update)
+            {
+                UpdateXml();
             }
         }
 
@@ -93,14 +124,16 @@ namespace ServerTools
                 sw.WriteLine("    <Players>");
                 if (dict.Count > 0)
                 {
-                    foreach (KeyValuePair<string, string> kvp in dict)
+                    foreach (KeyValuePair<string, DateTime> kvp in dict)
                     {
-                        sw.WriteLine(string.Format("        <Player SteamId=\"{0}\" Name=\"{1}\" Expires=\"\" />", kvp.Key, kvp.Value));
+                        string _name = "";
+                        dict1.TryGetValue(kvp.Key, out _name);
+                        sw.WriteLine(string.Format("        <Player SteamId=\"{0}\" Name=\"{1}\" Expires=\"{2}\" />", kvp.Key, _name, kvp.Value.ToString()));
                     }
                 }
                 else
                 {
-                    sw.WriteLine(string.Format("        <!-- Player SteamId=\"123456\" Name=\"foobar.\" Expires=\"\" / -->"));
+                    sw.WriteLine(string.Format("        <!-- Player SteamId=\"123456\" Name=\"foobar.\" Expires=\"10/29/2050 7:30:00 AM\" / -->"));
                 }
                 sw.WriteLine("    </Players>");
                 sw.WriteLine("</ReservedSlots>");
@@ -145,55 +178,71 @@ namespace ServerTools
                 }
                 else
                 {
-                    ClientInfo _playerToKick = null;
-                    uint _itemsCrafted = 1999999999;
-                    float _distanceWalked = 9999999999.0f;
-                    int _level = 1000;
-                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                    foreach (ClientInfo _cInfo1 in _cInfoList)
+                    DateTime _dt;
+                    dict.TryGetValue(_cInfo.playerId, out _dt);
+                    if (DateTime.Now > _dt)
                     {
-                        if (!dict.ContainsKey(_cInfo1.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo1.playerId))
+                        string _phrase21;
+                        if (!Phrases.Dict.TryGetValue(21, out _phrase21))
                         {
-                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
-                            if (_player.Level <= _level)
+                            _phrase21 = "Sorry {PlayerName} your reserved slot has expired.";
+                        }
+                        _phrase21 = _phrase21.Replace("{PlayerName}", _cInfo.playerName);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase21), _cInfo);
+                    }
+                    else
+                    {
+                        ClientInfo _playerToKick = null;
+                        uint _itemsCrafted = 1999999999;
+                        float _distanceWalked = 9999999999.0f;
+                        int _level = 1000;
+                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                        foreach (ClientInfo _cInfo1 in _cInfoList)
+                        {
+                            if (!dict.ContainsKey(_cInfo1.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo1.playerId))
                             {
-                                if (_player.Level == _level)
+                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
+                                if (_player.Level <= _level)
                                 {
-                                    if (_player.totalItemsCrafted <= _itemsCrafted)
+                                    if (_player.Level == _level)
                                     {
-                                        if (_player.totalItemsCrafted == _itemsCrafted)
+                                        if (_player.totalItemsCrafted <= _itemsCrafted)
                                         {
-                                            if (_player.distanceWalked < _distanceWalked)
+                                            if (_player.totalItemsCrafted == _itemsCrafted)
                                             {
-                                                _distanceWalked = _player.distanceWalked;
+                                                if (_player.distanceWalked < _distanceWalked)
+                                                {
+                                                    _distanceWalked = _player.distanceWalked;
+                                                    _playerToKick = _cInfo1;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                _itemsCrafted = _player.totalItemsCrafted;
                                                 _playerToKick = _cInfo1;
                                             }
                                         }
-                                        else
-                                        {
-                                            _itemsCrafted = _player.totalItemsCrafted;
-                                            _playerToKick = _cInfo1;
-                                        }
                                     }
-                                }
-                                else
-                                {
-                                    _level = _player.Level;
-                                    _playerToKick = _cInfo1;
+                                    else
+                                    {
+                                        _level = _player.Level;
+                                        _playerToKick = _cInfo1;
+                                    }
                                 }
                             }
                         }
-                    }          
-                    if (_playerToKick != null)
-                    {
-                        string _phrase20;
-                        if (!Phrases.Dict.TryGetValue(20, out _phrase20))
+                        if (_playerToKick != null)
                         {
-                            _phrase20 = "Sorry {PlayerName} this slot is reserved.";
+                            string _phrase20;
+                            if (!Phrases.Dict.TryGetValue(20, out _phrase20))
+                            {
+                                _phrase20 = "Sorry {PlayerName} this slot is reserved.";
+                            }
+                            _phrase20 = _phrase20.Replace("{PlayerName}", _playerToKick.playerName);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _playerToKick.playerId, _phrase20), _playerToKick);
                         }
-                        _phrase20 = _phrase20.Replace("{PlayerName}", _playerToKick.playerName);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _playerToKick.playerId, _phrase20), _playerToKick);
                     }
+                    
                 }
             }
         }
