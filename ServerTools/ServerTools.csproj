@@ -47,8 +47,8 @@
     <Compile Include="src\Chat\InfoTicker.cs" />
     <Compile Include="src\Chat\Log.cs" />
     <Compile Include="src\Chat\Motd.cs" />
-    <Compile Include="src\ClanManager\ClanData.cs" />
     <Compile Include="src\ClanManager\ClanManager.cs" />
+    <Compile Include="src\ConsoleCommands\ReservedSlots.cs" />
     <Compile Include="src\ConsoleCommands\StopServer.cs" />
     <Compile Include="src\Functions\LoadConfig.cs" />
     <Compile Include="src\Functions\LoadGameItems.cs" />
@@ -68,6 +68,9 @@
     <Compile Include="src\Watchlist\Watchlist.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ConsoleCommandExamples.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="ModInfo.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

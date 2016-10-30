@@ -22,11 +22,11 @@
             }
             if (ClanManager.IsEnabled)
             {
-                ClanData.Load();
+                PersistentContainer.Instance.Players.GetClans();
             }
             if (!ClanManager.IsEnabled)
             {
-                ClanData.Unload();
+                PersistentContainer.Instance.Players.clans.Clear();
             }
             if (CustomCommands.IsRunning && !CustomCommands.IsEnabled)
             {

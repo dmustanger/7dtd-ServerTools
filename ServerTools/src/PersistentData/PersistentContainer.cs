@@ -63,8 +63,7 @@ namespace ServerTools
                 }
                 catch (Exception e)
                 {
-                    Log.Error("[SERVERTOOLS] Exception in PersistentContainer.Load");
-                    Log.Exception(e);
+                    Log.Out(string.Format("[SERVERTOOLS] Exception in PersistentContainer.Load: {0}", e));
                 }
             }
             return false;

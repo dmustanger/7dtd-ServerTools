@@ -202,10 +202,11 @@
                             if (_message == "clancommands")
                             {
                                 ClanManager.GetChatCommands(_cInfo);
+                                return false;
                             }
-                            if (_message.StartsWith("clandad"))
+                            if (_message.StartsWith("clanadd"))
                             {
-                                if(_message == "clandad")
+                                if(_message == "clanadd")
                                 {
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clanadd clanName[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
                                 }
@@ -214,10 +215,12 @@
                                     _message = _message.Replace("clanadd ", "");
                                     ClanManager.AddClan(_cInfo, _message);
                                 }
+                                return false;
                             }
                             if (_message == "clandel")
                             {
                                 ClanManager.RemoveClan(_cInfo);
+                                return false;
                             }
                             if (_message.StartsWith("claninvite"))
                             {
@@ -230,14 +233,17 @@
                                     _message = _message.Replace("claninvite ", "");
                                     ClanManager.InviteMember(_cInfo, _message);
                                 }
+                                return false;
                             }
                             if (_message == "clanaccept")
                             {
                                 ClanManager.InviteAccept(_cInfo);
+                                return false;
                             }
                             if (_message == "clandecline")
                             {
                                 ClanManager.InviteDecline(_cInfo);
+                                return false;
                             }
                             if (_message.StartsWith("clanremove"))
                             {
@@ -250,6 +256,7 @@
                                     _message = _message.Replace("clanremove ", "");
                                     ClanManager.RemoveMember(_cInfo, _message);
                                 }
+                                return false;
                             }
                             if (_message.StartsWith("clanpromote"))
                             {
@@ -262,6 +269,7 @@
                                     _message = _message.Replace("clanpromote ", "");
                                     ClanManager.PromoteMember(_cInfo, _message);
                                 }
+                                return false;
                             }
                             if (_message.StartsWith("clandemote"))
                             {
@@ -273,11 +281,13 @@
                                 {
                                     _message = _message.Replace("clandemote ", "");
                                     ClanManager.DemoteMember(_cInfo, _message);
-                                }   
+                                }
+                                return false;
                             }
                             if (_message == "clanleave")
                             {
                                 ClanManager.LeaveClan(_cInfo);
+                                return false;
                             }
                             if (_message.StartsWith("clan"))
                             {
@@ -290,6 +300,7 @@
                                     _message = _message.Replace("clan ", "");
                                     ClanManager.Clan(_cInfo, _message);
                                 }
+                                return false;
                             }
                             if (_message.StartsWith("c"))
                             {
@@ -302,6 +313,7 @@
                                     _message = _message.Replace("c ", "");
                                     ClanManager.Clan(_cInfo, _message);
                                 }
+                                return false;
                             }
                         }
                         else

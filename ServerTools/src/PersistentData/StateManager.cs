@@ -12,7 +12,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out("Error in StateManager.Awake: " + e);
+                Log.Out(string.Format("[SERVERTOOLS] Error in StateManager.Awake: {0}", e));
             }
         }
 
@@ -24,7 +24,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out("Error in StateManager.Shutdown: " + e);
+                Log.Out(string.Format("[SERVERTOOLS] Error in StateManager.Shutdown: {0}", e));
             }
         }
     }

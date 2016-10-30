@@ -1,8 +1,11 @@
 ﻿v3.7
-Removed chat command /delhome
-Moved Gimme, Killme and Sethome data to a binary file
-Todo move clan data to binary file
-Add /re chat command to whisper
+Added Reserved Slot console command
+Fixed /sethome no longer spawns player at the highest point
+Fixed /home still not saving players positions after server reboots
+Changed Reserved slots will now observe expired date/time in reservedslots.xml
+Changed Removed chat command /delhome, players can now just set a new home
+Changed Moved Gimme, Killme, Clan and Sethome data to a binary file
+Changed Added a usage response for /clan commands if no params were given
 
 v3.6
 Added console command stopserver. Will stop the game server with a chat warning countdown every minute. Usage: stopserver <minutes>

@@ -6,7 +6,24 @@ namespace ServerTools
     [Serializable]
     public class Players
     {
-        private Dictionary<string, Player> players = new Dictionary<string, Player>();
+        public Dictionary<string, Player> players = new Dictionary<string, Player>();
+        public Dictionary<string, string> clans = new Dictionary<string, string>();
+
+        public List<string> ClanList
+        {
+            get
+            {
+                return new List<string>(clans.Keys);
+            }
+        }
+
+        public List<string> SteamIDs
+        {
+            get
+            {
+                return new List<string>(players.Keys);
+            }
+        }
 
         public Player this[string steamId, bool create]
         {
@@ -29,6 +46,21 @@ namespace ServerTools
                         return p;
                     }
                     return null;
+                }
+            }
+        }
+
+        public void GetClans()
+        {
+            foreach (string _id in PersistentContainer.Instance.Players.SteamIDs)
+            {
+                Player p = PersistentContainer.Instance.Players[_id, false];
+                if (p.IsClanOwner)
+                {
+                    if (!clans.ContainsKey(p.ClanName))
+                    {
+                        clans.Add(p.ClanName, _id);
+                    }
                 }
             }
         }
