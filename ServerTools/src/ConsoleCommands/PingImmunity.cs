@@ -32,16 +32,21 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count < 1)
+                if (_params.Count < 1 || _params.Count > 3)
                 {
                     SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 to 3, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("add"))
                 {
-                    if (_params.Count != 2 && _params.Count != 3)
+                    if (_params.Count != 3)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2 or 3, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 3, found {0}.", _params.Count));
+                        return;
+                    }
+                    if (_params[1].Length != 17)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Can not add SteamId: Invalid SteamId {0}", _params[1]));
                         return;
                     }
                     if (HighPingKicker.Dict.ContainsKey(_params[1]))
@@ -49,16 +54,8 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Can not add SteamId. {0} is already in the Ping Immunity list.", _params[1]));
                         return;
                     }
-                    if (_params.Count == 2)
-                    {
-                        HighPingKicker.Dict.Add(_params[1], null);
-                        SdtdConsole.Instance.Output(string.Format("Added SteamId {0} to the Ping Immunity list.", _params[1]));
-                    }
-                    else
-                    {
-                        HighPingKicker.Dict.Add(_params[1], _params[2]);
-                        SdtdConsole.Instance.Output(string.Format("Added SteamId {0} with the name {1} the Ping Immunity list.", _params[1], _params[2]));
-                    }
+                    HighPingKicker.Dict.Add(_params[1], _params[2]);
+                    SdtdConsole.Instance.Output(string.Format("Added SteamId {0} with the name of {1} the Ping Immunity list.", _params[1], _params[2]));
                     HighPingKicker.UpdateXml();
                 }
                 else if (_params[0].ToLower().Equals("remove"))
