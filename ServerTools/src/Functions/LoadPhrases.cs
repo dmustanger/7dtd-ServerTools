@@ -200,6 +200,12 @@ namespace ServerTools
                     _phrase20 = "Sorry {PlayerName} this slot is reserved.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"20\" Phrase=\"{0}\" />", _phrase20));
+                string _phrase21;
+                if (!Dict.TryGetValue(21, out _phrase21))
+                {
+                    _phrase21 = "Sorry {PlayerName} your reserved slot has expired.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"21\" Phrase=\"{0}\" />", _phrase21));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ****************** Clan Tag Protection ***************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
