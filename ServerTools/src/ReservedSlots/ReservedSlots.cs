@@ -9,8 +9,8 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static bool IsRunning = false;
-        private static SortedDictionary<string, DateTime> dict = new SortedDictionary<string, DateTime>();
-        private static SortedDictionary<string, string> dict1 = new SortedDictionary<string, string>();
+        public static SortedDictionary<string, DateTime> Dict = new SortedDictionary<string, DateTime>();
+        public static SortedDictionary<string, string> Dict1 = new SortedDictionary<string, string>();
         private static string file = "ReservedSlots.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
@@ -27,7 +27,7 @@ namespace ServerTools
 
         public static void Unload()
         {
-            dict.Clear();
+            Dict.Clear();
             fileWatcher.Dispose();
             IsRunning = false;
         }
@@ -54,7 +54,7 @@ namespace ServerTools
             {
                 if (childNode.Name == "Players")
                 {
-                    dict.Clear();
+                    Dict.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -97,13 +97,13 @@ namespace ServerTools
                             }
                             
                         }
-                        if (!dict.ContainsKey(_line.GetAttribute("SteamId")))
+                        if (!Dict.ContainsKey(_line.GetAttribute("SteamId")))
                         {
-                            dict.Add(_line.GetAttribute("SteamId"), _dt);
+                            Dict.Add(_line.GetAttribute("SteamId"), _dt);
                         }
-                        if (!dict1.ContainsKey(_line.GetAttribute("SteamId")))
+                        if (!Dict1.ContainsKey(_line.GetAttribute("SteamId")))
                         {
-                            dict1.Add(_line.GetAttribute("SteamId"), _line.GetAttribute("Name"));
+                            Dict1.Add(_line.GetAttribute("SteamId"), _line.GetAttribute("Name"));
                         }
                     }
                 }
@@ -114,7 +114,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpdateXml()
+        public static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath))
@@ -122,12 +122,12 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ReservedSlots>");
                 sw.WriteLine("    <Players>");
-                if (dict.Count > 0)
+                if (Dict.Count > 0)
                 {
-                    foreach (KeyValuePair<string, DateTime> kvp in dict)
+                    foreach (KeyValuePair<string, DateTime> kvp in Dict)
                     {
                         string _name = "";
-                        dict1.TryGetValue(kvp.Key, out _name);
+                        Dict1.TryGetValue(kvp.Key, out _name);
                         sw.WriteLine(string.Format("        <Player SteamId=\"{0}\" Name=\"{1}\" Expires=\"{2}\" />", kvp.Key, _name, kvp.Value.ToString()));
                     }
                 }
@@ -166,7 +166,7 @@ namespace ServerTools
             int _playerCount = ConnectionManager.Instance.ClientCount();
             if (_playerCount == API.MaxPlayers)
             {
-                if (!dict.ContainsKey(_cInfo.playerId))
+                if (!Dict.ContainsKey(_cInfo.playerId))
                 {
                     string _phrase20;
                     if (!Phrases.Dict.TryGetValue(20, out _phrase20))
@@ -179,7 +179,7 @@ namespace ServerTools
                 else
                 {
                     DateTime _dt;
-                    dict.TryGetValue(_cInfo.playerId, out _dt);
+                    Dict.TryGetValue(_cInfo.playerId, out _dt);
                     if (DateTime.Now > _dt)
                     {
                         string _phrase21;
@@ -199,7 +199,7 @@ namespace ServerTools
                         List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                         foreach (ClientInfo _cInfo1 in _cInfoList)
                         {
-                            if (!dict.ContainsKey(_cInfo1.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo1.playerId))
+                            if (!Dict.ContainsKey(_cInfo1.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo1.playerId))
                             {
                                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
                                 if (_player.Level <= _level)
@@ -241,8 +241,7 @@ namespace ServerTools
                             _phrase20 = _phrase20.Replace("{PlayerName}", _playerToKick.playerName);
                             SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _playerToKick.playerId, _phrase20), _playerToKick);
                         }
-                    }
-                    
+                    } 
                 }
             }
         }
