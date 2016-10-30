@@ -30,7 +30,7 @@ namespace ServerTools
         public static void TeleHome(ClientInfo _cInfo)
         {
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p == null || p.HomePosition ==null)
+            if (p == null || p.HomePosition == null)
             {
                 string _phrase11;
                 if (!Phrases.Dict.TryGetValue(11, out _phrase11))
