@@ -13,14 +13,12 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. pingimmunity add <steamID>\n" +
-                   "  2. pingimmunity add <steamID> <player name>\n" +
-                   "  3. pingimmunity remove <steamID>\n" +
-                   "  4. pingimmunity list\n" +
-                   "1. Adds a steamID to the Ping Immunity list\n" +
-                   "2. Adds a steamID  and name to the Ping Immunity list\n" +
-                   "3. Removes a steamID from the Ping Immunity list\n" +
-                   "4. Lists all steamIDs that have Ping Immunity";
+                   "  1. pingimmunity add <steamID> <player name>\n" +
+                   "  2. pingimmunity remove <steamID>\n" +
+                   "  3. pingimmunity list\n" +
+                   "1. Adds a steamID  and name to the Ping Immunity list\n" +
+                   "2. Removes a steamID from the Ping Immunity list\n" +
+                   "3. Lists all steamIDs that have Ping Immunity";
         }
 
         public override string[] GetCommands()
@@ -88,8 +86,7 @@ namespace ServerTools
                     }
                     foreach (KeyValuePair<string, string> _key in HighPingKicker.Dict)
                     {
-                        string _output = string.Format("{0} {1}", _key.Key, _key.Value);
-                        SdtdConsole.Instance.Output(_output);
+                        SdtdConsole.Instance.Output(string.Format("{0} {1}", _key.Key, _key.Value));
                     }
                 }
                 else

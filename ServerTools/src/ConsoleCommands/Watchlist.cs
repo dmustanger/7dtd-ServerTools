@@ -42,6 +42,11 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 3, found {0}.", _params.Count));
                         return;
                     }
+                    if (_params[1].Length != 17)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Can not add SteamId: Invalid SteamId {0}", _params[1]));
+                        return;
+                    }
                     if (Watchlist.Dict.ContainsKey(_params[1]))
                     {
                         SdtdConsole.Instance.Output(string.Format("Can not add SteamId. {0} is already in the Watchlist.", _params[1]));
