@@ -77,7 +77,7 @@
                             return false;
                         }
                     }
-                    if (_message.StartsWith("r ") || _message.StartsWith("R "))
+                    if (_message.StartsWith("r ") || _message.StartsWith("R ") || _message.StartsWith("RE ") || _message.StartsWith("re "))
                     {
                         if (CustomCommands.IsEnabled)
                         {

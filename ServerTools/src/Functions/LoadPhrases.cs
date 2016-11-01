@@ -191,6 +191,18 @@ namespace ServerTools
                     _phrase14 = "{SenderName} player {TargetName} was not found.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"14\" Phrase=\"{0}\" />", _phrase14));
+                string _phrase15;
+                if (!Dict.TryGetValue(15, out _phrase15))
+                {
+                    _phrase15 = "{SenderName} no one has pm'd you.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"15\" Phrase=\"{0}\" />", _phrase15));
+                string _phrase16;
+                if (!Dict.TryGetValue(16, out _phrase16))
+                {
+                    _phrase16 = "{SenderName} the player is not online.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"16\" Phrase=\"{0}\" />", _phrase16));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ******************** ReservedSlots ********************* -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");

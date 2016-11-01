@@ -32,8 +32,8 @@ namespace ServerTools
                     SdtdConsole.Instance.Output(string.Format("Can not add SteamId: Invalid SteamId {0}", _params[0]));
                     return;
                 }
-                string _filepath = string.Format("{0}/{1}/{2}/Player/{3}.map", API.GamePath, API.GameWorld, API.GameName, _params[0]);
-                string _filepath1 = string.Format("{0}/{1}/{2}/Player/{3}.ttp", API.GamePath, API.GameWorld, API.GameName, _params[0]);
+                string _filepath = string.Format("{0}/Player/{1}.map", GameUtils.GetSaveGameDir(), _params[0]);
+                string _filepath1 = string.Format("{0}/Player/{1}.ttp", GameUtils.GetSaveGameDir(), _params[0]);
                 List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                 foreach (ClientInfo _cInfo in _cInfoList)
                 {

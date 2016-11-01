@@ -23,6 +23,8 @@ namespace ServerTools
         private bool isclanofficer;
         [OptionalField]
         private string invitedtoclan;
+        [OptionalField]
+        private string lastwhisper;
 
         public DateTime LastGimme
         {
@@ -117,6 +119,18 @@ namespace ServerTools
             set
             {
                 invitedtoclan = value;
+            }
+        }
+
+        public string LastWhisper
+        {
+            get
+            {
+                return lastwhisper;
+            }
+            set
+            {
+                lastwhisper = value;
             }
         }
 
