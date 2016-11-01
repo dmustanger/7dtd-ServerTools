@@ -383,6 +383,12 @@ namespace ServerTools
                     _phrase128 = "{PlayerName} the clan {ClanName} was not found.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"128\" Phrase=\"{0}\" />", _phrase128));
+                string _phrase129;
+                if (!Dict.TryGetValue(129, out _phrase129))
+                {
+                    _phrase129 = "{PlayerName} the clanName must be longer the 3 characters.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"129\" Phrase=\"{0}\" />", _phrase129));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ****************** Admins Chat Commands **************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");

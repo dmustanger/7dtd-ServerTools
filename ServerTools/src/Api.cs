@@ -6,7 +6,6 @@ namespace ServerTools
     {
         public static string GamePath = GamePrefs.GetString(EnumGamePrefs.SaveGameFolder);
         public static string ConfigPath = string.Format("{0}/ServerTools", GamePath);
-        public static string DataPath = string.Format("{0}/Data", ConfigPath);
         public static int MaxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
         public static string GameWorld = GamePrefs.GetString(EnumGamePrefs.GameWorld);
         public static string GameName = GamePrefs.GetString(EnumGamePrefs.GameName);

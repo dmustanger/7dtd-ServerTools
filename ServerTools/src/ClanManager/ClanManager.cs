@@ -71,19 +71,32 @@ namespace ServerTools
                     }
                     else
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].ClanName = _clanName;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].IsClanOwner = true;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].IsClanOfficer = true;
-                        PersistentContainer.Instance.Save();
-                        PersistentContainer.Instance.Players.clans.Add(_clanName, _cInfo.playerId);
-                        string _phrase104;
-                        if (!Phrases.Dict.TryGetValue(104, out _phrase104))
+                        if (string.IsNullOrEmpty(_clanName) || _clanName.Length < 3)
                         {
-                            _phrase104 = "{PlayerName} you have added the clan {ClanName}.";
+                            string _phrase129;
+                            if (!Phrases.Dict.TryGetValue(129, out _phrase129))
+                            {
+                                _phrase129 = "{PlayerName} the clanName must be longer the 3 characters";
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase129, CustomCommands.ChatColor), "Server", false, "", false));
+                            }
+                            _phrase129 = _phrase129.Replace("{PlayerName}", _cInfo.playerName);
                         }
-                        _phrase104 = _phrase104.Replace("{PlayerName}", _cInfo.playerName);
-                        _phrase104 = _phrase104.Replace("{ClanName}", _clanName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase104, CustomCommands.ChatColor), "Server", false, "", false));
+                        else
+                        {
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].ClanName = _clanName;
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].IsClanOwner = true;
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].IsClanOfficer = true;
+                            PersistentContainer.Instance.Save();
+                            PersistentContainer.Instance.Players.clans.Add(_clanName, _cInfo.playerId);
+                            string _phrase104;
+                            if (!Phrases.Dict.TryGetValue(104, out _phrase104))
+                            {
+                                _phrase104 = "{PlayerName} you have added the clan {ClanName}.";
+                            }
+                            _phrase104 = _phrase104.Replace("{PlayerName}", _cInfo.playerName);
+                            _phrase104 = _phrase104.Replace("{ClanName}", _clanName);
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase104, CustomCommands.ChatColor), "Server", false, "", false));
+                        } 
                     }
                 }
             }
