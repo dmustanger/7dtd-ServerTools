@@ -1018,7 +1018,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"stalactite02\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"stalactite03\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"stalactite04\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"cobweb\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"hangingMoss\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"stalagmite01\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"stalagmite02\" />"));
