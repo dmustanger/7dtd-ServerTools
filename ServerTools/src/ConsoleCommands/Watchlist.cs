@@ -100,7 +100,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("Error in WatchlistCommand.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in WatchlistCommand.Run: {0}.", e));
             }
         }
     }

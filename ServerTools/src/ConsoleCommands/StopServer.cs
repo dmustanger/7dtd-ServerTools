@@ -8,6 +8,7 @@ namespace ServerTools
     {
         private static Thread th;
         private static int _mins;
+        private static bool isCountingDown = false;
 
         public override string GetDescription()
         {
@@ -16,7 +17,8 @@ namespace ServerTools
 
         public override string GetHelp()
         {
-            return "Usage: stopserver <minutes>";
+            return "Usage: stopserver <minutes>\n" +
+                "Usage: stopserver cancel";
         }
 
         public override string[] GetCommands()
@@ -28,22 +30,47 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count != 1)
+                if (_params.Count < 1 || _params.Count > 2)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
                     return;
                 }
-                
-                if (!int.TryParse(_params[0], out _mins))
+                if (_params[0] == "cancel")
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid time specified: {0}", _mins));
-                    return;
+                    if (!isCountingDown)
+                    {
+                        SdtdConsole.Instance.Output("Stopserver is not running.");
+                    }
+                    else
+                    {
+                        th.Abort();
+                        isCountingDown = false;
+                        SdtdConsole.Instance.Output("Stopserver has stopped.");
+                    }
                 }
-                Start();
+                else
+                {
+                    if (isCountingDown)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Server is already stopping in {0} mins", _mins));
+                    }
+                    else
+                    {
+                        if (!int.TryParse(_params[0], out _mins))
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Invalid time specified: {0}", _mins));
+                        }
+                        else
+                        {
+                            Start();
+                        }
+                    }
+                    
+                }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("Error in StopServer.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in StopServer.Run: {0}.", e));
             }
         }
 
@@ -52,11 +79,11 @@ namespace ServerTools
             th = new Thread(new ThreadStart(StatusCheck));
             th.IsBackground = true;
             th.Start();
-            Log.Out("[SERVERTOOLS] InfoTicker has started.");
         }
 
         private static void StatusCheck()
         {
+            isCountingDown = true;
             SdtdConsole.Instance.Output(string.Format("Stopping server in {0} mins!", _mins));
             string _phrase450;
             if (!Phrases.Dict.TryGetValue(450, out _phrase450))

@@ -96,7 +96,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("Error in PingImmunityCommand.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PingImmunityCommand.Run: {0}.", e));
             }
         }
     }

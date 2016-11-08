@@ -45,7 +45,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("Error in EntityRemove.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in EntityRemove.Run: {0}.", e));
             }
         }
     }

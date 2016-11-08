@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ServerTools
 {
@@ -18,18 +19,25 @@ namespace ServerTools
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
-            if (_params.Count != 1)
+            try
             {
-                SdtdConsole.Instance.Output("Wrong number of arguments.");
-                return;
+                if (_params.Count != 1)
+                {
+                    SdtdConsole.Instance.Output("Wrong number of arguments.");
+                    return;
+                }
+                if (!int.TryParse(_params[0], out HighPingKicker.MAXPING))
+                {
+                    SdtdConsole.Instance.Output("Maxping is not an integer.");
+                    return;
+                }
+                SdtdConsole.Instance.Output(string.Format("Max ping limit set to {0}", HighPingKicker.MAXPING));
+                Config.UpdateXml();
             }
-            if (!int.TryParse(_params[0], out HighPingKicker.MAXPING))
+            catch (Exception e)
             {
-                SdtdConsole.Instance.Output("Maxping is not an integer.");
-                return;
+                Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlot.Run: {0}.", e));
             }
-            SdtdConsole.Instance.Output(string.Format("Max ping limit set to {0}", HighPingKicker.MAXPING));
-            Config.UpdateXml();
         }
     }
 }
