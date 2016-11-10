@@ -29,73 +29,106 @@ namespace ServerTools
             foreach (Entity _e in _entities)
             {
                 string _name = EntityClass.list[_e.entityClass].entityClassName;
-                if (_name == "playerMale" || _name == "playerFemale" || _name == "item" || _name == "fallingBlock" || _name == "Backpack" || _name == "traderBob" || _name == "fallingTree" || _name == "traderJoel") 
+                if (_name == "playerMale" || _name == "playerFemale" || _name == "item" || _name == "fallingBlock" || _name == "Backpack" || _name == "traderBob" || _name == "fallingTree" || _name == "traderJoel" || _name == "traderRekt")
                 {
                     continue;
                 }
                 else if (_name == "zombieMarlene" || _name == "zombieDarlene" || _name == "zombieArlene" || _name == "zombieBoe" || _name == "zombieYo" || _name == "zombieSteveCrawler" || _name == "zombieNurse" || _name == "zombieMoe" || _name == "zombieJoe" || _name == "burntzombie" || _name == "spiderzombie" || _name == "snowzombie" || _name == "zombieSteve" || _name == "ZombieStripper" || _name == "ZombieFarmer" || _name == "ZombieBiker" || _name == "ZombieFemaleUMA" || _name == "ZombieFemaleFatUMA" || _name == "ZombieMaleUMA" || _name == "zombieMaleHazmat" || _name == "ZombieCheerleader" || _name == "ZombieSoldier" || _name == "ZombieSkateboarder" || _name == "zombieFemaleHazmat" || _name == "ZombieMiner" || _name == "ZombieUtilityWorker" || _name == "ZombieFootballPlayer") 
                 {
-                    _zombies = _zombies + 1;
+                    if (_e.IsAlive())
+                    {
+                        _zombies = _zombies + 1;
+                    }
                     continue;
                 }
                 else if (_name == "animalRabbit")
                 {
-                    _animals = _animals + 1;
-                    _rabbit = _rabbit + 1;
+                    if (_e.IsAlive())
+                    {
+                        _animals = _animals + 1;
+                        _rabbit = _rabbit + 1;
+                    }
                     continue;
                 }
                 else if (_name == "animalChicken")
                 {
-                    _animals = _animals + 1;
-                    _chicken = _chicken + 1;
+                    if (_e.IsAlive())
+                    {
+                        _animals = _animals + 1;
+                        _chicken = _chicken + 1;
+                    }
                     continue;
                 }
                 else if (_name == "animalStag")
                 {
-                    _animals = _animals + 1;
-                    _stag = _stag + 1;
+                    if (_e.IsAlive())
+                    {
+                        _animals = _animals + 1;
+                        _stag = _stag + 1;
+                    }
                     continue;
                 }
                 else if (_name == "animalPig")
                 {
-                    _animals = _animals + 1;
-                    _pig = _pig + 1;
+                    if (_e.IsAlive())
+                    {
+                        _animals = _animals + 1;
+                        _pig = _pig + 1;
+                    }
                     continue;
                 }
                 else if (_name == "animalBear" || _name == "zombieBear")
                 {
-                    _animals = _animals + 1;
-                    _bear = _bear + 1;
+                    if (_e.IsAlive())
+                    {
+                        _animals = _animals + 1;
+                        _bear = _bear + 1;
+                    }
                     continue;
                 }
                 else if (_name == "zombiedog")
                 {
-                    _zombies = _zombies + 1;
-                    _dog = _dog + 1;
+                    if (_e.IsAlive())
+                    {
+                        _zombies = _zombies + 1;
+                        _dog = _dog + 1;
+                    }
                     continue;
                 }
                 else if (_name == "zombieScreamer")
                 {
-                    _zombies = _zombies + 1;
-                    _screamer = _screamer + 1;
+                    if (_e.IsAlive())
+                    {
+                        _zombies = _zombies + 1;
+                        _screamer = _screamer + 1;
+                    }
                     continue;
                 }
                 else if (_name == "zombieferal")
                 {
-                    _zombies = _zombies + 1;
-                    _feralZombies = _feralZombies + 1;
+                    if (_e.IsAlive())
+                    {
+                        _zombies = _zombies + 1;
+                        _feralZombies = _feralZombies + 1;
+                    }
                     continue;
                 }
                 else if (_name == "hornet")
                 {
-                    _zombies = _zombies + 1;
-                    _hornet = _hornet + 1;
+                    if (_e.IsAlive())
+                    {
+                        _zombies = _zombies + 1;
+                        _hornet = _hornet + 1;
+                    }
                     continue;
                 }
                 else if (_name == "fatzombiecop")
                 {
-                    _zombies = _zombies + 1;
-                    _cop = _cop + 1;
+                    if (_e.IsAlive())
+                    {
+                        _zombies = _zombies + 1;
+                        _cop = _cop + 1;
+                    }
                     continue;
                 }
                 else if (_name == "minibike")
