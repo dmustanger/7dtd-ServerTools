@@ -318,9 +318,8 @@
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}ClanManager is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
+                            return true;
                         }
-                        return false;
                     }
                     if (CustomCommands.IsEnabled && CustomCommands.Dict.Count > 0 && CustomCommands.Dict.ContainsKey(_message))
                     {
