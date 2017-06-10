@@ -37,26 +37,26 @@ Watchlist You can add suspect players to this list and when they join the server
 <br>
 All chat responses can be edited via config.<br>
 <br>
-Admin chat commands @admins @all /mute /unmute. @admins <message> will send a message to all admins and only admins can use this command. @all <message> is just like a say command. /mute <playerName> will keep said player from posting in the chat. /unmute <playerName> will allow the player to post in the chat again.<br>
+Admin chat commands @admins @all /mute /unmute. @admins \<message\> will send a message to all admins and only admins can use this command. @all \<message\> is just like a say command. /mute \<playerName\> will keep said player from posting in the chat. /unmute \<playerName\> will allow the player to post in the chat again.<br>
 <br>
 Clan Tag Protection. Only the person that created the clan can delete the clan and promote/demote members to/from officers. Only clan owners and officers can invite and remove members.<br>
-to make a clan type /clanadd <clanTag><br>
+to make a clan type /clanadd \<clanTag\><br>
 to delete a clan type /clandel<br>
-to add members type /claninvite <playerName><br>
-to remove a member type /clanremove <playerName><br>
-to promote a member to officer type /clanpromote <playerName><br>
-to demote a member from officer to member type /clandemote <playerName><br>
+to add members type /claninvite \<playerName\><br>
+to remove a member type /clanremove \<playerName\><br>
+to promote a member to officer type /clanpromote \<playerName\><br>
+to demote a member from officer to member type /clandemote \<playerName\><br>
 to accept a clan invite type /clanaccept<br>
 to decline a clan invite type /clandecline<br>
 to leave a clan type /clanleave<br>
 <br>
 Chat commands /pm or /w for players to pm other players.<br>
-Usage: /w <playername> <message> or /pm <playername> <message><br>
+Usage: /w \<playername\> \<message\> or /pm \<playername\> \<message\><br>
 <br>
 Admin name coloring and prefixes<br>
 <br>
-Console command to stop the game server. Usage: stopserver <minutes><br>
+Console command to stop the game server. Usage: stopserver \<minutes\><br>
 <br>
-Console command to remove a entity. Usage: entityremove <entityId><br>
+Console command to remove a entity. Usage: entityremove \<entityId\><br>
 <br>
-Console command to reset a players profile. Usage: rp <steamId> or resetplayer <steamId>
+Console command to reset a players profile. Usage: rp \<steamId\> or resetplayer \<steamId\>
