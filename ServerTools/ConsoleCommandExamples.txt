@@ -20,19 +20,6 @@ Examples for console command PingImmunity:
 		pingimmunity list
 		pi list
 
-Examples for console command ReservedSlot:
-	Usage: reservedslot add <steamID> <playerName> <days to expire>
-		reservedslot add 12345678912345678 "Foo bar" 30
-		rs add 12345678912345678 "Foo bar" 30
-
-	Usage: reservedslot remove <steamID>
-		reservedslot remove 12345678912345678
-		rs remove 12345678912345678
-
-	Usage: reservedslot list
-		reservedslot list
-		rs list
-
 Examples for console command ResetPlayer:
 	Usage: resetplayer <steamId>
 		resetplayer 12345678912345678
@@ -41,6 +28,9 @@ Examples for console command ResetPlayer:
 Examples for console command StopServer:
 	Usage: stopserver <minutes>
 		stopserver 10
+
+	Usage: stopserver cancel
+		stopserver cancel
 
 Examples for console command Watchlist:
 	Usage: watchlist add <steamID> <reason>

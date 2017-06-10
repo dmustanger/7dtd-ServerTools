@@ -76,14 +76,6 @@
             {
                 Watchlist.Unload();
             }
-            if (!ReservedSlots.IsRunning && ReservedSlots.IsEnabled)
-            {
-                ReservedSlots.Load();
-            }
-            if (ReservedSlots.IsRunning && !ReservedSlots.IsEnabled)
-            {
-                ReservedSlots.Unload();
-            }
         }
     }
 }

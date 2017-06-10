@@ -37,10 +37,6 @@ namespace ServerTools
 
         public override void PlayerLogin(ClientInfo _cInfo, string _compatibilityVersion)
         {
-            if (ReservedSlots.IsEnabled)
-            {
-                ReservedSlots.CheckReservedSlot(_cInfo);
-            }
         }
 
         public override void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)
