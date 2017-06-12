@@ -400,6 +400,18 @@ namespace ServerTools
                                     Motd.Message = _line.GetAttribute("Message");
                                 }
                                 break;
+                            case "ReservedSlots":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ReservedSlots.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                             case "SetHome":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -474,6 +486,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"InvalidItemKicker\" Enable=\"{0}\" Ban=\"{1}\" />", InventoryCheck.IsEnabled, InventoryCheck.BanPlayer));
                 sw.WriteLine(string.Format("        <Tool Name=\"Killme\" Enable=\"{0}\" DelayBetweenKillmeUses=\"{1}\" />", KillMe.IsEnabled, KillMe.DelayBetweenUses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Motd\" Enable=\"{0}\" Message=\"{1}\" />", Motd.IsEnabled, Motd.Message));
+                sw.WriteLine(string.Format("        <Tool Name=\"ReservedSlots\" Enable=\"{0}\" />", ReservedSlots.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"SetHome\" Enable=\"{0}\" DelayBetweenSetHomeUses=\"{1}\" />", TeleportHome.IsEnabled, TeleportHome.DelayBetweenUses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Watchlist\" Enable=\"{0}\" />", Watchlist.IsEnabled));
                 sw.WriteLine("    </Tools>");
