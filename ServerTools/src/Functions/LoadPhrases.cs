@@ -464,13 +464,13 @@ namespace ServerTools
                 string _phrase303;
                 if (!Dict.TryGetValue(303, out _phrase303))
                 {
-                    _phrase303 = "Feral Zombies:{Ferals} Cops:{Cops} Dogs:{Dogs} Bees:{Bees} Screamers:{Screamers}";
+                    _phrase303 = "Feral Zombies:{Ferals} Radiated Zombies:{Radiated} Dogs:{Dogs} Vultures:{Vultures} Screamers:{Screamers}";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"303\" Phrase=\"{0}\" />", _phrase303));
                 string _phrase304;
                 if (!Dict.TryGetValue(304, out _phrase304))
                 {
-                    _phrase304 = "Bears:{Bears} Stags:{Stags} Pigs:{Pigs} Rabbits:{Rabbits} Chickens:{Chickens}";
+                    _phrase304 = "Bears:{Bears} Stags:{Stags} Boars:{Boars} Rabbits:{Rabbits} Chickens:{Chickens} Snakes:{Snakes} Wolves:{Wolves}";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"304\" Phrase=\"{0}\" />", _phrase304));
                 string _phrase305;
