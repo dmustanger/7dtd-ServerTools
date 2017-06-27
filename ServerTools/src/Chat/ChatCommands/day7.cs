@@ -23,7 +23,6 @@ namespace ServerTools
             int _pig = 0;
             int _dog = 0;
             int _vulture = 0;
-            int _cop = 0;
             int _screamer = 0;
             int _snake = 0;
             int _wolf = 0;
@@ -36,7 +35,7 @@ namespace ServerTools
                 {
                     continue;
                 }
-                else if (_name == "zombieUtilityWorker" || _name == "zombieSkateboarder" || _name == "zombieSnow" || _name == "zombieStripper" || _name == "zombieBusinessMan" || _name == "zombieBurnt" || _name == "zombieOldTimer" || _name == "zombieBiker" || _name == "zombieCheerleader" || _name == "zombieFarmer" || _name == "zombieFemaleFat" || _name == "zombieSoldier" || _name == "zombieFootballPlayer" || _name == "zombieFatHawaiian") 
+                else if (_name == "zombieUtilityWorker" || _name == "zombieSkateboarder" || _name == "zombieSnow" || _name == "zombieStripper" || _name == "zombieBusinessMan" || _name == "zombieBurnt" || _name == "zombieOldTimer" || _name == "zombieBiker" || _name == "zombieCheerleader" || _name == "zombieFarmer" || _name == "zombieFemaleFat" || _name == "zombieSoldier" || _name == "zombieFootballPlayer" || _name == "zombieFatHawaiian" || _name == "zombieMarlene" || _name == "zombieSteveCrawler" || _name == "zombieSteve" || _name == "zombieMoe" || _name == "zombieDarlene" || _name == "zombieYo" || _name == "zombieBoe" || _name == "zombieMaleHazmat" || _name == "zombieJoe" || _name == "zombieArlene" || _name == "zombieNurse" || _name == "zombieFatCop" || _name == "zombieSpider") 
                 {
                     if (_e.IsAlive())
                     {
@@ -116,7 +115,7 @@ namespace ServerTools
                     }
                     continue;
                 }
-                else if (_name == "zombieSpiderFeral" || _name == "zombieSteveFeral" || _name == "zombieDarleneFeral" || _name == "zombieFatCopFeral" || _name == "zombieBoeFeral" || _name == "zombieYoFeral" || _name == "zombieFemaleFatFeral" || _name == "zombieMarleneFeral" || _name == "zombieSkateboarderFeral" || _name == "zombieFatHawaiianFeral" || _name == "zombieNurseFeral" || _name == "zombieBusinessManFeral" || _name == "zombieMoeFeral" || _name == "zombieWightFeral")
+                else if (_name == "zombieSpiderFeral" || _name == "zombieSteveFeral" || _name == "zombieDarleneFeral" || _name == "zombieFatCopFeral" || _name == "zombieBoeFeral" || _name == "zombieYoFeral" || _name == "zombieFemaleFatFeral" || _name == "zombieMarleneFeral" || _name == "zombieSkateboarderFeral" || _name == "zombieFatHawaiianFeral" || _name == "zombieNurseFeral" || _name == "zombieBusinessManFeral" || _name == "zombieMoeFeral" || _name == "zombieWightFeral" || _name == "zombieSteveCrawlerFeral")
                 {
                     if (_e.IsAlive())
                     {
@@ -140,15 +139,6 @@ namespace ServerTools
                     {
                         _zombies = _zombies + 1;
                         _vulture = _vulture + 1;
-                    }
-                    continue;
-                }
-                else if (_name == "fatzombiecop")
-                {
-                    if (_e.IsAlive())
-                    {
-                        _zombies = _zombies + 1;
-                        _cop = _cop + 1;
                     }
                     continue;
                 }
@@ -208,7 +198,6 @@ namespace ServerTools
                 _phrase306 = "Next 7th day is today";
             }
             _phrase300 = _phrase300.Replace("{Fps}", _fps);
-            _phrase301 = _phrase301.Replace("{DaysUntil7}", _daysUntil7.ToString());
             _phrase302 = _phrase302.Replace("{Players}", _playerCount.ToString());
             _phrase302 = _phrase302.Replace("{Zombies}", _zombies.ToString());
             _phrase302 = _phrase302.Replace("{Animals}", _animals.ToString());
