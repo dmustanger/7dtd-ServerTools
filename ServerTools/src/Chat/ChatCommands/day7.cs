@@ -31,7 +31,7 @@ namespace ServerTools
             foreach (Entity _e in _entities)
             {
                 string _name = EntityClass.list[_e.entityClass].entityClassName;
-                if (_name == "playerMale" || _name == "playerFemale" || _name == "item" || _name == "fallingBlock" || _name == "Backpack" || _name == "fallingTree" || _name == "npcTraderJimmy" || _name == "npcTraderBob" || _name == "DroppedLootContainer")
+                if (_name == "playerMale" || _name == "playerFemale" || _name == "item" || _name == "fallingBlock" || _name == "Backpack" || _name == "fallingTree" || _name == "npcTraderJimmy" || _name == "npcTraderBob" || _name == "DroppedLootContainer" || _name == "npcTraderRekt")
                 {
                     continue;
                 }
@@ -79,7 +79,7 @@ namespace ServerTools
                     }
                     continue;
                 }
-                else if (_name == "animalWolf")
+                else if (_name == "animalWolf" || _name == "animalDireWolf")
                 {
                     if (_e.IsAlive())
                     {
@@ -115,7 +115,7 @@ namespace ServerTools
                     }
                     continue;
                 }
-                else if (_name == "zombieSpiderFeral" || _name == "zombieSteveFeral" || _name == "zombieDarleneFeral" || _name == "zombieFatCopFeral" || _name == "zombieBoeFeral" || _name == "zombieYoFeral" || _name == "zombieFemaleFatFeral" || _name == "zombieMarleneFeral" || _name == "zombieSkateboarderFeral" || _name == "zombieFatHawaiianFeral" || _name == "zombieNurseFeral" || _name == "zombieBusinessManFeral" || _name == "zombieMoeFeral" || _name == "zombieWightFeral" || _name == "zombieSteveCrawlerFeral")
+                else if (_name == "zombieSpiderFeral" || _name == "zombieSteveFeral" || _name == "zombieDarleneFeral" || _name == "zombieFatCopFeral" || _name == "zombieBoeFeral" || _name == "zombieYoFeral" || _name == "zombieFemaleFatFeral" || _name == "zombieMarleneFeral" || _name == "zombieSkateboarderFeral" || _name == "zombieFatHawaiianFeral" || _name == "zombieNurseFeral" || _name == "zombieBusinessManFeral" || _name == "zombieMoeFeral" || _name == "zombieWightFeral" || _name == "zombieSteveCrawlerFeral" || _name == "zombieArleneFeral" || _name == "zombieJoeFeral")
                 {
                     if (_e.IsAlive())
                     {
@@ -149,6 +149,7 @@ namespace ServerTools
                 }
                 else if (_name == "animalSnake")
                 {
+                    _animals = _animals + 1;
                     _snake = _snake + 1;
                     continue;
                 }
@@ -198,6 +199,7 @@ namespace ServerTools
                 _phrase306 = "Next 7th day is today";
             }
             _phrase300 = _phrase300.Replace("{Fps}", _fps);
+            _phrase301 = _phrase301.Replace("{DaysUntil7}", _daysUntil7.ToString());
             _phrase302 = _phrase302.Replace("{Players}", _playerCount.ToString());
             _phrase302 = _phrase302.Replace("{Zombies}", _zombies.ToString());
             _phrase302 = _phrase302.Replace("{Animals}", _animals.ToString());
