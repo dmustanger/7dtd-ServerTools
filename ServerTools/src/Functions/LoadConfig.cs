@@ -123,18 +123,50 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminNameColoring entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Prefix"))
+                                if (!_line.HasAttribute("AdminLevelNeeded"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminNameColoring entry because of missing 'Prefix' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminNameColoring entry because of missing 'AdminLevelNeeded' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                ChatHook.AdminPrefix = _line.GetAttribute("Prefix");
-                                if (!_line.HasAttribute("Color"))
+                                if (!int.TryParse(_line.GetAttribute("AdminLevelNeeded"), out ChatHook.AdminLevel))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminNameColoring entry because of missing 'Color' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminNameColoring entry because of invalid (non-numeric) value for 'AdminLevelNeeded' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                ChatHook.AdminColor = _line.GetAttribute("Color");
+                                if (!_line.HasAttribute("AdminPrefix"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminNameColoring entry because of missing 'AdminPrefix' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("AdminColor"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminNameColoring entry because of missing 'AdminColor' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("ModeratorLevelNeeded"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminNameColoring entry because of missing 'ModeratorLevelNeeded' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("ModeratorLevelNeeded"), out ChatHook.ModLevel))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminNameColoring entry because of invalid (non-numeric) value for 'ModeratorLevelNeeded' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("ModeratorPrefix"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminNameColoring entry because of missing 'ModeratorPrefix' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("ModeratorColor"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminNameColoring entry because of missing 'ModeratorColor' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                ChatHook.AdminPrefix = _line.GetAttribute("AdminPrefix");
+                                ChatHook.AdminColor = _line.GetAttribute("AdminColor");
+                                ChatHook.ModPrefix = _line.GetAttribute("ModeratorPrefix");
+                                ChatHook.ModColor = _line.GetAttribute("ModeratorColor");
                                 break;
                             case "AnnounceInvalidItemStack":
                                 if (!_line.HasAttribute("Enable"))
@@ -471,7 +503,7 @@ namespace ServerTools
                 sw.WriteLine("    </Version>");
                 sw.WriteLine("    <Tools>");
                 sw.WriteLine(string.Format("        <Tool Name=\"AdminChatCommands\" Enable=\"{0}\" PermissionLevelForMute=\"{1}\" />", AdminChat.IsEnabled, MutePlayer.PermLevelNeededforMute));
-                sw.WriteLine(string.Format("        <Tool Name=\"AdminNameColoring\" Enable=\"{0}\" Prefix=\"{1}\" Color=\"{2}\" />", ChatHook.AdminNameColoring, ChatHook.AdminPrefix, ChatHook.AdminColor));
+                sw.WriteLine(string.Format("        <Tool Name=\"AdminNameColoring\" Enable=\"{0}\" AdminLevelNeeded=\"{1}\" AdminPrefix=\"{2}\" AdminColor=\"{3}\" ModeratorLevelNeeded=\"{4}\" ModeratorPrefix=\"{5}\" ModeratorColor=\"{6}\" />", ChatHook.AdminNameColoring, ChatHook.AdminLevel, ChatHook.AdminPrefix, ChatHook.AdminColor, ChatHook.ModLevel, ChatHook.ModPrefix, ChatHook.ModColor));
                 sw.WriteLine(string.Format("        <Tool Name=\"AnnounceInvalidItemStack\" Enable=\"{0}\" />", InventoryCheck.AnounceInvalidStack));
                 sw.WriteLine(string.Format("        <Tool Name=\"AutoSaveWorld\" Enable=\"{0}\" DelayBetweenWorldSaves=\"{1}\" />", AutoSaveWorld.IsEnabled, AutoSaveWorld.DelayBetweenWorldSaves));
                 sw.WriteLine(string.Format("        <Tool Name=\"BadWordFilter\" Enable=\"{0}\" />", Badwords.IsEnabled));

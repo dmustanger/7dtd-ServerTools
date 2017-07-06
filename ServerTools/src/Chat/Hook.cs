@@ -6,6 +6,10 @@
         public static bool AdminNameColoring = false;
         public static string AdminColor = "[FF0000]";
         public static string AdminPrefix = "(ADMIN)";
+        public static int AdminLevel = 0;
+        public static string ModColor = "[008000]";
+        public static string ModPrefix = "(MOD)";
+        public static int ModLevel = 1;
 
         public static bool Hook(ClientInfo _cInfo, string _message, string _playerName, string _secondaryName, bool _localizeSecondary)
         {
@@ -30,9 +34,19 @@
                 }
                 if (AdminNameColoring && !_message.StartsWith("/") && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
                 {
-                    _playerName = string.Format("{0}{1} {2}[-]", AdminColor, AdminPrefix, _playerName);
-                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                    return false;
+                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                    if (Admin.PermissionLevel == AdminLevel)
+                    {
+                        _playerName = string.Format("{0}{1} {2}[-]", AdminColor, AdminPrefix, _playerName);
+                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                        return false;
+                    }
+                    if (Admin.PermissionLevel == ModLevel)
+                    {
+                        _playerName = string.Format("{0}{1} {2}[-]", ModColor, ModPrefix, _playerName);
+                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                        return false;
+                    }
                 }
                 if (Badwords.IsEnabled)
                 {
