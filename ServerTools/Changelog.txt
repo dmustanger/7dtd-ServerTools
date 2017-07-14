@@ -1,4 +1,14 @@
-﻿v3.7
+﻿v3.8
+Added AdminLevelNeeded For AdminNameColoring (check ServerToolsConfig.xml)
+Added Moderator name coloring
+Added param cancel to stopserver command. Usage: stopserver cancel
+Changed clanmanger to return the chat message if the clanmanager is not enabled.
+Updated /Day7 to a16 zombies and animals
+Updated InvalidItems to a16 blocks
+Fixed /clanadd players can no longer add blank clan names
+Fixed /re not sending reply messages to the players that pm'd
+
+v3.7
 Added Reserved Slot console command
 Fixed /sethome no longer spawns player at the highest point
 Fixed /home still not saving players positions after server reboots
