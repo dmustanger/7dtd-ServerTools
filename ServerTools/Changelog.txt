@@ -1,4 +1,7 @@
-﻿v3.8
+﻿v3.9
+Fixed Reserved slots command not working
+
+v3.8
 Added AdminLevelNeeded For AdminNameColoring (check ServerToolsConfig.xml)
 Added Moderator name coloring
 Added param cancel to stopserver command. Usage: stopserver cancel
