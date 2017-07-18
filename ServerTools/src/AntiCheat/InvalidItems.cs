@@ -436,7 +436,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"storeShelving01Double\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"storeShelving01Top\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"storeShelving01TopDouble\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"mineCookingPot\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"plantedHop2\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"plantedHop3Harvest\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"plantedMushroom2\" />"));
