@@ -100,16 +100,16 @@ namespace ServerTools
                             continue;
                         }
                         string _item = _line.GetAttribute("item");
-                        ItemValue _iv = ItemClass.GetItem(_item, true);
-                        if (_iv.type == ItemValue.None.type)
+                        ItemValue _itemValue = ItemClass.GetItem(_item, true);
+                        if (_itemValue.type == ItemValue.None.type)
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Gimme item not found.: {0}", _item));
                             continue;
                         }
                         if (!dict.ContainsKey(_item))
                         {
-                                int[] _c = new int[] { _min, _max };
-                                dict.Add(_item, _c); 
+                            int[] _c = new int[] { _min, _max };
+                            dict.Add(_item, _c); 
                         }
                     }
                 }
@@ -238,19 +238,19 @@ namespace ServerTools
         private static void _GiveItem(ClientInfo _cInfo, bool _announce)
         {
             string _randomItem = list.RandomObject();
-            ItemValue iv = ItemClass.GetItem(_randomItem, true);
-            iv = new ItemValue(iv.type, true);
+            ItemValue _itemValue = ItemClass.GetItem(_randomItem, true);
+            _itemValue = new ItemValue(_itemValue.type, true);
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (iv.HasQuality)
+            if (_itemValue.HasQuality)
             {
                 int _quality = random.Next(1, 600);
-                iv.Quality = _quality;
+                _itemValue.Quality = _quality;
             }
             int[] _counts;
             if (dict.TryGetValue(_randomItem, out _counts))
             {
                 int _count = random.Next(_counts[0], _counts[1]);
-                ItemStack _itemDrop = new ItemStack(iv, _count);
+                ItemStack _itemDrop = new ItemStack(_itemValue, _count);
                 GameManager.Instance.ItemDropServer(_itemDrop, _player.GetPosition(), Vector3.zero);
                 string _phrase7;
                 if (!Phrases.Dict.TryGetValue(7, out _phrase7))
