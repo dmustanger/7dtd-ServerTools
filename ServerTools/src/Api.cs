@@ -15,7 +15,6 @@ namespace ServerTools
                 Directory.CreateDirectory(ConfigPath);
             }
             StateManager.Awake();
-            GameItems.LoadGameItems();
             Config.Load();
         }
 

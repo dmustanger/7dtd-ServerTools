@@ -99,10 +99,17 @@ namespace ServerTools
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring items entry because of invalid (non-numeric) value for 'max' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!dict.ContainsKey(_line.GetAttribute("item")))
+                        string _item = _line.GetAttribute("item");
+                        ItemValue _iv = ItemClass.GetItem(_item, true);
+                        if (_iv.type == ItemValue.None.type)
                         {
-                            int[] _c = new int[] { _min, _max };
-                            dict.Add(_line.GetAttribute("item"), _c);
+                            Log.Out(string.Format("[SERVERTOOLS] Gimme item not found.: {0}", _item));
+                            continue;
+                        }
+                        if (!dict.ContainsKey(_item))
+                        {
+                                int[] _c = new int[] { _min, _max };
+                                dict.Add(_item, _c); 
                         }
                     }
                 }
@@ -231,34 +238,20 @@ namespace ServerTools
         private static void _GiveItem(ClientInfo _cInfo, bool _announce)
         {
             string _randomItem = list.RandomObject();
-            ItemValue _itemValue = new ItemValue();
-            if (GameItems.Dict.ContainsKey(_randomItem))
-            {
-                _itemValue = GameItems.Dict[_randomItem].Clone();
-            }
-            else
-            {
-                _randomItem = _randomItem.ToLower();
-                foreach (KeyValuePair<string, ItemValue> _key in GameItems.Dict)
-                {
-                    if (_key.Key.ToLower().Equals(_randomItem))
-                    {
-                        _itemValue = _key.Value.Clone();
-                    }
-                }
-            }
+            ItemValue iv = ItemClass.GetItem(_randomItem, true);
+            iv = new ItemValue(iv.type, true);
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (_itemValue.HasQuality)
+            if (iv.HasQuality)
             {
                 int _quality = random.Next(1, 600);
-                _itemValue.Quality = _quality;
+                iv.Quality = _quality;
             }
             int[] _counts;
             if (dict.TryGetValue(_randomItem, out _counts))
             {
                 int _count = random.Next(_counts[0], _counts[1]);
-                ItemStack _itemDrop = new ItemStack(_itemValue, _count);
-                GameManager.Instance.ItemDropServer(_itemDrop, _player.GetPosition(), Vector3.zero, -1, 60);
+                ItemStack _itemDrop = new ItemStack(iv, _count);
+                GameManager.Instance.ItemDropServer(_itemDrop, _player.GetPosition(), Vector3.zero);
                 string _phrase7;
                 if (!Phrases.Dict.TryGetValue(7, out _phrase7))
                 {
