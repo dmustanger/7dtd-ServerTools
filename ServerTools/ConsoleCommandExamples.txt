@@ -54,3 +54,13 @@ Examples for console command Watchlist:
 	Usage: watchlist list
 		watchlist list
 		wl list
+
+Examples for console command Mute:
+	Usage: mute add <steamId>
+		mute add 12345678912345678
+
+	Usage: mute remove <steamId>
+		mute remove 12345678912345678
+
+	Usage: mute list
+		mute list

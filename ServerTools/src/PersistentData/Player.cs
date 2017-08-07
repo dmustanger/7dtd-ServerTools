@@ -25,6 +25,10 @@ namespace ServerTools
         private string invitedtoclan;
         [OptionalField]
         private string lastwhisper;
+        [OptionalField]
+        private bool ismuted;
+        [OptionalField]
+        private string jail;
 
         public DateTime LastGimme
         {
@@ -131,6 +135,30 @@ namespace ServerTools
             set
             {
                 lastwhisper = value;
+            }
+        }
+
+        public bool IsMuted
+        {
+            get
+            {
+                return ismuted;
+            }
+            set
+            {
+                ismuted = value;
+            }
+        }
+
+        public string Jail
+        {
+            get
+            {
+                return jail;
+            }
+            set
+            {
+                jail = value;
             }
         }
 

@@ -27,10 +27,14 @@
                 {
                     ChatLog.Log(_message, _playerName);
                 }
-                if (MutePlayer.Dict.ContainsKey(_cInfo.playerId))
+                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                if (p != null)
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, "You are muted.", "Server", false, "ServerTools", false));
-                    return false;
+                    if (p.IsMuted)
+                    {
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, "You are muted.", "Server", false, "ServerTools", false));
+                        return false;
+                    }
                 }
                 if (AdminNameColoring && !_message.StartsWith("/") && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
                 {
