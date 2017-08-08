@@ -101,16 +101,6 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminChatCommands entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("PermissionLevelForMute"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminChatCommands entry because of missing 'PermissionLevelForMute' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("PermissionLevelForMute"), out MutePlayer.PermLevelNeededforMute))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminChatCommands entry because of invalid (non-numeric) value for 'PermissionLevelForMute' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
                                 break;
                             case "AdminNameColoring":
                                 if (!_line.HasAttribute("Enable"))
@@ -502,7 +492,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Version Version=\"{0}\" />", version.ToString()));
                 sw.WriteLine("    </Version>");
                 sw.WriteLine("    <Tools>");
-                sw.WriteLine(string.Format("        <Tool Name=\"AdminChatCommands\" Enable=\"{0}\" PermissionLevelForMute=\"{1}\" />", AdminChat.IsEnabled, MutePlayer.PermLevelNeededforMute));
+                sw.WriteLine(string.Format("        <Tool Name=\"AdminChatCommands\" Enable=\"{0}\" />", AdminChat.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"AdminNameColoring\" Enable=\"{0}\" AdminLevelNeeded=\"{1}\" AdminPrefix=\"{2}\" AdminColor=\"{3}\" ModeratorLevelNeeded=\"{4}\" ModeratorPrefix=\"{5}\" ModeratorColor=\"{6}\" />", ChatHook.AdminNameColoring, ChatHook.AdminLevel, ChatHook.AdminPrefix, ChatHook.AdminColor, ChatHook.ModLevel, ChatHook.ModPrefix, ChatHook.ModColor));
                 sw.WriteLine(string.Format("        <Tool Name=\"AnnounceInvalidItemStack\" Enable=\"{0}\" />", InventoryCheck.AnounceInvalidStack));
                 sw.WriteLine(string.Format("        <Tool Name=\"AutoSaveWorld\" Enable=\"{0}\" DelayBetweenWorldSaves=\"{1}\" />", AutoSaveWorld.IsEnabled, AutoSaveWorld.DelayBetweenWorldSaves));
