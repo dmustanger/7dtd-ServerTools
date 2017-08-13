@@ -59,7 +59,10 @@ namespace ServerTools
                 {
                     if (!clans.ContainsKey(p.ClanName))
                     {
-                        clans.Add(p.ClanName, _id);
+                        if (p.ClanName != null)
+                        {
+                            clans.Add(p.ClanName, _id);
+                        }
                     }
                 }
             }
