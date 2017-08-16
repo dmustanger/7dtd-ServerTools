@@ -307,7 +307,6 @@ namespace ServerTools
             th = new Thread(new ThreadStart(StatusCheck));
             th.IsBackground = true;
             th.Start();
-            Log.Out("[SERVERTOOLS] InfoTicker has started.");
         }
 
         private static void StatusCheck()
