@@ -68,13 +68,13 @@
             {
                 InventoryCheck.Load();
             }
-            if (!Watchlist.IsRunning && Watchlist.IsEnabled)
+            if (!Jail.IsRunning && Jail.IsEnabled)
             {
-                Watchlist.Load();
+                Jail.Load();
             }
-            if (Watchlist.IsRunning && !Watchlist.IsEnabled)
+            if (Jail.IsRunning && !Jail.IsEnabled)
             {
-                Watchlist.Unload();
+                Jail.Unload();
             }
             if (!ReservedSlots.IsRunning && ReservedSlots.IsEnabled)
             {
@@ -83,6 +83,14 @@
             if (ReservedSlots.IsRunning && !ReservedSlots.IsEnabled)
             {
                 ReservedSlots.Unload();
+            }
+            if (!Watchlist.IsRunning && Watchlist.IsEnabled)
+            {
+                Watchlist.Load();
+            }
+            if (Watchlist.IsRunning && !Watchlist.IsEnabled)
+            {
+                Watchlist.Unload();
             }
         }
     }

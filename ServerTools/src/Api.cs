@@ -44,19 +44,35 @@ namespace ServerTools
 
         public override void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)
         {
-            if (Motd.IsEnabled)
-            {
-                Motd.Send(_cInfo);
-            }
             if (ClanManager.IsEnabled)
             {
                 ClanManager.CheckforClantag(_cInfo);
             }
         }
 
+        public override void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
+        {
+            if (Motd.IsEnabled)
+            {
+                Motd.Send(_cInfo);
+            }
+            if (Jail.IsEnabled)
+            {
+                Jail.CheckPlayer(_cInfo);
+            }
+        }
+
         public override bool ChatMessage(ClientInfo _cInfo, EnumGameMessages _type, string _message, string _playerName, bool _localizeMain, string _secondaryName, bool _localizeSecondary)
         {
             return ChatHook.Hook(_cInfo, _message, _playerName, _secondaryName, _localizeSecondary);
+        }
+
+        public override void PlayerDisconnected(ClientInfo _cInfo, bool _bShutdown)
+        {
+            if (Jail.Dict.ContainsKey(_cInfo.playerId))
+            {
+                Jail.Dict.Remove(_cInfo.playerId);
+            }
         }
 
         public override void GameShutdown()

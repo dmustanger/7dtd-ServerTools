@@ -64,3 +64,10 @@ Examples for console command Mute:
 
 	Usage: mute list
 		mute list
+
+Examples for console command Jail:
+	Usage: jail add <steamId>
+		jail add 12345678912345678
+
+	Usage: jail remove <steamId>
+		jail remove 12345678912345678

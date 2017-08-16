@@ -9,7 +9,7 @@ namespace ServerTools
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
         private const double version = 4.0;
-        public static bool UpdateConfigs = true;
+        public static bool UpdateConfigs = false;
 
         public static void Load()
         {
@@ -63,9 +63,9 @@ namespace ServerTools
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring Version entry because of invalid (non-numeric) value for 'Version' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (_oldversion == version)
+                        if (_oldversion != version)
                         {
-                            UpdateConfigs = false;
+                            UpdateConfigs = true;
                         }
                     }
                 }
@@ -379,6 +379,34 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
+                            case "JailCommands":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring JailCommands entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Jail.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring JailCommands entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("JailSize"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring JailCommands entry because of missing 'JailSize' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("JailSize"), out Jail.JailSize))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring JailCommands entry because of invalid (non-numeric) value for 'JailSize' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("JailPosition"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring JailCommands entry because of missing 'JailPosition' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                Jail.JailPosition = _line.GetAttribute("JailPosition");
+                                break;
                             case "Killme":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -478,7 +506,7 @@ namespace ServerTools
             }
             Phrases.Load();
             Mods.Load();
-            UpdateConfigs = true;
+            UpdateConfigs = false;
         }
 
         public static void UpdateXml()
@@ -506,6 +534,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"HighPingKicker\" Enable=\"{0}\" Maxping=\"{1}\" SamplesNeeded=\"{2}\" />", HighPingKicker.IsEnabled, HighPingKicker.MAXPING, HighPingKicker.SamplesNeeded));
                 sw.WriteLine(string.Format("        <Tool Name=\"InfoTicker\" Enable=\"{0}\" DelayBetweenMessages=\"{1}\" />", InfoTicker.IsEnabled, InfoTicker.DelayBetweenMessages));
                 sw.WriteLine(string.Format("        <Tool Name=\"InvalidItemKicker\" Enable=\"{0}\" Ban=\"{1}\" />", InventoryCheck.IsEnabled, InventoryCheck.BanPlayer));
+                sw.WriteLine(string.Format("        <Tool Name=\"JailCommands\" Enable=\"{0}\" JailSize=\"{1}\" JailPosition=\"{2}\" />", Jail.IsEnabled, Jail.JailSize, Jail.JailPosition));
                 sw.WriteLine(string.Format("        <Tool Name=\"Killme\" Enable=\"{0}\" DelayBetweenKillmeUses=\"{1}\" />", KillMe.IsEnabled, KillMe.DelayBetweenUses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Motd\" Enable=\"{0}\" Message=\"{1}\" />", Motd.IsEnabled, Motd.Message));
                 sw.WriteLine(string.Format("        <Tool Name=\"ReservedSlots\" Enable=\"{0}\" />", ReservedSlots.IsEnabled));

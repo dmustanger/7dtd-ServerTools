@@ -28,7 +28,9 @@ namespace ServerTools
         [OptionalField]
         private bool ismuted;
         [OptionalField]
-        private string jail;
+        private bool isjailed;
+        [OptionalField]
+        private bool isremovedfromjail = true;
 
         public DateTime LastGimme
         {
@@ -150,15 +152,27 @@ namespace ServerTools
             }
         }
 
-        public string Jail
+        public bool IsJailed
         {
             get
             {
-                return jail;
+                return isjailed;
             }
             set
             {
-                jail = value;
+                isjailed = value;
+            }
+        }
+        
+        public bool IsRemovedFromJail
+        {
+            get
+            {
+                return isremovedfromjail;
+            }
+            set
+            {
+                isremovedfromjail = value;
             }
         }
 

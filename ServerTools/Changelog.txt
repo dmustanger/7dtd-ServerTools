@@ -1,4 +1,25 @@
-﻿v3.10
+﻿v4.0
+Added a jail system
+Added console command mute (see ConsoleCommandExamples.txt for usage)
+Moved mute data to Persistent data
+Removed PermissionLevelForMute from ServerToolsConfig.xml, will now need to set the permission level in the serveradmin.xml (example: <permission cmd="mute" permission_level="0" />)
+Fixed an error that would happen if a player removed a clan
+will need to delete servertools.bin or errors will appear in the log
+
+todo
+make a pvp command
+add permission levels to custom commands
+make a webby
+make possible for new spawns to be teled auto to a point on the map
+add a votban/kick
+make so that erros go into a seperate file in the servertools folder
+add additional option for a item name of the item in the chat for gimme
+Could we get a command that when player writes: /bloodmoon it will use the information from Phrase 301 and 306 only and not all the others Phrase id's 202-205. 
+the options to also add How long till bloodmoon on the MODT.
+Detection if people are flying, (clipping if possible). (alert admins only) and/or with automatic kick/ban options.
+If possible somehow for admins to be able to "look" inside an chest without breaking lock!
+
+v3.10
 Updated gimme to a16.2
 
 v3.9

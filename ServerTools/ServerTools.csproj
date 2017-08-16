@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ServerTools</RootNamespace>
     <AssemblyName>ServerTools</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>false</DebugSymbols>
@@ -40,6 +41,7 @@
     <Compile Include="src\Chat\ChatCommands\CustomCommands.cs" />
     <Compile Include="src\Chat\ChatCommands\day7.cs" />
     <Compile Include="src\Chat\ChatCommands\Gimme.cs" />
+    <Compile Include="src\Chat\AdminChatCommands\Jail.cs" />
     <Compile Include="src\Chat\ChatCommands\Killme.cs" />
     <Compile Include="src\Chat\ChatCommands\TeleportHome.cs" />
     <Compile Include="src\Chat\ChatCommands\Whisper.cs" />
@@ -48,10 +50,11 @@
     <Compile Include="src\Chat\Log.cs" />
     <Compile Include="src\Chat\Motd.cs" />
     <Compile Include="src\ClanManager\ClanManager.cs" />
+    <Compile Include="src\ConsoleCommands\Jail.cs" />
+    <Compile Include="src\ConsoleCommands\MutePlayer.cs" />
     <Compile Include="src\ConsoleCommands\ReservedSlots.cs" />
     <Compile Include="src\ConsoleCommands\StopServer.cs" />
     <Compile Include="src\Functions\LoadConfig.cs" />
-    <Compile Include="src\Functions\LoadGameItems.cs" />
     <Compile Include="src\Functions\LoadMods.cs" />
     <Compile Include="src\Functions\LoadPhrases.cs" />
     <Compile Include="src\ConsoleCommands\MaxPing.cs" />
@@ -62,37 +65,43 @@
     <Compile Include="src\PersistentData\Player.cs" />
     <Compile Include="src\PersistentData\Players.cs" />
     <Compile Include="src\PersistentData\StateManager.cs" />
-    <Compile Include="src\ReservedSlots\ReservedSlots.cs" />
     <Compile Include="src\ConsoleCommands\ResetPlayer.cs" />
     <Compile Include="src\ConsoleCommands\Watchlist.cs" />
+    <Compile Include="src\ReservedSlots\ReservedSlots.cs" />
     <Compile Include="src\Watchlist\Watchlist.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ChatCommandExamples.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="ConsoleCommandExamples.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="ModInfo.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
-    <Content Include="Changelog.txt" />
+    <Content Include="Changelog.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>E:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>E:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="LogLibrary">
-      <HintPath>E:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\LogLibrary.dll</HintPath>
+      <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\LogLibrary.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>E:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

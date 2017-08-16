@@ -524,6 +524,51 @@ namespace ServerTools
                     _phrase451 = "Saving World Now.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"451\" Phrase=\"{0}\" />", _phrase451));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ************************ Jail ************************** -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase500;
+                if (!Dict.TryGetValue(500, out _phrase500))
+                {
+                    _phrase500 = "{PlayerName} you have been sent to jail.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"500\" Phrase=\"{0}\" />", _phrase500));
+                string _phrase501;
+                if (!Dict.TryGetValue(501, out _phrase501))
+                {
+                    _phrase501 = "{PlayerName} you have been released from jail.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"501\" Phrase=\"{0}\" />", _phrase501));
+                string _phrase502;
+                if (!Dict.TryGetValue(502, out _phrase502))
+                {
+                    _phrase502 = "{PlayerName} you have set the jail position as {JailPosition}.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"502\" Phrase=\"{0}\" />", _phrase502));
+                string _phrase503;
+                if (!Dict.TryGetValue(503, out _phrase503))
+                {
+                    _phrase503 = "{PlayerName} the jail position jas not been set.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"503\" Phrase=\"{0}\" />", _phrase503));
+                string _phrase504;
+                if (!Dict.TryGetValue(504, out _phrase504))
+                {
+                    _phrase504 = "{AdminPlayerName} player {PlayerName} is already in jail.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"504\" Phrase=\"{0}\" />", _phrase504));
+                string _phrase505;
+                if (!Dict.TryGetValue(505, out _phrase505))
+                {
+                    _phrase505 = "{AdminPlayerName} you have put {PlayerName} in jail.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"505\" Phrase=\"{0}\" />", _phrase505));
+                string _phrase506;
+                if (!Dict.TryGetValue(506, out _phrase506))
+                {
+                    _phrase506 = "{AdminPlayerName} player {PlayerName} is not in jail.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"506\" Phrase=\"{0}\" />", _phrase506));
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();

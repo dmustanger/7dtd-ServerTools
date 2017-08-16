@@ -12,6 +12,18 @@ Unmute a player (admins only)
 	!unmute <playername>
 	/unmute <playername>
 
+Put a player in jail (admins only)
+	!jail <playername>
+	/jail <playername>
+
+Remove a player from jail
+	!unjail <playername>
+	/unjail <playername>
+
+Set the jail position
+	!setjail
+	/setjail
+
 list all commands available (all players)
 	!commands
 	/commands
