@@ -77,6 +77,7 @@ namespace ServerTools
                 {
                     List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                     ClientInfo _cInfo = _cInfoList.RandomObject();
+                    GetBloodmoon(_cInfo, true);
                 }
                 Thread.Sleep(60000 * AutoShowBloodmoon);
             }

@@ -16,7 +16,6 @@ make possible for new spawns to be teled auto to a point on the map
 add a votban/kick
 make so that erros go into a seperate file in the servertools folder
 add additional option for a item name of the item in the chat for gimme
-Could we get a command that when player writes: /bloodmoon it will use the information from Phrase 301 and 306 only and not all the others Phrase id's 202-205. 
 the options to also add How long till bloodmoon on the MODT.
 Detection if people are flying, (clipping if possible). (alert admins only) and/or with automatic kick/ban options.
 If possible somehow for admins to be able to "look" inside an chest without breaking lock!
