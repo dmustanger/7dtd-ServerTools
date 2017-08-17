@@ -52,13 +52,17 @@ namespace ServerTools
 
         public override void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
         {
-            if (Motd.IsEnabled)
-            {
-                Motd.Send(_cInfo);
-            }
             if (Jail.IsEnabled)
             {
                 Jail.CheckPlayer(_cInfo);
+            }
+            if (NewSpawnTele.IsEnabled)
+            {
+                NewSpawnTele.TeleNewSpawn(_cInfo);
+            }
+            if (Motd.IsEnabled)
+            {
+                Motd.Send(_cInfo);
             }
             if (Bloodmoon.ShowOnSpawn)
             {

@@ -569,6 +569,21 @@ namespace ServerTools
                     _phrase506 = "{AdminPlayerName} player {PlayerName} is not in jail.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"506\" Phrase=\"{0}\" />", _phrase506));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ******************** New Spawn Tele ******************** -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase525;
+                if (!Dict.TryGetValue(525, out _phrase525))
+                {
+                    _phrase525 = "{PlayerName} you have set the New Spawn position as {NewSpawnTelePosition}.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"525\" Phrase=\"{0}\" />", _phrase525));
+                string _phrase526;
+                if (!Dict.TryGetValue(526, out _phrase526))
+                {
+                    _phrase526 = "{PlayerName} you have been teleported to the new spawn location.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"526\" Phrase=\"{0}\" />", _phrase526));
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();

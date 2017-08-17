@@ -62,6 +62,7 @@
     <Compile Include="src\ConsoleCommands\PingImmunity.cs" />
     <Compile Include="src\HighPingKicker\HighPingKicker.cs" />
     <Compile Include="src\ConsoleCommands\EntityRemove.cs" />
+    <Compile Include="src\NewSpawnTele\NewSpawnTele.cs" />
     <Compile Include="src\PersistentData\PersistentContainer.cs" />
     <Compile Include="src\PersistentData\Player.cs" />
     <Compile Include="src\PersistentData\Players.cs" />

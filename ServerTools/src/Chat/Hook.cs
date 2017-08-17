@@ -231,19 +231,43 @@
                         {
                             if (_message == "setjail")
                             {
+                                if (_announce)
+                                {
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
+                                }
                                 Jail.SetJail(_cInfo);
                                 return false;
                             }
                             if (_message.StartsWith("jail "))
                             {
+                                if (_announce)
+                                {
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
+                                }
                                 Jail.PutInJail(_cInfo, _message);
                                 return false;
                             }
                             if(_message.StartsWith("unjail "))
                             {
+                                if (_announce)
+                                {
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
+                                }
                                 Jail.RemoveFromJail(_cInfo, _message);
                                 return false;
                             }
+                        }
+                    }
+                    if (_message == "setspawn")
+                    {
+                        if (NewSpawnTele.IsEnabled)
+                        {
+                            if (_announce)
+                            {
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
+                            }
+                            NewSpawnTele.SetNewSpawnTele(_cInfo);
+                            return false;
                         }
                     }
                     if (_message.StartsWith("clanadd") || _message == "clandel" || _message.StartsWith("claninvite") || _message == "clanaccept" || _message == "clandecline" || _message.StartsWith("clanremove") || _message.StartsWith("clanpromote") || _message.StartsWith("clandemote") || _message.StartsWith("clan") || _message.StartsWith("c") || _message == "clancommands")

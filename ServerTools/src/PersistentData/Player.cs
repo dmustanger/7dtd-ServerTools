@@ -31,6 +31,8 @@ namespace ServerTools
         private bool isjailed;
         [OptionalField]
         private bool isremovedfromjail = true;
+        [OptionalField]
+        private bool newspawntele;
 
         public DateTime LastGimme
         {
@@ -173,6 +175,18 @@ namespace ServerTools
             set
             {
                 isremovedfromjail = value;
+            }
+        }
+
+        public bool NewSpawnTele
+        {
+            get
+            {
+                return newspawntele;
+            }
+            set
+            {
+                newspawntele = value;
             }
         }
 

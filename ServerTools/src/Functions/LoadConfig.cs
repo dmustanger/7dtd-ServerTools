@@ -482,6 +482,24 @@ namespace ServerTools
                                     Motd.Message = _line.GetAttribute("Message");
                                 }
                                 break;
+                            case "NewSpawnTele":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring NewSpawnTele entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out NewSpawnTele.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring NewSpawnTele entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("NewSpawnTelePosition"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring NewSpawnTele entry because of missing a NewSpawnTelePosition attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                NewSpawnTele.NewSpawnTelePosition = _line.GetAttribute("NewSpawnTelePosition");
+                                break;
                             case "ReservedSlots":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -570,6 +588,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"JailCommands\" Enable=\"{0}\" JailSize=\"{1}\" JailPosition=\"{2}\" />", Jail.IsEnabled, Jail.JailSize, Jail.JailPosition));
                 sw.WriteLine(string.Format("        <Tool Name=\"Killme\" Enable=\"{0}\" DelayBetweenKillmeUses=\"{1}\" />", KillMe.IsEnabled, KillMe.DelayBetweenUses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Motd\" Enable=\"{0}\" Message=\"{1}\" />", Motd.IsEnabled, Motd.Message));
+                sw.WriteLine(string.Format("        <Tool Name=\"NewSpawnTele\" Enable=\"{0}\" NewSpawnTelePosition=\"{1}\" />", NewSpawnTele.IsEnabled, NewSpawnTele.NewSpawnTelePosition));
                 sw.WriteLine(string.Format("        <Tool Name=\"ReservedSlots\" Enable=\"{0}\" />", ReservedSlots.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"SetHome\" Enable=\"{0}\" DelayBetweenSetHomeUses=\"{1}\" />", TeleportHome.IsEnabled, TeleportHome.DelayBetweenUses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Watchlist\" Enable=\"{0}\" />", Watchlist.IsEnabled));
