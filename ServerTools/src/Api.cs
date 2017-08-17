@@ -60,6 +60,10 @@ namespace ServerTools
             {
                 Jail.CheckPlayer(_cInfo);
             }
+            if (Bloodmoon.ShowOnSpawn)
+            {
+                Bloodmoon.GetBloodmoon(_cInfo, false);
+            }
         }
 
         public override bool ChatMessage(ClientInfo _cInfo, EnumGameMessages _type, string _message, string _playerName, bool _localizeMain, string _secondaryName, bool _localizeSecondary)

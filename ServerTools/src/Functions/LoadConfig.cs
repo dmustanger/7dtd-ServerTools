@@ -204,6 +204,38 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
+                            case "Bloodmoon":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Bloodmoon.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("ShowOnSpawn"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon entry because of missing 'ShowOnSpawn' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("ShowOnSpawn"), out Bloodmoon.ShowOnSpawn))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon entry because of invalid (true/false) value for 'ShowOnSpawn' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("AutoShowBloodmoonDelay"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon entry because of missing 'AutoShowBloodmoonDelay' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("AutoShowBloodmoonDelay"), out Bloodmoon.AutoShowBloodmoon))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon entry because of invalid (non-numeric) value for 'AutoShowBloodmoonDelay' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                             case "ChatFloodProtection":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -525,6 +557,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"AnnounceInvalidItemStack\" Enable=\"{0}\" />", InventoryCheck.AnounceInvalidStack));
                 sw.WriteLine(string.Format("        <Tool Name=\"AutoSaveWorld\" Enable=\"{0}\" DelayBetweenWorldSaves=\"{1}\" />", AutoSaveWorld.IsEnabled, AutoSaveWorld.DelayBetweenWorldSaves));
                 sw.WriteLine(string.Format("        <Tool Name=\"BadWordFilter\" Enable=\"{0}\" />", Badwords.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" ShowOnSpawn=\"{1}\" AutoShowBloodmoonDelay=\"{2}\" />", Bloodmoon.IsEnabled, Bloodmoon.ShowOnSpawn, Bloodmoon.AutoShowBloodmoon));
                 sw.WriteLine(string.Format("        <Tool Name=\"ChatFloodProtection\" Enable=\"{0}\" />", ChatHook.ChatFlood));
                 sw.WriteLine(string.Format("        <Tool Name=\"ChatLogger\" Enable=\"{0}\" />", ChatLog.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"ClanManager\" Enable=\"{0}\" />", ClanManager.IsEnabled));

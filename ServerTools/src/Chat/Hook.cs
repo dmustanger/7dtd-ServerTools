@@ -177,6 +177,18 @@
                             return false;
                         }
                     }
+                    if (_message == "bloodmoon")
+                    {
+                        if (Bloodmoon.IsEnabled)
+                        {
+                            if (_announce)
+                            {
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
+                            }
+                            Bloodmoon.GetBloodmoon(_cInfo, _announce);
+                            return false;
+                        }
+                    }
                     if (_message == "killme" || _message == "wrist" || _message == "suicide")
                     {
                         if (_announce)

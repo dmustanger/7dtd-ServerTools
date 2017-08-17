@@ -20,6 +20,14 @@
             {
                 Badwords.Load();
             }
+            if (Bloodmoon.IsRunning && !Bloodmoon.IsEnabled)
+            {
+                Bloodmoon.Unload();
+            }
+            if (!Bloodmoon.IsRunning && Bloodmoon.IsEnabled)
+            {
+                Bloodmoon.Load();
+            }
             if (ClanManager.IsEnabled)
             {
                 PersistentContainer.Instance.Players.GetClans();
