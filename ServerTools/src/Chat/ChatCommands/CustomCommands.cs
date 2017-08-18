@@ -189,7 +189,10 @@ namespace ServerTools
                 string[] _command1 = { "jail" };
                 if (GameManager.Instance.adminTools.CommandAllowedFor(_command1, _cInfo.playerId))
                 {
-                    _commands = string.Format("{0} /jail", _commands);
+                    if (Jail.IsEnabled)
+                    {
+                        _commands = string.Format("{0} /jail", _commands);
+                    }
                 }
                 string[] _command2 = { "mute" };
                 if (GameManager.Instance.adminTools.CommandAllowedFor(_command2, _cInfo.playerId))
