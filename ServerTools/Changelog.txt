@@ -3,10 +3,11 @@ Added a jail system
 Added console command mute (see ConsoleCommandExamples.txt for usage)
 Added chat command /bloodmoon (only shows how many more days until bloodmoon) can also set it to auto show every x amount of mins with AutoShowBloodmoonDelay to disable set to 0
 Added New spawn tele system (possible for new spawns to be auto teled to a point on the map)
+Added a additional option for a gimme item to show a custom name in the chat (GimmeItems.xml will auto update to the new version when the server is started)
 Moved mute data to Persistent data
 Removed PermissionLevelForMute from ServerToolsConfig.xml, will now need to set the permission level in the serveradmin.xml (example: <permission cmd="mute" permission_level="0" />)
 Fixed an error that would happen if a player removed a clan
-Motd now displays every time a player spawns
+Motd now displays every time a player spawns not just on join
 NOTE: you will need to delete servertools.bin or errors will appear in the log
 
 todo
@@ -14,8 +15,6 @@ make a pvp command
 add permission levels to custom commands
 make a webby
 add a votban/kick
-make so that erros go into a seperate file in the servertools folder
-add additional option for a item name of the item in the chat for gimme
 Detection if people are flying, (clipping if possible). (alert admins only) and/or with automatic kick/ban options.
 If possible somehow for admins to be able to "look" inside an chest without breaking lock!
 

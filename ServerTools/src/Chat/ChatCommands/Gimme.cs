@@ -15,8 +15,10 @@ namespace ServerTools
         private const string file = "GimmeItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, int[]> dict = new SortedDictionary<string, int[]>();
+        private static SortedDictionary<string, string> dict1 = new SortedDictionary<string, string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static System.Random random = new System.Random();
+        private static bool updateConfig = false;
 
         private static List<string> list
         {
@@ -60,6 +62,7 @@ namespace ServerTools
                 if (childNode.Name == "items")
                 {
                     dict.Clear();
+                    dict1.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -76,6 +79,10 @@ namespace ServerTools
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring items entry because of missing item attribute: {0}", subChild.OuterXml));
                             continue;
+                        }
+                        if (!_line.HasAttribute("secondaryname"))
+                        {
+                            updateConfig = true;
                         }
                         if (!_line.HasAttribute("min"))
                         {
@@ -100,6 +107,15 @@ namespace ServerTools
                             continue;
                         }
                         string _item = _line.GetAttribute("item");
+                        string _secondaryname;
+                        if (_line.HasAttribute("secondaryname"))
+                        {
+                            _secondaryname = _line.GetAttribute("secondaryname");
+                        }
+                        else
+                        {
+                            _secondaryname = _item;
+                        }
                         ItemValue _itemValue = ItemClass.GetItem(_item, true);
                         if (_itemValue.type == ItemValue.None.type)
                         {
@@ -111,8 +127,17 @@ namespace ServerTools
                             int[] _c = new int[] { _min, _max };
                             dict.Add(_item, _c); 
                         }
+                        if (!dict1.ContainsKey(_item))
+                        {
+                            dict1.Add(_item, _secondaryname);
+                        }
                     }
                 }
+            }
+            if (updateConfig)
+            {
+                updateConfig = false;
+                UpdateXml();
             }
         }
 
@@ -128,40 +153,44 @@ namespace ServerTools
                 {
                     foreach (KeyValuePair<string, int[]> kvp in dict)
                     {
-                        sw.WriteLine(string.Format("        <item item=\"{0}\" min=\"{1}\" max=\"{2}\" />", kvp.Key, kvp.Value[0], kvp.Value[1]));
+                        string _name;
+                        if (dict1.TryGetValue(kvp.Key, out _name))
+                        {
+                            sw.WriteLine(string.Format("        <item item=\"{0}\" secondaryname=\"{1}\" min=\"{2}\" max=\"{3}\" />", kvp.Key, _name, kvp.Value[0], kvp.Value[1]));
+                        }     
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <item item=\"bottledWater\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"beer\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"keystoneBlock\" min=\"1\" max=\"1\" />");
-                    sw.WriteLine("        <item item=\"canChicken\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"canChili\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"corn\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"potato\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"firstAidBandage\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"painkillers\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"scrapBrass\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"antibiotics\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"moldyBread\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"oil\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"cornMeal\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"blueberries\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"canHam\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"coffeeBeans\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"casinoCoin\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"boneShiv\" min=\"1\" max=\"1\" />");
-                    sw.WriteLine("        <item item=\"canDogfood\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"animalHide\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"blueberryPie\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"canPeas\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"canStock\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"canCatfood\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"scrapIron\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"goldenrodPlant\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"clayLump\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"rottingFlesh\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"bottledWater\" secondaryname=\"Bottled Water\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"beer\" secondaryname=\"Beer\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"keystoneBlock\" secondaryname=\"Land Claim Block\" min=\"1\" max=\"1\" />");
+                    sw.WriteLine("        <item item=\"canChicken\" secondaryname=\"Can of Chicken\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"canChili\" secondaryname=\"Can of Chilli\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"corn\" secondaryname=\"Corn\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"potato\" secondaryname=\"Potato\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"firstAidBandage\" secondaryname=\"First Aid Bandage\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"painkillers\" secondaryname=\"Pain Killers\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"scrapBrass\" secondaryname=\"Scrap Brass\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"antibiotics\" secondaryname=\"Antibiotics\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"moldyBread\" secondaryname=\"Moldy Bread\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"oil\" secondaryname=\"Oil\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"cornMeal\" secondaryname=\"Cornmeal\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"blueberries\" secondaryname=\"Blueberries\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"canHam\" secondaryname=\"Can of Hame\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"coffeeBeans\" secondaryname=\"Coffee Beans\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"casinoCoin\" secondaryname=\"Casino Coins\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"boneShiv\" secondaryname=\"Bone Shiv\" min=\"1\" max=\"1\" />");
+                    sw.WriteLine("        <item item=\"canDogfood\" secondaryname=\"Can of Dog Food\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"animalHide\" secondaryname=\"Animal Hide\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"blueberryPie\" secondaryname=\"Blueberry Pie\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"canPeas\" secondaryname=\"Can of Peas\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"canStock\" secondaryname=\"Can of Stock\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"canCatfood\" secondaryname=\"Can of Cat Food\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"scrapIron\" secondaryname=\"Scrap Iron\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"goldenrodPlant\" secondaryname=\"Goldenrod Plant\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"clayLump\" secondaryname=\"Lumps of Clay\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"rottingFlesh\" secondaryname=\"Rotting Flesh\" min=\"1\" max=\"5\" />");
                 }
                 sw.WriteLine("    </items>");
                 sw.WriteLine("</Gimme>");
@@ -259,7 +288,11 @@ namespace ServerTools
                 }
                 _phrase7 = _phrase7.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase7 = _phrase7.Replace("{ItemCount}", _count.ToString());
-                _phrase7 = _phrase7.Replace("{ItemName}", _randomItem);
+                string _name;
+                if (dict1.TryGetValue(_randomItem, out _name))
+                {
+                    _phrase7 = _phrase7.Replace("{ItemName}", _name);
+                }
                 if (_announce || AlwaysShowResponse)
                 {
                     GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _phrase7), "Server", false, "", false);
