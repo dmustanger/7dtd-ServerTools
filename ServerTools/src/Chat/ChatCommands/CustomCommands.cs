@@ -162,9 +162,17 @@ namespace ServerTools
             {
                 _commands = string.Format("{0} /killme", _commands);
             }
+            if (Day7.IsEnabled)
+            {
+                _commands = string.Format("{0} /day7", _commands);
+            }
+            if (Bloodmoon.IsEnabled)
+            {
+                _commands = string.Format("{0} /bloodmoon", _commands);
+            }
             if (IsEnabled)
             {
-                _commands = string.Format("{0} /day7 /pm", _commands);
+                _commands = string.Format("{0} /pm /re", _commands);
             }
             if (ClanManager.IsEnabled)
             {
@@ -177,6 +185,16 @@ namespace ServerTools
                 if (GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo.playerId))
                 {
                     _commands = string.Format("{0} @all", _commands);
+                }
+                string[] _command1 = { "jail" };
+                if (GameManager.Instance.adminTools.CommandAllowedFor(_command1, _cInfo.playerId))
+                {
+                    _commands = string.Format("{0} /jail", _commands);
+                }
+                string[] _command2 = { "mute" };
+                if (GameManager.Instance.adminTools.CommandAllowedFor(_command2, _cInfo.playerId))
+                {
+                    _commands = string.Format("{0} /mute", _commands);
                 }
             }
             if (Dict.Count > 0)
