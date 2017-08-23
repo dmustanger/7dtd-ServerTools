@@ -45,30 +45,42 @@ namespace ServerTools
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (_player.Level == 1 && _player.totalItemsCrafted == 0 && NewSpawnTelePosition != "0,0,0" && !p.NewSpawnTele)
+            if (p == null)
             {
-                float xf;
-                float yf;
-                float zf;
-                string[] _cords = NewSpawnTelePosition.Split(',');
-                float.TryParse(_cords[0], out xf);
-                float.TryParse(_cords[1], out yf);
-                float.TryParse(_cords[2], out zf);
-                int x = (int)xf;
-                int y = (int)yf;
-                int z = (int)zf;
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].NewSpawnTele = true;
-                PersistentContainer.Instance.Save();
-                SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, x, y, z), _cInfo);
-                string _phrase526;
-                if (!Phrases.Dict.TryGetValue(526, out _phrase526))
-                {
-                    _phrase526 = "{PlayerName} you have been teleported to the new spawn location.";
-                }
-                _phrase526 = _phrase526.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _phrase526), "Server", false, "", false));
-
+                TelePlayer(_cInfo);
             }
+            else
+            {
+                if (_player.Level == 1 && _player.totalItemsCrafted == 0 && NewSpawnTelePosition != "0,0,0" && !p.NewSpawnTele)
+                {
+
+                    TelePlayer(_cInfo);
+                }
+            }
+        }
+
+        public static void TelePlayer(ClientInfo _cInfo)
+        {
+            float xf;
+            float yf;
+            float zf;
+            string[] _cords = NewSpawnTelePosition.Split(',');
+            float.TryParse(_cords[0], out xf);
+            float.TryParse(_cords[1], out yf);
+            float.TryParse(_cords[2], out zf);
+            int x = (int)xf;
+            int y = (int)yf;
+            int z = (int)zf;
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].NewSpawnTele = true;
+            PersistentContainer.Instance.Save();
+            SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, x, y, z), _cInfo);
+            string _phrase526;
+            if (!Phrases.Dict.TryGetValue(526, out _phrase526))
+            {
+                _phrase526 = "{PlayerName} you have been teleported to the new spawn location.";
+            }
+            _phrase526 = _phrase526.Replace("{PlayerName}", _cInfo.playerName);
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _phrase526), "Server", false, "", false));
         }
     }
 }
