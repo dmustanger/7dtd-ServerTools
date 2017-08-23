@@ -45,7 +45,7 @@ namespace ServerTools
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p == null && NewSpawnTelePosition != "0,0,0")
+            if (p == null && _player.Level == 1 && _player.totalItemsCrafted == 0 && NewSpawnTelePosition != "0,0,0")
             {
                 TelePlayer(_cInfo);
             }
