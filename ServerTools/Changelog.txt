@@ -1,4 +1,15 @@
-﻿v4.0
+﻿v4.1
+Fixed a NullReferenceException with NewSpawnTele
+
+todo
+make a pvp command
+add permission levels to custom commands
+make a webby
+add a votban/kick
+Detection if people are flying, (clipping if possible). (alert admins only) and/or with automatic kick/ban options.
+If possible somehow for admins to be able to "look" inside an chest without breaking lock!
+
+v4.0
 Added a jail system
 Added console command mute (see ConsoleCommandExamples.txt for usage)
 Added chat command /bloodmoon (only shows how many more days until bloodmoon) can also set it to auto show every x amount of mins with AutoShowBloodmoonDelay to disable set to 0
@@ -9,14 +20,6 @@ Removed PermissionLevelForMute from ServerToolsConfig.xml, will now need to set 
 Fixed an error that would happen if a player removed a clan
 Motd now displays every time a player spawns not just on join
 NOTE: you will need to delete servertools.bin or errors will appear in the log
-
-todo
-make a pvp command
-add permission levels to custom commands
-make a webby
-add a votban/kick
-Detection if people are flying, (clipping if possible). (alert admins only) and/or with automatic kick/ban options.
-If possible somehow for admins to be able to "look" inside an chest without breaking lock!
 
 v3.10
 Updated gimme to a16.2
