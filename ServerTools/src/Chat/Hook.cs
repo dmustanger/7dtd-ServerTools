@@ -104,7 +104,7 @@
                         }
                     }
                     _message = _message.ToLower();
-                    if (_message == "sethome")
+                    if (_message.StartsWith("sethome"))
                     {
                         if (_announce)
                         {
@@ -112,7 +112,7 @@
                         }
                         if (TeleportHome.IsEnabled)
                         {
-                            TeleportHome.SetHome(_cInfo);
+                            TeleportHome.SetHome(_cInfo, _message);
                         }
                         else
                         {
@@ -120,7 +120,7 @@
                         }
                         return false;
                     }
-                    if (_message == "home")
+                    if (_message.StartsWith("home"))
                     {
                         if (_announce)
                         {
@@ -128,7 +128,7 @@
                         }
                         if (TeleportHome.IsEnabled)
                         {
-                            TeleportHome.TeleHome(_cInfo);
+                            TeleportHome.TeleHome(_cInfo, _message);
                         }
                         else
                         {
