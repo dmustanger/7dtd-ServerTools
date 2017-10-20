@@ -47,13 +47,19 @@ killme command (all players)
 teleport home command (all players)
 	/sethome mainbase
 	!sethome mainbase
+	/listhomes
+	!listhomes
 	/home mainbase
 	!home mainbase
+	/delhome mainbase
+	!delhome mainbase
 	- If you do not specify a name, the name will be "default"
 	/sethome
 	!sethome
 	/home
 	!home
+	/delhome
+	!delhome
 
 
 whisper command (all players)

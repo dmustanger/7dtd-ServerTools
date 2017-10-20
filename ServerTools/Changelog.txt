@@ -1,5 +1,5 @@
 ﻿v4.1a
-Add support for multiple saved home locations
+Add support for multiple saved home locations, including listing and deleting homes
 
 v4.1
 Fixed a NullReferenceException with NewSpawnTele

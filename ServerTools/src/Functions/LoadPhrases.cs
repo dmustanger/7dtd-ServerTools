@@ -173,7 +173,7 @@ namespace ServerTools
                 string _phrase12;
                 if (!Dict.TryGetValue(12, out _phrase12))
                 {
-                    _phrase12 = "{PlayerName} your home has been removed.";
+                    _phrase12 = "{PlayerName} your home {HomeName} has been removed.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"12\" Phrase=\"{0}\" />", _phrase12));
                 string _phrase13;

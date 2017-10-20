@@ -136,6 +136,38 @@
                         }
                         return false;
                     }
+                    if (_message.StartsWith("listhomes"))
+                    {
+                        if (_announce)
+                        {
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
+                        }
+                        if (TeleportHome.IsEnabled)
+                        {
+                            TeleportHome.ListHomes(_cInfo);
+                        }
+                        else
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Home is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
+                        }
+                        return false;
+                    }
+                    if (_message.StartsWith("delhome"))
+                    {
+                        if (_announce)
+                        {
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
+                        }
+                        if (TeleportHome.IsEnabled)
+                        {
+                            TeleportHome.RemoveHome(_cInfo, _message);
+                        }
+                        else
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Home is not enabled.[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
+                        }
+                        return false;
+                    }
                     if (AdminChat.IsEnabled)
                     {
                         if (_message.StartsWith("mute ") || _message.StartsWith("unmute "))

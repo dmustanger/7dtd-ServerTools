@@ -33,7 +33,7 @@ namespace ServerTools
 		{
 			Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
 			string homeName = GetHomeName(_message);
-			if (p == null || p.HomePositions[homeName] == null)
+			if (p == null || !p.HomePositions.ContainsKey(homeName))
             {
                 string _phrase11;
                 if (!Phrases.Dict.TryGetValue(11, out _phrase11))
@@ -84,7 +84,65 @@ namespace ServerTools
             }
         }
 
-		private static string GetHomeName(string _message)
+        public static void ListHomes(ClientInfo _cInfo)
+        {
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            if (p == null)
+            {
+                string _phrase11;
+                if (!Phrases.Dict.TryGetValue(11, out _phrase11))
+                {
+                    _phrase11 = "{PlayerName} you do not have a {HomeName} home saved.";
+                }
+                _phrase11 = _phrase11.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase11 = _phrase11.Replace("{HomeName} ", "");
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase11, CustomCommands.ChatColor), "Server", false, "", false));
+            }
+            else
+            {
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", "---", CustomCommands.ChatColor), "Server", false, "", false));
+                var homes = PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePositions;
+                foreach (string name in homes.Keys)
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", name, CustomCommands.ChatColor), "Server", false, "", false));
+                }
+            }
+        }
+
+        public static void RemoveHome(ClientInfo _cInfo, string _message)
+        {
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            string homeName = GetHomeName(_message);
+            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            if (p == null || !p.HomePositions.ContainsKey(homeName))
+            {
+                string _phrase11;
+                if (!Phrases.Dict.TryGetValue(11, out _phrase11))
+                {
+                    _phrase11 = "{PlayerName} you do not have a {HomeName} home saved.";
+                }
+                _phrase11 = _phrase11.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase11 = _phrase11.Replace("{HomeName}", homeName);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase11, CustomCommands.ChatColor), "Server", false, "", false));
+            }
+            else
+            {
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePositions.Remove(homeName);
+                PersistentContainer.Instance.Save();
+                string _phrase12;
+                if (!Phrases.Dict.TryGetValue(12, out _phrase12))
+                {
+                    _phrase12 = "{PlayerName} your home {HomeName} has been removed.";
+                }
+                _phrase12 = _phrase12.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase12 = _phrase12.Replace("{HomeName}", homeName);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase12, CustomCommands.ChatColor), "Server", false, "", false));
+            }
+            
+        }
+
+        private static string GetHomeName(string _message)
 		{
 			if (_message.Contains(" "))
 			{
