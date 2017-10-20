@@ -89,21 +89,21 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\7dtd-binaries\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\7dtd-binaries\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="LogLibrary">
-      <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\LogLibrary.dll</HintPath>
+      <HintPath>..\7dtd-binaries\LogLibrary.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\7dtd-binaries\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

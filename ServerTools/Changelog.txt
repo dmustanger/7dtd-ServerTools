@@ -1,4 +1,7 @@
-﻿v4.1
+﻿v4.1a
+Add support for multiple saved home locations
+
+v4.1
 Fixed a NullReferenceException with NewSpawnTele
 
 todo

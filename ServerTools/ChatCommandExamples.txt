@@ -45,10 +45,16 @@ killme command (all players)
 	/killme
 
 teleport home command (all players)
+	/sethome mainbase
+	!sethome mainbase
+	/home mainbase
+	!home mainbase
+	- If you do not specify a name, the name will be "default"
 	/sethome
 	!sethome
 	/home
 	!home
+
 
 whisper command (all players)
 	/pm <message>
