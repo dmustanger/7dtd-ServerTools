@@ -15,7 +15,7 @@ namespace ServerTools
         [OptionalField]
         private string homeposition;  // eventually once multihome support is widespread and data is migrated, swap the decorator to [NonSerialized].  Once that's widespread, remove this prop.
         [OptionalField]
-        private Dictionary<string, string> homepositions = new Dictionary<string, string>();
+        private Dictionary<string, string> homepositions;
         [OptionalField]
         private DateTime lastsethome;
         [OptionalField]
@@ -65,6 +65,10 @@ namespace ServerTools
         {
             get
             {
+                if(homepositions == null)
+                {
+                    homepositions = new Dictionary<string, string>();
+                }
                 if(homeposition != null)
                 {
                     homepositions["default"] = homeposition;
