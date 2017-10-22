@@ -8,3 +8,5 @@ UnityEngine.dll
 bin/**
 /ServerTools/obj/Debug
 /ServerTools/obj/Release
+.vscode
+.vs

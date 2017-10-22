@@ -155,25 +155,25 @@ namespace ServerTools
                 string _phrase9;
                 if (!Dict.TryGetValue(9, out _phrase9))
                 {
-                    _phrase9 = "{PlayerName} you already have a home set.";
+                    _phrase9 = "{PlayerName} you already have a {HomeName} home set.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"9\" Phrase=\"{0}\" />", _phrase9));
                 string _phrase10;
                 if (!Dict.TryGetValue(10, out _phrase10))
                 {
-                    _phrase10 = "{PlayerName} your home has been saved.";
+                    _phrase10 = "{PlayerName} your home {HomeName} has been saved.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"10\" Phrase=\"{0}\" />", _phrase10));
                 string _phrase11;
                 if (!Dict.TryGetValue(11, out _phrase11))
                 {
-                    _phrase11 = "{PlayerName} you do not have a home saved.";
+                    _phrase11 = "{PlayerName} you do not have a {HomeName} home saved.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"11\" Phrase=\"{0}\" />", _phrase11));
                 string _phrase12;
                 if (!Dict.TryGetValue(12, out _phrase12))
                 {
-                    _phrase12 = "{PlayerName} your home has been removed.";
+                    _phrase12 = "{PlayerName} your home {HomeName} has been removed.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"12\" Phrase=\"{0}\" />", _phrase12));
                 string _phrase13;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace ServerTools
@@ -12,7 +13,9 @@ namespace ServerTools
         [OptionalField]
         private DateTime lastkillme;
         [OptionalField]
-        private string homeposition;
+        private string homeposition;  // eventually once multihome support is widespread and data is migrated, swap the decorator to [NonSerialized].  Once that's widespread, remove this prop.
+        [OptionalField]
+        private Dictionary<string, string> homepositions;
         [OptionalField]
         private DateTime lastsethome;
         [OptionalField]
@@ -58,15 +61,20 @@ namespace ServerTools
             }
         }
 
-        public string HomePosition
+        public Dictionary<string, string> HomePositions
         {
             get
             {
-                return homeposition;
-            }
-            set
-            {
-                homeposition = value;
+                if(homepositions == null)
+                {
+                    homepositions = new Dictionary<string, string>();
+                }
+                if(homeposition != null)
+                {
+                    homepositions["default"] = homeposition;
+                    homeposition = null; 
+                }
+                return homepositions;
             }
         }
 
