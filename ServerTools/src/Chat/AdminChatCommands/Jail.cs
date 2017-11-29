@@ -13,6 +13,7 @@ namespace ServerTools
         public static string JailPosition = "0,0,0";
         private static Thread th;
         public static SortedDictionary<string, string> Dict = new SortedDictionary<string, string>();
+        public static SortedDictionary<string, string> Dict1 = new SortedDictionary<string, string>();
 
         private static List<string> List
         {
@@ -149,6 +150,8 @@ namespace ServerTools
             if (!Dict.ContainsKey(_PlayertoJail.playerId))
             {
                 Dict.Add(_PlayertoJail.playerId, null);
+                Dict1.Add(_PlayertoJail.playerId, _PlayertoJail.playerName);
+
             }
             PersistentContainer.Instance.Players[_PlayertoJail.playerId, true].IsJailed = true;
             PersistentContainer.Instance.Players[_PlayertoJail.playerId, true].IsRemovedFromJail = false;
@@ -229,6 +232,7 @@ namespace ServerTools
                             if (Dict.ContainsKey(_PlayertoUnJail.playerId))
                             {
                                 Dict.Remove(_PlayertoUnJail.playerId);
+                                Dict1.Remove(_PlayertoUnJail.playerId);
                             }
                             PersistentContainer.Instance.Players[_PlayertoUnJail.playerId, false].IsJailed = false;
                             PersistentContainer.Instance.Players[_PlayertoUnJail.playerId, false].IsRemovedFromJail = true;
@@ -268,6 +272,7 @@ namespace ServerTools
                     if (!Dict.ContainsKey(_cInfo.playerId))
                     {
                         Dict.Add(_cInfo.playerId, null);
+                        Dict1.Add(_cInfo.playerId, _cInfo.playerName);
                     }
                 }
                 else
@@ -275,6 +280,7 @@ namespace ServerTools
                     if (Dict.ContainsKey(_cInfo.playerId))
                     {
                         Dict.Remove(_cInfo.playerId);
+                        Dict1.Remove(_cInfo.playerId);
                     }
                     if (!p.IsRemovedFromJail)
                     {

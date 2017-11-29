@@ -48,6 +48,14 @@ namespace ServerTools
             {
                 ClanManager.CheckforClantag(_cInfo);
             }
+            if (Motd.IsEnabled & !Motd.ShowOnRespawn)
+            {
+                Motd.Send(_cInfo);
+            }
+            if (Bloodmoon.ShowOnSpawn & !Bloodmoon.ShowOnRespawn)
+            {
+                Bloodmoon.GetBloodmoon(_cInfo, false);
+            }
         }
 
         public override void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
@@ -60,11 +68,11 @@ namespace ServerTools
             {
                 NewSpawnTele.TeleNewSpawn(_cInfo);
             }
-            if (Motd.IsEnabled)
+            if (Motd.IsEnabled & Motd.ShowOnRespawn)
             {
                 Motd.Send(_cInfo);
             }
-            if (Bloodmoon.ShowOnSpawn)
+            if (Bloodmoon.ShowOnSpawn & Bloodmoon.ShowOnRespawn)
             {
                 Bloodmoon.GetBloodmoon(_cInfo, false);
             }

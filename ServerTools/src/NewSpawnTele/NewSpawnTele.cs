@@ -51,7 +51,7 @@ namespace ServerTools
             }
             else
             {
-                if (_player.Level == 1 && _player.totalItemsCrafted == 0 && NewSpawnTelePosition != "0,0,0" && !p.NewSpawnTele)
+                if (_player.Level == 1 && _player.distanceWalked == 0 && NewSpawnTelePosition != "0,0,0" && !p.NewSpawnTele)
                 {
 
                     TelePlayer(_cInfo);

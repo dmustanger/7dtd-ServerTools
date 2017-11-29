@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Xml;
 
@@ -9,17 +10,15 @@ namespace ServerTools
     {
         public static bool IsRunning = false;
         public static bool IsEnabled = false;
+        public static bool Random = false;
         public static int DelayBetweenMessages = 5;
         private const string file = "InfoTicker.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, int> dict = new SortedDictionary<string, int>();
+        private static List<string> msgList = new List<string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static Thread th;
 
-        private static List<string> messages
-        {
-            get { return new List<string>(dict.Keys); }
-        }
 
         public static void Load()
         {
@@ -58,6 +57,7 @@ namespace ServerTools
                 if (childNode.Name == "Messages")
                 {
                     dict.Clear();
+                    msgList.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -89,6 +89,13 @@ namespace ServerTools
                         if (!dict.ContainsKey(_line.GetAttribute("Message")))
                         {
                             dict.Add(_line.GetAttribute("Message"), _id);
+                        }
+                        foreach (var msg in dict.Keys)
+                        {
+                            if (!msgList.Contains(msg))
+                            {
+                                msgList.Add(msg);
+                            }  
                         }
                     }
                 }
@@ -156,19 +163,59 @@ namespace ServerTools
         {
             while (IsEnabled)
             {
-                if (ConnectionManager.Instance.ClientCount() > 0 && dict.Count > 0)
+                if (ConnectionManager.Instance.ClientCount() > 0)
                 {
-                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                    ClientInfo _cInfo = _cInfoList.RandomObject();
-                    string _message = messages.RandomObject();
-                    int _id;
-                    if (dict.TryGetValue(_message, out _id))
+                    if (msgList.Count > 0)
                     {
-                        foreach (KeyValuePair<string, int> kvp in dict)
+                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                        if (Random)
                         {
-                            if (kvp.Value == _id)
+                            ClientInfo _cInfo = _cInfoList.RandomObject();
+                            msgList.RandomizeList();
+                            var _message = msgList.First();
+                            if (_message != null)
                             {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, kvp.Key), "Server", false, "", false);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _message), "Server", false, "", false);
+                                msgList.RemoveAt(0);
+                            }
+                        }
+                        else
+                        { 
+                            ClientInfo _cInfo = _cInfoList.RandomObject();
+                            var _message = msgList.First();
+                            if (_message != null)
+                            {
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _message), "Server", false, "", false);
+                                msgList.RemoveAt(0);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        LoadXml();
+                        if (msgList.Count > 0)
+                        {
+                            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                            if (Random)
+                            {
+                                ClientInfo _cInfo = _cInfoList.RandomObject();
+                                msgList.RandomizeList();
+                                var _message = msgList.First();
+                                if (_message != null)
+                                {
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _message), "Server", false, "", false);
+                                    msgList.RemoveAt(0);
+                                }
+                            }
+                            else
+                            {
+                                ClientInfo _cInfo = _cInfoList.RandomObject();
+                                var _message = msgList.First();
+                                if (_message != null)
+                                {
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _message), "Server", false, "", false);
+                                    msgList.RemoveAt(0);
+                                }
                             }
                         }
                     }

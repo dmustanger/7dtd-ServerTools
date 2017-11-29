@@ -41,6 +41,7 @@ Examples for console command ResetPlayer:
 Examples for console command StopServer:
 	Usage: stopserver <minutes>
 		stopserver 10
+		stopserver cancel
 
 Examples for console command Watchlist:
 	Usage: watchlist add <steamID> <reason>

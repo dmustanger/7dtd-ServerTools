@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace ServerTools
@@ -9,13 +8,17 @@ namespace ServerTools
     {
         private readonly string steamId;
         [OptionalField]
+        private bool adminChatColor;
+        [OptionalField]
+        private DateTime lastanimals;
+        [OptionalField]
+        private DateTime lastVoteReward;
+        [OptionalField]
         private DateTime lastgimme;
         [OptionalField]
         private DateTime lastkillme;
         [OptionalField]
-        private string homeposition;  // eventually once multihome support is widespread and data is migrated, swap the decorator to [NonSerialized].  Once that's widespread, remove this prop.
-        [OptionalField]
-        private Dictionary<string, string> homepositions;
+        private string homeposition;
         [OptionalField]
         private DateTime lastsethome;
         [OptionalField]
@@ -36,6 +39,42 @@ namespace ServerTools
         private bool isremovedfromjail = true;
         [OptionalField]
         private bool newspawntele;
+
+        public bool AdminChatColor
+        {
+            get
+            {
+                return adminChatColor;
+            }
+            set
+            {
+                adminChatColor = value;
+            }
+        }
+
+        public DateTime LastVoteReward
+        {
+            get
+            {
+                return lastVoteReward;
+            }
+            set
+            {
+                lastVoteReward = value;
+            }
+        }
+
+        public DateTime LastAnimals
+        {
+            get
+            {
+                return lastanimals;
+            }
+            set
+            {
+                lastanimals = value;
+            }
+        }
 
         public DateTime LastGimme
         {
@@ -61,20 +100,15 @@ namespace ServerTools
             }
         }
 
-        public Dictionary<string, string> HomePositions
+        public string HomePosition
         {
             get
             {
-                if(homepositions == null)
-                {
-                    homepositions = new Dictionary<string, string>();
-                }
-                if(homeposition != null)
-                {
-                    homepositions["default"] = homeposition;
-                    homeposition = null; 
-                }
-                return homepositions;
+                return homeposition;
+            }
+            set
+            {
+                homeposition = value;
             }
         }
 

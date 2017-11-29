@@ -32,13 +32,26 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="src\AntiCheat\PveProtection.cs" />
+    <Compile Include="src\AntiCheat\PlayerStatCheck.cs" />
+    <Compile Include="src\AntiCheat\PlayerPositionLogs.cs" />
+    <Compile Include="src\AntiCheat\UndergroundCheck.cs" />
+    <Compile Include="src\AntiCheat\FlightCheck.cs" />
     <Compile Include="src\AntiCheat\InvalidItems.cs" />
     <Compile Include="src\Api.cs" />
+    <Compile Include="src\AutoRestart\AutoRestart.cs" />
     <Compile Include="src\AutoSaveWorld\AutoSaveWorld.cs" />
     <Compile Include="src\Chat\AdminChatCommands\AdminChat.cs" />
     <Compile Include="src\Chat\AdminChatCommands\MutePlayer.cs" />
     <Compile Include="src\Chat\BadWordFilter.cs" />
+    <Compile Include="src\Chat\ChatCommands\AdminList.cs" />
     <Compile Include="src\Chat\ChatCommands\Bloodmoon.cs" />
+    <Compile Include="src\Chat\ChatCommands\Animals.cs" />
     <Compile Include="src\Chat\ChatCommands\CustomCommands.cs" />
     <Compile Include="src\Chat\ChatCommands\day7.cs" />
     <Compile Include="src\Chat\ChatCommands\Gimme.cs" />
@@ -51,10 +64,18 @@
     <Compile Include="src\Chat\Log.cs" />
     <Compile Include="src\Chat\Motd.cs" />
     <Compile Include="src\ClanManager\ClanManager.cs" />
+    <Compile Include="src\ConsoleCommands\AdminChatColor.cs" />
+    <Compile Include="src\ConsoleCommands\NextRestart.cs" />
+    <Compile Include="src\ConsoleCommands\ResetAnimalTracking.cs" />
+    <Compile Include="src\ConsoleCommands\ResetGimme.cs" />
+    <Compile Include="src\ConsoleCommands\ResetVoteReward.cs" />
+    <Compile Include="src\ConsoleCommands\SpawnEntityInRadius.cs" />
     <Compile Include="src\ConsoleCommands\Jail.cs" />
     <Compile Include="src\ConsoleCommands\MutePlayer.cs" />
     <Compile Include="src\ConsoleCommands\ReservedSlots.cs" />
     <Compile Include="src\ConsoleCommands\StopServer.cs" />
+    <Compile Include="src\ConsoleCommands\TempBan.cs" />
+    <Compile Include="src\EntityUnderground\EntityUnderground.cs" />
     <Compile Include="src\Functions\LoadConfig.cs" />
     <Compile Include="src\Functions\LoadMods.cs" />
     <Compile Include="src\Functions\LoadPhrases.cs" />
@@ -70,6 +91,7 @@
     <Compile Include="src\ConsoleCommands\ResetPlayer.cs" />
     <Compile Include="src\ConsoleCommands\Watchlist.cs" />
     <Compile Include="src\ReservedSlots\ReservedSlots.cs" />
+    <Compile Include="src\VoteReward\VoteReward.cs" />
     <Compile Include="src\Watchlist\Watchlist.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -89,23 +111,32 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\7dtd-binaries\Assembly-CSharp.dll</HintPath>
+      <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\7dtd-binaries\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="LogLibrary">
-      <HintPath>..\7dtd-binaries\LogLibrary.dll</HintPath>
+      <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\LogLibrary.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>..\7dtd-binaries\UnityEngine.dll</HintPath>
+      <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

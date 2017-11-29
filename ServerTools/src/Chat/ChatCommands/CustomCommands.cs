@@ -150,6 +150,10 @@ namespace ServerTools
         public static string GetChatCommands(ClientInfo _cInfo)
         {
             string _commands = string.Format("{0}Commands are:", ChatColor);
+            if (Animals.IsEnabled)
+            {
+                _commands = string.Format("{0} /gimme", _commands);
+            }
             if (Gimme.IsEnabled)
             {
                 _commands = string.Format("{0} /gimme", _commands);

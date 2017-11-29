@@ -155,25 +155,25 @@ namespace ServerTools
                 string _phrase9;
                 if (!Dict.TryGetValue(9, out _phrase9))
                 {
-                    _phrase9 = "{PlayerName} you already have a {HomeName} home set.";
+                    _phrase9 = "{PlayerName} you already have a home set.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"9\" Phrase=\"{0}\" />", _phrase9));
                 string _phrase10;
                 if (!Dict.TryGetValue(10, out _phrase10))
                 {
-                    _phrase10 = "{PlayerName} your home {HomeName} has been saved.";
+                    _phrase10 = "{PlayerName} your home has been saved.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"10\" Phrase=\"{0}\" />", _phrase10));
                 string _phrase11;
                 if (!Dict.TryGetValue(11, out _phrase11))
                 {
-                    _phrase11 = "{PlayerName} you do not have a {HomeName} home saved.";
+                    _phrase11 = "{PlayerName} you do not have a home saved.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"11\" Phrase=\"{0}\" />", _phrase11));
                 string _phrase12;
                 if (!Dict.TryGetValue(12, out _phrase12))
                 {
-                    _phrase12 = "{PlayerName} your home {HomeName} has been removed.";
+                    _phrase12 = "{PlayerName} your home has been removed.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"12\" Phrase=\"{0}\" />", _phrase12));
                 string _phrase13;
@@ -521,7 +521,7 @@ namespace ServerTools
                 string _phrase451;
                 if (!Dict.TryGetValue(451, out _phrase451))
                 {
-                    _phrase451 = "Saving World Now.";
+                    _phrase451 = "Saving World Now. Do not exchange items from inventory or build until after restart.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"451\" Phrase=\"{0}\" />", _phrase451));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -584,6 +584,24 @@ namespace ServerTools
                     _phrase526 = "{PlayerName} you have been teleported to the new spawn location.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"526\" Phrase=\"{0}\" />", _phrase526));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ******************** AnimalTracking ******************** -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase601;
+                if (!Dict.TryGetValue(601, out _phrase601))
+                {
+                    _phrase601 = "You have taxed your tracking ability. Wait {TimeRemaining} minutes and try again.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"601\" Phrase=\"{0}\" />", _phrase601));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ********************** VoteReward ********************** -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase602;
+                if (!Dict.TryGetValue(602, out _phrase602))
+                {
+                    _phrase602 = "{PlayerName} you can only use /reward once every 24 hours. Time remaining: {TimeRemaining} hour(s).";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"602\" Phrase=\"{0}\" />", _phrase602)); 
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();

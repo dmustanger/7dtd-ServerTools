@@ -6,14 +6,20 @@ namespace ServerTools
 {
     public class CommandJail : ConsoleCmdAbstract
     {
+
         public override string GetDescription()
         {
             return "Puts a player in jail.";
         }
         public override string GetHelp()
         {
-            return "Usage: jail add <steamId>\n" +
-                "Usage: jail remove <steamId>";
+            return "Usage:\n" +
+                "  1. jail add <steamId>\n" +
+                "  2. jail remove <steamId>" +
+                "  3. jail list\n" +
+                "1. Adds a steamID to the jail list\n" +
+                "2. Removes a steamID from the jail list\n" +
+                "3. Lists all steamID in the jail list";
         }
         public override string[] GetCommands()
         {
@@ -23,16 +29,16 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count < 1 || _params.Count > 4)
+                if (_params.Count < 1 || _params.Count > 2)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 to 4, found {0}.", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 to 2, found {0}.", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("add"))
                 {
                     if(_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count)); 
                         return;
                     }
                     if (_params[1].Length != 17)
@@ -40,9 +46,14 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Can not add SteamId: Invalid SteamId {0}.", _params[1]));
                         return;
                     }
+                    if (Jail.Dict.ContainsKey(_params[1]))
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Can not add SteamId. {0} is already in the Jail list.", _params[1]));
+                        return;
+                    }
                     if (Jail.JailPosition == "0,0,0")
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not put player in jail: Jail position has not been set."));
+                        SdtdConsole.Instance.Output(string.Format("Can not put a player in jail: Jail position has not been set."));
                         return;
                     }
                     else
@@ -78,6 +89,7 @@ namespace ServerTools
                                 if (!Jail.Dict.ContainsKey(_cInfo.playerId))
                                 {
                                     Jail.Dict.Add(_cInfo.playerId, null);
+                                    Jail.Dict1.Add(_cInfo.playerId, _cInfo.playerName);
                                 }
                                 string _phrase500;
                                 if (!Phrases.Dict.TryGetValue(500, out _phrase500))
@@ -127,6 +139,7 @@ namespace ServerTools
                                 if (Jail.Dict.ContainsKey(_cInfo.playerId))
                                 {
                                     Jail.Dict.Remove(_cInfo.playerId);
+                                    Jail.Dict1.Remove(_cInfo.playerId);
                                 }
                                 if (_position.Count > 0)
                                 {
@@ -149,6 +162,27 @@ namespace ServerTools
                         }
                         PersistentContainer.Instance.Save();
                         SdtdConsole.Instance.Output(string.Format("You have released {0} from jail. ", _params[1]));
+                    }
+                }
+                else if (_params[0].ToLower().Equals("list"))
+                {
+                    if (_params.Count != 1)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
+                        return;
+                    }
+                    if (Jail.Dict1.Count < 1)
+                    {
+                        SdtdConsole.Instance.Output("There are no steamIds on the Jail list.");
+                        return;
+                    }
+                    foreach (KeyValuePair<string, string> _key in Jail.Dict1)
+                    {
+                        string _name;
+                        if (Jail.Dict1.TryGetValue(_key.Key, out _name))
+                        {
+                            SdtdConsole.Instance.Output(string.Format("{0} {1}", _key.Key, _key.Value));
+                        }
                     }
                 }
                 else
