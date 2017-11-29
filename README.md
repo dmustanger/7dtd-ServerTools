@@ -19,7 +19,13 @@ Go to the releases tab and check for the latest files https://github.com/dmustan
 <br>
 
 # Current Features
-Multiple anticheat systems. One for flying above ground, one for below ground. Player stats monitor. Player position logger.<br>
+Multiple anticheat systems. One for flying above ground, one for below ground. Player stats monitor. Player position logger. Player inventory logger. Family share account detection<br>
+<br>
+Custom starting items option. Places items from a list into the player's inventory when first entering a new world.<br>
+<br>
+First claim block system to help prevent claim block grief.<br>
+<br>
+Give items or blocks directly into a player's inventory.<br>
 <br>
 Vote reward system linked into the https://7daystodie-servers.com website.<br>
 <br>
