@@ -339,7 +339,8 @@ namespace ServerTools
                         {
                             float _distance = _player.GetDistanceSq(new Vector3(xf, yf, zf));
                             int _dis = (int)_distance;
-                            if (_dis > JailSize)
+                            int _jailSize = (JailSize * 10);
+                            if (_dis > _jailSize)
                             {
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _dis), "Server", false, "", false));
                                 SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, x, y, z), _cInfo);

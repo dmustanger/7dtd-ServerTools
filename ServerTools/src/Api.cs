@@ -32,6 +32,10 @@ namespace ServerTools
             {
                 Watchlist.CheckWatchlist(_cInfo);
             }
+            if (FamilyShareAccount.IsEnabled)
+            {
+                FamilyShareAccount.AccCheck(_cInfo);
+            }
         }
 
         public override void PlayerLogin(ClientInfo _cInfo, string _compatibilityVersion)
@@ -39,7 +43,7 @@ namespace ServerTools
             if (ReservedSlots.IsEnabled)
             {
                 ReservedSlots.CheckReservedSlot(_cInfo);
-            }
+            }          
         }
 
         public override void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)
@@ -75,6 +79,14 @@ namespace ServerTools
             if (Bloodmoon.ShowOnSpawn & Bloodmoon.ShowOnRespawn)
             {
                 Bloodmoon.GetBloodmoon(_cInfo, false);
+            }
+            if (FamilyShareAccount.IsEnabled)
+            {
+                FamilyShareAccount.AccCheck(_cInfo);
+            }
+            if (StartingItems.IsEnabled)
+            {
+                StartingItems.checkAndGive(_cInfo);
             }
         }
 

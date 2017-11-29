@@ -36,7 +36,7 @@ namespace ServerTools
                                     Block.Block.blockID == 759 || Block.Block.blockID == 760 || Block.Block.blockID == 761 || Block.Block.blockID == 762 || Block.Block.blockID == 763 ||
                                     Block.Block.blockID == 764 || Block.Block.blockID == 853 || Block.Block.blockID == 854 || Block.Block.blockID == 855 || Block.Block.blockID == 856 ||
                                     Block.Block.blockID == 869 || Block.Block.blockID == 870 || Block.Block.blockID == 884 || Block.Block.blockID == 959 || Block.Block.blockID == 960 ||
-                                    Block.Block.blockID == 961 || Block.Block.blockID == 962)
+                                    Block.Block.blockID == 961 || Block.Block.blockID == 962 || Block.Block.blockID == 826 || Block.Block.blockID == 900)
                         {
                             return false;
                         }
@@ -87,7 +87,6 @@ namespace ServerTools
                                     var x = (int)ent.position.x;
                                     var y = (int)ent.position.y;
                                     var z = (int)ent.position.z;
-
 
                                     int _flag = 0;
                                     if (Flag.TryGetValue(ent.entityId, out _flag))

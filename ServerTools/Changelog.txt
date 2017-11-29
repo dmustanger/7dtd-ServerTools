@@ -6,11 +6,20 @@ Email specific alerts to listed addresses...
 v.5.7 in process
 Anticheat - player damage...
 Anticheat - teleportation, world height...
-
-V.5.6 in process
-Anticheat - inventory checks and logs...
-Anticheat - world edge...
 Anticheat - pve/pvp zone protection...
+Added more information to Player Logs. Destroying a block, destroying a door, inside claimed space and whos claim...
+
+V.5.6
+Allocs Server Fixes are required for this version
+Added Anticheat: Family Share Account detection. Auto kicks with message. Exception list available
+Added Anticheat: Player Logs. Adds a folder containing files with the player logs you have turned on. Outputs each player's log into a txt file separated by date
+Added First Claim Block. While enabled, new players can request a single claim block with chat command /claim. Can reset this command for a player via console
+Added Player Inventory Log option
+Added console command giveitem or gi. Sends a item directly to a player's inventory
+Added console command giveblock or gb. Sends a block directly to a player's inventory
+Added Starting Items. Setting to true will create a StartingItems.xml. The items in the list are the starting items players will receive when they first enter the world
+Merged Player Position Logs into Player Logs. You can turn on which ever log you prefer and it all outputs to one folder and file
+Changed /gimme to put the item directly into the player's inventory. Items spawn by the their feet if inventory is full
 
 v.5.55
 Fixed /admin chat command returning too many and incorrect responses in game. Enable /admin chat command by setting AdminList in servertools config to true

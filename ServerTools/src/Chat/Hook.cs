@@ -372,6 +372,16 @@ namespace ServerTools
                             return true;
                         }
                     }
+                    if (_message == "claim")
+                    {
+                        if (FirstClaimBlock.IsEnabled)
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking your claim block status.[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
+                            FirstClaimBlock.firstClaim(_cInfo);
+                            return false;
+                        }
+                        return true;
+                    }
                     if (_message.StartsWith("clanadd") || _message == "clandel" || _message.StartsWith("claninvite") || _message == "clanaccept" || _message == "clandecline" || _message.StartsWith("clanremove") || _message.StartsWith("clanpromote") || _message.StartsWith("clandemote") || _message.StartsWith("clan") || _message.StartsWith("c") || _message == "clancommands")
                     {
                         if (ClanManager.IsEnabled)
@@ -718,7 +728,7 @@ namespace ServerTools
                     {
                         if (AdminList.IsEnabled)
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("Listing online administrators and moderators.[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Listing online administrators and moderators.[-]", CustomCommands.ChatColor), "Server", false, "ServerTools", false));
                             AdminList.List(_cInfo, _announce, _playerName);
                             return false;
                         }

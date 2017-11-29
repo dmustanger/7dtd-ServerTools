@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        private const double version = 5.55;
+        private const double version = 5.6;
         public static bool UpdateConfigs = false;
 
         public static void Load()
@@ -555,6 +555,40 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
+                            case "FamilyShareAccount":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring FamilyShareAccount entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out FamilyShareAccount.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring FamilyShareAccount entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("AdminLevel"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring FamilyShareAccount entry because of missing 'AdminLevel' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("AdminLevel"), out FamilyShareAccount.AdminLevel))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring FamilyShareAccount entry because of invalid (non-numeric) value for 'AdminLevel' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
+                            case "FirstClaimBlock":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring FirstClaimBlock entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out FirstClaimBlock.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring FirstClaimBlock entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                             case "FlightCheck":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -865,15 +899,45 @@ namespace ServerTools
                                 }
                                 NewSpawnTele.NewSpawnTelePosition = _line.GetAttribute("NewSpawnTelePosition");
                                 break;
-                            case "PlayerPositionLogs":
+                            case "PlayerLogs":
                                 if (!_line.HasAttribute("Enable"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PlayerPositionLogs entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PlayerLogs entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out PlayerPositionLogs.IsEnabled))
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out PlayerLogs.IsEnabled))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PlayerPositionLogs entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PlayerLogs entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Interval"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PlayerLogs entry because of missing 'Interval' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Interval"), out PlayerLogs.Interval))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PlayerLogs entry because of invalid (non-numeric) value for 'Interval' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Position"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PlayerLogs entry because of missing 'Position' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Position"), out PlayerLogs.Position))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PlayerLogs entry because of invalid (true/false) value for 'Position' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Inventory"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PlayerLogs entry because of missing 'Inventory' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Inventory"), out PlayerLogs.Inventory))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PlayerLogs entry because of invalid (true/false) value for 'Inventory' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -937,7 +1001,7 @@ namespace ServerTools
                                 }
                                 if (!bool.TryParse(_line.GetAttribute("ReservedCheck"), out ChatHook.ReservedCheck))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of invalid (non-numeric) value for 'ReservedCheck' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of invalid (true/false) value for 'ReservedCheck' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -992,6 +1056,18 @@ namespace ServerTools
                                     continue;
                                 }
                                 ChatHook.SpecialPlayersList = _line.GetAttribute("SpecialPlayerSteamId");
+                                break;
+                            case "StartingItems":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring SetHome entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out StartingItems.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring SetHome entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                             case "TempBan":
                                 if (!_line.HasAttribute("Enable"))
@@ -1110,6 +1186,16 @@ namespace ServerTools
                                     continue;
                                 }
                                 VoteReward.APIKey = _line.GetAttribute("APIKey");
+                                if (!_line.HasAttribute("DelayBetweenRewards"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry because of missing 'DelayBetweenRewards' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("DelayBetweenRewards"), out VoteReward.DelayBetweenRewards))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry because of invalid (non-numeric) value for 'DelayBetweenRewards' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                             case "VotingReward":
                                 if (!_line.HasAttribute("RewardIsItemOrBlock"))
@@ -1199,6 +1285,8 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Day7\" Enable=\"{0}\" />", Day7.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"DonatorNameColoring\" Enable=\"{0}\" DonatorLevel1=\"{1}\" DonatorLevel2=\"{2}\" DonatorLevel3=\"{3}\" DonatorPrefix1=\"{4}\" DonatorPrefix2=\"{5}\" DonatorPrefix3=\"{6}\" DonatorColor1=\"{7}\" DonatorColor2=\"{8}\" DonatorColor3=\"{9}\" />", ChatHook.DonatorNameColoring && ReservedSlots.DonatorNameColoring, ChatHook.DonLevel1, ChatHook.DonLevel2, ChatHook.DonLevel3, ChatHook.DonPrefix1, ChatHook.DonPrefix2, ChatHook.DonPrefix3, ChatHook.DonColor1, ChatHook.DonColor2, ChatHook.DonColor3));
                 sw.WriteLine(string.Format("        <Tool Name=\"EntityUndergroundCheck\" Enable=\"{0}\" AlertAdmin=\"{1}\" AdminLevel=\"{2}\" />", EntityUnderground.IsEnabled, EntityUnderground.AlertAdmin, EntityUnderground.AdminLevel));
+                sw.WriteLine(string.Format("        <Tool Name=\"FamilyShareAccount\" Enable=\"{0}\" AdminLevel=\"{1}\" />", FamilyShareAccount.IsEnabled, FamilyShareAccount.AdminLevel));
+                sw.WriteLine(string.Format("        <Tool Name=\"FirstClaimBlock\" Enable=\"{0}\" />", FirstClaimBlock.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"FlightCheck\" Enable=\"{0}\" AdminLevel=\"{1}\" MaxHeight=\"{2}\" KillPlayer=\"{3}\" Announce=\"{4}\" JailEnabled=\"{5}\" KickEnabled=\"{6}\" BanEnabled=\"{7}\" />", FlightCheck.IsEnabled, FlightCheck.AdminLevel, FlightCheck.MaxHeight, FlightCheck.KillPlayer, FlightCheck.Announce, FlightCheck.JailEnabled, FlightCheck.KickEnabled, FlightCheck.BanEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Gimme\" Enable=\"{0}\" DelayBetweenGimmeUses=\"{1}\" AlwaysShowResponse=\"{2}\" />", Gimme.IsEnabled, Gimme.DelayBetweenUses, Gimme.AlwaysShowResponse));
                 sw.WriteLine(string.Format("        <Tool Name=\"HighPingKicker\" Enable=\"{0}\" Maxping=\"{1}\" SamplesNeeded=\"{2}\" />", HighPingKicker.IsEnabled, HighPingKicker.MAXPING, HighPingKicker.SamplesNeeded));
@@ -1208,14 +1296,15 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Killme\" Enable=\"{0}\" DelayBetweenKillmeUses=\"{1}\" />", KillMe.IsEnabled, KillMe.DelayBetweenUses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Motd\" Enable=\"{0}\" ShowOnRespawn=\"{1}\" Message=\"{2}\" />", Motd.IsEnabled, Motd.ShowOnRespawn, Motd.Message));
                 sw.WriteLine(string.Format("        <Tool Name=\"NewSpawnTele\" Enable=\"{0}\" NewSpawnTelePosition=\"{1}\" />", NewSpawnTele.IsEnabled, NewSpawnTele.NewSpawnTelePosition));
-                sw.WriteLine(string.Format("        <Tool Name=\"PlayerPositionLogs\" Enable=\"{0}\" />", PlayerPositionLogs.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"PlayerLogs\" Enable=\"{0}\" Interval=\"{1}\" Position=\"{2}\" Inventory=\"{3}\" />", PlayerLogs.IsEnabled, PlayerLogs.Interval, PlayerLogs.Position, PlayerLogs.Inventory));
                 sw.WriteLine(string.Format("        <Tool Name=\"PlayerStatCheck\" Enable=\"{0}\" AdminLevel=\"{1}\" KickEnabled=\"{2}\" BanEnabled=\"{3}\" />", PlayerStatCheck.IsEnabled, PlayerStatCheck.AdminLevel, PlayerStatCheck.KickEnabled, PlayerStatCheck.BanEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"ReservedSlots\" Enable=\"{0}\" ReservedCheck=\"{1}\" />", ReservedSlots.IsEnabled, ChatHook.ReservedCheck));
                 sw.WriteLine(string.Format("        <Tool Name=\"SetHome\" Enable=\"{0}\" DelayBetweenSetHomeUses=\"{1}\" />", TeleportHome.IsEnabled, TeleportHome.DelayBetweenUses));
                 sw.WriteLine(string.Format("        <Tool Name=\"SpecialPlayerNameColoring\" Enable=\"{0}\" SpecialPlayerSteamId=\"{1}\" SpecialPlayerPrefix=\"{2}\" SpecialPlayerColor=\"{3}\" />", ChatHook.SpecialPlayerNameColoring, ChatHook.SpecialPlayersList, ChatHook.SpecialPlayerPrefix, ChatHook.SpecialPlayerColor));
+                sw.WriteLine(string.Format("        <Tool Name=\"StartingItems\" Enable=\"{0}\" />", StartingItems.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"TempBan\" Enable=\"{0}\" AdminLevel=\"{1}\" />", TempBan.IsEnabled, TempBan.AdminLevel));
                 sw.WriteLine(string.Format("        <Tool Name=\"UndergroundCheck\" Enable=\"{0}\" AdminLevel=\"{1}\" KillPlayer=\"{2}\" Announce=\"{3}\" JailEnabled=\"{4}\" KickEnabled=\"{5}\" BanEnabled=\"{6}\" />", UndergroundCheck.IsEnabled, UndergroundCheck.AdminLevel, UndergroundCheck.KillPlayer, UndergroundCheck.Announce, UndergroundCheck.JailEnabled, UndergroundCheck.KickEnabled, UndergroundCheck.BanEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" YourVotingSite=\"{1}\" APIKey=\"{2}\" />", VoteReward.IsEnabled, VoteReward.YourVotingSite, VoteReward.APIKey));
+                sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" YourVotingSite=\"{1}\" APIKey=\"{2}\" DelayBetweenRewards=\"{3}\"/>", VoteReward.IsEnabled, VoteReward.YourVotingSite, VoteReward.APIKey, VoteReward.DelayBetweenRewards));
                 sw.WriteLine(string.Format("        <Tool Name=\"VotingReward\" RewardIsItemOrBlock=\"{0}\" ItemOrBlock=\"{1}\" RewardIsEntity=\"{2}\" Entity=\"{3}\" />", VoteReward.RewardIsItemOrBlock, VoteReward.ItemOrBlock, VoteReward.RewardIsEntity, VoteReward.Entity));               
                 sw.WriteLine(string.Format("        <Tool Name=\"Watchlist\" Enable=\"{0}\" />", Watchlist.IsEnabled));
                 sw.WriteLine("    </Tools>");

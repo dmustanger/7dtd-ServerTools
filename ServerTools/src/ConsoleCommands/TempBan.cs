@@ -70,7 +70,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("Can not ban Id: {0} Id belongs to an administrator", _cInfo.playerName));
+                                SdtdConsole.Instance.Output(string.Format("Can not ban Id: {0}. The Id belongs to administrator {1}", _cInfo.entityId, _cInfo.playerName));
                             }
                         }
                     }

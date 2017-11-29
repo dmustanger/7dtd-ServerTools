@@ -12,11 +12,11 @@ namespace ServerTools
         public static bool RewardIsEntity = false;
         public static string ItemOrBlock = ("votecrate");
         public static string Entity = ("sc_General");
-        private static int DelayBetweenUses = 24;
+        public static int DelayBetweenRewards = 24;
 
         public static void CheckReward(ClientInfo _cInfo)
         {
-            if (DelayBetweenUses == 0)
+            if (DelayBetweenRewards == 0)
             {
                 Execute(_cInfo);
             }
@@ -32,13 +32,13 @@ namespace ServerTools
                     TimeSpan varTime = DateTime.Now - p.LastVoteReward;
                     double fractionalHours = varTime.TotalHours;
                     int _timepassed = (int)fractionalHours;
-                    if (_timepassed > DelayBetweenUses)
+                    if (_timepassed > DelayBetweenRewards)
                     {
                         Execute(_cInfo);
                     }
                     else
                     {
-                        int _timeleft = DelayBetweenUses - _timepassed;
+                        int _timeleft = DelayBetweenRewards - _timepassed;
                         string _phrase602;
                         if (!Phrases.Dict.TryGetValue(602, out _phrase602))
                         {

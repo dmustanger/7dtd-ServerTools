@@ -8,6 +8,8 @@ namespace ServerTools
     {
         private readonly string steamId;
         [OptionalField]
+        private int worldSeedFirstClaim;
+        [OptionalField]
         private bool adminChatColor;
         [OptionalField]
         private DateTime lastanimals;
@@ -39,6 +41,19 @@ namespace ServerTools
         private bool isremovedfromjail = true;
         [OptionalField]
         private bool newspawntele;
+
+
+        public int WorldSeedFirstClaim
+        {
+            get
+            {
+                return worldSeedFirstClaim;
+            }
+            set
+            {
+                worldSeedFirstClaim = value;
+            }
+        }
 
         public bool AdminChatColor
         {

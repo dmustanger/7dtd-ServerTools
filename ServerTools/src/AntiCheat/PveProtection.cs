@@ -30,8 +30,7 @@ namespace ServerTools
 
         public static void PvEProt(object sender, ElapsedEventArgs e)
         {
-            int _playerCount = ConnectionManager.Instance.ClientCount();
-            if (_playerCount > 0)
+            if (ConnectionManager.Instance.ClientCount() > 0)
             {
                 World world = GameManager.Instance.World;
                 var enumerator = world.Players.list;

@@ -270,9 +270,10 @@ namespace ServerTools
             ItemValue _itemValue = ItemClass.GetItem(_randomItem, true);
             _itemValue = new ItemValue(_itemValue.type, true);
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            int _quality = 1;
             if (_itemValue.HasQuality)
             {
-                int _quality = random.Next(1, 600);
+                _quality = random.Next(1, 600);
                 _itemValue.Quality = _quality;
             }
             int[] _counts;
@@ -280,7 +281,28 @@ namespace ServerTools
             {
                 int _count = random.Next(_counts[0], _counts[1]);
                 ItemStack _itemDrop = new ItemStack(_itemValue, _count);
-                GameManager.Instance.ItemDropServer(_itemDrop, _player.GetPosition(), Vector3.zero);
+                ItemValue itemValue;
+                itemValue = new ItemValue(ItemClass.GetItem(_randomItem).type, _quality, _quality, true);
+
+                if (Equals(itemValue, ItemValue.None))
+                {
+                    SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", _randomItem));
+                    return;
+                }
+                World world = GameManager.Instance.World;
+                var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                {
+                    entityClass = EntityClass.FromString("item"),
+                    id = EntityFactory.nextEntityID++,
+                    itemStack = new ItemStack(itemValue, _count),
+                    pos = world.Players.dict[_cInfo.entityId].position,
+                    rot = new Vector3(20f, 0f, 20f),
+                    lifetime = 60f,
+                    belongsPlayerId = _cInfo.entityId
+                });
+                world.SpawnEntityInWorld(entityItem);
+                _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
+                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                 string _phrase7;
                 if (!Phrases.Dict.TryGetValue(7, out _phrase7))
                 {

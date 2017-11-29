@@ -11,8 +11,7 @@ namespace ServerTools
 
         public static void PlayerStat()
         {
-            int _playerCount = ConnectionManager.Instance.ClientCount();
-            if (_playerCount > 0)
+            if (ConnectionManager.Instance.ClientCount() > 0)
             {
                 World world = GameManager.Instance.World;
                 var enumerator = world.Players.list;

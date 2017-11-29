@@ -1,0 +1,74 @@
+C:\Modding Mods\7dtd-ServerTools-master-original-redo\bin\Mods\ServerTools\ChatCommandExamples.txt
+C:\Modding Mods\7dtd-ServerTools-master-original-redo\bin\Mods\ServerTools\ConsoleCommandExamples.txt
+C:\Modding Mods\7dtd-ServerTools-master-original-redo\bin\Mods\ServerTools\ModInfo.xml
+C:\Modding Mods\7dtd-ServerTools-master-original-redo\bin\Mods\ServerTools\Changelog.txt
+C:\Modding Mods\7dtd-ServerTools-master-original-redo\bin\Mods\ServerTools\ServerTools.dll
+C:\Modding Mods\7dtd-ServerTools-master-original-redo\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache
+C:\Modding Mods\7dtd-ServerTools-master-original-redo\ServerTools\obj\Debug\ServerTools.dll
+C:\Modding Mods\7dtd-ServerTools-master-4.1.2 in progress\bin\Mods\ServerTools\ChatCommandExamples.txt
+C:\Modding Mods\7dtd-ServerTools-master-4.1.2 in progress\bin\Mods\ServerTools\ConsoleCommandExamples.txt
+C:\Modding Mods\7dtd-ServerTools-master-4.1.2 in progress\bin\Mods\ServerTools\ModInfo.xml
+C:\Modding Mods\7dtd-ServerTools-master-4.1.2 in progress\bin\Mods\ServerTools\Changelog.txt
+C:\Modding Mods\7dtd-ServerTools-master-4.1.2 in progress\bin\Mods\ServerTools\ServerTools.dll
+C:\Modding Mods\7dtd-ServerTools-master-4.1.2 in progress\ServerTools\obj\Debug\ServerTools.dll
+C:\Modding Mods\7dtd-ServerTools-master-4.1.2 in progress\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache
+C:\Modding Mods\7dtd-ServerTools-master-4.3 in progress\bin\Mods\ServerTools\ChatCommandExamples.txt
+C:\Modding Mods\7dtd-ServerTools-master-4.3 in progress\bin\Mods\ServerTools\ConsoleCommandExamples.txt
+C:\Modding Mods\7dtd-ServerTools-master-4.3 in progress\bin\Mods\ServerTools\ModInfo.xml
+C:\Modding Mods\7dtd-ServerTools-master-4.3 in progress\bin\Mods\ServerTools\Changelog.txt
+C:\Modding Mods\7dtd-ServerTools-master-4.3 in progress\bin\Mods\ServerTools\ServerTools.dll
+C:\Modding Mods\7dtd-ServerTools-master-4.3 in progress\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache
+C:\Modding Mods\7dtd-ServerTools-master-4.3 in progress\ServerTools\obj\Debug\ServerTools.dll
+C:\Modding Mods\7dtd-ServerTools-master-4.4\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache
+C:\Modding Mods\7dtd-ServerTools-master-4.4\ServerTools\obj\Debug\ServerTools.dll
+C:\Modding Mods\7dtd-ServerTools-master-4.4\bin\Mods\ServerTools\ChatCommandExamples.txt
+C:\Modding Mods\7dtd-ServerTools-master-4.4\bin\Mods\ServerTools\ConsoleCommandExamples.txt
+C:\Modding Mods\7dtd-ServerTools-master-4.4\bin\Mods\ServerTools\ModInfo.xml
+C:\Modding Mods\7dtd-ServerTools-master-4.4\bin\Mods\ServerTools\Changelog.txt
+C:\Modding Mods\7dtd-ServerTools-master-4.4\bin\Mods\ServerTools\ServerTools.dll
+C:\Users\lohsem\ownCloud\development\7dtd-ServerTools-master-4.4\bin\Mods\ServerTools\ChatCommandExamples.txt
+C:\Users\lohsem\ownCloud\development\7dtd-ServerTools-master-4.4\bin\Mods\ServerTools\ConsoleCommandExamples.txt
+C:\Users\lohsem\ownCloud\development\7dtd-ServerTools-master-4.4\bin\Mods\ServerTools\ModInfo.xml
+C:\Users\lohsem\ownCloud\development\7dtd-ServerTools-master-4.4\bin\Mods\ServerTools\Changelog.txt
+C:\Users\lohsem\ownCloud\development\7dtd-ServerTools-master-4.4\bin\Mods\ServerTools\ServerTools.dll
+C:\Users\lohsem\ownCloud\development\7dtd-ServerTools-master-4.4\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache
+C:\Users\lohsem\ownCloud\development\7dtd-ServerTools-master-4.4\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
+C:\Users\lohsem\ownCloud\development\7dtd-ServerTools-master-4.4\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.Cache
+C:\Users\lohsem\ownCloud\development\7dtd-ServerTools-master-4.4\ServerTools\obj\Debug\ServerTools.csproj.CoreCompileInputs.cache
+C:\Users\lohsem\ownCloud\development\7dtd-ServerTools-master-4.4\ServerTools\obj\Debug\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.4\bin\Mods\ServerTools\ChatCommandExamples.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.4\bin\Mods\ServerTools\ConsoleCommandExamples.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.4\bin\Mods\ServerTools\ModInfo.xml
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.4\bin\Mods\ServerTools\Changelog.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.4\bin\Mods\ServerTools\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.4\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.4\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.Cache
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.4\ServerTools\obj\Debug\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.4\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.5\bin\Mods\ServerTools\ChatCommandExamples.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.5\bin\Mods\ServerTools\ConsoleCommandExamples.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.5\bin\Mods\ServerTools\ModInfo.xml
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.5\bin\Mods\ServerTools\Changelog.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.5\bin\Mods\ServerTools\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.5\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.5\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.5\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.Cache
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.5\ServerTools\obj\Debug\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.6\bin\Mods\ServerTools\ChatCommandExamples.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.6\bin\Mods\ServerTools\ConsoleCommandExamples.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.6\bin\Mods\ServerTools\ModInfo.xml
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.6\bin\Mods\ServerTools\Changelog.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.6\bin\Mods\ServerTools\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.6\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.6\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.6\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.Cache
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.6\ServerTools\obj\Debug\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.7\bin\Mods\ServerTools\ChatCommandExamples.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.7\bin\Mods\ServerTools\ConsoleCommandExamples.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.7\bin\Mods\ServerTools\ModInfo.xml
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.7\bin\Mods\ServerTools\Changelog.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.7\bin\Mods\ServerTools\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.7\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.7\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.7\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.Cache
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-4.7\ServerTools\obj\Debug\ServerTools.dll

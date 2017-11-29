@@ -64,6 +64,14 @@
             {
                 EntityUnderground.EntityUndergroundTimerStop();
             }
+            if (FamilyShareAccount.IsRunning && !FamilyShareAccount.IsEnabled)
+            {
+                FamilyShareAccount.Unload();
+            }
+            if (!FamilyShareAccount.IsRunning && FamilyShareAccount.IsEnabled)
+            {
+                FamilyShareAccount.Load();
+            }
             if (FlightCheck.IsEnabled)
             {
                 FlightCheck.FlightTimerStart();
@@ -112,18 +120,26 @@
             {
                 Jail.Unload();
             }
-            if (PlayerPositionLogs.IsEnabled)
+            if (PlayerLogs.IsEnabled)
             {
-                PlayerPositionLogs.PlayerPositionLogsStart();
-                PlayerPositionLogs.PlayerPositionLogsDir();    
+                PlayerLogs.PlayerLogsStart();
+                PlayerLogs.PlayerLogsDir();    
             }
-            if (!PlayerPositionLogs.IsEnabled)
+            if (!PlayerLogs.IsEnabled)
             {
-                PlayerPositionLogs.PlayerPositionLogsStop();
+                PlayerLogs.PlayerLogsStop();
             }
             if (PlayerStatCheck.IsEnabled)
             {
                 PlayerStatCheck.PlayerStat();
+            }
+            if (!StartingItems.IsRunning && StartingItems.IsEnabled)
+            {
+                StartingItems.Load();
+            }
+            if (StartingItems.IsRunning && !StartingItems.IsEnabled)
+            {
+                StartingItems.Unload();
             }
             if (!ReservedSlots.IsRunning && ReservedSlots.IsEnabled)
             {

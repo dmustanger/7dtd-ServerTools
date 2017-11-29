@@ -16,8 +16,8 @@ namespace ServerTools
         {
             return "Usage:\n" +
                    "  1. adminchatcolor off <steamID>\n" +
-                   "1. Turn off admin chat color for admin\n" +
                    "  2. adminchatcolor on <steamID>\n" +
+                   "1. Turn off admin chat color for admin\n" +                   
                    "2. Turn on admin chat color for admin\n";
         }
 

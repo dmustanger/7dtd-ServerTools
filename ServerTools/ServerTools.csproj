@@ -37,9 +37,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="src\AntiCheat\FamilyShareAccount.cs" />
     <Compile Include="src\AntiCheat\PveProtection.cs" />
     <Compile Include="src\AntiCheat\PlayerStatCheck.cs" />
-    <Compile Include="src\AntiCheat\PlayerPositionLogs.cs" />
+    <Compile Include="src\AntiCheat\PlayerLogs.cs" />
     <Compile Include="src\AntiCheat\UndergroundCheck.cs" />
     <Compile Include="src\AntiCheat\FlightCheck.cs" />
     <Compile Include="src\AntiCheat\InvalidItems.cs" />
@@ -63,10 +64,14 @@
     <Compile Include="src\Chat\InfoTicker.cs" />
     <Compile Include="src\Chat\Log.cs" />
     <Compile Include="src\Chat\Motd.cs" />
+    <Compile Include="src\ClaimBlock\FirstClaimBlock.cs" />
     <Compile Include="src\ClanManager\ClanManager.cs" />
     <Compile Include="src\ConsoleCommands\AdminChatColor.cs" />
+    <Compile Include="src\ConsoleCommands\GiveBlock.cs" />
+    <Compile Include="src\ConsoleCommands\GiveItem.cs" />
     <Compile Include="src\ConsoleCommands\NextRestart.cs" />
     <Compile Include="src\ConsoleCommands\ResetAnimalTracking.cs" />
+    <Compile Include="src\ConsoleCommands\ResetFirstClaimBlock.cs" />
     <Compile Include="src\ConsoleCommands\ResetGimme.cs" />
     <Compile Include="src\ConsoleCommands\ResetVoteReward.cs" />
     <Compile Include="src\ConsoleCommands\SpawnEntityInRadius.cs" />
@@ -91,6 +96,7 @@
     <Compile Include="src\ConsoleCommands\ResetPlayer.cs" />
     <Compile Include="src\ConsoleCommands\Watchlist.cs" />
     <Compile Include="src\ReservedSlots\ReservedSlots.cs" />
+    <Compile Include="src\StartingItems\StartingItems.cs" />
     <Compile Include="src\VoteReward\VoteReward.cs" />
     <Compile Include="src\Watchlist\Watchlist.cs" />
   </ItemGroup>
@@ -110,6 +116,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="7dtd-server-fixes, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\7dtd-binaries\7dtd-server-fixes.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>

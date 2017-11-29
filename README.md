@@ -1,17 +1,22 @@
 # 7dtd-ServerTools
 Server tools for 7 days to die dedicated servers<br>
-
+<br>
 # Installation
-Go to the releases tab and check for the latest files.<br>
-Or click this link https://github.com/dmustanger/7dtd-ServerTools/releases <br>
 <br>
 Download and extract the files.<br>
+<br>
 Copy the Mods folder to the root directory of your server.<br>
 <br>
 Start the server.<br>
 <br>
-The mod will auto create the necessary config file in the game's save directory. Enable each part of the mod you want via ..\your game save directory\ServerTools\ServerToolsConfig.xml<br>
-Once a module is enabled, if it has a config or folder, it will auto create them in the ServerTools folder.<br>
+The mod will auto create the config file in the game save directory.<br>
+Enable each part of the mod you want via ..\your game save directory\ServerTools\ServerToolsConfig.xml<br>
+Once a module is enabled, if it has a config it will auto create them in the ServerTools folder.<br>
+<br>
+Go to the releases tab and check for the latest files https://github.com/dmustanger/7dtd-ServerTools/releases <br>
+<br>
+<br>
+<br>
 
 # Current Features
 Multiple anticheat systems. One for flying above ground, one for below ground. Player stats monitor. Player position logger.<br>
