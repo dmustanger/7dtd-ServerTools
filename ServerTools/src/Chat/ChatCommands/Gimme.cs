@@ -40,7 +40,7 @@ namespace ServerTools
             IsRunning = false;
         }
 
-        private static void LoadXml()
+        public static void LoadXml()
         {
             if (!Utils.FileExists(filePath))
             {
@@ -246,7 +246,7 @@ namespace ServerTools
                         string _phrase6;
                         if (!Phrases.Dict.TryGetValue(6, out _phrase6))
                         {
-                            _phrase6 = "{PlayerName} you can only use /gimme once every {DelayBetweenUses} minutes.Time remaining: {TimeRemaining} minutes.";
+                            _phrase6 = "{PlayerName} you can only use /gimme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                         }
                         _phrase6 = _phrase6.Replace("{PlayerName}", _playerName);
                         _phrase6 = _phrase6.Replace("{DelayBetweenUses}", DelayBetweenUses.ToString());

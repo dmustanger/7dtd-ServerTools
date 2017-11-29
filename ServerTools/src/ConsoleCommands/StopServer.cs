@@ -106,7 +106,7 @@ namespace ServerTools
             string _phrase451;
             if (!Phrases.Dict.TryGetValue(451, out _phrase451))
             {
-                _phrase451 = "Saving World Now.";
+                _phrase451 = "Saving World Now. Do not exchange items from inventory or build until after restart.";
             }
             List<ClientInfo> _cInfoList1 = ConnectionManager.Instance.GetClients();
             ClientInfo _cInfo1 = _cInfoList1.RandomObject();

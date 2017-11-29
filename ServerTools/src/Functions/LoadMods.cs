@@ -4,6 +4,14 @@
     {
         public static void Load()
         {
+            if (AutoRestart.IsEnabled)
+            {
+                AutoRestart.TimerStart();
+            }
+            if (!AutoRestart.IsEnabled)
+            {
+                AutoRestart.TimerStop();
+            }
             if (AutoSaveWorld.IsRunning && !AutoSaveWorld.IsEnabled)
             {
                 AutoSaveWorld.Stop();
@@ -28,6 +36,10 @@
             {
                 Bloodmoon.Load();
             }
+            if (ChatHook.SpecialPlayerNameColoring)
+            {
+                ChatHook.SpecialIdCheck();
+            }
             if (ClanManager.IsEnabled)
             {
                 PersistentContainer.Instance.Players.GetClans();
@@ -43,6 +55,22 @@
             if (!CustomCommands.IsRunning && CustomCommands.IsEnabled)
             {
                 CustomCommands.Load();
+            }
+            if (EntityUnderground.IsEnabled)
+            {
+                EntityUnderground.EntityUndergroundTimerStart();
+            }
+            if (!EntityUnderground.IsEnabled)
+            {
+                EntityUnderground.EntityUndergroundTimerStop();
+            }
+            if (FlightCheck.IsEnabled)
+            {
+                FlightCheck.FlightTimerStart();
+            }
+            if (!FlightCheck.IsEnabled)
+            {
+                FlightCheck.FlightTimerStop();
             }
             if (Gimme.IsRunning && !Gimme.IsEnabled)
             {
@@ -84,6 +112,19 @@
             {
                 Jail.Unload();
             }
+            if (PlayerPositionLogs.IsEnabled)
+            {
+                PlayerPositionLogs.PlayerPositionLogsStart();
+                PlayerPositionLogs.PlayerPositionLogsDir();    
+            }
+            if (!PlayerPositionLogs.IsEnabled)
+            {
+                PlayerPositionLogs.PlayerPositionLogsStop();
+            }
+            if (PlayerStatCheck.IsEnabled)
+            {
+                PlayerStatCheck.PlayerStat();
+            }
             if (!ReservedSlots.IsRunning && ReservedSlots.IsEnabled)
             {
                 ReservedSlots.Load();
@@ -91,6 +132,22 @@
             if (ReservedSlots.IsRunning && !ReservedSlots.IsEnabled)
             {
                 ReservedSlots.Unload();
+            }
+            if (!ReservedSlots.IsRunning && ReservedSlots.DonatorNameColoring)
+            {
+                ReservedSlots.Load();
+            }
+            if (ReservedSlots.IsRunning && !ReservedSlots.DonatorNameColoring)
+            {
+                ReservedSlots.Unload();
+            }            
+            if (UndergroundCheck.IsEnabled)
+            {
+                UndergroundCheck.UndergroundTimerStart();
+            }
+            if (!UndergroundCheck.IsEnabled)
+            {
+                UndergroundCheck.UndergroundTimerStop();
             }
             if (!Watchlist.IsRunning && Watchlist.IsEnabled)
             {

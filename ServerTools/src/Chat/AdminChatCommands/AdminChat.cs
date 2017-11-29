@@ -25,9 +25,13 @@ namespace ServerTools
                 {
                     if (GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
                     {
-                        _message = _message.Replace("@ADMINS ", "");
-                        _message = _message.Replace("@admins ", "");
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0080]{0}[-]", _message), _sender.playerName, false, "", false));
+                        AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                        if (Admin.PermissionLevel <= ChatHook.ModLevel)
+                        {
+                            _message = _message.Replace("@ADMINS ", "");
+                            _message = _message.Replace("@admins ", "");
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0080]{0}[-]", _message), _sender.playerName, false, "", false));
+                        }
                     }
                 }
             }

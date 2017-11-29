@@ -3,6 +3,7 @@
     public class Motd
     {
         public static bool IsEnabled = false;
+        public static bool ShowOnRespawn = false;
         public static string Message = "Welcome to YourServerNameHere {PlayerName}. If this is your first time here, please read the rules!";
 
         public static void Send(ClientInfo _cInfo)

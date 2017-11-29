@@ -14,6 +14,7 @@ namespace ServerTools
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, string> dict = new SortedDictionary<string, string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        public static int LevelToIgnore = 0;
 
         public static void Load()
         {
@@ -1219,113 +1220,117 @@ namespace ServerTools
         {
             if (_cInfo != null && !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
             {
-                for (int i = 0; i < _playerDataFile.inventory.Length; i++)
+                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                if (Admin.PermissionLevel <= LevelToIgnore)
                 {
-                    ItemStack _intemStack = new ItemStack();
-                    ItemValue _itemValue = new ItemValue();
-                    _intemStack = _playerDataFile.inventory[i];
-                    _itemValue = _intemStack.itemValue;
-                    int _count = _playerDataFile.inventory[i].count;
-                    if (_count > 0 && _itemValue != null && !_itemValue.Equals(ItemValue.None) && _cInfo != null)
+                    for (int i = 0; i < _playerDataFile.inventory.Length; i++)
                     {
-                        int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
-                        string _name = ItemClass.list[_itemValue.type].GetItemName();
-                        if (AnounceInvalidStack && _count > _maxAllowed)
+                        ItemStack _intemStack = new ItemStack();
+                        ItemValue _itemValue = new ItemValue();
+                        _intemStack = _playerDataFile.inventory[i];
+                        _itemValue = _intemStack.itemValue;
+                        int _count = _playerDataFile.inventory[i].count;
+                        if (_count > 0 && _itemValue != null && !_itemValue.Equals(ItemValue.None) && _cInfo != null)
                         {
-                            string _phrase3;
-                            if (!Phrases.Dict.TryGetValue(3, out _phrase3))
+                            int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
+                            string _name = ItemClass.list[_itemValue.type].GetItemName();
+                            if (AnounceInvalidStack && _count > _maxAllowed)
                             {
-                                _phrase3 = "{PlayerName} you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
-                            }
-                            _phrase3 = _phrase3.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase3 = _phrase3.Replace("{ItemName}", _name);
-                            _phrase3 = _phrase3.Replace("{ItemCount}", _count.ToString());
-                            _phrase3 = _phrase3.Replace("{MaxPerStack}", _maxAllowed.ToString());
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase3), "Server", false, "", false));
-                            ChatLog.Log(_phrase3, "Server");
-                        }
-                        if (IsEnabled && dict.ContainsKey(_name))
-                        {
-                            if (BanPlayer)
-                            {
-                                string _phrase4;
-                                if (!Phrases.Dict.TryGetValue(4, out _phrase4))
+                                string _phrase3;
+                                if (!Phrases.Dict.TryGetValue(3, out _phrase3))
                                 {
-                                    _phrase4 = "Cheat Detected: Auto banned {PlayerName} for having a invalid item: {ItemName}.";
+                                    _phrase3 = "{PlayerName} you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
                                 }
-                                _phrase4 = _phrase4.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase4 = _phrase4.Replace("{ItemName}", _name);
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase4), "Server", false, "", false);
-                                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Invalid Item {1}\"", _cInfo.entityId, _name), _cInfo);
+                                _phrase3 = _phrase3.Replace("{PlayerName}", _cInfo.playerName);
+                                _phrase3 = _phrase3.Replace("{ItemName}", _name);
+                                _phrase3 = _phrase3.Replace("{ItemCount}", _count.ToString());
+                                _phrase3 = _phrase3.Replace("{MaxPerStack}", _maxAllowed.ToString());
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase3), "Server", false, "", false));
+                                ChatLog.Log(_phrase3, "Server");
                             }
-                            else
+                            if (IsEnabled && dict.ContainsKey(_name))
                             {
-                                string _phrase5;
-                                if (!Phrases.Dict.TryGetValue(5, out _phrase5))
+                                if (BanPlayer)
                                 {
-                                    _phrase5 = "Cheat Detected: Auto kicked {PlayerName} for having a invalid item: {ItemName}.";
+                                    string _phrase4;
+                                    if (!Phrases.Dict.TryGetValue(4, out _phrase4))
+                                    {
+                                        _phrase4 = "Cheat Detected: Auto banned {PlayerName} for having a invalid item: {ItemName}.";
+                                    }
+                                    _phrase4 = _phrase4.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase4 = _phrase4.Replace("{ItemName}", _name);
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase4), "Server", false, "", false);
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Invalid Item {1}\"", _cInfo.entityId, _name), _cInfo);
                                 }
-                                _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase5 = _phrase5.Replace("{ItemName}", _name);
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase5), "Server", false, "", false);
-                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), _cInfo);
+                                else
+                                {
+                                    string _phrase5;
+                                    if (!Phrases.Dict.TryGetValue(5, out _phrase5))
+                                    {
+                                        _phrase5 = "Cheat Detected: Auto kicked {PlayerName} for having a invalid item: {ItemName}.";
+                                    }
+                                    _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase5 = _phrase5.Replace("{ItemName}", _name);
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase5), "Server", false, "", false);
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), _cInfo);
+                                }
+                                break;
                             }
-                            break;
                         }
                     }
-                }
-                for (int i = 0; i < _playerDataFile.bag.Length; i++)
-                {
-                    ItemStack _intemStack = new ItemStack();
-                    ItemValue _itemValue = new ItemValue();
-                    _intemStack = _playerDataFile.bag[i];
-                    _itemValue = _intemStack.itemValue;
-                    int _count = _playerDataFile.bag[i].count;
-                    if (_count > 0 && _itemValue != null && !_itemValue.Equals(ItemValue.None) && _cInfo != null)
+                    for (int i = 0; i < _playerDataFile.bag.Length; i++)
                     {
-                        int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
-                        string _name = ItemClass.list[_itemValue.type].GetItemName();
-                        if (AnounceInvalidStack && _count > _maxAllowed)
+                        ItemStack _intemStack = new ItemStack();
+                        ItemValue _itemValue = new ItemValue();
+                        _intemStack = _playerDataFile.bag[i];
+                        _itemValue = _intemStack.itemValue;
+                        int _count = _playerDataFile.bag[i].count;
+                        if (_count > 0 && _itemValue != null && !_itemValue.Equals(ItemValue.None) && _cInfo != null)
                         {
-                            string _phrase3;
-                            if (!Phrases.Dict.TryGetValue(3, out _phrase3))
+                            int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
+                            string _name = ItemClass.list[_itemValue.type].GetItemName();
+                            if (AnounceInvalidStack && _count > _maxAllowed)
                             {
-                                _phrase3 = "{PlayerName} you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
-                            }
-                            _phrase3 = _phrase3.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase3 = _phrase3.Replace("{ItemName}", _name);
-                            _phrase3 = _phrase3.Replace("{ItemCount}", _count.ToString());
-                            _phrase3 = _phrase3.Replace("{MaxPerStack}", _maxAllowed.ToString());
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase3), "Server", false, "", false));
-                            ChatLog.Log(_phrase3, "Server");
-                        }
-                        if (IsEnabled && dict.ContainsKey(_name))
-                        {
-                            if (BanPlayer)
-                            {
-                                string _phrase4;
-                                if (!Phrases.Dict.TryGetValue(4, out _phrase4))
+                                string _phrase3;
+                                if (!Phrases.Dict.TryGetValue(3, out _phrase3))
                                 {
-                                    _phrase4 = "Cheat Detected: Auto banned {PlayerName} for having a invalid item: {ItemName}.";
+                                    _phrase3 = "{PlayerName} you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
                                 }
-                                _phrase4 = _phrase4.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase4 = _phrase4.Replace("{ItemName}", _name);
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase4), "Server", false, "", false);
-                                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Invalid Item {1}\"", _cInfo.entityId, _name), _cInfo);
+                                _phrase3 = _phrase3.Replace("{PlayerName}", _cInfo.playerName);
+                                _phrase3 = _phrase3.Replace("{ItemName}", _name);
+                                _phrase3 = _phrase3.Replace("{ItemCount}", _count.ToString());
+                                _phrase3 = _phrase3.Replace("{MaxPerStack}", _maxAllowed.ToString());
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase3), "Server", false, "", false));
+                                ChatLog.Log(_phrase3, "Server");
                             }
-                            else
+                            if (IsEnabled && dict.ContainsKey(_name))
                             {
-                                string _phrase5;
-                                if (!Phrases.Dict.TryGetValue(5, out _phrase5))
+                                if (BanPlayer)
                                 {
-                                    _phrase5 = "Cheat Detected: Auto kicked {PlayerName} for having a invalid item: {ItemName}.";
+                                    string _phrase4;
+                                    if (!Phrases.Dict.TryGetValue(4, out _phrase4))
+                                    {
+                                        _phrase4 = "Cheat Detected: Auto banned {PlayerName} for having a invalid item: {ItemName}.";
+                                    }
+                                    _phrase4 = _phrase4.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase4 = _phrase4.Replace("{ItemName}", _name);
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase4), "Server", false, "", false);
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Invalid Item {1}\"", _cInfo.entityId, _name), _cInfo);
                                 }
-                                _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase5 = _phrase5.Replace("{ItemName}", _name);
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase5), "Server", false, "", false);
-                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), _cInfo);
+                                else
+                                {
+                                    string _phrase5;
+                                    if (!Phrases.Dict.TryGetValue(5, out _phrase5))
+                                    {
+                                        _phrase5 = "Cheat Detected: Auto kicked {PlayerName} for having a invalid item: {ItemName}.";
+                                    }
+                                    _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase5 = _phrase5.Replace("{ItemName}", _name);
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase5), "Server", false, "", false);
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), _cInfo);
+                                }
+                                break;
                             }
-                            break;
                         }
                     }
                 }

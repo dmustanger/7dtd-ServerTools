@@ -8,6 +8,7 @@ namespace ServerTools
         public static bool IsRunning = false;
         public static bool IsEnabled = false;
         public static bool ShowOnSpawn = false;
+        public static bool ShowOnRespawn = false;
         public static int AutoShowBloodmoon = 30;
         private static Thread th;
 

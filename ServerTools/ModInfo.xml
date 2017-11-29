@@ -3,8 +3,8 @@
   <ModInfo>
     <Name value="Server Tools" />
     <Description value="Server tools for dedicated servers" />
-    <Author value="Dmustanger" />
-    <Version value="4.1b" />
-    <Website value="https://github.com/dmustanger/7dtd-ServerTools" />
+    <Author value="ObsessiveCompulsive" />
+    <Version value="5.55" />
+    <Website value="https://github.com/ObsComp/7dtd-ServerTools-master-5.5" />
   </ModInfo>
 </xml>

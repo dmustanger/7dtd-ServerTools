@@ -86,7 +86,7 @@ namespace ServerTools
                     {
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
                         return;
-                    }
+                    }                  
                     bool _mutedPlayersFound = false;
                     foreach (string _id in PersistentContainer.Instance.Players.SteamIDs)
                     {
@@ -94,8 +94,9 @@ namespace ServerTools
                         {
                             if (p.IsMuted)
                             {
+                                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_params[1]);
                                 _mutedPlayersFound = true;
-                                SdtdConsole.Instance.Output(string.Format("{0}", _id));
+                                SdtdConsole.Instance.Output(string.Format("{0} {1}", _id, _cInfo.playerId));
                             }
                         }
                     }

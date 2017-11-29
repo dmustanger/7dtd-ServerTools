@@ -45,22 +45,10 @@ killme command (all players)
 	/killme
 
 teleport home command (all players)
-	/sethome mainbase
-	!sethome mainbase
-	/listhomes
-	!listhomes
-	/home mainbase
-	!home mainbase
-	/delhome mainbase
-	!delhome mainbase
-	- If you do not specify a name, the name will be "default"
 	/sethome
 	!sethome
 	/home
 	!home
-	/delhome
-	!delhome
-
 
 whisper command (all players)
 	/pm <message>
@@ -85,3 +73,12 @@ clan commands (all players)
 	/clandecline
 	!clanleave
 	/clanleave
+
+Reserved list commands (reserved list players)
+	/doncolor 
+
+Reserved list commands (all players)
+	/reserved
+
+Animal tracking commands (all players)
+	/trackanimal /track

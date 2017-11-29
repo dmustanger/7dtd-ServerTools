@@ -1,5 +1,119 @@
-﻿v4.1a
-Add support for multiple saved home locations, including listing and deleting homes
+﻿v.5.8 in process
+Redo donator chat color system to allow them to not be on the admin list...
+Look into block processing to reduce lag...
+Email specific alerts to listed addresses...
+
+v.5.7 in process
+Anticheat - player damage...
+Anticheat - teleportation, world height...
+
+V.5.6 in process
+Anticheat - inventory checks and logs...
+Anticheat - world edge...
+Anticheat - pve/pvp zone protection...
+
+v.5.55
+Fixed /admin chat command returning too many and incorrect responses in game. Enable /admin chat command by setting AdminList in servertools config to true
+
+v.5.54
+Changed Admin Chat Color off to be only temporary. Server restarts will reset this status. This was creating a bug to disallow some admins or mods to see their chat color
+Next version will correct this feature to be permanent but requires a new file be created. That will be the final version before 5.6 is released
+*Cancelled persistant chat color off. Feature will remain temporary
+
+v.5.53
+InfoTicker can be set to random, default is now sequential. Random is improved from prior. Goes through the entire list before repeating the same message. Random option added to servertools config
+
+v.5.52
+Fixed Admin Chat Color off/on through console
+Added anti stuck teleport for players flagged as stuck underground by the Entity Underground Check. The player stuck function is experimental. Turn off EUC if you have troubles and report any bugs
+Adjusted result of command restart check in console and /restart in chat. It will now read # H : # M
+
+v.5.51
+Fixed Admin Chat Color bug - Colors will now show properly
+Fixed Player Stat Check bug - Player skill points available did not add the skill points available from beginner quests and challenges, leading to false positives
+
+v.5.5
+Changed Flight Check detection system to avoid false positives
+Removed teleport to surface in anticheat system for players unless detected while moving
+Improved Entity Underground Check and fixed one bug within it
+Added chat command /admin. Lists all currently in game administrators and moderators based on the server admin list. Can be announced with !admin
+Added chat command /restart. Shows a player when the next auto restart is. Can be announced with !restart
+Added console command tempban, example: tempban 171 15 would ban player with Id 171 for 15 minutes. Limit is 60 minutes
+Added console command restart check to see when the next auto restart is
+Added Player Position Logs. Adds a folder containing files with the player positions. Outputs each player's position every minute into a txt file. Files are separated by days
+Added console commands to reset a player's cooldown on gimme and animal tracking. In console: gimme reset steamId and animaltracking reset steamId
+Added Player Stat Check to automatically watch over player's stats for cheating values. Currently checks for health, stamina, jump, movement speed, player model height,
+skill points available versus player level, and player level
+
+v.5.4
+Tweaked Anticheat detection
+Added vote reward system. Players can receive a reward ingame after voting for your server at https://7daystodie-servers.com
+Added console subcommand to Jail. Use jail list to see the current jailed players
+Added built in admin alert system to anticheat systems
+Fixed admin alert for entities found underground. It will not alert admins about other admins found underground anymore
+
+v.5.3
+Tweaks to Anticheat detection. Improvements around false positives
+Added Special Player Chat Color option. Adding their steamId to the config will allow them to use the special player prefix and color in chat. Separate your id entries with a ,
+Special players can turn their chat color on and off with /spcolor
+Admins can now turn on and off their chat color with /admincolor
+Admins can now be alerted to suspected players stuck underground while they are in game and Entity Underground Check is running
+Fixed Animal Tracking delay timer
+Fixed internal timer systems
+
+v.5.2
+Anticheat Flight Check and Underground Check are improved tremendously. Should have little to no false positives
+Added Kill Player option to Anticheat Checks
+Added Entity Underground Check. This will check if entity such as minibikes, animals, and zombies are underground, then teleport them to the surface
+
+v.5.1
+Added AntiCheat: Underground Check. This will teleport players stuck underground to the surface. Only moving players underground will be detected as flying underground
+Changed AntiCheat: Flight Check. This will teleport players standing still in the air to the surface. Only moving players in the air will be detected as flying
+Changed AnimalTracking to work with EntityId. Place the EntityId in your config. Admins can choose what to spawn this way. Requires server restart for EntityId changes
+
+v.5.0
+Coppis mod is no longer required to use the /trackanimal or /track command
+Added AntiCheat: Flight Check
+Added option in the configuration allowing admins to change chat command symbols from default / and !
+
+v.4.6
+Adjusted Motd to allow it to be shown every respawn or only on entry
+Adjusted Bloodmoon to allow it to be shown every respawn or only on entry
+Added new line in the servertools config just for donator chat coloring
+Added third donator chat color option
+Added enable option to donator chat color due to it currently using the reservedslots list. *Note* You must enable reservedslots to utilize donator colors
+Fixed invalid item checker to look for anyone listed greater in number on the admin list than has been set in the servertools config option
+Invalid items setup example: Setting 4 on the servertools config will check for all admins, mods, and players level 5 and higher for invalid items. Setting 2 would check 
+anyone 3 or higher from the admin list
+Fixed /reserved command and /doncolor giving improper responses when the reservedslots function is turned off
+Set higher defaults for donator levels to avoid conflicts with existing admin tiers
+
+Updates to the colored chat system in future versions are coming
+
+v.4.5
+Added auto restart system. This is technically a shutdown. Performs shutdown with countdown by calling on stopserver command. To restart your server automatically, set it as
+a service in windows OS or make sure your server provider you rent from has an auto restart feature enabled before using this feature. If this is not available to you, you
+will need to manually reboot your server after each shutdown. Setting is default off.
+Servertools can not restart a server automatically because it is only loaded when the server is running
+
+v.4.4
+*REQUIRES COPPIS MOD FOR ANIMAL TRACKING*
+Fixed donator chat color. Admin can change the level and donators can still activate their chat color at will or switch between them
+Fixed /reserved command not working when doncolor was turned off
+Added /trackanimal or /track command. Allows a player to spawn an animal within a radius set by the servertools config. Hostile animals can be turned on as well
+
+v.4.3
+Fixed donator color switch
+Adjusted donator prefix to allow different donator prefix for each tier
+Donator chat color now based on expiration date in reserved list
+Added command /reserved for players to check their reserved list status
+Added command /doncolor for players to enable and change available donator chat colors
+
+v.4.2
+Servertools code now implemented by Obsessive Compulsive after 4.1
+Added two donator tiers for chat coloring. Config allows level, prefix and color changes
+Fixed invalid item checker to look for moderators and donators as well as regular player.
+Fixed @Admins command to not be sent to donators, only moderators and admins
 
 v4.1
 Fixed a NullReferenceException with NewSpawnTele
