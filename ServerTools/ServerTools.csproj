@@ -38,7 +38,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="src\AntiCheat\FamilyShareAccount.cs" />
-    <Compile Include="src\AntiCheat\PveProtection.cs" />
+    <Compile Include="src\AntiCheat\HatchElevator.cs" />
+    <Compile Include="src\AntiCheat\ZoneProtection.cs" />
     <Compile Include="src\AntiCheat\PlayerStatCheck.cs" />
     <Compile Include="src\AntiCheat\PlayerLogs.cs" />
     <Compile Include="src\AntiCheat\UndergroundCheck.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="src\Chat\AdminChatCommands\Jail.cs" />
     <Compile Include="src\Chat\ChatCommands\Killme.cs" />
     <Compile Include="src\Chat\ChatCommands\TeleportHome.cs" />
+    <Compile Include="src\Chat\ChatCommands\Travel.cs" />
     <Compile Include="src\Chat\ChatCommands\Whisper.cs" />
     <Compile Include="src\Chat\Hook.cs" />
     <Compile Include="src\Chat\InfoTicker.cs" />
@@ -119,6 +121,7 @@
     <Reference Include="7dtd-server-fixes, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\7dtd-binaries\7dtd-server-fixes.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\Assembly-CSharp.dll</HintPath>

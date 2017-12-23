@@ -45,9 +45,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        World world = GameManager.Instance.World;
-                        int worldSeed = world.Seed;
-                        PersistentContainer.Instance.Players[_params[1], false].WorldSeedFirstClaim = worldSeed;
+                        PersistentContainer.Instance.Players[_params[1], true].WorldSeedFirstClaim = 1;
                         PersistentContainer.Instance.Save();
                     }
                 }
@@ -59,7 +57,7 @@ namespace ServerTools
 
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ResetAnimalTracking.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ResetFirstClaimBlock.Run: {0}.", e));
             }
         }
     }

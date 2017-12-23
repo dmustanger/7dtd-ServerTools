@@ -97,7 +97,7 @@ namespace ServerTools
                                     _phrase500 = "{PlayerName} you have been sent to jail.";
                                 }
                                 _phrase500 = _phrase500.Replace("{PlayerName}", _cInfo.playerName);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _phrase500), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase500), "Server", false, "", false));
                             }
                         }
                         SdtdConsole.Instance.Output(string.Format("You have put {0} in jail. ", _params[1]));
@@ -156,7 +156,7 @@ namespace ServerTools
                                     _phrase501 = "{PlayerName} you have been released from jail.";
                                 }
                                 _phrase501 = _phrase501.Replace("{PlayerName}", _cInfo.playerName);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _phrase501), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase501), "Server", false, "", false));
                                 PersistentContainer.Instance.Players[_params[1], false].IsRemovedFromJail = true;
                             }
                         }

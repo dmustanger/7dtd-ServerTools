@@ -599,9 +599,32 @@ namespace ServerTools
                 string _phrase602;
                 if (!Dict.TryGetValue(602, out _phrase602))
                 {
-                    _phrase602 = "{PlayerName} you can only use /reward once every 24 hours. Time remaining: {TimeRemaining} hour(s).";
+                    _phrase602 = "{PlayerName} you can only use /reward once every {DelayBetweenRewards} hours. Time remaining: {TimeRemaining} hour(s).";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"602\" Phrase=\"{0}\" />", _phrase602)); 
+                sw.WriteLine("    </Phrases>");
+                sw.WriteLine("</ServerTools>");
+                sw.Flush();
+                sw.Close();
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ******************* TravelLocations ******************** -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase603;
+                if (!Dict.TryGetValue(603, out _phrase603))
+                {
+                    _phrase603 = "You have traveled to.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"603\" Phrase=\"{0}\" />", _phrase603));
+                sw.WriteLine("    </Phrases>");
+                sw.WriteLine("</ServerTools>");
+                sw.Flush();
+                sw.Close();
+                string _phrase604;
+                if (!Dict.TryGetValue(604, out _phrase604))
+                {
+                    _phrase604 = "You are not in a travel location.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"604\" Phrase=\"{0}\" />", _phrase604));
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();

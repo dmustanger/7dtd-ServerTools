@@ -35,13 +35,12 @@ namespace ServerTools
                 world.SpawnEntityInWorld(entityItem);
                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Claim block has been added to your inventory or if inventory is full, it dropped at your feet.[-]", CustomCommands.ChatColor), "Server", false, "", false));
-                PersistentContainer.Instance.Players[_cInfo.playerId, false].WorldSeedFirstClaim = worldSeed;
-                PersistentContainer.Instance.Save();
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Claim block has been added to your inventory or if inventory is full, it dropped at your feet.[-]", Config.ChatColor), "Server", false, "", false));
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].WorldSeedFirstClaim = worldSeed;
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already received your first claim block. Contact an administrator if you require help.[-]", CustomCommands.ChatColor), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already received your first claim block. Contact an administrator if you require help.[-]", Config.ChatColor), "Server", false, "", false));
             }
         }
     }

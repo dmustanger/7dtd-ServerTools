@@ -88,6 +88,14 @@
             {
                 Gimme.Load();
             }
+            if (HatchElevator.IsEnabled)
+            {
+                HatchElevator.HatchElevatorTimerStart();
+            }
+            if (!HatchElevator.IsEnabled)
+            {
+                HatchElevator.HatchElevatorTimerStop();
+            }
             if (HighPingKicker.IsRunning && !HighPingKicker.IsEnabled)
             {
                 HighPingKicker.Unload();
@@ -133,14 +141,6 @@
             {
                 PlayerStatCheck.PlayerStat();
             }
-            if (!StartingItems.IsRunning && StartingItems.IsEnabled)
-            {
-                StartingItems.Load();
-            }
-            if (StartingItems.IsRunning && !StartingItems.IsEnabled)
-            {
-                StartingItems.Unload();
-            }
             if (!ReservedSlots.IsRunning && ReservedSlots.IsEnabled)
             {
                 ReservedSlots.Load();
@@ -156,7 +156,23 @@
             if (ReservedSlots.IsRunning && !ReservedSlots.DonatorNameColoring)
             {
                 ReservedSlots.Unload();
-            }            
+            }
+            if (!StartingItems.IsRunning && StartingItems.IsEnabled)
+            {
+                StartingItems.Load();
+            }
+            if (StartingItems.IsRunning && !StartingItems.IsEnabled)
+            {
+                StartingItems.Unload();
+            }
+            if (!Travel.IsRunning && Travel.IsEnabled)
+            {
+                Travel.Load();
+            }
+            if (Travel.IsRunning && !Travel.IsEnabled)
+            {
+                Travel.Unload();
+            }
             if (UndergroundCheck.IsEnabled)
             {
                 UndergroundCheck.UndergroundTimerStart();
@@ -173,6 +189,14 @@
             {
                 Watchlist.Unload();
             }
+            /*if (ZoneProtection.IsEnabled)
+            {
+                ZoneProtection.ZoneProtectionTimerStart();
+            }
+            if (!ZoneProtection.IsEnabled)
+            {
+                ZoneProtection.ZoneProtectionTimerStop();
+            }*/
         }
     }
 }

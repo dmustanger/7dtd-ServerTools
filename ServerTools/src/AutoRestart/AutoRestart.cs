@@ -69,11 +69,11 @@ namespace ServerTools
                 TimeLeft = string.Format("{0:00} H : {1:00} M", _timeleftMinutes / 60, _timeleftMinutes % 60);
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}The next auto restart is in [FF8000]{1}[-]", CustomCommands.ChatColor, TimeLeft), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}The next auto restart is in [FF8000]{1}[-]", Config.ChatColor, TimeLeft), "Server", false, "", false);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}The next auto restart is in [FF8000]{1}[-]", CustomCommands.ChatColor, TimeLeft), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}The next auto restart is in [FF8000]{1}[-]", Config.ChatColor, TimeLeft), "Server", false, "", false));
                 }
             }
         }

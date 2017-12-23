@@ -14,7 +14,7 @@
                     _phrase200 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase200 = _phrase200.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _phrase200), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase200), "Server", false, "", false));
             }
             else
             {
@@ -29,7 +29,7 @@
                     }
                     _phrase201 = _phrase201.Replace("{AdminPlayerName}", _cInfo.playerName);
                     _phrase201 = _phrase201.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase201, CustomCommands.ChatColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase201, Config.ChatColor), "Server", false, "", false));
                 }
                 else
                 {
@@ -49,7 +49,7 @@
                             }
                             _phrase202 = _phrase202.Replace("{AdminPlayerName}", _cInfo.playerName);
                             _phrase202 = _phrase202.Replace("{MutedPlayerName}", _PlayertoMute.playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase202, CustomCommands.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase202, Config.ChatColor), "Server", false, "", false));
                         }
                         else
                         {
@@ -71,7 +71,7 @@
             }
             _phrase203 = _phrase203.Replace("{AdminPlayerName}", _admin.playerName);
             _phrase203 = _phrase203.Replace("{MutedPlayerName}", _player.playerName);
-            _admin.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase203, CustomCommands.ChatColor), "Server", false, "", false));
+            _admin.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase203, Config.ChatColor), "Server", false, "", false));
         }
 
         public static void Remove(ClientInfo _cInfo, string _playerName)
@@ -84,7 +84,7 @@
                     _phrase200 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase200 = _phrase200.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _phrase200), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase200), "Server", false, "", false));
             }
             else
             {
@@ -99,7 +99,7 @@
                     }
                     _phrase201 = _phrase201.Replace("{AdminPlayerName}", _cInfo.playerName);
                     _phrase201 = _phrase201.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase201, CustomCommands.ChatColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase201, Config.ChatColor), "Server", false, "", false));
                 }
                 else
                 {
@@ -113,7 +113,7 @@
                         }
                         _phrase204 = _phrase204.Replace("{AdminPlayerName}", _cInfo.playerName);
                         _phrase204 = _phrase204.Replace("{PlayerName}", _PlayertoUnMute.playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase204, CustomCommands.ChatColor), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase204, Config.ChatColor), "Server", false, "", false));
                     }
                     else
                     {
@@ -126,7 +126,7 @@
                             }
                             _phrase204 = _phrase204.Replace("{AdminPlayerName}", _cInfo.playerName);
                             _phrase204 = _phrase204.Replace("{PlayerName}", _PlayertoUnMute.playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase204, CustomCommands.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase204, Config.ChatColor), "Server", false, "", false));
                         }
                         else
                         {
@@ -139,7 +139,7 @@
                             }
                             _phrase205 = _phrase205.Replace("{AdminPlayerName}", _cInfo.playerName);
                             _phrase205 = _phrase205.Replace("{UnMutedPlayerName}", _PlayertoUnMute.playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase205, CustomCommands.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase205, Config.ChatColor), "Server", false, "", false));
                         }
                     }
                 }

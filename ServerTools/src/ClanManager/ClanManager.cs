@@ -40,7 +40,7 @@ namespace ServerTools
                 }
                 _phrase101 = _phrase101.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase101 = _phrase101.Replace("{ClanName}", p.ClanName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase101, CustomCommands.ChatColor), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase101, Config.ChatColor), "Server", false, "", false));
             }
             else
             {
@@ -53,7 +53,7 @@ namespace ServerTools
                     }
                     _phrase103 = _phrase103.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase103 = _phrase103.Replace("{ClanName}", p.ClanName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase103, CustomCommands.ChatColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase103, Config.ChatColor), "Server", false, "", false));
                 }
                 else
                 {
@@ -67,7 +67,7 @@ namespace ServerTools
                         }
                         _phrase102 = _phrase102.Replace("{PlayerName}", _cInfo.playerName);
                         _phrase102 = _phrase102.Replace("{ClanName}", _clanName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase102, CustomCommands.ChatColor), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase102, Config.ChatColor), "Server", false, "", false));
                     }
                     else
                     {
@@ -77,7 +77,7 @@ namespace ServerTools
                             if (!Phrases.Dict.TryGetValue(129, out _phrase129))
                             {
                                 _phrase129 = "{PlayerName} the clanName must be longer the 3 characters";
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase129, CustomCommands.ChatColor), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase129, Config.ChatColor), "Server", false, "", false));
                             }
                             _phrase129 = _phrase129.Replace("{PlayerName}", _cInfo.playerName);
                         }
@@ -95,7 +95,7 @@ namespace ServerTools
                             }
                             _phrase104 = _phrase104.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase104 = _phrase104.Replace("{ClanName}", _clanName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase104, CustomCommands.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase104, Config.ChatColor), "Server", false, "", false));
                         } 
                     }
                 }
@@ -113,7 +113,7 @@ namespace ServerTools
                     _phrase105 = "{PlayerName} you are not the owner of any clans.";
                 }
                 _phrase105 = _phrase105.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase105, CustomCommands.ChatColor), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase105, Config.ChatColor), "Server", false, "", false));
             }
             else
             {
@@ -135,7 +135,7 @@ namespace ServerTools
                         }
                         _phrase121 = _phrase121.Replace("{PlayerName}", _cInfo1.playerName);
                         _phrase121 = _phrase121.Replace("{ClanName}", p.ClanName);
-                        _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase121, CustomCommands.ChatColor), "Server", false, "", false));
+                        _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase121, Config.ChatColor), "Server", false, "", false));
                     }
                 }
                 foreach (string _id in PersistentContainer.Instance.Players.SteamIDs)
@@ -165,7 +165,7 @@ namespace ServerTools
                 PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName = null;
                 PersistentContainer.Instance.Players[_cInfo.playerId, false].IsClanOfficer = false;
                 PersistentContainer.Instance.Players[_cInfo.playerId, false].IsClanOwner = false;
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase106, CustomCommands.ChatColor), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase106, Config.ChatColor), "Server", false, "", false));
                 PersistentContainer.Instance.Save();
             }
         }
@@ -181,7 +181,7 @@ namespace ServerTools
                     _phrase107 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase107, CustomCommands.ChatColor), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase107, Config.ChatColor), "Server", false, "", false));
             }
             else
             {
@@ -195,7 +195,7 @@ namespace ServerTools
                     }
                     _phrase108 = _phrase108.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase108 = _phrase108.Replace("{TargetPlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase108, CustomCommands.ChatColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase108, Config.ChatColor), "Server", false, "", false));
                 }
                 else
                 {
@@ -208,7 +208,7 @@ namespace ServerTools
                             _phrase109 = "{PlayerName} is already a member of a clan.";
                         }
                         _phrase109 = _phrase109.Replace("{PlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase109, CustomCommands.ChatColor), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase109, Config.ChatColor), "Server", false, "", false));
                     }
                     else
                     {
@@ -220,7 +220,7 @@ namespace ServerTools
                                 _phrase110 = "{PlayerName} already has pending clan invites.";
                             }
                             _phrase110 = _phrase110.Replace("{PlayerName}", _playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase110, CustomCommands.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase110, Config.ChatColor), "Server", false, "", false));
                         }
                         else
                         {
@@ -242,8 +242,8 @@ namespace ServerTools
                             _phrase112 = _phrase112.Replace("{ClanName}", p.ClanName);
                             PersistentContainer.Instance.Players[_newMember.playerId, true].InvitedToClan = p.ClanName;
                             PersistentContainer.Instance.Save();
-                            _newMember.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase111, CustomCommands.ChatColor), "Server", false, "", false));
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase112, CustomCommands.ChatColor), "Server", false, "", false));
+                            _newMember.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase111, Config.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase112, Config.ChatColor), "Server", false, "", false));
                         }
                     }
                 }
@@ -261,7 +261,7 @@ namespace ServerTools
                     _phrase113 = "{PlayerName} you have not been invited to any clans.";
                 }
                 _phrase113 = _phrase113.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase113, CustomCommands.ChatColor), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase113, Config.ChatColor), "Server", false, "", false));
             }
             else
             {
@@ -280,7 +280,7 @@ namespace ServerTools
                             _phrase115 = "{PlayerName} has joined the clan.";
                         }
                         _phrase115 = _phrase115.Replace("{PlayerName}", _cInfo.playerName);
-                        _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase115, CustomCommands.ChatColor), "Server", false, "", false));
+                        _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase115, Config.ChatColor), "Server", false, "", false));
                     }
                 }
             }
@@ -297,7 +297,7 @@ namespace ServerTools
                     _phrase113 = "{PlayerName} you have not been invited to any clans.";
                 }
                 _phrase113 = _phrase113.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase113, CustomCommands.ChatColor), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase113, Config.ChatColor), "Server", false, "", false));
             }
             else
             {
@@ -309,7 +309,7 @@ namespace ServerTools
                     _phrase116 = "{PlayerName} you have declined the invite to the clan.";
                 }
                 _phrase116 = _phrase116.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase116, CustomCommands.ChatColor), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase116, Config.ChatColor), "Server", false, "", false));
             }
         }
 
@@ -324,7 +324,7 @@ namespace ServerTools
                     _phrase107 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase107, CustomCommands.ChatColor), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase107, Config.ChatColor), "Server", false, "", false));
             }
             else
             {
@@ -349,7 +349,7 @@ namespace ServerTools
                         }
                         _phrase108 = _phrase108.Replace("{PlayerName}", _cInfo.playerName);
                         _phrase108 = _phrase108.Replace("{TargetPlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase108, CustomCommands.ChatColor), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase108, Config.ChatColor), "Server", false, "", false));
                         return;
                     }
                 }
@@ -362,7 +362,7 @@ namespace ServerTools
                         _phrase117 = "{PlayerName} is not a member of your clan.";
                     }
                     _phrase117 = _phrase117.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase117, CustomCommands.ChatColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase117, Config.ChatColor), "Server", false, "", false));
                 }
                 else
                 {
@@ -374,7 +374,7 @@ namespace ServerTools
                             _phrase118 = "{PlayerName} only the clan owner can remove officers.";
                         }
                         _phrase118 = _phrase118.Replace("{PlayerName}", _cInfo.playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase118, CustomCommands.ChatColor), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase118, Config.ChatColor), "Server", false, "", false));
                     }
                     else
                     {
@@ -396,10 +396,10 @@ namespace ServerTools
                         _phrase120 = _phrase120.Replace("{ClanName}", p.ClanName);
                         _phrase121 = _phrase121.Replace("{PlayerName}", _playerName);
                         _phrase121 = _phrase121.Replace("{ClanName}", p.ClanName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase120, CustomCommands.ChatColor), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase120, Config.ChatColor), "Server", false, "", false));
                         if (_PlayertoRemove != null)
                         {
-                            _PlayertoRemove.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase121, CustomCommands.ChatColor), "Server", false, "", false));
+                            _PlayertoRemove.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase121, Config.ChatColor), "Server", false, "", false));
                         }
                     }
                 }
@@ -417,7 +417,7 @@ namespace ServerTools
                     _phrase107 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase107, CustomCommands.ChatColor), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase107, Config.ChatColor), "Server", false, "", false));
             }
             else
             {
@@ -431,7 +431,7 @@ namespace ServerTools
                     }
                     _phrase108 = _phrase108.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase108 = _phrase108.Replace("{TargetPlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase108, CustomCommands.ChatColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase108, Config.ChatColor), "Server", false, "", false));
                 }
                 else
                 {
@@ -444,7 +444,7 @@ namespace ServerTools
                             _phrase117 = "{PlayerName} is not a member of your clan.";
                         }
                         _phrase117 = _phrase117.Replace("{PlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase117, CustomCommands.ChatColor), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase117, Config.ChatColor), "Server", false, "", false));
                     }
                     else
                     {
@@ -456,7 +456,7 @@ namespace ServerTools
                                 _phrase122 = "{PlayerName} is already a officer.";
                             }
                             _phrase122 = _phrase122.Replace("{PlayerName}", _playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase122, CustomCommands.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase122, Config.ChatColor), "Server", false, "", false));
                         }
                         else
                         {
@@ -468,7 +468,7 @@ namespace ServerTools
                                 _phrase123 = "{PlayerName} has been promoted to an officer.";
                             }
                             _phrase123 = _phrase123.Replace("{PlayerName}", _playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase123, CustomCommands.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase123, Config.ChatColor), "Server", false, "", false));
                         }
                     }
                 }
@@ -486,7 +486,7 @@ namespace ServerTools
                     _phrase107 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase107, CustomCommands.ChatColor), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase107, Config.ChatColor), "Server", false, "", false));
             }
             else
             {
@@ -500,7 +500,7 @@ namespace ServerTools
                     }
                     _phrase108 = _phrase108.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase108 = _phrase108.Replace("{TargetPlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase108, CustomCommands.ChatColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase108, Config.ChatColor), "Server", false, "", false));
                 }
                 else
                 {
@@ -513,7 +513,7 @@ namespace ServerTools
                             _phrase117 = "{PlayerName} is not a member of your clan.";
                         }
                         _phrase117 = _phrase117.Replace("{PlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase117, CustomCommands.ChatColor), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase117, Config.ChatColor), "Server", false, "", false));
                     }
                     else
                     {
@@ -525,7 +525,7 @@ namespace ServerTools
                                 _phrase124 = "{PlayerName} is not an officer.";
                             }
                             _phrase124 = _phrase124.Replace("{PlayerName}", _playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase124, CustomCommands.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase124, Config.ChatColor), "Server", false, "", false));
                         }
                         else
                         {
@@ -537,7 +537,7 @@ namespace ServerTools
                                 _phrase125 = "{PlayerName} has been demoted.";
                             }
                             _phrase125 = _phrase125.Replace("{PlayerName}", _playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase125, CustomCommands.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase125, Config.ChatColor), "Server", false, "", false));
                         }
                     }
                 }
@@ -555,7 +555,7 @@ namespace ServerTools
                     _phrase126 = "{PlayerName} you can not leave the clan because you are the owner. You can only delete the clan.";
                 }
                 _phrase126 = _phrase126.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase126, CustomCommands.ChatColor), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase126, Config.ChatColor), "Server", false, "", false));
             }
             else
             {
@@ -567,7 +567,7 @@ namespace ServerTools
                         _phrase127 = "{PlayerName} you do not belong to any clans.";
                     }
                     _phrase127 = _phrase127.Replace("{PlayerName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase127, CustomCommands.ChatColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase127, Config.ChatColor), "Server", false, "", false));
                 }
                 else
                 {
@@ -584,7 +584,7 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[_cInfo.playerId, false].IsClanOfficer = false;
                     }
                     PersistentContainer.Instance.Save();
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase121, CustomCommands.ChatColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase121, Config.ChatColor), "Server", false, "", false));
                 }
             }
         }
@@ -596,7 +596,7 @@ namespace ServerTools
         public static void GetChatCommands(ClientInfo _cInfo)
         {
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, true];
-            string _commands = string.Format("{0}Clan commands are:", CustomCommands.ChatColor); ;
+            string _commands = string.Format("{0}Clan commands are:", Config.ChatColor); ;
             if (!p.IsClanOwner && !p.IsClanOfficer && p.ClanName == null && p.InvitedToClan == null)
             {
                 _commands = string.Format("{0} /clanadd", _commands);

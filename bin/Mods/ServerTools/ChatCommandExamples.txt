@@ -1,0 +1,84 @@
+﻿Send a message to all admins (admins only)
+	@admins <message>
+
+Send a message to all players (admins only)
+	@all <message>
+
+Mute a player (admins only)
+	!mute <playername>
+	/mute <playername>
+
+Unmute a player (admins only)
+	!unmute <playername>
+	/unmute <playername>
+
+Put a player in jail (admins only)
+	!jail <playername>
+	/jail <playername>
+
+Remove a player from jail (admins only)
+	!unjail <playername>
+	/unjail <playername>
+
+Set the jail position (admins only)
+	!setjail
+	/setjail
+
+Set the new spawn tele position (admins only)
+	!setspawn
+	/setspawn
+
+list all commands available (all players)
+	!commands
+	/commands
+
+day7 command (all players)
+	!day7
+	/day7
+
+gimme command (all players)
+	!gimme
+	/gimme
+
+killme command (all players)
+	!killme
+	/killme
+
+teleport home command (all players)
+	/sethome
+	!sethome
+	/home
+	!home
+
+whisper command (all players)
+	/pm <message>
+	/re <message>
+
+clan commands (all players)
+	!clanadd <clanname>
+	/clanadd <clanname>
+	!/clanpromote <playername>
+	/clanpromote <playername>
+	!clandemote <playername>
+	/clandemote <playername>
+	!clandel
+	/clandel
+	!claninvite <playername>
+	/claninvite <playername>
+	!clanremove <playername>
+	/clanremove <playername>
+	!clanaccept
+	/clanaccept
+	!clandecline
+	/clandecline
+	!clanleave
+	/clanleave
+
+Reserved list commands (reserved list players)
+	/doncolor 
+
+Reserved list commands (all players)
+	/reserved
+
+Animal tracking commands (all players)
+	/trackanimal /track

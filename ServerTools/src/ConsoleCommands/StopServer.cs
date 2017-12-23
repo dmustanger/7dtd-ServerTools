@@ -9,6 +9,7 @@ namespace ServerTools
         private static Thread th;
         private static int _mins;
         private static bool isCountingDown = false;
+        public static bool TenSecondCountdown = false;
 
         public override string GetDescription()
         {
@@ -108,6 +109,7 @@ namespace ServerTools
             {
                 _phrase451 = "Saving World Now. Do not exchange items from inventory or build until after restart.";
             }
+
             List<ClientInfo> _cInfoList1 = ConnectionManager.Instance.GetClients();
             ClientInfo _cInfo1 = _cInfoList1.RandomObject();
             _phrase450 = _phrase450.Replace("{Minutes}", _mins.ToString());

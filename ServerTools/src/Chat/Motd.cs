@@ -14,7 +14,7 @@
                 Message = Message.Replace("{PlayerName}", _cInfo.playerName);
                 _replaceName = true;
             }
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, Message), "Server", false, "", false));
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, Message), "Server", false, "", false));
             if (_replaceName)
             {
                 Message = Message.Replace(_cInfo.playerName, "{PlayerName}");

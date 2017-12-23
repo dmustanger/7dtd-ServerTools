@@ -8,7 +8,6 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static bool IsRunning = false;
-        public static string ChatColor = "[00FF00]";
         public static SortedDictionary<string, string[]> Dict = new SortedDictionary<string, string[]>();
         private const string file = "CustomChatCommands.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -149,7 +148,7 @@ namespace ServerTools
 
         public static string GetChatCommands(ClientInfo _cInfo)
         {
-            string _commands = string.Format("{0}Commands are:", ChatColor);
+            string _commands = string.Format("{0}Commands are:", Config.ChatColor);
             if (Animals.IsEnabled)
             {
                 _commands = string.Format("{0} /gimme", _commands);
@@ -214,7 +213,7 @@ namespace ServerTools
             }
             if (_commands.EndsWith("Commands are:") )
             {
-                _commands = string.Format("{0}Sorry, there are no custom chat commands.", ChatColor);
+                _commands = string.Format("{0}Sorry, there are no custom chat commands.", Config.ChatColor);
             }
             _commands = string.Format("{0}[-]", _commands);
             return _commands;

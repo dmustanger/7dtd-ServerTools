@@ -174,7 +174,24 @@ namespace ServerTools
                     foreach (KeyValuePair<string, int[]> kvp in startItemList)
                     {
                         ItemValue itemValue;
-                        itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], true);
+                        var itemId = 4096;
+                        int _itemId;
+                        if (int.TryParse(kvp.Key, out _itemId))
+                        {
+                            int calc = (_itemId + 4096);
+                            itemId = calc;
+                            itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, kvp.Value[1], kvp.Value[1], true);
+                        }
+                        else
+                        {
+                            if (!ItemClass.ItemNames.Contains(kvp.Key))
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", kvp.Key));
+                                return;
+                            }
+
+                            itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], true);
+                        }
 
                         if (Equals(itemValue, ItemValue.None))
                         {

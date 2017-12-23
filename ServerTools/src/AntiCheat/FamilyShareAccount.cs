@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
@@ -132,6 +133,15 @@ namespace ServerTools
                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                 if (Admin.PermissionLevel > AdminLevel)
                 {
+                    string _file = string.Format("PlayerLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+                    string _filepath = string.Format("{0}/PlayerLogs/{1}", API.GamePath, _file);
+                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                    {
+                        sw.WriteLine(string.Format("{0} {1} ownerId {2} playerId {3} IP Address {4} connected with a family share account", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId));
+                        sw.WriteLine();
+                        sw.Flush();
+                        sw.Close();
+                    }
                     SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using a family share account. Purchase the game or contact an administrator for permission to join this server\"", _cInfo.playerId), _cInfo);
                 }
             }

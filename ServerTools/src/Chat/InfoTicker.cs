@@ -175,7 +175,7 @@ namespace ServerTools
                             var _message = msgList.First();
                             if (_message != null)
                             {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _message), "Server", false, "", false);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _message), "Server", false, "", false);
                                 msgList.RemoveAt(0);
                             }
                         }
@@ -185,7 +185,7 @@ namespace ServerTools
                             var _message = msgList.First();
                             if (_message != null)
                             {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _message), "Server", false, "", false);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _message), "Server", false, "", false);
                                 msgList.RemoveAt(0);
                             }
                         }
@@ -203,7 +203,7 @@ namespace ServerTools
                                 var _message = msgList.First();
                                 if (_message != null)
                                 {
-                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _message), "Server", false, "", false);
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _message), "Server", false, "", false);
                                     msgList.RemoveAt(0);
                                 }
                             }
@@ -213,7 +213,7 @@ namespace ServerTools
                                 var _message = msgList.First();
                                 if (_message != null)
                                 {
-                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", CustomCommands.ChatColor, _message), "Server", false, "", false);
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _message), "Server", false, "", false);
                                     msgList.RemoveAt(0);
                                 }
                             }

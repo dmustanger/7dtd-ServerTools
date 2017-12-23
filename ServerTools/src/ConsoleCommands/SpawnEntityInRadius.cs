@@ -21,7 +21,7 @@ namespace ServerTools
             "or\n" +
             "   ser <steam id/player name/entity id> <spawn radius> @ [<list of entities>]\n" +
             "Example\n" +
-            "   ser -1520 860 15 @ 1 1 18 18 21 21 21\n";
+            "   ser -1520 860 15 @ 1 18 18 20 21 71\n";
         }
 
         public override string[] GetCommands()

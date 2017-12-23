@@ -1,0 +1,74 @@
+﻿Examples for console command entityremove:
+	Usage: entityremove <entityId>
+		entityremove 123456
+		er 123456
+
+Examples for console command maxping:
+	Usage: maxping <ping>
+		maxping 300
+
+Examples for console command PingImmunity:
+	Usage: pingimmunity add <steamID> <player name>
+		pingimmunity add 12345678912345678 "foo bar"
+		pi add 12345678912345678 "foo bar"
+
+	Usage: pingimmunity remove <steamID>
+		pingimmunity remove 12345678912345678
+		pi remove 12345678912345678
+
+	Usage: pingimmunity list
+		pingimmunity list
+		pi list
+
+Examples for console command ReservedSlot:
+	Usage: reservedslot add <steamID> <playerName> <days to expire>
+		reservedslot add 12345678912345678 "Foo bar" 30
+		rs add 12345678912345678 "Foo bar" 30
+
+	Usage: reservedslot remove <steamID>
+		reservedslot remove 12345678912345678
+		rs remove 12345678912345678
+
+	Usage: reservedslot list
+		reservedslot list
+		rs list
+
+Examples for console command ResetPlayer:
+	Usage: resetplayer <steamId>
+		resetplayer 12345678912345678
+		rp 12345678912345678
+
+Examples for console command StopServer:
+	Usage: stopserver <minutes>
+		stopserver 10
+		stopserver cancel
+
+Examples for console command Watchlist:
+	Usage: watchlist add <steamID> <reason>
+		watchlist add 12345678912345678 "possible cheating"
+		wl add 12345678912345678 "possible cheating"
+
+	Usage: watchlist remove <steamID>
+		watchlist remove 12345678912345678
+		wl remove 12345678912345678
+
+	Usage: watchlist list
+		watchlist list
+		wl list
+
+Examples for console command Mute:
+	Usage: mute add <steamId>
+		mute add 12345678912345678
+
+	Usage: mute remove <steamId>
+		mute remove 12345678912345678
+
+	Usage: mute list
+		mute list
+
+Examples for console command Jail:
+	Usage: jail add <steamId>
+		jail add 12345678912345678
+
+	Usage: jail remove <steamId>
+		jail remove 12345678912345678
