@@ -5,12 +5,12 @@ Server tools for 7 days to die dedicated servers<br>
 <br>
 Download and extract the files.<br>
 <br>
-Copy the Mods folder to the root directory of your server.<br>
+Copy or extract the ServerTools folder and place it in the Mods folder found in the root directory of your server. If no mods folder exists, make one.<br>
 <br>
 Start the server.<br>
 <br>
-The mod will auto create the config file in the game save directory.<br>
-Enable each part of the mod you want via ..\your game save directory\ServerTools\ServerToolsConfig.xml<br>
+The mod will auto create the config file in the server's world save directory.<br>
+Enable each part of the mod you want via ..\your world save directory\ServerTools\ServerToolsConfig.xml<br>
 Once a module is enabled, if it has a config it will auto create them in the ServerTools folder.<br>
 <br>
 Go to the releases tab and check for the latest files https://github.com/dmustanger/7dtd-ServerTools/releases <br>
@@ -19,7 +19,10 @@ Go to the releases tab and check for the latest files https://github.com/dmustan
 <br>
 
 # Current Features
-Multiple anticheat systems. One for flying above ground, one for below ground. Player stats monitor. Player position logger. Player inventory logger. Family share account detection<br>
+Travel system for players to teleport to set locations when standing in the right zone<br>
+<br>
+Multiple anticheat systems. One for flying above ground, one for below ground. Player stats monitor. Player position logger. Player inventory logger. Player IP logger. Family share account detection, exception list available.<br>
+Hatch Elevator detector, stuns and breaks leg.<br>
 <br>
 Custom starting items option. Places items from a list into the player's inventory when first entering a new world.<br>
 <br>
@@ -35,7 +38,7 @@ Can reset all player's command delays via console.<br>
 <br>
 Temporary ban command for 1 to 60 min ban via console.<br>
 <br>
-Default chat command triggers / and ! can be set to a custom instead.<br>
+Default chat command triggers / and ! can be set to a custom symbol instead.<br>
 <br>
 Administrator alerts when entities are detected stuck underground.<br>
 <br>
