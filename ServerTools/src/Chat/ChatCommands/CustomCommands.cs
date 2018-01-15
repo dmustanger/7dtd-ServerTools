@@ -149,17 +149,13 @@ namespace ServerTools
         public static string GetChatCommands(ClientInfo _cInfo)
         {
             string _commands = string.Format("{0}Commands are:", Config.ChatColor);
-            if (Animals.IsEnabled)
-            {
-                _commands = string.Format("{0} /gimme", _commands);
-            }
             if (Gimme.IsEnabled)
             {
                 _commands = string.Format("{0} /gimme", _commands);
             }
             if (TeleportHome.IsEnabled)
             {
-                _commands = string.Format("{0} /sethome /home", _commands);
+                _commands = string.Format("{0} /sethome /home /delhome", _commands);
             }
             if (KillMe.IsEnabled)
             {
@@ -181,26 +177,70 @@ namespace ServerTools
             {
                 _commands = string.Format("{0} /clancommands", _commands);
             }
+            if (FirstClaimBlock.IsEnabled)
+            {
+                _commands = string.Format("{0} /claim", _commands);
+            }
+            if (Animals.IsEnabled)
+            {
+                _commands = string.Format("{0} /trackanimal /track", _commands);
+            }
+            if (VoteReward.IsEnabled)
+            {
+                _commands = string.Format("{0} /reward", _commands);
+            }
+            if (ChatHook.DonatorNameColoring)
+            {
+                _commands = string.Format("{0} /doncolor", _commands);
+            }
+            if (ChatHook.ReservedCheck)
+            {
+                _commands = string.Format("{0} /reserved", _commands);
+            }
+            if (AutoRestart.IsEnabled)
+            {
+                _commands = string.Format("{0} /restart", _commands);
+            }
+            if (AdminList.IsEnabled)
+            {
+                _commands = string.Format("{0} /admin", _commands);
+            }
+            if (Travel.IsEnabled)
+            {
+                _commands = string.Format("{0} /travel", _commands);
+            }
+            if (ChatHook.SpecialPlayerNameColoring && ChatHook.SpecialPlayers.Contains(_cInfo.playerId))
+            {
+                _commands = string.Format("{0} /spcolor", _commands);
+            }
+            if (TeleportHome.IsEnabled & ReservedSlots.IsEnabled & ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+            {
+                _commands = string.Format("{0} /sethome2 /home2 /delhome2", _commands);
+            }
             if (AdminChat.IsEnabled && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
             {
-                _commands = string.Format("{0} @admins", _commands);
-                string[] _command = { "say" };
-                if (GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo.playerId))
+                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                if (Admin.PermissionLevel <= ChatHook.AdminLevel)
                 {
-                    _commands = string.Format("{0} @all", _commands);
-                }
-                string[] _command1 = { "jail" };
-                if (GameManager.Instance.adminTools.CommandAllowedFor(_command1, _cInfo.playerId))
-                {
-                    if (Jail.IsEnabled)
+                    _commands = string.Format("{0} @admins", _commands);
+                    string[] _command = { "say" };
+                    if (GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo.playerId))
                     {
-                        _commands = string.Format("{0} /jail", _commands);
+                        _commands = string.Format("{0} @all", _commands);
                     }
-                }
-                string[] _command2 = { "mute" };
-                if (GameManager.Instance.adminTools.CommandAllowedFor(_command2, _cInfo.playerId))
-                {
-                    _commands = string.Format("{0} /mute", _commands);
+                    string[] _command1 = { "jail" };
+                    if (GameManager.Instance.adminTools.CommandAllowedFor(_command1, _cInfo.playerId))
+                    {
+                        if (Jail.IsEnabled)
+                        {
+                            _commands = string.Format("{0} /jail", _commands);
+                        }
+                    }
+                    string[] _command2 = { "mute" };
+                    if (GameManager.Instance.adminTools.CommandAllowedFor(_command2, _cInfo.playerId))
+                    {
+                        _commands = string.Format("{0} /mute", _commands);
+                    }
                 }
             }
             if (Dict.Count > 0)

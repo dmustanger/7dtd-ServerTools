@@ -164,12 +164,14 @@ namespace ServerTools
         }
 
 
-        public static void checkAndGive(ClientInfo _cInfo)
+        public static void StartingItemCheck(ClientInfo _cInfo)
         {
             if (startItemList.Count > 0)
             {
+                World world = GameManager.Instance.World;
+                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                if (_player.Level == 1 && _player.distanceWalked == 0 && _player.totalItemsCrafted == 0 && _player.longestLife < 0.5)
+                if (p == null && _player.Level == 1 && _player.totalItemsCrafted == 0)
                 {
                     foreach (KeyValuePair<string, int[]> kvp in startItemList)
                     {
@@ -186,8 +188,7 @@ namespace ServerTools
                         {
                             if (!ItemClass.ItemNames.Contains(kvp.Key))
                             {
-                                SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", kvp.Key));
-                                return;
+                                Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0}", kvp.Key));
                             }
 
                             itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], true);
@@ -195,10 +196,8 @@ namespace ServerTools
 
                         if (Equals(itemValue, ItemValue.None))
                         {
-                            SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", kvp.Key));
-                            return;
+                            Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0}", kvp.Key));
                         }
-                        World world = GameManager.Instance.World;
                         var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                         {
                             entityClass = EntityClass.FromString("item"),
@@ -214,6 +213,8 @@ namespace ServerTools
                         world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                         Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
                     }
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = true;
+                    PersistentContainer.Instance.Save();
                 }
             }
         }

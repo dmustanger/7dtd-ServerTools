@@ -602,10 +602,6 @@ namespace ServerTools
                     _phrase602 = "{PlayerName} you can only use /reward once every {DelayBetweenRewards} hours. Time remaining: {TimeRemaining} hour(s).";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"602\" Phrase=\"{0}\" />", _phrase602)); 
-                sw.WriteLine("    </Phrases>");
-                sw.WriteLine("</ServerTools>");
-                sw.Flush();
-                sw.Close();
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ******************* TravelLocations ******************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -615,16 +611,54 @@ namespace ServerTools
                     _phrase603 = "You have traveled to.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"603\" Phrase=\"{0}\" />", _phrase603));
-                sw.WriteLine("    </Phrases>");
-                sw.WriteLine("</ServerTools>");
-                sw.Flush();
-                sw.Close();
                 string _phrase604;
                 if (!Dict.TryGetValue(604, out _phrase604))
                 {
                     _phrase604 = "You are not in a travel location.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"604\" Phrase=\"{0}\" />", _phrase604));
+                string _phrase605;
+                if (!Dict.TryGetValue(605, out _phrase605))
+                {
+                    _phrase605 = "{PlayerName} you can only use /travel once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"605\" Phrase=\"{0}\" />", _phrase605));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ******************** ZoneProtection ******************** -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase606;
+                if (!Dict.TryGetValue(606, out _phrase606))
+                {
+                    _phrase606 = "{PlayerName} you can only use /return for two minutes after respawn. Time has expired.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"606\" Phrase=\"{0}\" />", _phrase606));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- *********************** SetHome2 *********************** -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase607;
+                if (!Dict.TryGetValue(607, out _phrase607))
+                {
+                    _phrase607 = "{PlayerName} your home2 has been saved.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"607\" Phrase=\"{0}\" />", _phrase607));
+                string _phrase608;
+                if (!Dict.TryGetValue(608, out _phrase608))
+                {
+                    _phrase608 = "{PlayerName} you do not have a home2 saved.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"608\" Phrase=\"{0}\" />", _phrase608));
+                string _phrase609;
+                if (!Dict.TryGetValue(609, out _phrase609))
+                {
+                    _phrase609 = "{PlayerName} you can only use /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"609\" Phrase=\"{0}\" />", _phrase609));
+                string _phrase610;
+                if (!Dict.TryGetValue(610, out _phrase610))
+                {
+                    _phrase610 = "{PlayerName} your home2 has been removed.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"610\" Phrase=\"{0}\" />", _phrase610));
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();

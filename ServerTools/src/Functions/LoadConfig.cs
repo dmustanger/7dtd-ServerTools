@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        private const double version = 5.7;
+        private const double version = 5.8;
         public static bool UpdateConfigs = false;
         public static string ChatColor = "[00FF00]";
 
@@ -1119,6 +1119,16 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("DelayBetweenUses"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry because of missing 'DelayBetweenUses' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("DelayBetweenUses"), out Travel.DelayBetweenUses))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry because of invalid (non-numeric) value for 'DelayBetweenUses' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                             case "UndergroundCheck":
                                 if (!_line.HasAttribute("Enable"))
@@ -1272,7 +1282,39 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
-                            /*case "ZoneProtection":
+                            /*case "WorldRadius":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring WorldRadius entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out WorldRadius.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring WorldRadius entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("WorldSize"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring WorldRadius entry because of missing 'WorldSize' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("WorldSize"), out WorldRadius.WorldSize))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring WorldRadius entry because of invalid (non-numeric) value for 'WorldSize' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("ZoneWarnings"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring WorldRadius entry because of missing 'ZoneWarnings' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("ZoneWarnings"), out WorldRadius.ZoneWarnings))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;*/
+                            case "ZoneProtection":
                                 if (!_line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
@@ -1283,51 +1325,47 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("WorldSize"))
+                                if (!_line.HasAttribute("KillMurderer"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of missing 'WorldSize' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of missing 'KillMurderer' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("WorldSize"), out ZoneProtection.WorldSize))
+                                if (!bool.TryParse(_line.GetAttribute("KillMurderer"), out ZoneProtection.KillMurderer))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of invalid (non-numeric) value for 'WorldSize' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of invalid (true/false) value for 'KillMurderer' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("ZoneWarnings"))
+                                if (!_line.HasAttribute("JailEnabled"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of missing 'ZoneWarnings' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of missing 'JailEnabled' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("ZoneWarnings"), out ZoneProtection.ZoneWarnings))
+                                if (!bool.TryParse(_line.GetAttribute("JailEnabled"), out ZoneProtection.JailEnabled))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of invalid (true/false) value for 'JailEnabled' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("PZone1"))
+                                if (!_line.HasAttribute("KickEnabled"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of missing 'PZone1' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of missing 'KickEnabled' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                ZoneProtection.PZone1 = _line.GetAttribute("PZone1");
-                                if (!_line.HasAttribute("PZone2"))
+                                if (!bool.TryParse(_line.GetAttribute("KickEnabled"), out ZoneProtection.KickEnabled))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of missing 'PZone2' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of invalid (true/false) value for 'KickEnabled' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                ZoneProtection.PZone2 = _line.GetAttribute("PZone2");
-                                if (!_line.HasAttribute("PZone3"))
+                                if (!_line.HasAttribute("BanEnabled"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of missing 'PZone3' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of missing 'BanEnabled' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                ZoneProtection.PZone3 = _line.GetAttribute("PZone3");
-                                if (!_line.HasAttribute("PZone4"))
+                                if (!bool.TryParse(_line.GetAttribute("BanEnabled"), out ZoneProtection.BanEnabled))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of missing 'PZone4' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of invalid (true/false) value for 'BanEnabled' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                ZoneProtection.PZone4 = _line.GetAttribute("PZone4");
-                                break;*/
+                                break;
                         }
                     }
                 }
@@ -1391,12 +1429,13 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"StartingItems\" Enable=\"{0}\" />", StartingItems.IsEnabled));
                 //sw.WriteLine(string.Format("        <Tool Name=\"Stopserver\" TenSecondCountdown=\"{0}\" />", StopServer.TenSecondCountdown));
                 sw.WriteLine(string.Format("        <Tool Name=\"TempBan\" Enable=\"{0}\" AdminLevel=\"{1}\" />", TempBan.IsEnabled, TempBan.AdminLevel));
-                sw.WriteLine(string.Format("        <Tool Name=\"Travel\" Enable=\"{0}\" />", Travel.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Travel\" Enable=\"{0}\" DelayBetweenUses=\"{1}\" />", Travel.IsEnabled, Travel.DelayBetweenUses));
                 sw.WriteLine(string.Format("        <Tool Name=\"UndergroundCheck\" Enable=\"{0}\" AdminLevel=\"{1}\" KillPlayer=\"{2}\" Announce=\"{3}\" JailEnabled=\"{4}\" KickEnabled=\"{5}\" BanEnabled=\"{6}\" />", UndergroundCheck.IsEnabled, UndergroundCheck.AdminLevel, UndergroundCheck.KillPlayer, UndergroundCheck.Announce, UndergroundCheck.JailEnabled, UndergroundCheck.KickEnabled, UndergroundCheck.BanEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" YourVotingSite=\"{1}\" APIKey=\"{2}\" DelayBetweenRewards=\"{3}\"/>", VoteReward.IsEnabled, VoteReward.YourVotingSite, VoteReward.APIKey, VoteReward.DelayBetweenRewards));
                 sw.WriteLine(string.Format("        <Tool Name=\"VotingReward\" RewardIsItemOrBlock=\"{0}\" ItemOrBlock=\"{1}\" RewardIsEntity=\"{2}\" Entity=\"{3}\" />", VoteReward.RewardIsItemOrBlock, VoteReward.ItemOrBlock, VoteReward.RewardIsEntity, VoteReward.Entity));               
                 sw.WriteLine(string.Format("        <Tool Name=\"Watchlist\" Enable=\"{0}\" />", Watchlist.IsEnabled));
-                //sw.WriteLine(string.Format("        <Tool Name=\"ZoneProtection\" Enable=\"{0}\" WorldSize=\"{1}\" ZoneWarnings=\"{2}\"  PZone1=\"{3}\" PZone2=\"{4}\" PZone3=\"{5}\" PZone4=\"{6}\" />", ZoneProtection.IsEnabled, ZoneProtection.WorldSize, ZoneProtection.ZoneWarnings, ZoneProtection.PZone1, ZoneProtection.PZone2, ZoneProtection.PZone3, ZoneProtection.PZone4));
+                //sw.WriteLine(string.Format("        <Tool Name=\"WorldRadius\" Enable=\"{0}\" WorldSize=\"{1}\" ZoneWarnings=\"{2}\", ZoneProtection.IsEnabled, ZoneProtection.WorldSize, ZoneProtection.ZoneWarnings));
+                sw.WriteLine(string.Format("        <Tool Name=\"ZoneProtection\" Enable=\"{0}\" KillMurderer=\"{1}\" JailEnabled=\"{2}\" KickEnabled=\"{3}\" BanEnabled=\"{4}\" />", ZoneProtection.IsEnabled, ZoneProtection.KillMurderer, ZoneProtection.JailEnabled, ZoneProtection.KickEnabled, ZoneProtection.BanEnabled));
                 sw.WriteLine("    </Tools>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();

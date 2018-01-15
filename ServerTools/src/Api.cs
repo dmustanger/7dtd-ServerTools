@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -86,7 +88,17 @@ namespace ServerTools
             }
             if (StartingItems.IsEnabled)
             {
-                StartingItems.checkAndGive(_cInfo);
+                StartingItems.StartingItemCheck(_cInfo);
+            }
+            if (ZoneProtection.Victim.ContainsKey(_cInfo.entityId))
+            {
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /return to teleport back to your death position. There is a two minute limit.[-]", Config.ChatColor), "Server", false, "", false));
+                PersistentContainer.Instance.Players[_cInfo.playerId, false].RespawnTime = DateTime.Now;
+                PersistentContainer.Instance.Save();
+                if (ZoneProtection.Forgive.ContainsKey(_cInfo.entityId))
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /forgive to release your killer from jail.[-]", Config.ChatColor), "Server", false, "", false));
+                }
             }
         }
 
@@ -101,6 +113,30 @@ namespace ServerTools
             {
                 Jail.Dict.Remove(_cInfo.playerId);
             }
+            if (ZoneProtection.PvEFlag.Contains(_cInfo.entityId))
+            {
+                ZoneProtection.PvEFlag.Remove(_cInfo.entityId);
+            }
+            if (FlightCheck.Flag.ContainsKey(_cInfo.playerId))
+            {
+                FlightCheck.Flag.Remove(_cInfo.playerId);
+            }
+            if (FlightCheck.fLastPositionXZ.ContainsKey(_cInfo.entityId))
+            {
+                FlightCheck.fLastPositionXZ.Remove(_cInfo.entityId);
+            }
+            if (FlightCheck.fLastPositionY.ContainsKey(_cInfo.entityId))
+            {
+                FlightCheck.fLastPositionY.Remove(_cInfo.entityId);
+            }
+            if (UndergroundCheck.Flag.ContainsKey(_cInfo.playerId))
+            {
+                UndergroundCheck.Flag.Remove(_cInfo.playerId);
+            }
+            if (UndergroundCheck.uLastPositionXZ.ContainsKey(_cInfo.entityId))
+            {
+                UndergroundCheck.uLastPositionXZ.Remove(_cInfo.entityId);
+            }            
         }
 
         public override void GameShutdown()

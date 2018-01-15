@@ -41,6 +41,7 @@ namespace ServerTools
         public static void TimerStop()
         {
             timerRestart.Stop();
+            timerStart.Clear();
         }
 
         public static void shutdown(object sender, ElapsedEventArgs e)

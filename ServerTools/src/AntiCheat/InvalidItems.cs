@@ -1218,10 +1218,10 @@ namespace ServerTools
 
         public static void CheckInv(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
         {
-            if (_cInfo != null && !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
+            if (_cInfo != null)
             {
                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                if (Admin.PermissionLevel <= LevelToIgnore)
+                if (Admin.PermissionLevel > LevelToIgnore)
                 {
                     for (int i = 0; i < _playerDataFile.inventory.Length; i++)
                     {

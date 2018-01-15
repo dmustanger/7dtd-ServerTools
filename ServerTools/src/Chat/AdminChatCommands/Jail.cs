@@ -14,6 +14,7 @@ namespace ServerTools
         private static Thread th;
         public static SortedDictionary<string, string> Dict = new SortedDictionary<string, string>();
         public static SortedDictionary<string, string> Dict1 = new SortedDictionary<string, string>();
+        public static SortedDictionary<string, Vector3> JailReleasePosition = new SortedDictionary<string, Vector3>();
 
         private static List<string> List
         {
@@ -84,7 +85,7 @@ namespace ServerTools
                     string _phrase503;
                     if (!Phrases.Dict.TryGetValue(503, out _phrase503))
                     {
-                        _phrase503 = "{PlayerName} the jail position jas not been set.";
+                        _phrase503 = "{PlayerName} the jail position has not been set.";
                     }
                     _phrase503 = _phrase503.Replace("{PlayerName}", _cInfo.playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase503), "Server", false, "", false));
@@ -145,7 +146,7 @@ namespace ServerTools
             float.TryParse(_cords[2], out zf);
             int x = (int)xf;
             int y = (int)yf;
-            int z = (int)zf;
+            int z = (int)zf;           
             SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _PlayertoJail.entityId, x, y, z), _cInfo);
             if (!Dict.ContainsKey(_PlayertoJail.playerId))
             {
@@ -344,10 +345,57 @@ namespace ServerTools
                             {
                                 SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, x, y, z), _cInfo);
                             }
-                        } 
+                        }
                     }
                 }
                 Thread.Sleep(1000);
+            }
+        }
+
+        public static void Forgive(ClientInfo _cInfo)
+        {
+            int _killId;
+            if (ZoneProtection.Forgive.TryGetValue(_cInfo.entityId, out _killId))
+            {
+                ClientInfo _cInfoKiller = ConnectionManager.Instance.GetClientInfoForEntityId(_killId);
+                Player p = PersistentContainer.Instance.Players[_cInfoKiller.playerId, false];
+                if (p == null)
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this player is not in jail.[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false));
+                    ZoneProtection.Forgive.Remove(_cInfo.entityId);
+                }
+                else
+                {
+                    if (!p.IsJailed)
+                    {
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this player is not in jail.[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false));
+                        ZoneProtection.Forgive.Remove(_cInfo.entityId);
+                    }
+                    else
+                    {
+                        if (Dict.ContainsKey(_cInfoKiller.playerId))
+                        {
+                            Dict.Remove(_cInfoKiller.playerId);
+                            Dict1.Remove(_cInfoKiller.playerId);
+                        }
+                        PersistentContainer.Instance.Players[_cInfoKiller.playerId, false].IsJailed = false;
+                        PersistentContainer.Instance.Players[_cInfoKiller.playerId, false].IsRemovedFromJail = true;
+                        PersistentContainer.Instance.Save();
+                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoKiller.entityId];
+                        EntityBedrollPositionList _position = _player.SpawnPoints;
+                        if (_position.Count > 0)
+                        {
+                            SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfoKiller.entityId, _position[0].x, _position[0].y, _position[0].z), _cInfo);
+                        }
+                        else
+                        {
+                            Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfoKiller.entityId, _pos[0].x, _pos[0].y, _pos[0].z), _cInfo);
+                        }
+                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have been forgiven and released from jail by {2}.[-]", Config.ChatColor, _cInfoKiller.playerName, _cInfo.playerName), "Server", false, "", false));
+                        ZoneProtection.Forgive.Remove(_cInfo.entityId);
+                    }
+                }
             }
         }
     }

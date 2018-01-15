@@ -131,7 +131,7 @@
             if (PlayerLogs.IsEnabled)
             {
                 PlayerLogs.PlayerLogsStart();
-                PlayerLogs.PlayerLogsDir();    
+                PlayerLogs.PlayerLogsDir();
             }
             if (!PlayerLogs.IsEnabled)
             {
@@ -189,14 +189,24 @@
             {
                 Watchlist.Unload();
             }
-            /*if (ZoneProtection.IsEnabled)
+            /*if (WorldRadius.IsEnabled)
+            {
+                WorldRadius.WorldRadiusTimerStart();
+            }
+            if (!WorldRadius.IsEnabled)
+            {
+                WorldRadius.WorldRadiusTimerStop();
+            }*/
+            if (!ZoneProtection.IsRunning && ZoneProtection.IsEnabled)
             {
                 ZoneProtection.ZoneProtectionTimerStart();
+                ZoneProtection.Load();
             }
-            if (!ZoneProtection.IsEnabled)
+            if (ZoneProtection.IsRunning && !ZoneProtection.IsEnabled)
             {
                 ZoneProtection.ZoneProtectionTimerStop();
-            }*/
+                ZoneProtection.Unload();
+            }
         }
     }
 }

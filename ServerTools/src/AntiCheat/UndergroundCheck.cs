@@ -13,9 +13,9 @@ namespace ServerTools
         public static bool JailEnabled = false;
         public static bool KickEnabled = false;
         public static bool BanEnabled = false;
-        public static int AdminLevel = 0;       
-        private static SortedDictionary<string, int> Flag = new SortedDictionary<string, int>();
-        private static SortedDictionary<int, string> uLastPositionXZ = new SortedDictionary<int, string>();
+        public static int AdminLevel = 0;
+        public static SortedDictionary<string, int> Flag = new SortedDictionary<string, int>();
+        public static SortedDictionary<int, string> uLastPositionXZ = new SortedDictionary<int, string>();
         private static System.Timers.Timer timerUnderground = new System.Timers.Timer();
 
         public override string GetDescription()
@@ -158,46 +158,46 @@ namespace ServerTools
                                                 }
                                                 if (_flag > 1)
                                                 {
-                                                    Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying underground. ", _cInfo.playerName, _cInfo.steamId);
-
                                                     int x = (int)ep.position.x;
                                                     int y = (int)ep.position.y;
                                                     int z = (int)ep.position.z;
 
+                                                    Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z);
+
                                                     if (Announce)
                                                     {
-                                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0} has been detected flying underground[-]", _cInfo.playerName), "Server", false, "", false);
+                                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1} has been detected flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
                                                         if (_flag == 4)
                                                         {
                                                             Flag.Remove(_cInfo.playerId);
                                                             if (Admin.PermissionLevel <= AdminLevel && ep.entityId != _cInfo.entityId)
                                                             {
-                                                                SdtdConsole.Instance.ExecuteSync(string.Format("pm {0} \"Detected {1} flying underground @ {2} {3} {4}\"", _cInfo.playerId, ep.EntityName, x, y, z), _cInfo);
+                                                                SdtdConsole.Instance.ExecuteSync(string.Format("pm {0} \"{1}Detected {2} flying underground @ {3} {4} {5}\"", _cInfo.playerId, Config.ChatColor, ep.EntityName, x, y, z), _cInfo);
                                                             }
                                                         }
                                                     }
                                                     if (JailEnabled)
                                                     {
                                                         Flag.Remove(_cInfo.playerId);
-                                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0} has been jailed for flying underground[-]", _cInfo.playerName), "Server", false, "", false);
+                                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1} has been jailed for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
                                                         SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0}", _cInfo.playerId), _cInfo);
                                                     }
                                                     if (KillPlayer)
                                                     {
                                                         Flag.Remove(_cInfo.playerId);
-                                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0} has been killed for flying underground[-]", _cInfo.playerName), "Server", false, "", false);
+                                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1} has been killed for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
                                                         SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), _cInfo);
                                                     }
                                                     if (KickEnabled)
                                                     {
                                                         Flag.Remove(_cInfo.playerId);
-                                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0} has been kicked for flying underground[-]", _cInfo.playerName), "Server", false, "", false);
+                                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1} has been kicked for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
                                                         SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for flying\"", _cInfo.playerId), _cInfo);
                                                     }
                                                     if (BanEnabled)
                                                     {
                                                         Flag.Remove(_cInfo.playerId);
-                                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0} has been banned for flying underground[-]", _cInfo.playerName), "Server", false, "", false);
+                                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1} has been banned for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
                                                         SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for flying\"", _cInfo.playerId), _cInfo);
                                                     }
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} -1 {2}", ep.entityId, x, z), _cInfo);

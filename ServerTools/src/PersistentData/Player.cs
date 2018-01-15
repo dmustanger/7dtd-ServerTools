@@ -8,11 +8,21 @@ namespace ServerTools
     {
         private readonly string steamId;
         [OptionalField]
+        private bool startingItems;
+        [OptionalField]
+        private string homeposition2;
+        [OptionalField]
+        private DateTime lastsethome2;
+        [OptionalField]
+        private DateTime respawnTime;
+        [OptionalField]
+        private DateTime lastTravel;
+        [OptionalField]
         private int worldSeedFirstClaim;
         [OptionalField]
         private bool adminChatColor;
         [OptionalField]
-        private DateTime lastanimals;
+        private DateTime lastAnimals;
         [OptionalField]
         private DateTime lastVoteReward;
         [OptionalField]
@@ -42,6 +52,65 @@ namespace ServerTools
         [OptionalField]
         private bool newspawntele;
 
+        public bool StartingItems
+        {
+            get
+            {
+                return startingItems;
+            }
+            set
+            {
+                startingItems = value;
+            }
+        }
+
+        public string HomePosition2
+        {
+            get
+            {
+                return homeposition2;
+            }
+            set
+            {
+                homeposition2 = value;
+            }
+        }
+
+        public DateTime LastSetHome2
+        {
+            get
+            {
+                return lastsethome2;
+            }
+            set
+            {
+                lastsethome2 = value;
+            }
+        }
+
+        public DateTime RespawnTime
+        {
+            get
+            {
+                return respawnTime;
+            }
+            set
+            {
+                respawnTime = value;
+            }
+        }
+
+        public DateTime LastTravel
+        {
+            get
+            {
+                return lastTravel;
+            }
+            set
+            {
+                lastTravel = value;
+            }
+        }
 
         public int WorldSeedFirstClaim
         {
@@ -83,11 +152,11 @@ namespace ServerTools
         {
             get
             {
-                return lastanimals;
+                return lastAnimals;
             }
             set
             {
-                lastanimals = value;
+                lastAnimals = value;
             }
         }
 

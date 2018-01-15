@@ -19,8 +19,7 @@ namespace ServerTools
 
                 if (Equals(itemValue, ItemValue.None))
                 {
-                    SdtdConsole.Instance.Output(string.Format("Unable to find item {0} for /claim command", claimBlock));
-                    return;
+                    SdtdConsole.Instance.Output(string.Format("Unable to find block {0} for /claim command", claimBlock));
                 }
                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                 {
@@ -37,6 +36,7 @@ namespace ServerTools
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Claim block has been added to your inventory or if inventory is full, it dropped at your feet.[-]", Config.ChatColor), "Server", false, "", false));
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].WorldSeedFirstClaim = worldSeed;
+                PersistentContainer.Instance.Save();
             }
             else
             {
