@@ -223,34 +223,34 @@ namespace ServerTools
                                     {
                                         _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has murdered you while you were in a protected zone.[-]", Config.ChatColor, _cInfoKiller.playerName), "Server", false, "", false));
                                         _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have murdered {1} while you were inside a protected zone.[-]", Config.ChatColor, _cInfoVictim.playerName), "Server", false, "", false));
+                                        Penalty(_cInfoKiller, _cInfoVictim);
                                         if (Victim.ContainsKey(_cInfoVictim.entityId))
                                         {
                                             Victim.Remove(_cInfoVictim.entityId);
                                         }
-                                        Victim.Add(_cInfoVictim.entityId, _victim.position);
-                                        Penalty(_cInfoKiller, _cInfoVictim);                                        
+                                        Victim.Add(_cInfoVictim.entityId, _victim.position);                                                                                
                                     }
                                     if (PvEFlag.Contains(_cInfoVictim.entityId) & !PvEFlag.Contains(_cInfoKiller.entityId))
                                     {
                                         _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has murdered you while you were in a protected zone.[-]", Config.ChatColor, _cInfoKiller.playerName), "Server", false, "", false));
                                         _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have murdered {1}. They were inside a protected zone.[-]", Config.ChatColor, _cInfoVictim.playerName), "Server", false, "", false));
+                                        Penalty(_cInfoKiller, _cInfoVictim);
                                         if (Victim.ContainsKey(_cInfoVictim.entityId))
                                         {
                                             Victim.Remove(_cInfoVictim.entityId);
                                         }
                                         Victim.Add(_cInfoVictim.entityId, _victim.position);
-                                        Penalty(_cInfoKiller, _cInfoVictim);
                                     }
                                     if (!PvEFlag.Contains(_cInfoVictim.entityId) & PvEFlag.Contains(_cInfoKiller.entityId))
                                     {
                                         _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has murdered you while they were in a protected zone.[-]", Config.ChatColor, _cInfoKiller.playerName), "Server", false, "", false));
                                         _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have murdered {1} while you were inside a protected zone.[-]", Config.ChatColor, _cInfoVictim.playerName), "Server", false, "", false));
+                                        Penalty(_cInfoKiller, _cInfoVictim);
                                         if (Victim.ContainsKey(_cInfoVictim.entityId))
                                         {
                                             Victim.Remove(_cInfoVictim.entityId);
                                         }
                                         Victim.Add(_cInfoVictim.entityId, _victim.position);
-                                        Penalty(_cInfoKiller, _cInfoVictim);
                                     }
                                 }
                             }
@@ -337,7 +337,7 @@ namespace ServerTools
                                         }
                                     }
 
-                                    if (_xMax >= 0)
+                                    if (_xMax > 0)
                                     {
                                         if (_playerX <= _xMax)
                                         {
@@ -394,7 +394,7 @@ namespace ServerTools
                                         }
                                     }
 
-                                    if (_yMax >= 0)
+                                    if (_yMax > 0)
                                     {
                                         if (_playerY <= _yMax)
                                         {
@@ -451,7 +451,7 @@ namespace ServerTools
                                         }
                                     }
 
-                                    if (_zMax >= 0)
+                                    if (_zMax > 0)
                                     {
                                         if (_playerZ <= _zMax)
                                         {

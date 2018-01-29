@@ -8,7 +8,8 @@ namespace ServerTools
         public static bool ChatFlood = false;
         public static bool AdminNameColoring = false;
         public static bool DonatorNameColoring = false;
-        public static bool SpecialPlayerNameColoring = false;       
+        public static bool SpecialPlayerNameColoring = false;
+        public static bool NormalPlayerNameColoring = false;
         public static bool ReservedCheck = false;
         public static string AdminColor = "[FF0000]";
         public static string ModColor = "[008000]";
@@ -16,12 +17,14 @@ namespace ServerTools
         public static string DonColor2 = "[FF66CC]";
         public static string DonColor3 = "[E9C918]";
         public static string SpecialPlayerColor = "[ADAD85]";
+        public static string NormalPlayerColor = "[00B3B3]";
         public static string AdminPrefix = "(ADMIN)";      
         public static string ModPrefix = "(MOD)";
         public static string DonPrefix1 = "(DON)";
         public static string DonPrefix2 = "(DON)";
         public static string DonPrefix3 = "(DON)";
         public static string SpecialPlayerPrefix = "(SPECIAL)";
+        public static string NormalPlayerPrefix = "(NOOB)";
         public static int AdminLevel = 0;
         public static int ModLevel = 1;
         public static int DonLevel1 = 100;
@@ -81,15 +84,33 @@ namespace ServerTools
                     AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                     if (Admin.PermissionLevel <= AdminLevel)
                     {
-                        _playerName = string.Format("{0}{1} {2}[-]", AdminColor, AdminPrefix, _playerName);
-                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                        return false;
+                        if (AdminPrefix != "")
+                        {
+                            _playerName = string.Format("{0}{1} {2}[-]", AdminColor, AdminPrefix, _playerName);
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                            return false;
+                        }
+                        else
+                        {
+                            _playerName = string.Format("{0}{1}[-]", AdminColor, _playerName);
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                            return false;
+                        }
                     }
                     if (Admin.PermissionLevel > AdminLevel & Admin.PermissionLevel <= ModLevel)
                     {
-                        _playerName = string.Format("{0}{1} {2}[-]", ModColor, ModPrefix, _playerName);
-                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                        return false;
+                        if (ModPrefix != "")
+                        {
+                            _playerName = string.Format("{0}{1} {2}[-]", ModColor, ModPrefix, _playerName);
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                            return false;
+                        }
+                        else
+                        {
+                            _playerName = string.Format("{0}{1}[-]", ModColor, _playerName);
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                            return false;
+                        }
                     }
                 }
                 if (DonatorNameColoring && !_message.StartsWith(commandPrivate) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
@@ -101,9 +122,18 @@ namespace ServerTools
                         ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                         if (DateTime.Now < _dt)
                         {
-                            _playerName = string.Format("{0}{1} {2}[-]", DonColor1, DonPrefix1, _playerName);
-                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                            return false;
+                            if (DonPrefix1 != "")
+                            {
+                                _playerName = string.Format("{0}{1} {2}[-]", DonColor1, DonPrefix1, _playerName);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                return false;
+                            }
+                            else
+                            {
+                                _playerName = string.Format("{0}{1}[-]", DonColor1, _playerName);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                return false;
+                            }
                         }
                     }
                     if (Admin.PermissionLevel == DonLevel2)
@@ -112,9 +142,18 @@ namespace ServerTools
                         ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                         if (DateTime.Now < _dt)
                         {
-                            _playerName = string.Format("{0}{1} {2}[-]", DonColor2, DonPrefix2, _playerName);
-                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                            return false;
+                            if (DonPrefix2 != "")
+                            {
+                                _playerName = string.Format("{0}{1} {2}[-]", DonColor2, DonPrefix2, _playerName);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                return false;
+                            }
+                            else
+                            {
+                                _playerName = string.Format("{0}{1}[-]", DonColor2, _playerName);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                return false;
+                            }
                         }
                     }
                     if (Admin.PermissionLevel == DonLevel3)
@@ -123,17 +162,50 @@ namespace ServerTools
                         ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                         if (DateTime.Now < _dt)
                         {
-                            _playerName = string.Format("{0}{1} {2}[-]", DonColor3, DonPrefix3, _playerName);
-                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                            return false;
+                            if (DonPrefix3 != "")
+                            {
+                                _playerName = string.Format("{0}{1} {2}[-]", DonColor3, DonPrefix3, _playerName);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                return false;
+                            }
+                            else
+                            {
+                                _playerName = string.Format("{0}{1}[-]", DonColor3, _playerName);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                return false;
+                            }
                         }
                     }
                 }
                 if (SpecialPlayerNameColoring && !_message.StartsWith(commandPrivate) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && SpecialPlayers.Contains(_cInfo.playerId) && !SpecialPlayersColorOff.Contains(_cInfo.playerId))
                 {
-                    _playerName = string.Format("{0}{1} {2}[-]", SpecialPlayerColor, SpecialPlayerPrefix, _playerName);
-                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                    return false;
+                    if (SpecialPlayerPrefix != "")
+                    {
+                        _playerName = string.Format("{0}{1} {2}[-]", SpecialPlayerColor, SpecialPlayerPrefix, _playerName);
+                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                        return false;
+                    }
+                    else
+                    {
+                        _playerName = string.Format("{0}{1}[-]", SpecialPlayerColor, _playerName);
+                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                        return false;
+                    }
+                }
+                if (NormalPlayerNameColoring && !_message.StartsWith(commandPrivate) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && !SpecialPlayers.Contains(_cInfo.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
+                {
+                    if (SpecialPlayerPrefix != "")
+                    {
+                        _playerName = string.Format("{0}{1} {2}[-]", NormalPlayerColor, NormalPlayerPrefix, _playerName);
+                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                        return false;
+                    }
+                    else
+                    {
+                        _playerName = string.Format("{0}{1}[-]", NormalPlayerColor, _playerName);
+                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                        return false;
+                    }
                 }
                 if (Badwords.IsEnabled)
                 {
@@ -280,6 +352,7 @@ namespace ServerTools
                                 if (DateTime.Now < _dt)
                                 {
                                     TeleportHome.SetHome2(_cInfo, _playerName, _announce);
+                                    return false;
                                 }
                                 else
                                 {
@@ -330,6 +403,7 @@ namespace ServerTools
                                 if (DateTime.Now < _dt)
                                 {
                                     TeleportHome.TeleHome2(_cInfo, _playerName, _announce);
+                                    return false;
                                 }
                                 else
                                 {

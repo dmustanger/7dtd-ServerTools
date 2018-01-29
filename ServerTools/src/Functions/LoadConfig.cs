@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        private const double version = 5.8;
+        private const double version = 5.9;
         public static bool UpdateConfigs = false;
         public static string ChatColor = "[00FF00]";
 
@@ -358,6 +358,14 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon entry because of invalid (non-numeric) value for 'AutoShowBloodmoonDelay' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                break;
+                            case "ChatColor":
+                                if (!_line.HasAttribute("Color"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColor entry because of missing 'Color' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                Config.ChatColor = _line.GetAttribute("Color");
                                 break;
                             case "ChatCommandPrivate":
                                 if (!_line.HasAttribute("Enable"))
@@ -888,6 +896,37 @@ namespace ServerTools
                                     Motd.Message = _line.GetAttribute("Message");
                                 }
                                 break;
+                            case "Motd2":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd2 entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Motd.MOTD2IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd2 entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("ShowOnRespawn"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd2 entry because of missing 'ShowOnRespawn' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("ShowOnRespawn"), out Motd.ShowOnRespawn))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd2 entry because of invalid (true/false) value for 'ShowOnRespawn' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Message"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd2 entry because of missing a Message attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (Motd.IsEnabled)
+                                {
+                                    Motd.Message2 = _line.GetAttribute("Message");
+                                }
+                                break;
                             case "NewSpawnTele":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -905,6 +944,30 @@ namespace ServerTools
                                     continue;
                                 }
                                 NewSpawnTele.NewSpawnTelePosition = _line.GetAttribute("NewSpawnTelePosition");
+                                break;
+                            case "NormalPlayerNameColoring":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring NormalPlayerNameColoring entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatHook.NormalPlayerNameColoring))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring NormalPlayerNameColoring entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("NormalPlayerPrefix"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring NormalPlayerNameColoring entry because of missing 'NormalPlayerPrefix' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("NormalPlayerColor"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring NormalPlayerNameColoring entry because of missing 'NormalPlayerColor' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                ChatHook.NormalPlayerPrefix = _line.GetAttribute("NormalPlayerPrefix");
+                                ChatHook.NormalPlayerColor = _line.GetAttribute("NormalPlayerColor");
                                 break;
                             case "PlayerLogs":
                                 if (!_line.HasAttribute("Enable"))
@@ -1420,7 +1483,9 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"JailCommands\" Enable=\"{0}\" JailSize=\"{1}\" JailPosition=\"{2}\" />", Jail.IsEnabled, Jail.JailSize, Jail.JailPosition));
                 sw.WriteLine(string.Format("        <Tool Name=\"Killme\" Enable=\"{0}\" DelayBetweenKillmeUses=\"{1}\" />", KillMe.IsEnabled, KillMe.DelayBetweenUses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Motd\" Enable=\"{0}\" ShowOnRespawn=\"{1}\" Message=\"{2}\" />", Motd.IsEnabled, Motd.ShowOnRespawn, Motd.Message));
+                sw.WriteLine(string.Format("        <Tool Name=\"Motd2\" Enable=\"{0}\" ShowOnRespawn=\"{1}\" Message=\"{2}\" />", Motd.IsEnabled, Motd.ShowOnRespawn2, Motd.Message2));
                 sw.WriteLine(string.Format("        <Tool Name=\"NewSpawnTele\" Enable=\"{0}\" NewSpawnTelePosition=\"{1}\" />", NewSpawnTele.IsEnabled, NewSpawnTele.NewSpawnTelePosition));
+                sw.WriteLine(string.Format("        <Tool Name=\"NormalPlayerNameColoring\" Enable=\"{0}\" NormalPlayerPrefix=\"{1}\" NormalPlayerColor=\"{2}\" />", ChatHook.NormalPlayerNameColoring, ChatHook.NormalPlayerPrefix, ChatHook.NormalPlayerColor));
                 sw.WriteLine(string.Format("        <Tool Name=\"PlayerLogs\" Enable=\"{0}\" Interval=\"{1}\" Position=\"{2}\" Inventory=\"{3}\" Extra=\"{4}\" />", PlayerLogs.IsEnabled, PlayerLogs.Interval, PlayerLogs.Position, PlayerLogs.Inventory, PlayerLogs.P_Data));
                 sw.WriteLine(string.Format("        <Tool Name=\"PlayerStatCheck\" Enable=\"{0}\" AdminLevel=\"{1}\" KickEnabled=\"{2}\" BanEnabled=\"{3}\" />", PlayerStatCheck.IsEnabled, PlayerStatCheck.AdminLevel, PlayerStatCheck.KickEnabled, PlayerStatCheck.BanEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"ReservedSlots\" Enable=\"{0}\" ReservedCheck=\"{1}\" />", ReservedSlots.IsEnabled, ChatHook.ReservedCheck));

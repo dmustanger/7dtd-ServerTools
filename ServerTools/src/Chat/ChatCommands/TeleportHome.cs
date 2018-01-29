@@ -11,7 +11,7 @@ namespace ServerTools
         public static void SetHome(ClientInfo _cInfo, string _playerName, bool _announce)
         {
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p != null & !p.IsJailed)
+            if (p != null || p != null & !p.IsJailed)
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 Vector3 _position = _player.GetPosition();
@@ -179,7 +179,7 @@ namespace ServerTools
         public static void SetHome2(ClientInfo _cInfo, string _playerName, bool _announce)
         {
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p != null & !p.IsJailed)
+            if (p != null || p != null & !p.IsJailed)
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 Vector3 _position = _player.GetPosition();
