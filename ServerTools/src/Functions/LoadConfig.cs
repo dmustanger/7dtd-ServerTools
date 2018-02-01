@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        private const double version = 5.9;
+        private const double version = 5.91;
         public static bool UpdateConfigs = false;
         public static string ChatColor = "[00FF00]";
 
@@ -467,7 +467,7 @@ namespace ServerTools
                                 }
                                 if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatHook.DonatorNameColoring))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AdminNameColoring entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring DonatorNameColoring entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!bool.TryParse(_line.GetAttribute("Enable"), out ReservedSlots.DonatorNameColoring))

@@ -49,6 +49,10 @@ namespace ServerTools
 
         public override void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)
         {
+            if (FamilyShareAccount.IsEnabled)
+            {
+                FamilyShareAccount.AccCheck(_cInfo);
+            }
             if (ClanManager.IsEnabled)
             {
                 ClanManager.CheckforClantag(_cInfo);
@@ -69,13 +73,13 @@ namespace ServerTools
 
         public override void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
         {
-            if (Jail.IsEnabled)
-            {
-                Jail.CheckPlayer(_cInfo);
-            }
             if (NewSpawnTele.IsEnabled)
             {
                 NewSpawnTele.TeleNewSpawn(_cInfo);
+            }
+            if (Jail.IsEnabled)
+            {
+                Jail.CheckPlayer(_cInfo);
             }
             if (Motd.IsEnabled & Motd.ShowOnRespawn)
             {
@@ -88,10 +92,6 @@ namespace ServerTools
             if (Bloodmoon.ShowOnSpawn & Bloodmoon.ShowOnRespawn)
             {
                 Bloodmoon.GetBloodmoon(_cInfo, false);
-            }
-            if (FamilyShareAccount.IsEnabled)
-            {
-                FamilyShareAccount.AccCheck(_cInfo);
             }
             if (StartingItems.IsEnabled)
             {

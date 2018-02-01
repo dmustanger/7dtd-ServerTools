@@ -8,7 +8,7 @@ namespace ServerTools
     {
         private readonly string steamId;
         [OptionalField]
-        private bool startingItems;
+        private int startingItems;
         [OptionalField]
         private string homeposition2;
         [OptionalField]
@@ -50,9 +50,9 @@ namespace ServerTools
         [OptionalField]
         private bool isremovedfromjail = true;
         [OptionalField]
-        private bool newspawntele;
+        private int newspawntele;
 
-        public bool StartingItems
+        public int StartingItems
         {
             get
             {
@@ -304,7 +304,7 @@ namespace ServerTools
             }
         }
 
-        public bool NewSpawnTele
+        public int NewSpawnTele
         {
             get
             {

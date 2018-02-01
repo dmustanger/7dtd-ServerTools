@@ -169,9 +169,10 @@ namespace ServerTools
             if (startItemList.Count > 0)
             {
                 World world = GameManager.Instance.World;
+                int mapSeed = world.Seed;
                 Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                if (p == null && _player.Level == 1 && _player.totalItemsCrafted == 0)
+                if (p == null && _player.Level == 1 && _player.totalItemsCrafted == 0 || _player.Level == 1 && _player.totalItemsCrafted == 0 && p.StartingItems != mapSeed)
                 {
                     foreach (KeyValuePair<string, int[]> kvp in startItemList)
                     {
@@ -213,7 +214,7 @@ namespace ServerTools
                         world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                         Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
                     }
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = true;
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = mapSeed;
                     PersistentContainer.Instance.Save();
                 }
             }

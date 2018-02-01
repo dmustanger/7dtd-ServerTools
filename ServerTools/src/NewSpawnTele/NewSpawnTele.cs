@@ -43,24 +43,20 @@ namespace ServerTools
 
         public static void TeleNewSpawn(ClientInfo _cInfo)
         {
+            World world = GameManager.Instance.World;
+            int mapSeed = world.Seed;
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p == null && _player.Level == 1 && _player.totalItemsCrafted == 0 && NewSpawnTelePosition != "0,0,0")
+            if (p == null && _player.Level == 1 && _player.totalItemsCrafted == 0 && NewSpawnTelePosition != "0,0,0" || _player.Level == 1 && _player.totalItemsCrafted == 0 && NewSpawnTelePosition != "0,0,0" && p.NewSpawnTele != mapSeed)
             {
                 TelePlayer(_cInfo);
-            }
-            else
-            {
-                if (_player.Level == 1 && _player.distanceWalked == 0 && NewSpawnTelePosition != "0,0,0" && !p.NewSpawnTele)
-                {
-
-                    TelePlayer(_cInfo);
-                }
             }
         }
 
         public static void TelePlayer(ClientInfo _cInfo)
         {
+            World world = GameManager.Instance.World;
+            int mapSeed = world.Seed;
             float xf;
             float yf;
             float zf;
@@ -71,7 +67,7 @@ namespace ServerTools
             int x = (int)xf;
             int y = (int)yf;
             int z = (int)zf;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].NewSpawnTele = true;
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].NewSpawnTele = mapSeed;
             PersistentContainer.Instance.Save();
             SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, x, y, z), _cInfo);
             string _phrase526;
