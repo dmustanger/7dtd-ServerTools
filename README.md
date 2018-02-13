@@ -19,6 +19,8 @@ Go to the releases tab and check for the latest files https://github.com/dmustan
 <br>
 
 # Current Features
+Chat color and prefix option for standard players.<br>
+<br>
 Special logs are created when a player is detected by an anticheat module.<br>
 <br>
 Logs are automatically deleted if too old. Configured via config.<br>
