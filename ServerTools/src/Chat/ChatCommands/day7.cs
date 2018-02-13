@@ -238,19 +238,19 @@ namespace ServerTools
             _phrase305 = _phrase305.Replace("{MiniBikes}", _miniBikes.ToString());
             if (_announce)
             {
-                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase300, Config.ChatColor), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase300, Config.ChatColor), "Server", false, "", false);
                 if (_daysUntil7 == 7)
                 {
-                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase306, Config.ChatColor), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase306, Config.ChatColor), "Server", false, "", false);
                 }
                 else
                 {
-                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.ChatColor), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.ChatColor), "Server", false, "", false);
                 }
-                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase302, Config.ChatColor), "Server", false, "", false);
-                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase303, Config.ChatColor), "Server", false, "", false);
-                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase304, Config.ChatColor), "Server", false, "", false);
-                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase305, Config.ChatColor), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase302, Config.ChatColor), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase303, Config.ChatColor), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase304, Config.ChatColor), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase305, Config.ChatColor), "Server", false, "", false);
             }
             else
             {

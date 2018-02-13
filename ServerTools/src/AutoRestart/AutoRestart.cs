@@ -49,11 +49,9 @@ namespace ServerTools
             int _playerCount = ConnectionManager.Instance.ClientCount();
             if (_playerCount > 0)
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                ClientInfo _cInfo = _cInfoList.RandomObject();
                 Log.Out("[SERVERTOOLS] Running stopserver command.");
-                SdtdConsole.Instance.ExecuteSync("say \"[FF0000]Auto Restart Initiated\"", _cInfo);
-                SdtdConsole.Instance.ExecuteSync(string.Format("stopserver {0}", CountdownTimer), _cInfo);
+                SdtdConsole.Instance.ExecuteSync("say \"[FF0000]Auto Restart Initiated\"", (ClientInfo)null);
+                SdtdConsole.Instance.ExecuteSync(string.Format("stopserver {0}", CountdownTimer), (ClientInfo)null);
             }
         }
 
@@ -70,7 +68,7 @@ namespace ServerTools
                 TimeLeft = string.Format("{0:00} H : {1:00} M", _timeleftMinutes / 60, _timeleftMinutes % 60);
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}The next auto restart is in [FF8000]{1}[-]", Config.ChatColor, TimeLeft), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}The next auto restart is in [FF8000]{1}[-]", Config.ChatColor, TimeLeft), "Server", false, "", false);
                 }
                 else
                 {

@@ -9,7 +9,7 @@ namespace ServerTools
         private static Thread th;
         private static int _mins;
         private static bool isCountingDown = false;
-        public static bool TenSecondCountdown = false;
+        public static bool TenSecondCountdownEnabled = false;
 
         public override string GetDescription()
         {
@@ -93,13 +93,11 @@ namespace ServerTools
             }
             while (_mins != 1)
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                ClientInfo _cInfo = _cInfoList.RandomObject();
                 _phrase450 = _phrase450.Replace("{Minutes}", _mins.ToString());
                 string _red = "[FF0000]";
-                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red, _phrase450), "Server", false, "", false);
-                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red, _phrase450), "Server", false, "", false);
-                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red, _phrase450), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red, _phrase450), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red, _phrase450), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red, _phrase450), "Server", false, "", false);
                 int _oldMins = _mins;
                 _mins = _mins - 1;
                 _phrase450 = _phrase450.Replace(_oldMins.ToString(), _mins.ToString());
@@ -111,19 +109,34 @@ namespace ServerTools
                 _phrase451 = "Saving World Now. Do not exchange items from inventory or build until after restart.";
             }
 
-            List<ClientInfo> _cInfoList1 = ConnectionManager.Instance.GetClients();
-            ClientInfo _cInfo1 = _cInfoList1.RandomObject();
             _phrase450 = _phrase450.Replace("{Minutes}", _mins.ToString());
             string _red1 = "[FF0000]";
-            GameManager.Instance.GameMessageServer(_cInfo1, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red1, _phrase450), "Server", false, "", false);
-            GameManager.Instance.GameMessageServer(_cInfo1, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red1, _phrase450), "Server", false, "", false);
-            GameManager.Instance.GameMessageServer(_cInfo1, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red1, _phrase450), "Server", false, "", false);
-            GameManager.Instance.GameMessageServer(_cInfo1, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red1, _phrase451), "Server", false, "", false);
-            SdtdConsole.Instance.ExecuteSync("saveworld", _cInfo1);
-            Thread.Sleep(60000);
-            List<ClientInfo> _cInfoList2 = ConnectionManager.Instance.GetClients();
-            ClientInfo _cInfo2 = _cInfoList2.RandomObject();
-            SdtdConsole.Instance.ExecuteSync("shutdown", _cInfo2);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red1, _phrase450), "Server", false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red1, _phrase450), "Server", false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red1, _phrase450), "Server", false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red1, _phrase451), "Server", false, "", false);
+            SdtdConsole.Instance.ExecuteSync("saveworld", (ClientInfo)null);
+            if (TenSecondCountdownEnabled)
+            {
+                Thread.Sleep(50000);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}10 seconds until shutdown[-]", _red1), "Server", false, "", false);
+                Thread.Sleep(5000);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}5[-]", _red1), "Server", false, "", false);
+                Thread.Sleep(1000);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}4[-]", _red1), "Server", false, "", false);
+                Thread.Sleep(1000);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}3[-]", _red1), "Server", false, "", false);
+                Thread.Sleep(1000);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}2[-]", _red1), "Server", false, "", false);
+                Thread.Sleep(1000);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}1[-]", _red1), "Server", false, "", false);
+                SdtdConsole.Instance.ExecuteSync("shutdown", (ClientInfo)null);
+            }
+            else
+            {
+                Thread.Sleep(60000);
+                SdtdConsole.Instance.ExecuteSync("shutdown", (ClientInfo)null);
+            }
         }
     }
 }

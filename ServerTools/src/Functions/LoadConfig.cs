@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        private const double version = 5.91;
+        private const double version = 6.0;
         public static bool UpdateConfigs = false;
         public static string ChatColor = "[00FF00]";
 
@@ -613,6 +613,16 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring FlightCheck entry because of invalid (non-numeric) value for 'AdminLevel' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("MaxPing"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring FlightCheck entry because of missing 'MaxPing' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("MaxPing"), out FlightCheck.MaxPing))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring FlightCheck entry because of invalid (non-numeric) value for 'MaxPing' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 if (!_line.HasAttribute("MaxHeight"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring FlightCheck entry because of missing 'MaxHeight' attribute: {0}", subChild.OuterXml));
@@ -706,7 +716,7 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
-                            case "HatchElevator":
+                            case "HatchElevatorDetector":
                                 if (!_line.HasAttribute("Enable"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring HatchElevator entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
@@ -886,46 +896,6 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd entry because of invalid (true/false) value for 'ShowOnRespawn' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Message"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd entry because of missing a Message attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (Motd.IsEnabled)
-                                {
-                                    Motd.Message = _line.GetAttribute("Message");
-                                }
-                                break;
-                            case "Motd2":
-                                if (!_line.HasAttribute("Enable"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd2 entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Motd.MOTD2IsEnabled))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd2 entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("ShowOnRespawn"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd2 entry because of missing 'ShowOnRespawn' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("ShowOnRespawn"), out Motd.ShowOnRespawn))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd2 entry because of invalid (true/false) value for 'ShowOnRespawn' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Message"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Motd2 entry because of missing a Message attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (Motd.IsEnabled)
-                                {
-                                    Motd.Message2 = _line.GetAttribute("Message");
-                                }
                                 break;
                             case "NewSpawnTele":
                                 if (!_line.HasAttribute("Enable"))
@@ -1020,6 +990,16 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring PlayerLogs entry because of invalid (true/false) value for 'Extra' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("DaysBeforeDeleted"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PlayerLogs entry because of missing 'DaysBeforeDeleted' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("DaysBeforeDeleted"), out PlayerLogs.DaysBeforeDeleted))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PlayerLogs entry because of invalid (non-numeric) value for 'DaysBeforeDeleted' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                             case "PlayerStatCheck":
                                 if (!_line.HasAttribute("Enable"))
@@ -1096,6 +1076,26 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring SetHome entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("SetHome2Enabled"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring SetHome entry because of missing 'SetHome2Enabled' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("SetHome2Enabled"), out TeleportHome.SetHome2Enabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring SetHome entry because of invalid (true/false) value for 'SetHome2Enabled' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("SetHome2DonorOnly"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring SetHome entry because of missing 'SetHome2DonorOnly' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("SetHome2DonorOnly"), out TeleportHome.SetHome2DonorOnly))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring SetHome entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 if (!_line.HasAttribute("DelayBetweenSetHomeUses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring SetHome entry because of missing 'DelayBetweenSetHomeUses' attribute: {0}", subChild.OuterXml));
@@ -1146,6 +1146,18 @@ namespace ServerTools
                                 if (!bool.TryParse(_line.GetAttribute("Enable"), out StartingItems.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring SetHome entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
+                            case "Stopserver":
+                                if (!_line.HasAttribute("TenSecondCountdownEnabled"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Stopserver entry because of missing 'TenSecondCountdownEnabled' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("TenSecondCountdownEnabled"), out StopServer.TenSecondCountdownEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Stopserver entry because of invalid (true/false) value for 'TenSecondCountdownEnabled' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -1212,6 +1224,16 @@ namespace ServerTools
                                 if (!int.TryParse(_line.GetAttribute("AdminLevel"), out UndergroundCheck.AdminLevel))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring UndergroundCheck entry because of invalid (non-numeric) value for 'AdminLevel' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("MaxPing"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring UndergroundCheck entry because of missing 'MaxPing' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("MaxPing"), out UndergroundCheck.MaxPing))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring UndergroundCheck entry because of invalid (non-numeric) value for 'MaxPing' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("KillPlayer"))
@@ -1298,40 +1320,6 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry because of invalid (non-numeric) value for 'DelayBetweenRewards' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                break;
-                            case "VotingReward":
-                                if (!_line.HasAttribute("RewardIsItemOrBlock"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring VotingReward entry because of missing 'RewardIsItemOrBlock' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("RewardIsItemOrBlock"), out VoteReward.RewardIsItemOrBlock))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring VotingReward entry because of invalid (true/false) value for 'RewardIsItemOrBlock' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("RewardIsEntity"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring VotingReward entry because of missing 'RewardIsEntity' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("RewardIsEntity"), out VoteReward.RewardIsEntity))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring VotingReward entry because of invalid (true/false) value for 'RewardIsEntity' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("ItemOrBlock"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry because of missing 'ItemOrBlock' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                VoteReward.ItemOrBlock = _line.GetAttribute("ItemOrBlock");
-                                if (!_line.HasAttribute("Entity"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry because of missing 'Entity' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                VoteReward.Entity = _line.GetAttribute("Entity");
                                 break;
                             case "Watchlist":
                                 if (!_line.HasAttribute("Enable"))
@@ -1474,30 +1462,28 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"EntityUndergroundCheck\" Enable=\"{0}\" AlertAdmin=\"{1}\" AdminLevel=\"{2}\" />", EntityUnderground.IsEnabled, EntityUnderground.AlertAdmin, EntityUnderground.AdminLevel));
                 sw.WriteLine(string.Format("        <Tool Name=\"FamilyShareAccount\" Enable=\"{0}\" AdminLevel=\"{1}\" />", FamilyShareAccount.IsEnabled, FamilyShareAccount.AdminLevel));
                 sw.WriteLine(string.Format("        <Tool Name=\"FirstClaimBlock\" Enable=\"{0}\" />", FirstClaimBlock.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"FlightCheck\" Enable=\"{0}\" AdminLevel=\"{1}\" MaxHeight=\"{2}\" KillPlayer=\"{3}\" Announce=\"{4}\" JailEnabled=\"{5}\" KickEnabled=\"{6}\" BanEnabled=\"{7}\" />", FlightCheck.IsEnabled, FlightCheck.AdminLevel, FlightCheck.MaxHeight, FlightCheck.KillPlayer, FlightCheck.Announce, FlightCheck.JailEnabled, FlightCheck.KickEnabled, FlightCheck.BanEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"FlightCheck\" Enable=\"{0}\" AdminLevel=\"{1}\" MaxPing=\"{2}\" MaxHeight=\"{3}\" KillPlayer=\"{4}\" Announce=\"{5}\" JailEnabled=\"{6}\" KickEnabled=\"{7}\" BanEnabled=\"{8}\" DaysBeforeDeleted=\"{9}\" />", FlightCheck.IsEnabled, FlightCheck.AdminLevel, FlightCheck.MaxPing, FlightCheck.MaxHeight, FlightCheck.KillPlayer, FlightCheck.Announce, FlightCheck.JailEnabled, FlightCheck.KickEnabled, FlightCheck.BanEnabled, FlightCheck.DaysBeforeDeleted));
                 sw.WriteLine(string.Format("        <Tool Name=\"Gimme\" Enable=\"{0}\" DelayBetweenGimmeUses=\"{1}\" AlwaysShowResponse=\"{2}\" />", Gimme.IsEnabled, Gimme.DelayBetweenUses, Gimme.AlwaysShowResponse));
-                sw.WriteLine(string.Format("        <Tool Name=\"HatchElevator\" Enable=\"{0}\" />", HatchElevator.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"HatchElevatorDetector\" Enable=\"{0}\" />", HatchElevator.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"HighPingKicker\" Enable=\"{0}\" Maxping=\"{1}\" SamplesNeeded=\"{2}\" />", HighPingKicker.IsEnabled, HighPingKicker.MAXPING, HighPingKicker.SamplesNeeded));
                 sw.WriteLine(string.Format("        <Tool Name=\"InfoTicker\" Enable=\"{0}\" DelayBetweenMessages=\"{1}\" Random=\"{2}\" />", InfoTicker.IsEnabled, InfoTicker.DelayBetweenMessages, InfoTicker.Random));
                 sw.WriteLine(string.Format("        <Tool Name=\"InvalidItemKicker\" Enable=\"{0}\" Ban=\"{1}\" LevelToIgnore=\"{2}\" />", InventoryCheck.IsEnabled, InventoryCheck.BanPlayer, InventoryCheck.LevelToIgnore));
                 sw.WriteLine(string.Format("        <Tool Name=\"JailCommands\" Enable=\"{0}\" JailSize=\"{1}\" JailPosition=\"{2}\" />", Jail.IsEnabled, Jail.JailSize, Jail.JailPosition));
                 sw.WriteLine(string.Format("        <Tool Name=\"Killme\" Enable=\"{0}\" DelayBetweenKillmeUses=\"{1}\" />", KillMe.IsEnabled, KillMe.DelayBetweenUses));
-                sw.WriteLine(string.Format("        <Tool Name=\"Motd\" Enable=\"{0}\" ShowOnRespawn=\"{1}\" Message=\"{2}\" />", Motd.IsEnabled, Motd.ShowOnRespawn, Motd.Message));
-                sw.WriteLine(string.Format("        <Tool Name=\"Motd2\" Enable=\"{0}\" ShowOnRespawn=\"{1}\" Message=\"{2}\" />", Motd.IsEnabled, Motd.ShowOnRespawn2, Motd.Message2));
+                sw.WriteLine(string.Format("        <Tool Name=\"Motd\" Enable=\"{0}\" ShowOnRespawn=\"{1}\" />", Motd.IsEnabled, Motd.ShowOnRespawn));
                 sw.WriteLine(string.Format("        <Tool Name=\"NewSpawnTele\" Enable=\"{0}\" NewSpawnTelePosition=\"{1}\" />", NewSpawnTele.IsEnabled, NewSpawnTele.NewSpawnTelePosition));
                 sw.WriteLine(string.Format("        <Tool Name=\"NormalPlayerNameColoring\" Enable=\"{0}\" NormalPlayerPrefix=\"{1}\" NormalPlayerColor=\"{2}\" />", ChatHook.NormalPlayerNameColoring, ChatHook.NormalPlayerPrefix, ChatHook.NormalPlayerColor));
-                sw.WriteLine(string.Format("        <Tool Name=\"PlayerLogs\" Enable=\"{0}\" Interval=\"{1}\" Position=\"{2}\" Inventory=\"{3}\" Extra=\"{4}\" />", PlayerLogs.IsEnabled, PlayerLogs.Interval, PlayerLogs.Position, PlayerLogs.Inventory, PlayerLogs.P_Data));
+                sw.WriteLine(string.Format("        <Tool Name=\"PlayerLogs\" Enable=\"{0}\" Interval=\"{1}\" Position=\"{2}\" Inventory=\"{3}\" Extra=\"{4}\" DaysBeforeDeleted=\"{5}\" />", PlayerLogs.IsEnabled, PlayerLogs.Interval, PlayerLogs.Position, PlayerLogs.Inventory, PlayerLogs.P_Data, PlayerLogs.DaysBeforeDeleted));
                 sw.WriteLine(string.Format("        <Tool Name=\"PlayerStatCheck\" Enable=\"{0}\" AdminLevel=\"{1}\" KickEnabled=\"{2}\" BanEnabled=\"{3}\" />", PlayerStatCheck.IsEnabled, PlayerStatCheck.AdminLevel, PlayerStatCheck.KickEnabled, PlayerStatCheck.BanEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"ReservedSlots\" Enable=\"{0}\" ReservedCheck=\"{1}\" />", ReservedSlots.IsEnabled, ChatHook.ReservedCheck));
-                sw.WriteLine(string.Format("        <Tool Name=\"SetHome\" Enable=\"{0}\" DelayBetweenSetHomeUses=\"{1}\" />", TeleportHome.IsEnabled, TeleportHome.DelayBetweenUses));
+                sw.WriteLine(string.Format("        <Tool Name=\"SetHome\" Enable=\"{0}\" SetHome2Enabled=\"{1}\" SetHome2DonorOnly=\"{2}\" DelayBetweenSetHomeUses=\"{3}\" />", TeleportHome.IsEnabled, TeleportHome.SetHome2Enabled, TeleportHome.SetHome2DonorOnly, TeleportHome.DelayBetweenUses));
                 sw.WriteLine(string.Format("        <Tool Name=\"SpecialPlayerNameColoring\" Enable=\"{0}\" SpecialPlayerSteamId=\"{1}\" SpecialPlayerPrefix=\"{2}\" SpecialPlayerColor=\"{3}\" />", ChatHook.SpecialPlayerNameColoring, ChatHook.SpecialPlayersList, ChatHook.SpecialPlayerPrefix, ChatHook.SpecialPlayerColor));
                 sw.WriteLine(string.Format("        <Tool Name=\"StartingItems\" Enable=\"{0}\" />", StartingItems.IsEnabled));
-                //sw.WriteLine(string.Format("        <Tool Name=\"Stopserver\" TenSecondCountdown=\"{0}\" />", StopServer.TenSecondCountdown));
+                sw.WriteLine(string.Format("        <Tool Name=\"Stopserver\" TenSecondCountdownEnabled=\"{0}\" />", StopServer.TenSecondCountdownEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"TempBan\" Enable=\"{0}\" AdminLevel=\"{1}\" />", TempBan.IsEnabled, TempBan.AdminLevel));
                 sw.WriteLine(string.Format("        <Tool Name=\"Travel\" Enable=\"{0}\" DelayBetweenUses=\"{1}\" />", Travel.IsEnabled, Travel.DelayBetweenUses));
-                sw.WriteLine(string.Format("        <Tool Name=\"UndergroundCheck\" Enable=\"{0}\" AdminLevel=\"{1}\" KillPlayer=\"{2}\" Announce=\"{3}\" JailEnabled=\"{4}\" KickEnabled=\"{5}\" BanEnabled=\"{6}\" />", UndergroundCheck.IsEnabled, UndergroundCheck.AdminLevel, UndergroundCheck.KillPlayer, UndergroundCheck.Announce, UndergroundCheck.JailEnabled, UndergroundCheck.KickEnabled, UndergroundCheck.BanEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" YourVotingSite=\"{1}\" APIKey=\"{2}\" DelayBetweenRewards=\"{3}\"/>", VoteReward.IsEnabled, VoteReward.YourVotingSite, VoteReward.APIKey, VoteReward.DelayBetweenRewards));
-                sw.WriteLine(string.Format("        <Tool Name=\"VotingReward\" RewardIsItemOrBlock=\"{0}\" ItemOrBlock=\"{1}\" RewardIsEntity=\"{2}\" Entity=\"{3}\" />", VoteReward.RewardIsItemOrBlock, VoteReward.ItemOrBlock, VoteReward.RewardIsEntity, VoteReward.Entity));               
+                sw.WriteLine(string.Format("        <Tool Name=\"UndergroundCheck\" Enable=\"{0}\" AdminLevel=\"{1}\" MaxPing=\"{2}\" KillPlayer=\"{3}\" Announce=\"{4}\" JailEnabled=\"{5}\" KickEnabled=\"{6}\" BanEnabled=\"{7}\" DaysBeforeDeleted=\"{8}\" />", UndergroundCheck.IsEnabled, UndergroundCheck.AdminLevel, UndergroundCheck.MaxPing, UndergroundCheck.KillPlayer, UndergroundCheck.Announce, UndergroundCheck.JailEnabled, UndergroundCheck.KickEnabled, UndergroundCheck.BanEnabled, UndergroundCheck.DaysBeforeDeleted));
+                sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" YourVotingSite=\"{1}\" APIKey=\"{2}\" DelayBetweenRewards=\"{3}\"/>", VoteReward.IsEnabled, VoteReward.YourVotingSite, VoteReward.APIKey, VoteReward.DelayBetweenRewards));               
                 sw.WriteLine(string.Format("        <Tool Name=\"Watchlist\" Enable=\"{0}\" />", Watchlist.IsEnabled));
                 //sw.WriteLine(string.Format("        <Tool Name=\"WorldRadius\" Enable=\"{0}\" WorldSize=\"{1}\" ZoneWarnings=\"{2}\", ZoneProtection.IsEnabled, ZoneProtection.WorldSize, ZoneProtection.ZoneWarnings));
                 sw.WriteLine(string.Format("        <Tool Name=\"ZoneProtection\" Enable=\"{0}\" KillMurderer=\"{1}\" JailEnabled=\"{2}\" KickEnabled=\"{3}\" BanEnabled=\"{4}\" />", ZoneProtection.IsEnabled, ZoneProtection.KillMurderer, ZoneProtection.JailEnabled, ZoneProtection.KickEnabled, ZoneProtection.BanEnabled));

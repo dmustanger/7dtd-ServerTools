@@ -103,7 +103,7 @@ namespace ServerTools
                                         _z = (_z - 5);
                                     }
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reached world border limit[-]", Config.ChatColor, WorldSize), "Server", false, "", false));
-                                    SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, _x, -1, _z), _cInfo);
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, _x, -1, _z), (ClientInfo)null);
                                 }
                             }
                         }

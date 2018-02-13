@@ -167,25 +167,22 @@ namespace ServerTools
                 {
                     if (msgList.Count > 0)
                     {
-                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                         if (Random)
                         {
-                            ClientInfo _cInfo = _cInfoList.RandomObject();
                             msgList.RandomizeList();
                             var _message = msgList.First();
                             if (_message != null)
                             {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _message), "Server", false, "", false);
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _message), "Server", false, "", false);
                                 msgList.RemoveAt(0);
                             }
                         }
                         else
                         { 
-                            ClientInfo _cInfo = _cInfoList.RandomObject();
                             var _message = msgList.First();
                             if (_message != null)
                             {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _message), "Server", false, "", false);
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _message), "Server", false, "", false);
                                 msgList.RemoveAt(0);
                             }
                         }
@@ -195,25 +192,22 @@ namespace ServerTools
                         LoadXml();
                         if (msgList.Count > 0)
                         {
-                            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                             if (Random)
                             {
-                                ClientInfo _cInfo = _cInfoList.RandomObject();
                                 msgList.RandomizeList();
                                 var _message = msgList.First();
                                 if (_message != null)
                                 {
-                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _message), "Server", false, "", false);
+                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _message), "Server", false, "", false);
                                     msgList.RemoveAt(0);
                                 }
                             }
                             else
                             {
-                                ClientInfo _cInfo = _cInfoList.RandomObject();
                                 var _message = msgList.First();
                                 if (_message != null)
                                 {
-                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _message), "Server", false, "", false);
+                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _message), "Server", false, "", false);
                                     msgList.RemoveAt(0);
                                 }
                             }

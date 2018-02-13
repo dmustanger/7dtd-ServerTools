@@ -179,7 +179,7 @@ namespace ServerTools
                             _phrase20 = "Sorry {PlayerName} this slot is reserved.";
                         }
                         _phrase20 = _phrase20.Replace("{PlayerName}", _cInfo.playerName);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase20), _cInfo);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase20), (ClientInfo)null);
                     }
                     else
                     {
@@ -193,7 +193,7 @@ namespace ServerTools
                                 _phrase21 = "Sorry {PlayerName} your reserved slot has expired.";
                             }
                             _phrase21 = _phrase21.Replace("{PlayerName}", _cInfo.playerName);
-                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase21), _cInfo);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase21), (ClientInfo)null);
                         }
                         else
                         {

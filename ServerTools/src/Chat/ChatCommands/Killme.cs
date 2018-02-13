@@ -42,7 +42,7 @@ namespace ServerTools
                         _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeremaining.ToString());
                         if (_announce)
                         {
-                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase8), "Server", false, "", false);
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase8), "Server", false, "", false);
                         }
                         else
                         {
@@ -55,7 +55,7 @@ namespace ServerTools
 
         private static void KillPlayer(ClientInfo _cInfo)
         {
-            SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.entityId), _cInfo);
+            SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.entityId), (ClientInfo)null);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastKillme = DateTime.Now;
             PersistentContainer.Instance.Save();
         }

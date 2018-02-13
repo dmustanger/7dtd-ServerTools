@@ -1259,8 +1259,8 @@ namespace ServerTools
                                     }
                                     _phrase4 = _phrase4.Replace("{PlayerName}", _cInfo.playerName);
                                     _phrase4 = _phrase4.Replace("{ItemName}", _name);
-                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase4), "Server", false, "", false);
-                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Invalid Item {1}\"", _cInfo.entityId, _name), _cInfo);
+                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase4), "Server", false, "", false);
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Invalid Item {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
                                 }
                                 else
                                 {
@@ -1271,8 +1271,8 @@ namespace ServerTools
                                     }
                                     _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
                                     _phrase5 = _phrase5.Replace("{ItemName}", _name);
-                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase5), "Server", false, "", false);
-                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), _cInfo);
+                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase5), "Server", false, "", false);
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
                                 }
                                 break;
                             }
@@ -1314,8 +1314,8 @@ namespace ServerTools
                                     }
                                     _phrase4 = _phrase4.Replace("{PlayerName}", _cInfo.playerName);
                                     _phrase4 = _phrase4.Replace("{ItemName}", _name);
-                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase4), "Server", false, "", false);
-                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Invalid Item {1}\"", _cInfo.entityId, _name), _cInfo);
+                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase4), "Server", false, "", false);
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Invalid Item {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
                                 }
                                 else
                                 {
@@ -1326,8 +1326,8 @@ namespace ServerTools
                                     }
                                     _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
                                     _phrase5 = _phrase5.Replace("{ItemName}", _name);
-                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase5), "Server", false, "", false);
-                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), _cInfo);
+                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase5), "Server", false, "", false);
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
                                 }
                                 break;
                             }

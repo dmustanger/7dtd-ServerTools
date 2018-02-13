@@ -13,6 +13,7 @@ namespace ServerTools
         public static bool Inventory = false;
         public static bool P_Data = false;
         public static int Interval = 60;
+        public static int DaysBeforeDeleted = 5;
         private static System.Timers.Timer timerLogs = new System.Timers.Timer();
 
         public static void PlayerLogsDir()
@@ -20,6 +21,17 @@ namespace ServerTools
             if (!Directory.Exists(API.GamePath + "/PlayerLogs"))
             {
                 Directory.CreateDirectory(API.GamePath + "/PlayerLogs");
+            }
+
+            string[] files = Directory.GetFiles(API.GamePath + "/PlayerLogs");
+            int _daysBeforeDeleted = (DaysBeforeDeleted * -1);
+            foreach (string file in files)
+            {
+                FileInfo fi = new FileInfo(file);
+                if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
+                {
+                    fi.Delete();
+                }
             }
         }
 

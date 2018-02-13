@@ -49,7 +49,7 @@ namespace ServerTools
                             _phrase601 = _phrase601.Replace("{TimeRemaining}", _timeleft.ToString());
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase601), "Server", false, "", false);
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase601), "Server", false, "", false);
                             }
                             else
                             {
@@ -76,10 +76,10 @@ namespace ServerTools
                 int randomAnimal = rnd.Next(entities.Count);
                 int nextAnimal = entities[randomAnimal - 1];
                 int nextRadius = rnd.Next(minRad, maxRad);
-                SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} {1} @ {2}", _cInfo.entityId, nextRadius, nextAnimal), _cInfo);                
+                SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} {1} @ {2}", _cInfo.entityId, nextRadius, nextAnimal), (ClientInfo)null);                
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatColor, _cInfo.playerName, nextRadius), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatColor, _cInfo.playerName, nextRadius), "Server", false, "", false);
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
                     PersistentContainer.Instance.Save();
                     return;
@@ -100,7 +100,7 @@ namespace ServerTools
                 SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} {1} @ {2}", _cInfo.entityId, nextRadius, nextAnimal), _cInfo);
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatColor, _cInfo.playerName, nextRadius), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatColor, _cInfo.playerName, nextRadius), "Server", false, "", false);
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
                     PersistentContainer.Instance.Save();
                     return;

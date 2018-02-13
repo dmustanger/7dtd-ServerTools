@@ -54,7 +54,7 @@ namespace ServerTools
             {
                 _message = _message.Replace("@ALL ", "");
                 _message = _message.Replace("@all ", "");
-                SdtdConsole.Instance.ExecuteSync(string.Format("say \"[FF8000]{0}[-]\"", _message), _cInfo);
+                SdtdConsole.Instance.ExecuteSync(string.Format("say \"[FF8000]{0}[-]\"", _message), (ClientInfo)null);
             }
         }
     }

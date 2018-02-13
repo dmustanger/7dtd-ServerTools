@@ -43,18 +43,18 @@ namespace ServerTools
             {
                 if (_daysUntil7 == 7)
                 {
-                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase306, Config.ChatColor), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase306, Config.ChatColor), "Server", false, "", false);
                 }
                 else
                 {
-                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.ChatColor), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.ChatColor), "Server", false, "", false);
                 }
             }
             else
             {
                 if (_daysUntil7 == 7)
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase306, Config.ChatColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.ChatColor), "Server", false, "", false));
                 }
                 else
                 {
@@ -76,9 +76,7 @@ namespace ServerTools
             {
                 if (ConnectionManager.Instance.ClientCount() > 0)
                 {
-                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                    ClientInfo _cInfo = _cInfoList.RandomObject();
-                    GetBloodmoon(_cInfo, true);
+                    GetBloodmoon((ClientInfo)null, true);
                 }
                 Thread.Sleep(60000 * AutoShowBloodmoon);
             }

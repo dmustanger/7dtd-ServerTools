@@ -152,15 +152,17 @@ namespace ServerTools
                                         }
                                         if (_flag > 2)
                                         {
-                                            Log.Out("Detected player was stuck underground and teleported them to the surface. Id # {0}, position {1} {2} {3}", ent.entityId, x, y, z);
+                                            Log.Out("Detected player was stuck underground and teleported them to the surface. Id # {0}, position {1} {2} {3}", ent.entityId, x, y, z);                                            
+                                            SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} -1 {2}", ent.entityId, x, z), (ClientInfo)null);
                                             List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                                            ClientInfo _cInfo = _cInfoList.RandomObject();
-                                            SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} -1 {2}", ent.entityId, x, z), _cInfo);
-                                            GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
-                                            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                                            if (Admin.PermissionLevel <= AdminLevel)
+                                            foreach (var _cInfo in _cInfoList)
                                             {
-                                                SdtdConsole.Instance.ExecuteSync(string.Format("pm {0} \"Detected player # {1} stuck underground @ {2} {3} {4}. Teleported them to the surface.\"", _cInfo.playerId, ent.entityId, x, y, z), _cInfo);
+                                                GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
+                                                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                                                if (Admin.PermissionLevel <= AdminLevel)
+                                                {
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("pm {0} \"Detected player # {1} stuck underground @ {2} {3} {4}. Teleported them to the surface.\"", _cInfo.playerId, ent.entityId, x, y, z), (ClientInfo)null);
+                                                }
                                             }
                                         }
                                     }

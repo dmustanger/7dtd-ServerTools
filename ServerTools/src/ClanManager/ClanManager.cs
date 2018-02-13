@@ -22,7 +22,7 @@ namespace ServerTools
                             _phrase100 = "You do not belong to the clan {ClanName}. Please remove the clan tag and rejoin.";
                         }
                         _phrase100 = _phrase100.Replace("{ClanName}", _clan);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase100), _cInfo);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase100), (ClientInfo)null);
                     }
                 }
             }

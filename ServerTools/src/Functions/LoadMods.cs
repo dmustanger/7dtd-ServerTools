@@ -75,6 +75,7 @@
             if (FlightCheck.IsEnabled)
             {
                 FlightCheck.FlightTimerStart();
+                FlightCheck.DetectionLogsDir();
             }
             if (!FlightCheck.IsEnabled)
             {
@@ -91,6 +92,7 @@
             if (HatchElevator.IsEnabled)
             {
                 HatchElevator.HatchElevatorTimerStart();
+                HatchElevator.DetectionLogsDir();
             }
             if (!HatchElevator.IsEnabled)
             {
@@ -127,6 +129,14 @@
             if (Jail.IsRunning && !Jail.IsEnabled)
             {
                 Jail.Unload();
+            }
+            if (!Motd.IsRunning && Motd.IsEnabled)
+            {
+                Motd.Load();
+            }
+            if (Motd.IsRunning && !Motd.IsEnabled)
+            {
+                Motd.Unload();
             }
             if (PlayerLogs.IsEnabled)
             {
@@ -176,6 +186,7 @@
             if (UndergroundCheck.IsEnabled)
             {
                 UndergroundCheck.UndergroundTimerStart();
+                UndergroundCheck.DetectionLogsDir();
             }
             if (!UndergroundCheck.IsEnabled)
             {

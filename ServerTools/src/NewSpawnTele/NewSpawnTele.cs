@@ -69,7 +69,7 @@ namespace ServerTools
             int z = (int)zf;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].NewSpawnTele = mapSeed;
             PersistentContainer.Instance.Save();
-            SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, x, y, z), _cInfo);
+            SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, x, y, z), (ClientInfo)null);
             string _phrase526;
             if (!Phrases.Dict.TryGetValue(526, out _phrase526))
             {

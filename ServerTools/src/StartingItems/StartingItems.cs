@@ -11,7 +11,7 @@ namespace ServerTools
         public static bool IsRunning = false;
         private const string file = "StartingItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static SortedDictionary<string, int[]> startItemList = new SortedDictionary<string, int[]>();
+        public static SortedDictionary<string, int[]> startItemList = new SortedDictionary<string, int[]>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
 
@@ -83,12 +83,12 @@ namespace ServerTools
                         int _quality = 1;
                         if (!int.TryParse(_line.GetAttribute("count"), out _count))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring starting item entry because of invalid (non-numeric) value for 'min' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring starting item entry because of invalid (non-numeric) value for 'count' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!int.TryParse(_line.GetAttribute("quality"), out _quality))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring starting item entry because of invalid (non-numeric) value for 'max' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring starting item entry because of invalid (non-numeric) value for 'quality' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         string _item = _line.GetAttribute("item");
@@ -162,7 +162,6 @@ namespace ServerTools
             }
             LoadXml();
         }
-
 
         public static void StartingItemCheck(ClientInfo _cInfo)
         {

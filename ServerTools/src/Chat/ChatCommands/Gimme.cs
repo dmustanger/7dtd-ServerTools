@@ -253,7 +253,7 @@ namespace ServerTools
                         _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
                         if (_announce)
                         {
-                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase6), "Server", false, "", false);
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase6), "Server", false, "", false);
                         }
                         else
                         {
@@ -317,7 +317,7 @@ namespace ServerTools
                 }
                 if (_announce || AlwaysShowResponse)
                 {
-                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase7), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase7), "Server", false, "", false);
                 }
                 else
                 {

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 
 namespace ServerTools
 {
@@ -33,12 +32,8 @@ namespace ServerTools
         {
             while (IsEnabled)
             {
-                int _playerCount = ConnectionManager.Instance.ClientCount();
-                if (_playerCount > 0)
                 {
-                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                    ClientInfo _cInfo = _cInfoList.RandomObject();
-                    SdtdConsole.Instance.ExecuteSync("saveworld", _cInfo);
+                    SdtdConsole.Instance.ExecuteSync("saveworld", (ClientInfo)null);
                     Log.Out("[SERVERTOOLS] World Saved.");
                 }
                 Thread.Sleep(60000 * DelayBetweenWorldSaves);

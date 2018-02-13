@@ -142,7 +142,7 @@ namespace ServerTools
                         sw.Flush();
                         sw.Close();
                     }
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using a family share account. Purchase the game or contact an administrator for permission to join this server\"", _cInfo.playerId), _cInfo);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using a family share account. Purchase the game or contact an administrator for permission to join this server\"", _cInfo.playerId), (ClientInfo)null);
                 }
             }
         }

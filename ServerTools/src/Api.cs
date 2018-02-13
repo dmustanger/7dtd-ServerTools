@@ -61,10 +61,6 @@ namespace ServerTools
             {
                 Motd.Send(_cInfo);
             }
-            if (Motd.MOTD2IsEnabled & !Motd.ShowOnRespawn2)
-            {
-                Motd.Send2(_cInfo);
-            }
             if (Bloodmoon.ShowOnSpawn & !Bloodmoon.ShowOnRespawn)
             {
                 Bloodmoon.GetBloodmoon(_cInfo, false);
@@ -84,10 +80,6 @@ namespace ServerTools
             if (Motd.IsEnabled & Motd.ShowOnRespawn)
             {
                 Motd.Send(_cInfo);
-            }
-            if (Motd.MOTD2IsEnabled & Motd.ShowOnRespawn2)
-            {
-                Motd.Send2(_cInfo);
             }
             if (Bloodmoon.ShowOnSpawn & Bloodmoon.ShowOnRespawn)
             {

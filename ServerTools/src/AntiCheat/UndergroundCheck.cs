@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Timers;
 
 namespace ServerTools
@@ -14,6 +15,8 @@ namespace ServerTools
         public static bool KickEnabled = false;
         public static bool BanEnabled = false;
         public static int AdminLevel = 0;
+        public static int MaxPing = 300;
+        public static int DaysBeforeDeleted = 5;
         public static SortedDictionary<string, int> Flag = new SortedDictionary<string, int>();
         public static SortedDictionary<int, string> uLastPositionXZ = new SortedDictionary<int, string>();
         private static System.Timers.Timer timerUnderground = new System.Timers.Timer();
@@ -121,6 +124,25 @@ namespace ServerTools
             timerUnderground.Stop();
         }
 
+        public static void DetectionLogsDir()
+        {
+            if (!Directory.Exists(API.GamePath + "/DetectionLogs"))
+            {
+                Directory.CreateDirectory(API.GamePath + "/DetectionLogs");
+            }
+
+            string[] files = Directory.GetFiles(API.GamePath + "/DetectionLogs");
+            int _daysBeforeDeleted = (DaysBeforeDeleted * -1);
+            foreach (string file in files)
+            {
+                FileInfo fi = new FileInfo(file);
+                if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
+                {
+                    fi.Delete();
+                }
+            }
+        }
+
         public static void AutoUndergroundCheck(object sender, ElapsedEventArgs e)
         {
             if (ConnectionManager.Instance.ClientCount() > 0)
@@ -163,44 +185,52 @@ namespace ServerTools
                                                     int z = (int)ep.position.z;
 
                                                     Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z);
-
+                                                    string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+                                                    string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
+                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                    {
+                                                        sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z));
+                                                        sw.WriteLine();
+                                                        sw.Flush();
+                                                        sw.Close();
+                                                    }
                                                     if (Announce)
                                                     {
-                                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1} has been detected flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
+                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been detected flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
                                                         if (_flag == 4)
                                                         {
                                                             Flag.Remove(_cInfo.playerId);
                                                             if (Admin.PermissionLevel <= AdminLevel && ep.entityId != _cInfo.entityId)
                                                             {
-                                                                SdtdConsole.Instance.ExecuteSync(string.Format("pm {0} \"{1}Detected {2} flying underground @ {3} {4} {5}\"", _cInfo.playerId, Config.ChatColor, ep.EntityName, x, y, z), _cInfo);
+                                                                SdtdConsole.Instance.ExecuteSync(string.Format("pm {0} \"{1}Detected {2} flying underground @ {3} {4} {5}\"", _cInfo.playerId, Config.ChatColor, ep.EntityName, x, y, z), (ClientInfo)null);
                                                             }
                                                         }
                                                     }
                                                     if (JailEnabled)
                                                     {
                                                         Flag.Remove(_cInfo.playerId);
-                                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1} has been jailed for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
-                                                        SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0}", _cInfo.playerId), _cInfo);
+                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been jailed for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
+                                                        SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0}", _cInfo.playerId), (ClientInfo)null);
                                                     }
                                                     if (KillPlayer)
                                                     {
                                                         Flag.Remove(_cInfo.playerId);
-                                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1} has been killed for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
-                                                        SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), _cInfo);
+                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been killed for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
+                                                        SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), (ClientInfo)null);
                                                     }
                                                     if (KickEnabled)
                                                     {
                                                         Flag.Remove(_cInfo.playerId);
-                                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1} has been kicked for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
-                                                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for flying\"", _cInfo.playerId), _cInfo);
+                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been kicked for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
+                                                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for flying\"", _cInfo.playerId), (ClientInfo)null);
                                                     }
                                                     if (BanEnabled)
                                                     {
                                                         Flag.Remove(_cInfo.playerId);
-                                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1} has been banned for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
-                                                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for flying\"", _cInfo.playerId), _cInfo);
+                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been banned for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
+                                                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for flying\"", _cInfo.playerId), (ClientInfo)null);
                                                     }
-                                                    SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} -1 {2}", ep.entityId, x, z), _cInfo);
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} -1 {2}", ep.entityId, x, z), (ClientInfo)null);
                                                 }
                                             }
                                         }
@@ -236,33 +266,41 @@ namespace ServerTools
                 {
                     uLastPositionXZ.Remove(Id);
                     uLastPositionXZ.Add(Id, xz);
-                    for (int i = x - 3; i <= (x + 3); i++)
+                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(ep.entityId);
+                    if (_cInfo.ping < MaxPing)
                     {
-                        for (int j = z - 3; j <= (z + 3); j++)
+                        for (int i = x - 3; i <= (x + 3); i++)
                         {
-                            for (int k = y - 4; k <= (y + 3); k++)
+                            for (int j = z - 3; j <= (z + 3); j++)
                             {
-                                BlockValue Block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));                               
-                                if (Block.type == BlockValue.Air.type || ep.IsInElevator() || ep.IsInWater() || Block.Block.blockID == 1562 || Block.Block.blockID == 631 ||
-                                    Block.Block.blockID == 642 || Block.Block.blockID == 643 || Block.Block.blockID == 1248 || Block.Block.blockID == 1249 || Block.Block.blockID == 1250 ||
-                                    Block.Block.blockID == 1449 || Block.Block.blockID == 1450 || Block.Block.blockID == 1451 || Block.Block.blockID == 93 || Block.Block.blockID == 1251 ||
-                                    Block.Block.blockID == 1469 || Block.Block.blockID == 1470 || Block.Block.blockID == 1471 || Block.Block.blockID == 901 || Block.Block.blockID == 902 ||
-                                    Block.Block.blockID == 903 || Block.Block.blockID == 94 || Block.Block.blockID == 1934 || Block.Block.blockID == 749 || Block.Block.blockID == 257 ||
-                                    Block.Block.blockID == 258 || Block.Block.blockID == 259 || Block.Block.blockID == 260 || Block.Block.blockID == 261 || Block.Block.blockID == 262 ||
-                                    Block.Block.blockID == 527 || Block.Block.blockID == 528 || Block.Block.blockID == 529 || Block.Block.blockID == 530 || Block.Block.blockID == 531 ||
-                                    Block.Block.blockID == 532 || Block.Block.blockID == 533 || Block.Block.blockID == 534 || Block.Block.blockID == 713 || Block.Block.blockID == 714 ||
-                                    Block.Block.blockID == 759 || Block.Block.blockID == 760 || Block.Block.blockID == 761 || Block.Block.blockID == 762 || Block.Block.blockID == 763 ||
-                                    Block.Block.blockID == 764 || Block.Block.blockID == 853 || Block.Block.blockID == 854 || Block.Block.blockID == 855 || Block.Block.blockID == 856 ||
-                                    Block.Block.blockID == 869 || Block.Block.blockID == 870 || Block.Block.blockID == 884 || Block.Block.blockID == 959 || Block.Block.blockID == 960 ||
-                                    Block.Block.blockID == 961 || Block.Block.blockID == 962 || Block.Block.blockID == 826 || Block.Block.blockID == 900 || Block.Block.blockID == 1252 ||
-                                    Block.Block.blockID == 1253)
+                                for (int k = y - 4; k <= (y + 3); k++)
                                 {
-                                    return false;
+                                    BlockValue Block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
+                                    if (Block.type == BlockValue.Air.type || ep.IsInElevator() || ep.IsInWater() || Block.Block.blockID == 1562 || Block.Block.blockID == 631 ||
+                                        Block.Block.blockID == 642 || Block.Block.blockID == 643 || Block.Block.blockID == 1248 || Block.Block.blockID == 1249 || Block.Block.blockID == 1250 ||
+                                        Block.Block.blockID == 1449 || Block.Block.blockID == 1450 || Block.Block.blockID == 1451 || Block.Block.blockID == 93 || Block.Block.blockID == 1251 ||
+                                        Block.Block.blockID == 1469 || Block.Block.blockID == 1470 || Block.Block.blockID == 1471 || Block.Block.blockID == 901 || Block.Block.blockID == 902 ||
+                                        Block.Block.blockID == 903 || Block.Block.blockID == 94 || Block.Block.blockID == 1934 || Block.Block.blockID == 749 || Block.Block.blockID == 257 ||
+                                        Block.Block.blockID == 258 || Block.Block.blockID == 259 || Block.Block.blockID == 260 || Block.Block.blockID == 261 || Block.Block.blockID == 262 ||
+                                        Block.Block.blockID == 527 || Block.Block.blockID == 528 || Block.Block.blockID == 529 || Block.Block.blockID == 530 || Block.Block.blockID == 531 ||
+                                        Block.Block.blockID == 532 || Block.Block.blockID == 533 || Block.Block.blockID == 534 || Block.Block.blockID == 713 || Block.Block.blockID == 714 ||
+                                        Block.Block.blockID == 759 || Block.Block.blockID == 760 || Block.Block.blockID == 761 || Block.Block.blockID == 762 || Block.Block.blockID == 763 ||
+                                        Block.Block.blockID == 764 || Block.Block.blockID == 853 || Block.Block.blockID == 854 || Block.Block.blockID == 855 || Block.Block.blockID == 856 ||
+                                        Block.Block.blockID == 869 || Block.Block.blockID == 870 || Block.Block.blockID == 884 || Block.Block.blockID == 959 || Block.Block.blockID == 960 ||
+                                        Block.Block.blockID == 961 || Block.Block.blockID == 962 || Block.Block.blockID == 826 || Block.Block.blockID == 900 || Block.Block.blockID == 1252 ||
+                                        Block.Block.blockID == 1253)
+                                    {
+                                        return false;
+                                    }
                                 }
-                            }                           
+                            }
                         }
+                        return true;
                     }
-                    return true;
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {

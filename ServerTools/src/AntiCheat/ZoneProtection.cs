@@ -88,17 +88,17 @@ namespace ServerTools
                         XmlElement _line = (XmlElement)subChild;
                         if (!_line.HasAttribute("name"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone entry because of missing name attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone Protection entry because of missing name attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("XYZmin"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone entry because of missing XYZmin attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone Protection entry because of missing XYZmin attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("XYZmax"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone entry because of missing XYZmax attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone Protection entry because of missing XYZmax attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         string _name = _line.GetAttribute("name");
@@ -251,6 +251,15 @@ namespace ServerTools
                                             Victim.Remove(_cInfoVictim.entityId);
                                         }
                                         Victim.Add(_cInfoVictim.entityId, _victim.position);
+                                        string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+                                        string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
+                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                        {
+                                            sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, murdered {2}, Steam Id {3} in a protected zone.", _cInfoKiller.playerName, _cInfoKiller.steamId, _cInfoVictim.playerName, _cInfoVictim.steamId));
+                                            sw.WriteLine();
+                                            sw.Flush();
+                                            sw.Close();
+                                        }
                                     }
                                 }
                             }
@@ -555,8 +564,8 @@ namespace ServerTools
         {
             if (JailEnabled)
             {
-                GameManager.Instance.GameMessageServer(_cInfoKiller, EnumGameMessages.Chat, string.Format("{0}{1} has been jailed for murder in a protected zone.[-]", Config.ChatColor, _cInfoKiller.playerName), "Server", false, "", false);
-                SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0}", _cInfoKiller.playerId), _cInfoKiller);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been jailed for murder in a protected zone.[-]", Config.ChatColor, _cInfoKiller.playerName), "Server", false, "", false);
+                SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0}", _cInfoKiller.playerId), (ClientInfo)null);
                 if (Forgive.ContainsKey(_cInfoVictim.entityId))
                 {
                     Forgive.Remove(_cInfoVictim.entityId);
@@ -565,18 +574,18 @@ namespace ServerTools
             }
             if (KillMurderer)
             {
-                GameManager.Instance.GameMessageServer(_cInfoKiller, EnumGameMessages.Chat, string.Format("{0}{1} has been executed for murder in a protected zone.[-]", Config.ChatColor, _cInfoKiller.playerName), "Server", false, "", false);
-                SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfoKiller.playerId), _cInfoKiller);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been executed for murder in a protected zone.[-]", Config.ChatColor, _cInfoKiller.playerName), "Server", false, "", false);
+                SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfoKiller.playerId), (ClientInfo)null);
             }
             if (KickEnabled)
             {
-                GameManager.Instance.GameMessageServer(_cInfoKiller, EnumGameMessages.Chat, string.Format("{0}{1} has been kicked for murder in a protected zone.[-]", Config.ChatColor, _cInfoKiller.playerName), "Server", false, "", false);
-                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for murder in a protected zone\"", _cInfoKiller.playerId), _cInfoKiller);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been kicked for murder in a protected zone.[-]", Config.ChatColor, _cInfoKiller.playerName), "Server", false, "", false);
+                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for murder in a protected zone\"", _cInfoKiller.playerId), (ClientInfo)null);
             }
             if (BanEnabled)
             {
-                GameManager.Instance.GameMessageServer(_cInfoKiller, EnumGameMessages.Chat, string.Format("{0}{1} has been banned for murder in a protected zone.[-]", Config.ChatColor, _cInfoKiller.playerName), "Server", false, "", false);
-                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for murder in a protected zone\"", _cInfoKiller.playerId), _cInfoKiller);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been banned for murder in a protected zone.[-]", Config.ChatColor, _cInfoKiller.playerName), "Server", false, "", false);
+                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for murder in a protected zone\"", _cInfoKiller.playerId), (ClientInfo)null);
             }
         }
     }
