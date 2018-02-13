@@ -192,6 +192,14 @@
             {
                 UndergroundCheck.UndergroundTimerStop();
             }
+            if (!VoteReward.IsRunning && VoteReward.IsEnabled)
+            {
+                VoteReward.Load();
+            }
+            if (VoteReward.IsRunning && !VoteReward.IsEnabled)
+            {
+                VoteReward.Unload();
+            }
             if (!Watchlist.IsRunning && Watchlist.IsEnabled)
             {
                 Watchlist.Load();
