@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ServerTools
 {
-    public class ResetVoteReward : ConsoleCmdAbstract
+    public class ResetHome : ConsoleCmdAbstract
     {
         public override string GetDescription()
         {
@@ -13,13 +13,13 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. votereward reset <steamID>\n" +
-                   "1. Reset the status of a steamID from the vote reward list\n";
+                   "  1. home reset <steamID>\n" +
+                   "1. Reset the delay of the /home and /home2 commands for the specified steamID\n";
         }
 
         public override string[] GetCommands()
         {
-            return new string[] { "votereward", "vr" };
+            return new string[] { "home" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -45,7 +45,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        PersistentContainer.Instance.Players[_params[1], true].LastVoteReward = DateTime.Now.AddDays(-2);
+                        PersistentContainer.Instance.Players[_params[1], true].LastSetHome = DateTime.Now.AddDays(-2);
                         PersistentContainer.Instance.Save();
                     }
                 }
@@ -58,7 +58,7 @@ namespace ServerTools
 
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ResetVoteReward.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ResetHome.Run: {0}.", e));
             }
         }
     }

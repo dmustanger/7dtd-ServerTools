@@ -13,7 +13,7 @@ namespace ServerTools
         public static void SetHome(ClientInfo _cInfo, string _playerName, bool _announce)
         {
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p != null || !p.IsJailed)
+            if (p == null && !ZoneProtection.PvEFlag.Contains(_cInfo.entityId) || !p.IsJailed && !ZoneProtection.PvEFlag.Contains(_cInfo.entityId))
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 Vector3 _position = _player.GetPosition();
@@ -68,7 +68,7 @@ namespace ServerTools
         public static void TeleHome(ClientInfo _cInfo, string _playerName, bool _announce)
         {
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p == null || p.HomePosition == null & !p.IsJailed)
+            if (p == null || p.HomePosition == null)
             {
                 string _phrase11;
                 if (!Phrases.Dict.TryGetValue(11, out _phrase11))
@@ -85,7 +85,7 @@ namespace ServerTools
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase11, Config.ChatColor), "Server", false, "", false));
                 }
             }
-            else
+            else if (!p.IsJailed)
             {
                 if (DelayBetweenUses < 1)
                 {
@@ -112,7 +112,7 @@ namespace ServerTools
                             string _phrase13;
                             if (!Phrases.Dict.TryGetValue(13, out _phrase13))
                             {
-                                _phrase13 = "{PlayerName} you can only use /home once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                _phrase13 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
                             _phrase13 = _phrase13.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase13 = _phrase13.Replace("{DelayBetweenUses}", DelayBetweenUses.ToString());
@@ -181,7 +181,7 @@ namespace ServerTools
         public static void SetHome2(ClientInfo _cInfo, string _playerName, bool _announce)
         {
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p != null || !p.IsJailed)
+            if (p == null && !ZoneProtection.PvEFlag.Contains(_cInfo.entityId) || !p.IsJailed && !ZoneProtection.PvEFlag.Contains(_cInfo.entityId))
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 Vector3 _position = _player.GetPosition();
@@ -236,7 +236,7 @@ namespace ServerTools
         public static void TeleHome2(ClientInfo _cInfo, string _playerName, bool _announce)
         {
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p == null || p.HomePosition2 == null && !p.IsJailed)
+            if (p == null || p.HomePosition2 == null)
             {
                 string _phrase608;
                 if (!Phrases.Dict.TryGetValue(608, out _phrase608))
@@ -253,7 +253,7 @@ namespace ServerTools
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase608, Config.ChatColor), "Server", false, "", false));
                 }
             }
-            else
+            else if (!p.IsJailed)
             {
                 if (DelayBetweenUses < 1)
                 {
@@ -261,13 +261,13 @@ namespace ServerTools
                 }
                 else
                 {
-                    if (p.LastSetHome2 == null)
+                    if (p.LastSetHome == null)
                     {
                         Home2(_cInfo, p.HomePosition2, _playerName, _announce);
                     }
                     else
                     {
-                        TimeSpan varTime = DateTime.Now - p.LastSetHome2;
+                        TimeSpan varTime = DateTime.Now - p.LastSetHome;
                         double fractionalMinutes = varTime.TotalMinutes;
                         int _timepassed = (int)fractionalMinutes;
                         if (_timepassed > DelayBetweenUses)
@@ -280,7 +280,7 @@ namespace ServerTools
                             string _phrase609;
                             if (!Phrases.Dict.TryGetValue(609, out _phrase609))
                             {
-                                _phrase609 = "{PlayerName} you can only use /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                _phrase609 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
                             _phrase609 = _phrase609.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase609 = _phrase609.Replace("{DelayBetweenUses}", DelayBetweenUses.ToString());
@@ -313,7 +313,7 @@ namespace ServerTools
             int y = (int)yf;
             int z = (int)zf;
             SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, x, y, z), (ClientInfo)null);
-            PersistentContainer.Instance.Players[_cInfo.playerId, false].LastSetHome2 = DateTime.Now;
+            PersistentContainer.Instance.Players[_cInfo.playerId, false].LastSetHome = DateTime.Now;
             PersistentContainer.Instance.Save();
         }
 

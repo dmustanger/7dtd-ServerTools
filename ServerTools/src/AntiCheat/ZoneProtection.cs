@@ -25,7 +25,6 @@ namespace ServerTools
         public static SortedDictionary<int, Vector3> Victim = new SortedDictionary<int, Vector3>();
         public static SortedDictionary<int, int> Forgive = new SortedDictionary<int, int>();
         public static List<int> PvEFlag = new List<int>();
-        public static List<int> PvEFlag2 = new List<int>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
         private static System.Timers.Timer t = new System.Timers.Timer();

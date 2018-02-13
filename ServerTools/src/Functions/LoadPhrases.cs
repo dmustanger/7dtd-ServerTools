@@ -179,7 +179,7 @@ namespace ServerTools
                 string _phrase13;
                 if (!Dict.TryGetValue(13, out _phrase13))
                 {
-                    _phrase13 = "{PlayerName} you can only use /home once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase13 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"13\" Phrase=\"{0}\" />", _phrase13));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -650,7 +650,7 @@ namespace ServerTools
                 string _phrase609;
                 if (!Dict.TryGetValue(609, out _phrase609))
                 {
-                    _phrase609 = "{PlayerName} you can only use /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase609 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"609\" Phrase=\"{0}\" />", _phrase609));
                 string _phrase610;

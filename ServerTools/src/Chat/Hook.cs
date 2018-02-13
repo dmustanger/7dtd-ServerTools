@@ -11,7 +11,6 @@ namespace ServerTools
         public static bool SpecialPlayerNameColoring = false;
         public static bool NormalPlayerNameColoring = false;
         public static bool ReservedCheck = false;
-        public static bool DonorOnly = false;
         public static string AdminColor = "[FF0000]";
         public static string ModColor = "[008000]";
         public static string DonColor1 = "[009000]";
@@ -344,7 +343,7 @@ namespace ServerTools
                     }
                     if (_message == "sethome2")
                     {
-                        if (TeleportHome.SetHome2Enabled & DonorOnly & ReservedSlots.IsEnabled)
+                        if (TeleportHome.SetHome2Enabled && TeleportHome.SetHome2DonorOnly && ReservedSlots.IsEnabled)
                         {
                             if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
@@ -359,11 +358,11 @@ namespace ServerTools
                                 {
                                     if (_announce)
                                     {
-                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
                                     }
                                     else
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired Command is unavailable..[-]", Config.ChatColor), "Server", false, "ServerTools", false));
                                         return false;
                                     }
                                 }
@@ -372,16 +371,16 @@ namespace ServerTools
                             {
                                 if (_announce)
                                 {
-                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}You do not have a reserved status on this server. /sethome2 is unavailable.[-]", _message), _playerName, false, "ServerTools", true);
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", _message), _playerName, false, "ServerTools", true);
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You do not have a reserved status on this server. /sethome2 is unavailable.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                             }
                         }
-                        else if (TeleportHome.SetHome2Enabled & !DonorOnly)
+                        else if (TeleportHome.SetHome2Enabled && !TeleportHome.SetHome2DonorOnly)
                         {
                             TeleportHome.SetHome2(_cInfo, _playerName, _announce);
                             return false;
@@ -400,7 +399,7 @@ namespace ServerTools
                     }
                     if (_message == "home2")
                     {
-                        if (TeleportHome.SetHome2Enabled & DonorOnly & ReservedSlots.IsEnabled)
+                        if (TeleportHome.SetHome2Enabled && TeleportHome.SetHome2DonorOnly && ReservedSlots.IsEnabled)
                         {
                             if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
@@ -415,11 +414,11 @@ namespace ServerTools
                                 {
                                     if (_announce)
                                     {
-                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
                                     }
                                     else
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
                                         return false;
                                     }
                                 }
@@ -428,16 +427,16 @@ namespace ServerTools
                             {
                                 if (_announce)
                                 {
-                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}You do not have a reserved status on this server. /home2 is unavailable.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}You are not on the reserved list, please donate or contact an admin.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You do not have a reserved status on this server. /home2 is unavailable.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are not on the reserved list, please donate or contact an admin.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                             }
                         }
-                        else if (TeleportHome.SetHome2Enabled & !DonorOnly)
+                        else if (TeleportHome.SetHome2Enabled && !TeleportHome.SetHome2DonorOnly)
                         {
                             TeleportHome.TeleHome2(_cInfo, _playerName, _announce);
                             return false;
@@ -456,7 +455,7 @@ namespace ServerTools
                     }
                     if (_message == "delhome2")
                     {
-                        if (TeleportHome.SetHome2Enabled & DonorOnly & ReservedSlots.IsEnabled)
+                        if (TeleportHome.SetHome2Enabled && TeleportHome.SetHome2DonorOnly && ReservedSlots.IsEnabled)
                         {
                             if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
@@ -474,23 +473,34 @@ namespace ServerTools
                                         return false;
                                     }
                                 }
-                            }
-                        }
-                        else if (TeleportHome.SetHome2Enabled & !DonorOnly)
-                        {
-                            TeleportHome.DelHome2(_cInfo, _playerName, _announce);
-                            return false;
-                        }
-                        else
-                        {
-                            if (_announce)
-                            {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Delhome2 is not enabled.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                else
+                                {
+                                    if (_announce)
+                                    {
+                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                    }
+                                    else
+                                    {
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                    }
+                                }
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Delhome2 is not enabled.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                if (_announce)
+                                {
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}You are not on the reserved list, please donate or contact an admin.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are not on the reserved list, please donate or contact an admin.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                }
                             }
+                        }
+                        else if (TeleportHome.SetHome2Enabled && !TeleportHome.SetHome2DonorOnly)
+                        {
+                            TeleportHome.DelHome2(_cInfo, _playerName, _announce);
+                            return false;
                         }
                     }
                     if (AdminChat.IsEnabled)

@@ -12,8 +12,6 @@ namespace ServerTools
         [OptionalField]
         private string homeposition2;
         [OptionalField]
-        private DateTime lastsethome2;
-        [OptionalField]
         private DateTime respawnTime;
         [OptionalField]
         private DateTime lastTravel;
@@ -73,18 +71,6 @@ namespace ServerTools
             set
             {
                 homeposition2 = value;
-            }
-        }
-
-        public DateTime LastSetHome2
-        {
-            get
-            {
-                return lastsethome2;
-            }
-            set
-            {
-                lastsethome2 = value;
             }
         }
 
