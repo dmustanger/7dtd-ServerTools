@@ -5,12 +5,12 @@ Server tools for 7 days to die dedicated servers<br>
 <br>
 Download and extract the files.<br>
 <br>
-Copy or extract the ServerTools folder and place it in the Mods folder found in the root directory of your server. If no mods folder exists, make one.<br>
+Copy the Mods folder to the root directory of your server.<br>
 <br>
 Start the server.<br>
 <br>
-The mod will auto create the config file in the server's world save directory.<br>
-Enable each part of the mod you want via ..\your world save directory\ServerTools\ServerToolsConfig.xml<br>
+The mod will auto create the config file in the game save directory.<br>
+Enable each part of the mod you want via ..\your game save directory\ServerTools\ServerToolsConfig.xml<br>
 Once a module is enabled, if it has a config it will auto create them in the ServerTools folder.<br>
 <br>
 Go to the releases tab and check for the latest files https://github.com/dmustanger/7dtd-ServerTools/releases <br>
@@ -19,7 +19,13 @@ Go to the releases tab and check for the latest files https://github.com/dmustan
 <br>
 
 # Current Features
-Travel system for players to teleport to set locations when standing in the right zone<br>
+Special logs are created when a player is detected by an anticheat module.<br>
+<br>
+Logs are automatically deleted if too old. Configured via config.<br>
+<br>
+Zone Protection for PvE only zones. Killers can be auto kicked, banned, jailed.<br>
+<br>
+Travel system for players to teleport to set locations when standing in the right zone.<br>
 <br>
 Multiple anticheat systems. One for flying above ground, one for below ground. Player stats monitor. Player position logger. Player inventory logger. Player IP logger. Family share account detection, exception list available.<br>
 Hatch Elevator detector, stuns and breaks leg.<br>
@@ -64,7 +70,7 @@ Custom chat commands with custom color. Add your own commands via config. All co
 <br>
 /Killme with adjustable timer via config.<br>
 <br>
-/home /sethome /delhome with adjustable timer for /home via config.<br>
+Multiple home points via chat commands /home /sethome /delhome /home2 /sethom2 /delhome 2 and with adjustable timer for /home and /home 2 via config.<br>
 <br>
 High ping kicker with ping immunity. Can add players to the immunity list via config or console command. Can also set it so that it takes samples before a kick occurs. If you set SamplesNeeded to 2 in the config, a player would have to have a high ping for 2 checks before the player is kicked.<br>
 <br>
@@ -76,7 +82,7 @@ Chat logger. Saves all ingame chat to a log file in the game save directory.<br>
 <br>
 Bad word filter. Replaces bad words with "*****". Can add bad words via config.<br>
 <br>
-Motd adjustable via config.<br>
+Motd adjustable via Motd.xml.<br>
 <br>
 InfoTicker/Scrolling messages adjustable via config.<br>
 <br>
