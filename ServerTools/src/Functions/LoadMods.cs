@@ -200,6 +200,10 @@
             {
                 VoteReward.Unload();
             }
+            if (VoteReward.IsEnabled)
+            {
+                VoteReward.RandomList();
+            }
             if (!Watchlist.IsRunning && Watchlist.IsEnabled)
             {
                 Watchlist.Load();

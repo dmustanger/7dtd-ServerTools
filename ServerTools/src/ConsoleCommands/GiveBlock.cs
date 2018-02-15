@@ -13,10 +13,10 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. giveblock <steamId> <blockId> <count>\n" +
-                "  2. giveblock all <blockId> <count>\n" +
-                "1. Gives a player the block(s) in their inventory unless full. Drops to the ground when full.\n"+
-                "2. Gives all players the block(s) in their inventory unless full. Drops to the ground when full.\n";
+                "  1. giveblock <steamId> <blockId or name> <count>\n" +
+                "  2. giveblock all <blockId or name> <count>\n" +
+                "1. Gives a player the block(s) to their inventory unless full. Drops to the ground when full.\n"+
+                "2. Gives all players the block(s) to their inventory unless full. Drops to the ground when full.\n";
         }
         public override string[] GetCommands()
         {
@@ -26,15 +26,18 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count > 4)
+                if (_params.Count > 3)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 4, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 3, found {0}", _params.Count));
                     return;
                 }
-                if (_params[0].Length != 3 || _params[0].Length != 17)
+                if (_params[0].Length != 3)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Can not give block to SteamId: Invalid SteamId {0}", _params[0]));
-                    return;
+                    if (_params[0].Length != 17)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Can not give block to SteamId: Invalid SteamId {0}", _params[0]));
+                        return;
+                    }
                 }
                 if (_params[1].Length < 1)
                 {
@@ -48,8 +51,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    string all = _params[0];
-                    if (all == "all")
+                    if (_params[0] == "all" || _params[0] == "ALL" || _params[0] == "All")
                     {
                         List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                         foreach (var _cInfo in _cInfoList)
@@ -104,7 +106,7 @@ namespace ServerTools
                                 world.SpawnEntityInWorld(entityItem);
                                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.ChatColor, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false));
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.ChatColor, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false);
                             }
                             else
                             {
@@ -112,7 +114,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    else if (_params[0].Length == 17)
+                    else
                     {
                         ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_params[0]);
                         if (_cInfo != null)

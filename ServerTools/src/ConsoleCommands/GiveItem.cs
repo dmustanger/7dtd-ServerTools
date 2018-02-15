@@ -16,9 +16,9 @@ namespace ServerTools
             return "Usage:\n" +
                 "  1. giveitem <steamId> <itemId or name> <count> <quality>\n" +
                 "  2. giveitem all <itemId or name> <count> <quality>\n " +
-                "1. Gives a player the item(s) in their inventory unless full. Drops to the ground when full.\n" +
-                "2. Gives all players the item(s) in their inventory unless full. Drops to the ground when full.\n" +
-                "Note: Items with no quality require a 1\n";
+                "1. Gives a player the item(s) to their inventory unless full. Drops to the ground when full.\n" +
+                "2. Gives all players the item(s) to their inventory unless full. Drops to the ground when full.\n" +
+                "*Note Item(s) with no quality require a 1*\n";
         }
         public override string[] GetCommands()
         {
@@ -28,15 +28,18 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count != 4)
+                if (_params.Count > 4)
                 {
                     SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 4, found {0}", _params.Count));
                     return;
                 }
-                if (_params[0].Length != 3 || _params[0].Length != 17)
+                if (_params[0].Length != 3)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Can not give item to SteamId: Invalid SteamId {0}", _params[0]));
-                    return;
+                    if (_params[0].Length != 17)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Can not give item to SteamId: Invalid SteamId {0}", _params[0]));
+                        return;
+                    }
                 }
                 if (_params[1].Length < 1)
                 {
@@ -48,15 +51,14 @@ namespace ServerTools
                     SdtdConsole.Instance.Output(string.Format("Can not give item: Invalid count {0}", _params[2]));
                     return;
                 }
-                if (_params[2].Length < 1 || _params[2].Length > 3)
+                if (_params[3].Length < 1 || _params[3].Length > 3)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Can not give item: Invalid quality {0}", _params[2]));
+                    SdtdConsole.Instance.Output(string.Format("Can not give item: Invalid quality {0}", _params[3]));
                     return;
                 }
                 else
                 {
-                    string all = _params[0];
-                    if (all == "all")
+                    if (_params[0] == "all" || _params[0] == "ALL" || _params[0] == "All")
                     {
                         List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                         foreach (var _cInfo in _cInfoList)
@@ -65,7 +67,7 @@ namespace ServerTools
                             int _count;
                             if (int.TryParse(_params[2], out _count))
                             {
-                                if (_count > 0 & _count < 10000)
+                                if (_count > 0 & _count < 10001)
                                 {
                                     count = _count;
                                 }
@@ -77,7 +79,7 @@ namespace ServerTools
 
                             if (int.TryParse(_params[3], out quality))
                             {
-                                if (quality > 0 & quality <= 600)
+                                if (quality > 0 & quality < 601)
                                 {
                                     min = quality;
                                     max = quality;
@@ -126,15 +128,16 @@ namespace ServerTools
                                 world.SpawnEntityInWorld(entityItem);
                                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.ChatColor, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false));
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.ChatColor, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false);
                             }
                             else
                             {
                                 SdtdConsole.Instance.Output(string.Format("Player with steamdId {0} is not spawned", _params[1]));
                             }
+
                         }
                     }
-                    else if (_params[0].Length == 17)
+                    else
                     {
                         ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_params[0]);
                         if (_cInfo != null)
@@ -155,7 +158,7 @@ namespace ServerTools
 
                             if (int.TryParse(_params[3], out quality))
                             {
-                                if (quality > 0 & quality <= 600)
+                                if (quality > 0 & quality < 601)
                                 {
                                     min = quality;
                                     max = quality;

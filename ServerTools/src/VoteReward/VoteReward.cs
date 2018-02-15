@@ -11,14 +11,37 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static bool IsRunning = false;
+        public static bool RandomListRunning = true;
+        public static int RewardCount = 1;
         private const string file = "VoteReward.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        public static SortedDictionary<string, int[]> voteRewardList = new SortedDictionary<string, int[]>();
+        private static SortedDictionary<string, int[]> dict = new SortedDictionary<string, int[]>();
+        public static SortedDictionary<string, int[]> randomVoteReward = new SortedDictionary<string, int[]>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
         public static string YourVotingSite = ("https://7daystodie-servers.com/server/12345");
         public static string APIKey = ("xxxxxxxx");
         public static int DelayBetweenRewards = 24;
+        public static System.Random rnd = new System.Random();
+
+        private static List<string> list
+        {
+            get { return new List<string>(dict.Keys); }
+        }
+
+        public static void RandomList()
+        {
+            string _randomItem = list.RandomObject();
+            int[] _values;
+            if (dict.TryGetValue(_randomItem, out _values))
+            {
+                randomVoteReward.Add(_randomItem, _values);
+                if (randomVoteReward.Count < RewardCount)
+                {
+                    RandomList();
+                }
+            }
+        }
 
         public static void Load()
         {
@@ -56,7 +79,7 @@ namespace ServerTools
             {
                 if (childNode.Name == "Rewards")
                 {
-                    voteRewardList.Clear();
+                    dict.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -119,10 +142,10 @@ namespace ServerTools
                             continue;
                         }
                         string item = _line.GetAttribute("item");
-                        if (!voteRewardList.ContainsKey(item))
+                        if (!dict.ContainsKey(item))
                         {
                             int[] _c = new int[] { _countMin, _countMax, _qualityMin, _qualityMax };
-                            voteRewardList.Add(item, _c);
+                            dict.Add(item, _c);
                         }
                     }
                 }
@@ -142,9 +165,9 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<RewardItems>");
                 sw.WriteLine("    <Rewards>");
-                if (voteRewardList.Count > 0)
+                if (dict.Count > 0)
                 {
-                    foreach (KeyValuePair<string, int[]> kvp in voteRewardList)
+                    foreach (KeyValuePair<string, int[]> kvp in dict)
                     {
                         sw.WriteLine(string.Format("        <reward item=\"{0}\" countMin=\"{1}\" countMax=\"{2}\" qualityMin=\"{3}\" qualityMax=\"{4}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
                     }
@@ -240,17 +263,19 @@ namespace ServerTools
                 if (VoteResult == "1")
                 {
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Thank you for your vote {1}. You can vote and receive another reward in {2} hours[-]", Config.ChatColor, _cInfo.playerName, DelayBetweenRewards), "Server", false, "", false));
-                    foreach (KeyValuePair<string, int[]> kvp in voteRewardList)
+                    foreach (KeyValuePair<string, int[]> kvp in randomVoteReward)
                     {
-                        System.Random rnd = new System.Random();
                         int count = rnd.Next(kvp.Value[0], kvp.Value[1]);
                         int quality = rnd.Next(kvp.Value[2], kvp.Value[3]);
+                        if (quality < 1 || quality > 600)
+                        {
+                            quality = rnd.Next(1, 600);
+                        }
 
                         ItemValue itemValue;
                         if (!ItemClass.ItemNames.Contains(kvp.Key))
                         {
                             Log.Out(string.Format("[SERVERTOOLS]Unable to find reward item {0}", kvp.Key));
-                            continue;
                         }
                         else
                         {
@@ -258,7 +283,6 @@ namespace ServerTools
                             if (Equals(itemValue, ItemValue.None))
                             {
                                 Log.Out(string.Format("[SERVERTOOLS]Unable to find reward item {0}", kvp.Key));
-                                continue;
                             }
                             else
                             {
@@ -278,7 +302,7 @@ namespace ServerTools
                                     world.SpawnEntityInWorld(entityItem);
                                     _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                     world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory. If your bag is full, check the ground[-]", Config.ChatColor, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward item was sent to your inventory.[-]", Config.ChatColor), "Server", false, "", false));
                                 }
                                 else
                                 {
@@ -287,6 +311,8 @@ namespace ServerTools
                             }
                         }
                     }
+                    randomVoteReward.Clear();
+                    RandomList();
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now;
                     PersistentContainer.Instance.Save();
                 }
