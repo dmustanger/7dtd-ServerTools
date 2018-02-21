@@ -4,7 +4,7 @@ Updated for v.6.4
 v.6.4
 Added ServerTools alias to console command results when help command is used. Alias is st- . All command entries starting with st- are from ServerTools
 Added a HowToSetup.xml explaining how to use each tool with in ServerTools. Can be found in the same folder as the ServerToolsConfig.xml file
-Added WeatherVote system. Start a vote to change the weather by typing /weather. Vote by typing /normal, /rain, or /snow in chat. Snow and rain will
+Added WeatherVote system. Start a vote to change the weather by typing /weather. Vote by typing /clear, /rain, or /snow in chat. Snow and rain will
 be a random intensity and stops after thirty minutes automatically. In console, type weather snow 0 or weather rain 0 to stop snow or rain.
 Added custom command delays for first ten entries in CustomCommands.xml. You can add more command after ten entries but their delay will not work
 Added option to ZoneProtection to disable the in game message warning when entering and exiting a protected zone
