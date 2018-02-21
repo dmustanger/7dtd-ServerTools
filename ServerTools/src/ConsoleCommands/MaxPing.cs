@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "Sets the Max Ping limit for the server.";
+            return "[ServerTools]-Sets the Max Ping limit for the server.";
         }
         public override string GetHelp()
         {
@@ -15,7 +15,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "maxping", string.Empty };
+            return new string[] { "st-MaxPing", "maxping", string.Empty };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

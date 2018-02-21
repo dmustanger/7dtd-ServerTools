@@ -4,13 +4,13 @@
     {
         public static void Load()
         {
-            if (AutoRestart.IsEnabled)
+            if (AutoShutdown.IsEnabled)
             {
-                AutoRestart.TimerStart();
+                AutoShutdown.TimerStart();
             }
-            if (!AutoRestart.IsEnabled)
+            if (!AutoShutdown.IsEnabled)
             {
-                AutoRestart.TimerStop();
+                AutoShutdown.TimerStop();
             }
             if (AutoSaveWorld.IsRunning && !AutoSaveWorld.IsEnabled)
             {
@@ -105,6 +105,10 @@
             if (!HighPingKicker.IsRunning && HighPingKicker.IsEnabled)
             {
                 HighPingKicker.Load();
+            }
+            if (HowToSetup.IsEnabled)
+            {
+                HowToSetup.HowTo();
             }
             if (InfoTicker.IsRunning && !InfoTicker.IsEnabled)
             {

@@ -96,3 +96,12 @@ C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.3\ServerTools\obj
 C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.3\ServerTools\obj\Release\ServerTools.Properties.Resources.resources
 C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.3\ServerTools\obj\Release\ServerTools.csproj.GenerateResource.Cache
 C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.3\ServerTools\obj\Release\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.4\bin\Mods\ServerTools\ChatCommandExamples.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.4\bin\Mods\ServerTools\ConsoleCommandExamples.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.4\bin\Mods\ServerTools\ModInfo.xml
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.4\bin\Mods\ServerTools\Changelog.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.4\bin\Mods\ServerTools\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.4\ServerTools\obj\Release\ServerTools.csprojResolveAssemblyReference.cache
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.4\ServerTools\obj\Release\ServerTools.Properties.Resources.resources
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.4\ServerTools\obj\Release\ServerTools.csproj.GenerateResource.Cache
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.4\ServerTools\obj\Release\ServerTools.dll

@@ -9,7 +9,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "Puts a player in jail.";
+            return "[ServerTools]-Puts a player in jail.";
         }
         public override string GetHelp()
         {
@@ -23,7 +23,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "jail", string.Empty };
+            return new string[] { "st-Jail", "jail", string.Empty };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -97,7 +97,7 @@ namespace ServerTools
                                     _phrase500 = "{PlayerName} you have been sent to jail.";
                                 }
                                 _phrase500 = _phrase500.Replace("{PlayerName}", _cInfo.playerName);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase500), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase500), "Server", false, "", false));
                             }
                         }
                         SdtdConsole.Instance.Output(string.Format("You have put {0} in jail. ", _params[1]));
@@ -156,7 +156,7 @@ namespace ServerTools
                                     _phrase501 = "{PlayerName} you have been released from jail.";
                                 }
                                 _phrase501 = _phrase501.Replace("{PlayerName}", _cInfo.playerName);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase501), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase501), "Server", false, "", false));
                                 PersistentContainer.Instance.Players[_params[1], false].IsRemovedFromJail = true;
                             }
                         }

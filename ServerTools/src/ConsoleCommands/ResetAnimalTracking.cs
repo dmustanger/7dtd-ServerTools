@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "Reset a player's animal tracking status so they can track another animal.";
+            return "[ServerTools]-Reset a player's animal tracking status so they can track another animal.";
         }
 
         public override string GetHelp()
@@ -20,7 +20,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "animaltracking", "at" };
+            return new string[] { "st-AnimalTracking", "animaltracking", "at" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -48,6 +48,7 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.Players[_params[1], true].LastAnimals = DateTime.Now.AddDays(-2);
                         PersistentContainer.Instance.Save();
+                        SdtdConsole.Instance.Output("Animal tracking delay reset.");
                     }
                 }
                 else

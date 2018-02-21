@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "Gives the starting items from the list directly to a players inventory. Drops to the ground if full.";
+            return "[ServerTools]-Gives the starting items from the list directly to a players inventory. Drops to the ground if full.";
         }
         public override string GetHelp()
         {
@@ -18,7 +18,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "givestartingitems", "gsi" };
+            return new string[] { "st-GiveStartingItems", "givestartingitems", "gsi" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -83,6 +83,7 @@ namespace ServerTools
                                     world.SpawnEntityInWorld(entityItem);
                                     _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                     world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+                                    SdtdConsole.Instance.Output(string.Format("Spawned starting item {0} for {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
                                     Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
                                 }
                                 PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = mapSeed;

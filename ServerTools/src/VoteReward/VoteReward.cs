@@ -31,14 +31,20 @@ namespace ServerTools
 
         public static void RandomList()
         {
-            string _randomItem = list.RandomObject();
-            int[] _values;
-            if (dict.TryGetValue(_randomItem, out _values))
+            if (randomVoteReward.Count < RewardCount)
             {
-                randomVoteReward.Add(_randomItem, _values);
-                if (randomVoteReward.Count < RewardCount)
+                string _randomItem = list.RandomObject();
+                int[] _values;
+                if (!randomVoteReward.ContainsKey(_randomItem))
                 {
-                    RandomList();
+                    if (dict.TryGetValue(_randomItem, out _values))
+                    {
+                        randomVoteReward.Add(_randomItem, _values);
+                        if (randomVoteReward.Count < RewardCount)
+                        {
+                            RandomList();
+                        }
+                    }
                 }
             }
         }
@@ -241,7 +247,7 @@ namespace ServerTools
                         _phrase602 = _phrase602.Replace("{DelayBetweenRewards}", DelayBetweenRewards.ToString());
                         _phrase602 = _phrase602.Replace("{TimeRemaining}", _timeleft.ToString());
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase602), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase602), "Server", false, "", false));
                         }
                     }
                 }
@@ -258,11 +264,11 @@ namespace ServerTools
                 VoteResult = NewVote.DownloadString(VoteUrl);
                 if (VoteResult == "0")
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your vote has not been located {1}. Make sure you voted @ {2} and try again.[-]", Config.ChatColor, _cInfo.playerName, YourVotingSite), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your vote has not been located {1}. Make sure you voted @ {2} and try again.[-]", Config.ChatResponseColor, _cInfo.playerName, YourVotingSite), "Server", false, "", false));
                 }
                 if (VoteResult == "1")
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Thank you for your vote {1}. You can vote and receive another reward in {2} hours[-]", Config.ChatColor, _cInfo.playerName, DelayBetweenRewards), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Thank you for your vote {1}. You can vote and receive another reward in {2} hours[-]", Config.ChatResponseColor, _cInfo.playerName, DelayBetweenRewards), "Server", false, "", false));
                     foreach (KeyValuePair<string, int[]> kvp in randomVoteReward)
                     {
                         int count = rnd.Next(kvp.Value[0], kvp.Value[1]);
@@ -302,7 +308,7 @@ namespace ServerTools
                                     world.SpawnEntityInWorld(entityItem);
                                     _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                     world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward item was sent to your inventory.[-]", Config.ChatColor), "Server", false, "", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward item was sent to your inventory.[-]", Config.ChatResponseColor), "Server", false, "", false));
                                 }
                                 else
                                 {

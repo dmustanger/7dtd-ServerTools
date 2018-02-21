@@ -9,7 +9,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "Turn your admin chat color and prefix off or on.";
+            return "[ServerTools]-Turn your admin chat color and prefix off or on.";
         }
 
         public override string GetHelp()
@@ -23,7 +23,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "adminchatcolor", "acc" };
+            return new string[] { "st-AdminChatColor", "adminchatcolor", "acc" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

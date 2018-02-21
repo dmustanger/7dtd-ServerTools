@@ -135,7 +135,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine(string.Format("        <!-- Player SteamId=\"123456\" Name=\"foobar.\" Expires=\"10/29/2050 7:30:00 AM\" / -->"));
+                    sw.WriteLine(string.Format("        <!-- Player SteamId=\"76561191234567891\" Name=\"foobar.\" Expires=\"10/29/2050 7:30:00 AM\" / -->"));
                 }
                 sw.WriteLine("    </Players>");
                 sw.WriteLine("</ReservedSlots>");

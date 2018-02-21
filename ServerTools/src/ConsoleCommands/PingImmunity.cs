@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "Add, Remove and View steamids on the PingImmunity list.";
+            return "[ServerTools]-Add, Remove and View steamids on the PingImmunity list.";
         }
 
         public override string GetHelp()
@@ -23,7 +23,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "pingimmunity", "pi" };
+            return new string[] { "st-PingImmunity", "pingimmunity", "pi" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

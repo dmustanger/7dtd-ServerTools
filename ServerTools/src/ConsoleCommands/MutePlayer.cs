@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "Mutes a players chat.";
+            return "[ServerTools]-Mutes a players chat.";
         }
         public override string GetHelp()
         {
@@ -17,7 +17,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "mute", string.Empty };
+            return new string[] { "st-Mute", "mute", string.Empty };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

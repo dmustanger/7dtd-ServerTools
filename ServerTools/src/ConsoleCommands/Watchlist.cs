@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "Add, Remove and View steamids on the Watchlist.";
+            return "[ServerTools]-Add, Remove and View steamids on the Watchlist.";
         }
 
         public override string GetHelp()
@@ -23,7 +23,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "watchlist", "wl" };
+            return new string[] { "st-WatchList", "watchlist", "wl" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

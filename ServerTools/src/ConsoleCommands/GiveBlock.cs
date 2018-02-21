@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "Gives a block directly to a players inventory. Drops to the ground if full.";
+            return "[ServerTools]-Gives a block directly to a players inventory. Drops to the ground if full.";
         }
         public override string GetHelp()
         {
@@ -18,10 +18,12 @@ namespace ServerTools
                 "1. Gives a player the block(s) to their inventory unless full. Drops to the ground when full.\n"+
                 "2. Gives all players the block(s) to their inventory unless full. Drops to the ground when full.\n";
         }
+
         public override string[] GetCommands()
         {
-            return new string[] { "giveblock", "gb" };
+            return new string[] { "st-GiveBlock", "giveblock", "gb" };
         }
+
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
             try
@@ -84,12 +86,6 @@ namespace ServerTools
                                 itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, 1, 1, true);
                             }
 
-                            if (Equals(itemValue, ItemValue.None))
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", _params[1]));
-                                return;
-                            }
-
                             World world = GameManager.Instance.World;
                             if (world.Players.dict[_cInfo.entityId].IsSpawned())
                             {
@@ -106,7 +102,8 @@ namespace ServerTools
                                 world.SpawnEntityInWorld(entityItem);
                                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.ChatColor, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false);
+                                SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.ChatResponseColor, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false);
                             }
                             else
                             {
@@ -169,7 +166,7 @@ namespace ServerTools
                                 world.SpawnEntityInWorld(entityItem);
                                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.ChatColor, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.ChatResponseColor, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false));
                             }
                             else
                             {

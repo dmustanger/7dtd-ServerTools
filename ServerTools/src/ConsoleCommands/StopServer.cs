@@ -13,7 +13,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "Stops the game server with a warning countdown every minute.";
+            return "[ServerTools]-Stops the game server with a warning countdown every minute.";
         }
 
         public override string GetHelp()
@@ -24,7 +24,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "stopserver", string.Empty };
+            return new string[] { "st-StopServer", "stopserver", string.Empty };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

@@ -9,7 +9,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "Gives a item directly to a players inventory. Drops to the ground if full.";
+            return "[ServerTools]-Gives a item directly to a players inventory. Drops to the ground if full.";
         }
         public override string GetHelp()
         {
@@ -22,7 +22,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "giveitem", "gi" };
+            return new string[] { "st-GiveItem", "giveitem", "gi" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -93,24 +93,21 @@ namespace ServerTools
                             {
                                 int calc = (_itemId + 4096);
                                 itemId = calc;
-                                itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, min, max, true);
+                                itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, true);
                             }
                             else
                             {
-                                if (!ItemClass.ItemNames.Contains(_params[1]))
+                                ItemValue _itemValue = ItemClass.GetItem(_params[1], true);
+                                if (_itemValue.type == ItemValue.None.type)
                                 {
                                     SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", _params[1]));
                                     return;
                                 }
-
-                                itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, min, max, true);
-                            }
-
-                            if (Equals(itemValue, ItemValue.None))
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", _params[1]));
-                                return;
-                            }
+                                else
+                                {
+                                    itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, true);
+                                }
+                            }                        
 
                             World world = GameManager.Instance.World;
                             if (world.Players.dict[_cInfo.entityId].IsSpawned())
@@ -128,7 +125,8 @@ namespace ServerTools
                                 world.SpawnEntityInWorld(entityItem);
                                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.ChatColor, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false);
+                                SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.ChatResponseColor, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false);
                             }
                             else
                             {
@@ -176,19 +174,16 @@ namespace ServerTools
                             }
                             else
                             {
-                                if (!ItemClass.ItemNames.Contains(_params[1]))
+                                ItemValue _itemValue = ItemClass.GetItem(_params[1], true);
+                                if (_itemValue.type == ItemValue.None.type)
                                 {
                                     SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", _params[1]));
                                     return;
                                 }
-
-                                itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, min, max, true);
-                            }
-
-                            if (Equals(itemValue, ItemValue.None))
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", _params[1]));
-                                return;
+                                else
+                                {
+                                    itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, min, max, true);
+                                }
                             }
 
                             World world = GameManager.Instance.World;
@@ -207,7 +202,7 @@ namespace ServerTools
                                 world.SpawnEntityInWorld(entityItem);
                                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.ChatColor, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.ChatResponseColor, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false));
                             }
                             else
                             {

@@ -452,7 +452,7 @@ namespace ServerTools
                 string _phrase301;
                 if (!Dict.TryGetValue(301, out _phrase301))
                 {
-                    _phrase301 = "Next 7th day is in {DaysUntil7} days";
+                    _phrase301 = "Next horde night is in {DaysUntilHorde} days";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"301\" Phrase=\"{0}\" />", _phrase301));
                 string _phrase302;
@@ -482,7 +482,7 @@ namespace ServerTools
                 string _phrase306;
                 if (!Dict.TryGetValue(306, out _phrase306))
                 {
-                    _phrase306 = "Next 7th day is today";
+                    _phrase306 = "Next horde night is today";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"306\" Phrase=\"{0}\" />", _phrase306));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -659,6 +659,42 @@ namespace ServerTools
                     _phrase610 = "{PlayerName} your home2 has been removed.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"610\" Phrase=\"{0}\" />", _phrase610));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ********************* WeatherVote ********************** -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase611;
+                if (!Dict.TryGetValue(611, out _phrase611))
+                {
+                    _phrase611 = "A vote to change the weather has begun and will close in 30 seconds. Type /normal, /rain or /snow to cast your vote.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"611\" Phrase=\"{0}\" />", _phrase611));
+                string _phrase612;
+                if (!Dict.TryGetValue(612, out _phrase612))
+                {
+                    _phrase612 = "Weather vote complete but no votes were cast. No changes were made.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"612\" Phrase=\"{0}\" />", _phrase612));
+                string _phrase613;
+                if (!Dict.TryGetValue(613, out _phrase613))
+                {
+                    _phrase613 = "Weather vote complete. Most votes went to {weather}. The next weather vote can be started in {VoteDelay} minutes.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"613\" Phrase=\"{0}\" />", _phrase613));
+                string _phrase614;
+                if (!Dict.TryGetValue(614, out _phrase614))
+                {
+                    _phrase614 = "Weather vote was a tie. No changes were made.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"614\" Phrase=\"{0}\" />", _phrase614));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ******************** CustomCommands ******************** -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase615;
+                if (!Dict.TryGetValue(615, out _phrase615))
+                {
+                    _phrase615 = "{PlayerName} you can only use {Command} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"615\" Phrase=\"{0}\" />", _phrase615));
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();

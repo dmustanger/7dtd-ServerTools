@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "Reset a players first claim block status.";
+            return "[ServerTools]-Reset a players first claim block status.";
         }
 
         public override string GetHelp()
@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "firstclaimblock", "fcb" };
+            return new string[] { "st-FirstClaimBlock", "firstclaimblock", "fcb" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -47,6 +47,7 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.Players[_params[1], true].WorldSeedFirstClaim = 1;
                         PersistentContainer.Instance.Save();
+                        SdtdConsole.Instance.Output("First claim block reset.");
                     }
                 }
                 else

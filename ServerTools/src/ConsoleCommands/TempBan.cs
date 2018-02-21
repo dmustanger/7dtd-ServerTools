@@ -11,7 +11,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "Ban a player temporarily.";
+            return "[ServerTools]-Ban a player temporarily.";
         }
 
         public override string GetHelp()
@@ -23,7 +23,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "tempban", "tb" };
+            return new string[] { "st-TempBan", "tempban", "tb" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

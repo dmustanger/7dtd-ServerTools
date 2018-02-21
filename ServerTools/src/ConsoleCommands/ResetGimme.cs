@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "Reset a player's gimme status so they can receive another gimme.";
+            return "[ServerTools]-Reset a player's gimme status so they can receive another gimme.";
         }
 
         public override string GetHelp()
@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "gimme" };
+            return new string[] { "st-Gimme", "gimme" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -47,6 +47,7 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.Players[_params[1], true].LastGimme = DateTime.Now.AddDays(-2);
                         PersistentContainer.Instance.Save();
+                        SdtdConsole.Instance.Output("Gimme delay reset.");
                     }
                 }
                 else

@@ -53,13 +53,13 @@ namespace ServerTools
                 {
                     if (_params.Count == 1)
                     {
-                        ClientInfo ci = ConsoleHelper.ParseParamIdOrName(_params[0]);
-                        if (ci == null)
+                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
+                        if (_cInfo == null)
                         {
                             SdtdConsole.Instance.Output("Playername or entity/steamid id not found.");
                             return;
                         }
-                        EntityPlayer ep = GameManager.Instance.World.Players.dict[ci.entityId];
+                        EntityPlayer ep = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                         SdtdConsole.Instance.Output("UC: entity_id=" + ep.entityId + " isUnderGround=" + getPlayerUnderground(ep));
                     }
                     else
@@ -196,41 +196,18 @@ namespace ServerTools
                                                     }
                                                     if (Announce)
                                                     {
-                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been detected flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
+                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been detected flying underground[-]", Config.ChatResponseColor, _cInfo.playerName), "Server", false, "", false);
                                                         if (_flag == 4)
                                                         {
                                                             Flag.Remove(_cInfo.playerId);
                                                             if (Admin.PermissionLevel <= AdminLevel && ep.entityId != _cInfo.entityId)
                                                             {
-                                                                SdtdConsole.Instance.ExecuteSync(string.Format("pm {0} \"{1}Detected {2} flying underground @ {3} {4} {5}\"", _cInfo.playerId, Config.ChatColor, ep.EntityName, x, y, z), (ClientInfo)null);
+                                                                SdtdConsole.Instance.ExecuteSync(string.Format("pm {0} \"{1}Detected {2} flying underground @ {3} {4} {5}\"", _cInfo.playerId, Config.ChatResponseColor, ep.EntityName, x, y, z), (ClientInfo)null);
                                                             }
                                                         }
                                                     }
-                                                    if (JailEnabled)
-                                                    {
-                                                        Flag.Remove(_cInfo.playerId);
-                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been jailed for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
-                                                        SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0}", _cInfo.playerId), (ClientInfo)null);
-                                                    }
-                                                    if (KillPlayer)
-                                                    {
-                                                        Flag.Remove(_cInfo.playerId);
-                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been killed for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
-                                                        SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), (ClientInfo)null);
-                                                    }
-                                                    if (KickEnabled)
-                                                    {
-                                                        Flag.Remove(_cInfo.playerId);
-                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been kicked for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
-                                                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for flying\"", _cInfo.playerId), (ClientInfo)null);
-                                                    }
-                                                    if (BanEnabled)
-                                                    {
-                                                        Flag.Remove(_cInfo.playerId);
-                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been banned for flying underground[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false);
-                                                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for flying\"", _cInfo.playerId), (ClientInfo)null);
-                                                    }
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} -1 {2}", ep.entityId, x, z), (ClientInfo)null);
+                                                    Penalty(_cInfo); 
                                                 }
                                             }
                                         }
@@ -304,8 +281,6 @@ namespace ServerTools
                 }
                 else
                 {
-                    uLastPositionXZ.Remove(Id);
-                    uLastPositionXZ.Add(Id, xz);
                     return false;
                 }
             }
@@ -314,6 +289,34 @@ namespace ServerTools
                 uLastPositionXZ.Remove(Id);
                 uLastPositionXZ.Add(Id, xz);
                 return false;
+            }
+        }
+
+        public static void Penalty(ClientInfo _cInfo)
+        {
+            if (JailEnabled)
+            {
+                Flag.Remove(_cInfo.playerId);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been jailed for flying underground[-]", Config.ChatResponseColor, _cInfo.playerName), "Server", false, "", false);
+                SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0}", _cInfo.playerId), (ClientInfo)null);
+            }
+            if (KillPlayer)
+            {
+                Flag.Remove(_cInfo.playerId);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been killed for flying underground[-]", Config.ChatResponseColor, _cInfo.playerName), "Server", false, "", false);
+                SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), (ClientInfo)null);
+            }
+            if (KickEnabled)
+            {
+                Flag.Remove(_cInfo.playerId);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been kicked for flying underground[-]", Config.ChatResponseColor, _cInfo.playerName), "Server", false, "", false);
+                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for flying\"", _cInfo.playerId), (ClientInfo)null);
+            }
+            if (BanEnabled)
+            {
+                Flag.Remove(_cInfo.playerId);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been banned for flying underground[-]", Config.ChatResponseColor, _cInfo.playerName), "Server", false, "", false);
+                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for flying\"", _cInfo.playerId), (ClientInfo)null);
             }
         }
     }

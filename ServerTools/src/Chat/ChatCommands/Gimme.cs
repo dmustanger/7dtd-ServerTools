@@ -125,7 +125,7 @@ namespace ServerTools
                         if (!dict.ContainsKey(_item))
                         {
                             int[] _c = new int[] { _min, _max };
-                            dict.Add(_item, _c); 
+                            dict.Add(_item, _c);
                         }
                         if (!dict1.ContainsKey(_item))
                         {
@@ -157,7 +157,7 @@ namespace ServerTools
                         if (dict1.TryGetValue(kvp.Key, out _name))
                         {
                             sw.WriteLine(string.Format("        <item item=\"{0}\" secondaryname=\"{1}\" min=\"{2}\" max=\"{3}\" />", kvp.Key, _name, kvp.Value[0], kvp.Value[1]));
-                        }     
+                        }
                     }
                 }
                 else
@@ -253,11 +253,11 @@ namespace ServerTools
                         _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
                         if (_announce)
                         {
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase6), "Server", false, "", false);
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase6), "Server", false, "", false);
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase6), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase6), "Server", false, "", false));
                         }
                     }
                 }
@@ -317,11 +317,11 @@ namespace ServerTools
                 }
                 if (_announce || AlwaysShowResponse)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase7), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase7), "Server", false, "", false);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase7), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase7), "Server", false, "", false));
                 }
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].LastGimme = DateTime.Now;
                 PersistentContainer.Instance.Save();

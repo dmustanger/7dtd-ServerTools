@@ -43,7 +43,7 @@ namespace ServerTools
                     _phrase200 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase200 = _phrase200.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase200), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase200), "Server", false, "", false));
             }
             else
             {
@@ -61,7 +61,7 @@ namespace ServerTools
                 }
                 _phrase502 = _phrase502.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase502 = _phrase502.Replace("{JailPosition}", JailPosition);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase502), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase502), "Server", false, "", false));
                 Config.UpdateXml();
             }
         }
@@ -76,7 +76,7 @@ namespace ServerTools
                     _phrase200 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase200 = _phrase200.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase200), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase200), "Server", false, "", false));
             }
             else
             {
@@ -88,7 +88,7 @@ namespace ServerTools
                         _phrase503 = "{PlayerName} the jail position has not been set.";
                     }
                     _phrase503 = _phrase503.Replace("{PlayerName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase503), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase503), "Server", false, "", false));
                 }
                 else
                 {
@@ -103,7 +103,7 @@ namespace ServerTools
                         }
                         _phrase201 = _phrase201.Replace("{AdminPlayerName}", _cInfo.playerName);
                         _phrase201 = _phrase201.Replace("{PlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase201, Config.ChatColor), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase201, Config.ChatResponseColor), "Server", false, "", false));
                     }
                     else
                     {
@@ -123,7 +123,7 @@ namespace ServerTools
                                 }
                                 _phrase504 = _phrase504.Replace("{AdminPlayerName}", _cInfo.playerName);
                                 _phrase504 = _phrase504.Replace("{PlayerName}", _playerName);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase504, Config.ChatColor), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase504, Config.ChatResponseColor), "Server", false, "", false));
                             }
                             else
                             {
@@ -163,7 +163,7 @@ namespace ServerTools
                 _phrase500 = "{PlayerName} you have been sent to jail.";
             }
             _phrase500 = _phrase500.Replace("{PlayerName}", _PlayertoJail.playerName);
-            _PlayertoJail.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase500), "Server", false, "", false));
+            _PlayertoJail.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase500), "Server", false, "", false));
             string _phrase505;
             if (!Phrases.Dict.TryGetValue(505, out _phrase505))
             {
@@ -171,7 +171,7 @@ namespace ServerTools
             }
             _phrase505 = _phrase505.Replace("{AdminPlayerName}", _cInfo.playerName);
             _phrase505 = _phrase505.Replace("{PlayerName}", _PlayertoJail.playerName);
-            _PlayertoJail.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase505), "Server", false, "", false));
+            _PlayertoJail.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase505), "Server", false, "", false));
         }
 
         public static void RemoveFromJail(ClientInfo _cInfo, string _playerName)
@@ -184,7 +184,7 @@ namespace ServerTools
                     _phrase200 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase200 = _phrase200.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase200), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase200), "Server", false, "", false));
             }
             else
             {
@@ -199,7 +199,7 @@ namespace ServerTools
                     }
                     _phrase201 = _phrase201.Replace("{AdminPlayerName}", _cInfo.playerName);
                     _phrase201 = _phrase201.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase201, Config.ChatColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase201, Config.ChatResponseColor), "Server", false, "", false));
                 }
                 else
                 {
@@ -213,7 +213,7 @@ namespace ServerTools
                         }
                         _phrase506 = _phrase506.Replace("{AdminPlayerName}", _cInfo.playerName);
                         _phrase506 = _phrase506.Replace("{PlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase506, Config.ChatColor), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase506, Config.ChatResponseColor), "Server", false, "", false));
                     }
                     else
                     {
@@ -226,7 +226,7 @@ namespace ServerTools
                             }
                             _phrase506 = _phrase506.Replace("{AdminPlayerName}", _cInfo.playerName);
                             _phrase506 = _phrase506.Replace("{PlayerName}", _playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase506, Config.ChatColor), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase506, Config.ChatResponseColor), "Server", false, "", false));
                         }
                         else
                         {
@@ -255,7 +255,7 @@ namespace ServerTools
                                 _phrase501 = "{PlayerName} you have been released from jail.";
                             }
                             _phrase501 = _phrase501.Replace("{PlayerName}", _PlayertoUnJail.playerName);
-                            _PlayertoUnJail.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase501), "Server", false, "", false));
+                            _PlayertoUnJail.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase501), "Server", false, "", false));
                         }
                     }
                 }
@@ -301,7 +301,7 @@ namespace ServerTools
                             _phrase501 = "{PlayerName} you have been released from jail.";
                         }
                         _phrase501 = _phrase501.Replace("{PlayerName}", _cInfo.playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase501), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase501), "Server", false, "", false));
                         PersistentContainer.Instance.Players[_cInfo.playerId, false].IsRemovedFromJail = true;
                         PersistentContainer.Instance.Save();
                     }
@@ -361,14 +361,14 @@ namespace ServerTools
                 Player p = PersistentContainer.Instance.Players[_cInfoKiller.playerId, false];
                 if (p == null)
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this player is not in jail.[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this player is not in jail.[-]", Config.ChatResponseColor, _cInfo.playerName), "Server", false, "", false));
                     ZoneProtection.Forgive.Remove(_cInfo.entityId);
                 }
                 else
                 {
                     if (!p.IsJailed)
                     {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this player is not in jail.[-]", Config.ChatColor, _cInfo.playerName), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this player is not in jail.[-]", Config.ChatResponseColor, _cInfo.playerName), "Server", false, "", false));
                         ZoneProtection.Forgive.Remove(_cInfo.entityId);
                     }
                     else
@@ -392,7 +392,7 @@ namespace ServerTools
                             Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
                             SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfoKiller.entityId, _pos[0].x, _pos[0].y, _pos[0].z), (ClientInfo)null);
                         }
-                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have been forgiven and released from jail by {2}.[-]", Config.ChatColor, _cInfoKiller.playerName, _cInfo.playerName), "Server", false, "", false));
+                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have been forgiven and released from jail by {2}.[-]", Config.ChatResponseColor, _cInfoKiller.playerName, _cInfo.playerName), "Server", false, "", false));
                         ZoneProtection.Forgive.Remove(_cInfo.entityId);
                     }
                 }

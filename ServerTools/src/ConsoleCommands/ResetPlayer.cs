@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "Reset a players profile.";
+            return "[ServerTools]-Reset a players profile. Warning, can not be undone without a backup.";
         }
         public override string GetHelp()
         {
@@ -16,7 +16,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "resetplayer", "rp" };
+            return new string[] { "st-ResetPlayerProfile", "resetplayerprofile", "rpp" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

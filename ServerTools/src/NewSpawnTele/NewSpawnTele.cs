@@ -18,7 +18,7 @@ namespace ServerTools
                     _phrase200 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase200 = _phrase200.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase200), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase200), "Server", false, "", false));
             }
             else
             {
@@ -36,7 +36,7 @@ namespace ServerTools
                 }
                 _phrase525 = _phrase525.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase525 = _phrase525.Replace("{NewSpawnTelePosition}", NewSpawnTelePosition);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase525), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase525), "Server", false, "", false));
                 Config.UpdateXml();
             }
         }
@@ -76,7 +76,7 @@ namespace ServerTools
                 _phrase526 = "{PlayerName} you have been teleported to the new spawn location.";
             }
             _phrase526 = _phrase526.Replace("{PlayerName}", _cInfo.playerName);
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase526), "Server", false, "", false));
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase526), "Server", false, "", false));
         }
     }
 }

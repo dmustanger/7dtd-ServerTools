@@ -18,7 +18,7 @@ namespace ServerTools
         public static string DonColor3 = "[E9C918]";
         public static string SpecialPlayerColor = "[ADAD85]";
         public static string NormalPlayerColor = "[00B3B3]";
-        public static string AdminPrefix = "(ADMIN)";      
+        public static string AdminPrefix = "(ADMIN)";
         public static string ModPrefix = "(MOD)";
         public static string DonPrefix1 = "(DON)";
         public static string DonPrefix2 = "(DON)";
@@ -37,11 +37,11 @@ namespace ServerTools
         public static string commandPublic = "!";
         private static string filepath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
         private static SortedDictionary<string, DateTime> Dict = new SortedDictionary<string, DateTime>();
-        private static SortedDictionary<string, string> Dict1 = new SortedDictionary<string, string>(); 
+        private static SortedDictionary<string, string> Dict1 = new SortedDictionary<string, string>();
         public static List<string> SpecialPlayers = new List<string>();
         private static List<string> SpecialPlayersColorOff = new List<string>();
 
-        public static void SpecialIdCheck ()
+        public static void SpecialIdCheck()
         {
             if (SpecialPlayerNameColoring)
             {
@@ -55,14 +55,14 @@ namespace ServerTools
         }
 
         public static bool Hook(ClientInfo _cInfo, string _message, string _playerName, string _secondaryName, bool _localizeSecondary)
-        {           
+        {
             if (!string.IsNullOrEmpty(_message) && _cInfo != null && _playerName != "Server" && _secondaryName != "ServerTools")
             {
                 if (ChatFlood)
                 {
                     if (_message.Length > 500)
                     {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Message too long.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Message too long.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                         return false;
                     }
                 }
@@ -262,7 +262,7 @@ namespace ServerTools
                             return false;
                         }
                     }
-                    _message = _message.ToLower();                   
+                    _message = _message.ToLower();
                     if (_message == "sethome")
                     {
                         if (TeleportHome.IsEnabled)
@@ -281,11 +281,11 @@ namespace ServerTools
                         {
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Sethome is not enabled.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Sethome is not enabled.[-]", Config.ChatResponseColor), _playerName, false, "ServerTools", true);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Sethome is not enabled.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Sethome is not enabled.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                             }
                         }
                     }
@@ -307,13 +307,13 @@ namespace ServerTools
                         {
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Home is not enabled.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Home is not enabled.[-]", Config.ChatResponseColor), _playerName, false, "ServerTools", true);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Home is not enabled.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Home is not enabled.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                             }
-                        }                      
+                        }
                     }
                     if (_message == "delhome")
                     {
@@ -333,11 +333,11 @@ namespace ServerTools
                         {
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Delhome is not enabled.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Delhome is not enabled.[-]", Config.ChatResponseColor), _playerName, false, "ServerTools", true);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Delhome is not enabled.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Delhome is not enabled.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                             }
                         }
                     }
@@ -358,11 +358,11 @@ namespace ServerTools
                                 {
                                     if (_announce)
                                     {
-                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatResponseColor), _playerName, false, "ServerTools", true);
                                     }
                                     else
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired Command is unavailable..[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired Command is unavailable..[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                                         return false;
                                     }
                                 }
@@ -375,7 +375,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                             }
@@ -389,11 +389,11 @@ namespace ServerTools
                         {
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Sethome2 is not enabled.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Sethome2 is not enabled.[-]", Config.ChatResponseColor), _playerName, false, "ServerTools", true);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Sethome2 is not enabled.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Sethome2 is not enabled.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                             }
                         }
                     }
@@ -414,11 +414,11 @@ namespace ServerTools
                                 {
                                     if (_announce)
                                     {
-                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatResponseColor), _playerName, false, "ServerTools", true);
                                     }
                                     else
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                                         return false;
                                     }
                                 }
@@ -427,11 +427,11 @@ namespace ServerTools
                             {
                                 if (_announce)
                                 {
-                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}You are not on the reserved list, please donate or contact an admin.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}You are not on the reserved list, please donate or contact an admin.[-]", Config.ChatResponseColor), _playerName, false, "ServerTools", true);
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are not on the reserved list, please donate or contact an admin.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are not on the reserved list, please donate or contact an admin.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                             }
@@ -445,11 +445,11 @@ namespace ServerTools
                         {
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Home2 is not enabled.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Home2 is not enabled.[-]", Config.ChatResponseColor), _playerName, false, "ServerTools", true);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Home2 is not enabled.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Home2 is not enabled.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                             }
                         }
                     }
@@ -477,11 +477,11 @@ namespace ServerTools
                                 {
                                     if (_announce)
                                     {
-                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatResponseColor), _playerName, false, "ServerTools", true);
                                     }
                                     else
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                                     }
                                 }
                             }
@@ -489,11 +489,11 @@ namespace ServerTools
                             {
                                 if (_announce)
                                 {
-                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}You are not on the reserved list, please donate or contact an admin.[-]", Config.ChatColor), _playerName, false, "ServerTools", true);
+                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}You are not on the reserved list, please donate or contact an admin.[-]", Config.ChatResponseColor), _playerName, false, "ServerTools", true);
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are not on the reserved list, please donate or contact an admin.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are not on the reserved list, please donate or contact an admin.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                                 }
                             }
                         }
@@ -532,7 +532,7 @@ namespace ServerTools
                         }
                         return false;
                     }
-                    if (_message == "day7")
+                    if (_message == "day7" || _message == "day")
                     {
                         if (Day7.IsEnabled)
                         {
@@ -568,7 +568,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Killme is not enabled.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Killme is not enabled.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                         }
                         return false;
                     }
@@ -614,7 +614,7 @@ namespace ServerTools
                                 Jail.PutInJail(_cInfo, _message);
                                 return false;
                             }
-                            if(_message.StartsWith("unjail "))
+                            if (_message.StartsWith("unjail "))
                             {
                                 if (_announce)
                                 {
@@ -649,8 +649,8 @@ namespace ServerTools
                         }
                         if (Animals.IsEnabled)
                         {
-                            Animals.Checkplayer(_cInfo, _announce, _playerName); 
-                            return false;                                          
+                            Animals.Checkplayer(_cInfo, _announce, _playerName);
+                            return false;
                         }
                         {
                             return true;
@@ -660,13 +660,13 @@ namespace ServerTools
                     {
                         if (FirstClaimBlock.IsEnabled)
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking your claim block status.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking your claim block status.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                             FirstClaimBlock.firstClaim(_cInfo);
                             return false;
                         }
                         return true;
                     }
-                    if (_message.StartsWith("clanadd") || _message == "clandel" || _message.StartsWith("claninvite") || _message == "clanaccept" || _message == "clandecline" || _message.StartsWith("clanremove") || _message.StartsWith("clanpromote") || _message.StartsWith("clandemote") || _message.StartsWith("clan") || _message.StartsWith("c") || _message == "clancommands")
+                    if (_message.StartsWith("clanadd") || _message == "clandel" || _message.StartsWith("claninvite") || _message == "clanaccept" || _message == "clandecline" || _message.StartsWith("clanremove") || _message.StartsWith("clanpromote") || _message.StartsWith("clandemote") || _message.StartsWith("clan") || _message == "clancommands")
                     {
                         if (ClanManager.IsEnabled)
                         {
@@ -677,9 +677,9 @@ namespace ServerTools
                             }
                             if (_message.StartsWith("clanadd"))
                             {
-                                if(_message == "clanadd")
+                                if (_message == "clanadd")
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clanadd clanName[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clanadd clanName[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                                 }
                                 else
                                 {
@@ -695,9 +695,9 @@ namespace ServerTools
                             }
                             if (_message.StartsWith("claninvite"))
                             {
-                                if(_message == "claninvite")
+                                if (_message == "claninvite")
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /claninvite playerName[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /claninvite playerName[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                                 }
                                 else
                                 {
@@ -720,7 +720,7 @@ namespace ServerTools
                             {
                                 if (_message == "clanremove")
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clanremove playerName[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clanremove playerName[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                                 }
                                 else
                                 {
@@ -733,7 +733,7 @@ namespace ServerTools
                             {
                                 if (_message == "clanpromote")
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clanpromote playerName[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clanpromote playerName[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                                 }
                                 else
                                 {
@@ -746,7 +746,7 @@ namespace ServerTools
                             {
                                 if (_message == "clandemote")
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clandemote playerName[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clandemote playerName[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                                 }
                                 else
                                 {
@@ -764,24 +764,11 @@ namespace ServerTools
                             {
                                 if (_message == "clan")
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clan message[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clan message[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                                 }
                                 else
                                 {
                                     _message = _message.Replace("clan ", "");
-                                    ClanManager.Clan(_cInfo, _message);
-                                }
-                                return false;
-                            }
-                            if (_message.StartsWith("c"))
-                            {
-                                if (_message == "c")
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /c message[-]", Config.ChatColor), "Server", false, "ServerTools", false));
-                                }
-                                else
-                                {
-                                    _message = _message.Replace("c ", "");
                                     ClanManager.Clan(_cInfo, _message);
                                 }
                                 return false;
@@ -804,12 +791,12 @@ namespace ServerTools
                                 ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                                 if (DateTime.Now < _dt)
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Sorry {1}, your chat color can not be changed as a moderator or administrator.[-]", Config.ChatColor, _playerName), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Sorry {1}, your chat color can not be changed as a moderator or administrator.[-]", Config.ChatResponseColor, _playerName), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Moderators and Admins can not change their chat color.[-]", Config.ChatColor, _playerName, _dt), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Moderators and Admins can not change their chat color.[-]", Config.ChatResponseColor, _playerName, _dt), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                             }
@@ -821,12 +808,12 @@ namespace ServerTools
                                 {
                                     int dl2 = DonLevel2;
                                     SdtdConsole.Instance.ExecuteSync(string.Format("admin add {0} {1}", _cInfo.entityId, dl2), _cInfo);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been switched.[-]", Config.ChatColor, _playerName), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been switched.[-]", Config.ChatResponseColor, _playerName), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Command is unavailable.[-]", Config.ChatColor, _playerName, _dt), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Command is unavailable.[-]", Config.ChatResponseColor, _playerName, _dt), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                             }
@@ -838,12 +825,12 @@ namespace ServerTools
                                 {
                                     int dl3 = DonLevel3;
                                     SdtdConsole.Instance.ExecuteSync(string.Format("admin add {0} {1}", _cInfo.entityId, dl3), _cInfo);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been switched.[-]", Config.ChatColor, _playerName), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been switched.[-]", Config.ChatResponseColor, _playerName), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Command is unavailable.[-]", Config.ChatColor, _playerName, _dt), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Command is unavailable.[-]", Config.ChatResponseColor, _playerName, _dt), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                             }
@@ -854,12 +841,12 @@ namespace ServerTools
                                 if (DateTime.Now < _dt)
                                 {
                                     SdtdConsole.Instance.ExecuteSync(string.Format("admin remove {0}", _cInfo.entityId), _cInfo);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned off.[-]", Config.ChatColor, _playerName), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned off.[-]", Config.ChatResponseColor, _playerName), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Command is unavailable.[-]", Config.ChatColor, _playerName, _dt), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Command is unavailable.[-]", Config.ChatResponseColor, _playerName, _dt), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                             }
@@ -867,18 +854,18 @@ namespace ServerTools
                             {
                                 int dl1 = DonLevel1;
                                 SdtdConsole.Instance.ExecuteSync(string.Format("admin add {0} {1}", _cInfo.entityId, DonLevel1), _cInfo);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned on.[-]", Config.ChatColor, _playerName), "Server", false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned on.[-]", Config.ChatResponseColor, _playerName), "Server", false, "ServerTools", false));
                                 return false;
                             }
                         }
                         if (!DonatorNameColoring & ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have donated {1}, but the command is unavailable.[-]", Config.ChatColor, _playerName), "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have donated {1}, but the command is unavailable.[-]", Config.ChatResponseColor, _playerName), "Server", false, "ServerTools", false));
                             return true;
                         }
                         if (DonatorNameColoring & !ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have not donated {1}. Command is unavailable.[-]", Config.ChatColor, _playerName), "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have not donated {1}. Command is unavailable.[-]", Config.ChatResponseColor, _playerName), "Server", false, "ServerTools", false));
                             return true;
                         }
                         return true;
@@ -895,12 +882,12 @@ namespace ServerTools
                                 ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                                 if (DateTime.Now < _dt)
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expires on {2}.[-]", Config.ChatColor, _playerName, _dt), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expires on {2}.[-]", Config.ChatResponseColor, _playerName, _dt), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}.[-]", Config.ChatColor, _playerName, _dt), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}.[-]", Config.ChatResponseColor, _playerName, _dt), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                             }
@@ -910,12 +897,12 @@ namespace ServerTools
                                 ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                                 if (DateTime.Now < _dt)
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expires on {2}.[-]", Config.ChatColor, _playerName, _dt), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expires on {2}.[-]", Config.ChatResponseColor, _playerName, _dt), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}[-]", Config.ChatColor, _playerName, _dt), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}[-]", Config.ChatResponseColor, _playerName, _dt), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                             }
@@ -925,12 +912,12 @@ namespace ServerTools
                                 ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                                 if (DateTime.Now < _dt)
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expires on {2}.[-]", Config.ChatColor, _playerName, _dt), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expires on {2}.[-]", Config.ChatResponseColor, _playerName, _dt), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}.[-]", Config.ChatColor, _playerName, _dt), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}.[-]", Config.ChatResponseColor, _playerName, _dt), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                             }
@@ -940,12 +927,12 @@ namespace ServerTools
                                 ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                                 if (DateTime.Now < _dt)
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expires on {2}.[-]", Config.ChatColor, _playerName, _dt), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expires on {2}.[-]", Config.ChatResponseColor, _playerName, _dt), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}.[-]", Config.ChatColor, _playerName, _dt), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}.[-]", Config.ChatResponseColor, _playerName, _dt), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                             }
@@ -955,19 +942,19 @@ namespace ServerTools
                                 ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                                 if (DateTime.Now < _dt)
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expires on {2}.[-]", Config.ChatColor, _playerName, _dt), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expires on {2}.[-]", Config.ChatResponseColor, _playerName, _dt), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}.[-]", Config.ChatColor, _playerName, _dt), "Server", false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}.[-]", Config.ChatResponseColor, _playerName, _dt), "Server", false, "ServerTools", false));
                                     return false;
                                 }
                             }
                         }
                         if (ReservedCheck && !ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}You have not donated {1}. Expiration date unavailable.[-]", Config.ChatColor, _playerName), _playerName, false, "ServerTools", true);
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}You have not donated {1}. Expiration date unavailable.[-]", Config.ChatResponseColor, _playerName), _playerName, false, "ServerTools", true);
                             return true;
                         }
                         return true;
@@ -976,13 +963,13 @@ namespace ServerTools
                     {
                         if (SpecialPlayerNameColoring && SpecialPlayers.Contains(_cInfo.playerId) && !SpecialPlayersColorOff.Contains(_cInfo.playerId))
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned off.[-]", Config.ChatColor, _playerName), "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned off.[-]", Config.ChatResponseColor, _playerName), "Server", false, "ServerTools", false));
                             SpecialPlayersColorOff.Add(_cInfo.playerId);
                             return false;
                         }
                         if (SpecialPlayerNameColoring && SpecialPlayers.Contains(_cInfo.playerId) && SpecialPlayersColorOff.Contains(_cInfo.playerId))
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned on.[-]", Config.ChatColor, _playerName), "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned on.[-]", Config.ChatResponseColor, _playerName), "Server", false, "ServerTools", false));
                             SpecialPlayersColorOff.Remove(_cInfo.playerId);
                             return false;
                         }
@@ -992,18 +979,18 @@ namespace ServerTools
                     {
                         if (VoteReward.IsEnabled)
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking for your vote.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking for your vote.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                             VoteReward.CheckReward(_cInfo);
                             return false;
                         }
                         return true;
                     }
-                    if (_message == "restart")
+                    if (_message == "shutdown")
                     {
-                        if (AutoRestart.IsEnabled)
+                        if (AutoShutdown.IsEnabled)
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking for the next restart time.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
-                            AutoRestart.CheckNextRestart(_cInfo, _announce, _playerName);
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking for the next shutdown time.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                            AutoShutdown.CheckNextShutdown(_cInfo, _announce, _playerName);
                             return false;
                         }
                         return true;
@@ -1012,7 +999,7 @@ namespace ServerTools
                     {
                         if (AdminList.IsEnabled)
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Listing online administrators and moderators.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Listing online administrators and moderators.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                             AdminList.List(_cInfo, _announce, _playerName);
                             return false;
                         }
@@ -1022,7 +1009,7 @@ namespace ServerTools
                     {
                         if (Travel.IsEnabled)
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking location and last use.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking location and last use.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                             Travel.Check(_cInfo, _announce, _playerName);
                             return false;
                         }
@@ -1031,52 +1018,95 @@ namespace ServerTools
                     {
                         if (ZoneProtection.IsEnabled & ZoneProtection.Victim.ContainsKey(_cInfo.entityId))
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Sending you to your death point.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Sending you to your death point.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                             ZoneProtection.ReturnToPosition(_cInfo);
                             return false;
-                        }                     
+                        }
                     }
                     if (_message == "forgive")
                     {
                         if (ZoneProtection.IsEnabled & Jail.IsEnabled & ZoneProtection.Forgive.ContainsKey(_cInfo.entityId))
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your killer has been forgiven.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your killer has been forgiven.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                             Jail.Forgive(_cInfo);
                             return false;
                         }
                     }
-                    if (CustomCommands.IsEnabled && CustomCommands.Dict.Count > 0 && CustomCommands.Dict.ContainsKey(_message))
+                    if (_message == "weather")
                     {
-                        string[] _r;
-                        if (CustomCommands.Dict.TryGetValue(_message, out _r))
+                        if (WeatherVote.IsEnabled & WeatherVote.VoteClosed)
                         {
-                            string _response = _r[0];
-                            _response = _response.Replace("{EntityId}", _cInfo.entityId.ToString());
-                            _response = _response.Replace("{SteamId}", _cInfo.playerId);
-                            _response = _response.Replace("{PlayerName}", _playerName);
-                            if (_announce)
+                            if (!WeatherVote.VoteOpen)
                             {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
+                                WeatherVote.Start();
+                                return false;
                             }
-                            if (_response.StartsWith("say "))
+                            else if (WeatherVote.VoteOpen)
                             {
-                                if (_announce)
-                                {
-                                    SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
-                                }
-                                else
-                                {
-                                    _response = _response.Replace("say ", "");
-                                    _response = _response.Replace("\"", "");
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format(_response), "Server", false, "ServerTools", false));
-                                }
-                            }
-                            else
-                            {
-                                SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote has already begun.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                                 return false;
                             }
                         }
+                        else
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote can only begin every {1} minutes.[-]", Config.ChatResponseColor, WeatherVote.VoteDelay), "Server", false, "ServerTools", false));
+                            return false;
+                        }
+                    }
+                    if (_message == "clear")
+                    {
+                        if (WeatherVote.VoteOpen)
+                        {
+                            if (!WeatherVote.clear.Contains(_cInfo.entityId))
+                            {
+                                WeatherVote.clear.Add(_cInfo.entityId);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.ChatResponseColor, _message), "Server", false, "ServerTools", false));
+                                return false;
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                return false;
+                            }
+                        }
+                    }
+                    if (_message == "rain")
+                    {
+                        if (WeatherVote.VoteOpen)
+                        {
+                            if (!WeatherVote.rain.Contains(_cInfo.entityId))
+                            {
+                                WeatherVote.rain.Add(_cInfo.entityId);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.ChatResponseColor, _message), "Server", false, "ServerTools", false));
+                                return false;
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                return false;
+                            }
+                        }
+                    }
+                    if (_message == "snow")
+                    {
+                        if (WeatherVote.VoteOpen)
+                        {
+                            if (!WeatherVote.snow.Contains(_cInfo.entityId))
+                            {
+                                WeatherVote.snow.Add(_cInfo.entityId);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.ChatResponseColor, _message), "Server", false, "ServerTools", false));
+                                return false;
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                return false;
+                            }
+                        }
+                    }
+                    if (CustomCommands.IsEnabled && CustomCommands.Dict.ContainsKey(_message))
+                    {
+                        CustomCommands.CheckCustomDelay(_cInfo, _message, _playerName, _announce);
                         return false;
                     }
                 }
@@ -1086,7 +1116,7 @@ namespace ServerTools
                     {
                         if (!AdminChat.IsEnabled)
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                         }
                         else
                         {
@@ -1098,7 +1128,7 @@ namespace ServerTools
                     {
                         if (!AdminChat.IsEnabled)
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", Config.ChatColor), "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                         }
                         else
                         {

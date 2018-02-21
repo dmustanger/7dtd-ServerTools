@@ -85,18 +85,22 @@ namespace ServerTools
             {
                 Bloodmoon.GetBloodmoon(_cInfo, false);
             }
+            if (_respawnReason == RespawnType.Teleport)
+            {
+                HatchElevator.LastPositionY.Remove(_cInfo.entityId);
+            }
             if (StartingItems.IsEnabled)
             {
                 StartingItems.StartingItemCheck(_cInfo);
             }
             if (ZoneProtection.Victim.ContainsKey(_cInfo.entityId))
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /return to teleport back to your death position. There is a two minute limit.[-]", Config.ChatColor), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /return to teleport back to your death position. There is a two minute limit.[-]", Config.ChatResponseColor), "Server", false, "", false));
                 PersistentContainer.Instance.Players[_cInfo.playerId, false].RespawnTime = DateTime.Now;
                 PersistentContainer.Instance.Save();
                 if (ZoneProtection.Forgive.ContainsKey(_cInfo.entityId))
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /forgive to release your killer from jail.[-]", Config.ChatColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /forgive to release your killer from jail.[-]", Config.ChatResponseColor), "Server", false, "", false));
                 }
             }
         }

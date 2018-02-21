@@ -40,13 +40,13 @@ namespace ServerTools
             string _modList = string.Join(", ", Mods.ToArray());
             if (_announce)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}Server admins in game: [FF8000]{1}[-]", Config.ChatColor, _adminList), "Server", false, "", false);
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}Server mods in game: [FF8000]{1}[-]", Config.ChatColor, _modList), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}Server admins in game: [FF8000]{1}[-]", Config.ChatResponseColor, _adminList), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}Server mods in game: [FF8000]{1}[-]", Config.ChatResponseColor, _modList), "Server", false, "", false);
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Server admins in game: [FF8000]{1}[-]", Config.ChatColor, _adminList), "Server", false, "", false));
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Server mods in game: [FF8000]{1}[-]", Config.ChatColor, _modList), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Server admins in game: [FF8000]{1}[-]", Config.ChatResponseColor, _adminList), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Server mods in game: [FF8000]{1}[-]", Config.ChatResponseColor, _modList), "Server", false, "", false));
             }
         }
     }

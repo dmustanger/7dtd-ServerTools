@@ -49,11 +49,11 @@ namespace ServerTools
                             _phrase601 = _phrase601.Replace("{TimeRemaining}", _timeleft.ToString());
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase601), "Server", false, "", false);
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase601), "Server", false, "", false);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase601), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase601), "Server", false, "", false));
                             }
                         }
                     }
@@ -79,14 +79,14 @@ namespace ServerTools
                 SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} {1} @ {2}", _cInfo.entityId, nextRadius, nextAnimal), (ClientInfo)null);                
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatColor, _cInfo.playerName, nextRadius), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatResponseColor, _cInfo.playerName, nextRadius), "Server", false, "", false);
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
                     PersistentContainer.Instance.Save();
                     return;
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatColor, _cInfo.playerName, nextRadius), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatResponseColor, _cInfo.playerName, nextRadius), "Server", false, "", false));
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
                     PersistentContainer.Instance.Save();
                 }
@@ -100,14 +100,14 @@ namespace ServerTools
                 SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} {1} @ {2}", _cInfo.entityId, nextRadius, nextAnimal), _cInfo);
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatColor, _cInfo.playerName, nextRadius), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatResponseColor, _cInfo.playerName, nextRadius), "Server", false, "", false);
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
                     PersistentContainer.Instance.Save();
                     return;
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatColor, _cInfo.playerName, nextRadius), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatResponseColor, _cInfo.playerName, nextRadius), "Server", false, "", false));
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
                     PersistentContainer.Instance.Save();
                 }               

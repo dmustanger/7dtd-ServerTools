@@ -1302,6 +1302,8 @@ namespace ServerTools
                                 _phrase3 = _phrase3.Replace("{MaxPerStack}", _maxAllowed.ToString());
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase3), "Server", false, "", false));
                                 ChatLog.Log(_phrase3, "Server");
+
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase3), "Server", false, "", false));
                             }
                             if (IsEnabled && dict.ContainsKey(_name))
                             {

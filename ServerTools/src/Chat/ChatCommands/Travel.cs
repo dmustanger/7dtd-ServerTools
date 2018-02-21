@@ -25,6 +25,12 @@ namespace ServerTools
         private static int _xMaxCheck = 0;
         private static int _yMaxCheck = 0;
         private static int _zMaxCheck = 0;
+        private static int _xMin = 0;
+        private static int _yMin = 0;
+        private static int _zMin = 0;
+        private static int _xMax = 0;
+        private static int _yMax = 0;
+        private static int _zMax = 0;
 
         public static void Load()
         {
@@ -218,11 +224,11 @@ namespace ServerTools
                         _phrase605 = _phrase605.Replace("{TimeRemaining}", _timeleft.ToString());
                         if (_announce)
                         {
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase605), "Server", false, "", false);
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase605), "Server", false, "", false);
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase605), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase605), "Server", false, "", false));
                         }
                     }
                 }
@@ -257,10 +263,6 @@ namespace ServerTools
                                     float.TryParse(_xyzMinCords[0], out xMin);
                                     float.TryParse(_xyzMinCords[1], out yMin);
                                     float.TryParse(_xyzMinCords[2], out zMin);
-                                    int _xMin = (int)xMin;
-                                    int _yMin = (int)yMin;
-                                    int _zMin = (int)zMin;
-
                                     float xMax;
                                     float yMax;
                                     float zMax;
@@ -268,9 +270,36 @@ namespace ServerTools
                                     float.TryParse(_xyzMaxCords[0], out xMax);
                                     float.TryParse(_xyzMaxCords[1], out yMax);
                                     float.TryParse(_xyzMaxCords[2], out zMax);
-                                    int _xMax = (int)xMax;
-                                    int _yMax = (int)yMax;
-                                    int _zMax = (int)zMax;
+                                    if (xMin < xMax)
+                                    {
+                                        _xMin = (int)xMin;
+                                        _xMax = (int)xMax;
+                                    }
+                                    else
+                                    {
+                                        _xMin = (int)xMax;
+                                        _xMax = (int)xMin;
+                                    }
+                                    if (yMin < yMax)
+                                    {
+                                        _yMin = (int)yMin;
+                                        _yMax = (int)yMax;
+                                    }
+                                    else
+                                    {
+                                        _yMin = (int)yMax;
+                                        _yMax = (int)yMin;
+                                    }
+                                    if (zMin < zMax)
+                                    {
+                                        _zMin = (int)zMin;
+                                        _zMax = (int)zMax;
+                                    }
+                                    else
+                                    {
+                                        _zMin = (int)zMax;
+                                        _zMax = (int)zMin;
+                                    }
 
                                     float xDest;
                                     float yDest;
@@ -464,7 +493,7 @@ namespace ServerTools
                                         {
                                             _phrase603 = "You have traveled to";
                                         }
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}.[-]", Config.ChatColor, _phrase603, kvpXYZmin.Key), "Server", false, "", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}.[-]", Config.ChatResponseColor, _phrase603, kvpXYZmin.Key), "Server", false, "", false));
                                         continue;
                                     }
                                     else
@@ -477,7 +506,7 @@ namespace ServerTools
                                             {
                                                 _phrase604 = "You are not in a travel location.";
                                             }
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _phrase604), "Server", false, "", false));
+                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase604), "Server", false, "", false));
                                         }
                                     }
                                 }

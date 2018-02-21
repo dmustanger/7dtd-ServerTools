@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "Add, Remove and View steamids on the ReservedSlots list.";
+            return "[ServerTools]-Add, Remove and View steamids on the ReservedSlots list.";
         }
 
         public override string GetHelp()
@@ -23,7 +23,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "reservedslot", "rs" };
+            return new string[] { "st-ReservedSlot", "reservedslot", "rs" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

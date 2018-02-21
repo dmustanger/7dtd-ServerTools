@@ -136,7 +136,7 @@ namespace ServerTools
             {
                 foreach (string _message in Message)
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatColor, _message), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _message), "Server", false, "", false));
                 }
             }
         }

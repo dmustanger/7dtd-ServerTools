@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "Reset a player's vote reward status so they can receive another reward.";
+            return "[ServerTools]-Reset a player's vote reward status so they can receive another reward.";
         }
 
         public override string GetHelp()
@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "home" };
+            return new string[] { "st-Home", "home" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -47,6 +47,7 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.Players[_params[1], true].LastSetHome = DateTime.Now.AddDays(-2);
                         PersistentContainer.Instance.Save();
+                        SdtdConsole.Instance.Output("Chat command /home and /home2 delay reset.");
                     }
                 }
                 else

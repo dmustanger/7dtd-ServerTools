@@ -10,8 +10,9 @@ namespace ServerTools
         private static int timerInstanceCount = 0;
         public static bool IsEnabled = false;
         public static int DaysBeforeDeleted = 5;
+        public static int MaxPing = 300;
         private static SortedDictionary<int, int> Flag = new SortedDictionary<int, int>();
-        private static SortedDictionary<int, int> LastPositionY = new SortedDictionary<int, int>();
+        public static SortedDictionary<int, int> LastPositionY = new SortedDictionary<int, int>();
         private static System.Timers.Timer timerHatch = new System.Timers.Timer();
 
         public static void DetectionLogsDir()
@@ -98,57 +99,68 @@ namespace ServerTools
 
             if (LastPositionY.ContainsKey(Id))
             {
-                for (int i = (x - 2); i <= (x + 2); i++)
+                for (int i = x - 1; i <= (x + 1); i++)
                 {
-                    for (int j = (z - 2); j <= (z + 2); j++)
+                    for (int j = z - 1; j <= (z + 1); j++)
                     {
-                        for (int k = (y - 1); k <= (y + 1); k++)
+                        for (int k = y - 2; k <= (y + 1); k++)
                         {
                             BlockValue Block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
-                            if (Block.Block.blockID == 1251 || Block.Block.blockID == 1252 || Block.Block.blockID == 1253 ||
-                                Block.Block.blockID == 1463 || Block.Block.blockID == 1464 || Block.Block.blockID == 1465 ||
-                                Block.Block.blockID == 1469 || Block.Block.blockID == 1470 || Block.Block.blockID == 1471 &&
-                                Block.Block.blockID != 788 || Block.Block.blockID != 389 || Block.Block.blockID != 949)
+                            if (Block.Block.blockID != 788 || Block.Block.blockID != 389 || Block.Block.blockID != 949)
                             {
-                                if (Flag.ContainsKey(Id))
+                                if (Block.Block.blockID == 1251 || Block.Block.blockID == 1252 || Block.Block.blockID == 1253 ||
+                                    Block.Block.blockID == 1463 || Block.Block.blockID == 1464 || Block.Block.blockID == 1465 ||
+                                    Block.Block.blockID == 1469 || Block.Block.blockID == 1470 || Block.Block.blockID == 1471)
                                 {
-                                    int _lastY;
-                                    if (LastPositionY.TryGetValue(Id, out _lastY))
+                                    if (Flag.ContainsKey(Id))
                                     {
-                                        int heightChange = (_lastY - y);
-                                        if (heightChange < -6)
+                                        int _lastY;
+                                        if (LastPositionY.TryGetValue(Id, out _lastY))
                                         {
-                                            LastPositionY.Remove(Id);
-                                            LastPositionY.Add(Id, y);
-                                            Log.Out(string.Format("[SERVERTOOLS] Detected {0} using a hatch elevator. Applied stun and broke leg", ep.entityId));
                                             ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(ep.entityId);
-                                            _cInfo.SendPackage(new NetPackageConsoleCmdClient("buff " + "brokenLeg", true));
-                                            _cInfo.SendPackage(new NetPackageConsoleCmdClient("buff " + "stunned", true));
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are stunned and have broken your leg while smashing yourself through hatches. Ouch![-]", Config.ChatColor), "Server", false, "ServerTools", false));
-                                            string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                                            string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
-                                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                            if (_cInfo.ping < MaxPing)
                                             {
-                                                sw.WriteLine(string.Format("{0} {1} steamId {2} was detected using a hatch elevator @ {3} X, {4} Y, {5} Z", DateTime.Now, _cInfo.playerName, _cInfo.playerId, ep.position.x, ep.position.y, ep.position.z));
-                                                sw.WriteLine();
-                                                sw.Flush();
-                                                sw.Close();
+                                                int heightChange = (_lastY - y);
+                                                if (heightChange < -6)
+                                                {
+                                                    LastPositionY.Remove(Id);
+                                                    LastPositionY.Add(Id, y);
+                                                    Log.Out(string.Format("[SERVERTOOLS] Detected {0} using a hatch elevator. Applied stun and broke leg", ep.entityId));
+                                                    _cInfo.SendPackage(new NetPackageConsoleCmdClient("buff " + "brokenLeg", true));
+                                                    _cInfo.SendPackage(new NetPackageConsoleCmdClient("buff " + "stunned", true));
+                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are stunned and have broken your leg while smashing yourself through hatches. Ouch![-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                                    string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+                                                    string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
+                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                    {
+                                                        sw.WriteLine(string.Format("{0} {1} steamId {2} was detected using a hatch elevator @ {3} X, {4} Y, {5} Z", DateTime.Now, _cInfo.playerName, _cInfo.playerId, ep.position.x, ep.position.y, ep.position.z));
+                                                        sw.WriteLine();
+                                                        sw.Flush();
+                                                        sw.Close();
+                                                    }
+                                                    return false;
+                                                }
+                                                else
+                                                {
+                                                    LastPositionY.Remove(Id);
+                                                    LastPositionY.Add(Id, y);
+                                                    return true;
+                                                }
                                             }
-                                            return false;
+                                            else
+                                            {
+                                                LastPositionY.Remove(Id);
+                                                LastPositionY.Add(Id, y);
+                                                return false;
+                                            }
                                         }
-                                        else
-                                        {
-                                            LastPositionY.Remove(Id);
-                                            LastPositionY.Add(Id, y);
-                                            return true;
-                                        }
-                                    } 
-                                }
-                                else
-                                {
-                                    LastPositionY.Remove(Id);
-                                    LastPositionY.Add(Id, y);
-                                    return true;
+                                    }
+                                    else
+                                    {
+                                        LastPositionY.Remove(Id);
+                                        LastPositionY.Add(Id, y);
+                                        return true;
+                                    }
                                 }
                             }
                         }
