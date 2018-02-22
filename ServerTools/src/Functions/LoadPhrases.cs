@@ -608,7 +608,7 @@ namespace ServerTools
                 string _phrase603;
                 if (!Dict.TryGetValue(603, out _phrase603))
                 {
-                    _phrase603 = "You have traveled to.";
+                    _phrase603 = "You have traveled to";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"603\" Phrase=\"{0}\" />", _phrase603));
                 string _phrase604;
@@ -665,7 +665,7 @@ namespace ServerTools
                 string _phrase611;
                 if (!Dict.TryGetValue(611, out _phrase611))
                 {
-                    _phrase611 = "A vote to change the weather has begun and will close in 30 seconds. Type /normal, /rain or /snow to cast your vote.";
+                    _phrase611 = "A vote to change the weather has begun and will close in 30 seconds. Type /clear, /rain or /snow to cast your vote.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"611\" Phrase=\"{0}\" />", _phrase611));
                 string _phrase612;

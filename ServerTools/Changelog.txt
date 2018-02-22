@@ -1,5 +1,12 @@
 ﻿CHANGELOG
-Updated for v.6.4 
+Updated for v.6.41 
+
+v.6.41
+Fixed ZoneProtection and Travel detection formula. Some combinations of interger did not respond after last patch
+Fixed WeatherVote not responding
+Fixed some phrases in ServerToolsPhrases.xml
+Changed ZoneProtection.xml and TravelLocations.xml. xyzMin is now corner1 and xyzMax is now corner2. Just as before, corner to corner x, y, z coordinates
+Updated HowToSetup.xml with some missing info and one command
 
 v.6.4
 Added ServerTools alias to console command results when help command is used. Alias is st- . All command entries starting with st- are from ServerTools

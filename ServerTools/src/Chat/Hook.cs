@@ -1034,24 +1034,27 @@ namespace ServerTools
                     }
                     if (_message == "weather")
                     {
-                        if (WeatherVote.IsEnabled & WeatherVote.VoteClosed)
+                        if (WeatherVote.IsEnabled)
                         {
-                            if (!WeatherVote.VoteOpen)
+                            if (!WeatherVote.VoteClosed)
                             {
-                                WeatherVote.Start();
+                                if (!WeatherVote.VoteOpen)
+                                {
+                                    WeatherVote.Start();
+                                    return false;
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote has already begun.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote can only begin every {1} minutes.[-]", Config.ChatResponseColor, WeatherVote.VoteDelay), "Server", false, "ServerTools", false));
                                 return false;
                             }
-                            else if (WeatherVote.VoteOpen)
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote has already begun.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
-                                return false;
-                            }
-                        }
-                        else
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote can only begin every {1} minutes.[-]", Config.ChatResponseColor, WeatherVote.VoteDelay), "Server", false, "ServerTools", false));
-                            return false;
-                        }
+                        }  
                     }
                     if (_message == "clear")
                     {

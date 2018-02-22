@@ -7,7 +7,7 @@ namespace ServerTools
         public static bool IsEnabled = true;
         private const string file = "HowToSetup.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private const double version = 6.4;
+        private const double version = 6.41;
 
         public static void HowTo()
         {
@@ -491,7 +491,9 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("Enabling will create a TravelLocations.xml in your \"world save folder/ServerTools\"");
                 sw.WriteLine("All locations listed in the TravelLocations.xml will allow a player to type /travel while inside one and teleport to the corresponding destination.");
-                sw.WriteLine("Inside the TravelLocations.xml, xyzMin controls one corner of the travel zone and xyzMax controls the opposite corner. Destination is where the player will teleport to.");
+                sw.WriteLine("Inside the TravelLocations.xml, destination is where the player will teleport to.");
+                sw.WriteLine("The name will be the name of the travel zone, Corner1 is first corner of the zone, Corner2 is the opposite corner of the zone.");
+                sw.WriteLine("Corner1, corner2 and destination are represented by x, y, z coordinates.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -574,6 +576,8 @@ namespace ServerTools
                 sw.WriteLine("If jail is enabled, the victim can type /forgive to release the killer from jail.");
                 sw.WriteLine("The victim receives a message upon respawn alerting them to type /return. This command brings them back to their death spot.");
                 sw.WriteLine("If ZoneMessage is false, players will not receive a message upon entering or exiting a protected zone.");
+                sw.WriteLine("Inside the ZoneProtection.xml, the name will be the name of the protection zone, Corner1 is first corner of the zone, Corner2 is the opposite corner of the zone.");
+                sw.WriteLine("Corner1, and corner2 are represented by x, y, z coordinates.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -629,29 +633,33 @@ namespace ServerTools
                 sw.WriteLine("Example: rs remove 76561191234567891");
                 sw.WriteLine("Adds the player to the ReservedSlots.xml file. Players on this list are not booted when the server is full and reserved slots are enabled.");
                 sw.WriteLine();
-                sw.WriteLine("ResetAnimalTracking");
+                sw.WriteLine("Reset AnimalTracking");
                 sw.WriteLine("Example: animaltracking reset 76561191234567891");
                 sw.WriteLine("Resets the delay on the command animal tracking for the player.");
                 sw.WriteLine();
-                sw.WriteLine("ResetFirstClaimBlock");
+                sw.WriteLine("Reset FirstClaimBlock");
                 sw.WriteLine("Example: firstclaimblock reset 76561191234567891");
                 sw.WriteLine("Resets the delay on the command first claim block for the player.");
                 sw.WriteLine();
-                sw.WriteLine("ResetGimme");
+                sw.WriteLine("Reset Gimme");
                 sw.WriteLine("Example: gimme reset 76561191234567891");
                 sw.WriteLine("Resets the delay on the command gimme for the player.");
                 sw.WriteLine();
-                sw.WriteLine("ResetHome");
+                sw.WriteLine("Reset Home");
                 sw.WriteLine("Example: home reset 76561191234567891");
                 sw.WriteLine("Resets the delay on the command home and home2 for the player.");
                 sw.WriteLine();
-                sw.WriteLine("ResetPlayer");
+                sw.WriteLine("Reset Player Profile");
                 sw.WriteLine("Example: player reset 76561191234567891");
                 sw.WriteLine("Resets the profile for the player.");
                 sw.WriteLine();
-                sw.WriteLine("ResetVoteReward");
+                sw.WriteLine("Reset VoteReward");
                 sw.WriteLine("Example: votereward reset 76561191234567891");
                 sw.WriteLine("Resets the delay on the command reward for the player.");
+                sw.WriteLine();
+                sw.WriteLine("Reset WeatherVote");
+                sw.WriteLine("Example: weathervote reset");
+                sw.WriteLine("Resets the delay on the weather vote for the server.");
                 sw.WriteLine();
                 sw.WriteLine("SpawnEntityInRadius");
                 sw.WriteLine("Example: ser 76561191234567891 30 @ 62 63 64");
