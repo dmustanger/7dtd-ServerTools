@@ -176,7 +176,7 @@ namespace ServerTools
                     TimeSpan varTime = DateTime.Now - p.LastTravel;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
-                    if (_timepassed > DelayBetweenUses)
+                    if (_timepassed >= DelayBetweenUses)
                     {
                         Tele(_cInfo, _announce);
                     }

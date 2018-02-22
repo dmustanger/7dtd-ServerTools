@@ -17,6 +17,7 @@ namespace ServerTools
         public static bool KickEnabled = false;
         public static bool BanEnabled = false;
         public static bool ZoneMessage = false;
+        public static bool SetHome = false;
         private const string file = "ZoneProtection.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, string[]> Box = new SortedDictionary<string, string[]>();
@@ -177,6 +178,7 @@ namespace ServerTools
         public static void ZoneProtectionTimerStop()
         {
             t.Stop();
+            PvEFlag.Clear();
         }
 
         public static void KillCheck(object sender, ElapsedEventArgs e)

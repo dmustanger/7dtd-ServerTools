@@ -267,14 +267,44 @@ namespace ServerTools
                     {
                         if (TeleportHome.IsEnabled)
                         {
-                            if (_announce)
+                            if (!ZoneProtection.SetHome)
                             {
-                                TeleportHome.SetHome(_cInfo, _playerName, _announce);
+                                if (!ZoneProtection.PvEFlag.Contains(_cInfo.entityId))
+                                {
+                                    if (_announce)
+                                    {
+                                        TeleportHome.SetHome(_cInfo, _playerName, _announce);
+                                    }
+                                    else
+                                    {
+                                        TeleportHome.SetHome(_cInfo, _playerName, _announce);
+                                        return false;
+                                    }
+                                }
+                                else
+                                {
+                                    if (_announce)
+                                    {
+                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}You can not use sethome in a protected zone.[-]", _message), _playerName, false, "ServerTools", true);
+                                    }
+                                    else
+                                    {
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You can not use sethome in a protected zone.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                        return false;
+                                    }
+                                }
                             }
                             else
                             {
-                                TeleportHome.SetHome(_cInfo, _playerName, _announce);
-                                return false;
+                                if (_announce)
+                                {
+                                    TeleportHome.SetHome(_cInfo, _playerName, _announce);
+                                }
+                                else
+                                {
+                                    TeleportHome.SetHome(_cInfo, _playerName, _announce);
+                                    return false;
+                                }
                             }
                         }
                         else
@@ -343,13 +373,117 @@ namespace ServerTools
                     }
                     if (_message == "sethome2")
                     {
-                        if (TeleportHome.SetHome2Enabled && TeleportHome.SetHome2DonorOnly && ReservedSlots.IsEnabled)
+                        if (TeleportHome.SetHome2Enabled & TeleportHome.SetHome2DonorOnly & ReservedSlots.IsEnabled)
                         {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            if (!ZoneProtection.SetHome)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                if (!ZoneProtection.PvEFlag.Contains(_cInfo.entityId))
+                                {
+                                    if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                    {
+                                        DateTime _dt;
+                                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                        if (DateTime.Now < _dt)
+                                        {
+                                            if (_announce)
+                                            {
+                                                TeleportHome.SetHome2(_cInfo, _playerName, _announce);
+                                            }
+                                            else
+                                            {
+                                                TeleportHome.SetHome2(_cInfo, _playerName, _announce);
+                                                return false;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (_announce)
+                                            {
+                                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatResponseColor), _playerName, false, "ServerTools", true);
+                                            }
+                                            else
+                                            {
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired Command is unavailable..[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                                return false;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (_announce)
+                                        {
+                                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}You are not listed as a reserved player. Command is unavailable.[-]", _message), _playerName, false, "ServerTools", true);
+                                        }
+                                        else
+                                        {
+                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are not listed as a reserved player. Command is unavailable.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                            return false;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (_announce)
+                                    {
+                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}You can not use sethome2 in a protected zone.[-]", _message), _playerName, false, "ServerTools", true);
+                                    }
+                                    else
+                                    {
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You can not use sethome2 in a protected zone.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                        return false;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                {
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
+                                    {
+                                        if (_announce)
+                                        {
+                                            TeleportHome.SetHome2(_cInfo, _playerName, _announce);
+                                        }
+                                        else
+                                        {
+                                            TeleportHome.SetHome2(_cInfo, _playerName, _announce);
+                                            return false;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (_announce)
+                                        {
+                                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatResponseColor), _playerName, false, "ServerTools", true);
+                                        }
+                                        else
+                                        {
+                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired Command is unavailable..[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                            return false;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (_announce)
+                                    {
+                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}You are not listed as a reserved player. Command is unavailable.[-]", _message), _playerName, false, "ServerTools", true);
+                                    }
+                                    else
+                                    {
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are not listed as a reserved player. Command is unavailable.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                        else if (TeleportHome.SetHome2Enabled && !TeleportHome.SetHome2DonorOnly)
+                        {
+                            if (!ZoneProtection.SetHome)
+                            {
+                                if (!ZoneProtection.PvEFlag.Contains(_cInfo.entityId))
                                 {
                                     TeleportHome.SetHome2(_cInfo, _playerName, _announce);
                                     return false;
@@ -358,42 +492,19 @@ namespace ServerTools
                                 {
                                     if (_announce)
                                     {
-                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatResponseColor), _playerName, false, "ServerTools", true);
+                                        GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}You can not use sethome2 in a protected zone.[-]", _message), _playerName, false, "ServerTools", true);
                                     }
                                     else
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired Command is unavailable..[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You can not use sethome2 in a protected zone.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                                         return false;
                                     }
                                 }
                             }
                             else
                             {
-                                if (_announce)
-                                {
-                                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", _message), _playerName, false, "ServerTools", true);
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your reserved status has expired. Command is unavailable.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
-                                    return false;
-                                }
-                            }
-                        }
-                        else if (TeleportHome.SetHome2Enabled && !TeleportHome.SetHome2DonorOnly)
-                        {
-                            TeleportHome.SetHome2(_cInfo, _playerName, _announce);
-                            return false;
-                        }
-                        else
-                        {
-                            if (_announce)
-                            {
-                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}Sethome2 is not enabled.[-]", Config.ChatResponseColor), _playerName, false, "ServerTools", true);
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Sethome2 is not enabled.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                TeleportHome.SetHome2(_cInfo, _playerName, _announce);
+                                return false;
                             }
                         }
                     }
@@ -1058,52 +1169,73 @@ namespace ServerTools
                     }
                     if (_message == "clear")
                     {
-                        if (WeatherVote.VoteOpen)
+                        if (WeatherVote.IsEnabled)
                         {
-                            if (!WeatherVote.clear.Contains(_cInfo.entityId))
+                            if (WeatherVote.VoteOpen)
                             {
-                                WeatherVote.clear.Add(_cInfo.entityId);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.ChatResponseColor, _message), "Server", false, "ServerTools", false));
-                                return false;
+                                if (!WeatherVote.clear.Contains(_cInfo.entityId))
+                                {
+                                    WeatherVote.clear.Add(_cInfo.entityId);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.ChatResponseColor, _message), "Server", false, "ServerTools", false));
+                                    return false;
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                    return false;
+                                }
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
-                                return false;
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}There is no active weather vote. Type /weather in chat to open a new vote.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                             }
                         }
                     }
                     if (_message == "rain")
                     {
-                        if (WeatherVote.VoteOpen)
+                        if (WeatherVote.IsEnabled)
                         {
-                            if (!WeatherVote.rain.Contains(_cInfo.entityId))
+                            if (WeatherVote.VoteOpen)
                             {
-                                WeatherVote.rain.Add(_cInfo.entityId);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.ChatResponseColor, _message), "Server", false, "ServerTools", false));
-                                return false;
+                                if (!WeatherVote.rain.Contains(_cInfo.entityId))
+                                {
+                                    WeatherVote.rain.Add(_cInfo.entityId);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.ChatResponseColor, _message), "Server", false, "ServerTools", false));
+                                    return false;
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                    return false;
+                                }
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
-                                return false;
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}There is no active weather vote. Type /weather in chat to open a new vote.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                             }
                         }
                     }
                     if (_message == "snow")
                     {
-                        if (WeatherVote.VoteOpen)
+                        if (WeatherVote.IsEnabled)
                         {
-                            if (!WeatherVote.snow.Contains(_cInfo.entityId))
+                            if (WeatherVote.VoteOpen)
                             {
-                                WeatherVote.snow.Add(_cInfo.entityId);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.ChatResponseColor, _message), "Server", false, "ServerTools", false));
-                                return false;
+                                if (!WeatherVote.snow.Contains(_cInfo.entityId))
+                                {
+                                    WeatherVote.snow.Add(_cInfo.entityId);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.ChatResponseColor, _message), "Server", false, "ServerTools", false));
+                                    return false;
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                    return false;
+                                }
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
-                                return false;
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}There is no active weather vote. Type /weather in chat to open a new vote.[-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
                             }
                         }
                     }

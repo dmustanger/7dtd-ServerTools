@@ -230,7 +230,7 @@ namespace ServerTools
                     TimeSpan varTime = DateTime.Now - p.LastVoteReward;
                     double fractionalHours = varTime.TotalHours;
                     int _timepassed = (int)fractionalHours;
-                    if (_timepassed > DelayBetweenRewards)
+                    if (_timepassed >= DelayBetweenRewards)
                     {
                         Execute(_cInfo);
                     }

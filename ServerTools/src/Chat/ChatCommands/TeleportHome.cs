@@ -12,58 +12,55 @@ namespace ServerTools
 
         public static void SetHome(ClientInfo _cInfo, string _playerName, bool _announce)
         {
-            if (!ZoneProtection.PvEFlag.Contains(_cInfo.entityId))
+            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            if (p == null || !p.IsJailed)
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null || !p.IsJailed)
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                Vector3 _position = _player.GetPosition();
+                string x = _position.x.ToString();
+                string y = _position.y.ToString();
+                string z = _position.z.ToString();
+                string _sposition = x + "," + y + "," + z;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition = _sposition;
+                PersistentContainer.Instance.Save();
+                string _phrase10;
+                if (!Phrases.Dict.TryGetValue(10, out _phrase10))
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    Vector3 _position = _player.GetPosition();
-                    string x = _position.x.ToString();
-                    string y = _position.y.ToString();
-                    string z = _position.z.ToString();
-                    string _sposition = x + "," + y + "," + z;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition = _sposition;
-                    PersistentContainer.Instance.Save();
-                    string _phrase10;
-                    if (!Phrases.Dict.TryGetValue(10, out _phrase10))
-                    {
-                        _phrase10 = "{PlayerName} your home has been saved.";
-                    }
-                    _phrase10 = _phrase10.Replace("{PlayerName}", _cInfo.playerName);
-                    if (_announce)
-                    {
-                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
-                    }
-                    else
-                    {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.ChatResponseColor), "Server", false, "", false));
-                    }
+                    _phrase10 = "{PlayerName} your home has been saved.";
+                }
+                _phrase10 = _phrase10.Replace("{PlayerName}", _cInfo.playerName);
+                if (_announce)
+                {
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
                 }
                 else
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    Vector3 _position = _player.GetPosition();
-                    string x = _position.x.ToString();
-                    string y = _position.y.ToString();
-                    string z = _position.z.ToString();
-                    string _sposition = x + "," + y + "," + z;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition = _sposition;
-                    PersistentContainer.Instance.Save();
-                    string _phrase10;
-                    if (!Phrases.Dict.TryGetValue(10, out _phrase10))
-                    {
-                        _phrase10 = "{PlayerName} your home has been saved.";
-                    }
-                    _phrase10 = _phrase10.Replace("{PlayerName}", _cInfo.playerName);
-                    if (_announce)
-                    {
-                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
-                    }
-                    else
-                    {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.ChatResponseColor), "Server", false, "", false));
-                    }
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.ChatResponseColor), "Server", false, "", false));
+                }
+            }
+            else
+            {
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                Vector3 _position = _player.GetPosition();
+                string x = _position.x.ToString();
+                string y = _position.y.ToString();
+                string z = _position.z.ToString();
+                string _sposition = x + "," + y + "," + z;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition = _sposition;
+                PersistentContainer.Instance.Save();
+                string _phrase10;
+                if (!Phrases.Dict.TryGetValue(10, out _phrase10))
+                {
+                    _phrase10 = "{PlayerName} your home has been saved.";
+                }
+                _phrase10 = _phrase10.Replace("{PlayerName}", _cInfo.playerName);
+                if (_announce)
+                {
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
+                }
+                else
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.ChatResponseColor), "Server", false, "", false));
                 }
             }
         }
@@ -105,7 +102,7 @@ namespace ServerTools
                         TimeSpan varTime = DateTime.Now - p.LastSetHome;
                         double fractionalMinutes = varTime.TotalMinutes;
                         int _timepassed = (int)fractionalMinutes;
-                        if (_timepassed > DelayBetweenUses)
+                        if (_timepassed >= DelayBetweenUses)
                         {
                             Home(_cInfo, p.HomePosition, _announce);
                         }
@@ -183,58 +180,55 @@ namespace ServerTools
 
         public static void SetHome2(ClientInfo _cInfo, string _playerName, bool _announce)
         {
-            if (!ZoneProtection.PvEFlag.Contains(_cInfo.entityId))
+            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            if (p == null && !ZoneProtection.PvEFlag.Contains(_cInfo.entityId) || !p.IsJailed && !ZoneProtection.PvEFlag.Contains(_cInfo.entityId))
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null && !ZoneProtection.PvEFlag.Contains(_cInfo.entityId) || !p.IsJailed && !ZoneProtection.PvEFlag.Contains(_cInfo.entityId))
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                Vector3 _position = _player.GetPosition();
+                string x = _position.x.ToString();
+                string y = _position.y.ToString();
+                string z = _position.z.ToString();
+                string _sposition = x + "," + y + "," + z;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition2 = _sposition;
+                PersistentContainer.Instance.Save();
+                string _phrase607;
+                if (!Phrases.Dict.TryGetValue(607, out _phrase607))
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    Vector3 _position = _player.GetPosition();
-                    string x = _position.x.ToString();
-                    string y = _position.y.ToString();
-                    string z = _position.z.ToString();
-                    string _sposition = x + "," + y + "," + z;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition2 = _sposition;
-                    PersistentContainer.Instance.Save();
-                    string _phrase607;
-                    if (!Phrases.Dict.TryGetValue(607, out _phrase607))
-                    {
-                        _phrase607 = "{PlayerName} your home2 has been saved.";
-                    }
-                    _phrase607 = _phrase607.Replace("{PlayerName}", _cInfo.playerName);
-                    if (_announce)
-                    {
-                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
-                    }
-                    else
-                    {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.ChatResponseColor), "Server", false, "", false));
-                    }
+                    _phrase607 = "{PlayerName} your home2 has been saved.";
+                }
+                _phrase607 = _phrase607.Replace("{PlayerName}", _cInfo.playerName);
+                if (_announce)
+                {
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
                 }
                 else
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    Vector3 _position = _player.GetPosition();
-                    string x = _position.x.ToString();
-                    string y = _position.y.ToString();
-                    string z = _position.z.ToString();
-                    string _sposition = x + "," + y + "," + z;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition2 = _sposition;
-                    PersistentContainer.Instance.Save();
-                    string _phrase607;
-                    if (!Phrases.Dict.TryGetValue(607, out _phrase607))
-                    {
-                        _phrase607 = "{PlayerName} your home2 has been saved.";
-                    }
-                    _phrase607 = _phrase607.Replace("{PlayerName}", _cInfo.playerName);
-                    if (_announce)
-                    {
-                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
-                    }
-                    else
-                    {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.ChatResponseColor), "Server", false, "", false));
-                    }
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.ChatResponseColor), "Server", false, "", false));
+                }
+            }
+            else
+            {
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                Vector3 _position = _player.GetPosition();
+                string x = _position.x.ToString();
+                string y = _position.y.ToString();
+                string z = _position.z.ToString();
+                string _sposition = x + "," + y + "," + z;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition2 = _sposition;
+                PersistentContainer.Instance.Save();
+                string _phrase607;
+                if (!Phrases.Dict.TryGetValue(607, out _phrase607))
+                {
+                    _phrase607 = "{PlayerName} your home2 has been saved.";
+                }
+                _phrase607 = _phrase607.Replace("{PlayerName}", _cInfo.playerName);
+                if (_announce)
+                {
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
+                }
+                else
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.ChatResponseColor), "Server", false, "", false));
                 }
             }
         }
@@ -276,7 +270,7 @@ namespace ServerTools
                         TimeSpan varTime = DateTime.Now - p.LastSetHome;
                         double fractionalMinutes = varTime.TotalMinutes;
                         int _timepassed = (int)fractionalMinutes;
-                        if (_timepassed > DelayBetweenUses)
+                        if (_timepassed >= DelayBetweenUses)
                         {
                             Home2(_cInfo, p.HomePosition2, _playerName, _announce);
                         }

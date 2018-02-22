@@ -34,7 +34,7 @@ namespace ServerTools
                         TimeSpan varTime = DateTime.Now - p.LastAnimals;
                         double fractionalMinutes = varTime.TotalMinutes;
                         int _timepassed = (int)fractionalMinutes;
-                        if (_timepassed > DelayBetweenUses)
+                        if (_timepassed >= DelayBetweenUses)
                         {
                             _GiveAnimals(_cInfo, _announce);
                         }

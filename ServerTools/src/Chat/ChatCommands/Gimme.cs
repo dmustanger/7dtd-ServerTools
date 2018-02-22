@@ -236,7 +236,7 @@ namespace ServerTools
                     TimeSpan varTime = DateTime.Now - p.LastGimme;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
-                    if (_timepassed > DelayBetweenUses)
+                    if (_timepassed >= DelayBetweenUses)
                     {
                         _GiveItem(_cInfo, _announce);
                     }

@@ -1,5 +1,15 @@
 ﻿CHANGELOG
-Updated for v.6.41 
+Updated for v.6.5 
+
+v.6.5
+No longer using sub iterations for version change because some files do not update
+Added option to ZoneProtection called SetHome. Setting true lets all players use sethome or sethome2 in protected zones
+delete it to have the file auto create itself while the server is running. Restart the server only if necessary
+Changed WeatherVote to respond in two messages when a vote is started
+Fixed CustomCommand delay
+Fixed all command delay checks. They were off by 1 minute
+Fixed WeatherVote /clear not clearing the weather completely
+Fixed WeatherVote completed vote response
 
 v.6.41
 Fixed ZoneProtection and Travel detection formula. Some combinations of interger did not respond after last patch

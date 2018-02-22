@@ -7,7 +7,7 @@ namespace ServerTools
         public static bool IsEnabled = true;
         private const string file = "HowToSetup.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private const double version = 6.41;
+        private const double version = Config.version;
 
         public static void HowTo()
         {
@@ -15,7 +15,7 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine(string.Format("This was drafted for version \"{0}\"/>", version));
+                sw.WriteLine(string.Format("This was drafted for version \"{0}\"", version));
                 sw.WriteLine();
                 sw.WriteLine("ServerTools was coded and tested under a Windows operating system. It should operate on other major O.S. but if you find bugs, report them to");
                 sw.WriteLine("https://github.com/dmustanger/7dtd-ServerTools/issues");
@@ -552,13 +552,13 @@ namespace ServerTools
                 sw.WriteLine("Set a numeric value for RewardCount");
                 sw.WriteLine();
                 sw.WriteLine("Enabling will allow players to start a vote to change the weather by typing /weather in chat.");
-                sw.WriteLine("All players will be alerted to an open weather vote where they can type /normal, /rain, or /snow.");
+                sw.WriteLine("All players will be alerted to an open weather vote where they can type /clear, /rain, or /snow.");
                 sw.WriteLine("The winning weather type will be announced after 30 seconds and set server wide.");
                 sw.WriteLine("VoteDelay controls the time between votes. Time is in minutes.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("<Tool Name=\"ZoneProtection\" Enable=\"False\" KillMurderer=\"False\" JailEnabled=\"False\" KickEnabled=\"False\" BanEnabled=\"False\" ZoneMessage=\"False\" />");
+                sw.WriteLine("<Tool Name=\"ZoneProtection\" Enable=\"False\" KillMurderer=\"False\" JailEnabled=\"False\" KickEnabled=\"False\" BanEnabled=\"False\" ZoneMessage=\"False\" SetHome=\"False\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set True or False for KillMurderer");
@@ -566,6 +566,7 @@ namespace ServerTools
                 sw.WriteLine("Set True or False for KickEnabled");
                 sw.WriteLine("Set True or False for BanEnabled");
                 sw.WriteLine("Set True or False for ZoneMessage");
+                sw.WriteLine("Set True or False for SetHome");
                 sw.WriteLine();
                 sw.WriteLine("Enabling will create a ZoneProtection.xml in your \"world save folder/ServerTools\"");
                 sw.WriteLine("Automatically detects players locations to see if they match those listed in ZoneProtection.xml");
@@ -576,6 +577,7 @@ namespace ServerTools
                 sw.WriteLine("If jail is enabled, the victim can type /forgive to release the killer from jail.");
                 sw.WriteLine("The victim receives a message upon respawn alerting them to type /return. This command brings them back to their death spot.");
                 sw.WriteLine("If ZoneMessage is false, players will not receive a message upon entering or exiting a protected zone.");
+                sw.WriteLine("SetHome controls whether players can use the chat commands /sethome and /sethome2 inside a protected zone. Setting true allows all players to use those commands.");
                 sw.WriteLine("Inside the ZoneProtection.xml, the name will be the name of the protection zone, Corner1 is first corner of the zone, Corner2 is the opposite corner of the zone.");
                 sw.WriteLine("Corner1, and corner2 are represented by x, y, z coordinates.");
                 sw.WriteLine();
@@ -633,19 +635,19 @@ namespace ServerTools
                 sw.WriteLine("Example: rs remove 76561191234567891");
                 sw.WriteLine("Adds the player to the ReservedSlots.xml file. Players on this list are not booted when the server is full and reserved slots are enabled.");
                 sw.WriteLine();
-                sw.WriteLine("Reset AnimalTracking");
+                sw.WriteLine("AnimalTracking");
                 sw.WriteLine("Example: animaltracking reset 76561191234567891");
                 sw.WriteLine("Resets the delay on the command animal tracking for the player.");
                 sw.WriteLine();
-                sw.WriteLine("Reset FirstClaimBlock");
+                sw.WriteLine("FirstClaimBlock");
                 sw.WriteLine("Example: firstclaimblock reset 76561191234567891");
                 sw.WriteLine("Resets the delay on the command first claim block for the player.");
                 sw.WriteLine();
-                sw.WriteLine("Reset Gimme");
+                sw.WriteLine("Gimme");
                 sw.WriteLine("Example: gimme reset 76561191234567891");
                 sw.WriteLine("Resets the delay on the command gimme for the player.");
                 sw.WriteLine();
-                sw.WriteLine("Reset Home");
+                sw.WriteLine("Home");
                 sw.WriteLine("Example: home reset 76561191234567891");
                 sw.WriteLine("Resets the delay on the command home and home2 for the player.");
                 sw.WriteLine();
@@ -653,11 +655,11 @@ namespace ServerTools
                 sw.WriteLine("Example: player reset 76561191234567891");
                 sw.WriteLine("Resets the profile for the player.");
                 sw.WriteLine();
-                sw.WriteLine("Reset VoteReward");
+                sw.WriteLine("VoteReward");
                 sw.WriteLine("Example: votereward reset 76561191234567891");
                 sw.WriteLine("Resets the delay on the command reward for the player.");
                 sw.WriteLine();
-                sw.WriteLine("Reset WeatherVote");
+                sw.WriteLine("WeatherVote");
                 sw.WriteLine("Example: weathervote reset");
                 sw.WriteLine("Resets the delay on the weather vote for the server.");
                 sw.WriteLine();

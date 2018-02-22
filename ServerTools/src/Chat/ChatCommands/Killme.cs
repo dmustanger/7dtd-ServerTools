@@ -25,7 +25,7 @@ namespace ServerTools
                     TimeSpan varTime = DateTime.Now - p.LastKillme;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
-                    if (_timepassed > DelayBetweenKillMe)
+                    if (_timepassed >= DelayBetweenKillMe)
                     {
                         KillPlayer(_cInfo);
                     }

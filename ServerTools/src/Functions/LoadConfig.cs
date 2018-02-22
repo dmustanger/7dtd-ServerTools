@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        private const double version = 6.4;
+        public const double version = 6.5;
         public static bool UpdateConfigs = false;
         public static string ChatResponseColor = "[00FF00]";
 
@@ -1488,6 +1488,16 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of invalid (true/false) value for 'ZoneMessage' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("SetHome"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of missing 'SetHome' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("SetHome"), out ZoneProtection.SetHome))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring ZoneProtection entry because of invalid (true/false) value for 'SetHome' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                         }
                     }
@@ -1559,7 +1569,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Watchlist\" Enable=\"{0}\" />", Watchlist.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"WeatherVote\" Enable=\"{0}\" VoteDelay=\"{1}\"/>", WeatherVote.IsEnabled, WeatherVote.VoteDelay));
                 //sw.WriteLine(string.Format("        <Tool Name=\"WorldRadius\" Enable=\"{0}\" WorldSize=\"{1}\" ZoneWarnings=\"{2}\", WorldRadius.IsEnabled, WorldRadius.WorldSize, WorldRadius.ZoneWarnings));
-                sw.WriteLine(string.Format("        <Tool Name=\"ZoneProtection\" Enable=\"{0}\" KillMurderer=\"{1}\" JailEnabled=\"{2}\" KickEnabled=\"{3}\" BanEnabled=\"{4}\" ZoneMessage=\"{5}\" />", ZoneProtection.IsEnabled, ZoneProtection.KillMurderer, ZoneProtection.JailEnabled, ZoneProtection.KickEnabled, ZoneProtection.BanEnabled, ZoneProtection.ZoneMessage));
+                sw.WriteLine(string.Format("        <Tool Name=\"ZoneProtection\" Enable=\"{0}\" KillMurderer=\"{1}\" JailEnabled=\"{2}\" KickEnabled=\"{3}\" BanEnabled=\"{4}\" ZoneMessage=\"{5}\" SetHome=\"{6}\" />", ZoneProtection.IsEnabled, ZoneProtection.KillMurderer, ZoneProtection.JailEnabled, ZoneProtection.KickEnabled, ZoneProtection.BanEnabled, ZoneProtection.ZoneMessage, ZoneProtection.SetHome));
                 sw.WriteLine("    </Tools>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();

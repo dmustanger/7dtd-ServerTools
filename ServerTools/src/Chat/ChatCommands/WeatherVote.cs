@@ -35,17 +35,25 @@ namespace ServerTools
             string _phrase611;
             if (!Phrases.Dict.TryGetValue(611, out _phrase611))
             {
-                _phrase611 = "A vote to change the weather has begun and will close in 30 seconds. Type /clear, /rain or /snow to cast your vote.";
+                _phrase611 = "A vote to change the weather has begun and will close in 30 seconds.";
             }
             GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase611), "Server", false, "", false);
+            string _phrase615;
+            if (!Phrases.Dict.TryGetValue(615, out _phrase615))
+            {
+                _phrase615 = "Type /clear, /rain or /snow to cast your vote.";
+            }
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase615), "Server", false, "", false);
             VoteOpen = true;
             Thread.Sleep(30000);
             VoteOpen = false;
             if (clear.Count > rain.Count & clear.Count > snow.Count)
             {
-                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, ("{0}Clear skies ahead"), "", false, "ServerTools", true);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}Clear skies ahead", Config.ChatResponseColor), "Server", false, "ServerTools", true);
                 SdtdConsole.Instance.ExecuteSync("weather rain 0", (ClientInfo)null);
+                SdtdConsole.Instance.ExecuteSync("weather wet 0", (ClientInfo)null);
                 SdtdConsole.Instance.ExecuteSync("weather snow 0", (ClientInfo)null);
+                SdtdConsole.Instance.ExecuteSync("weather snowfall 0", (ClientInfo)null);
                 VoteClosed = true;
                 WeatherTimerStart();
                 _weather = "clear";
@@ -56,18 +64,20 @@ namespace ServerTools
                 int _rndWeather = rnd.Next(1, 3);
                 if (_rndWeather == 1)
                 {
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, ("{0}Light rain has started"), "", false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}Light rain has started", Config.ChatResponseColor), "Server", false, "ServerTools", true);
                     SdtdConsole.Instance.ExecuteSync("weather rain 0.2", (ClientInfo)null);
                 }
                 if (_rndWeather == 2)
                 {
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, ("{0}A rain storm has started"), "", false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}A rain storm has started", Config.ChatResponseColor), "Server", false, "ServerTools", true);
                     SdtdConsole.Instance.ExecuteSync("weather rain 0.6", (ClientInfo)null);
+                    SdtdConsole.Instance.ExecuteSync("weather wet 1", (ClientInfo)null);
                 }
                 if (_rndWeather == 3)
                 {
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, ("{0}A heavy rain storm has started"), "", false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}A heavy rain storm has started", Config.ChatResponseColor), "Server", false, "ServerTools", true);
                     SdtdConsole.Instance.ExecuteSync("weather rain 1", (ClientInfo)null);
+                    SdtdConsole.Instance.ExecuteSync("weather wet 1", (ClientInfo)null);
                 }
                 VoteClosed = true;
                 WeatherTimerStart();
@@ -79,17 +89,19 @@ namespace ServerTools
                 int _rndWeather = rnd.Next(1, 3);
                 if (_rndWeather == 1)
                 {
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, ("{0}Light snow has started"), "", false, "ServerTools", true);
-                    SdtdConsole.Instance.ExecuteSync("weather snow 0.2", (ClientInfo)null);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}Light snow has started", Config.ChatResponseColor), "Server", false, "ServerTools", true);
+                    SdtdConsole.Instance.ExecuteSync("weather snowfall 0.2", (ClientInfo)null);
                 }
                 if (_rndWeather == 2)
                 {
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, ("{0}A snow storm has started"), "", false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}A snow storm has started", Config.ChatResponseColor), "Server", false, "ServerTools", true);
+                    SdtdConsole.Instance.ExecuteSync("weather snowfall 0.6", (ClientInfo)null);
                     SdtdConsole.Instance.ExecuteSync("weather snow 0.6", (ClientInfo)null);
                 }
                 if (_rndWeather == 3)
                 {
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, ("{0}A heavy snow storm has started"), "", false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}A heavy snow storm has started", Config.ChatResponseColor), "Server", false, "ServerTools", true);
+                    SdtdConsole.Instance.ExecuteSync("weather snowfall 1", (ClientInfo)null);
                     SdtdConsole.Instance.ExecuteSync("weather snow 1", (ClientInfo)null);
                 }
                 VoteClosed = true;
@@ -154,9 +166,7 @@ namespace ServerTools
         public static void WeatherTimerStop(object sender, ElapsedEventArgs e)
         {
             t.Stop();
-            SdtdConsole.Instance.ExecuteSync("weather rain 0", (ClientInfo)null);
-            SdtdConsole.Instance.ExecuteSync("weather snow 0", (ClientInfo)null);
-            SdtdConsole.Instance.ExecuteSync("weather normalize", (ClientInfo)null);
+            SdtdConsole.Instance.ExecuteSync("weather defaults", (ClientInfo)null);
             VoteClosed = false;
         }
     }

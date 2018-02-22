@@ -87,12 +87,12 @@ namespace ServerTools
                                 Log.Out(string.Format("[SERVERTOOLS] Using default value of 0 for DelayBetweenUses for command entry {1} because of invalid (non-numeric) value: {0}", subChild.OuterXml, _line.GetAttribute("Trigger")));
                             }
                         }
-                        int _number = 1;
+                        int _number = 0;
                         if (_line.HasAttribute("Number"))
                         {
                             if (!int.TryParse(_line.GetAttribute("Number"), out _number))
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Using default value of 1 for Number for command entry {1} because of invalid (non-numeric) value: {0}", subChild.OuterXml, _line.GetAttribute("Trigger")));
+                                Log.Out(string.Format("[SERVERTOOLS] Using default value of 0 for Number for command entry {1} because of invalid (non-numeric) value: {0}", subChild.OuterXml, _line.GetAttribute("Trigger")));
                             }
                         }
                         string _trigger = _line.GetAttribute("Trigger");
@@ -298,7 +298,7 @@ namespace ServerTools
             int[] _c;
             if (Dict1.TryGetValue(_message, out _c))
             {
-                if (_c[0] < 1)
+                if (_c[0] == 0)
                 {
                     CommandResponse(_cInfo, _message, _playerName, _announce, _c);
                 }
@@ -315,85 +315,85 @@ namespace ServerTools
                         {
                             TimeSpan varTime = DateTime.Now - p.CustomCommand1;
                             double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
+                            _timepassed = (int)fractionalMinutes;
                         }
                         if (_c[1] == 2)
                         {
                             TimeSpan varTime = DateTime.Now - p.CustomCommand2;
                             double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
+                            _timepassed = (int)fractionalMinutes;
                         }
                         if (_c[1] == 3)
                         {
                             TimeSpan varTime = DateTime.Now - p.CustomCommand3;
                             double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
+                            _timepassed = (int)fractionalMinutes;
                         }
                         if (_c[1] == 4)
                         {
                             TimeSpan varTime = DateTime.Now - p.CustomCommand4;
                             double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
+                            _timepassed = (int)fractionalMinutes;
                         }
                         if (_c[1] == 5)
                         {
                             TimeSpan varTime = DateTime.Now - p.CustomCommand5;
                             double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
+                            _timepassed = (int)fractionalMinutes;
                         }
                         if (_c[1] == 6)
                         {
                             TimeSpan varTime = DateTime.Now - p.CustomCommand6;
                             double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
+                            _timepassed = (int)fractionalMinutes;
                         }
                         if (_c[1] == 7)
                         {
                             TimeSpan varTime = DateTime.Now - p.CustomCommand7;
                             double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
+                            _timepassed = (int)fractionalMinutes;
                         }
                         if (_c[1] == 8)
                         {
                             TimeSpan varTime = DateTime.Now - p.CustomCommand8;
                             double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
+                            _timepassed = (int)fractionalMinutes;
                         }
                         if (_c[1] == 9)
                         {
                             TimeSpan varTime = DateTime.Now - p.CustomCommand9;
                             double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
+                            _timepassed = (int)fractionalMinutes;
                         }
                         if (_c[1] == 10)
                         {
                             TimeSpan varTime = DateTime.Now - p.CustomCommand10;
                             double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
+                            _timepassed = (int)fractionalMinutes;
                         }
-                        if (_timepassed > _c[0])
+                        if (_timepassed >= _c[0])
                         {
                             CommandResponse(_cInfo, _message, _playerName, _announce, _c);
                         }
                         else
                         {
                             int _timeleft = _c[0] - _timepassed;
-                            string _phrase615;
-                            if (!Phrases.Dict.TryGetValue(615, out _phrase615))
+                            string _phrase616;
+                            if (!Phrases.Dict.TryGetValue(616, out _phrase616))
                             {
-                                _phrase615 = "{PlayerName} you can only use {Command} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                _phrase616 = "{PlayerName} you can only use {Command} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
-                            _phrase615 = _phrase615.Replace("{Command}", _message);
-                            _phrase615 = _phrase615.Replace("{PlayerName}", _playerName);
-                            _phrase615 = _phrase615.Replace("{DelayBetweenUses}", _c[0].ToString());
-                            _phrase615 = _phrase615.Replace("{TimeRemaining}", _timeleft.ToString());
+                            _phrase616 = _phrase616.Replace("{Command}", _message);
+                            _phrase616 = _phrase616.Replace("{PlayerName}", _playerName);
+                            _phrase616 = _phrase616.Replace("{DelayBetweenUses}", _c[0].ToString());
+                            _phrase616 = _phrase616.Replace("{TimeRemaining}", _timeleft.ToString());
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase615), "Server", false, "", false);
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase616), "Server", false, "", false);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase615), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase616), "Server", false, "", false));
                             }
                         }
                     }
@@ -484,7 +484,7 @@ namespace ServerTools
                     PersistentContainer.Instance.Save();
                 }
             }
-            return "";
+            return null;
         }
     }
 }

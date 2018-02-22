@@ -665,7 +665,7 @@ namespace ServerTools
                 string _phrase611;
                 if (!Dict.TryGetValue(611, out _phrase611))
                 {
-                    _phrase611 = "A vote to change the weather has begun and will close in 30 seconds. Type /clear, /rain or /snow to cast your vote.";
+                    _phrase611 = "A vote to change the weather has begun and will close in 30 seconds.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"611\" Phrase=\"{0}\" />", _phrase611));
                 string _phrase612;
@@ -686,15 +686,21 @@ namespace ServerTools
                     _phrase614 = "Weather vote was a tie. No changes were made.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"614\" Phrase=\"{0}\" />", _phrase614));
-                sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- ******************** CustomCommands ******************** -->");
-                sw.WriteLine("        <!-- ******************************************************** -->");
                 string _phrase615;
                 if (!Dict.TryGetValue(615, out _phrase615))
                 {
-                    _phrase615 = "{PlayerName} you can only use {Command} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase615 = "Type /clear, /rain or /snow to cast your vote.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"615\" Phrase=\"{0}\" />", _phrase615));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ******************** CustomCommands ******************** -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase616;
+                if (!Dict.TryGetValue(616, out _phrase616))
+                {
+                    _phrase616 = "{PlayerName} you can only use {Command} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"616\" Phrase=\"{0}\" />", _phrase616));
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();
