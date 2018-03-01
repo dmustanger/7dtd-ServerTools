@@ -1,5 +1,27 @@
 ﻿CHANGELOG
-Updated for v.6.5 
+Updated for v.7.0
+
+v.7.0
+Added to Travel system. To teleport a bike, while riding the bike type /travel to prep the current bike, then get off and type /travel again.
+Added Friend_Teleport. Type /friend to see all current online friends and their Id. Type /friend Id to send a request to teleport to that friend. The 
+friend can type /accept for up to 30 seconds and the request will be accepted. Optional delay
+Added chat command /bm. Works exactly like /bloodmoon
+Added Invalid_Name option to Bad_Word_Filter. If the players name has a bad word from BadWords.xml, their name is replaced with Invalid Name-No Commands
+Added Shop system. Type /wallet to see current value. /shop to display player wallet value and the items from Market.xml but it must 
+be done in a trader zone. Players can purchase items from the shop with /buy #. The # is shown when players use /market. Wallet values are
+always displayed privately. Different wallet calculation for PvE vs PvP
+Added Anticheat - Teleport_Check. Players teleporting that are not at least Admin_level are auto killed, jailed, kicked or banned
+Added general code improvements
+Changed console command tempban. It no longer has a config option, you set it up like any other console command under your ServerAdmin.xml 
+Changed console commands that utilized a steam Id only to allow entity Id or steam Id. A player name should also suffice
+Changed two config option lines by merging them with another. Chat_Command_Response now has the options Color, Chat_Command_Private, Chat_Command_Public
+Changed command names to make it easier to read the config file. Example: AnimalList is now Animal_List, ZoneProtection is now Zone_Protection
+Changed console commands giveitem and giveblock response when a player receives an item. The in game response is now private instead of public
+Changed threading use in ServerTools. There were only roughly 5 tools using threading out of the 45 tools but there is now only 1 and it operates as 
+a background process. Improves server performance on low end processors if all the tools are enabled and active
+Fixed Vote_Reward quantity when using /reward
+Fixed Bloodmoon days until horde result
+Fixed some output_log responses for the configuration file when a improper input is configured by the user
 
 v.6.5
 No longer using sub iterations for version change because some files do not update
