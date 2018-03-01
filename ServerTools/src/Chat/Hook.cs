@@ -194,7 +194,7 @@ namespace ServerTools
                 }
                 if (Normal_Player_Name_Coloring && !_message.StartsWith(Command_Private) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && !SpecialPlayers.Contains(_cInfo.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
                 {
-                    if (Special_Player_Prefix != "")
+                    if (Normal_Player_Prefix != "")
                     {
                         _playerName = string.Format("{0}{1} {2}[-]", Normal_Player_Color, Normal_Player_Prefix, _playerName);
                         GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
@@ -648,15 +648,38 @@ namespace ServerTools
                     }
                     if (_message == "commands")
                     {
-                        string _commands = CustomCommands.GetChatCommands(_cInfo);
+                        string _commands1 = CustomCommands.GetChatCommands1(_cInfo);
+                        string _commands2 = CustomCommands.GetChatCommands2(_cInfo);
+                        string _commandsCustom = CustomCommands.GetChatCommandsCustom(_cInfo);
+                        string _commandsAdmin = CustomCommands.GetChatCommandsAdmin(_cInfo);
                         if (_announce)
                         {
                             GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("{0}{1}", Command_Public, _message), _playerName, false, "ServerTools", true);
-                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _commands, "Server", false, "ServerTools", false);
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _commands1, "Server", false, "ServerTools", false);
+                            GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _commands2, "Server", false, "ServerTools", false);
+                            if (CustomCommands.IsEnabled)
+                            {
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _commandsCustom, "Server", false, "ServerTools", false);
+                            }
+                            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                            if (Admin.PermissionLevel <= Admin_Level)
+                            {
+                                GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, _commandsAdmin, "Server", false, "ServerTools", false);
+                            }
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commands, "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commands1, "Server", false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commands2, "Server", false, "ServerTools", false));
+                            if (CustomCommands.IsEnabled)
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commandsCustom, "Server", false, "ServerTools", false));
+                            }
+                            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                            if (Admin.PermissionLevel <= Admin_Level)
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commandsAdmin, "Server", false, "ServerTools", false));
+                            }                           
                         }
                         return false;
                     }
