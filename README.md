@@ -17,7 +17,8 @@ Go to the releases tab and check for the latest files https://github.com/dmustan
 <br>
 <br>
 <br>
-# Current Tools and Features
+# Current-Tools-and-Features
+<br>
 <br>
 Anti Cheat<br>
 <br>
