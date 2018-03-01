@@ -173,133 +173,155 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static string GetChatCommands(ClientInfo _cInfo)
+        public static string GetChatCommands1(ClientInfo _cInfo)
         {
-            string _commands = string.Format("{0}Commands are:", Config.Chat_Response_Color);
+            string _commands_1 = string.Format("{0}Commands are:", Config.Chat_Response_Color);
             if (FriendTeleport.IsEnabled)
             {
-                _commands = string.Format("{0} /friend /accept", _commands);
+                _commands_1 = string.Format("{0} /friend /friend # /accept", _commands_1);
             }
             if (Shop.IsEnabled)
             {
-                _commands = string.Format("{0} /wallet /shop /buy", _commands);
+                _commands_1 = string.Format("{0} /wallet /shop /buy", _commands_1);
             }
             if (Gimme.IsEnabled)
             {
-                _commands = string.Format("{0} /gimme", _commands);
+                _commands_1 = string.Format("{0} /gimme", _commands_1);
             }
             if (TeleportHome.IsEnabled)
             {
-                _commands = string.Format("{0} /sethome /home /delhome", _commands);
+                _commands_1 = string.Format("{0} /sethome /home /delhome", _commands_1);
             }
             if (KillMe.IsEnabled)
             {
-                _commands = string.Format("{0} /killme", _commands);
+                _commands_1 = string.Format("{0} /killme", _commands_1);
             }
             if (Day7.IsEnabled)
             {
-                _commands = string.Format("{0} /day7", _commands);
+                _commands_1 = string.Format("{0} /day7", _commands_1);
             }
             if (Bloodmoon.IsEnabled)
             {
-                _commands = string.Format("{0} /bloodmoon", _commands);
+                _commands_1 = string.Format("{0} /bloodmoon", _commands_1);
             }
             if (IsEnabled)
             {
-                _commands = string.Format("{0} /pm /re", _commands);
+                _commands_1 = string.Format("{0} /pm /re", _commands_1);
             }
             if (ClanManager.IsEnabled)
             {
-                _commands = string.Format("{0} /clancommands", _commands);
+                _commands_1 = string.Format("{0} /clancommands", _commands_1);
             }
             if (FirstClaimBlock.IsEnabled)
             {
-                _commands = string.Format("{0} /claim", _commands);
+                _commands_1 = string.Format("{0} /claim", _commands_1);
             }
+            return _commands_1;
+        }
+
+        public static string GetChatCommands2(ClientInfo _cInfo)
+        {
+            string _commands_2 = string.Format("{0}More Commands:", Config.Chat_Response_Color);
             if (Animals.IsEnabled)
             {
-                _commands = string.Format("{0} /trackanimal /track", _commands);
+                _commands_2 = string.Format("{0} /trackanimal /track", _commands_2);
             }
             if (VoteReward.IsEnabled)
             {
-                _commands = string.Format("{0} /reward", _commands);
+                _commands_2 = string.Format("{0} /reward", _commands_2);
             }
             if (ChatHook.Donator_Name_Coloring)
             {
-                _commands = string.Format("{0} /doncolor", _commands);
+                _commands_2 = string.Format("{0} /doncolor", _commands_2);
             }
             if (ChatHook.Reserved_Check)
             {
-                _commands = string.Format("{0} /reserved", _commands);
+                _commands_2 = string.Format("{0} /reserved", _commands_2);
             }
             if (AutoShutdown.IsEnabled)
             {
-                _commands = string.Format("{0} /shutdown", _commands);
+                _commands_2 = string.Format("{0} /shutdown", _commands_2);
             }
             if (AdminList.IsEnabled)
             {
-                _commands = string.Format("{0} /admin", _commands);
+                _commands_2 = string.Format("{0} /admin", _commands_2);
             }
             if (Travel.IsEnabled)
             {
-                _commands = string.Format("{0} /travel", _commands);
+                _commands_2 = string.Format("{0} /travel", _commands_2);
             }
             if (ChatHook.Special_Player_Name_Coloring && ChatHook.SpecialPlayers.Contains(_cInfo.playerId))
             {
-                _commands = string.Format("{0} /spcolor", _commands);
+                _commands_2 = string.Format("{0} /spcolor", _commands_2);
             }
             if (TeleportHome.IsEnabled & TeleportHome.Set_Home2_Enabled)
             {
-                _commands = string.Format("{0} /sethome2 /home2 /delhome2", _commands);
+                _commands_2 = string.Format("{0} /sethome2 /home2 /delhome2", _commands_2);
             }
             if (WeatherVote.IsEnabled)
             {
-                _commands = string.Format("{0} /weather", _commands);
+                _commands_2 = string.Format("{0} /weather", _commands_2);
             }
             if (WeatherVote.VoteOpen)
             {
-                _commands = string.Format("{0} /sun /rain /snow /fog /wind", _commands);
+                _commands_2 = string.Format("{0} /sun /rain /snow /fog /wind", _commands_2);
             }
+            return _commands_2;
+        }
+
+        public static string GetChatCommandsCustom(ClientInfo _cInfo)
+        {
+            string _commandsCustom = string.Format("{0}Custom commands are:", Config.Chat_Response_Color);
+            if (Dict.Count > 0)
+            {
+                foreach (KeyValuePair<string, string> kvp in Dict)
+                {
+                    string _c = kvp.Key;
+                    _commandsCustom = string.Format("{0} /{1}", _commandsCustom, _c);
+                }
+            }
+            if (_commandsCustom.EndsWith("Custom commands are:"))
+            {
+                _commandsCustom = string.Format("{0}Sorry, there are no custom chat commands.", Config.Chat_Response_Color);
+            }
+            _commandsCustom = string.Format("{0}[-]", _commandsCustom);
+            return _commandsCustom;
+        }
+
+        public static string GetChatCommandsAdmin(ClientInfo _cInfo)
+        {
+            string _commandsAdmin = string.Format("{0}Admin commands are:", Config.Chat_Response_Color);
             if (AdminChat.IsEnabled && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
             {
                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                 if (Admin.PermissionLevel <= ChatHook.Admin_Level)
                 {
-                    _commands = string.Format("{0} @admins", _commands);
+                    _commandsAdmin = string.Format("{0} @admins", _commandsAdmin);
                     string[] _command = { "say" };
                     if (GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo.playerId))
                     {
-                        _commands = string.Format("{0} @all", _commands);
+                        _commandsAdmin = string.Format("{0} @all", _commandsAdmin);
                     }
                     string[] _command1 = { "jail" };
                     if (GameManager.Instance.adminTools.CommandAllowedFor(_command1, _cInfo.playerId))
                     {
                         if (Jail.IsEnabled)
                         {
-                            _commands = string.Format("{0} /jail", _commands);
+                            _commandsAdmin = string.Format("{0} /jail", _commandsAdmin);
                         }
                     }
                     string[] _command2 = { "mute" };
                     if (GameManager.Instance.adminTools.CommandAllowedFor(_command2, _cInfo.playerId))
                     {
-                        _commands = string.Format("{0} /mute", _commands);
+                        _commandsAdmin = string.Format("{0} /mute", _commandsAdmin);
+                    }
+                    if (_commandsAdmin.EndsWith("Admin commands are:"))
+                    {
+                        _commandsAdmin = string.Format("{0}Sorry, there are no admin chat commands.", Config.Chat_Response_Color);
                     }
                 }
             }
-            if (Dict.Count > 0)
-            {
-                foreach (KeyValuePair<string, string> kvp in Dict)
-                {
-                    string _c = kvp.Key;
-                    _commands = string.Format("{0} /{1}", _commands, _c);
-                }
-            }
-            if (_commands.EndsWith("Commands are:"))
-            {
-                _commands = string.Format("{0}Sorry, there are no custom chat commands.", Config.Chat_Response_Color);
-            }
-            _commands = string.Format("{0}[-]", _commands);
-            return _commands;
+            return _commandsAdmin;
         }
 
         public static void CheckCustomDelay(ClientInfo _cInfo, string _message, string _playerName, bool _announce)
