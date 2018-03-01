@@ -17,103 +17,112 @@ Go to the releases tab and check for the latest files https://github.com/dmustan
 <br>
 <br>
 <br>
-
-# Current Features
-Chat color and prefix option for standard players.<br>
+# Current Tools and Features
 <br>
-Special logs are created when a player is detected by an anticheat module.<br>
+Anti Cheat<br>
 <br>
-Logs are automatically deleted if too old. Configured via config.<br>
 <br>
-Zone Protection for PvE only zones. Killers can be auto kicked, banned, jailed.<br>
+Automatically detects and deals with cheaters. Customizable<br>
 <br>
-Travel system for players to teleport to set locations when standing in the right zone.<br>
+Detects: flying above or below ground, hatch elevator, teleport, invalid items, invalid stack sized, family share accounts, <br>
+player stats such as height, speed, jump strength, max stamina, max health, available skill points.<br>
 <br>
-Multiple anticheat systems. One for flying above ground, one for below ground. Player stats monitor. Player position logger. Player inventory logger. Player IP logger. Family share account detection, exception list available.<br>
-Hatch Elevator detector, stuns and breaks leg.<br>
+Logs all player's inventory to a file for later review. Set the time between loggings. Default is once per minute.<br>
 <br>
-Custom starting items option. Places items from a list into the player's inventory when first entering a new world.<br>
+Records player's IP address and location to the inventory log.<br>
 <br>
-First claim block system to help prevent claim block grief.<br>
+Logs of violators are auto created and deleted based on your settings.<br>
 <br>
-Give items or blocks directly into a player's inventory.<br>
 <br>
-Vote reward system linked into the https://7daystodie-servers.com website.<br>
 <br>
-Chat command /admin to show players online administrators and moderators.<br>
+Other Tools<br>
 <br>
-Can reset all player's command delays via console.<br>
 <br>
-Temporary ban command for 1 to 60 min ban via console.<br>
+Day7 alerts: automatically receive in game alerts to the upcoming bloodmoon. Can set a custom horde night value<br>
 <br>
-Default chat command triggers / and ! can be set to a custom symbol instead.<br>
+Zone protection: set an area as a protected space. PvP inside is dealt with automatically. Alert upon entry/exit<br>
 <br>
-Administrator alerts when entities are detected stuck underground.<br>
+Weather vote: vote to change the weather<br>
 <br>
-Administrators can turn off their chat color to remain stealthy via console.<br>
+Teleport to friend: request to teleport to a friend. They must accept the request in a time limit<br>
 <br>
-Special players can be given a unique prefix and color for chat.<br>
+Shop and wallet: make a custom shop list for players to buy from. Wallet is calculated automatically. Can only shop in trader zone<br>
 <br>
-Automatically teleports entities found underground to the surface such as bikes and backpacks. This drastically reduces lag on busy servers.<br>
+Vote rewards: for players voting your server at https://7daystodie-servers.com website<br>
 <br>
-Console command restart check for remaining time until auto restart initiates. Chat command /restart does the same.<br>
+Travel: for players to specific locations when in the right location. Can teleport a bike. Custom delay<br>
 <br>
-Auto restart. Set a time and countdown amount. This runs stopserver command automatically upon timer expiration<br>
+Starting items: new players receive all the items from the StartingItems.xml<br>
 <br>
-Animal spawning with /trackanimal or /track. Delay timer optional. Choice of available animals via servertools config<br>
+First claim block: players can type /claim to receive a single claim block. Prevents greifing<br>
 <br>
-Reservation expiration check with /reserved in chat.<br>
+Give item: give item directly into a players inventory or all online players. Drops to the ground if their inventory is full<br>
 <br>
-Donator chat colors and prefix. Adjustable colors via chat command /doncolor. Players must be listed in the reserved list.<br>
+Give block: give block directly into a players inventory or all online players. Drops to the ground if their inventory is full<br>
 <br>
-Custom chat commands with custom color. Add your own commands via config. All commands are added to the chat commands /commands /info /help automatically. All chat commands can use "!" or "/". If "/gimme" is used it returns a private message to the player. If "!gimme" is used it returns a message to the entire server.<br>
+Admin List: players can type trigger an ingame list of currently online admins and moderators<br>
 <br>
-/Gimme with adjustable timer and items via config.<br>
+Command delays: multiple commands have delay times. Players can not use the command until the delay has expired since last use<br>
 <br>
-/Killme with adjustable timer via config.<br>
+Command delay reset: reset any player command delays via the console<br>
 <br>
-Multiple home points via chat commands /home /sethome /delhome /home2 /sethom2 /delhome 2 and with adjustable timer for /home and /home 2 via config.<br>
+Temporary ban: console command tempban to allow a limited ban time for moderators or low tier admins<br>
 <br>
-High ping kicker with ping immunity. Can add players to the immunity list via config or console command. Can also set it so that it takes samples before a kick occurs. If you set SamplesNeeded to 2 in the config, a player would have to have a high ping for 2 checks before the player is kicked.<br>
+Custom chat command triggers: commands use / and ! to initialize commands but they can be set to any symbol<br>
 <br>
-Ban or kick players for invalid items/blocks in their inventory such as reinforced concrete blocks. Select what items/blocks are invalid via config.<br>
+Stuck entity: automatically sends bikes, bags, and zombies to the world surface to prevent errors and server lag<br>
 <br>
-Alert players of Invalid Item stack numbers in their inventory.<br>
+Admin alerts: detections that require manual inspection is sent to currently online admins<br>
 <br>
-Chat logger. Saves all ingame chat to a log file in the game save directory.<br>
+Chat colors and prefixes: administators, moderators, donators/reserved players, special players can all get custom chat colors and prefix<br>
 <br>
-Bad word filter. Replaces bad words with "*****". Can add bad words via config.<br>
+Auto shutdown: the server will auto shutdown after a scheduled time frame. Initiates shutdown system with alerts, world save, countdown<br>
 <br>
-Motd adjustable via Motd.xml.<br>
+Animal spawning: made to be like an animal tracking system. Players spawn a random animal from a list<br>
 <br>
-InfoTicker/Scrolling messages adjustable via config.<br>
+Stealh admins: while chat color and prefix is active, admins can disable their chat color to stay hidden<br>
 <br>
-Auto save the world every x amount of minutes adjustable via config.<br>
+Reserved players: automatically kick a non reserved player to let your reserved players in<br>
 <br>
-Watchlist You can add suspect players to this list and when they join the server it will alert any online admins that they are online.<br>
+Custom commands: Make your own commands and set optional delays for the first ten entries<br>
 <br>
-All chat responses can be edited via config.<br>
+Check next shutdown: Can check when the next scheduled shutdown period is<br>
 <br>
-Admin chat commands @admins @all /mute /unmute. @admins \<message\> will send a message to all admins and only admins can use this command. @all \<message\> is just like a say command. /mute \<playerName\> will keep said player from posting in the chat. /unmute \<playerName\> will allow the player to post in the chat again.<br>
+Reservation check: players can check the expiration time for their reservation<br>
 <br>
-Clan Tag Protection. Only the person that created the clan can delete the clan and promote/demote members to/from officers. Only clan owners and officers can invite and remove members.<br>
-to make a clan type /clanadd \<clanTag\><br>
-to delete a clan type /clandel<br>
-to add members type /claninvite \<playerName\><br>
-to remove a member type /clanremove \<playerName\><br>
-to promote a member to officer type /clanpromote \<playerName\><br>
-to demote a member from officer to member type /clandemote \<playerName\><br>
-to accept a clan invite type /clanaccept<br>
-to decline a clan invite type /clandecline<br>
-to leave a clan type /clanleave<br>
+Gimme system: players can spawn a free item periodically with a custom delay<br>
 <br>
-Chat commands /pm or /w for players to pm other players.<br>
-Usage: /w \<playername\> \<message\> or /pm \<playername\> \<message\><br>
+Killme command: players can commit suicide with a custom delay<br>
 <br>
-Admin name coloring and prefixes<br>
+Set home: save a home location so players can teleport to it with a custom delay<br>
 <br>
-Console command to stop the game server. Usage: stopserver \<minutes\><br>
+Set home 2: a second home location that can be set for donators only<br>
 <br>
-Console command to remove a entity. Usage: entityremove \<entityId\><br>
+High ping kicker: kicks players that have a ping too high<br>
 <br>
-Console command to reset a players profile. Usage: rp \<steamId\> or resetplayer \<steamId\>
+Chat logger: saves all in game chat to a file for later review<br>
+<br>
+Bad word filter: replaces any words used in chat that matches ones from a list. Can also change bad player names to Invalid Name-No commands<br>
+<br>
+Message of the day: shows players a custom message upon entering the server<br>
+<br>
+Infoticker: automatically displays custom server messages. Can be set to display in a random order<br>
+<br>
+Auto world save: automatically saves the world based on custom delay time<br>
+<br>
+Watchlist: players listed here will be able to join but send online admins an alert when they are in game<br>
+<br>
+Custom phrases: any phrases list in the phrase file can be set a custom response<br>
+<br>
+Admin chat: admins can send all other online admins a direct private message<br>
+<br>
+Clan manager: create clan tags, add players, hire officers and rule the server as a elite crew<br>
+<br>
+Remove entity: remove a live entity from the game using its entity id via console<br>
+<br>
+Reset player profile: an easy console command will kick and delete the saved data of a player<br>
+<br>
+Stopserver command: easily shutdown your server with an alert system and countdown so players are aware<br>
+<br>
+<br> 
+<br>
