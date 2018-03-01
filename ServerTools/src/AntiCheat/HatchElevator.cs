@@ -128,7 +128,7 @@ namespace ServerTools
                                                     Log.Out(string.Format("[SERVERTOOLS] Detected {0} using a hatch elevator. Applied stun and broke leg", ep.entityId));
                                                     _cInfo.SendPackage(new NetPackageConsoleCmdClient("buff " + "brokenLeg", true));
                                                     _cInfo.SendPackage(new NetPackageConsoleCmdClient("buff " + "stunned", true));
-                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are stunned and have broken your leg while smashing yourself through hatches. Ouch![-]", Config.ChatResponseColor), "Server", false, "ServerTools", false));
+                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are stunned and have broken your leg while smashing yourself through hatches. Ouch![-]", Config.Chat_Response_Color), "Server", false, "ServerTools", false));
                                                     string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
                                                     string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
                                                     using (StreamWriter sw = new StreamWriter(_filepath, true))

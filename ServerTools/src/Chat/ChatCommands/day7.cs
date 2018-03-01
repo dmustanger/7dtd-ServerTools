@@ -5,7 +5,7 @@ namespace ServerTools
     public class Day7
     {
         public static bool IsEnabled = false;
-        public static int DaysUntilHorde = 7;
+        public static int Days_Until_Horde = 7;
 
         public static void GetInfo(ClientInfo _cInfo, bool _announce)
         {
@@ -27,7 +27,7 @@ namespace ServerTools
             int _screamer = 0;
             int _snake = 0;
             int _wolf = 0;
-            int _daysUntilHorde = DaysUntilHorde - GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()) % DaysUntilHorde;
+            int _daysUntilHorde = Days_Until_Horde - GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()) % Days_Until_Horde;
             List<Entity> _entities = GameManager.Instance.World.Entities.list;
             foreach (Entity _e in _entities)
             {
@@ -239,35 +239,35 @@ namespace ServerTools
             _phrase305 = _phrase305.Replace("{MiniBikes}", _miniBikes.ToString());
             if (_announce)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase300, Config.ChatResponseColor), "Server", false, "", false);
-                if (_daysUntilHorde == DaysUntilHorde)
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase300, Config.Chat_Response_Color), "Server", false, "", false);
+                if (_daysUntilHorde == Days_Until_Horde)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase306, Config.ChatResponseColor), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase306, Config.Chat_Response_Color), "Server", false, "", false);
                 }
                 else
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.ChatResponseColor), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.Chat_Response_Color), "Server", false, "", false);
                 }
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase302, Config.ChatResponseColor), "Server", false, "", false);
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase303, Config.ChatResponseColor), "Server", false, "", false);
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase304, Config.ChatResponseColor), "Server", false, "", false);
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase305, Config.ChatResponseColor), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase302, Config.Chat_Response_Color), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase303, Config.Chat_Response_Color), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase304, Config.Chat_Response_Color), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase305, Config.Chat_Response_Color), "Server", false, "", false);
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase300, Config.ChatResponseColor), "Server", false, "", false));
-                if (_daysUntilHorde == DaysUntilHorde)
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase300, Config.Chat_Response_Color), "Server", false, "", false));
+                if (_daysUntilHorde == Days_Until_Horde)
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase306, Config.ChatResponseColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase306, Config.Chat_Response_Color), "Server", false, "", false));
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.ChatResponseColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.Chat_Response_Color), "Server", false, "", false));
                 }  
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase302, Config.ChatResponseColor), "Server", false, "", false));
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase303, Config.ChatResponseColor), "Server", false, "", false));
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase304, Config.ChatResponseColor), "Server", false, "", false));
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase305, Config.ChatResponseColor), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase302, Config.Chat_Response_Color), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase303, Config.Chat_Response_Color), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase304, Config.Chat_Response_Color), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase305, Config.Chat_Response_Color), "Server", false, "", false));
             }
         }
     }

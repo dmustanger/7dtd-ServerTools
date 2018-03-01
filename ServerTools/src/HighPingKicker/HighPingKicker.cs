@@ -8,8 +8,8 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static bool IsRunning = false;
-        public static int MAXPING = 250;
-        public static int SamplesNeeded = 0;
+        public static int Max_Ping = 250;
+        public static int Samples_Needed = 0;
         public static SortedDictionary<string, string> Dict = new SortedDictionary<string, string>();
         private const string file = "HighPingImmunity.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -124,9 +124,9 @@ namespace ServerTools
 
         public static void CheckPing(ClientInfo _cInfo)
         {
-            if (_cInfo.ping > MAXPING && !Dict.ContainsKey(_cInfo.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
+            if (_cInfo.ping > Max_Ping && !Dict.ContainsKey(_cInfo.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
             {
-                if (SamplesNeeded < 1)
+                if (Samples_Needed < 1)
                 {
                     KickPlayer(_cInfo);
                 }
@@ -141,7 +141,7 @@ namespace ServerTools
                         int _savedsamples = 0;
                         if (samples.TryGetValue(_cInfo.playerId, out _savedsamples))
                         {
-                            if (_savedsamples < SamplesNeeded)
+                            if (_savedsamples < Samples_Needed)
                             {
                                 samples.Remove(_cInfo.playerId);
                                 samples.Add(_cInfo.playerId, _savedsamples + 1);
@@ -178,9 +178,9 @@ namespace ServerTools
             }
             _phrase1 = _phrase1.Replace("{PlayerName}", _cInfo.playerName);
             _phrase1 = _phrase1.Replace("{PlayerPing}", _cInfo.ping.ToString());
-            _phrase1 = _phrase1.Replace("{MaxPing}", MAXPING.ToString());
+            _phrase1 = _phrase1.Replace("{MaxPing}", Max_Ping.ToString());
             _phrase2 = _phrase2.Replace("{PlayerPing}", _cInfo.ping.ToString());
-            _phrase2 = _phrase2.Replace("{MaxPing}", MAXPING.ToString());
+            _phrase2 = _phrase2.Replace("{MaxPing}", Max_Ping.ToString());
             Log.Out(string.Format("[SERVERTOOLS] {0}", _phrase1));
             GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase1), "Server", false, "", false);
             SdtdConsole.Instance.ExecuteSync(string.Format("Kick {0} \"{1}\"", _cInfo.entityId, _phrase2), (ClientInfo)null);

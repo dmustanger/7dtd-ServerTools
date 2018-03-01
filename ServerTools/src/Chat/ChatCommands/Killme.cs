@@ -5,11 +5,11 @@ namespace ServerTools
     public class KillMe
     {
         public static bool IsEnabled = false;
-        public static int DelayBetweenKillMe = 60;
+        public static int Delay_Between_Uses = 60;
 
         public static void CheckPlayer(ClientInfo _cInfo, bool _announce)
         {
-            if (DelayBetweenKillMe < 1)
+            if (Delay_Between_Uses < 1)
             {
                 KillPlayer(_cInfo);
             }
@@ -25,28 +25,28 @@ namespace ServerTools
                     TimeSpan varTime = DateTime.Now - p.LastKillme;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
-                    if (_timepassed >= DelayBetweenKillMe)
+                    if (_timepassed >= Delay_Between_Uses)
                     {
                         KillPlayer(_cInfo);
                     }
                     else
                     {
-                        int _timeremaining = DelayBetweenKillMe - _timepassed;
+                        int _timeremaining = Delay_Between_Uses - _timepassed;
                         string _phrase8;
                         if (!Phrases.Dict.TryGetValue(8, out _phrase8))
                         {
                             _phrase8 = "{PlayerName} you can only use /killme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                         }
                         _phrase8 = _phrase8.Replace("{PlayerName}", _cInfo.playerName);
-                        _phrase8 = _phrase8.Replace("{DelayBetweenUses}", DelayBetweenKillMe.ToString());
+                        _phrase8 = _phrase8.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                         _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeremaining.ToString());
                         if (_announce)
                         {
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase8), "Server", false, "", false);
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), "Server", false, "", false);
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase8), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), "Server", false, "", false));
                         }
                     }
                 }

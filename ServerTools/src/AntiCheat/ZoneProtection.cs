@@ -12,12 +12,13 @@ namespace ServerTools
         private static int timerInstanceCount = 0;
         public static bool IsEnabled = false;
         public static bool IsRunning = false;
-        public static bool KillMurderer = false;
-        public static bool JailEnabled = false;
-        public static bool KickEnabled = false;
-        public static bool BanEnabled = false;
-        public static bool ZoneMessage = false;
-        public static bool SetHome = false;
+        public static bool Kill_Enabled = false;
+        public static bool Jail_Enabled = false;
+        public static bool Kick_Enabled = false;
+        public static bool Ban_Enabled = false;
+        public static bool Zone_Message = false;
+        public static bool Set_Home = false;
+        public static int Days_Before_Log_Delete = 5;      
         private const string file = "ZoneProtection.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, string[]> Box = new SortedDictionary<string, string[]>();
@@ -167,8 +168,7 @@ namespace ServerTools
             timerInstanceCount++;
             if (timerInstanceCount <= 1)
             {
-                int d = 500;
-                t.Interval = d;
+                t.Interval = 1000;
                 t.Start();
                 t.Elapsed += new ElapsedEventHandler(KillCheck);
                 t.Elapsed += new ElapsedEventHandler(ZoneCheck);
@@ -179,6 +179,7 @@ namespace ServerTools
         {
             t.Stop();
             PvEFlag.Clear();
+            Flag.Clear();
         }
 
         public static void KillCheck(object sender, ElapsedEventArgs e)
@@ -209,8 +210,8 @@ namespace ServerTools
                                 {
                                     if (PvEFlag.Contains(_cInfoVictim.entityId) & PvEFlag.Contains(_cInfoKiller.entityId))
                                     {
-                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has murdered you while you were in a protected zone.[-]", Config.ChatResponseColor, _cInfoKiller.playerName), "Server", false, "", false));
-                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have murdered {1} while you were inside a protected zone.[-]", Config.ChatResponseColor, _cInfoVictim.playerName), "Server", false, "", false));
+                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has murdered you while you were in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), "Server", false, "", false));
+                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have murdered {1} while you were inside a protected zone.[-]", Config.Chat_Response_Color, _cInfoVictim.playerName), "Server", false, "", false));
                                         Penalty(_cInfoKiller, _cInfoVictim);
                                         if (Victim.ContainsKey(_cInfoVictim.entityId))
                                         {
@@ -220,8 +221,8 @@ namespace ServerTools
                                     }
                                     if (PvEFlag.Contains(_cInfoVictim.entityId) & !PvEFlag.Contains(_cInfoKiller.entityId))
                                     {
-                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has murdered you while you were in a protected zone.[-]", Config.ChatResponseColor, _cInfoKiller.playerName), "Server", false, "", false));
-                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have murdered {1}. They were inside a protected zone.[-]", Config.ChatResponseColor, _cInfoVictim.playerName), "Server", false, "", false));
+                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has murdered you while you were in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), "Server", false, "", false));
+                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have murdered {1}. They were inside a protected zone.[-]", Config.Chat_Response_Color, _cInfoVictim.playerName), "Server", false, "", false));
                                         Penalty(_cInfoKiller, _cInfoVictim);
                                         if (Victim.ContainsKey(_cInfoVictim.entityId))
                                         {
@@ -231,8 +232,8 @@ namespace ServerTools
                                     }
                                     if (!PvEFlag.Contains(_cInfoVictim.entityId) & PvEFlag.Contains(_cInfoKiller.entityId))
                                     {
-                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has murdered you while they were in a protected zone.[-]", Config.ChatResponseColor, _cInfoKiller.playerName), "Server", false, "", false));
-                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have murdered {1} while you were inside a protected zone.[-]", Config.ChatResponseColor, _cInfoVictim.playerName), "Server", false, "", false));
+                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has murdered you while they were in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), "Server", false, "", false));
+                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have murdered {1} while you were inside a protected zone.[-]", Config.Chat_Response_Color, _cInfoVictim.playerName), "Server", false, "", false));
                                         Penalty(_cInfoKiller, _cInfoVictim);
                                         if (Victim.ContainsKey(_cInfoVictim.entityId))
                                         {
@@ -257,21 +258,40 @@ namespace ServerTools
             }
         }
 
+        public static void DetectionLogsDir()
+        {
+            if (!Directory.Exists(API.GamePath + "/DetectionLogs"))
+            {
+                Directory.CreateDirectory(API.GamePath + "/DetectionLogs");
+            }
+
+            string[] files = Directory.GetFiles(API.GamePath + "/DetectionLogs");
+            int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
+            foreach (string file in files)
+            {
+                FileInfo fi = new FileInfo(file);
+                if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
+                {
+                    fi.Delete();
+                }
+            }
+        }
+
         public static void ZoneCheck(object sender, ElapsedEventArgs e)
         {
             List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
             foreach (var _cInfo in _cInfoList)
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                Flag.Remove(_cInfo.entityId);
                 if (!_player.IsDead())
                 {
-                    int _playerX = (int)_player.position.x;
-                    int _playerY = (int)_player.position.y;
-                    int _playerZ = (int)_player.position.z;
+                int _X = (int)_player.position.x;
+                int _Y = (int)_player.position.y;
+                int _Z = (int)_player.position.z;
 
                     if (Box.Count > 0)
                     {
+                        Flag.Remove(_cInfo.entityId);
                         foreach (KeyValuePair<string, string[]> kvpCorners in Box)
                         {
                             float xMin;
@@ -290,11 +310,11 @@ namespace ServerTools
                             float.TryParse(__corner2[2], out zMax);
 
 
-                            if (xMin >= 0 & xMax > 0)
+                            if (xMin >= 0 & xMax >= 0)
                             {
                                 if (xMin < xMax)
                                 {
-                                    if (_playerX >= xMin)
+                                    if (_X >= xMin)
                                     {
                                         _xMinCheck = 1;
                                     }
@@ -302,7 +322,7 @@ namespace ServerTools
                                     {
                                         _xMinCheck = 0;
                                     }
-                                    if (_playerX <= xMax)
+                                    if (_X <= xMax)
                                     {
                                         _xMaxCheck = 1;
                                     }
@@ -313,7 +333,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    if (_playerX <= xMin)
+                                    if (_X <= xMin)
                                     {
                                         _xMinCheck = 1;
                                     }
@@ -321,7 +341,7 @@ namespace ServerTools
                                     {
                                         _xMinCheck = 0;
                                     }
-                                    if (_playerX >= xMax)
+                                    if (_X >= xMax)
                                     {
                                         _xMaxCheck = 1;
                                     }
@@ -331,11 +351,11 @@ namespace ServerTools
                                     }
                                 }
                             }
-                            else if (xMin < 0 & xMax < 0)
+                            else if (xMin <= 0 & xMax <= 0)
                             {
                                 if (xMin < xMax)
                                 {
-                                    if (_playerX >= xMin)
+                                    if (_X >= xMin)
                                     {
                                         _xMinCheck = 1;
                                     }
@@ -343,7 +363,7 @@ namespace ServerTools
                                     {
                                         _xMinCheck = 0;
                                     }
-                                    if (_playerX <= xMax)
+                                    if (_X <= xMax)
                                     {
                                         _xMaxCheck = 1;
                                     }
@@ -354,7 +374,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    if (_playerX <= xMin)
+                                    if (_X <= xMin)
                                     {
                                         _xMinCheck = 1;
                                     }
@@ -362,7 +382,7 @@ namespace ServerTools
                                     {
                                         _xMinCheck = 0;
                                     }
-                                    if (_playerX >= xMax)
+                                    if (_X >= xMax)
                                     {
                                         _xMaxCheck = 1;
                                     }
@@ -372,9 +392,9 @@ namespace ServerTools
                                     }
                                 }
                             }
-                            else if (xMin < 0 & xMax > 0)
+                            else if (xMin <= 0 & xMax >= 0)
                             {
-                                if (_playerX >= xMin)
+                                if (_X >= xMin)
                                 {
                                     _xMinCheck = 1;
                                 }
@@ -382,7 +402,7 @@ namespace ServerTools
                                 {
                                     _xMinCheck = 0;
                                 }
-                                if (_playerX <= xMax)
+                                if (_X <= xMax)
                                 {
                                     _xMaxCheck = 1;
                                 }
@@ -391,9 +411,9 @@ namespace ServerTools
                                     _xMaxCheck = 0;
                                 }
                             }
-                            else if (xMin > 0 & xMax < 0)
+                            else if (xMin >= 0 & xMax <= 0)
                             {
-                                if (_playerX <= xMin)
+                                if (_X <= xMin)
                                 {
                                     _xMinCheck = 1;
                                 }
@@ -401,7 +421,7 @@ namespace ServerTools
                                 {
                                     _xMinCheck = 0;
                                 }
-                                if (_playerX >= xMax)
+                                if (_X >= xMax)
                                 {
                                     _xMaxCheck = 1;
                                 }
@@ -411,11 +431,11 @@ namespace ServerTools
                                 }
                             }
 
-                            if (yMin >= 0 & yMax > 0)
+                            if (yMin >= 0 & yMax >= 0)
                             {
                                 if (yMin < yMax)
                                 {
-                                    if (_playerY >= yMin)
+                                    if (_Y >= yMin)
                                     {
                                         _yMinCheck = 1;
                                     }
@@ -423,7 +443,7 @@ namespace ServerTools
                                     {
                                         _yMinCheck = 0;
                                     }
-                                    if (_playerY <= yMax)
+                                    if (_Y <= yMax)
                                     {
                                         _yMaxCheck = 1;
                                     }
@@ -434,7 +454,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    if (_playerY <= yMin)
+                                    if (_Y <= yMin)
                                     {
                                         _yMinCheck = 1;
                                     }
@@ -442,7 +462,7 @@ namespace ServerTools
                                     {
                                         _yMinCheck = 0;
                                     }
-                                    if (_playerY >= yMax)
+                                    if (_Y >= yMax)
                                     {
                                         _yMaxCheck = 1;
                                     }
@@ -452,11 +472,11 @@ namespace ServerTools
                                     }
                                 }
                             }
-                            else if (yMin < 0 & yMax < 0)
+                            else if (yMin <= 0 & yMax <= 0)
                             {
                                 if (yMin < yMax)
                                 {
-                                    if (_playerY >= yMin)
+                                    if (_Y >= yMin)
                                     {
                                         _yMinCheck = 1;
                                     }
@@ -464,7 +484,7 @@ namespace ServerTools
                                     {
                                         _yMinCheck = 0;
                                     }
-                                    if (_playerY <= yMax)
+                                    if (_Y <= yMax)
                                     {
                                         _yMaxCheck = 1;
                                     }
@@ -475,7 +495,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    if (_playerY <= yMin)
+                                    if (_Y <= yMin)
                                     {
                                         _yMinCheck = 1;
                                     }
@@ -483,7 +503,7 @@ namespace ServerTools
                                     {
                                         _yMinCheck = 0;
                                     }
-                                    if (_playerY >= yMax)
+                                    if (_Y >= yMax)
                                     {
                                         _yMaxCheck = 1;
                                     }
@@ -493,9 +513,9 @@ namespace ServerTools
                                     }
                                 }
                             }
-                            else if (yMin < 0 & yMax >= 0)
+                            else if (yMin <= 0 & yMax >= 0)
                             {
-                                if (_playerY >= yMin)
+                                if (_Y >= yMin)
                                 {
                                     _yMinCheck = 1;
                                 }
@@ -503,7 +523,7 @@ namespace ServerTools
                                 {
                                     _yMinCheck = 0;
                                 }
-                                if (_playerY <= yMax)
+                                if (_Y <= yMax)
                                 {
                                     _yMaxCheck = 1;
                                 }
@@ -512,9 +532,9 @@ namespace ServerTools
                                     _yMaxCheck = 0;
                                 }
                             }
-                            else if (yMin > 0 & yMax < 0)
+                            else if (yMin >= 0 & yMax <= 0)
                             {
-                                if (_playerY <= yMin)
+                                if (_Y <= yMin)
                                 {
                                     _yMinCheck = 1;
                                 }
@@ -522,7 +542,7 @@ namespace ServerTools
                                 {
                                     _yMinCheck = 0;
                                 }
-                                if (_playerY >= yMax)
+                                if (_Y >= yMax)
                                 {
                                     _yMaxCheck = 1;
                                 }
@@ -532,11 +552,11 @@ namespace ServerTools
                                 }
                             }
 
-                            if (zMin >= 0 & zMax > 0)
+                            if (zMin >= 0 & zMax >= 0)
                             {
                                 if (zMin < zMax)
                                 {
-                                    if (_playerZ >= zMin)
+                                    if (_Z >= zMin)
                                     {
                                         _zMinCheck = 1;
                                     }
@@ -544,7 +564,7 @@ namespace ServerTools
                                     {
                                         _zMinCheck = 0;
                                     }
-                                    if (_playerZ <= zMax)
+                                    if (_Z <= zMax)
                                     {
                                         _zMaxCheck = 1;
                                     }
@@ -555,7 +575,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    if (_playerZ <= zMin)
+                                    if (_Z <= zMin)
                                     {
                                         _zMinCheck = 1;
                                     }
@@ -563,7 +583,7 @@ namespace ServerTools
                                     {
                                         _zMinCheck = 0;
                                     }
-                                    if (_playerZ >= zMax)
+                                    if (_Z >= zMax)
                                     {
                                         _zMaxCheck = 1;
                                     }
@@ -573,11 +593,11 @@ namespace ServerTools
                                     }
                                 }
                             }
-                            else if (zMin < 0 & zMax < 0)
+                            else if (zMin <= 0 & zMax <= 0)
                             {
                                 if (zMin < zMax)
                                 {
-                                    if (_playerZ >= zMin)
+                                    if (_Z >= zMin)
                                     {
                                         _zMinCheck = 1;
                                     }
@@ -585,7 +605,7 @@ namespace ServerTools
                                     {
                                         _zMinCheck = 0;
                                     }
-                                    if (_playerZ <= zMax)
+                                    if (_Z <= zMax)
                                     {
                                         _zMaxCheck = 1;
                                     }
@@ -596,7 +616,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    if (_playerZ <= zMin)
+                                    if (_Z <= zMin)
                                     {
                                         _zMinCheck = 1;
                                     }
@@ -604,7 +624,7 @@ namespace ServerTools
                                     {
                                         _zMinCheck = 0;
                                     }
-                                    if (_playerZ >= zMax)
+                                    if (_Z >= zMax)
                                     {
                                         _zMaxCheck = 1;
                                     }
@@ -614,9 +634,9 @@ namespace ServerTools
                                     }
                                 }
                             }
-                            else if (zMin < 0 & zMax >= 0)
+                            else if (zMin <= 0 & zMax >= 0)
                             {
-                                if (_playerZ >= zMin)
+                                if (_Z >= zMin)
                                 {
                                     _zMinCheck = 1;
                                 }
@@ -624,7 +644,7 @@ namespace ServerTools
                                 {
                                     _zMinCheck = 0;
                                 }
-                                if (_playerZ <= zMax)
+                                if (_Z <= zMax)
                                 {
                                     _zMaxCheck = 1;
                                 }
@@ -633,9 +653,9 @@ namespace ServerTools
                                     _zMaxCheck = 0;
                                 }
                             }
-                            else if (zMin > 0 & zMax < 0)
+                            else if (zMin >= 0 & zMax <= 0)
                             {
-                                if (_playerY <= zMin)
+                                if (_Z <= zMin)
                                 {
                                     _zMinCheck = 1;
                                 }
@@ -643,7 +663,7 @@ namespace ServerTools
                                 {
                                     _zMinCheck = 0;
                                 }
-                                if (_playerY >= zMax)
+                                if (_Z >= zMax)
                                 {
                                     _zMaxCheck = 1;
                                 }
@@ -652,13 +672,14 @@ namespace ServerTools
                                     _zMaxCheck = 0;
                                 }
                             }
+
                             if (_xMinCheck == 1 & _yMinCheck == 1 & _zMinCheck == 1 & _xMaxCheck == 1 & _yMaxCheck == 1 & _zMaxCheck == 1)
                             {
                                 if (!PvEFlag.Contains(_cInfo.entityId))
                                 {
-                                    if (ZoneMessage)
+                                    if (Zone_Message)
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have entered {1}. Do not harm other players while in this zone.[-]", Config.ChatResponseColor, kvpCorners.Key), "Server", false, "", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have entered {1}. Do not harm other players while in this zone.[-]", Config.Chat_Response_Color, kvpCorners.Key), "Server", false, "", false));
                                     }
                                     PvEFlag.Add(_cInfo.entityId);
                                 }
@@ -673,9 +694,9 @@ namespace ServerTools
                                         int _flag1 = _flag + 1;
                                         if (_flag1 == Box.Count & PvEFlag.Contains(_cInfo.entityId))
                                         {
-                                            if (ZoneMessage)
+                                            if (Zone_Message)
                                             {
-                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have exited the protected zone.[-]", Config.ChatResponseColor), "Server", false, "", false));
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have exited the protected zone.[-]", Config.Chat_Response_Color), "Server", false, "", false));
                                             }
                                             PvEFlag.Remove(_cInfo.entityId);
                                         }
@@ -694,7 +715,7 @@ namespace ServerTools
                                     {
                                         if (_flag == Box.Count & PvEFlag.Contains(_cInfo.entityId))
                                         {
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have exited the protected zone.[-]", Config.ChatResponseColor), "Server", false, "", false));
+                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have exited the protected zone.[-]", Config.Chat_Response_Color), "Server", false, "", false));
                                             PvEFlag.Remove(_cInfo.entityId);
                                         }
                                     }
@@ -735,9 +756,9 @@ namespace ServerTools
 
         public static void Penalty(ClientInfo _cInfoKiller, ClientInfo _cInfoVictim)
         {
-            if (JailEnabled)
+            if (Jail_Enabled)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been jailed for murder in a protected zone.[-]", Config.ChatResponseColor, _cInfoKiller.playerName), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been jailed for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), "Server", false, "", false);
                 SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0}", _cInfoKiller.playerId), (ClientInfo)null);
                 if (Forgive.ContainsKey(_cInfoVictim.entityId))
                 {
@@ -745,19 +766,19 @@ namespace ServerTools
                 }
                 Forgive.Add(_cInfoVictim.entityId, _cInfoKiller.entityId);
             }
-            if (KillMurderer)
+            if (Kill_Enabled)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been executed for murder in a protected zone.[-]", Config.ChatResponseColor, _cInfoKiller.playerName), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been executed for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), "Server", false, "", false);
                 SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfoKiller.playerId), (ClientInfo)null);
             }
-            if (KickEnabled)
+            if (Kick_Enabled)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been kicked for murder in a protected zone.[-]", Config.ChatResponseColor, _cInfoKiller.playerName), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been kicked for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), "Server", false, "", false);
                 SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for murder in a protected zone\"", _cInfoKiller.playerId), (ClientInfo)null);
             }
-            if (BanEnabled)
+            if (Ban_Enabled)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been banned for murder in a protected zone.[-]", Config.ChatResponseColor, _cInfoKiller.playerName), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been banned for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), "Server", false, "", false);
                 SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for murder in a protected zone\"", _cInfoKiller.playerId), (ClientInfo)null);
             }
         }

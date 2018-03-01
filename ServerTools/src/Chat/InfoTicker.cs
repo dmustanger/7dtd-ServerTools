@@ -1,38 +1,51 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Timers;
 using System.Xml;
 
 namespace ServerTools
 {
     public class InfoTicker
     {
-        public static bool IsRunning = false;
+        private static int timerInstanceCount = 0;
         public static bool IsEnabled = false;
         public static bool Random = false;
-        public static int DelayBetweenMessages = 5;
+        public static int Delay_Between_Messages = 5;
         private const string file = "InfoTicker.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, int> dict = new SortedDictionary<string, int>();
         private static List<string> msgList = new List<string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static Thread th;
-
+        private static System.Timers.Timer t = new System.Timers.Timer();
 
         public static void Load()
         {
             LoadXml();
             InitFileWatcher();
-            Start();
-            IsRunning = true;
+            TimerStart();
         }
 
         public static void Unload()
         {
-            th.Abort();
             fileWatcher.Dispose();
-            IsRunning = false;
+            TimerStop();
+        }
+
+        public static void TimerStart()
+        {
+            timerInstanceCount++;
+            if (timerInstanceCount <= 1)
+            {
+                t.Interval = Delay_Between_Messages * 60000;
+                t.Start();
+                t.Elapsed += new ElapsedEventHandler(StatusCheck);
+            }
+        }
+
+        public static void TimerStop()
+        {
+            t.Stop();
         }
 
         private static void LoadXml()
@@ -95,7 +108,7 @@ namespace ServerTools
                             if (!msgList.Contains(msg))
                             {
                                 msgList.Add(msg);
-                            }  
+                            }
                         }
                     }
                 }
@@ -151,20 +164,35 @@ namespace ServerTools
             LoadXml();
         }
 
-        private static void Start()
+        private static void StatusCheck(object sender, ElapsedEventArgs e)
         {
-            th = new Thread(new ThreadStart(StatusCheck));
-            th.IsBackground = true;
-            th.Start();
-            Log.Out("[SERVERTOOLS] InfoTicker has started.");
-        }
-
-        private static void StatusCheck()
-        {
-            while (IsEnabled)
+            if (ConnectionManager.Instance.ClientCount() > 0)
             {
-                if (ConnectionManager.Instance.ClientCount() > 0)
+                if (msgList.Count > 0)
                 {
+                    if (Random)
+                    {
+                        msgList.RandomizeList();
+                        var _message = msgList.First();
+                        if (_message != null)
+                        {
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
+                            msgList.RemoveAt(0);
+                        }
+                    }
+                    else
+                    {
+                        var _message = msgList.First();
+                        if (_message != null)
+                        {
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
+                            msgList.RemoveAt(0);
+                        }
+                    }
+                }
+                else
+                {
+                    LoadXml();
                     if (msgList.Count > 0)
                     {
                         if (Random)
@@ -173,48 +201,21 @@ namespace ServerTools
                             var _message = msgList.First();
                             if (_message != null)
                             {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _message), "Server", false, "", false);
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
                                 msgList.RemoveAt(0);
                             }
                         }
                         else
-                        { 
+                        {
                             var _message = msgList.First();
                             if (_message != null)
                             {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _message), "Server", false, "", false);
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
                                 msgList.RemoveAt(0);
                             }
                         }
                     }
-                    else
-                    {
-                        LoadXml();
-                        if (msgList.Count > 0)
-                        {
-                            if (Random)
-                            {
-                                msgList.RandomizeList();
-                                var _message = msgList.First();
-                                if (_message != null)
-                                {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _message), "Server", false, "", false);
-                                    msgList.RemoveAt(0);
-                                }
-                            }
-                            else
-                            {
-                                var _message = msgList.First();
-                                if (_message != null)
-                                {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _message), "Server", false, "", false);
-                                    msgList.RemoveAt(0);
-                                }
-                            }
-                        }
-                    }
                 }
-                Thread.Sleep(60000 * DelayBetweenMessages);
             }
         }
     }

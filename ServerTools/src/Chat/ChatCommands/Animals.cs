@@ -7,18 +7,18 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static bool IsRunning = false;
-        public static bool AlwaysShowResponse = false;
-        public static int DelayBetweenUses = 60;
-        public static int MinimumSpawnRadius = 20;
-        public static int MaximumSpawnRadius = 30;
+        public static bool Always_Show_Response = false;
+        public static int Delay_Between_Uses = 60;
+        public static int Minimum_Spawn_Radius = 20;
+        public static int Maximum_Spawn_Radius = 30;
         public static List<int> entities = new List<int>();
-        public static string animalList = "59,60,61";
+        public static string Animal_List = "59,60,61";
 
         public static void Checkplayer(ClientInfo _cInfo, bool _announce, string _playerName)
         {
             if (IsEnabled)
             {
-                if (DelayBetweenUses < 1)
+                if (Delay_Between_Uses < 1)
                 {
                     _GiveAnimals(_cInfo, _announce);
                 }
@@ -34,13 +34,13 @@ namespace ServerTools
                         TimeSpan varTime = DateTime.Now - p.LastAnimals;
                         double fractionalMinutes = varTime.TotalMinutes;
                         int _timepassed = (int)fractionalMinutes;
-                        if (_timepassed >= DelayBetweenUses)
+                        if (_timepassed >= Delay_Between_Uses)
                         {
                             _GiveAnimals(_cInfo, _announce);
                         }
                         else
                         {
-                            int _timeleft = DelayBetweenUses - _timepassed;
+                            int _timeleft = Delay_Between_Uses - _timepassed;
                             string _phrase601;
                             if (!Phrases.Dict.TryGetValue(601, out _phrase601))
                             {
@@ -49,11 +49,11 @@ namespace ServerTools
                             _phrase601 = _phrase601.Replace("{TimeRemaining}", _timeleft.ToString());
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase601), "Server", false, "", false);
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase601), "Server", false, "", false);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase601), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase601), "Server", false, "", false));
                             }
                         }
                     }
@@ -63,12 +63,12 @@ namespace ServerTools
 
         public static void _GiveAnimals(ClientInfo _cInfo, bool _announce)
         {
-            var a = animalList.Split(',');
+            var a = Animal_List.Split(',');
             foreach (var animal in a)
             {
                 entities.Add(Convert.ToInt32(animal));
             }
-            if (MaximumSpawnRadius < MinimumSpawnRadius)
+            if (Maximum_Spawn_Radius < Minimum_Spawn_Radius)
             {
                 Random rnd = new Random();
                 int minRad = 20;
@@ -79,14 +79,14 @@ namespace ServerTools
                 SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} {1} @ {2}", _cInfo.entityId, nextRadius, nextAnimal), (ClientInfo)null);                
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatResponseColor, _cInfo.playerName, nextRadius), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.Chat_Response_Color, _cInfo.playerName, nextRadius), "Server", false, "", false);
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
                     PersistentContainer.Instance.Save();
                     return;
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatResponseColor, _cInfo.playerName, nextRadius), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.Chat_Response_Color, _cInfo.playerName, nextRadius), "Server", false, "", false));
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
                     PersistentContainer.Instance.Save();
                 }
@@ -96,18 +96,18 @@ namespace ServerTools
                 Random rnd = new Random();
                 int randomAnimal = rnd.Next(entities.Count);
                 int nextAnimal = entities[randomAnimal - 1];
-                int nextRadius = rnd.Next(MinimumSpawnRadius, MaximumSpawnRadius);
+                int nextRadius = rnd.Next(Minimum_Spawn_Radius, Maximum_Spawn_Radius);
                 SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} {1} @ {2}", _cInfo.entityId, nextRadius, nextAnimal), _cInfo);
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatResponseColor, _cInfo.playerName, nextRadius), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.Chat_Response_Color, _cInfo.playerName, nextRadius), "Server", false, "", false);
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
                     PersistentContainer.Instance.Save();
                     return;
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.ChatResponseColor, _cInfo.playerName, nextRadius), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has tracked down an animal to within {2} metres[-]", Config.Chat_Response_Color, _cInfo.playerName, nextRadius), "Server", false, "", false));
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
                     PersistentContainer.Instance.Save();
                 }               

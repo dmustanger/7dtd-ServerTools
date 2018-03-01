@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. home reset <steamID>\n" +
-                   "1. Reset the delay of the /home and /home2 commands for the specified steamID\n";
+                   "  1. home reset <steamId/entityId>\n" +
+                   "1. Reset the delay of the players /home and /home2 command delays\n";
         }
 
         public override string[] GetCommands()
@@ -38,16 +38,39 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
                         return;
                     }
-                    if (_params[1].Length != 17)
+                    if (_params[1].Length < 1 || _params[1].Length > 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not reset SteamId: Invalid SteamId {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}", _params[1]));
                         return;
+                    }
+                    if (_params[1].Length == 17)
+                    {
+                        Player p = PersistentContainer.Instance.Players[_params[1], false];
+                        if (p.LastSetHome != null)
+                        {
+                            PersistentContainer.Instance.Players[_params[1], true].LastSetHome = DateTime.Now.AddDays(-2);
+                            PersistentContainer.Instance.Save();
+                            SdtdConsole.Instance.Output("Players chat command /home and /home2 delay reset.");
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a Home delay to reset.", _params[1]));
+                        }
                     }
                     else
                     {
-                        PersistentContainer.Instance.Players[_params[1], true].LastSetHome = DateTime.Now.AddDays(-2);
-                        PersistentContainer.Instance.Save();
-                        SdtdConsole.Instance.Output("Chat command /home and /home2 delay reset.");
+                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                        Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                        if (p.LastSetHome != null)
+                        {
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastSetHome = DateTime.Now.AddDays(-2);
+                            PersistentContainer.Instance.Save();
+                            SdtdConsole.Instance.Output("Players chat command /home and /home2 delay reset.");
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a Home delay to reset.", _params[1]));
+                        }
                     }
                 }
                 else

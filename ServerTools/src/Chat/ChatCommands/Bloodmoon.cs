@@ -1,33 +1,37 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Timers;
 
 namespace ServerTools
 {
     public class Bloodmoon
     {
-        public static bool IsRunning = false;
+        private static int timerInstanceCount = 0;
         public static bool IsEnabled = false;
-        public static bool ShowOnSpawn = false;
-        public static bool ShowOnRespawn = false;
-        public static int AutoShowBloodmoon = 30;
-        public static int DaysUntilHorde = 7;
-        private static Thread th;
+        public static bool Show_On_Login = false;
+        public static bool Show_On_Respawn = false;
+        public static int Auto_Show_Bloodmoon_Delay = 30;
+        public static int Days_Until_Horde = 7;
+        private static System.Timers.Timer t = new System.Timers.Timer();
 
-        public static void Load()
+        public static void TimerStart()
         {
-            Start();
-            IsRunning = true;
+            timerInstanceCount++;
+            if (timerInstanceCount <= 1)
+            {
+                t.Interval = Auto_Show_Bloodmoon_Delay * 60000;
+                t.Start();
+                t.Elapsed += new ElapsedEventHandler(StatusCheck);
+            }
         }
 
-        public static void Unload()
+        public static void TimerStop()
         {
-            th.Abort();
-            IsRunning = false;
+            t.Stop();
         }
+
 
         public static void GetBloodmoon(ClientInfo _cInfo, bool _announce)
         {
-            int _daysUntilHorde = DaysUntilHorde - GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()) % DaysUntilHorde;
+            int _daysUntilHorde = Days_Until_Horde - GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()) % Days_Until_Horde;
             string _phrase301;
             string _phrase306;
 
@@ -42,44 +46,33 @@ namespace ServerTools
             _phrase301 = _phrase301.Replace("{DaysUntilHorde}", _daysUntilHorde.ToString());
             if (_announce)
             {
-                if (_daysUntilHorde == DaysUntilHorde)
+                if (_daysUntilHorde == Days_Until_Horde)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase306, Config.ChatResponseColor), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase306, Config.Chat_Response_Color), "Server", false, "", false);
                 }
                 else
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.ChatResponseColor), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.Chat_Response_Color), "Server", false, "", false);
                 }
             }
             else
             {
-                if (_daysUntilHorde == DaysUntilHorde)
+                if (_daysUntilHorde == Days_Until_Horde)
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.ChatResponseColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.Chat_Response_Color), "Server", false, "", false));
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.ChatResponseColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.Chat_Response_Color), "Server", false, "", false));
                 }
             }
         }
 
-        private static void Start()
+        private static void StatusCheck(object sender, ElapsedEventArgs e)
         {
-            th = new Thread(new ThreadStart(StatusCheck));
-            th.IsBackground = true;
-            th.Start();
-        }
-
-        private static void StatusCheck()
-        {
-            while (AutoShowBloodmoon > 0)
+            if (ConnectionManager.Instance.ClientCount() > 0)
             {
-                if (ConnectionManager.Instance.ClientCount() > 0)
-                {
-                    GetBloodmoon((ClientInfo)null, true);
-                }
-                Thread.Sleep(60000 * AutoShowBloodmoon);
+                GetBloodmoon((ClientInfo)null, true);
             }
         }
     }

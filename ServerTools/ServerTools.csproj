@@ -39,6 +39,7 @@
     </Compile>
     <Compile Include="src\AntiCheat\FamilyShareAccount.cs" />
     <Compile Include="src\AntiCheat\HatchElevator.cs" />
+    <Compile Include="src\AntiCheat\TeleportCheck.cs" />
     <Compile Include="src\AntiCheat\WorldRadius.cs" />
     <Compile Include="src\AntiCheat\PlayerStatCheck.cs" />
     <Compile Include="src\AntiCheat\PlayerLogs.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="src\Chat\ChatCommands\Animals.cs" />
     <Compile Include="src\Chat\ChatCommands\CustomCommands.cs" />
     <Compile Include="src\Chat\ChatCommands\day7.cs" />
+    <Compile Include="src\Chat\ChatCommands\FriendTeleport.cs" />
     <Compile Include="src\Chat\ChatCommands\Gimme.cs" />
     <Compile Include="src\Chat\AdminChatCommands\Jail.cs" />
     <Compile Include="src\Chat\ChatCommands\Killme.cs" />
@@ -70,6 +72,8 @@
     <Compile Include="src\Chat\Motd.cs" />
     <Compile Include="src\ClaimBlock\FirstClaimBlock.cs" />
     <Compile Include="src\ClanManager\ClanManager.cs" />
+    <Compile Include="src\CoinMarket\Shop.cs" />
+    <Compile Include="src\CoinMarket\Wallet.cs" />
     <Compile Include="src\ConsoleCommands\AdminChatColor.cs" />
     <Compile Include="src\ConsoleCommands\GiveBlock.cs" />
     <Compile Include="src\ConsoleCommands\GiveItem.cs" />

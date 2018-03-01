@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. reservedslot add <steamID> <playerName> <days to expire>\n" +
-                   "  2. reservedslot remove <steamID>\n" +
+                   "  1. reservedslot add <steamId/EntityId> <playerName> <days to expire>\n" +
+                   "  2. reservedslot remove <steamId/EntityId>\n" +
                    "  3. reservedslot list\n" +
                    "1. Adds a steamID to the Reserved Slots list\n" +
                    "2. Removes a steamID from the Reserved Slots list\n" +
@@ -30,9 +30,9 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count < 1 || _params.Count > 4)
+                if (_params.Count != 1 || _params.Count != 2 || _params.Count != 4)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 to 4, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, 2 or 4, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("add"))
@@ -42,35 +42,39 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 4, found {0}.", _params.Count));
                         return;
                     }
-                    if (_params[1].Length != 17)
+                    if (_params[1].Length < 1 || _params[1].Length > 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not add SteamId: Invalid SteamId {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("Can not add Id: Invalid Id {0}", _params[1]));
                         return;
                     }
-                    if (ReservedSlots.Dict.ContainsKey(_params[1]))
+                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    if (_cInfo != null)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not add SteamId. {0} is already in the Reserved Slots list.", _params[1]));
-                        return;
+                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} is already in the Reserved Slots list.", _params[1]));
+                            return;
+                        }
+                        double _daysToExpire;
+                        if (!double.TryParse(_params[3], out _daysToExpire))
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Invalid days to expire: {0}", _params[3]));
+                            return;
+                        }
+                        DateTime _expireDate;
+                        if (_daysToExpire > 0d)
+                        {
+                            _expireDate = DateTime.Now.AddDays(_daysToExpire);
+                        }
+                        else
+                        {
+                            _expireDate = DateTime.Now.AddDays(18250d);
+                        }
+                        ReservedSlots.Dict.Add(_cInfo.playerId, _expireDate);
+                        ReservedSlots.Dict1.Add(_cInfo.playerId, _params[2]);
+                        SdtdConsole.Instance.Output(string.Format("Added Id {0} with the name of {1} that expires on {2} to the Reserved Slots list.", _params[1], _params[2], _expireDate.ToString()));
+                        ReservedSlots.UpdateXml();
                     }
-                    double _daysToExpire;
-                    if (!double.TryParse(_params[3], out _daysToExpire))
-                    {
-                        SdtdConsole.Instance.Output(string.Format("Invalid days to expire: {0}", _params[3]));
-                        return;
-                    }
-                    DateTime _expireDate;
-                    if (_daysToExpire > 0d)
-                    {
-                        _expireDate = DateTime.Now.AddDays(_daysToExpire);
-                    }
-                    else
-                    {
-                        _expireDate = DateTime.Now.AddDays(18250d);
-                    }
-                    ReservedSlots.Dict.Add(_params[1], _expireDate);
-                    ReservedSlots.Dict1.Add(_params[1], _params[2]);
-                    SdtdConsole.Instance.Output(string.Format("Added SteamId {0} with the name of {1} that expires on {2} to the Reserved Slots list.", _params[1], _params[2], _expireDate.ToString()));
-                    ReservedSlots.UpdateXml();
                 }
                 else if (_params[0].ToLower().Equals("remove"))
                 {
@@ -79,15 +83,24 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
-                    if (!ReservedSlots.Dict.ContainsKey(_params[1]))
+                    if (_params[1].Length < 1 || _params[1].Length > 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("SteamId {0} was not found.", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("Can not add Id: Invalid Id {0}", _params[1]));
                         return;
                     }
-                    ReservedSlots.Dict.Remove(_params[1]);
-                    ReservedSlots.Dict1.Remove(_params[1]);
-                    SdtdConsole.Instance.Output(string.Format("Removed SteamId {0} from Reserved Slots list.", _params[1]));
-                    ReservedSlots.UpdateXml();
+                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    if (_cInfo != null)
+                    {
+                        if (!ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Id {0} was not found in .", _params[1]));
+                            return;
+                        }
+                        ReservedSlots.Dict.Remove(_cInfo.playerId);
+                        ReservedSlots.Dict1.Remove(_cInfo.playerId);
+                        SdtdConsole.Instance.Output(string.Format("Removed Id {0} from Reserved Slots list.", _params[1]));
+                        ReservedSlots.UpdateXml();
+                    }
                 }
                 else if (_params[0].ToLower().Equals("list"))
                 {

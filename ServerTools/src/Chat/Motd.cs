@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static bool IsRunning = false;
-        public static bool ShowOnRespawn = false;
+        public static bool Show_On_Respawn = false;
         private const string file = "Motd.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
@@ -136,7 +136,7 @@ namespace ServerTools
             {
                 foreach (string _message in Message)
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _message), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false));
                 }
             }
         }

@@ -7,8 +7,8 @@ namespace ServerTools
     {
         private static int timerInstanceCount = 0;
         public static bool IsEnabled = false;
-        public static bool AlertAdmin = false;
-        public static int AdminLevel = 0;
+        public static bool Alert_Admin = false;
+        public static int Admin_Level = 0;
         private static SortedDictionary<int, int> Flag = new SortedDictionary<int, int>();
         private static System.Timers.Timer timerEntity = new System.Timers.Timer();
 
@@ -52,8 +52,7 @@ namespace ServerTools
             timerInstanceCount++;
             if (timerInstanceCount <= 1)
             {
-                int d = 10000;
-                timerEntity.Interval = d;
+                timerEntity.Interval = 10000;
                 timerEntity.Start();
                 timerEntity.Elapsed += new ElapsedEventHandler(AutoEntityUnderground);
             }
@@ -104,13 +103,13 @@ namespace ServerTools
                                         }
                                         if (_flag > 9)
                                         {
-                                            if (AlertAdmin)
+                                            if (Alert_Admin)
                                             {
                                                 foreach (var _cInfo2 in _cInfoList)
                                                 {
                                                     GameManager.Instance.adminTools.IsAdmin(_cInfo2.playerId);
                                                     AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo2.playerId);
-                                                    if (Admin.PermissionLevel <= AdminLevel)
+                                                    if (Admin.PermissionLevel <= Admin_Level)
                                                     {
                                                         SdtdConsole.Instance.ExecuteSync(string.Format("pm {0} \"Detected entity # {1} underground @ {2} {3} {4}\"", _cInfo2.playerId, ent.entityId, x, y, z), _cInfo2);
                                                     }
@@ -159,7 +158,7 @@ namespace ServerTools
                                             {
                                                 GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
                                                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                                                if (Admin.PermissionLevel <= AdminLevel)
+                                                if (Admin.PermissionLevel <= Admin_Level)
                                                 {
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("pm {0} \"Detected player # {1} stuck underground @ {2} {3} {4}. Teleported them to the surface.\"", _cInfo.playerId, ent.entityId, x, y, z), (ClientInfo)null);
                                                 }

@@ -1,44 +1,34 @@
-﻿using System.Threading;
+﻿using System.Timers;
 
 namespace ServerTools
 {
     public class AutoSaveWorld
     {
+        private static int timerInstanceCount = 0;
         public static bool IsEnabled = false;
-        public static bool IsRunning = false;
-        public static int DelayBetweenWorldSaves = 15;
-        private static Thread th;
+        public static int Delay_Between_World_Saves = 15;
+        private static System.Timers.Timer t = new System.Timers.Timer();
 
-        public static void Start()
+        public static void StartTimer()
         {
-            th = new Thread(new ThreadStart(Save));
-            th.IsBackground = true;
-            th.Start();
-            IsRunning = true;
-            Log.Out("[SERVERTOOLS] AutoSaveWorld has started.");
-        }
-
-        public static void Stop()
-        {
-            if (!IsEnabled)
+            timerInstanceCount++;
+            if (timerInstanceCount <= 1)
             {
-                th.Abort();
-                IsRunning = false;
-                Log.Out("[SERVERTOOLS] AutoSaveWorld has stopped.");
+                t.Interval = Delay_Between_World_Saves * 60000;
+                t.Start();
+                t.Elapsed += new ElapsedEventHandler(Save);
             }
         }
 
-        private static void Save()
+        public static void StopTimer()
         {
-            while (IsEnabled)
-            {
-                {
-                    SdtdConsole.Instance.ExecuteSync("saveworld", (ClientInfo)null);
-                    Log.Out("[SERVERTOOLS] World Saved.");
-                }
-                Thread.Sleep(60000 * DelayBetweenWorldSaves);
-            }
-            Stop();
+            t.Stop();
+        }
+
+        private static void Save(object sender, ElapsedEventArgs e)
+        {
+            SdtdConsole.Instance.ExecuteSync("saveworld", (ClientInfo)null);
+            Log.Out("[SERVERTOOLS] World Saved.");
         }
     }
 }

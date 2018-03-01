@@ -9,7 +9,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static bool IsRunning = false;
-        public static int AdminLevel = 0;
+        public static int Admin_Level = 0;
         private const string file = "FamilyShareAccount.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, string> OmittedPlayers = new SortedDictionary<string, string>();
@@ -131,7 +131,7 @@ namespace ServerTools
             {
                 GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                if (Admin.PermissionLevel > AdminLevel)
+                if (Admin.PermissionLevel > Admin_Level)
                 {
                     string _file = string.Format("PlayerLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
                     string _filepath = string.Format("{0}/PlayerLogs/{1}", API.GamePath, _file);

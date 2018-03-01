@@ -6,7 +6,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         private static string[] _cmd = { "tele" };
-        public static string NewSpawnTelePosition = "0,0,0";
+        public static string New_Spawn_Tele_Position = "0,0,0";
 
         public static void SetNewSpawnTele(ClientInfo _cInfo)
         {
@@ -18,7 +18,7 @@ namespace ServerTools
                     _phrase200 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase200 = _phrase200.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase200), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase200), "Server", false, "", false));
             }
             else
             {
@@ -28,15 +28,15 @@ namespace ServerTools
                 string y = _position.y.ToString();
                 string z = _position.z.ToString();
                 string _sposition = x + "," + y + "," + z;
-                NewSpawnTelePosition = _sposition;
+                New_Spawn_Tele_Position = _sposition;
                 string _phrase525;
                 if (!Phrases.Dict.TryGetValue(525, out _phrase525))
                 {
                     _phrase525 = "{PlayerName} you have set the New Spawn position as {NewSpawnTelePosition}.";
                 }
                 _phrase525 = _phrase525.Replace("{PlayerName}", _cInfo.playerName);
-                _phrase525 = _phrase525.Replace("{NewSpawnTelePosition}", NewSpawnTelePosition);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase525), "Server", false, "", false));
+                _phrase525 = _phrase525.Replace("{NewSpawnTelePosition}", New_Spawn_Tele_Position);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase525), "Server", false, "", false));
                 Config.UpdateXml();
             }
         }
@@ -47,7 +47,7 @@ namespace ServerTools
             int mapSeed = world.Seed;
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p == null && _player.Level == 1 && _player.totalItemsCrafted == 0 && NewSpawnTelePosition != "0,0,0" || _player.Level == 1 && _player.totalItemsCrafted == 0 && NewSpawnTelePosition != "0,0,0" && p.NewSpawnTele != mapSeed)
+            if (p == null && _player.Level == 1 && _player.totalItemsCrafted == 0 && New_Spawn_Tele_Position != "0,0,0" || _player.Level == 1 && _player.totalItemsCrafted == 0 && New_Spawn_Tele_Position != "0,0,0" && p.NewSpawnTele != mapSeed)
             {
                 TelePlayer(_cInfo);
             }
@@ -60,7 +60,7 @@ namespace ServerTools
             float xf;
             float yf;
             float zf;
-            string[] _cords = NewSpawnTelePosition.Split(',');
+            string[] _cords = New_Spawn_Tele_Position.Split(',');
             float.TryParse(_cords[0], out xf);
             float.TryParse(_cords[1], out yf);
             float.TryParse(_cords[2], out zf);
@@ -76,7 +76,7 @@ namespace ServerTools
                 _phrase526 = "{PlayerName} you have been teleported to the new spawn location.";
             }
             _phrase526 = _phrase526.Replace("{PlayerName}", _cInfo.playerName);
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase526), "Server", false, "", false));
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase526), "Server", false, "", false));
         }
     }
 }

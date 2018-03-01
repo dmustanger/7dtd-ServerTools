@@ -9,7 +9,7 @@ namespace ServerTools
         private static Thread th;
         private static int _mins;
         private static bool isCountingDown = false;
-        public static bool TenSecondCountdownEnabled = false;
+        public static bool Ten_Second_Countdown_Enabled = false;
 
         public override string GetDescription()
         {
@@ -116,7 +116,7 @@ namespace ServerTools
             GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red1, _phrase450), "Server", false, "", false);
             GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", _red1, _phrase451), "Server", false, "", false);
             SdtdConsole.Instance.ExecuteSync("saveworld", (ClientInfo)null);
-            if (TenSecondCountdownEnabled)
+            if (Ten_Second_Countdown_Enabled)
             {
                 Thread.Sleep(50000);
                 GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}10 seconds until shutdown[-]", _red1), "Server", false, "", false);

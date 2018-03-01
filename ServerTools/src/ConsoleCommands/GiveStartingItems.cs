@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. givestartingitems <steamId>\n" +
-                "1. Gives a player the item(s) in their inventory unless full. Drops to the ground when full.\n";
+                "  1. givestartingitems <steamId/entityId>\n" +
+                "1. Gives a player the item(s) from the StatingItems.xml to their inventory unless full. Drops to the ground when full.\n";
         }
         public override string[] GetCommands()
         {
@@ -31,14 +31,14 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
-                    if (_params[0].Length != 17)
+                    if (_params[0].Length < 1 || _params[0].Length > 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not give starting items to SteamId: Invalid SteamId {0}", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("Can not give starting items to Id: Invalid Id {0}", _params[0]));
                         return;
                     }
                     else
                     {
-                        ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_params[0]);
+                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                         if (_cInfo != null)
                         {
                             if (StartingItems.startItemList.Count > 0)
@@ -92,7 +92,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Player with steamdId {0} does not exist", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Player with Id {0} does not exist", _params[1]));
                         }
                     }
                 }

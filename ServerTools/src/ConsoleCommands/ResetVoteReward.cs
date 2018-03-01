@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. votereward reset <steamID>\n" +
-                   "1. Reset the status of a steamID from the vote reward list\n";
+                   "  1. votereward reset <steamId/entityId>\n" +
+                   "1. Reset the vote reward delay status of a player Id\n";
         }
 
         public override string[] GetCommands()
@@ -38,16 +38,39 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
                         return;
                     }
-                    if (_params[1].Length != 17)
+                    if (_params[1].Length < 1 || _params[1].Length > 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not reset SteamId: Invalid SteamId {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}", _params[1]));
                         return;
+                    }
+                    if (_params[1].Length == 17)
+                    {
+                        Player p = PersistentContainer.Instance.Players[_params[1], false];
+                        if (p.LastVoteReward != null)
+                        {
+                            PersistentContainer.Instance.Players[_params[1], true].LastVoteReward = DateTime.Now.AddDays(-2);
+                            PersistentContainer.Instance.Save();
+                            SdtdConsole.Instance.Output("Vote reward delay reset.");
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a Vote reward delay to reset.", _params[1]));
+                        }
                     }
                     else
                     {
-                        PersistentContainer.Instance.Players[_params[1], true].LastVoteReward = DateTime.Now.AddDays(-2);
-                        PersistentContainer.Instance.Save();
-                        SdtdConsole.Instance.Output("Vote reward delay reset.");
+                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                        Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                        if (p.LastVoteReward != null)
+                        {
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now.AddDays(-2);
+                            PersistentContainer.Instance.Save();
+                            SdtdConsole.Instance.Output("Vote reward delay reset.");
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a Vote reward delay to reset.", _params[1]));
+                        }
                     }
                 }
                 else

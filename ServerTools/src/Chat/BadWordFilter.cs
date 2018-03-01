@@ -8,6 +8,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static bool IsRunning = false;
+        public static bool Invalid_Name = false;
         private const string file = "BadWords.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, string> dict = new SortedDictionary<string, string>();

@@ -11,8 +11,8 @@ namespace ServerTools
         }
         public override string GetHelp()
         {
-            return "Usage: mute add <steamId>\n" +
-                "Usage: mute remove <steamId>\n" +
+            return "Usage: mute add <steamId/entityId>\n" +
+                "Usage: mute remove <steamId/entityId>\n" +
                 "Usage: mute list";
         }
         public override string[] GetCommands()
@@ -35,23 +35,41 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
                         return;
                     }
-                    if (_params[1].Length != 17)
+                    if (_params[1].Length < 1 || _params[1].Length > 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not add SteamId: Invalid SteamId {0}.", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("Can not add Id: Invalid Id {0}.", _params[1]));
                         return;
                     }
-                    Player p = PersistentContainer.Instance.Players[_params[1], false];
-                    if (p != null)
+                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    if (_cInfo != null)
                     {
-                        if (p.IsMuted)
+                        Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                        if (p != null)
                         {
-                            SdtdConsole.Instance.Output(string.Format("Player with the steamid {0} is already muted.", _params[1]));
-                            return;
+                            if (p.IsMuted)
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Player with the Id {0} is already muted.", _params[1]));
+                                return;
+                            }
+                            else
+                            {
+                                PersistentContainer.Instance.Players[_cInfo.playerId, true].IsMuted = true;
+                                PersistentContainer.Instance.Save();
+                                SdtdConsole.Instance.Output(string.Format("Player with the Id {0} has been muted.", _params[1]));
+                            }
+                        }
+                        else
+                        {
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].IsMuted = true;
+                            PersistentContainer.Instance.Save();
+                            SdtdConsole.Instance.Output(string.Format("Player with the Id {0} has been muted.", _cInfo.entityId));
                         }
                     }
-                    PersistentContainer.Instance.Players[_params[1], true].IsMuted = true;
-                    PersistentContainer.Instance.Save();
-                    SdtdConsole.Instance.Output(string.Format("Player with the steamid {0} has been muted.", _params[1]));
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Player with Id {0} can not be found.", _params[1]));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("remove"))
                 {
@@ -62,23 +80,37 @@ namespace ServerTools
                     }
                     if (_params[1].Length != 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not add SteamId: Invalid SteamId {0}.", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("Can not add Id: Invalid Id {0}.", _params[1]));
                         return;
                     }
-                    Player p = PersistentContainer.Instance.Players[_params[1], false];
-                    if (p == null)
+                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    if (_cInfo != null)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Player with the steamid {0} is not muted.", _params[1]));
-                        return;
+                        Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                        if (p != null)
+                        {
+                            if (!p.IsMuted)
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Player with the Id {0} is not muted.", _params[1]));
+                                return;
+                            }
+                            else
+                            {
+                                PersistentContainer.Instance.Players[_cInfo.playerId, false].IsMuted = false;
+                                PersistentContainer.Instance.Save();
+                                SdtdConsole.Instance.Output(string.Format("Player with the Id {0} has been unmuted.", _params[1]));
+                            }
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Player with Id {0} is not muted.", _params[1]));
+                            return;
+                        }
                     }
-                    if (!p.IsMuted)
+                    else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Player with the steamid {0} is not muted.", _params[1]));
-                        return;
+                        SdtdConsole.Instance.Output(string.Format("No Player with the Id {0} found.", _params[1]));
                     }
-                    PersistentContainer.Instance.Players[_params[1], false].IsMuted = false;
-                    PersistentContainer.Instance.Save();
-                    SdtdConsole.Instance.Output(string.Format("Player with the steamid {0} has been unmuted.", _params[1]));
                 }
                 else if (_params[0].ToLower().Equals("list"))
                 {

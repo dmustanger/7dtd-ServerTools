@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Xml;
 using UnityEngine;
@@ -12,16 +13,16 @@ namespace ServerTools
         public static bool IsEnabled = false;
         public static bool IsRunning = false;
         public static bool RandomListRunning = true;
-        public static int RewardCount = 1;
+        public static int Reward_Count = 1;
         private const string file = "VoteReward.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, int[]> dict = new SortedDictionary<string, int[]>();
         public static SortedDictionary<string, int[]> randomVoteReward = new SortedDictionary<string, int[]>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
-        public static string YourVotingSite = ("https://7daystodie-servers.com/server/12345");
-        public static string APIKey = ("xxxxxxxx");
-        public static int DelayBetweenRewards = 24;
+        public static string Your_Voting_Site = ("https://7daystodie-servers.com/server/12345");
+        public static string API_Key = ("xxxxxxxx");
+        public static int Delay_Between_Uses = 24;
         public static System.Random rnd = new System.Random();
 
         private static List<string> list
@@ -31,21 +32,27 @@ namespace ServerTools
 
         public static void RandomList()
         {
-            if (randomVoteReward.Count < RewardCount)
+            if (Reward_Count > dict.Count)
             {
-                string _randomItem = list.RandomObject();
+                Reward_Count = 3;
+            }
+            string _item = list.RandomObject();
+            if (!randomVoteReward.ContainsKey(_item))
+            {
                 int[] _values;
-                if (!randomVoteReward.ContainsKey(_randomItem))
+                if (dict.TryGetValue(_item, out _values))
                 {
-                    if (dict.TryGetValue(_randomItem, out _values))
+                    randomVoteReward.Add(_item, _values);
+                    Log.Out(string.Format("Added {0} to the vote rewards.", _item));
+                    if (randomVoteReward.Count < Reward_Count)
                     {
-                        randomVoteReward.Add(_randomItem, _values);
-                        if (randomVoteReward.Count < RewardCount)
-                        {
-                            RandomList();
-                        }
+                        RandomList();
                     }
                 }
+            }
+            else
+            {
+                RandomList();
             }
         }
 
@@ -214,7 +221,7 @@ namespace ServerTools
 
         public static void CheckReward(ClientInfo _cInfo)
         {
-            if (DelayBetweenRewards == 0)
+            if (Delay_Between_Uses == 0)
             {
                 Execute(_cInfo);
             }
@@ -230,13 +237,13 @@ namespace ServerTools
                     TimeSpan varTime = DateTime.Now - p.LastVoteReward;
                     double fractionalHours = varTime.TotalHours;
                     int _timepassed = (int)fractionalHours;
-                    if (_timepassed >= DelayBetweenRewards)
+                    if (_timepassed >= Delay_Between_Uses)
                     {
                         Execute(_cInfo);
                     }
                     else
                     {
-                        int _timeleft = DelayBetweenRewards - _timepassed;
+                        int _timeleft = Delay_Between_Uses - _timepassed;
                         string _phrase602;
                         if (!Phrases.Dict.TryGetValue(602, out _phrase602))
                         {
@@ -244,10 +251,10 @@ namespace ServerTools
                         }
                         string cinfoName = _cInfo.playerName;
                         _phrase602 = _phrase602.Replace("{PlayerName}", cinfoName);
-                        _phrase602 = _phrase602.Replace("{DelayBetweenRewards}", DelayBetweenRewards.ToString());
+                        _phrase602 = _phrase602.Replace("{DelayBetweenRewards}", Delay_Between_Uses.ToString());
                         _phrase602 = _phrase602.Replace("{TimeRemaining}", _timeleft.ToString());
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase602), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase602), "Server", false, "", false));
                         }
                     }
                 }
@@ -257,18 +264,18 @@ namespace ServerTools
         private static void Execute(ClientInfo _cInfo)
         {
             ServicePointManager.ServerCertificateValidationCallback += (send, certificate, chain, sslPolicyErrors) => { return true; };
-            var VoteUrl = string.Format("https://7daystodie-servers.com/api/?object=votes&element=claim&key={0}&username={1}", Uri.EscapeUriString(APIKey), Uri.EscapeUriString(_cInfo.playerName));
+            var VoteUrl = string.Format("https://7daystodie-servers.com/api/?object=votes&element=claim&key={0}&username={1}", Uri.EscapeUriString(API_Key), Uri.EscapeUriString(_cInfo.playerName));
             using (var NewVote = new WebClient())
             {
                 var VoteResult = string.Empty;
                 VoteResult = NewVote.DownloadString(VoteUrl);
                 if (VoteResult == "0")
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your vote has not been located {1}. Make sure you voted @ {2} and try again.[-]", Config.ChatResponseColor, _cInfo.playerName, YourVotingSite), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your vote has not been located {1}. Make sure you voted @ {2} and try again.[-]", Config.Chat_Response_Color, _cInfo.playerName, Your_Voting_Site), "Server", false, "", false));
                 }
                 if (VoteResult == "1")
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Thank you for your vote {1}. You can vote and receive another reward in {2} hours[-]", Config.ChatResponseColor, _cInfo.playerName, DelayBetweenRewards), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Thank you for your vote {1}. You can vote and receive another reward in {2} hours[-]", Config.Chat_Response_Color, _cInfo.playerName, Delay_Between_Uses), "Server", false, "", false));
                     foreach (KeyValuePair<string, int[]> kvp in randomVoteReward)
                     {
                         int count = rnd.Next(kvp.Value[0], kvp.Value[1]);
@@ -308,7 +315,6 @@ namespace ServerTools
                                     world.SpawnEntityInWorld(entityItem);
                                     _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                     world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward item was sent to your inventory.[-]", Config.ChatResponseColor), "Server", false, "", false));
                                 }
                                 else
                                 {
@@ -317,6 +323,7 @@ namespace ServerTools
                             }
                         }
                     }
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward items were sent to your inventory.[-]", Config.Chat_Response_Color), "Server", false, "", false));
                     randomVoteReward.Clear();
                     RandomList();
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now;

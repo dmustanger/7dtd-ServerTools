@@ -2,9 +2,9 @@
 <xml>
   <ModInfo>
     <Name value="Server Tools" />
-    <Description value="Server tools for 7 Days to Die dedicated servers" />
+    <Description value="ServerTools for 7 Days to Die Dedicated Servers" />
     <Author value="Dmustanger and ObsessiveCompulsive" />
-    <Version value="6.5" />
+    <Version value="7.0" />
     <Website value="https://github.com/dmustanger/7dtd-ServerTools/releases" />
   </ModInfo>
 </xml>

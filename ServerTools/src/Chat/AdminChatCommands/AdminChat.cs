@@ -16,7 +16,7 @@ namespace ServerTools
                     _phrase200 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase200 = _phrase200.Replace("{PlayerName}", _sender.playerName);
-                _sender.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase200), "Server", false, "", false));
+                _sender.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase200), "Server", false, "", false));
             }
             else
             {
@@ -26,7 +26,7 @@ namespace ServerTools
                     if (GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
                     {
                         AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                        if (Admin.PermissionLevel <= ChatHook.ModLevel)
+                        if (Admin.PermissionLevel <= ChatHook.Mod_Level)
                         {
                             _message = _message.Replace("@ADMINS ", "");
                             _message = _message.Replace("@admins ", "");
@@ -48,7 +48,7 @@ namespace ServerTools
                     _phrase200 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase200 = _phrase200.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase200), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase200), "Server", false, "", false));
             }
             else
             {

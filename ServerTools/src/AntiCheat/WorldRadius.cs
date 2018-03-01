@@ -65,7 +65,7 @@ namespace ServerTools
                             var worldRadiusWarning = Math.Sqrt(Math.Sqrt(WorldSize - 75));
                             if (playerRadius >= worldRadiusWarning)
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are near the edge of the world {1}[-]", Config.ChatResponseColor, _cInfo.playerName), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are near the edge of the world {1}[-]", Config.Chat_Response_Color, _cInfo.playerName), "Server", false, "", false));
                                 ZoneEdge.Add(_player.entityId);
                             }
                         }
@@ -101,7 +101,7 @@ namespace ServerTools
                                     {
                                         _z = (_z - 5);
                                     }
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reached world border limit[-]", Config.ChatResponseColor, WorldSize), "Server", false, "", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reached world border limit[-]", Config.Chat_Response_Color, WorldSize), "Server", false, "", false));
                                     SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, _x, -1, _z), (ClientInfo)null);
                                 }
                             }

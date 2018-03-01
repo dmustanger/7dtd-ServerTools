@@ -9,16 +9,16 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools]-Turn your admin chat color and prefix off or on.";
+            return "[ServerTools]-Turn your admin chat color and prefix off and on.";
         }
 
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. adminchatcolor off <steamID>\n" +
-                   "  2. adminchatcolor on <steamID>\n" +
-                   "1. Turn off admin chat color for admin\n" +                   
-                   "2. Turn on admin chat color for admin\n";
+                   "  1. adminchatcolor off\n" +
+                   "  2. adminchatcolor on\n" +
+                   "1. Turn off your admin chat color\n" +                   
+                   "2. Turn on your admin chat color\n";
         }
 
         public override string[] GetCommands()
@@ -35,7 +35,12 @@ namespace ServerTools
                     SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
                     return;
                 }
-                if (_params[0].ToLower().Equals("off"))
+                if (_params[0].Length < 2 || _params[0].Length > 3)
+                {
+                    SdtdConsole.Instance.Output(string.Format("Can not set Admin Chat Color on or off. Invalid \"on\" or \"off\" {0}", _params[0]));
+                    return;
+                }
+                else if (_params[0].ToLower().Equals("off"))
                 {
                     if (_params.Count != 1)
                     {
@@ -45,8 +50,11 @@ namespace ServerTools
                     else
                     {
                         var _id = _senderInfo.RemoteClientInfo;
-                        AdminColorOff.Add(_id.playerId);
-                        SdtdConsole.Instance.Output(string.Format("Set admin chat color off for you {0}.", _id.playerName));
+                        if (_id != null)
+                        {
+                            AdminColorOff.Add(_id.playerId);
+                        }
+                        SdtdConsole.Instance.Output(string.Format("Set your admin chat color to off {0}.", _id.playerName));
                     }
                 }
                 else if (_params[0].ToLower().Equals("on"))
@@ -59,8 +67,11 @@ namespace ServerTools
                     else
                     {
                         var _id = _senderInfo.RemoteClientInfo;
-                        AdminColorOff.Remove(_id.playerId);
-                        SdtdConsole.Instance.Output(string.Format("Set admin chat color on for you {0}.", _id.playerName));
+                        if (_id != null)
+                        {
+                            AdminColorOff.Remove(_id.playerId);
+                        }
+                        SdtdConsole.Instance.Output(string.Format("Set your admin chat color to on {0}.", _id.playerName));
                     }
                 }
                 else

@@ -10,8 +10,8 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static bool IsRunning = false;
-        public static bool AlwaysShowResponse = false;
-        public static int DelayBetweenUses = 60;
+        public static bool Always_Show_Response = false;
+        public static int Delay_Between_Uses = 60;
         private const string file = "GimmeItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, int[]> dict = new SortedDictionary<string, int[]>();
@@ -220,7 +220,7 @@ namespace ServerTools
 
         public static void Checkplayer(ClientInfo _cInfo, bool _announce, string _playerName)
         {
-            if (DelayBetweenUses < 1)
+            if (Delay_Between_Uses < 1)
             {
                 _GiveItem(_cInfo, _announce);
             }
@@ -236,28 +236,28 @@ namespace ServerTools
                     TimeSpan varTime = DateTime.Now - p.LastGimme;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
-                    if (_timepassed >= DelayBetweenUses)
+                    if (_timepassed >= Delay_Between_Uses)
                     {
                         _GiveItem(_cInfo, _announce);
                     }
                     else
                     {
-                        int _timeleft = DelayBetweenUses - _timepassed;
+                        int _timeleft = Delay_Between_Uses - _timepassed;
                         string _phrase6;
                         if (!Phrases.Dict.TryGetValue(6, out _phrase6))
                         {
                             _phrase6 = "{PlayerName} you can only use /gimme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                         }
                         _phrase6 = _phrase6.Replace("{PlayerName}", _playerName);
-                        _phrase6 = _phrase6.Replace("{DelayBetweenUses}", DelayBetweenUses.ToString());
+                        _phrase6 = _phrase6.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                         _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
                         if (_announce)
                         {
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase6), "Server", false, "", false);
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase6), "Server", false, "", false);
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase6), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase6), "Server", false, "", false));
                         }
                     }
                 }
@@ -315,13 +315,13 @@ namespace ServerTools
                 {
                     _phrase7 = _phrase7.Replace("{ItemName}", _name);
                 }
-                if (_announce || AlwaysShowResponse)
+                if (_announce || Always_Show_Response)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase7), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase7), "Server", false, "", false);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase7), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase7), "Server", false, "", false));
                 }
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].LastGimme = DateTime.Now;
                 PersistentContainer.Instance.Save();

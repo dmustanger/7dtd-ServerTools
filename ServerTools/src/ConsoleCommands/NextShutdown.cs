@@ -26,29 +26,26 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count < 1 || _params.Count > 1)
+                if (_params.Count != 1)
                 {
                     SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
                     return;
                 }
+                if (_params[1] != "check")
+                {
+                    SdtdConsole.Instance.Output(string.Format("Param 1 does not equal \"check\": Param 1 \"Check\" {0}.", _params[1]));
+                    return;
+                }
                 if (_params[0].ToLower().Equals("check"))
                 {
-                    if (_params.Count != 1)
-                    {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
-                        return;
-                    }
-                    else
-                    {
-                        var _timeStart = AutoShutdown.timerStart.RandomObject();
-                        TimeSpan varTime = DateTime.Now - _timeStart;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        int _timeMinutes = (int)fractionalMinutes;
-                        int _timeleftMinutes = AutoShutdown.TimeBeforeShutdown - _timeMinutes;
-                        string TimeLeft;
-                        TimeLeft = string.Format("{0:00} H :{1:00} M", _timeleftMinutes / 60, _timeleftMinutes % 60);
-                        SdtdConsole.Instance.Output(TimeLeft);
-                    }
+                    var _timeStart = AutoShutdown.timerStart.RandomObject();
+                    TimeSpan varTime = DateTime.Now - _timeStart;
+                    double fractionalMinutes = varTime.TotalMinutes;
+                    int _timeMinutes = (int)fractionalMinutes;
+                    int _timeleftMinutes = AutoShutdown.Time_Before_Shutdown - _timeMinutes;
+                    string TimeLeft;
+                    TimeLeft = string.Format("{0:00} H :{1:00} M", _timeleftMinutes / 60, _timeleftMinutes % 60);
+                    SdtdConsole.Instance.Output(TimeLeft);
                 }
                 else
                 {

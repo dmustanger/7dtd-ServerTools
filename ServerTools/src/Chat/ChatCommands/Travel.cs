@@ -10,11 +10,14 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static bool IsRunning = false;
-        public static int DelayBetweenUses = 60;
+        public static int Delay_Between_Uses = 60;
         private const string file = "TravelLocations.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, string[]> Box = new SortedDictionary<string, string[]>();
         private static SortedDictionary<string, string> Destination = new SortedDictionary<string, string>();
+        private static SortedDictionary<int, Entity> Bike = new SortedDictionary<int, Entity>();
+        public static SortedDictionary<int, DateTime> BikeTime = new SortedDictionary<int, DateTime>();
+        public static List<int> TeleportCheckProtection = new List<int>();
         private static List<int> Flag = new List<int>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
@@ -160,7 +163,7 @@ namespace ServerTools
 
         public static void Check(ClientInfo _cInfo, bool _announce, string _playerName)
         {
-            if (DelayBetweenUses < 1)
+            if (Delay_Between_Uses < 1)
             {
                 Tele(_cInfo, _announce);
             }
@@ -176,28 +179,28 @@ namespace ServerTools
                     TimeSpan varTime = DateTime.Now - p.LastTravel;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
-                    if (_timepassed >= DelayBetweenUses)
+                    if (_timepassed >= Delay_Between_Uses)
                     {
                         Tele(_cInfo, _announce);
                     }
                     else
                     {
-                        int _timeleft = DelayBetweenUses - _timepassed;
+                        int _timeleft = Delay_Between_Uses - _timepassed;
                         string _phrase605;
                         if (!Phrases.Dict.TryGetValue(605, out _phrase605))
                         {
                             _phrase605 = "{PlayerName} you can only use /travel once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                         }
                         _phrase605 = _phrase605.Replace("{PlayerName}", _playerName);
-                        _phrase605 = _phrase605.Replace("{DelayBetweenUses}", DelayBetweenUses.ToString());
+                        _phrase605 = _phrase605.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                         _phrase605 = _phrase605.Replace("{TimeRemaining}", _timeleft.ToString());
                         if (_announce)
                         {
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase605), "Server", false, "", false);
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase605), "Server", false, "", false);
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase605), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase605), "Server", false, "", false));
                         }
                     }
                 }
@@ -244,7 +247,7 @@ namespace ServerTools
                         int _yDest = (int)yDest;
                         int _zDest = (int)zDest;
 
-                        if (xMin >= 0 & xMax > 0)
+                        if (xMin >= 0 & xMax >= 0)
                         {
                             if (xMin < xMax)
                             {
@@ -285,7 +288,7 @@ namespace ServerTools
                                 }
                             }
                         }
-                        else if (xMin < 0 & xMax < 0)
+                        else if (xMin <= 0 & xMax <= 0)
                         {
                             if (xMin < xMax)
                             {
@@ -326,7 +329,7 @@ namespace ServerTools
                                 }
                             }
                         }
-                        else if (xMin < 0 & xMax >= 0)
+                        else if (xMin <= 0 & xMax >= 0)
                         {
                             if (_playerX >= xMin)
                             {
@@ -345,7 +348,7 @@ namespace ServerTools
                                 _xMaxCheck = 0;
                             }
                         }
-                        else if (xMin > 0 & xMax < 0)
+                        else if (xMin >= 0 & xMax <= 0)
                         {
                             if (_playerX <= xMin)
                             {
@@ -365,7 +368,7 @@ namespace ServerTools
                             }
                         }
 
-                        if (yMin >= 0 & yMax > 0)
+                        if (yMin >= 0 & yMax >= 0)
                         {
                             if (yMin < yMax)
                             {
@@ -406,7 +409,7 @@ namespace ServerTools
                                 }
                             }
                         }
-                        else if (yMin < 0 & yMax < 0)
+                        else if (yMin <= 0 & yMax <= 0)
                         {
                             if (yMin < yMax)
                             {
@@ -447,7 +450,7 @@ namespace ServerTools
                                 }
                             }
                         }
-                        else if (yMin < 0 & yMax >= 0)
+                        else if (yMin <= 0 & yMax >= 0)
                         {
                             if (_playerY >= yMin)
                             {
@@ -466,7 +469,7 @@ namespace ServerTools
                                 _yMaxCheck = 0;
                             }
                         }
-                        else if (yMin > 0 & yMax < 0)
+                        else if (yMin >= 0 & yMax <= 0)
                         {
                             if (_playerY <= yMin)
                             {
@@ -486,7 +489,7 @@ namespace ServerTools
                             }
                         }
 
-                        if (zMin >= 0 & zMax > 0)
+                        if (zMin >= 0 & zMax >= 0)
                         {
                             if (zMin < zMax)
                             {
@@ -527,7 +530,7 @@ namespace ServerTools
                                 }
                             }
                         }
-                        else if (zMin < 0 & zMax < 0)
+                        else if (zMin <= 0 & zMax <= 0)
                         {
                             if (zMin < zMax)
                             {
@@ -568,7 +571,7 @@ namespace ServerTools
                                 }
                             }
                         }
-                        else if (zMin < 0 & zMax >= 0)
+                        else if (zMin <= 0 & zMax >= 0)
                         {
                             if (_playerZ >= zMin)
                             {
@@ -587,7 +590,7 @@ namespace ServerTools
                                 _zMaxCheck = 0;
                             }
                         }
-                        else if (zMin > 0 & zMax < 0)
+                        else if (zMin >= 0 & zMax <= 0)
                         {
                             if (_playerY <= zMin)
                             {
@@ -609,17 +612,66 @@ namespace ServerTools
 
                         if (_xMinCheck == 1 & _yMinCheck == 1 & _zMinCheck == 1 & _xMaxCheck == 1 & _yMaxCheck == 1 & _zMaxCheck == 1)
                         {
-                            Vector3 _dest = new Vector3(_xDest, _yDest, _zDest);
-                            _cInfo.SendPackage(new NetPackageTeleportPlayer(_dest));
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastTravel = DateTime.Now;
-                            PersistentContainer.Instance.Save();
-                            string _phrase603;
-                            if (!Phrases.Dict.TryGetValue(603, out _phrase603))
+                            if (!TeleportCheckProtection.Contains(_cInfo.entityId))
                             {
-                                _phrase603 = "You have traveled to";
+                                TeleportCheckProtection.Add(_cInfo.entityId);
                             }
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}.[-]", Config.ChatResponseColor, _phrase603, kvpCorners.Key), "Server", false, "", false));
-                            continue;
+                            else
+                            {
+                                TeleportCheckProtection.Remove(_cInfo.entityId);
+                                TeleportCheckProtection.Add(_cInfo.entityId);
+                            }
+                            if (_player.AttachedToEntity)
+                            {
+                                Entity _bike = _player.AttachedToEntity;
+                                Bike.Remove(_cInfo.entityId);
+                                Bike.Add(_cInfo.entityId, _bike);
+                                BikeTime.Add(_cInfo.entityId, DateTime.Now);
+                                string _phrase800;
+                                if (!Phrases.Dict.TryGetValue(800, out _phrase800))
+                                {
+                                    _phrase800 = "Your minibike is prepared. Get off your bike and type /travel again. 1 minute limit.";
+                                }
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase800), "Server", false, "", false));
+                            }
+                            else
+                            {
+                                if (BikeTime.ContainsKey(_cInfo.entityId))
+                                {
+                                    DateTime _bikeValue;
+                                    if (BikeTime.TryGetValue(_cInfo.entityId, out _bikeValue))
+                                    {
+                                        TimeSpan varTime = DateTime.Now - _bikeValue;
+                                        double fractionalSeconds = varTime.TotalSeconds;
+                                        int _timepassed = (int)fractionalSeconds;
+                                        if (_timepassed <= 60)
+                                        {
+                                            Entity _bike;
+                                            if (Bike.TryGetValue(_cInfo.entityId, out _bike))
+                                            {
+                                                SdtdConsole.Instance.ExecuteSync(string.Format("telee {0} {1} {2} {3}", _bike.entityId, _xDest, _yDest, _zDest), (ClientInfo)null);
+                                                Bike.Remove(_cInfo.entityId);
+                                                BikeTime.Remove(_cInfo.entityId);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Bike.Remove(_cInfo.entityId);
+                                            BikeTime.Remove(_cInfo.entityId);
+                                        }
+                                    }
+                                }
+                                Vector3 _dest = new Vector3(_xDest, _yDest, _zDest);
+                                _cInfo.SendPackage(new NetPackageTeleportPlayer(_dest));
+                                PersistentContainer.Instance.Players[_cInfo.playerId, true].LastTravel = DateTime.Now;
+                                PersistentContainer.Instance.Save();
+                                string _phrase603;
+                                if (!Phrases.Dict.TryGetValue(603, out _phrase603))
+                                {
+                                    _phrase603 = "You have traveled to";
+                                }
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}.[-]", Config.Chat_Response_Color, _phrase603, kvpCorners.Key), "Server", false, "", false));
+                            }
                         }
                         else
                         {
@@ -631,7 +683,7 @@ namespace ServerTools
                                 {
                                     _phrase604 = "You are not in a travel location.";
                                 }
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase604), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase604), "Server", false, "", false));
                             }
                         }
                     }

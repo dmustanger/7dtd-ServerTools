@@ -12,6 +12,7 @@ namespace ServerTools
         public static int _timepassed = 0;       
         public static SortedDictionary<string, string> Dict = new SortedDictionary<string, string>();
         public static SortedDictionary<string, int[]> Dict1 = new SortedDictionary<string, int[]>();
+        public static List<int> TeleportCheckProtection = new List<int>();
         private const string file = "CustomChatCommands.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
@@ -174,7 +175,15 @@ namespace ServerTools
 
         public static string GetChatCommands(ClientInfo _cInfo)
         {
-            string _commands = string.Format("{0}Commands are:", Config.ChatResponseColor);
+            string _commands = string.Format("{0}Commands are:", Config.Chat_Response_Color);
+            if (FriendTeleport.IsEnabled)
+            {
+                _commands = string.Format("{0} /friend /accept", _commands);
+            }
+            if (Shop.IsEnabled)
+            {
+                _commands = string.Format("{0} /wallet /shop /buy", _commands);
+            }
             if (Gimme.IsEnabled)
             {
                 _commands = string.Format("{0} /gimme", _commands);
@@ -215,11 +224,11 @@ namespace ServerTools
             {
                 _commands = string.Format("{0} /reward", _commands);
             }
-            if (ChatHook.DonatorNameColoring)
+            if (ChatHook.Donator_Name_Coloring)
             {
                 _commands = string.Format("{0} /doncolor", _commands);
             }
-            if (ChatHook.ReservedCheck)
+            if (ChatHook.Reserved_Check)
             {
                 _commands = string.Format("{0} /reserved", _commands);
             }
@@ -235,11 +244,11 @@ namespace ServerTools
             {
                 _commands = string.Format("{0} /travel", _commands);
             }
-            if (ChatHook.SpecialPlayerNameColoring && ChatHook.SpecialPlayers.Contains(_cInfo.playerId))
+            if (ChatHook.Special_Player_Name_Coloring && ChatHook.SpecialPlayers.Contains(_cInfo.playerId))
             {
                 _commands = string.Format("{0} /spcolor", _commands);
             }
-            if (TeleportHome.IsEnabled & ReservedSlots.IsEnabled & ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+            if (TeleportHome.IsEnabled & TeleportHome.Set_Home2_Enabled)
             {
                 _commands = string.Format("{0} /sethome2 /home2 /delhome2", _commands);
             }
@@ -254,7 +263,7 @@ namespace ServerTools
             if (AdminChat.IsEnabled && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
             {
                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                if (Admin.PermissionLevel <= ChatHook.AdminLevel)
+                if (Admin.PermissionLevel <= ChatHook.Admin_Level)
                 {
                     _commands = string.Format("{0} @admins", _commands);
                     string[] _command = { "say" };
@@ -287,7 +296,7 @@ namespace ServerTools
             }
             if (_commands.EndsWith("Commands are:"))
             {
-                _commands = string.Format("{0}Sorry, there are no custom chat commands.", Config.ChatResponseColor);
+                _commands = string.Format("{0}Sorry, there are no custom chat commands.", Config.Chat_Response_Color);
             }
             _commands = string.Format("{0}[-]", _commands);
             return _commands;
@@ -389,11 +398,11 @@ namespace ServerTools
                             _phrase616 = _phrase616.Replace("{TimeRemaining}", _timeleft.ToString());
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase616), "Server", false, "", false);
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase616), "Server", false, "", false);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.ChatResponseColor, _phrase616), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase616), "Server", false, "", false));
                             }
                         }
                     }
@@ -430,6 +439,18 @@ namespace ServerTools
                 else
                 {
                     SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                }
+                if (_response.StartsWith("tele ") || _response.StartsWith("telee ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
+                {
+                    if (!TeleportCheckProtection.Contains(_cInfo.entityId))
+                    {
+                        TeleportCheckProtection.Add(_cInfo.entityId);
+                    }
+                    else
+                    {
+                        TeleportCheckProtection.Remove(_cInfo.entityId);
+                        TeleportCheckProtection.Add(_cInfo.entityId);
+                    }
                 }
 
                 int _delay = _c[0]; int _number = _c[1];

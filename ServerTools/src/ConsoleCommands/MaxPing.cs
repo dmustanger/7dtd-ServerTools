@@ -26,12 +26,12 @@ namespace ServerTools
                     SdtdConsole.Instance.Output("Wrong number of arguments.");
                     return;
                 }
-                if (!int.TryParse(_params[0], out HighPingKicker.MAXPING))
+                if (!int.TryParse(_params[0], out HighPingKicker.Max_Ping))
                 {
                     SdtdConsole.Instance.Output("Maxping is not an integer.");
                     return;
                 }
-                SdtdConsole.Instance.Output(string.Format("Max ping limit set to {0}", HighPingKicker.MAXPING));
+                SdtdConsole.Instance.Output(string.Format("Max ping limit set to {0}", HighPingKicker.Max_Ping));
                 Config.UpdateXml();
             }
             catch (Exception e)

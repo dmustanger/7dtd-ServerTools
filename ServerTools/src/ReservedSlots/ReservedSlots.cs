@@ -9,7 +9,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;        
         public static bool IsRunning = false;
-        public static bool DonatorNameColoring = false;
+        public static bool Donator_Name_Coloring = false;
         public static SortedDictionary<string, DateTime> Dict = new SortedDictionary<string, DateTime>();
         public static SortedDictionary<string, string> Dict1 = new SortedDictionary<string, string>();
         private static string file = "ReservedSlots.xml";
@@ -19,7 +19,7 @@ namespace ServerTools
 
         public static void Load()
         {
-            if (IsEnabled && !IsRunning || DonatorNameColoring && !IsRunning)
+            if (IsEnabled && !IsRunning || Donator_Name_Coloring && !IsRunning)
             {
                 LoadXml();
                 InitFileWatcher();
@@ -31,7 +31,7 @@ namespace ServerTools
             Dict.Clear();
             fileWatcher.Dispose();
             IsRunning = false;
-            DonatorNameColoring = false;
+            Donator_Name_Coloring = false;
         }
 
         private static void LoadXml()
@@ -152,7 +152,7 @@ namespace ServerTools
             fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
             fileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
-            DonatorNameColoring = true;
+            Donator_Name_Coloring = true;
         }
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)

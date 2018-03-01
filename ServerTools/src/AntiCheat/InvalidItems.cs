@@ -8,13 +8,13 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static bool IsRunning = false;
-        public static bool AnounceInvalidStack = false;
-        public static bool BanPlayer = true;
+        public static bool Anounce_Invalid_Stack = false;
+        public static bool Ban_Player = false;
         private static string file = "InvalidItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, string> dict = new SortedDictionary<string, string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        public static int LevelToIgnore = 0;
+        public static int Level_To_Ignore = 0;
 
         public static void Load()
         {
@@ -1221,7 +1221,7 @@ namespace ServerTools
             if (_cInfo != null)
             {
                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                if (Admin.PermissionLevel > LevelToIgnore)
+                if (Admin.PermissionLevel > Level_To_Ignore)
                 {
                     for (int i = 0; i < _playerDataFile.inventory.Length; i++)
                     {
@@ -1234,7 +1234,7 @@ namespace ServerTools
                         {
                             int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
                             string _name = ItemClass.list[_itemValue.type].GetItemName();
-                            if (AnounceInvalidStack && _count > _maxAllowed)
+                            if (Anounce_Invalid_Stack && _count > _maxAllowed)
                             {
                                 string _phrase3;
                                 if (!Phrases.Dict.TryGetValue(3, out _phrase3))
@@ -1250,7 +1250,7 @@ namespace ServerTools
                             }
                             if (IsEnabled && dict.ContainsKey(_name))
                             {
-                                if (BanPlayer)
+                                if (Ban_Player)
                                 {
                                     string _phrase4;
                                     if (!Phrases.Dict.TryGetValue(4, out _phrase4))
@@ -1289,7 +1289,7 @@ namespace ServerTools
                         {
                             int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
                             string _name = ItemClass.list[_itemValue.type].GetItemName();
-                            if (AnounceInvalidStack && _count > _maxAllowed)
+                            if (Anounce_Invalid_Stack && _count > _maxAllowed)
                             {
                                 string _phrase3;
                                 if (!Phrases.Dict.TryGetValue(3, out _phrase3))
@@ -1307,7 +1307,7 @@ namespace ServerTools
                             }
                             if (IsEnabled && dict.ContainsKey(_name))
                             {
-                                if (BanPlayer)
+                                if (Ban_Player)
                                 {
                                     string _phrase4;
                                     if (!Phrases.Dict.TryGetValue(4, out _phrase4))

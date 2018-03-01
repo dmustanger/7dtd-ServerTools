@@ -13,7 +13,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. giveblock <steamId> <blockId or name> <count>\n" +
+                "  1. giveblock <steamId/entityId> <blockId or name> <count>\n" +
                 "  2. giveblock all <blockId or name> <count>\n" +
                 "1. Gives a player the block(s) to their inventory unless full. Drops to the ground when full.\n"+
                 "2. Gives all players the block(s) to their inventory unless full. Drops to the ground when full.\n";
@@ -33,17 +33,14 @@ namespace ServerTools
                     SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 3, found {0}", _params.Count));
                     return;
                 }
-                if (_params[0].Length != 3)
+                if (_params[0].Length < 1 || _params[0].Length > 17)
                 {
-                    if (_params[0].Length != 17)
-                    {
-                        SdtdConsole.Instance.Output(string.Format("Can not give block to SteamId: Invalid SteamId {0}", _params[0]));
-                        return;
-                    }
+                    SdtdConsole.Instance.Output(string.Format("Can not give block to all players or player with Id: Invalid \"all\" or Id {0}", _params[0]));
+                    return;
                 }
-                if (_params[1].Length < 1)
+                if (_params[1].Length < 1 || _params[0].Length > 4)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Can not give block: Invalid itemId {0}", _params[1]));
+                    SdtdConsole.Instance.Output(string.Format("Can not give block: Invalid blockId {0}", _params[1]));
                     return;
                 }
                 if (_params[2].Length < 1 || _params[2].Length > 4)
@@ -103,7 +100,7 @@ namespace ServerTools
                                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                                 SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.ChatResponseColor, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.Chat_Response_Color, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false));
                             }
                             else
                             {
@@ -113,7 +110,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_params[0]);
+                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                         if (_cInfo != null)
                         {
                             int count = 1;
@@ -166,11 +163,11 @@ namespace ServerTools
                                 world.SpawnEntityInWorld(entityItem);
                                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.ChatResponseColor, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.Chat_Response_Color, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false));
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("Player with steamdId {0} is not spawned", _params[1]));
+                                SdtdConsole.Instance.Output(string.Format("Player with Id {0} is not spawned", _params[1]));
                             }
                         }
                         else

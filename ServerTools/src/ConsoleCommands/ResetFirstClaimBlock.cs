@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. firstclaimblock reset <steamID>\n" +
-                   "1. Reset the status of a steamID from the first claim block list\n";
+                   "  1. firstclaimblock reset <steamId/entityId>\n" +
+                   "1. Reset the status of a players first claim block\n";
         }
 
         public override string[] GetCommands()
@@ -26,9 +26,9 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count < 1 || _params.Count > 2)
+                if (_params.Count != 2)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 or 2, found {0}.", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("reset"))
@@ -38,16 +38,39 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
                         return;
                     }
-                    if (_params[1].Length != 17)
+                    if (_params[1].Length < 1 || _params[1].Length > 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not reset SteamId: Invalid SteamId {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}.", _params[1]));
                         return;
+                    }
+                    if (_params[1].Length == 17)
+                    {
+                        Player p = PersistentContainer.Instance.Players[_params[1], false];
+                        if (p != null)
+                        {
+                            PersistentContainer.Instance.Players[_params[1], true].WorldSeedFirstClaim = 1;
+                            PersistentContainer.Instance.Save();
+                            SdtdConsole.Instance.Output("Players first claim block reset.");
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a first claim block to reset.", _params[1]));
+                        }
                     }
                     else
                     {
-                        PersistentContainer.Instance.Players[_params[1], true].WorldSeedFirstClaim = 1;
-                        PersistentContainer.Instance.Save();
-                        SdtdConsole.Instance.Output("First claim block reset.");
+                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                        Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                        if (p != null)
+                        {
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].WorldSeedFirstClaim = 1;
+                            PersistentContainer.Instance.Save();
+                            SdtdConsole.Instance.Output("Players first claim block reset.");
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a first claim block to reset.", _params[1]));
+                        }
                     }
                 }
                 else

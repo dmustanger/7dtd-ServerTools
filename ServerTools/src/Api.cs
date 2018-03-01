@@ -25,7 +25,7 @@ namespace ServerTools
             {
                 HighPingKicker.CheckPing(_cInfo);
             }
-            if (InventoryCheck.IsEnabled || InventoryCheck.AnounceInvalidStack)
+            if (InventoryCheck.IsEnabled || InventoryCheck.Anounce_Invalid_Stack)
             {
                 InventoryCheck.CheckInv(_cInfo, _playerDataFile);
             }
@@ -57,13 +57,17 @@ namespace ServerTools
             {
                 ClanManager.CheckforClantag(_cInfo);
             }
-            if (Motd.IsEnabled & !Motd.ShowOnRespawn)
+            if (Motd.IsEnabled & !Motd.Show_On_Respawn)
             {
                 Motd.Send(_cInfo);
             }
-            if (Bloodmoon.ShowOnSpawn & !Bloodmoon.ShowOnRespawn)
+            if (Bloodmoon.Show_On_Login & !Bloodmoon.Show_On_Respawn)
             {
                 Bloodmoon.GetBloodmoon(_cInfo, false);
+            }
+            if (Shop.IsEnabled)
+            {
+                Wallet.AddWorldSeed(_cInfo);
             }
         }
 
@@ -77,17 +81,44 @@ namespace ServerTools
             {
                 Jail.CheckPlayer(_cInfo);
             }
-            if (Motd.IsEnabled & Motd.ShowOnRespawn)
+            if (Motd.IsEnabled & Motd.Show_On_Respawn)
             {
                 Motd.Send(_cInfo);
             }
-            if (Bloodmoon.ShowOnSpawn & Bloodmoon.ShowOnRespawn)
+            if (Bloodmoon.Show_On_Login & Bloodmoon.Show_On_Respawn)
             {
                 Bloodmoon.GetBloodmoon(_cInfo, false);
             }
-            if (_respawnReason == RespawnType.Teleport)
+            if (HatchElevator.IsEnabled & _respawnReason == RespawnType.Teleport)
             {
                 HatchElevator.LastPositionY.Remove(_cInfo.entityId);
+            }
+            if (TeleportCheck.IsEnabled & _respawnReason == RespawnType.Teleport)
+            {
+                if (!Travel.TeleportCheckProtection.Contains(_cInfo.entityId))
+                {
+                    TeleportCheck.TeleportCheckValid(_cInfo);
+                }
+                else
+                {
+                    Travel.TeleportCheckProtection.Remove(_cInfo.entityId);
+                }
+                if (!CustomCommands.TeleportCheckProtection.Contains(_cInfo.entityId))
+                {
+                    TeleportCheck.TeleportCheckValid(_cInfo);
+                }
+                else
+                {
+                    CustomCommands.TeleportCheckProtection.Remove(_cInfo.entityId);
+                }
+                if (!TeleportHome.TeleportCheckProtection.Contains(_cInfo.entityId))
+                {
+                    TeleportCheck.TeleportCheckValid(_cInfo);
+                }
+                else
+                {
+                    TeleportHome.TeleportCheckProtection.Remove(_cInfo.entityId);
+                }
             }
             if (StartingItems.IsEnabled)
             {
@@ -95,12 +126,12 @@ namespace ServerTools
             }
             if (ZoneProtection.Victim.ContainsKey(_cInfo.entityId))
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /return to teleport back to your death position. There is a two minute limit.[-]", Config.ChatResponseColor), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /return to teleport back to your death position. There is a two minute limit.[-]", Config.Chat_Response_Color), "Server", false, "", false));
                 PersistentContainer.Instance.Players[_cInfo.playerId, false].RespawnTime = DateTime.Now;
                 PersistentContainer.Instance.Save();
                 if (ZoneProtection.Forgive.ContainsKey(_cInfo.entityId))
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /forgive to release your killer from jail.[-]", Config.ChatResponseColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /forgive to release your killer from jail.[-]", Config.Chat_Response_Color), "Server", false, "", false));
                 }
             }
         }
@@ -112,6 +143,23 @@ namespace ServerTools
 
         public override void PlayerDisconnected(ClientInfo _cInfo, bool _bShutdown)
         {
+            if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
+            {
+                FriendTeleport.Dict.Remove(_cInfo.entityId);
+                FriendTeleport.Dict1.Remove(_cInfo.entityId);
+            }
+            if (Travel.TeleportCheckProtection.Contains(_cInfo.entityId))
+            {
+                Travel.TeleportCheckProtection.Remove(_cInfo.entityId);
+            }
+            if (CustomCommands.TeleportCheckProtection.Contains(_cInfo.entityId))
+            {
+                CustomCommands.TeleportCheckProtection.Remove(_cInfo.entityId);
+            }
+            if (TeleportHome.TeleportCheckProtection.Contains(_cInfo.entityId))
+            {
+                TeleportHome.TeleportCheckProtection.Remove(_cInfo.entityId);
+            }
             if (Jail.Dict.ContainsKey(_cInfo.playerId))
             {
                 Jail.Dict.Remove(_cInfo.playerId);

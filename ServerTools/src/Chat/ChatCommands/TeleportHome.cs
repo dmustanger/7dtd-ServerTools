@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ServerTools
@@ -6,9 +7,10 @@ namespace ServerTools
     public class TeleportHome
     {
         public static bool IsEnabled = false;
-        public static bool SetHome2Enabled = false;
-        public static bool SetHome2DonorOnly = false;
-        public static int DelayBetweenUses = 60;
+        public static bool Set_Home2_Enabled = false;
+        public static bool Set_Home2_Donor_Only = false;
+        public static int Delay_Between_Uses = 60;
+        public static List<int> TeleportCheckProtection = new List<int>();
 
         public static void SetHome(ClientInfo _cInfo, string _playerName, bool _announce)
         {
@@ -31,11 +33,11 @@ namespace ServerTools
                 _phrase10 = _phrase10.Replace("{PlayerName}", _cInfo.playerName);
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.ChatResponseColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.Chat_Response_Color), "Server", false, "", false));
                 }
             }
             else
@@ -56,11 +58,11 @@ namespace ServerTools
                 _phrase10 = _phrase10.Replace("{PlayerName}", _cInfo.playerName);
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.ChatResponseColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.Chat_Response_Color), "Server", false, "", false));
                 }
             }
         }
@@ -78,16 +80,16 @@ namespace ServerTools
                 _phrase11 = _phrase11.Replace("{PlayerName}", _cInfo.playerName);
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase11, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase11, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase11, Config.ChatResponseColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase11, Config.Chat_Response_Color), "Server", false, "", false));
                 }
             }
             else if (!p.IsJailed)
             {
-                if (DelayBetweenUses < 1)
+                if (Delay_Between_Uses < 1)
                 {
                     Home(_cInfo, p.HomePosition, _announce);
                 }
@@ -102,28 +104,28 @@ namespace ServerTools
                         TimeSpan varTime = DateTime.Now - p.LastSetHome;
                         double fractionalMinutes = varTime.TotalMinutes;
                         int _timepassed = (int)fractionalMinutes;
-                        if (_timepassed >= DelayBetweenUses)
+                        if (_timepassed >= Delay_Between_Uses)
                         {
                             Home(_cInfo, p.HomePosition, _announce);
                         }
                         else
                         {
-                            int _timeleft = DelayBetweenUses - _timepassed;
+                            int _timeleft = Delay_Between_Uses - _timepassed;
                             string _phrase13;
                             if (!Phrases.Dict.TryGetValue(13, out _phrase13))
                             {
                                 _phrase13 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
                             _phrase13 = _phrase13.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase13 = _phrase13.Replace("{DelayBetweenUses}", DelayBetweenUses.ToString());
+                            _phrase13 = _phrase13.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                             _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase13, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase13, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase13, Config.ChatResponseColor), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase13, Config.Chat_Response_Color), "Server", false, "", false));
                             }
                         }
                     }
@@ -144,6 +146,15 @@ namespace ServerTools
             int x = (int)xf;
             int y = (int)yf;
             int z = (int)zf;
+            if (!TeleportCheckProtection.Contains(_cInfo.entityId))
+            {
+                TeleportCheckProtection.Add(_cInfo.entityId);
+            }
+            else
+            {
+                TeleportCheckProtection.Remove(_cInfo.entityId);
+                TeleportCheckProtection.Add(_cInfo.entityId);
+            }
             SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, x, y, z), (ClientInfo)null);
             PersistentContainer.Instance.Players[_cInfo.playerId, false].LastSetHome = DateTime.Now;
             PersistentContainer.Instance.Save();
@@ -156,11 +167,11 @@ namespace ServerTools
             {
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} deleted home.[-]", Config.ChatResponseColor, _playerName), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} deleted home.[-]", Config.Chat_Response_Color, _playerName), _playerName, false, "ServerTools", true);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} deleted home.[-]", Config.ChatResponseColor, _playerName), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} deleted home.[-]", Config.Chat_Response_Color, _playerName), "Server", false, "", false));
                 }
                 PersistentContainer.Instance.Players[_cInfo.playerId, false].HomePosition = null;
                 PersistentContainer.Instance.Save();
@@ -169,11 +180,11 @@ namespace ServerTools
             {
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} you have no home to delete.[-]", Config.ChatResponseColor, _playerName), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} you have no home to delete.[-]", Config.Chat_Response_Color, _playerName), _playerName, false, "ServerTools", true);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have no home to delete.[-]", Config.ChatResponseColor, _playerName), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have no home to delete.[-]", Config.Chat_Response_Color, _playerName), "Server", false, "", false));
                 }
             }
         }
@@ -199,11 +210,11 @@ namespace ServerTools
                 _phrase607 = _phrase607.Replace("{PlayerName}", _cInfo.playerName);
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.ChatResponseColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.Chat_Response_Color), "Server", false, "", false));
                 }
             }
             else
@@ -224,11 +235,11 @@ namespace ServerTools
                 _phrase607 = _phrase607.Replace("{PlayerName}", _cInfo.playerName);
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.ChatResponseColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.Chat_Response_Color), "Server", false, "", false));
                 }
             }
         }
@@ -246,16 +257,16 @@ namespace ServerTools
                 _phrase608 = _phrase608.Replace("{PlayerName}", _cInfo.playerName);
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase608, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase608, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase608, Config.ChatResponseColor), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase608, Config.Chat_Response_Color), "Server", false, "", false));
                 }
             }
             else if (!p.IsJailed)
             {
-                if (DelayBetweenUses < 1)
+                if (Delay_Between_Uses < 1)
                 {
                     Home2(_cInfo, p.HomePosition2, _playerName, _announce);
                 }
@@ -270,28 +281,28 @@ namespace ServerTools
                         TimeSpan varTime = DateTime.Now - p.LastSetHome;
                         double fractionalMinutes = varTime.TotalMinutes;
                         int _timepassed = (int)fractionalMinutes;
-                        if (_timepassed >= DelayBetweenUses)
+                        if (_timepassed >= Delay_Between_Uses)
                         {
                             Home2(_cInfo, p.HomePosition2, _playerName, _announce);
                         }
                         else
                         {
-                            int _timeleft = DelayBetweenUses - _timepassed;
+                            int _timeleft = Delay_Between_Uses - _timepassed;
                             string _phrase609;
                             if (!Phrases.Dict.TryGetValue(609, out _phrase609))
                             {
                                 _phrase609 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
                             _phrase609 = _phrase609.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase609 = _phrase609.Replace("{DelayBetweenUses}", DelayBetweenUses.ToString());
+                            _phrase609 = _phrase609.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                             _phrase609 = _phrase609.Replace("{TimeRemaining}", _timeleft.ToString());
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase609, Config.ChatResponseColor), _playerName, false, "ServerTools", true);
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase609, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase609, Config.ChatResponseColor), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase609, Config.Chat_Response_Color), "Server", false, "", false));
                             }
                         }
                     }
@@ -312,6 +323,15 @@ namespace ServerTools
             int x = (int)xf;
             int y = (int)yf;
             int z = (int)zf;
+            if (!TeleportCheckProtection.Contains(_cInfo.entityId))
+            {
+                TeleportCheckProtection.Add(_cInfo.entityId);
+            }
+            else
+            {
+                TeleportCheckProtection.Remove(_cInfo.entityId);
+                TeleportCheckProtection.Add(_cInfo.entityId);
+            }
             SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, x, y, z), (ClientInfo)null);
             PersistentContainer.Instance.Players[_cInfo.playerId, false].LastSetHome = DateTime.Now;
             PersistentContainer.Instance.Save();
@@ -324,11 +344,11 @@ namespace ServerTools
             {
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} deleted home2.[-]", Config.ChatResponseColor, _playerName), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} deleted home2.[-]", Config.Chat_Response_Color, _playerName), _playerName, false, "ServerTools", true);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} deleted home2.[-]", Config.ChatResponseColor, _playerName), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} deleted home2.[-]", Config.Chat_Response_Color, _playerName), "Server", false, "", false));
                 }
                 PersistentContainer.Instance.Players[_cInfo.playerId, false].HomePosition2 = null;
                 PersistentContainer.Instance.Save();
@@ -337,11 +357,11 @@ namespace ServerTools
             {
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} you have no home2 to delete.[-]", Config.ChatResponseColor, _playerName), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} you have no home2 to delete.[-]", Config.Chat_Response_Color, _playerName), _playerName, false, "ServerTools", true);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have no home2 to delete.[-]", Config.ChatResponseColor, _playerName), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have no home2 to delete.[-]", Config.Chat_Response_Color, _playerName), "Server", false, "", false));
                 }
             }
         }

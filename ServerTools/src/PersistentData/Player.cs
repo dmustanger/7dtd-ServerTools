@@ -8,6 +8,12 @@ namespace ServerTools
     {
         private readonly string steamId;
         [OptionalField]
+        private DateTime lastFriendTele;
+        [OptionalField]
+        private int playerSpentCoins;
+        [OptionalField]
+        private int worldSeedCoins;
+        [OptionalField]
         public DateTime customCommand1;
         [OptionalField]
         public DateTime customCommand2;
@@ -70,6 +76,18 @@ namespace ServerTools
         [OptionalField]
         private int newspawntele;
 
+
+        public DateTime LastFriendTele
+        {
+            get
+            {
+                return lastFriendTele;
+            }
+            set
+            {
+                lastFriendTele = value;
+            }
+        }
 
         public DateTime CustomCommand1
         {
@@ -236,6 +254,30 @@ namespace ServerTools
             set
             {
                 lastTravel = value;
+            }
+        }
+
+        public int PlayerSpentCoins
+        {
+            get
+            {
+                return playerSpentCoins;
+            }
+            set
+            {
+                playerSpentCoins = value;
+            }
+        }
+
+        public int WorldSeedCoins
+        {
+            get
+            {
+                return worldSeedCoins;
+            }
+            set
+            {
+                worldSeedCoins = value;
             }
         }
 
