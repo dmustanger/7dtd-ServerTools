@@ -9,6 +9,7 @@ namespace ServerTools
         public static int Delay_Between_Uses = 60;
         public static SortedDictionary<int, int> Dict = new SortedDictionary<int, int>();
         public static SortedDictionary<int, DateTime> Dict1 = new SortedDictionary<int, DateTime>();
+        public static List<int> TeleportCheckProtection = new List<int>();
 
         public static void ListFriends(ClientInfo _cInfo, string _message)
         {
@@ -127,6 +128,15 @@ namespace ServerTools
 
         public static void TeleFriend(ClientInfo _cInfo, int _friendToTele)
         {
+            if (!TeleportCheckProtection.Contains(_cInfo.entityId))
+            {
+                TeleportCheckProtection.Add(_cInfo.entityId);
+            }
+            else
+            {
+                TeleportCheckProtection.Remove(_cInfo.entityId);
+                TeleportCheckProtection.Add(_cInfo.entityId);
+            }
             SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1}", _friendToTele, _cInfo.entityId), (ClientInfo)null);           
             ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForEntityId(_friendToTele);
             PersistentContainer.Instance.Players[_cInfo2.playerId, true].LastFriendTele = DateTime.Now;
