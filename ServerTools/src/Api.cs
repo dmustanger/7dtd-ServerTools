@@ -119,6 +119,14 @@ namespace ServerTools
                 {
                     TeleportHome.TeleportCheckProtection.Remove(_cInfo.entityId);
                 }
+                if (!FriendTeleport.TeleportCheckProtection.Contains(_cInfo.entityId))
+                {
+                    TeleportCheck.TeleportCheckValid(_cInfo);
+                }
+                else
+                {
+                    FriendTeleport.TeleportCheckProtection.Remove(_cInfo.entityId);
+                }
             }
             if (StartingItems.IsEnabled)
             {
