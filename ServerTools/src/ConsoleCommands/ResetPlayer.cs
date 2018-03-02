@@ -34,87 +34,43 @@ namespace ServerTools
                 }
                 string _filepath = string.Format("{0}/Player/{1}.map", GameUtils.GetSaveGameDir(), _params[0]);
                 string _filepath1 = string.Format("{0}/Player/{1}.ttp", GameUtils.GetSaveGameDir(), _params[0]);
-                if (_params[0].Length == 17)
+                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_params[0]);
+                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                if (p != null)
                 {
-                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_params[1]);
-                    Player p = PersistentContainer.Instance.Players[_params[1], false];
-                    if (p != null)
+                    string _phrase400;
+                    if (!Phrases.Dict.TryGetValue(400, out _phrase400))
                     {
-                        string _phrase400;
-                        if (!Phrases.Dict.TryGetValue(400, out _phrase400))
-                        {
-                            _phrase400 = "Reseting players profile.";
-                        }
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase400), _cInfo);
-                        if (!File.Exists(_filepath))
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Could not find file {0}.map", _params[0]));
-                        }
-                        else
-                        {
-                            File.Delete(_filepath);
-                        }
-                        if (!File.Exists(_filepath1))
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Could not find file {0}.ttp", _params[0]));
-                        }
-                        else
-                        {
-                            File.Delete(_filepath1);
-                        }
-                        string _phrase401;
-                        if (!Phrases.Dict.TryGetValue(401, out _phrase401))
-                        {
-                            _phrase401 = "You have reset the profile for Player {SteamId}.";
-                        }
-                        _phrase401 = _phrase401.Replace("{SteamId}", _params[0]);
-                        SdtdConsole.Instance.Output(string.Format("{0}", _phrase401));
+                        _phrase400 = "Reseting players profile.";
+                    }
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase400), _cInfo);
+                    if (!File.Exists(_filepath))
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Could not find file {0}.map", _params[0]));
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Player file {0}.ttp does not exist", _params[0]));
+                        File.Delete(_filepath);
                     }
+                    if (!File.Exists(_filepath1))
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Could not find file {0}.ttp", _params[0]));
+                    }
+                    else
+                    {
+                        File.Delete(_filepath1);
+                    }
+                    string _phrase401;
+                    if (!Phrases.Dict.TryGetValue(401, out _phrase401))
+                    {
+                        _phrase401 = "You have reset the profile for Player {SteamId}.";
+                    }
+                    _phrase401 = _phrase401.Replace("{SteamId}", _params[0]);
+                    SdtdConsole.Instance.Output(string.Format("{0}", _phrase401));
                 }
                 else
                 {
-                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_params[1]);
-                    Player p = PersistentContainer.Instance.Players[_params[1], false];
-                    if (p != null)
-                    {
-                        string _phrase400;
-                        if (!Phrases.Dict.TryGetValue(400, out _phrase400))
-                        {
-                            _phrase400 = "Reseting players profile.";
-                        }
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase400), _cInfo);
-                        if (!File.Exists(_filepath))
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Could not find file {0}.map", _cInfo.playerId));
-                        }
-                        else
-                        {
-                            File.Delete(_filepath);
-                        }
-                        if (!File.Exists(_filepath1))
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Could not find file {0}.ttp", _cInfo.playerId));
-                        }
-                        else
-                        {
-                            File.Delete(_filepath1);
-                        }
-                        string _phrase401;
-                        if (!Phrases.Dict.TryGetValue(401, out _phrase401))
-                        {
-                            _phrase401 = "You have reset the profile for Player {SteamId}.";
-                        }
-                        _phrase401 = _phrase401.Replace("{SteamId}", _cInfo.playerId);
-                        SdtdConsole.Instance.Output(string.Format("{0}", _phrase401));
-                    }
-                    else
-                    {
-                        SdtdConsole.Instance.Output(string.Format("Player file {0}.ttp does not exist", _cInfo.playerId));
-                    }
+                    SdtdConsole.Instance.Output(string.Format("Player file {0}.ttp does not exist", _params[0]));
                 }
             }
             catch (Exception e)

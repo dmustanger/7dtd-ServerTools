@@ -7,7 +7,6 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int Admin_Level = 0;
-        private static int TimeDefault = 15;
 
         public override string GetDescription()
         {
@@ -40,34 +39,36 @@ namespace ServerTools
                     SdtdConsole.Instance.Output(string.Format("Can not ban Id: Invalid Id {0}", _params[0]));
                     return;
                 }
-                else
+                int _time;
+                if (!int.TryParse(_params[1], out _time))
                 {
-                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
-                    if (_cInfo != null)
+                    _time = 15;
+                }
+                ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
+                if (_cInfo != null)
+                {
+                    GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
+                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                    if (Admin.PermissionLevel > Admin_Level)
                     {
-                        GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
-                        AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                        if (Admin.PermissionLevel > Admin_Level)
+                        if (_time > 60)
                         {
-                            if (Convert.ToInt32(_params[1]) > 60 || _params[1] == null)
-                            {
-                                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} {1} minutes \"You have been temporarily banned for {2} minutes\"", _cInfo.playerId, TimeDefault, TimeDefault), _cInfo);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} {1} minutes \"You have been temporarily banned for {2} minutes\"", _cInfo.playerId, _time, _time), _cInfo);
 
-                            }
-                            else
-                            {
-                                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} {1} minutes \"You have been temporarily banned for {2} minutes\"", _cInfo.playerId, _params[1], _params[1]), _cInfo);
-                            }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not ban Id: {0}. The Id belongs to an Admin.", _params[1]));
+                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} {1} minutes \"You have been temporarily banned for {2} minutes\"", _cInfo.playerId, _params[1], _params[1]), _cInfo);
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Player with Id {0} does not exist.", _cInfo.entityId));
+                        SdtdConsole.Instance.Output(string.Format("Can not ban Id: {0}. The Id belongs to an Admin.", _params[1]));
                     }
+                }
+                else
+                {
+                    SdtdConsole.Instance.Output(string.Format("Player with Id {0} does not exist.", _cInfo.entityId));
                 }
             }
             catch (Exception e)

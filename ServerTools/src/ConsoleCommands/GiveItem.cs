@@ -128,14 +128,14 @@ namespace ServerTools
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("Player with steamdId {0} is not spawned", _params[1]));
+                                SdtdConsole.Instance.Output(string.Format("Player with steamdId {0} is not spawned", _params[0]));
                             }
 
                         }
                     }
                     else
                     {
-                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
                         if (_cInfo != null)
                         {
                             int count = 1;
@@ -204,12 +204,12 @@ namespace ServerTools
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("Player with Id {0} is not spawned", _params[1]));
+                                SdtdConsole.Instance.Output(string.Format("Player with Id {0} is not spawned", _params[0]));
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Player with Id {0} does not exist", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Player with Id {0} does not exist", _params[0]));
                         }
                     }                       
                 }

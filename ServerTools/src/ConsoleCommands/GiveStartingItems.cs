@@ -38,7 +38,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
                         if (_cInfo != null)
                         {
                             if (StartingItems.startItemList.Count > 0)
@@ -92,7 +92,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Player with Id {0} does not exist", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Player with Id {0} does not exist", _params[0]));
                         }
                     }
                 }

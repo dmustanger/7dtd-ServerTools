@@ -46,20 +46,6 @@ namespace ServerTools
                     }
                     if (_params[1].Length == 17)
                     {
-                        Player p = PersistentContainer.Instance.Players[_params[1], false];
-                        if (p.LastAnimals != null)
-                        {
-                            PersistentContainer.Instance.Players[_params[1], true].LastAnimals = DateTime.Now.AddDays(-2);
-                            PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output("Animal tracking delay reset.");
-                        }
-                        else
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a animal tracking delay to reset.", _params[1]));
-                        }
-                    }
-                    else
-                    {
                         ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                         Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                         if (p.LastAnimals != null)
@@ -73,10 +59,10 @@ namespace ServerTools
                             SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a animal tracking delay to reset.", _params[1]));
                         }
                     }
-                }
-                else
-                {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    }
                 }
             }
             catch (Exception e)

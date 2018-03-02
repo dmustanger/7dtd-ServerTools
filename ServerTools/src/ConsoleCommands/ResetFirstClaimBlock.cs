@@ -43,34 +43,17 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}.", _params[1]));
                         return;
                     }
-                    if (_params[1].Length == 17)
+                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                    if (p != null)
                     {
-                        Player p = PersistentContainer.Instance.Players[_params[1], false];
-                        if (p != null)
-                        {
-                            PersistentContainer.Instance.Players[_params[1], true].WorldSeedFirstClaim = 1;
-                            PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output("Players first claim block reset.");
-                        }
-                        else
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a first claim block to reset.", _params[1]));
-                        }
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].WorldSeedFirstClaim = 1;
+                        PersistentContainer.Instance.Save();
+                        SdtdConsole.Instance.Output("Players first claim block reset.");
                     }
                     else
                     {
-                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                        Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                        if (p != null)
-                        {
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].WorldSeedFirstClaim = 1;
-                            PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output("Players first claim block reset.");
-                        }
-                        else
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a first claim block to reset.", _params[1]));
-                        }
+                        SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a first claim block to reset.", _params[1]));
                     }
                 }
                 else
@@ -78,7 +61,6 @@ namespace ServerTools
                     SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
                 }
             }
-
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in ResetFirstClaimBlock.Run: {0}.", e));
