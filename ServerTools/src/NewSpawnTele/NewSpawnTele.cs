@@ -24,9 +24,9 @@ namespace ServerTools
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 Vector3 _position = _player.GetPosition();
-                string x = _position.x.ToString();
-                string y = _position.y.ToString();
-                string z = _position.z.ToString();
+                int x = (int)_position.x;
+                int y = (int)_position.y;
+                int z = (int)_position.z;
                 string _sposition = x + "," + y + "," + z;
                 New_Spawn_Tele_Position = _sposition;
                 string _phrase525;
