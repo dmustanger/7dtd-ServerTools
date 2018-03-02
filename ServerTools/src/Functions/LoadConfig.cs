@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        public const double version = 7.0;
+        public const double version = 7.2;
         public static bool UpdateConfigs = false;
         public static string Chat_Response_Color = "[00FF00]";
 
@@ -1176,6 +1176,36 @@ namespace ServerTools
                                     continue;
                                 }
                                 Wallet.Coin_Name = _line.GetAttribute("Coin_Name");
+                                if (!_line.HasAttribute("Zombie_Kill_Value"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing 'Zombie_Kill_Value' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Zombie_Kill_Value"), out Wallet.Zombie_Kills))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (non-numeric) value for 'Zombie_Kill_Value' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Player_Kill_Value"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing 'Player_Kill_Value' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Player_Kill_Value"), out Wallet.Player_Kills))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (non-numeric) value for 'Player_Kill_Value' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Deaths_Penalty_Value"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing 'Deaths_Penalty_Value' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Deaths_Penalty_Value"), out Wallet.Deaths))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (non-numeric) value for 'Deaths_Penalty_Value' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                             case "Special_Player_Name_Coloring":
                                 if (!_line.HasAttribute("Enable"))
@@ -1626,7 +1656,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_Stat_Check\" Enable=\"{0}\" Admin_Level=\"{1}\" Kick_Enabled=\"{2}\" Ban_Enabled=\"{3}\" />", PlayerStatCheck.IsEnabled, PlayerStatCheck.Admin_Level, PlayerStatCheck.Kick_Enabled, PlayerStatCheck.Ban_Enabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Reserved_Slots\" Enable=\"{0}\" Reserved_Check=\"{1}\" />", ReservedSlots.IsEnabled, ChatHook.Reserved_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Set_Home\" Enable=\"{0}\" Set_Home2_Enabled=\"{1}\" Set_Home2_Donor_Only=\"{2}\" Delay_Between_Uses=\"{3}\" />", TeleportHome.IsEnabled, TeleportHome.Set_Home2_Enabled, TeleportHome.Set_Home2_Donor_Only, TeleportHome.Delay_Between_Uses));
-                sw.WriteLine(string.Format("        <Tool Name=\"Shop\" Enable=\"{0}\" Negative_Wallet=\"{1}\" Coin_Name=\"{2}\" />", Shop.IsEnabled, Wallet.Negative_Wallet, Wallet.Coin_Name));
+                sw.WriteLine(string.Format("        <Tool Name=\"Shop\" Enable=\"{0}\" Negative_Wallet=\"{1}\" Coin_Name=\"{2}\" Zombie_Kill_Value=\"{3}\" Player_Kill_Value=\"{4}\" Death_Penalty_Value=\"{5}\" />", Shop.IsEnabled, Wallet.Negative_Wallet, Wallet.Coin_Name, Wallet.Zombie_Kills, Wallet.Player_Kills, Wallet.Deaths));
                 sw.WriteLine(string.Format("        <Tool Name=\"Special_Player_Name_Coloring\" Enable=\"{0}\" Special_Player_Steam_Id=\"{1}\" Special_Player_Prefix=\"{2}\" Special_Player_Color=\"{3}\" />", ChatHook.Special_Player_Name_Coloring, ChatHook.Special_Players_List, ChatHook.Special_Player_Prefix, ChatHook.Special_Player_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Starting_Items\" Enable=\"{0}\" />", StartingItems.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Stopserver\" Ten_Second_Countdown_Enabled=\"{0}\" />", StopServer.Ten_Second_Countdown_Enabled));
