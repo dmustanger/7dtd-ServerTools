@@ -228,14 +228,6 @@
             {
                 Watchlist.Unload();
             }
-            /*if (WorldRadius.IsEnabled)
-            {
-                WorldRadius.WorldRadiusTimerStart();
-            }
-            if (!WorldRadius.IsEnabled)
-            {
-                WorldRadius.WorldRadiusTimerStop();
-            }*/
             if (!ZoneProtection.IsRunning && ZoneProtection.IsEnabled)
             {
                 ZoneProtection.DetectionLogsDir();
