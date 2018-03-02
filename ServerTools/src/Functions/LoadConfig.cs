@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        public const double version = 7.2;
+        public const double version = 7.3;
         public static bool UpdateConfigs = false;
         public static string Chat_Response_Color = "[00FF00]";
 
@@ -1196,14 +1196,14 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (non-numeric) value for 'Player_Kill_Value' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Deaths_Penalty_Value"))
+                                if (!_line.HasAttribute("Death_Penalty_Value"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing 'Deaths_Penalty_Value' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing 'Death_Penalty_Value' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Deaths_Penalty_Value"), out Wallet.Deaths))
+                                if (!int.TryParse(_line.GetAttribute("Death_Penalty_Value"), out Wallet.Deaths))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (non-numeric) value for 'Deaths_Penalty_Value' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (non-numeric) value for 'Death_Penalty_Value' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
