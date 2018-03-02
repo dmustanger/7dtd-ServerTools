@@ -1,5 +1,17 @@
 ﻿CHANGELOG
-Updated for v.7.0
+Updated for v.7.2
+
+v.7.2
+Added Shop options to adjust the wallet payouts for zombie/player kills and death penalty
+Fixed chat command /setspawn for New_Spawn_Tele setting a value with decimals and in turn causing an error for a new player teleporting
+Fixed Shop wallet reporting an error in the output log for new players joining a server
+Fixed some console commands not responding to entity id
+Fixed console command tempban
+
+v.7.1
+Changed /commands results. Split the message results and added a separate one for admins
+Fixed Normal_Player_Name_Coloring. The prefix is corrected
+Fixed Teleport_Check while using Friend_Teleport
 
 v.7.0
 Added to Travel system. To teleport a bike, while riding the bike type /travel to prep the current bike, then get off and type /travel again.
