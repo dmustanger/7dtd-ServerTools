@@ -65,10 +65,6 @@ namespace ServerTools
             {
                 Bloodmoon.GetBloodmoon(_cInfo, false);
             }
-            if (Shop.IsEnabled)
-            {
-                Wallet.AddWorldSeed(_cInfo);
-            }
         }
 
         public override void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
