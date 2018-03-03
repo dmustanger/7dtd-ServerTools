@@ -11,7 +11,7 @@ namespace ServerTools
         public static int Delay_Between_Uses = 60;
         public static int Minimum_Spawn_Radius = 20;
         public static int Maximum_Spawn_Radius = 30;
-        public static List<int> entities = new List<int>();
+        public static List<string> entities = new List<string>();
         public static string Animal_List = "59,60,61";
 
         public static void Checkplayer(ClientInfo _cInfo, bool _announce, string _playerName)
@@ -63,10 +63,11 @@ namespace ServerTools
 
         public static void _GiveAnimals(ClientInfo _cInfo, bool _announce)
         {
+            entities.Clear();
             var a = Animal_List.Split(',');
             foreach (var animal in a)
             {
-                entities.Add(Convert.ToInt32(animal));
+                entities.Add(animal);
             }
             if (Maximum_Spawn_Radius < Minimum_Spawn_Radius)
             {
@@ -74,7 +75,7 @@ namespace ServerTools
                 int minRad = 20;
                 int maxRad = 30;
                 int randomAnimal = rnd.Next(entities.Count);
-                int nextAnimal = entities[randomAnimal - 1];
+                string nextAnimal = entities[randomAnimal - 1];
                 int nextRadius = rnd.Next(minRad, maxRad);
                 SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} {1} @ {2}", _cInfo.entityId, nextRadius, nextAnimal), (ClientInfo)null);                
                 if (_announce)
@@ -95,7 +96,7 @@ namespace ServerTools
             {
                 Random rnd = new Random();
                 int randomAnimal = rnd.Next(entities.Count);
-                int nextAnimal = entities[randomAnimal - 1];
+                string nextAnimal = entities[randomAnimal - 1];
                 int nextRadius = rnd.Next(Minimum_Spawn_Radius, Maximum_Spawn_Radius);
                 SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} {1} @ {2}", _cInfo.entityId, nextRadius, nextAnimal), _cInfo);
                 if (_announce)
