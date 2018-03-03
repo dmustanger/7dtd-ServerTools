@@ -60,6 +60,7 @@ namespace ServerTools
             {
                 GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}Clear skies ahead", Config.Chat_Response_Color), "Server", false, "ServerTools", true);
                 SdtdConsole.Instance.ExecuteSync("weather rain 0", (ClientInfo)null);
+                SdtdConsole.Instance.ExecuteSync("weather rainfall 0", (ClientInfo)null);
                 SdtdConsole.Instance.ExecuteSync("weather wet 0", (ClientInfo)null);
                 SdtdConsole.Instance.ExecuteSync("weather snow 0", (ClientInfo)null);
                 SdtdConsole.Instance.ExecuteSync("weather snowfall 0", (ClientInfo)null);
