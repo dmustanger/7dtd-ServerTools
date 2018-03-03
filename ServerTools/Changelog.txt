@@ -1,5 +1,15 @@
 ﻿CHANGELOG
-Updated for v.7.2
+Updated for v.7.4
+
+v.7.4
+Added console command to adjust a player's wallet. In console type wallet entityId/steamId #. The # is how much you are adding or subtracting
+Changed Teleport_Check. Disabled function until false positives can be sorted out
+Fixed potential error when using /trackanimal
+Fixed Weather_Vote /clear not clearing up rainfall
+
+v.7.3
+Fixed /bloodmoon and /bm response phrase
+Fixed config name for Death_Penalty_Value
 
 v.7.2
 Added Shop options to adjust the wallet payouts for zombie/player kills and death penalty
