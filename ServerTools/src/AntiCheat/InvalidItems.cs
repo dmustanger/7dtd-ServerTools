@@ -10,11 +10,12 @@ namespace ServerTools
         public static bool IsRunning = false;
         public static bool Anounce_Invalid_Stack = false;
         public static bool Ban_Player = false;
+        public static int Level_To_Ignore = 0;
         private static string file = "InvalidItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, string> dict = new SortedDictionary<string, string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        public static int Level_To_Ignore = 0;
+        private static bool updateConfig = false;       
 
         public static void Load()
         {
@@ -77,6 +78,11 @@ namespace ServerTools
                         }
                     }
                 }
+            }
+            if (updateConfig)
+            {
+                updateConfig = false;
+                UpdateXml();
             }
         }
 
@@ -1213,6 +1219,10 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
+            if (!Utils.FileExists(filePath))
+            {
+                UpdateXml();
+            }
             LoadXml();
         }
 
