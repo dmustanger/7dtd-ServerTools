@@ -45,11 +45,11 @@ namespace ServerTools
         {
             if (Special_Player_Name_Coloring)
             {
+                SpecialPlayers.Clear();
                 var s_Id = Special_Players_List.Split(',');
                 foreach (var specialId in s_Id)
-                {
-                    SpecialPlayers.Clear();
-                    SpecialPlayers.Add(Convert.ToString(specialId));
+                {                   
+                    SpecialPlayers.Add(specialId.ToString());
                 }
             }
         }
@@ -1277,7 +1277,7 @@ namespace ServerTools
                     {
                         if (Shop.IsEnabled)
                         {
-                            Wallet.WalletCheck(_cInfo, _playerName);
+                            Wallet.WalletValue(_cInfo, _playerName);
                             return false;
                         }
                     }
