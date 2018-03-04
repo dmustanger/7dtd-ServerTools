@@ -1,5 +1,10 @@
 ﻿CHANGELOG
-Updated for v.7.4
+Updated for v.7.5
+
+v.7.5
+Fixed Invalid_Item_Kicker not responding
+Fixed InvalidItems.xml will properly regenerate if deleted
+Fixed Special_Player_Name_Coloring only applying to the last id from the list 
 
 v.7.4
 Added console command to adjust a player's wallet. In console type wallet entityId/steamId #. The # is how much you are adding or subtracting
