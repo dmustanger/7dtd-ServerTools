@@ -7,7 +7,7 @@ namespace ServerTools
         public static string Coin_Name = "coin";
         public static int Zombie_Kills = 10;
         public static int Player_Kills = 50;
-        public static int Deaths = -25;
+        public static int Deaths = 25;
 
         public static void WalletValue(ClientInfo _cInfo, string _playerName)
         {
