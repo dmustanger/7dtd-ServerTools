@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        public const double version = 7.3;
+        public const double version = 7.5;
         public static bool UpdateConfigs = false;
         public static string Chat_Response_Color = "[00FF00]";
 
@@ -835,35 +835,35 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
-                            case "Invalid_Items":
+                            case "Invalid_Item_Kicker":
                                 if (!_line.HasAttribute("Enable"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Items entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Item_Kicker entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!bool.TryParse(_line.GetAttribute("Enable"), out InventoryCheck.IsEnabled))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Items entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Item_Kicker entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Ban"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Items entry because of missing 'Ban' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Item_Kicker entry because of missing 'Ban' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!bool.TryParse(_line.GetAttribute("Ban"), out InventoryCheck.Ban_Player))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Items entry because of invalid (true/false) value for 'Ban' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Item_Kicker entry because of invalid (true/false) value for 'Ban' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Level_To_Ignore"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Items entry because of missing 'Level_To_Ignore' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Item_Kicker entry because of missing 'Level_To_Ignore' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!int.TryParse(_line.GetAttribute("Level_To_Ignore"), out InventoryCheck.Level_To_Ignore))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Items entry because of invalid (true/false) value for 'Level_To_Ignore' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Item_Kicker entry because of invalid (true/false) value for 'Level_To_Ignore' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -1261,78 +1261,78 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
-                            case "Teleport_Check":
-                                if (!_line.HasAttribute("Enable"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out TeleportCheck.IsEnabled))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Admin_Level"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out TeleportCheck.Admin_Level))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Announce"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of missing 'Announce' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Announce"), out TeleportCheck.Announce))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of invalid (true/false) value for 'Announce' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Kill_Enabled"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of missing 'Kill_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Kill_Enabled"), out TeleportCheck.Kill_Enabled))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of invalid (true/false) value for 'Kill_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Jail_Enabled"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of missing 'Jail_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Jail_Enabled"), out TeleportCheck.Jail_Enabled))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of invalid (true/false) value for 'Jail_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Kick_Enabled"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of missing 'Kick_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Kick_Enabled"), out TeleportCheck.Kick_Enabled))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of invalid (true/false) value for 'Kick_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Ban_Enabled"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of missing 'Ban_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Ban_Enabled"), out TeleportCheck.Ban_Enabled))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of invalid (true/false) value for 'Ban_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                break;
+                          //case "Teleport_Check":
+                          //    if (!_line.HasAttribute("Enable"))
+                          //    {
+                          //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                          //        continue;
+                          //    }
+                          //    if (!bool.TryParse(_line.GetAttribute("Enable"), out TeleportCheck.IsEnabled))
+                          //    {
+                          //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                          //        continue;
+                          //    }
+                          //    if (!_line.HasAttribute("Admin_Level"))
+                          //    {
+                          //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                          //        continue;
+                          //    }
+                          //    if (!int.TryParse(_line.GetAttribute("Admin_Level"), out TeleportCheck.Admin_Level))
+                          //    {
+                          //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                          //        continue;
+                          //    }
+                          //    if (!_line.HasAttribute("Announce"))
+                          //    {
+                          //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of missing 'Announce' attribute: {0}", subChild.OuterXml));
+                          //        continue;
+                          //    }
+                          //    if (!bool.TryParse(_line.GetAttribute("Announce"), out TeleportCheck.Announce))
+                          //    {
+                          //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of invalid (true/false) value for 'Announce' attribute: {0}", subChild.OuterXml));
+                          //        continue;
+                          //    }
+                          //    if (!_line.HasAttribute("Kill_Enabled"))
+                          //    {
+                          //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of missing 'Kill_Enabled' attribute: {0}", subChild.OuterXml));
+                          //        continue;
+                          //    }
+                          //    if (!bool.TryParse(_line.GetAttribute("Kill_Enabled"), out TeleportCheck.Kill_Enabled))
+                          //    {
+                          //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of invalid (true/false) value for 'Kill_Enabled' attribute: {0}", subChild.OuterXml));
+                          //        continue;
+                          //    }
+                          //    if (!_line.HasAttribute("Jail_Enabled"))
+                          //    {
+                          //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of missing 'Jail_Enabled' attribute: {0}", subChild.OuterXml));
+                          //        continue;
+                          //    }
+                          //    if (!bool.TryParse(_line.GetAttribute("Jail_Enabled"), out TeleportCheck.Jail_Enabled))
+                          //    {
+                          //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of invalid (true/false) value for 'Jail_Enabled' attribute: {0}", subChild.OuterXml));
+                          //        continue;
+                          //    }
+                          //    if (!_line.HasAttribute("Kick_Enabled"))
+                          //    {
+                          //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of missing 'Kick_Enabled' attribute: {0}", subChild.OuterXml));
+                          //        continue;
+                          //    }
+                          //    if (!bool.TryParse(_line.GetAttribute("Kick_Enabled"), out TeleportCheck.Kick_Enabled))
+                          //    {
+                          //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of invalid (true/false) value for 'Kick_Enabled' attribute: {0}", subChild.OuterXml));
+                          //        continue;
+                          //    }
+                          //    if (!_line.HasAttribute("Ban_Enabled"))
+                          //    {
+                          //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of missing 'Ban_Enabled' attribute: {0}", subChild.OuterXml));
+                          //        continue;
+                          //    }
+                          //    if (!bool.TryParse(_line.GetAttribute("Ban_Enabled"), out TeleportCheck.Ban_Enabled))
+                          //    {
+                          //        Log.Warning(string.Format("[SERVERTOOLS] Ignoring Teleport_Check entry because of invalid (true/false) value for 'Ban_Enabled' attribute: {0}", subChild.OuterXml));
+                          //        continue;
+                          //    }
+                          //    break;
                             case "Travel":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -1660,7 +1660,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Special_Player_Name_Coloring\" Enable=\"{0}\" Special_Player_Steam_Id=\"{1}\" Special_Player_Prefix=\"{2}\" Special_Player_Color=\"{3}\" />", ChatHook.Special_Player_Name_Coloring, ChatHook.Special_Players_List, ChatHook.Special_Player_Prefix, ChatHook.Special_Player_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Starting_Items\" Enable=\"{0}\" />", StartingItems.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Stopserver\" Ten_Second_Countdown_Enabled=\"{0}\" />", StopServer.Ten_Second_Countdown_Enabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Teleport_Check\" Enable=\"{0}\" Admin_Level=\"{1}\" Kill_Enabled=\"{2}\" Announce=\"{3}\" Jail_Enabled=\"{4}\" Kick_Enabled=\"{5}\" Ban_Enabled=\"{6}\" Days_Before_Log_Delete=\"{7}\" />", TeleportCheck.IsEnabled, TeleportCheck.Admin_Level, TeleportCheck.Kill_Enabled, TeleportCheck.Announce, TeleportCheck.Jail_Enabled, TeleportCheck.Kick_Enabled, TeleportCheck.Ban_Enabled, TeleportCheck.Days_Before_Log_Delete));
+                //sw.WriteLine(string.Format("        <Tool Name=\"Teleport_Check\" Enable=\"{0}\" Admin_Level=\"{1}\" Kill_Enabled=\"{2}\" Announce=\"{3}\" Jail_Enabled=\"{4}\" Kick_Enabled=\"{5}\" Ban_Enabled=\"{6}\" Days_Before_Log_Delete=\"{7}\" />", TeleportCheck.IsEnabled, TeleportCheck.Admin_Level, TeleportCheck.Kill_Enabled, TeleportCheck.Announce, TeleportCheck.Jail_Enabled, TeleportCheck.Kick_Enabled, TeleportCheck.Ban_Enabled, TeleportCheck.Days_Before_Log_Delete));
                 sw.WriteLine(string.Format("        <Tool Name=\"Travel\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" />", Travel.IsEnabled, Travel.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Underground_Check\" Enable=\"{0}\" Admin_Level=\"{1}\" Max_Ping=\"{2}\" Kill_Enabled=\"{3}\" Announce=\"{4}\" Jail_Enabled=\"{5}\" Kick_Enabled=\"{6}\" Ban_Enabled=\"{7}\" Days_Before_Log_Delete=\"{8}\" />", UndergroundCheck.IsEnabled, UndergroundCheck.Admin_Level, UndergroundCheck.Max_Ping, UndergroundCheck.Kill_Player, UndergroundCheck.Announce, UndergroundCheck.Jail_Enabled, UndergroundCheck.Kick_Enabled, UndergroundCheck.Ban_Enabled, UndergroundCheck.Days_Before_Log_Delete));
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" Your_Voting_Site=\"{1}\" API_Key=\"{2}\" Delay_Between_Uses=\"{3}\" Reward_Count=\"{4}\" />", VoteReward.IsEnabled, VoteReward.Your_Voting_Site, VoteReward.API_Key, VoteReward.Delay_Between_Uses, VoteReward.Reward_Count));               
