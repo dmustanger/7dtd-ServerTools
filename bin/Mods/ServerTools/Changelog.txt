@@ -1,5 +1,73 @@
 ﻿CHANGELOG
-Updated for v.7.2
+Updated for v.8.0
+
+v.8.0
+Added to PlayerLogs Extras. Now includes the player level, current stats, session playtime, zombie kills, players kills
+Added Item_Cleanup. Max_Pile controls how many entity can be in a small area. World_Max is the amount of entities in the world before trying to
+look for piles. Runs every 15 seconds
+Added Auction system. Players can sell, cancel and buy items with it. Commands have been added to /commands and the HowTo.xml
+Added Vote_To_Restart. Players can start a vote to shutdown the server. Only enable if your server auto restarts. Set minimum players required 
+online to start the vote. Minimum votes required are always 51% of minimum players. Vote will not open if an admin is online
+Added Death_Spot. Players can type /died in chat up to the 2 minute after dying to teleport to their death spot. Delay is in minutes
+Added option to Gimme called Zombies. While true, players can spawn a zombie on themselves when using chat command /gimme
+Added options to Vote rewards. Block names can be used instead of item names. Entity can be spawn by setting Reward_Entity to true. Entity_Id 
+is the id of the entity that will spawn
+Added custom Zone_Protection exit messages to the ZoneProtection.xml
+Added option to Shop called Shop_Anywhere. Setting true allows players to use /shop anywhere instead of a trader zone
+Added more of the response phrases for customization
+Added option to Auto_Shutdown. Alert_On_Login controls if the player is alerted to the next scheduled shutdown time on login
+Added dedicated system.timer to lower threadpool usage and increase performance of ServerTools. Only 1 system.timer running
+Added Bloodmoon option Auto_Enabled. Turns on and off the auto chat warning about the next bloodmoon
+Added option to Reserved_Slots called Session_Time. Controls how long a player must be logged in before kicked. Session_Time is in minutes
+Added option to Reserved_Slots called Admin_Level. Admins this level or higher are immune to reservation system
+Added to Motd. You can use {EntityId}, {SteamId} or {PlayerName} in the message
+Added to Custom_Commands. You can use € in the message
+Added some processing and code block optimizations
+Added options to Stop_Server. Kick_30_Seconds kicks all players when 30 seconds remain and blocks players from joining during that time.
+Kick_Login will not allow players to join during the count down. They will be kicked immediately with a message to join after restart
+Added Credential_Check. This will check if a player has a proper steam id and owner id on entry. It must have 17 numbers and start with 7656119.
+Option No_Internal checks for ip 192.168.1.* . Admin_Level omits players this tier or lower. Merged Family_Share_Account check into it
+Added option Clan_Color to Clan_Manager. Controls the color chat messages will appear to fellow clan members when using the clan chat
+Changed Invalid_Item_Kicker. It will now warn a player to drop the invalid item. They have 30 seconds to drop the item or be kicked. If caught
+again before a server restart they are kicked. Ban option does not warn the player
+Added Admin_Level to Watchlist. Alert_Delay controls how often online admins are alerted. Delay is in minutes
+Added loading alerts to output log on server start up
+Changed /travel command to teleport the player and their bike without having to get off the bike. Do not set -1 for destination y position
+Changed Reserved_Slots system to boot the player with the longest current play session time. Player must have played longer than Session_Time
+to be kicked
+Changed Shutdown responses
+Changed Anticheat Flight_Check and Underground_Check to be slightly more accurate and 1 second faster. A player should be caught in 3 seconds
+Changed multiple tools code for simplification
+Fixed Voting Reward_Count to always give the correct amount. If you set your reward count higher than the number of entries, it will default to 
+half the total entries
+Fixed Animal_Tracking randomization for Animal_Tracking, Voting, and Gimme
+Fixed console command reservedslots responding with a wrong param count argument
+Fixed Bloodmoon Auto_Show_Bloodmoon_Delay. Setting 0 will not show the next bloodmoon automatically in chat or make an error
+Fixed Player_Logs Interval. Setting 0 will not create an error
+Fixed Weather_Vote Vote_Delay. Setting 0 will not create an error
+Fixed Friend_Teleport delay
+Fixed Weather_Vote allowing multiple votes if cast for different results such as one for snow, rain and clear during a single vote
+Fixed detection log steam id reporting as 0 under some logs
+Fixed an error in the animal list generation
+Fixed various chat color responses
+Fixed error with Family_Share_Check and kick process
+Fixed error with Animal_Tracking
+Fixed console command Ping Immunity responding with invalid param argument
+
+v.7.5
+Fixed Invalid_Item_Kicker not responding
+Fixed InvalidItems.xml will properly regenerate if deleted
+Fixed Special_Player_Name_Coloring only applying to the last id from the list 
+
+v.7.4
+Added console command to adjust a player's wallet. In console type wallet entityId/steamId #. The # is how much you are adding or subtracting
+Changed Teleport_Check. Disabled function until false positives can be sorted out
+Fixed potential error when using /trackanimal
+Fixed Weather_Vote /clear not clearing up rainfall
+
+v.7.3
+Fixed /bloodmoon and /bm response phrase
+Fixed config name for Death_Penalty_Value
 
 v.7.2
 Added Shop options to adjust the wallet payouts for zombie/player kills and death penalty
