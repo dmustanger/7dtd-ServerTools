@@ -5,8 +5,7 @@ namespace ServerTools
     class AdminList
     {
         public static bool IsEnabled = false;
-        public static int Admin_Level = 0;
-        public static int Mod_Level = 1;
+        public static int Admin_Level = 0, Mod_Level = 1;
         private static List<string> Admins = new List<string>();
         private static List<string> Mods = new List<string>();
 
@@ -15,8 +14,9 @@ namespace ServerTools
             Admins.Clear();
             Mods.Clear();
             List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-            foreach (var _cInfoAdmins in _cInfoList)
+            for (int i = 0; i < _cInfoList.Count; i++)
             {
+                ClientInfo _cInfoAdmins = _cInfoList[i];
                 if (!AdminChatColor.AdminColorOff.Contains(_cInfoAdmins.playerId))
                 {
                     GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins.playerId);
@@ -40,13 +40,33 @@ namespace ServerTools
             string _modList = string.Join(", ", Mods.ToArray());
             if (_announce)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}Server admins in game: [FF8000]{1}[-]", Config.Chat_Response_Color, _adminList), "Server", false, "", false);
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}Server mods in game: [FF8000]{1}[-]", Config.Chat_Response_Color, _modList), "Server", false, "", false);
+                string _phrase725;
+                if (!Phrases.Dict.TryGetValue(725, out _phrase725))
+                {
+                    _phrase725 = "Server admins in game: [FF8000]";
+                }
+                string _phrase726;
+                if (!Phrases.Dict.TryGetValue(726, out _phrase726))
+                {
+                    _phrase726 = "Server moderators in game: [FF8000]";
+                }
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase725, _adminList), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase726, _modList), "Server", false, "", false);
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Server admins in game: [FF8000]{1}[-]", Config.Chat_Response_Color, _adminList), "Server", false, "", false));
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Server mods in game: [FF8000]{1}[-]", Config.Chat_Response_Color, _modList), "Server", false, "", false));
+                string _phrase725;
+                if (!Phrases.Dict.TryGetValue(725, out _phrase725))
+                {
+                    _phrase725 = "Server admins in game: [FF8000]";
+                }
+                string _phrase726;
+                if (!Phrases.Dict.TryGetValue(726, out _phrase726))
+                {
+                    _phrase726 = "Server moderators in game: [FF8000]";
+                }
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase725, _adminList), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase726, _modList), "Server", false, "", false));
             }
         }
     }

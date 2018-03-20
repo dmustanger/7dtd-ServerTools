@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Timers;
 
 namespace ServerTools
 {
     class PlayerLogs
     {
-        private static int timerInstanceCount = 0;
-        public static bool IsEnabled = false;
-        public static bool Position = false;
-        public static bool Inventory = false;
-        public static bool P_Data = false;
-        public static int Interval = 60;
+        public static bool IsEnabled = false, Position = false, Inventory = false, P_Data = false;
         public static int Days_Before_Log_Delete = 5;
-        private static System.Timers.Timer timerLogs = new System.Timers.Timer();
+        private static string _file = string.Format("PlayerLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static string _filepath = string.Format("{0}/PlayerLogs/{1}", API.GamePath, _file);
 
         public static void PlayerLogsDir()
         {
@@ -35,58 +30,34 @@ namespace ServerTools
             }
         }
 
-        public static void PlayerLogsStart()
+        public static void Move_Log()
         {
-            timerInstanceCount++;
-            if (timerInstanceCount <= 1)
+            if (ConnectionManager.Instance.ClientCount() > 0)
             {
-                int d = (Interval * 1000);
-                timerLogs.Interval = d;
-                timerLogs.Start();
-                timerLogs.Elapsed += new ElapsedEventHandler(Move_Log);
-                timerLogs.Elapsed += new ElapsedEventHandler(Player_InvLog);
-                timerLogs.Elapsed += new ElapsedEventHandler(Player_Data);
-            }
-        }
-
-        public static void PlayerLogsStop()
-        {
-            timerLogs.Stop();
-        }
-
-        public static void Move_Log(object sender, ElapsedEventArgs e)
-        {
-            if (Position)
-            {
-                if (ConnectionManager.Instance.ClientCount() > 0)
+                World world = GameManager.Instance.World;
+                var enumerator = world.Players.list;
+                foreach (var _player in enumerator)
                 {
-                    World world = GameManager.Instance.World;
-                    var enumerator = world.Players.list;
-                    foreach (var _player in enumerator)
+                    if (_player.IsClientControlled())
                     {
-                        if (_player.IsClientControlled())
-                        {
-                            var x = (int)_player.position.x;
-                            var y = (int)_player.position.y;
-                            var z = (int)_player.position.z;
+                        var x = (int)_player.position.x;
+                        var y = (int)_player.position.y;
+                        var z = (int)_player.position.z;
 
-                            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                            foreach (var _cInfo in _cInfoList)
+                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                        foreach (var _cInfo in _cInfoList)
+                        {
+                            if (_player.entityId == _cInfo.entityId)
                             {
-                                if (_player.entityId == _cInfo.entityId)
+                                if (_cInfo != null)
                                 {
-                                    if (_cInfo != null)
+                                    string _ip = AllocsFixes.PersistentData.PersistentContainer.Instance.Players[_cInfo.playerId, false].IP;
+                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
                                     {
-                                        string _ip = AllocsFixes.PersistentData.PersistentContainer.Instance.Players[_cInfo.playerId, false].IP;
-                                        string _file = string.Format("PlayerLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                                        string _filepath = string.Format("{0}/PlayerLogs/{1}", API.GamePath, _file);
-                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
-                                        {
-                                            sw.WriteLine(string.Format("{0} {1} steamId {2} IP Address {3} at Position: {4} X {5} Y {6} Z", DateTime.Now, _cInfo.playerName, _cInfo.playerId, _ip, x, y, z));
-                                            sw.WriteLine();
-                                            sw.Flush();
-                                            sw.Close();
-                                        }
+                                        sw.WriteLine(string.Format("{0}  {1} steamId {2} IP Address {3} at Position: {4} X {5} Y {6} Z", DateTime.Now, _cInfo.playerName, _cInfo.playerId, _ip, x, y, z));
+                                        sw.WriteLine();
+                                        sw.Flush();
+                                        sw.Close();
                                     }
                                 }
                             }
@@ -96,50 +67,45 @@ namespace ServerTools
             }
         }
 
-        public static void Player_InvLog(object sender, ElapsedEventArgs e)
+        public static void Player_InvLog()
         {
-            if (Inventory)
+            if (ConnectionManager.Instance.ClientCount() > 0)
             {
-                if (ConnectionManager.Instance.ClientCount() > 0)
+                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                foreach (var _cInfo in _cInfoList)
                 {
-                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                    foreach (var _cInfo in _cInfoList)
+                    if (_cInfo != null)
                     {
-                        if (_cInfo != null)
+                        AllocsFixes.PersistentData.Player p = AllocsFixes.PersistentData.PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                        AllocsFixes.PersistentData.Inventory inv = p.Inventory;                        
+                        using (StreamWriter sw = new StreamWriter(_filepath, true))
                         {
-                            AllocsFixes.PersistentData.Player p = AllocsFixes.PersistentData.PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                            AllocsFixes.PersistentData.Inventory inv = p.Inventory;
-                            string _file = string.Format("PlayerLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                            string _filepath = string.Format("{0}/PlayerLogs/{1}", API.GamePath, _file);
-                            using (StreamWriter sw = new StreamWriter(_filepath, true))
-                            {
-                                sw.WriteLine(string.Format("{0}: " + "Inventory of " + p.Name + " steamId {1}", DateTime.Now, _cInfo.playerId));
-                                sw.WriteLine("Belt:");
-                                sw.Flush();
-                                sw.Close();
-                            }
-                            PrintInv(inv.belt, p.EntityID, "belt");
-                            using (StreamWriter sw = new StreamWriter(_filepath, true))
-                            {
-                                sw.WriteLine("Bagpack:");
-                                sw.Flush();
-                                sw.Close();
-                            }
-                            PrintInv(inv.bag, p.EntityID, "backpack");
-                            using (StreamWriter sw = new StreamWriter(_filepath, true))
-                            {
-                                sw.WriteLine("Equipment:");
-                                sw.Flush();
-                                sw.Close();
-                            }
-                            PrintEquipment(inv.equipment, p.EntityID, "equipment");
-                            using (StreamWriter sw = new StreamWriter(_filepath, true))
-                            {
-                                sw.WriteLine("End of inventory");
-                                sw.WriteLine();
-                                sw.Flush();
-                                sw.Close();
-                            }
+                            sw.WriteLine(string.Format("{0}: " + "Inventory of " + p.Name + " steamId {1}", DateTime.Now, _cInfo.playerId));
+                            sw.WriteLine("Belt:");
+                            sw.Flush();
+                            sw.Close();
+                        }
+                        PrintInv(inv.belt, p.EntityID, "belt");
+                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                        {
+                            sw.WriteLine("Backpack:");
+                            sw.Flush();
+                            sw.Close();
+                        }
+                        PrintInv(inv.bag, p.EntityID, "backpack");
+                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                        {
+                            sw.WriteLine("Equipment:");
+                            sw.Flush();
+                            sw.Close();
+                        }
+                        PrintEquipment(inv.equipment, p.EntityID, "equipment");
+                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                        {
+                            sw.WriteLine("End of inventory");
+                            sw.WriteLine();
+                            sw.Flush();
+                            sw.Close();
                         }
                     }
                 }
@@ -243,7 +209,7 @@ namespace ServerTools
                     if (_parts[i] != null)
                     {
                         if (_currentMessage == null)
-                        { // no currentMessage given -> readable output
+                        {
                             if (_parts[i].quality < 0)
                             {
                                 string _file = string.Format("PlayerLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
@@ -283,29 +249,39 @@ namespace ServerTools
             return _currentMessage;
         }
 
-        public static void Player_Data(object sender, ElapsedEventArgs e)
+        public static void Player_Data()
         {
-            if (P_Data)
+            if (ConnectionManager.Instance.ClientCount() > 0)
             {
-                if (ConnectionManager.Instance.ClientCount() > 0)
+                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                foreach (var _cInfo in _cInfoList)
                 {
-                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                    foreach (var _cInfo in _cInfoList)
+                    if (_cInfo != null)
                     {
-                        if (_cInfo != null)
+                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                        if (_player.IsDead())
                         {
-                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                            if (_player.IsDead())
+                            string _file = string.Format("PlayerLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+                            string _filepath = string.Format("{0}/PlayerLogs/{1}", API.GamePath, _file);
+                            using (StreamWriter sw = new StreamWriter(_filepath, true))
                             {
-                                string _file = string.Format("PlayerLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                                string _filepath = string.Format("{0}/PlayerLogs/{1}", API.GamePath, _file);
-                                using (StreamWriter sw = new StreamWriter(_filepath, true))
-                                {
-                                    sw.WriteLine(string.Format("{0}: " + " steamId {1}. {2} is currently dead", DateTime.Now, _cInfo.playerId, _cInfo.playerName));
-                                    sw.WriteLine();
-                                    sw.Flush();
-                                    sw.Close();
-                                }
+                                sw.WriteLine(string.Format("{0}: " + "SteamId {1}. {2} is currently dead", DateTime.Now, _cInfo.playerId, _cInfo.playerName));
+                                sw.WriteLine();
+                                sw.Flush();
+                                sw.Close();
+                            }
+                        }
+                        if (_player.IsSpawned())
+                        {
+                            string _file = string.Format("PlayerLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+                            string _filepath = string.Format("{0}/PlayerLogs/{1}", API.GamePath, _file);
+                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                            {
+                                sw.WriteLine(string.Format("{0}: " + "SteamId {1}. {2} stats: Health= {3} Stamina= {4} Level= {5} SkillPoints= {6} ZombieKills= {7} PlayerKills= {8}", DateTime.Now, 
+                                    _cInfo.playerId, _cInfo.playerName, _player.Stats.Health.Value, _player.Stats.Stamina.Value, _player.Level, _player.SkillPoints, _player.KilledZombies, _player.KilledPlayers));
+                                sw.WriteLine();
+                                sw.Flush();
+                                sw.Close();
                             }
                         }
                     }

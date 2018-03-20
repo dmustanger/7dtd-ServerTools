@@ -33,7 +33,7 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("reset"))
                 {
-                    WeatherVote.VoteClosed = false;
+                    WeatherVote.VoteNew = true;
                     SdtdConsole.Instance.Output("Weather vote delay reset.");
                 }
                 else

@@ -90,7 +90,7 @@ namespace ServerTools
                             {
                                 int calc = (_itemId + 4096);
                                 itemId = calc;
-                                itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, true);
+                                itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, min, max, true);
                             }
                             else
                             {
@@ -102,7 +102,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, true);
+                                    itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, min, max, true);
                                 }
                             }
 
@@ -124,7 +124,14 @@ namespace ServerTools
                                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                                 SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was sent to your inventory by an admin. If your bag is full, check the ground.[-]", Config.Chat_Response_Color, count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false));
+                                string _phrase804;
+                                if (!Phrases.Dict.TryGetValue(804, out _phrase804))
+                                {
+                                    _phrase804 = "{Count} {ItemName} was sent to your inventory by an admin. If your bag is full, check the ground.";
+                                }
+                                _phrase804 = _phrase804.Replace("{Count}", count.ToString());
+                                _phrase804 = _phrase804.Replace("{ItemName}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase804), "Server", false, "", false));
                             }
                             else
                             {

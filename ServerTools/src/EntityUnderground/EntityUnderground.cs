@@ -1,16 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.Timers;
 
 namespace ServerTools
 {
     class EntityUnderground
     {
-        private static int timerInstanceCount = 0;
-        public static bool IsEnabled = false;
-        public static bool Alert_Admin = false;
+        public static bool IsEnabled = false, Alert_Admin = false;
         public static int Admin_Level = 0;
         private static SortedDictionary<int, int> Flag = new SortedDictionary<int, int>();
-        private static System.Timers.Timer timerEntity = new System.Timers.Timer();
 
         public static bool getEntityUnderground(Entity ent)
         {
@@ -47,23 +43,7 @@ namespace ServerTools
             return true;
         }
 
-        public static void EntityUndergroundTimerStart()
-        {
-            timerInstanceCount++;
-            if (timerInstanceCount <= 1)
-            {
-                timerEntity.Interval = 10000;
-                timerEntity.Start();
-                timerEntity.Elapsed += new ElapsedEventHandler(AutoEntityUnderground);
-            }
-        }
-
-        public static void EntityUndergroundTimerStop()
-        {
-            timerEntity.Stop();
-        }
-
-        public static void AutoEntityUnderground(object sender, ElapsedEventArgs e)
+        public static void AutoEntityUnderground()
         {
             if (IsEnabled)
             {

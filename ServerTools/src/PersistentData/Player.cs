@@ -8,11 +8,15 @@ namespace ServerTools
     {
         private readonly string steamId;
         [OptionalField]
+        private int auctionData;
+        [OptionalField]
+        private string[] auctionItem;
+        [OptionalField]
+        private DateTime lastDied;
+        [OptionalField]
         private DateTime lastFriendTele;
         [OptionalField]
         private int playerSpentCoins;
-        [OptionalField]
-        private int worldSeedCoins;
         [OptionalField]
         public DateTime customCommand1;
         [OptionalField]
@@ -34,7 +38,7 @@ namespace ServerTools
         [OptionalField]
         public DateTime customCommand10;
         [OptionalField]
-        private int startingItems;
+        private bool startingItems;
         [OptionalField]
         private string homeposition2;
         [OptionalField]
@@ -73,9 +77,42 @@ namespace ServerTools
         private bool isjailed;
         [OptionalField]
         private bool isremovedfromjail = true;
-        [OptionalField]
-        private int newspawntele;
 
+        public int AuctionData
+        {
+            get
+            {
+                return auctionData;
+            }
+            set
+            {
+                auctionData = value;
+            }
+        }
+
+        public string[] AuctionItem
+        {
+            get
+            {
+                return auctionItem;
+            }
+            set
+            {
+                auctionItem = value;
+            }
+        }
+
+        public DateTime LastDied
+        {
+            get
+            {
+                return lastDied;
+            }
+            set
+            {
+                lastDied = value;
+            }
+        }
 
         public DateTime LastFriendTele
         {
@@ -209,7 +246,7 @@ namespace ServerTools
             }
         }
 
-        public int StartingItems
+        public bool StartingItems
         {
             get
             {
@@ -266,18 +303,6 @@ namespace ServerTools
             set
             {
                 playerSpentCoins = value;
-            }
-        }
-
-        public int WorldSeedCoins
-        {
-            get
-            {
-                return worldSeedCoins;
-            }
-            set
-            {
-                worldSeedCoins = value;
             }
         }
 
@@ -470,18 +495,6 @@ namespace ServerTools
             set
             {
                 isremovedfromjail = value;
-            }
-        }
-
-        public int NewSpawnTele
-        {
-            get
-            {
-                return newspawntele;
-            }
-            set
-            {
-                newspawntele = value;
             }
         }
 

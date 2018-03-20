@@ -10,6 +10,7 @@ namespace ServerTools
         public static SortedDictionary<int, int> Dict = new SortedDictionary<int, int>();
         public static SortedDictionary<int, DateTime> Dict1 = new SortedDictionary<int, DateTime>();
         public static List<int> TeleportCheckProtection = new List<int>();
+        public static SortedDictionary<int, int> Count = new SortedDictionary<int, int>();
 
         public static void ListFriends(ClientInfo _cInfo, string _message)
         {
@@ -29,6 +30,13 @@ namespace ServerTools
                     _phrase625 = _phrase625.Replace("{EntityId}", _player.entityId.ToString());
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase625), "Server", false, "", false));
                 }
+                else
+                {
+                    if (!Count.ContainsKey(_cInfo.entityId))
+                    {
+                        Count.Add(_cInfo.entityId, 1);
+                    }
+                }
             }
         }
 
@@ -41,7 +49,7 @@ namespace ServerTools
             }
             else
             {
-                TimeSpan varTime = DateTime.Now - p.LastGimme;
+                TimeSpan varTime = DateTime.Now - p.LastFriendTele;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int _timepassed = (int)fractionalMinutes;
                 if (_timepassed >= Delay_Between_Uses)

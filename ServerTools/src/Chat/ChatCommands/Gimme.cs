@@ -8,14 +8,13 @@ namespace ServerTools
 {
     public class Gimme
     {
-        public static bool IsEnabled = false;
-        public static bool IsRunning = false;
-        public static bool Always_Show_Response = false;
+        public static bool IsEnabled = false, IsRunning = false, Always_Show_Response = false,
+            Zombies = false;
         public static int Delay_Between_Uses = 60;
         private const string file = "GimmeItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static SortedDictionary<string, int[]> dict = new SortedDictionary<string, int[]>();
-        private static SortedDictionary<string, string> dict1 = new SortedDictionary<string, string>();
+        private static Dictionary<string, int[]> dict = new Dictionary<string, int[]>();
+        private static Dictionary<string, string> dict1 = new Dictionary<string, string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static System.Random random = new System.Random();
         private static bool updateConfig = false;
@@ -36,6 +35,8 @@ namespace ServerTools
 
         public static void Unload()
         {
+            dict.Clear();
+            dict1.Clear();
             fileWatcher.Dispose();
             IsRunning = false;
         }
@@ -266,6 +267,26 @@ namespace ServerTools
 
         private static void _GiveItem(ClientInfo _cInfo, bool _announce)
         {
+            if (Zombies)
+            {
+                int itemOrEntity = random.Next(1, 7);
+                if (itemOrEntity != 4)
+                {
+                    RandomItem(_cInfo, _announce);
+                }
+                else
+                {
+                    RandomZombie(_cInfo, _announce);
+                }
+            }
+            else
+            {
+                RandomItem(_cInfo, _announce);
+            }
+        }
+
+        private static void RandomItem(ClientInfo _cInfo, bool _announce)
+        {
             string _randomItem = list.RandomObject();
             ItemValue _itemValue = ItemClass.GetItem(_randomItem, true);
             _itemValue = new ItemValue(_itemValue.type, true);
@@ -273,13 +294,13 @@ namespace ServerTools
             int _quality = 1;
             if (_itemValue.HasQuality)
             {
-                _quality = random.Next(1, 600);
+                _quality = random.Next(1, 601);
                 _itemValue.Quality = _quality;
             }
             int[] _counts;
             if (dict.TryGetValue(_randomItem, out _counts))
             {
-                int _count = random.Next(_counts[0], _counts[1]);
+                int _count = random.Next(_counts[0], _counts[1] + 1);
                 ItemStack _itemDrop = new ItemStack(_itemValue, _count);
                 ItemValue itemValue;
                 itemValue = new ItemValue(ItemClass.GetItem(_randomItem).type, _quality, _quality, true);
@@ -315,7 +336,7 @@ namespace ServerTools
                 {
                     _phrase7 = _phrase7.Replace("{ItemName}", _name);
                 }
-                if (_announce || Always_Show_Response)
+                if (_announce)
                 {
                     GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase7), "Server", false, "", false);
                 }
@@ -325,6 +346,63 @@ namespace ServerTools
                 }
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].LastGimme = DateTime.Now;
                 PersistentContainer.Instance.Save();
+            }
+        }
+
+        private static void RandomZombie(ClientInfo _cInfo, bool _announce)
+        {
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            Vector3 pos = _player.GetPosition();
+            float x = (int)pos.x;
+            float y = (int)pos.y;
+            float z = (int)pos.z;
+            int _x, _y, _z;
+            bool posFound = true;
+            posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(new Vector3((float)x, (float)y, (float)z), 15, out _x, out _y, out _z, new Vector3((float)5, (float)5, (float)5), true);
+            if (!posFound)
+            {
+                posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(new Vector3((float)x, (float)y, (float)z), 15, out _x, out _y, out _z, new Vector3((float)5 + 5, (float)5 + 5, (float)5 + 5), true);
+            }
+            if (posFound)
+            {
+                Log.Out("[SERVERTOOLS] Spawning zombie for player's gimme");
+                int _rndZ = random.Next(1, 4);
+                if (_rndZ == 1)
+                {
+                    SdtdConsole.Instance.ExecuteSync(string.Format("sea 4 {0} {1} {2}", _x, _y, _z), (ClientInfo)null);
+                }
+                if (_rndZ == 2)
+                {
+                    SdtdConsole.Instance.ExecuteSync(string.Format("sea 9 {0} {1} {2}", _x, _y, _z), (ClientInfo)null);
+                }
+                else
+                {
+                    SdtdConsole.Instance.ExecuteSync(string.Format("sea 11 {0} {1} {2}", _x, _y, _z), (ClientInfo)null);
+                }
+                string _phrase807;
+                if (!Phrases.Dict.TryGetValue(807, out _phrase807))
+                {
+                    _phrase807 = "OH NO! How did that get in there? You have received a zombie.";
+                }
+                if (_announce)
+                {
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase807), "Server", false, "", false);
+                }
+                else
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase807), "Server", false, "", false));
+                }
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].LastGimme = DateTime.Now;
+                PersistentContainer.Instance.Save();
+            }
+            else
+            {
+                string _phrase808;
+                if (!Phrases.Dict.TryGetValue(808, out _phrase808))
+                {
+                    _phrase808 = "No spawn points were found near you. Move locations and try /reward again.";
+                }
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase808), "Server", false, "", false));
             }
         }
     }

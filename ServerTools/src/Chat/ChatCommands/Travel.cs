@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using UnityEngine;
 
 namespace ServerTools
 {
     class Travel
     {
-        public static bool IsEnabled = false;
-        public static bool IsRunning = false;
+        public static bool IsEnabled = false, IsRunning = false;
         public static int Delay_Between_Uses = 60;
         private const string file = "TravelLocations.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -21,12 +19,7 @@ namespace ServerTools
         private static List<int> Flag = new List<int>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
-        private static int _xMinCheck = 0;
-        private static int _yMinCheck = 0;
-        private static int _zMinCheck = 0;
-        private static int _xMaxCheck = 0;
-        private static int _yMaxCheck = 0;
-        private static int _zMaxCheck = 0;
+        private static int _xMinCheck = 0, _yMinCheck = 0, _zMinCheck = 0, _xMaxCheck = 0, _yMaxCheck = 0, _zMaxCheck = 0;
 
         public static void Load()
         {
@@ -621,57 +614,16 @@ namespace ServerTools
                                 TeleportCheckProtection.Remove(_cInfo.entityId);
                                 TeleportCheckProtection.Add(_cInfo.entityId);
                             }
-                            if (_player.AttachedToEntity)
+                            SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, _xDest, _yDest, _zDest), (ClientInfo)null);
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastTravel = DateTime.Now;
+                            PersistentContainer.Instance.Save();
+                            string _phrase603;
+                            if (!Phrases.Dict.TryGetValue(603, out _phrase603))
                             {
-                                Entity _bike = _player.AttachedToEntity;
-                                Bike.Remove(_cInfo.entityId);
-                                Bike.Add(_cInfo.entityId, _bike);
-                                BikeTime.Add(_cInfo.entityId, DateTime.Now);
-                                string _phrase800;
-                                if (!Phrases.Dict.TryGetValue(800, out _phrase800))
-                                {
-                                    _phrase800 = "Your minibike is prepared. Get off your bike and type /travel again. 1 minute limit.";
-                                }
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase800), "Server", false, "", false));
+                                _phrase603 = "You have traveled to {Destination}.";
                             }
-                            else
-                            {
-                                if (BikeTime.ContainsKey(_cInfo.entityId))
-                                {
-                                    DateTime _bikeValue;
-                                    if (BikeTime.TryGetValue(_cInfo.entityId, out _bikeValue))
-                                    {
-                                        TimeSpan varTime = DateTime.Now - _bikeValue;
-                                        double fractionalSeconds = varTime.TotalSeconds;
-                                        int _timepassed = (int)fractionalSeconds;
-                                        if (_timepassed <= 60)
-                                        {
-                                            Entity _bike;
-                                            if (Bike.TryGetValue(_cInfo.entityId, out _bike))
-                                            {
-                                                SdtdConsole.Instance.ExecuteSync(string.Format("telee {0} {1} {2} {3}", _bike.entityId, _xDest, _yDest, _zDest), (ClientInfo)null);
-                                                Bike.Remove(_cInfo.entityId);
-                                                BikeTime.Remove(_cInfo.entityId);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            Bike.Remove(_cInfo.entityId);
-                                            BikeTime.Remove(_cInfo.entityId);
-                                        }
-                                    }
-                                }
-                                Vector3 _dest = new Vector3(_xDest, _yDest, _zDest);
-                                _cInfo.SendPackage(new NetPackageTeleportPlayer(_dest));
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].LastTravel = DateTime.Now;
-                                PersistentContainer.Instance.Save();
-                                string _phrase603;
-                                if (!Phrases.Dict.TryGetValue(603, out _phrase603))
-                                {
-                                    _phrase603 = "You have traveled to";
-                                }
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}.[-]", Config.Chat_Response_Color, _phrase603, kvpCorners.Key), "Server", false, "", false));
-                            }
+                            _phrase603 = _phrase603.Replace("{Destination}", kvpCorners.Key);
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase603), "Server", false, "", false));                            
                         }
                         else
                         {

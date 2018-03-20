@@ -6,9 +6,7 @@ namespace ServerTools
 {
     public class TeleportHome
     {
-        public static bool IsEnabled = false;
-        public static bool Set_Home2_Enabled = false;
-        public static bool Set_Home2_Donor_Only = false;
+        public static bool IsEnabled = false, Set_Home2_Enabled = false, Set_Home2_Donor_Only = false;
         public static int Delay_Between_Uses = 60;
         public static List<int> TeleportCheckProtection = new List<int>();
 
@@ -192,7 +190,7 @@ namespace ServerTools
         public static void SetHome2(ClientInfo _cInfo, string _playerName, bool _announce)
         {
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p == null && !ZoneProtection.PvEFlag.Contains(_cInfo.entityId) || !p.IsJailed && !ZoneProtection.PvEFlag.Contains(_cInfo.entityId))
+            if (p == null && !ZoneProtection.PvEFlag.ContainsKey(_cInfo.entityId) || !p.IsJailed && !ZoneProtection.PvEFlag.ContainsKey(_cInfo.entityId))
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 Vector3 _position = _player.GetPosition();

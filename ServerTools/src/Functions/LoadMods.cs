@@ -6,19 +6,25 @@
         {
             if (AutoShutdown.IsEnabled)
             {
-                AutoShutdown.TimerStart();
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
             }
             if (!AutoShutdown.IsEnabled)
             {
-                AutoShutdown.TimerStop();
-            }
-            if (!AutoSaveWorld.IsEnabled)
-            {
-                AutoSaveWorld.StopTimer();
+                Timers.TimerCheck(); 
             }
             if (AutoSaveWorld.IsEnabled)
             {
-                AutoSaveWorld.StartTimer();
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
+            }
+            if (!AutoSaveWorld.IsEnabled)
+            {
+                Timers.TimerCheck();
             }
             if (Badwords.IsRunning && !Badwords.IsEnabled)
             {
@@ -28,13 +34,16 @@
             {
                 Badwords.Load();
             }
-            if (!Bloodmoon.IsEnabled)
-            {
-                Bloodmoon.TimerStop();
-            }
             if (Bloodmoon.IsEnabled)
             {
-                Bloodmoon.TimerStart();
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
+            }
+            if (!Bloodmoon.IsEnabled)
+            {
+                Timers.TimerCheck();
             }
             if (ChatHook.Special_Player_Name_Coloring)
             {
@@ -58,28 +67,34 @@
             }
             if (EntityUnderground.IsEnabled)
             {
-                EntityUnderground.EntityUndergroundTimerStart();
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
             }
             if (!EntityUnderground.IsEnabled)
             {
-                EntityUnderground.EntityUndergroundTimerStop();
+                Timers.TimerCheck();
             }
-            if (FamilyShareAccount.IsRunning && !FamilyShareAccount.IsEnabled)
+            if (CredentialCheck.IsRunning && !CredentialCheck.IsEnabled)
             {
-                FamilyShareAccount.Unload();
+                CredentialCheck.Unload();
             }
-            if (!FamilyShareAccount.IsRunning && FamilyShareAccount.IsEnabled)
+            if (!CredentialCheck.IsRunning && CredentialCheck.IsEnabled)
             {
-                FamilyShareAccount.Load();
+                CredentialCheck.Load();
             }
             if (FlightCheck.IsEnabled)
             {
-                FlightCheck.FlightTimerStart();
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
                 FlightCheck.DetectionLogsDir();
             }
             if (!FlightCheck.IsEnabled)
             {
-                FlightCheck.FlightTimerStop();
+                Timers.TimerCheck();
             }
             if (Gimme.IsRunning && !Gimme.IsEnabled)
             {
@@ -91,12 +106,15 @@
             }
             if (HatchElevator.IsEnabled)
             {
-                HatchElevator.HatchElevatorTimerStart();
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
                 HatchElevator.DetectionLogsDir();
             }
             if (!HatchElevator.IsEnabled)
             {
-                HatchElevator.HatchElevatorTimerStop();
+                Timers.TimerCheck();
             }
             if (HighPingKicker.IsRunning && !HighPingKicker.IsEnabled)
             {
@@ -112,11 +130,16 @@
             }
             if (!InfoTicker.IsEnabled)
             {
-                InfoTicker.Unload();
+                Timers.TimerCheck();
+                InfoTicker.Unload();                
             }
             if (InfoTicker.IsEnabled)
             {
                 InfoTicker.Load();
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
             }
             if (InventoryCheck.IsRunning && !InventoryCheck.IsEnabled)
             {
@@ -128,13 +151,16 @@
             }
             if (Jail.IsEnabled)
             {
-                Jail.TimerStart();
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
             }
             if (!Jail.IsEnabled)
             {
-                Jail.TimerStop();
+                Timers.TimerCheck();
             }
-            if (!Shop.IsRunning  && Shop.IsEnabled)
+            if (!Shop.IsRunning && Shop.IsEnabled)
             {
                 Shop.Load();
             }
@@ -152,16 +178,27 @@
             }
             if (PlayerLogs.IsEnabled)
             {
-                PlayerLogs.PlayerLogsStart();
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
                 PlayerLogs.PlayerLogsDir();
             }
             if (!PlayerLogs.IsEnabled)
             {
-                PlayerLogs.PlayerLogsStop();
-            }
+                Timers.TimerCheck();
+            }            
             if (PlayerStatCheck.IsEnabled)
             {
-                PlayerStatCheck.PlayerStat();
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
+                PlayerStatCheck.DetectionLogsDir();
+            }
+            if (!PlayerStatCheck.IsEnabled)
+            {
+                Timers.TimerCheck();
             }
             if (!ReservedSlots.IsRunning && ReservedSlots.IsEnabled)
             {
@@ -201,12 +238,15 @@
             }
             if (UndergroundCheck.IsEnabled)
             {
-                UndergroundCheck.UndergroundTimerStart();
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
                 UndergroundCheck.DetectionLogsDir();
             }
             if (!UndergroundCheck.IsEnabled)
             {
-                UndergroundCheck.UndergroundTimerStop();
+                Timers.TimerCheck();
             }
             if (!VoteReward.IsRunning && VoteReward.IsEnabled)
             {
@@ -216,10 +256,6 @@
             {
                 VoteReward.Unload();
             }
-            if (VoteReward.IsEnabled)
-            {
-                VoteReward.RandomList();
-            }
             if (!Watchlist.IsRunning && Watchlist.IsEnabled)
             {
                 Watchlist.Load();
@@ -228,16 +264,28 @@
             {
                 Watchlist.Unload();
             }
-            if (!ZoneProtection.IsRunning && ZoneProtection.IsEnabled)
+            //if (WorldRadius.IsEnabled)
+            //{
+            //    if (!Timers.timer1Running)
+            //    {
+            //        Timers.TimerStart1Second();
+            //    }
+            //}
+            //if (!WorldRadius.IsEnabled)
+            //{
+            //    Timers.TimerCheck();
+            //}
+            if (ZoneProtection.IsEnabled)
             {
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
                 ZoneProtection.DetectionLogsDir();
-                ZoneProtection.ZoneProtectionTimerStart();
-                ZoneProtection.Load();
             }
-            if (ZoneProtection.IsRunning && !ZoneProtection.IsEnabled)
+            if (!ZoneProtection.IsEnabled)
             {
-                ZoneProtection.ZoneProtectionTimerStop();
-                ZoneProtection.Unload();
+                Timers.TimerCheck();
             }
         }
     }

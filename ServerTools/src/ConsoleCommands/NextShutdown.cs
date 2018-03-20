@@ -42,7 +42,7 @@ namespace ServerTools
                     TimeSpan varTime = DateTime.Now - _timeStart;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timeMinutes = (int)fractionalMinutes;
-                    int _timeleftMinutes = AutoShutdown.Time_Before_Shutdown - _timeMinutes;
+                    int _timeleftMinutes = Timers.Shutdown_Delay - _timeMinutes;
                     string TimeLeft;
                     TimeLeft = string.Format("{0:00} H :{1:00} M", _timeleftMinutes / 60, _timeleftMinutes % 60);
                     SdtdConsole.Instance.Output(TimeLeft);

@@ -1,38 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Timers;
 
 namespace ServerTools
 {
     class WeatherVote
     {
-        private static int timerInstanceCount = 0;
-        public static bool IsEnabled = false;
-        public static bool VoteOpen = false;
-        public static bool VoteClosed = false;
-        public static int Vote_Delay = 30;
+        public static bool IsEnabled = false, VoteOpen = false, VoteNew = true;
         private static string _weather = "";
         public static List<int> clear = new List<int>();
         public static List<int> rain = new List<int>();
         public static List<int> snow = new List<int>();
-        private static System.Timers.Timer t1 = new System.Timers.Timer();
-        private static System.Timers.Timer t2 = new System.Timers.Timer();
-
-        private static void StartTimerT1()
-        {
-            timerInstanceCount++;
-            if (timerInstanceCount <= 1)
-            {
-                t1.Interval = 30000;
-                t1.Start();
-                t1.Elapsed += new ElapsedEventHandler(CallForVote2);
-            }
-        }
-
-        private static void TimerStopT1()
-        {
-            t1.Stop();
-        }
 
         public static void CallForVote1()
         {
@@ -49,13 +26,14 @@ namespace ServerTools
             }
             GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase615), "Server", false, "", false);
             VoteOpen = true;
-            StartTimerT1();
+            if (!Timers.timer1Running)
+            {
+                Timers.TimerStart1Second();
+            }
         }
 
-        private static void CallForVote2(object sender, ElapsedEventArgs e)
+        public static void CallForVote2()
         {
-            TimerStopT1();
-            VoteOpen = false;
             if (clear.Count > rain.Count & clear.Count > snow.Count)
             {
                 GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}Clear skies ahead", Config.Chat_Response_Color), "Server", false, "ServerTools", true);
@@ -64,8 +42,11 @@ namespace ServerTools
                 SdtdConsole.Instance.ExecuteSync("weather wet 0", (ClientInfo)null);
                 SdtdConsole.Instance.ExecuteSync("weather snow 0", (ClientInfo)null);
                 SdtdConsole.Instance.ExecuteSync("weather snowfall 0", (ClientInfo)null);
-                VoteClosed = true;
-                WeatherTimerStart();
+                VoteNew = false;
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
                 _weather = "clear";
             }
             if (rain.Count > clear.Count & rain.Count > snow.Count)
@@ -89,8 +70,11 @@ namespace ServerTools
                     SdtdConsole.Instance.ExecuteSync("weather rain 1", (ClientInfo)null);
                     SdtdConsole.Instance.ExecuteSync("weather wet 1", (ClientInfo)null);
                 }
-                VoteClosed = true;
-                WeatherTimerStart();
+                VoteNew = false;
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
                 _weather = "rain";               
             }
             if (snow.Count > clear.Count & snow.Count > rain.Count)
@@ -114,8 +98,11 @@ namespace ServerTools
                     SdtdConsole.Instance.ExecuteSync("weather snowfall 1", (ClientInfo)null);
                     SdtdConsole.Instance.ExecuteSync("weather snow 1", (ClientInfo)null);
                 }
-                VoteClosed = true;
-                WeatherTimerStart();
+                VoteNew = false;
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
                 _weather = "snow";
             }
             if (clear.Count == 0 & rain.Count == 0 & snow.Count == 0)
@@ -139,7 +126,7 @@ namespace ServerTools
                         _phrase613 = "Weather vote complete. Most votes went to {weather}. The next weather vote can be started in {VoteDelay} minutes.";
                     }
                     _phrase613 = _phrase613.Replace("{weather}", _weather.ToString());
-                    _phrase613 = _phrase613.Replace("{VoteDelay}", Vote_Delay.ToString());
+                    _phrase613 = _phrase613.Replace("{VoteDelay}", Timers.Weather_Vote_Delay.ToString());
                     GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase613), "Server", false, "", false);
                     clear.Clear(); rain.Clear(); snow.Clear();
                     _weather = "";
@@ -156,25 +143,6 @@ namespace ServerTools
                     _weather = "";
                 }
             }
-        }
-
-        private static void WeatherTimerStart()
-        {
-            timerInstanceCount++;
-            if (timerInstanceCount <= 1)
-            {
-                int d = Vote_Delay * 60000;
-                t2.Interval = d;
-                t2.Start();
-                t2.Elapsed += new ElapsedEventHandler(WeatherTimerStop);
-            }
-        }
-
-        private static void WeatherTimerStop(object sender, ElapsedEventArgs e)
-        {
-            t2.Stop();
-            SdtdConsole.Instance.ExecuteSync("weather defaults", (ClientInfo)null);
-            VoteClosed = false;
         }
     }
 }

@@ -1,27 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Timers;
 
 namespace ServerTools
 {
     class FlightCheck : ConsoleCmdAbstract
     {
-        private static int timerInstanceCount = 0;
-        public static bool IsEnabled = false;
-        public static bool Kill_Player = false;
-        public static bool Announce = false;
-        public static bool Jail_Enabled = false;
-        public static bool Kick_Enabled = false;
-        public static bool Ban_Enabled = false;
-        public static int Admin_Level = 0;
-        public static int Max_Height = 2;
-        public static int Max_Ping = 300;
-        public static int Days_Before_Log_Delete = 5;
-        public static SortedDictionary<string, int> Flag = new SortedDictionary<string, int>();
-        public static SortedDictionary<int, int> fLastPositionY = new SortedDictionary<int, int>();
-        public static SortedDictionary<int, string> fLastPositionXZ = new SortedDictionary<int, string>();
-        private static System.Timers.Timer t = new System.Timers.Timer();
+        public static bool IsEnabled = false, Kill_Player = false, Announce = false, Jail_Enabled = false, Kick_Enabled = false, Ban_Enabled = false;
+        public static int Admin_Level = 0, Max_Height = 2, Max_Ping = 300, Days_Before_Log_Delete = 5;
+        public static Dictionary<string, int> Flag = new Dictionary<string, int>();
+        public static Dictionary<int, int> fLastPositionY = new Dictionary<int, int>();
+        public static Dictionary<int, int[]> fLastPositionXZ = new Dictionary<int, int[]>();
 
         public override string GetDescription()
         {
@@ -55,14 +44,13 @@ namespace ServerTools
                 {
                     if (_params.Count == 1)
                     {
-                        ClientInfo ci = ConsoleHelper.ParseParamIdOrName(_params[0]);
-                        if (ci == null)
+                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
+                        if (_cInfo == null)
                         {
                             SdtdConsole.Instance.Output("Playername or entity/steamid id not found.");
                             return;
                         }
-                        EntityPlayer ep = GameManager.Instance.World.Players.dict[ci.entityId];
-
+                        EntityPlayer ep = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                         SdtdConsole.Instance.Output("FC: entity_id=" + ep.entityId + " dist=" + getFlightCheck(ep));
                     }
                     else
@@ -140,14 +128,14 @@ namespace ServerTools
             }
         }
 
-        private static bool autoGetFlightCheck(EntityPlayer ep)
+        private static bool autoGetFlightCheck(EntityPlayer ep, ClientInfo _cInfo)
         {
             int x = (int)ep.position.x;
             int y = (int)ep.position.y;
             int z = (int)ep.position.z;
 
             int Id = ep.entityId;
-            string xz = (x.ToString() + z.ToString());
+            int[] xz = { x, z };
 
             if (fLastPositionY.ContainsKey(Id))
             {
@@ -174,13 +162,12 @@ namespace ServerTools
 
             if (fLastPositionXZ.ContainsKey(Id))
             {
-                string last_xz_pos;
+                int[] last_xz_pos;
                 fLastPositionXZ.TryGetValue(Id, out last_xz_pos);
                 if (last_xz_pos != xz)
                 {
                     fLastPositionXZ.Remove(Id);
                     fLastPositionXZ.Add(Id, xz);
-                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(ep.entityId);
                     if (_cInfo.ping < Max_Ping)
                     {
                         for (int k = y - Max_Height; k <= (y + 2); k++)
@@ -199,13 +186,11 @@ namespace ServerTools
                         }
                         return true;
                     }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }
                 else
                 {
+                    Flag.Remove(_cInfo.playerId);
                     fLastPositionXZ.Remove(Id);
                     fLastPositionXZ.Add(Id, xz);
                     return false;
@@ -219,44 +204,26 @@ namespace ServerTools
             }
         }
 
-        public static void FlightTimerStart()
-        {
-            timerInstanceCount++;
-            if (timerInstanceCount <= 1)
-            {
-                int d = 2500;
-                t.Interval = d;
-                t.Start();
-                t.Elapsed += new ElapsedEventHandler(AutoFlightCheck);
-            }
-        }
-
-        public static void FlightTimerStop()
-        {
-            t.Stop();
-        }
-
-        public static void AutoFlightCheck(object sender, ElapsedEventArgs e)
+        public static void AutoFlightCheck()
         {
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
+                World world = GameManager.Instance.World;
                 List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                 foreach (var _cInfo in _cInfoList)
                 {
                     GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
                     AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                     if (Admin.PermissionLevel > Admin_Level)
-                    {
-                        World world = GameManager.Instance.World;
+                    {                       
                         List<EntityPlayer>.Enumerator enumerator2 = world.Players.list.GetEnumerator();
                         using (List<EntityPlayer>.Enumerator enumerator = enumerator2)
-                        {
                             while (enumerator.MoveNext())
                             {
                                 EntityPlayer ep = enumerator.Current;
                                 if (ep.entityId == _cInfo.entityId && !ep.AttachedToEntity)
                                 {
-                                    var playerDistanceFromGround = autoGetFlightCheck(ep);
+                                    var playerDistanceFromGround = autoGetFlightCheck(ep, _cInfo);
                                     if (playerDistanceFromGround == true)
                                     {
                                         if (!Flag.ContainsKey(_cInfo.playerId))
@@ -268,40 +235,56 @@ namespace ServerTools
                                             int _flag = 0;
                                             if (Flag.TryGetValue(_cInfo.playerId, out _flag))
                                             {
+                                                int x = (int)ep.position.x;
+                                                int y = (int)ep.position.y;
+                                                int z = (int)ep.position.z;
                                                 {
                                                     Flag.Remove(_cInfo.playerId);
                                                     Flag.Add(_cInfo.playerId, _flag + 1);
                                                 }
-                                                if (_flag > 1)
+                                                if (_flag == 2)
                                                 {
-                                                    int x = (int)ep.position.x;
-                                                    int y = (int)ep.position.y;
-                                                    int z = (int)ep.position.z;
-
-                                                    Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z);
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} -1 {2}", ep.entityId, x, z), (ClientInfo)null);
+                                                    Penalty(_cInfo);
+                                                    Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.playerId, x, y, z);
                                                     string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
                                                     string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
                                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                     {
-                                                        sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z));
+                                                        sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.playerId, x, y, z));
                                                         sw.WriteLine();
                                                         sw.Flush();
                                                         sw.Close();
-                                                    }
-                                                    if (Announce)
+                                                    }                                                   
+                                                    List<ClientInfo> _cInfoList2 = ConnectionManager.Instance.GetClients();
+                                                    foreach (var _cInfo2 in _cInfoList2)
                                                     {
-                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been detected flying[-]", Config.Chat_Response_Color, _cInfo.playerName), "Server", false, "", false);
-                                                        if (_flag == 4)
+                                                        AdminToolsClientInfo Admin2 = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo2.playerId);
+                                                        if (Admin2.PermissionLevel <= Admin_Level)
                                                         {
-                                                            Flag.Remove(_cInfo.playerId);
-                                                            if (Admin.PermissionLevel <= Admin_Level && ep.entityId != _cInfo.entityId)
+                                                            string _phrase705;
+                                                            if (!Phrases.Dict.TryGetValue(705, out _phrase705))
                                                             {
-                                                                SdtdConsole.Instance.ExecuteSync(string.Format("pm {0} \"{1}Detected {2} flying @ {3} {4} {5}\"", _cInfo.playerId, Config.Chat_Response_Color, ep.EntityName, x, y, z), (ClientInfo)null);
+                                                                _phrase705 = "Detected {PlayerName} flying @ {X} {Y} {Z}";
                                                             }
+                                                            _phrase705 = _phrase705.Replace("{PlayerName}", _cInfo.playerName);
+                                                            _phrase705 = _phrase705.Replace("{X}", x.ToString());
+                                                            _phrase705 = _phrase705.Replace("{Y}", y.ToString());
+                                                            _phrase705 = _phrase705.Replace("{Z}", z.ToString());
+                                                            _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase705), "Server", false, "", false));
                                                         }
                                                     }
-                                                    SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} -1 {2}", ep.entityId, x, z), (ClientInfo)null);
-                                                    Penalty(_cInfo);
+                                                    Flag.Remove(_cInfo.playerId);
+                                                    if (Announce)
+                                                    {
+                                                        string _phrase706;
+                                                        if (!Phrases.Dict.TryGetValue(706, out _phrase706))
+                                                        {
+                                                            _phrase706 = "{PlayerName} has been detected flying.";
+                                                        }
+                                                        _phrase706 = _phrase706.Replace("{PlayerName}", _cInfo.playerName);
+                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase706), "Server", false, "", false);
+                                                    }
                                                 }
                                             }
                                         }
@@ -315,7 +298,6 @@ namespace ServerTools
                                     }
                                 }
                             }
-                        }
                     }
                 }
             }

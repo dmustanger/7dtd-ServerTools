@@ -116,6 +116,7 @@ namespace ServerTools
                 sw.Flush();
                 sw.Close();
             }
+
             fileWatcher.EnableRaisingEvents = true;
         }
 

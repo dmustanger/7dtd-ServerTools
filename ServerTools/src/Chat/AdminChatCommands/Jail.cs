@@ -6,7 +6,6 @@ namespace ServerTools
 {
     public class Jail
     {
-        private static int timerInstanceCount = 0;
         public static bool IsEnabled = false;
         public static int Jail_Size = 8;
         private static string[] _cmd = { "jail" };
@@ -14,27 +13,10 @@ namespace ServerTools
         public static SortedDictionary<string, string> Dict = new SortedDictionary<string, string>();
         public static SortedDictionary<string, string> Dict1 = new SortedDictionary<string, string>();
         public static SortedDictionary<string, Vector3> JailReleasePosition = new SortedDictionary<string, Vector3>();
-        private static System.Timers.Timer t = new System.Timers.Timer();
 
         private static List<string> List
         {
             get { return new List<string>(Dict.Keys); }
-        }
-
-        public static void TimerStart()
-        {
-            timerInstanceCount++;
-            if (timerInstanceCount <= 1)
-            {
-                t.Interval = 1000;
-                t.Start();
-                t.Elapsed += new ElapsedEventHandler(StatusCheck);
-            }
-        }
-
-        public static void TimerStop()
-        {
-            t.Stop();
         }
 
         public static void SetJail(ClientInfo _cInfo)
@@ -313,7 +295,7 @@ namespace ServerTools
             }
         }
 
-        private static void StatusCheck(object sender, ElapsedEventArgs e)
+        public static void StatusCheck()
         {
             if (Dict.Count > 0)
             {

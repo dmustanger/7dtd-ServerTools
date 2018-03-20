@@ -7,14 +7,14 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Add, Remove and View steamids on the ReservedSlots list.";
+            return "[ServerTools]-Add, Remove and View steamId on the ReservedSlots list.";
         }
 
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. reservedslot add <steamId/EntityId> <playerName> <days to expire>\n" +
-                   "  2. reservedslot remove <steamId/EntityId>\n" +
+                   "  1. reservedslot add <steamId/entityId> <playerName> <days to expire>\n" +
+                   "  2. reservedslot remove <steamId/entityId>\n" +
                    "  3. reservedslot list\n" +
                    "1. Adds a steamID to the Reserved Slots list\n" +
                    "2. Removes a steamID from the Reserved Slots list\n" +
@@ -30,7 +30,7 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count != 1 || _params.Count != 2 || _params.Count != 4)
+                if (_params.Count < 1 || _params.Count > 4)
                 {
                     SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, 2 or 4, found {0}", _params.Count));
                     return;

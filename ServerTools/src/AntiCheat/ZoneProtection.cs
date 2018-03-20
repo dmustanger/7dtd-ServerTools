@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Timers;
 using System.Xml;
 using UnityEngine;
 
@@ -9,15 +8,7 @@ namespace ServerTools
 {
     class ZoneProtection
     {
-        private static int timerInstanceCount = 0;
-        public static bool IsEnabled = false;
-        public static bool IsRunning = false;
-        public static bool Kill_Enabled = false;
-        public static bool Jail_Enabled = false;
-        public static bool Kick_Enabled = false;
-        public static bool Ban_Enabled = false;
-        public static bool Zone_Message = false;
-        public static bool Set_Home = false;
+        public static bool IsEnabled = false, IsRunning = false, Kill_Enabled = false, Jail_Enabled = false, Kick_Enabled = false, Ban_Enabled = false, Zone_Message = false, Set_Home = false;
         public static int Days_Before_Log_Delete = 5;      
         private const string file = "ZoneProtection.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -26,16 +17,10 @@ namespace ServerTools
         private static SortedDictionary<int, int> Flag = new SortedDictionary<int, int>();
         public static SortedDictionary<int, Vector3> Victim = new SortedDictionary<int, Vector3>();
         public static SortedDictionary<int, int> Forgive = new SortedDictionary<int, int>();
-        public static List<int> PvEFlag = new List<int>();
+        public static SortedDictionary<int, string> PvEFlag = new SortedDictionary<int, string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
-        private static System.Timers.Timer t = new System.Timers.Timer();
-        private static int _xMinCheck = 0;
-        private static int _yMinCheck = 0;
-        private static int _zMinCheck = 0;
-        private static int _xMaxCheck = 0;
-        private static int _yMaxCheck = 0;
-        private static int _zMaxCheck = 0;
+        private static int _xMinCheck = 0, _yMinCheck = 0, _zMinCheck = 0, _xMaxCheck = 0, _yMaxCheck = 0, _zMaxCheck = 0;
 
         public static void Load()
         {
@@ -101,8 +86,18 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone Protection entry because of missing corner2 attribute: {0}", subChild.OuterXml));
                             continue;
                         }
+                        if (!_line.HasAttribute("entryMessage"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone Protection entry because of missing entryMessage attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        if (!_line.HasAttribute("exitMessage"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone Protection entry because of missing exitMessage attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
                         string _name = _line.GetAttribute("name");
-                        string[] box = { _line.GetAttribute("corner1"), _line.GetAttribute("corner2") };
+                        string[] box = { _line.GetAttribute("corner1"), _line.GetAttribute("corner2"), _line.GetAttribute("entryMessage"), _line.GetAttribute("exitMessage") };
                         if (!Box.ContainsKey(_name))
                         {
                             Box.Add(_name, box);
@@ -129,13 +124,13 @@ namespace ServerTools
                 {
                     foreach (KeyValuePair<string, string[]> kvpBox in Box)
                     {
-                        sw.WriteLine(string.Format("        <zone name=\"{0}\" corner1=\"{1}\" corner2=\"{2}\" />", kvpBox.Key, kvpBox.Value[0], kvpBox.Value[1]));
+                        sw.WriteLine(string.Format("        <zone name=\"{0}\" corner1=\"{1}\" corner2=\"{2}\" entryMessage=\"{3}\" exitMessage=\"{4}\" />", kvpBox.Key, kvpBox.Value[0], kvpBox.Value[1], kvpBox.Value[2], kvpBox.Value[3]));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <zone name=\"Market\" corner1=\"-100,60,-90\" corner2=\"-140,70,-110\" />");
-                    sw.WriteLine("        <zone name=\"Lobby\" corner1=\"0,100,0\" corner2=\"25,105,25\" />");
+                    sw.WriteLine("        <zone name=\"Market\" corner1=\"-100,60,-90\" corner2=\"-140,70,-110\" entryMessage=\"You are now entering the Market\" exitMessage=\"You are exiting the Market\" />");
+                    sw.WriteLine("        <zone name=\"Lobby\" corner1=\"0,100,0\" corner2=\"25,105,25\" entryMessage=\"You are now entering the Lobby\" exitMessage=\"You are exiting the Lobby\" />");
                 }
                 sw.WriteLine("    </Zone>");
                 sw.WriteLine("</ZoneProtection>");
@@ -163,26 +158,7 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void ZoneProtectionTimerStart()
-        {
-            timerInstanceCount++;
-            if (timerInstanceCount <= 1)
-            {
-                t.Interval = 1000;
-                t.Start();
-                t.Elapsed += new ElapsedEventHandler(KillCheck);
-                t.Elapsed += new ElapsedEventHandler(ZoneCheck);
-            }
-        }
-
-        public static void ZoneProtectionTimerStop()
-        {
-            t.Stop();
-            PvEFlag.Clear();
-            Flag.Clear();
-        }
-
-        public static void KillCheck(object sender, ElapsedEventArgs e)
+        public static void Check()
         {
             List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
             foreach (var _cInfoKiller in _cInfoList)
@@ -208,108 +184,116 @@ namespace ServerTools
                                 ClientInfo _cInfoVictim = ConnectionManager.Instance.GetClientInfoForEntityId(_victim.entityId);
                                 if (_cInfoVictim != null)
                                 {
-                                    if (PvEFlag.Contains(_cInfoVictim.entityId) & PvEFlag.Contains(_cInfoKiller.entityId))
+                                    if (PvEFlag.ContainsKey(_cInfoVictim.entityId) & PvEFlag.ContainsKey(_cInfoKiller.entityId))
                                     {
-                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has murdered you while you were in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), "Server", false, "", false));
-                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have murdered {1} while you were inside a protected zone.[-]", Config.Chat_Response_Color, _cInfoVictim.playerName), "Server", false, "", false));
-                                        Penalty(_cInfoKiller, _cInfoVictim);
-                                        if (Victim.ContainsKey(_cInfoVictim.entityId))
+                                        string _phrase801;
+                                        if (!Phrases.Dict.TryGetValue(801, out _phrase801))
                                         {
-                                            Victim.Remove(_cInfoVictim.entityId);
+                                            _phrase801 = "{Killer} has murdered you while you were in a protected zone.";
                                         }
-                                        Victim.Add(_cInfoVictim.entityId, _victim.position);                                                                                
-                                    }
-                                    if (PvEFlag.Contains(_cInfoVictim.entityId) & !PvEFlag.Contains(_cInfoKiller.entityId))
-                                    {
-                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has murdered you while you were in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), "Server", false, "", false));
-                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have murdered {1}. They were inside a protected zone.[-]", Config.Chat_Response_Color, _cInfoVictim.playerName), "Server", false, "", false));
-                                        Penalty(_cInfoKiller, _cInfoVictim);
-                                        if (Victim.ContainsKey(_cInfoVictim.entityId))
+                                        _phrase801 = _phrase801.Replace("{Killer}", _cInfoKiller.playerName);
+                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase801), "Server", false, "", false));
+                                        string _phrase802;
+                                        if (!Phrases.Dict.TryGetValue(802, out _phrase802))
                                         {
-                                            Victim.Remove(_cInfoVictim.entityId);
+                                            _phrase802 = "You have murdered a player inside a protected zone. Their name was {Victim}";
                                         }
-                                        Victim.Add(_cInfoVictim.entityId, _victim.position);
-                                    }
-                                    if (!PvEFlag.Contains(_cInfoVictim.entityId) & PvEFlag.Contains(_cInfoKiller.entityId))
-                                    {
-                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} has murdered you while they were in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), "Server", false, "", false));
-                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have murdered {1} while you were inside a protected zone.[-]", Config.Chat_Response_Color, _cInfoVictim.playerName), "Server", false, "", false));
+                                        _phrase802 = _phrase802.Replace("{Victim}", _cInfoVictim.playerName);
+                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase802), "Server", false, "", false));
                                         Penalty(_cInfoKiller, _cInfoVictim);
                                         if (Victim.ContainsKey(_cInfoVictim.entityId))
                                         {
                                             Victim.Remove(_cInfoVictim.entityId);
                                         }
                                         Victim.Add(_cInfoVictim.entityId, _victim.position);
-                                        string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                                        string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
-                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                        continue;                                                                             
+                                    }
+                                    if (PvEFlag.ContainsKey(_cInfoVictim.entityId) & !PvEFlag.ContainsKey(_cInfoKiller.entityId))
+                                    {
+                                        string _phrase801;
+                                        if (!Phrases.Dict.TryGetValue(801, out _phrase801))
+                                        {
+                                            _phrase801 = "{Killer} has murdered you while you were in a protected zone.";
+                                        }
+                                        _phrase801 = _phrase801.Replace("{Killer}", _cInfoKiller.playerName);
+                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase801), "Server", false, "", false));
+                                        string _phrase802;
+                                        if (!Phrases.Dict.TryGetValue(802, out _phrase802))
+                                        {
+                                            _phrase802 = "You have murdered a player inside a protected zone. Their name was {Victim}";
+                                        }
+                                        _phrase802 = _phrase802.Replace("{Victim}", _cInfoVictim.playerName);
+                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase802), "Server", false, "", false));
+                                        Penalty(_cInfoKiller, _cInfoVictim);
+                                        if (Victim.ContainsKey(_cInfoVictim.entityId))
+                                        {
+                                            Victim.Remove(_cInfoVictim.entityId);
+                                        }
+                                        Victim.Add(_cInfoVictim.entityId, _victim.position);
+                                        continue;
+                                    }
+                                    if (!PvEFlag.ContainsKey(_cInfoVictim.entityId) & PvEFlag.ContainsKey(_cInfoKiller.entityId))
+                                    {
+                                        string _phrase803;
+                                        if (!Phrases.Dict.TryGetValue(801, out _phrase803))
+                                        {
+                                            _phrase803 = "{Killer} has murdered you while they were in a protected zone.";
+                                        }
+                                        _phrase803 = _phrase803.Replace("{Killer}", _cInfoKiller.playerName);
+                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase803), "Server", false, "", false));
+                                        string _phrase802;
+                                        if (!Phrases.Dict.TryGetValue(802, out _phrase802))
+                                        {
+                                            _phrase802 = "You have murdered a player inside a protected zone. Their name was {Victim}";
+                                        }
+                                        _phrase802 = _phrase802.Replace("{Victim}", _cInfoVictim.playerName);
+                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase802), "Server", false, "", false));
+                                        Penalty(_cInfoKiller, _cInfoVictim);
+                                        if (Victim.ContainsKey(_cInfoVictim.entityId))
+                                        {
+                                            Victim.Remove(_cInfoVictim.entityId);
+                                        }
+                                        Victim.Add(_cInfoVictim.entityId, _victim.position);
+                                        string _file1 = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+                                        string _filepath1 = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file1);
+                                        using (StreamWriter sw = new StreamWriter(_filepath1, true))
                                         {
                                             sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, murdered {2}, Steam Id {3} in a protected zone.", _cInfoKiller.playerName, _cInfoKiller.steamId, _cInfoVictim.playerName, _cInfoVictim.steamId));
                                             sw.WriteLine();
                                             sw.Flush();
                                             sw.Close();
                                         }
+                                        continue;
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
-        }
-
-        public static void DetectionLogsDir()
-        {
-            if (!Directory.Exists(API.GamePath + "/DetectionLogs"))
-            {
-                Directory.CreateDirectory(API.GamePath + "/DetectionLogs");
-            }
-
-            string[] files = Directory.GetFiles(API.GamePath + "/DetectionLogs");
-            int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
-            foreach (string file in files)
-            {
-                FileInfo fi = new FileInfo(file);
-                if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                {
-                    fi.Delete();
-                }
-            }
-        }
-
-        public static void ZoneCheck(object sender, ElapsedEventArgs e)
-        {
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-            foreach (var _cInfo in _cInfoList)
-            {
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 if (!_player.IsDead())
                 {
-                int _X = (int)_player.position.x;
-                int _Y = (int)_player.position.y;
-                int _Z = (int)_player.position.z;
-
+                    int _X = (int)_player.position.x;
+                    int _Y = (int)_player.position.y;
+                    int _Z = (int)_player.position.z;
                     if (Box.Count > 0)
                     {
-                        Flag.Remove(_cInfo.entityId);
+                        Flag.Remove(_cInfoKiller.entityId);
                         foreach (KeyValuePair<string, string[]> kvpCorners in Box)
                         {
                             float xMin;
                             float yMin;
                             float zMin;
-                            string[] __corner1 = kvpCorners.Value[0].Split(',');
-                            float.TryParse(__corner1[0], out xMin);
-                            float.TryParse(__corner1[1], out yMin);
-                            float.TryParse(__corner1[2], out zMin);
+                            string[] _corner1 = kvpCorners.Value[0].Split(',');
+                            float.TryParse(_corner1[0], out xMin);
+                            float.TryParse(_corner1[1], out yMin);
+                            float.TryParse(_corner1[2], out zMin);
                             float xMax;
                             float yMax;
                             float zMax;
-                            string[] __corner2 = kvpCorners.Value[1].Split(',');
-                            float.TryParse(__corner2[0], out xMax);
-                            float.TryParse(__corner2[1], out yMax);
-                            float.TryParse(__corner2[2], out zMax);
-
-
+                            string[] _corner2 = kvpCorners.Value[1].Split(',');
+                            float.TryParse(_corner2[0], out xMax);
+                            float.TryParse(_corner2[1], out yMax);
+                            float.TryParse(_corner2[2], out zMax);
                             if (xMin >= 0 & xMax >= 0)
                             {
                                 if (xMin < xMax)
@@ -672,57 +656,98 @@ namespace ServerTools
                                     _zMaxCheck = 0;
                                 }
                             }
-
                             if (_xMinCheck == 1 & _yMinCheck == 1 & _zMinCheck == 1 & _xMaxCheck == 1 & _yMaxCheck == 1 & _zMaxCheck == 1)
                             {
-                                if (!PvEFlag.Contains(_cInfo.entityId))
+                                if (!PvEFlag.ContainsKey(_cInfoKiller.entityId))
                                 {
                                     if (Zone_Message)
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have entered {1}. Do not harm other players while in this zone.[-]", Config.Chat_Response_Color, kvpCorners.Key), "Server", false, "", false));
+                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, kvpCorners.Value[2]), "Server", false, "", false));
                                     }
-                                    PvEFlag.Add(_cInfo.entityId);
+                                    PvEFlag.Add(_cInfoKiller.entityId, kvpCorners.Value[3]);
+                                }
+                                else
+                                {
+                                    string _msg;
+                                    if (PvEFlag.TryGetValue(_cInfoKiller.entityId, out _msg))
+                                    {
+                                        if (_msg != kvpCorners.Value[2])
+                                        {
+                                            PvEFlag.Remove(_cInfoKiller.entityId);
+                                            PvEFlag.Add(_cInfoKiller.entityId, kvpCorners.Value[3]);
+                                        }
+                                    }
                                 }
                             }
                             else
                             {
-                                if (Flag.ContainsKey(_cInfo.entityId))
+                                if (Flag.ContainsKey(_cInfoKiller.entityId))
                                 {
                                     int _flag = 0;
-                                    if (Flag.TryGetValue(_cInfo.entityId, out _flag))
+                                    if (Flag.TryGetValue(_cInfoKiller.entityId, out _flag))
                                     {
                                         int _flag1 = _flag + 1;
-                                        if (_flag1 == Box.Count & PvEFlag.Contains(_cInfo.entityId))
+                                        if (_flag1 == Box.Count & PvEFlag.ContainsKey(_cInfoKiller.entityId))
                                         {
                                             if (Zone_Message)
                                             {
-                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have exited the protected zone.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                                                string _msg;
+                                                if (PvEFlag.TryGetValue(_cInfoKiller.entityId, out _msg))
+                                                {
+                                                    _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _msg), "Server", false, "", false));
+                                                }
                                             }
-                                            PvEFlag.Remove(_cInfo.entityId);
+                                            PvEFlag.Remove(_cInfoKiller.entityId);
                                         }
                                         else
                                         {
-                                            Flag.Remove(_cInfo.entityId);
-                                            Flag.Add(_cInfo.entityId, _flag1);
+                                            Flag.Remove(_cInfoKiller.entityId);
+                                            Flag.Add(_cInfoKiller.entityId, _flag1);
                                         }
                                     }
                                 }
                                 else
                                 {
                                     int _flag = 1;
-                                    Flag.Add(_cInfo.entityId, _flag);
-                                    if (Flag.TryGetValue(_cInfo.entityId, out _flag))
+                                    Flag.Add(_cInfoKiller.entityId, _flag);
+                                    if (Flag.TryGetValue(_cInfoKiller.entityId, out _flag))
                                     {
-                                        if (_flag == Box.Count & PvEFlag.Contains(_cInfo.entityId))
+                                        if (_flag == Box.Count & PvEFlag.ContainsKey(_cInfoKiller.entityId))
                                         {
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have exited the protected zone.[-]", Config.Chat_Response_Color), "Server", false, "", false));
-                                            PvEFlag.Remove(_cInfo.entityId);
+                                            if (Zone_Message)
+                                            {
+                                                string _msg;
+                                                if (PvEFlag.TryGetValue(_cInfoKiller.entityId, out _msg))
+                                                {
+                                                    _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _msg), "Server", false, "", false));
+                                                }
+                                            }
+                                            PvEFlag.Remove(_cInfoKiller.entityId);
                                         }
                                     }
                                 }
                             }
                         }
                     }
+                }
+            }
+        }           
+
+        public static void DetectionLogsDir()
+        {
+            if (!Directory.Exists(API.GamePath + "/DetectionLogs"))
+            {
+                Directory.CreateDirectory(API.GamePath + "/DetectionLogs");
+            }
+
+            string[] files = Directory.GetFiles(API.GamePath + "/DetectionLogs");
+            int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
+            foreach (string file in files)
+            {
+                FileInfo fi = new FileInfo(file);
+                if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
+                {
+                    fi.Delete();
                 }
             }
         }

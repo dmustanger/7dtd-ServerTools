@@ -6,8 +6,8 @@ namespace ServerTools
 {
     public class Watchlist
     {
-        public static bool IsEnabled = false;
-        public static bool IsRunning = false;
+        public static bool IsEnabled = false, IsRunning = false;
+        public static int Admin_Level = 0, Alert_Delay = 5;
         public static SortedDictionary<string, string> Dict = new SortedDictionary<string, string>();
         private static string file = "Watchlist.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -127,26 +127,31 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void CheckWatchlist(ClientInfo _cInfo)
+        public static void CheckWatchlist()
         {
-            if (Dict.ContainsKey(_cInfo.playerId))
+            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+            for (int i = 0; i < _cInfoList.Count; i++)
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                foreach (ClientInfo _cInfo1 in _cInfoList)
+                ClientInfo _cInfo = _cInfoList[i];
+                if (Dict.ContainsKey(_cInfo.playerId))
                 {
-                    if (GameManager.Instance.adminTools.IsAdmin(_cInfo1.playerId))
+                    foreach (var _cInfo1 in _cInfoList)
                     {
-                        string _phrase350;
-                        if (!Phrases.Dict.TryGetValue(350, out _phrase350))
+                        AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo1.playerId);
+                        if (Admin.PermissionLevel <= Admin_Level)
                         {
-                            _phrase350 = "Player {PlayerName} is on the watchlist for {Reason}.";
-                        }
-                        string _reason = null;
-                        if (Dict.TryGetValue(_cInfo.playerId, out _reason))
-                        {
-                            _phrase350 = _phrase350.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase350 = _phrase350.Replace("{Reason}", _reason);
-                            _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase350), "Server", false, "", false));
+                            string _phrase350;
+                            if (!Phrases.Dict.TryGetValue(350, out _phrase350))
+                            {
+                                _phrase350 = "Player {PlayerName} is on the watchlist for {Reason}.";
+                            }
+                            string _reason = null;
+                            if (Dict.TryGetValue(_cInfo.playerId, out _reason))
+                            {
+                                _phrase350 = _phrase350.Replace("{PlayerName}", _cInfo.playerName);
+                                _phrase350 = _phrase350.Replace("{Reason}", _reason);
+                                _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase350), "Server", false, "", false));
+                            }
                         }
                     }
                 }

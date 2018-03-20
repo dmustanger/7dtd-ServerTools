@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Timers;
 using System.Xml;
 
 namespace ServerTools
 {
     public class InfoTicker
     {
-        private static int timerInstanceCount = 0;
         public static bool IsEnabled = false;
         public static bool Random = false;
         public static int Delay_Between_Messages = 5;
@@ -17,35 +15,16 @@ namespace ServerTools
         private static SortedDictionary<string, int> dict = new SortedDictionary<string, int>();
         private static List<string> msgList = new List<string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static System.Timers.Timer t = new System.Timers.Timer();
 
         public static void Load()
         {
             LoadXml();
             InitFileWatcher();
-            TimerStart();
         }
 
         public static void Unload()
         {
             fileWatcher.Dispose();
-            TimerStop();
-        }
-
-        public static void TimerStart()
-        {
-            timerInstanceCount++;
-            if (timerInstanceCount <= 1)
-            {
-                t.Interval = Delay_Between_Messages * 60000;
-                t.Start();
-                t.Elapsed += new ElapsedEventHandler(StatusCheck);
-            }
-        }
-
-        public static void TimerStop()
-        {
-            t.Stop();
         }
 
         private static void LoadXml()
@@ -123,6 +102,7 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<InfoTicketer>");
                 sw.WriteLine("    <Messages>");
+                sw.WriteLine("        <!-- possible variables {EntityId} {SteamId} {PlayerName}-->");
                 if (dict.Count > 0)
                 {
                     foreach (KeyValuePair<string, int> kvp in dict)
@@ -164,7 +144,7 @@ namespace ServerTools
             LoadXml();
         }
 
-        private static void StatusCheck(object sender, ElapsedEventArgs e)
+        public static void StatusCheck()
         {
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
@@ -176,6 +156,7 @@ namespace ServerTools
                         var _message = msgList.First();
                         if (_message != null)
                         {
+
                             GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
                             msgList.RemoveAt(0);
                         }
@@ -185,6 +166,7 @@ namespace ServerTools
                         var _message = msgList.First();
                         if (_message != null)
                         {
+
                             GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
                             msgList.RemoveAt(0);
                         }
@@ -201,6 +183,7 @@ namespace ServerTools
                             var _message = msgList.First();
                             if (_message != null)
                             {
+
                                 GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
                                 msgList.RemoveAt(0);
                             }
@@ -210,6 +193,7 @@ namespace ServerTools
                             var _message = msgList.First();
                             if (_message != null)
                             {
+
                                 GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
                                 msgList.RemoveAt(0);
                             }

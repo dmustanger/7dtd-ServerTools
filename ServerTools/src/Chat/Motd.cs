@@ -92,6 +92,7 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Motds>");
                 sw.WriteLine("    <Motd>");
+                sw.WriteLine("        <!-- possible variables {EntityId} {SteamId} {PlayerName} -->");
                 if (Message.Count > 0)
                 {
                     foreach (string _message in Message)
@@ -136,7 +137,11 @@ namespace ServerTools
             {
                 foreach (string _message in Message)
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false));
+                    string _motd = _message;
+                    _motd = _motd.Replace("{EntityId}", _cInfo.entityId.ToString());
+                    _motd = _motd.Replace("{SteamId}", _cInfo.playerId);
+                    _motd = _motd.Replace("{PlayerName}", _cInfo.playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _motd), "Server", false, "", false));
                 }
             }
         }

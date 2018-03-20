@@ -7,8 +7,7 @@ namespace ServerTools
 {
     public class CustomCommands
     {
-        public static bool IsEnabled = false;
-        public static bool IsRunning = false;
+        public static bool IsEnabled = false, IsRunning = false;
         public static int _timepassed = 0;       
         public static SortedDictionary<string, string> Dict = new SortedDictionary<string, string>();
         public static SortedDictionary<string, int[]> Dict1 = new SortedDictionary<string, int[]>();
@@ -120,7 +119,7 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<CustomCommands>");
                 sw.WriteLine("    <Commands>");
-                sw.WriteLine("        <!-- possible variables {EntityId} {SteamId} {PlayerName} -->");
+                sw.WriteLine("        <!-- possible variables {EntityId} {SteamId} {PlayerName}-->");
                 if (Dict.Count > 0)
                 {
                     foreach (KeyValuePair<string, string> kvp in Dict)
@@ -216,6 +215,14 @@ namespace ServerTools
             {
                 _commands_1 = string.Format("{0} /claim", _commands_1);
             }
+            if (RestartVote.IsEnabled)
+            {
+                _commands_1 = string.Format("{0} /restart", _commands_1);
+                if (RestartVote.VoteOpen)
+                {
+                    _commands_1 = string.Format("{0} /yes /no", _commands_1);
+                }
+            }
             return _commands_1;
         }
 
@@ -261,10 +268,18 @@ namespace ServerTools
             if (WeatherVote.IsEnabled)
             {
                 _commands_2 = string.Format("{0} /weather", _commands_2);
-            }
-            if (WeatherVote.VoteOpen)
+                if (WeatherVote.VoteOpen)
+                {
+                    _commands_2 = string.Format("{0} /sun /rain /snow /fog /wind", _commands_2);
+                }
+            }            
+            if (AuctionBox.IsEnabled)
             {
-                _commands_2 = string.Format("{0} /sun /rain /snow /fog /wind", _commands_2);
+                _commands_2 = string.Format("{0} /auction /auction sell # /auction buy #", _commands_2);
+            }
+            if (DeathSpot.IsEnabled)
+            {
+                _commands_2 = string.Format("{0} /died", _commands_2);
             }
             return _commands_2;
         }
@@ -417,7 +432,7 @@ namespace ServerTools
                             _phrase616 = _phrase616.Replace("{Command}", _message);
                             _phrase616 = _phrase616.Replace("{PlayerName}", _playerName);
                             _phrase616 = _phrase616.Replace("{DelayBetweenUses}", _c[0].ToString());
-                            _phrase616 = _phrase616.Replace("{TimeRemaining}", _timeleft.ToString());
+                            _phrase616 = _phrase616.Replace("{TimeRemaining}", _timeleft.ToString());                            
                             if (_announce)
                             {
                                 GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase616), "Server", false, "", false);
@@ -441,9 +456,10 @@ namespace ServerTools
                 _response = _response.Replace("{EntityId}", _cInfo.entityId.ToString());
                 _response = _response.Replace("{SteamId}", _cInfo.playerId);
                 _response = _response.Replace("{PlayerName}", _playerName);
+                _response = _response.Replace("€", "€");
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer(_cInfo, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
                 }
                 if (_response.StartsWith("say "))
                 {

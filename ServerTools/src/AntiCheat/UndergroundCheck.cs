@@ -1,25 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Timers;
 
 namespace ServerTools
 {
     class UndergroundCheck : ConsoleCmdAbstract
     {
-        private static int timerInstanceCount = 0;
-        public static bool IsEnabled = false;
-        public static bool Kill_Player = false;
-        public static bool Announce = false;
-        public static bool Jail_Enabled = false;
-        public static bool Kick_Enabled = false;
-        public static bool Ban_Enabled = false;
-        public static int Admin_Level = 0;
-        public static int Max_Ping = 300;
-        public static int Days_Before_Log_Delete = 5;
-        public static SortedDictionary<string, int> Flag = new SortedDictionary<string, int>();
-        public static SortedDictionary<int, string> uLastPositionXZ = new SortedDictionary<int, string>();
-        private static System.Timers.Timer timerUnderground = new System.Timers.Timer();
+        public static bool IsEnabled = false, Kill_Player = false, Announce = false, Jail_Enabled = false, Kick_Enabled = false, Ban_Enabled = false;
+        public static int Admin_Level = 0, Max_Ping = 300, Days_Before_Log_Delete = 5;
+        public static Dictionary<string, int> Flag = new Dictionary<string, int>();
+        public static Dictionary<int, int[]> uLastPositionXZ = new Dictionary<int, int[]>();
 
         public override string GetDescription()
         {
@@ -89,7 +79,6 @@ namespace ServerTools
             int x = (int)ep.position.x;
             int y = (int)ep.position.y;
             int z = (int)ep.position.z;
-
             for (int i = x - 2; i <= (x + 2); i++)
             {
                 for (int j = z - 2; j <= (z + 2); j++)
@@ -107,30 +96,12 @@ namespace ServerTools
             return true;
         }
 
-        public static void UndergroundTimerStart()
-        {
-            timerInstanceCount++;
-            if (timerInstanceCount <= 1)
-            {
-                int d = 2500;
-                timerUnderground.Interval = d;
-                timerUnderground.Start();
-                timerUnderground.Elapsed += new ElapsedEventHandler(AutoUndergroundCheck);
-            }
-        }
-
-        public static void UndergroundTimerStop()
-        {
-            timerUnderground.Stop();
-        }
-
         public static void DetectionLogsDir()
         {
             if (!Directory.Exists(API.GamePath + "/DetectionLogs"))
             {
                 Directory.CreateDirectory(API.GamePath + "/DetectionLogs");
             }
-
             string[] files = Directory.GetFiles(API.GamePath + "/DetectionLogs");
             int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
             foreach (string file in files)
@@ -143,7 +114,7 @@ namespace ServerTools
             }
         }
 
-        public static void AutoUndergroundCheck(object sender, ElapsedEventArgs e)
+        public static void AutoUndergroundCheck()
         {
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
@@ -162,7 +133,7 @@ namespace ServerTools
                                 EntityPlayer ep = enumerator.Current;
                                 if (ep.entityId == _cInfo.entityId && !ep.AttachedToEntity)
                                 {
-                                    var playerInGround = autoGetPlayerUnderground(ep);
+                                    var playerInGround = autoGetPlayerUnderground(ep, _cInfo);
                                     if (playerInGround == true)
                                     {
                                         if (!Flag.ContainsKey(_cInfo.playerId))
@@ -174,17 +145,18 @@ namespace ServerTools
                                             int _flag = 0;
                                             if (Flag.TryGetValue(_cInfo.playerId, out _flag))
                                             {
+                                                int x = (int)ep.position.x;
+                                                int y = (int)ep.position.y;
+                                                int z = (int)ep.position.z;
                                                 {
                                                     Flag.Remove(_cInfo.playerId);
                                                     Flag.Add(_cInfo.playerId, _flag + 1);
                                                 }
-                                                if (_flag > 1)
+                                                if (_flag == 2)
                                                 {
-                                                    int x = (int)ep.position.x;
-                                                    int y = (int)ep.position.y;
-                                                    int z = (int)ep.position.z;
-
-                                                    Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z);
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} -1 {2}", ep.entityId, x, z), (ClientInfo)null);
+                                                    Penalty(_cInfo);
+                                                    Log.Warning(string.Format("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z));
                                                     string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
                                                     string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
                                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
@@ -193,21 +165,36 @@ namespace ServerTools
                                                         sw.WriteLine();
                                                         sw.Flush();
                                                         sw.Close();
-                                                    }
-                                                    if (Announce)
+                                                    }                                                    
+                                                    List<ClientInfo> _cInfoList2 = ConnectionManager.Instance.GetClients();
+                                                    foreach (var _cInfo2 in _cInfoList2)
                                                     {
-                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been detected flying underground[-]", Config.Chat_Response_Color, _cInfo.playerName), "Server", false, "", false);
-                                                        if (_flag == 4)
+                                                        AdminToolsClientInfo Admin2 = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo2.playerId);
+                                                        if (Admin2.PermissionLevel <= Admin_Level)
                                                         {
-                                                            Flag.Remove(_cInfo.playerId);
-                                                            if (Admin.PermissionLevel <= Admin_Level && ep.entityId != _cInfo.entityId)
+                                                            string _phrase710;
+                                                            if (!Phrases.Dict.TryGetValue(710, out _phrase710))
                                                             {
-                                                                SdtdConsole.Instance.ExecuteSync(string.Format("pm {0} \"{1}Detected {2} flying underground @ {3} {4} {5}\"", _cInfo.playerId, Config.Chat_Response_Color, ep.EntityName, x, y, z), (ClientInfo)null);
+                                                                _phrase710 = "Detected {PlayerName} flying underground @ {X} {Y} {Z}.";
                                                             }
+                                                            _phrase710 = _phrase710.Replace("{PlayerName}", _cInfo.playerName);
+                                                            _phrase710 = _phrase710.Replace("{X}", x.ToString());
+                                                            _phrase710 = _phrase710.Replace("{Y}", y.ToString());
+                                                            _phrase710 = _phrase710.Replace("{Z}", z.ToString());
+                                                            _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase710), "Server", false, "", false));
                                                         }
                                                     }
-                                                    SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} -1 {2}", ep.entityId, x, z), (ClientInfo)null);
-                                                    Penalty(_cInfo); 
+                                                    Flag.Remove(_cInfo.playerId);
+                                                    if (Announce)
+                                                    {
+                                                        string _phrase711;
+                                                        if (!Phrases.Dict.TryGetValue(711, out _phrase711))
+                                                        {
+                                                            _phrase711 = "{PlayerName} has been detected flying underground.";
+                                                        }
+                                                        _phrase711 = _phrase711.Replace("{PlayerName}", _cInfo.playerName);
+                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase711), "Server", false, "", false);
+                                                    }
                                                 }
                                             }
                                         }
@@ -226,24 +213,23 @@ namespace ServerTools
             }
         }
 
-        public static bool autoGetPlayerUnderground(EntityPlayer ep)
+        public static bool autoGetPlayerUnderground(EntityPlayer ep, ClientInfo _cInfo)
         {
             int x = (int)ep.position.x;
             int y = (int)ep.position.y;
             int z = (int)ep.position.z;
 
             int Id = ep.entityId;
-            string xz = (x.ToString() + z.ToString());
+            int[] xz = { x, z };
 
             if (uLastPositionXZ.ContainsKey(Id))
             {
-                string last_xz_pos;
+                int[] last_xz_pos;
                 uLastPositionXZ.TryGetValue(Id, out last_xz_pos);
                 if (last_xz_pos != xz)
                 {
                     uLastPositionXZ.Remove(Id);
                     uLastPositionXZ.Add(Id, xz);
-                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(ep.entityId);
                     if (_cInfo.ping < Max_Ping)
                     {
                         for (int i = x - 3; i <= (x + 3); i++)
@@ -281,6 +267,9 @@ namespace ServerTools
                 }
                 else
                 {
+                    Flag.Remove(_cInfo.playerId);
+                    uLastPositionXZ.Remove(Id);
+                    uLastPositionXZ.Add(Id, xz);
                     return false;
                 }
             }

@@ -44,24 +44,17 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}.", _params[1]));
                         return;
                     }
-                    if (_params[1].Length == 17)
+                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                    if (p.LastAnimals != null)
                     {
-                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                        Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                        if (p.LastAnimals != null)
-                        {
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now.AddDays(-2);
-                            PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output("Animal tracking delay reset.");
-                        }
-                        else
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a animal tracking delay to reset.", _params[1]));
-                        }
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now.AddDays(-2);
+                        PersistentContainer.Instance.Save();
+                        SdtdConsole.Instance.Output("Animal tracking delay reset.");
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a animal tracking delay to reset.", _params[1]));
                     }
                 }
             }

@@ -40,7 +40,7 @@ namespace ServerTools
                 }
                 _phrase101 = _phrase101.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase101 = _phrase101.Replace("{ClanName}", p.ClanName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase101, Config.Chat_Response_Color), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase101), "Server", false, "", false));
             }
             else
             {
@@ -53,7 +53,7 @@ namespace ServerTools
                     }
                     _phrase103 = _phrase103.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase103 = _phrase103.Replace("{ClanName}", p.ClanName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase103, Config.Chat_Response_Color), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase103), "Server", false, "", false));
                 }
                 else
                 {
@@ -67,7 +67,7 @@ namespace ServerTools
                         }
                         _phrase102 = _phrase102.Replace("{PlayerName}", _cInfo.playerName);
                         _phrase102 = _phrase102.Replace("{ClanName}", _clanName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase102, Config.Chat_Response_Color), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase102), "Server", false, "", false));
                     }
                     else
                     {
@@ -630,7 +630,7 @@ namespace ServerTools
                 Player p1 = PersistentContainer.Instance.Players[_cInfo1.playerId, false];
                 if (p.ClanName == p1.ClanName)
                 {
-                    _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[804040]{0}[-]", _message), _cInfo.playerName, false, "", false));
+                    _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Clan_Response_Color, _message), _cInfo.playerName, false, "", false));
                 }
             }
         }

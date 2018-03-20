@@ -62,7 +62,7 @@ namespace ServerTools
             string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
             using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
-                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, teleporting.", _cInfo.playerName, _cInfo.steamId, _cInfo.playerName, _cInfo.steamId));
+                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, Entity Id {2} teleporting.", _cInfo.playerName, _cInfo.steamId, _cInfo.entityId));
                 sw.WriteLine();
                 sw.Flush();
                 sw.Close();

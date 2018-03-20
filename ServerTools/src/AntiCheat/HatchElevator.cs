@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Timers;
 
 namespace ServerTools
 {
     class HatchElevator
     {
-        private static int timerInstanceCount = 0;
         public static bool IsEnabled = false;
-        public static int DaysBeforeDeleted = 5;
-        public static int MaxPing = 300;
+        public static int DaysBeforeDeleted = 5, MaxPing = 300;
         private static SortedDictionary<int, int> Flag = new SortedDictionary<int, int>();
         public static SortedDictionary<int, int> LastPositionY = new SortedDictionary<int, int>();
-        private static System.Timers.Timer timerHatch = new System.Timers.Timer();
 
         public static void DetectionLogsDir()
         {
@@ -34,24 +30,7 @@ namespace ServerTools
             }
         }
 
-        public static void HatchElevatorTimerStart()
-        {
-            timerInstanceCount++;
-            if (timerInstanceCount <= 1)
-            {
-                int d = 1000;
-                timerHatch.Interval = d;
-                timerHatch.Start();
-                timerHatch.Elapsed += new ElapsedEventHandler(AutoHatchCheck);
-            }
-        }
-
-        public static void HatchElevatorTimerStop()
-        {
-            timerHatch.Stop();
-        }
-
-        public static void AutoHatchCheck(object sender, ElapsedEventArgs e)
+        public static void AutoHatchCheck()
         {           
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
@@ -128,7 +107,12 @@ namespace ServerTools
                                                     Log.Out(string.Format("[SERVERTOOLS] Detected {0} using a hatch elevator. Applied stun and broke leg", ep.entityId));
                                                     _cInfo.SendPackage(new NetPackageConsoleCmdClient("buff " + "brokenLeg", true));
                                                     _cInfo.SendPackage(new NetPackageConsoleCmdClient("buff " + "stunned", true));
-                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are stunned and have broken your leg while smashing yourself through hatches. Ouch![-]", Config.Chat_Response_Color), "Server", false, "ServerTools", false));
+                                                    string _phrase720;
+                                                    if (!Phrases.Dict.TryGetValue(705, out _phrase720))
+                                                    {
+                                                        _phrase720 = "You are stunned and have broken your leg while smashing yourself through hatches. Ouch!";
+                                                    }
+                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase720), "Server", false, "ServerTools", false));
                                                     string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
                                                     string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
                                                     using (StreamWriter sw = new StreamWriter(_filepath, true))

@@ -30,11 +30,6 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count != 2 || _params.Count != 3)
-                {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2 or 3, found {0}", _params.Count));
-                    return;
-                }
                 if (_params[0].ToLower().Equals("add"))
                 {
                     if (_params.Count != 3)

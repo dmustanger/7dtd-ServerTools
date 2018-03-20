@@ -44,7 +44,6 @@ namespace ServerTools
                             if (StartingItems.startItemList.Count > 0)
                             {
                                 World world = GameManager.Instance.World;
-                                int mapSeed = world.Seed;
                                 foreach (KeyValuePair<string, int[]> kvp in StartingItems.startItemList)
                                 {
                                     ItemValue itemValue;
@@ -86,7 +85,13 @@ namespace ServerTools
                                     SdtdConsole.Instance.Output(string.Format("Spawned starting item {0} for {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
                                     Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
                                 }
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = mapSeed;
+                                string _phrase806;
+                                if (!Phrases.Dict.TryGetValue(806, out _phrase806))
+                                {
+                                    _phrase806 = "You have received your starting items.";
+                                }
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase806), "Server", false, "", false));
+                                PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = true;
                                 PersistentContainer.Instance.Save();
                             }
                         }

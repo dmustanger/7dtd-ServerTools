@@ -17,6 +17,16 @@ namespace ServerTools
             }
             StateManager.Awake();
             Config.Load();
+            Timers.LogAlert();
+            if (AuctionBox.IsEnabled)
+            {
+                AuctionBox.BuildAuctionList();
+            }
+            if (Animals.IsEnabled)
+            {
+                Animals.BuildList();
+            }
+            Timers.LoadAlert();
         }
 
         public override void SavePlayerData(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
@@ -29,29 +39,34 @@ namespace ServerTools
             {
                 InventoryCheck.CheckInv(_cInfo, _playerDataFile);
             }
-            if (Watchlist.IsEnabled)
-            {
-                Watchlist.CheckWatchlist(_cInfo);
-            }
-            if (FamilyShareAccount.IsEnabled)
-            {
-                FamilyShareAccount.AccCheck(_cInfo);
-            }
         }
 
         public override void PlayerLogin(ClientInfo _cInfo, string _compatibilityVersion)
         {
+            if (StopServer.NoEntry)
+            {
+                int _seconds = (60 - Timers._sSCD);
+                string _phrase452;
+                if (!Phrases.Dict.TryGetValue(452, out _phrase452))
+                {
+                    _phrase452 = "Shutdown is in {Minutes} minutes {Seconds} seconds. Please come back after the server restarts.";
+                }
+                _phrase452 = _phrase452.Replace("{Minutes}", Timers._sSC.ToString());
+                _phrase452 = _phrase452.Replace("{Seconds}", _seconds.ToString());
+                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase452), (ClientInfo)null);
+            }
             if (ReservedSlots.IsEnabled)
             {
+                ReservedSlots.SessionTime(_cInfo);
                 ReservedSlots.CheckReservedSlot(_cInfo);
-            }          
+            }
         }
 
         public override void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)
         {
-            if (FamilyShareAccount.IsEnabled)
+            if (CredentialCheck.IsEnabled)
             {
-                FamilyShareAccount.AccCheck(_cInfo);
+                CredentialCheck.AccCheck(_cInfo);
             }
             if (ClanManager.IsEnabled)
             {
@@ -63,19 +78,26 @@ namespace ServerTools
             }
             if (Bloodmoon.Show_On_Login & !Bloodmoon.Show_On_Respawn)
             {
-                Bloodmoon.GetBloodmoon(_cInfo, false);
+                Bloodmoon.GetBloodmoon(_cInfo);
+            }
+            if (AutoShutdown.IsEnabled)
+            {
+                if (AutoShutdown.Alert_On_Login)
+                {
+                    AutoShutdown.CheckNextShutdown(_cInfo, false);
+                }
             }
         }
 
         public override void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
         {
-            if (NewSpawnTele.IsEnabled)
-            {
-                NewSpawnTele.TeleNewSpawn(_cInfo);
-            }
             if (Jail.IsEnabled)
             {
                 Jail.CheckPlayer(_cInfo);
+            }
+            if (StartingItems.IsEnabled)
+            {
+                StartingItems.StartingItemCheck(_cInfo);
             }
             if (Motd.IsEnabled & Motd.Show_On_Respawn)
             {
@@ -83,7 +105,7 @@ namespace ServerTools
             }
             if (Bloodmoon.Show_On_Login & Bloodmoon.Show_On_Respawn)
             {
-                Bloodmoon.GetBloodmoon(_cInfo, false);
+                Bloodmoon.GetBloodmoon(_cInfo);
             }
             if (HatchElevator.IsEnabled & _respawnReason == RespawnType.Teleport)
             {
@@ -123,10 +145,10 @@ namespace ServerTools
                 {
                     FriendTeleport.TeleportCheckProtection.Remove(_cInfo.entityId);
                 }
-            }
-            if (StartingItems.IsEnabled)
+            }           
+            if (NewSpawnTele.IsEnabled)
             {
-                StartingItems.StartingItemCheck(_cInfo);
+                NewSpawnTele.TeleNewSpawn(_cInfo);
             }
             if (ZoneProtection.Victim.ContainsKey(_cInfo.entityId))
             {
@@ -137,6 +159,11 @@ namespace ServerTools
                 {
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /forgive to release your killer from jail.[-]", Config.Chat_Response_Color), "Server", false, "", false));
                 }
+            }
+            if (DeathSpot.IsEnabled && _respawnReason == RespawnType.Died)
+            {
+                DeathSpot.Died.Remove(_cInfo.entityId);
+                DeathSpot.Died.Add(_cInfo.entityId, DateTime.Now);
             }
         }
 
@@ -168,7 +195,7 @@ namespace ServerTools
             {
                 Jail.Dict.Remove(_cInfo.playerId);
             }
-            if (ZoneProtection.PvEFlag.Contains(_cInfo.entityId))
+            if (ZoneProtection.PvEFlag.ContainsKey(_cInfo.entityId))
             {
                 ZoneProtection.PvEFlag.Remove(_cInfo.entityId);
             }
@@ -191,12 +218,7 @@ namespace ServerTools
             if (UndergroundCheck.uLastPositionXZ.ContainsKey(_cInfo.entityId))
             {
                 UndergroundCheck.uLastPositionXZ.Remove(_cInfo.entityId);
-            }            
-        }
-
-        public override void GameShutdown()
-        {
-            StateManager.Shutdown();
+            }   
         }
     }
 }

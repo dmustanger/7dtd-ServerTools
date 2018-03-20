@@ -30,7 +30,7 @@ namespace ServerTools
                         {
                             _message = _message.Replace("@ADMINS ", "");
                             _message = _message.Replace("@admins ", "");
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0080]{0}[-]", _message), _sender.playerName, false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), _sender.playerName, false, "", false));
                         }
                     }
                 }
@@ -54,7 +54,7 @@ namespace ServerTools
             {
                 _message = _message.Replace("@ALL ", "");
                 _message = _message.Replace("@all ", "");
-                SdtdConsole.Instance.ExecuteSync(string.Format("say \"[FF8000]{0}[-]\"", _message), (ClientInfo)null);
+                SdtdConsole.Instance.ExecuteSync(string.Format("say \"{0}{1}[-]\"", Config.Chat_Response_Color, _message), (ClientInfo)null);
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -7,6 +8,7 @@ namespace ServerTools
         public static bool IsEnabled = false;
         private static string[] _cmd = { "tele" };
         public static string New_Spawn_Tele_Position = "0,0,0";
+        public static List<int> NewSpawn = new List<int>();
 
         public static void SetNewSpawnTele(ClientInfo _cInfo)
         {
@@ -43,11 +45,8 @@ namespace ServerTools
 
         public static void TeleNewSpawn(ClientInfo _cInfo)
         {
-            World world = GameManager.Instance.World;
-            int mapSeed = world.Seed;
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p == null && _player.Level == 1 && _player.totalItemsCrafted == 0 && New_Spawn_Tele_Position != "0,0,0" || _player.Level == 1 && _player.totalItemsCrafted == 0 && New_Spawn_Tele_Position != "0,0,0" && p.NewSpawnTele != mapSeed)
+            if (_player.Level == 1 && _player.totalItemsCrafted == 0 && _player.distanceWalked == 0 && New_Spawn_Tele_Position != "0,0,0" && !NewSpawn.Contains(_cInfo.entityId))
             {
                 TelePlayer(_cInfo);
             }
@@ -55,8 +54,6 @@ namespace ServerTools
 
         public static void TelePlayer(ClientInfo _cInfo)
         {
-            World world = GameManager.Instance.World;
-            int mapSeed = world.Seed;
             float xf;
             float yf;
             float zf;
@@ -67,9 +64,8 @@ namespace ServerTools
             int x = (int)xf;
             int y = (int)yf;
             int z = (int)zf;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].NewSpawnTele = mapSeed;
-            PersistentContainer.Instance.Save();
             SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, x, y, z), (ClientInfo)null);
+            NewSpawn.Add(_cInfo.entityId);
             string _phrase526;
             if (!Phrases.Dict.TryGetValue(526, out _phrase526))
             {
