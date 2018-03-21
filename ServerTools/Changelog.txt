@@ -1,8 +1,7 @@
 ﻿CHANGELOG
 
 v.8.1
-Note: If you are upgrading from a version prior to 8.0, delete your ServerTools.bin file. Take note, this will wipe saved player data such as
-/sethome locations and player command delays set by ServerTools. This will not effect inventory or anything in that regard
+Note: You will see an error upon loading mentioning serialization. Disregard this notice, it will only show once
 Note: HowToSetup.xml only generates on server startup
 Note: If your output log reports a mistake while loading a file from ServerTools, it can sometimes be a simple issue with a file you have edited
 or a mistake in the ServerTools config file itself. The output will let you know. If an error is detected, try to delete the file with your server
