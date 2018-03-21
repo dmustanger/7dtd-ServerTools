@@ -1,5 +1,11 @@
 ﻿CHANGELOG
 
+v.8.2
+Added to HowToSetup.xml Voting section
+Fixed bad phrase returning { PlayerName}
+Fixed missing default lines from Voting
+Fixed Voting unable to spawn a entity
+
 v.8.1
 Note: You will see an error upon loading mentioning serialization. Disregard this notice, it will only show once
 Note: HowToSetup.xml only generates on server startup
