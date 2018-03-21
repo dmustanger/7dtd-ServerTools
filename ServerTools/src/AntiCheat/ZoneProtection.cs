@@ -33,6 +33,7 @@ namespace ServerTools
 
         public static void Unload()
         {
+            Box.Clear();
             fileWatcher.Dispose();
             IsRunning = false;
         }

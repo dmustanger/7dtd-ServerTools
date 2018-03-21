@@ -29,6 +29,7 @@ namespace ServerTools
 
         public static void Unload()
         {
+            OmittedPlayers.Clear();
             fileWatcher.Dispose();
             IsRunning = false;
         }
@@ -134,19 +135,22 @@ namespace ServerTools
             {
                 if (Family_Share)
                 {
-                    GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
-                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                    if (Admin.PermissionLevel > Admin_Level)
+                    if (_cInfo != null)
                     {
-                        if (_cInfo.ownerId != _cInfo.playerId && !OmittedPlayers.ContainsKey(_cInfo.playerId))
+                        GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
+                        AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                        if (Admin.PermissionLevel > Admin_Level)
                         {
-                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using a family share account. Purchase the game or contact an administrator for permission to join this server\"", _cInfo.playerId), (ClientInfo)null);
-                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                            if (_cInfo.ownerId != _cInfo.playerId && !OmittedPlayers.ContainsKey(_cInfo.playerId))
                             {
-                                sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with a family share account", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, AllocsFixes.PersistentData.PersistentContainer.Instance.Players[_cInfo.playerId, false].IP));
-                                sw.WriteLine();
-                                sw.Flush();
-                                sw.Close();
+                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using a family share account. Purchase the game or contact an administrator for permission to join this server\"", _cInfo.playerId), (ClientInfo)null);
+                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                {
+                                    sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with a family share account", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, AllocsFixes.PersistentData.PersistentContainer.Instance.Players[_cInfo.playerId, false].IP));
+                                    sw.WriteLine();
+                                    sw.Flush();
+                                    sw.Close();
+                                }
                             }
                         }
                     }

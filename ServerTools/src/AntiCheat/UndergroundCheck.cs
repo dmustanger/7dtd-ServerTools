@@ -251,7 +251,7 @@ namespace ServerTools
                                         Block.Block.blockID == 764 || Block.Block.blockID == 853 || Block.Block.blockID == 854 || Block.Block.blockID == 855 || Block.Block.blockID == 856 ||
                                         Block.Block.blockID == 869 || Block.Block.blockID == 870 || Block.Block.blockID == 884 || Block.Block.blockID == 959 || Block.Block.blockID == 960 ||
                                         Block.Block.blockID == 961 || Block.Block.blockID == 962 || Block.Block.blockID == 826 || Block.Block.blockID == 900 || Block.Block.blockID == 1252 ||
-                                        Block.Block.blockID == 1253)
+                                        Block.Block.blockID == 1253 || Block.Block.blockID == 389 || Block.Block.blockID == 788 || Block.Block.blockID == 949)
                                     {
                                         return false;
                                     }
