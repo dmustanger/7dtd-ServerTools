@@ -1,9 +1,29 @@
 ﻿CHANGELOG
-Updated for v.8.0
+
+v.8.1
+Note: If you are upgrading from a version prior to 8.0, delete your ServerTools.bin file. Take note, this will wipe saved player data such as
+/sethome locations and player command delays set by ServerTools. This will not effect inventory or anything in that regard
+Note: HowToSetup.xml only generates on server startup
+Note: If your output log reports a mistake while loading a file from ServerTools, it can sometimes be a simple issue with a file you have edited
+or a mistake in the ServerTools config file itself. The output will let you know. If an error is detected, try to delete the file with your server
+shutdown and restart. Check your output log at this time for any errors. Please report them to us so we can address it. Check HowToSetup.xml for 
+a link to the Github page you can report bugs at or enter our discord and join the party
+
+Added exemption for ladders to Underground_Check to prevent false positives
+Changed Custom_Commands. In the CustomCommand.xml, responses starting with say automatically set the Chat_Command_Response color to it
+Fixed Custom command delays not working
+Fixed FamilyShareAccount.xml not generating
+Fixed InfoTicker.xml not generating
+Fixed ZoneProtection.xml not generating
+Fixed Market.xml not generating
+Fixed multiple bugs in the CustomCommand.xml generation
+Fixed null ref errors on player login and respawn
+Fixed Credentials kicking players improperly
+Removed remaining Teleport_Check code. This will be replaced with a new system to work with other managers, mods and tools
 
 v.8.0
 Added to PlayerLogs Extras. Now includes the player level, current stats, session playtime, zombie kills, players kills
-Added Item_Cleanup. Max_Pile controls how many entity can be in a small area. World_Max is the amount of entities in the world before trying to
+Added Entity_Cleanup. Max_Pile controls how many entity can be in a small area. World_Max is the amount of entities in the world before trying to
 look for piles. Runs every 15 seconds
 Added Auction system. Players can sell, cancel and buy items with it. Commands have been added to /commands and the HowTo.xml
 Added Vote_To_Restart. Players can start a vote to shutdown the server. Only enable if your server auto restarts. Set minimum players required 
@@ -21,7 +41,6 @@ Added Bloodmoon option Auto_Enabled. Turns on and off the auto chat warning abou
 Added option to Reserved_Slots called Session_Time. Controls how long a player must be logged in before kicked. Session_Time is in minutes
 Added option to Reserved_Slots called Admin_Level. Admins this level or higher are immune to reservation system
 Added to Motd. You can use {EntityId}, {SteamId} or {PlayerName} in the message
-Added to Custom_Commands. You can use € in the message
 Added some processing and code block optimizations
 Added options to Stop_Server. Kick_30_Seconds kicks all players when 30 seconds remain and blocks players from joining during that time.
 Kick_Login will not allow players to join during the count down. They will be kicked immediately with a message to join after restart

@@ -108,6 +108,7 @@
     <Compile Include="src\ConsoleCommands\EntityRemove.cs" />
     <Compile Include="src\HowTo\HowToSetup.cs" />
     <Compile Include="src\NewSpawnTele\NewSpawnTele.cs" />
+    <Compile Include="src\OutputLog\SdtdLog.cs" />
     <Compile Include="src\PersistentData\PersistentContainer.cs" />
     <Compile Include="src\PersistentData\Player.cs" />
     <Compile Include="src\PersistentData\Players.cs" />
