@@ -833,7 +833,7 @@ namespace ServerTools
                 string _phrase701;
                 if (!Dict.TryGetValue(701, out _phrase701))
                 {
-                    _phrase701 = "Thank you for your vote { PlayerName}. You can vote and receive another reward in {VoteDelay} hours.";
+                    _phrase701 = "Thank you for your vote {PlayerName}. You can vote and receive another reward in {VoteDelay} hours.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"701\" Phrase=\"{0}\" />", _phrase701));
                 sw.WriteLine("        <!-- ******************************************************** -->");

@@ -4,12 +4,12 @@ namespace ServerTools
 {
     class HowToSetup
     {
-        public static bool IsEnabled = true;
+        public static bool IsEnabled = true, IsRunning = false;
         private const string file = "HowToSetup.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private const double version = Config.version;
 
-        public static void HowTo()
+        public static void Load()
         {
             using (StreamWriter sw = new StreamWriter(filePath))
             {
@@ -627,6 +627,8 @@ namespace ServerTools
                 sw.WriteLine("Set your server API_Key value found at https://7daystodie-servers.com for API_Key");
                 sw.WriteLine("Set a numeric value for Delay_Between_Rewards");
                 sw.WriteLine("Set a numeric value for Reward_Count");
+                sw.WriteLine("Set True or False for Reward_Entity");
+                sw.WriteLine("Set a numeric value for Entity_Id");
                 sw.WriteLine();
                 sw.WriteLine("Enabling allows players to use chat command /reward after voting at https://7daystodie-servers.com for your server.");
                 sw.WriteLine("If a player has not voted, they will be told to vote at YourVotingSite value.");
@@ -634,6 +636,7 @@ namespace ServerTools
                 sw.WriteLine("DelayBetweenRewards controls how many hours a player must wait before being able to vote and receive a reward for voting.");
                 sw.WriteLine("Reward count controls how many items a player will receive from the VoteRewards.xml each time they use /reward.");
                 sw.WriteLine("Reward count does not control how many of a particular item you will receive, it controls how many entries from the VoteRewards.xml a player will receive.");
+                sw.WriteLine("Setting Reward_Entity to true will nut use the VoteReward.xml. Instead it will spawn a single entity based on the Entity_Id.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -759,15 +762,6 @@ namespace ServerTools
                 sw.WriteLine("Example: player reset 76561191234567891");
                 sw.WriteLine("Resets the profile for the player.");
                 sw.WriteLine();
-                sw.WriteLine("VoteReward");
-                sw.WriteLine("Example: votereward reset 76561191234567891");
-                sw.WriteLine("Example: vr reset 171");
-                sw.WriteLine("Resets the delay on the command reward for the player.");
-                sw.WriteLine();
-                sw.WriteLine("WeatherVote");
-                sw.WriteLine("Example: weathervote reset");
-                sw.WriteLine("Resets the delay on the weather vote for the server.");
-                sw.WriteLine();
                 sw.WriteLine("SpawnEntityInRadius");
                 sw.WriteLine("Example: ser 76561191234567891 30 @ 62 63 64");
                 sw.WriteLine("Example: ser 171 30 @ 62 63 64");
@@ -782,6 +776,11 @@ namespace ServerTools
                 sw.WriteLine("Example: tempban 12341 30");
                 sw.WriteLine("Bans the player based their entity id for small amount of time. Maximum temp ban time is 60 minutes.");
                 sw.WriteLine();
+                sw.WriteLine("VoteReward");
+                sw.WriteLine("Example: votereward reset 76561191234567891");
+                sw.WriteLine("Example: vr reset 171");
+                sw.WriteLine("Resets the delay on the command reward for the player.");
+                sw.WriteLine();               
                 sw.WriteLine("WatchList");
                 sw.WriteLine("Example: watchlist add 76561191234567891");
                 sw.WriteLine("Example: watchlist remove 76561191234567891");
@@ -793,16 +792,10 @@ namespace ServerTools
                 sw.WriteLine("Example: wallet 76561191234567891 -50");
                 sw.WriteLine("Adds or subtracts from a players wallet.");
                 sw.WriteLine();
-                sw.WriteLine("WatchList");
-                sw.WriteLine("Example: watchlist add 76561191234567891");
-                sw.WriteLine("Example: watchlist remove 76561191234567891");
-                sw.WriteLine("Adds a player to the watchlist.");
+                sw.WriteLine("WeatherVote");
+                sw.WriteLine("Example: weathervote reset");
+                sw.WriteLine("Resets the delay on the weather vote for the server.");
                 sw.WriteLine();
-                sw.WriteLine("Wallet");
-                sw.WriteLine("Example: wallet <steamId/entityId> <value>");
-                sw.WriteLine("Example: wallet 171 50");
-                sw.WriteLine("Example: wallet 76561191234567891 -50");
-                sw.WriteLine("Adds or subtracts from a players wallet.");
                 sw.Flush();
                 sw.Close();
             }
