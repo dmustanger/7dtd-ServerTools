@@ -31,13 +31,16 @@ namespace ServerTools
 
         public override void SavePlayerData(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
         {
-            if (HighPingKicker.IsEnabled)
+            if (_cInfo != null)
             {
-                HighPingKicker.CheckPing(_cInfo);
-            }
-            if (InventoryCheck.IsEnabled || InventoryCheck.Anounce_Invalid_Stack)
-            {
-                InventoryCheck.CheckInv(_cInfo, _playerDataFile);
+                if (HighPingKicker.IsEnabled)
+                {
+                    HighPingKicker.CheckPing(_cInfo);
+                }
+                if (InventoryCheck.IsEnabled || InventoryCheck.Anounce_Invalid_Stack)
+                {
+                    InventoryCheck.CheckInv(_cInfo, _playerDataFile);
+                }
             }
         }
 
@@ -76,16 +79,16 @@ namespace ServerTools
             {
                 Motd.Send(_cInfo);
             }
-            if (Bloodmoon.Show_On_Login & !Bloodmoon.Show_On_Respawn)
-            {
-                Bloodmoon.GetBloodmoon(_cInfo);
-            }
             if (AutoShutdown.IsEnabled)
             {
                 if (AutoShutdown.Alert_On_Login)
                 {
                     AutoShutdown.CheckNextShutdown(_cInfo, false);
                 }
+            }
+            if (Bloodmoon.Show_On_Login & !Bloodmoon.Show_On_Respawn)
+            {
+                Bloodmoon.GetBloodmoon(_cInfo);
             }
         }
 
@@ -95,7 +98,7 @@ namespace ServerTools
             {
                 Jail.CheckPlayer(_cInfo);
             }
-            if (StartingItems.IsEnabled)
+            if (StartingItems.IsEnabled & _respawnReason == RespawnType.NewGame)
             {
                 StartingItems.StartingItemCheck(_cInfo);
             }
@@ -103,52 +106,13 @@ namespace ServerTools
             {
                 Motd.Send(_cInfo);
             }
-            if (Bloodmoon.Show_On_Login & Bloodmoon.Show_On_Respawn)
-            {
-                Bloodmoon.GetBloodmoon(_cInfo);
-            }
             if (HatchElevator.IsEnabled & _respawnReason == RespawnType.Teleport)
             {
                 HatchElevator.LastPositionY.Remove(_cInfo.entityId);
             }
-            if (TeleportCheck.IsEnabled & _respawnReason == RespawnType.Teleport)
+            if (Bloodmoon.Show_On_Login & Bloodmoon.Show_On_Respawn)
             {
-                if (!Travel.TeleportCheckProtection.Contains(_cInfo.entityId))
-                {
-                    TeleportCheck.TeleportCheckValid(_cInfo);
-                }
-                else
-                {
-                    Travel.TeleportCheckProtection.Remove(_cInfo.entityId);
-                }
-                if (!CustomCommands.TeleportCheckProtection.Contains(_cInfo.entityId))
-                {
-                    TeleportCheck.TeleportCheckValid(_cInfo);
-                }
-                else
-                {
-                    CustomCommands.TeleportCheckProtection.Remove(_cInfo.entityId);
-                }
-                if (!TeleportHome.TeleportCheckProtection.Contains(_cInfo.entityId))
-                {
-                    TeleportCheck.TeleportCheckValid(_cInfo);
-                }
-                else
-                {
-                    TeleportHome.TeleportCheckProtection.Remove(_cInfo.entityId);
-                }
-                if (!FriendTeleport.TeleportCheckProtection.Contains(_cInfo.entityId))
-                {
-                    TeleportCheck.TeleportCheckValid(_cInfo);
-                }
-                else
-                {
-                    FriendTeleport.TeleportCheckProtection.Remove(_cInfo.entityId);
-                }
-            }           
-            if (NewSpawnTele.IsEnabled)
-            {
-                NewSpawnTele.TeleNewSpawn(_cInfo);
+                Bloodmoon.GetBloodmoon(_cInfo);
             }
             if (ZoneProtection.Victim.ContainsKey(_cInfo.entityId))
             {
@@ -162,8 +126,28 @@ namespace ServerTools
             }
             if (DeathSpot.IsEnabled && _respawnReason == RespawnType.Died)
             {
+                if (DeathSpot.Died.ContainsKey(_cInfo.entityId))
+                {
+                    DeathSpot.Died.Remove(_cInfo.entityId);
+                    DeathSpot.Died.Add(_cInfo.entityId, DateTime.Now);
+                }
+                else
+                {
+                    DeathSpot.Died.Add(_cInfo.entityId, DateTime.Now);
+                }
+            }
+            if (NewSpawnTele.IsEnabled & _respawnReason == RespawnType.NewGame)
+            {
+                NewSpawnTele.TeleNewSpawn(_cInfo);
+            }
+            if (_respawnReason == RespawnType.Died)
+            {
+                EntityPlayer ep = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                var _position = ep.GetDroppedBackpackPosition();
                 DeathSpot.Died.Remove(_cInfo.entityId);
                 DeathSpot.Died.Add(_cInfo.entityId, DateTime.Now);
+                DeathSpot.Position.Remove(_cInfo.entityId);
+                DeathSpot.Position.Add(_cInfo.entityId, _position);
             }
         }
 

@@ -35,10 +35,13 @@ namespace ServerTools
 
         public static void Unload()
         {
-            dict.Clear();
-            dict1.Clear();
-            fileWatcher.Dispose();
-            IsRunning = false;
+            if (!IsEnabled && IsRunning)
+            {
+                dict.Clear();
+                dict1.Clear();
+                fileWatcher.Dispose();
+                IsRunning = false;
+            }
         }
 
         public static void LoadXml()

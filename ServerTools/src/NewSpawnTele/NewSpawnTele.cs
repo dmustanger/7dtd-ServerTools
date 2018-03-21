@@ -8,7 +8,6 @@ namespace ServerTools
         public static bool IsEnabled = false;
         private static string[] _cmd = { "tele" };
         public static string New_Spawn_Tele_Position = "0,0,0";
-        public static List<int> NewSpawn = new List<int>();
 
         public static void SetNewSpawnTele(ClientInfo _cInfo)
         {
@@ -46,7 +45,7 @@ namespace ServerTools
         public static void TeleNewSpawn(ClientInfo _cInfo)
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (_player.Level == 1 && _player.totalItemsCrafted == 0 && _player.distanceWalked == 0 && New_Spawn_Tele_Position != "0,0,0" && !NewSpawn.Contains(_cInfo.entityId))
+            if (_player.Level == 1 && _player.totalItemsCrafted == 0 && New_Spawn_Tele_Position != "0,0,0")
             {
                 TelePlayer(_cInfo);
             }
@@ -65,7 +64,6 @@ namespace ServerTools
             int y = (int)yf;
             int z = (int)zf;
             SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, x, y, z), (ClientInfo)null);
-            NewSpawn.Add(_cInfo.entityId);
             string _phrase526;
             if (!Phrases.Dict.TryGetValue(526, out _phrase526))
             {

@@ -47,7 +47,7 @@ namespace ServerTools
                     Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                     if (p != null)
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].WorldSeedFirstClaim = 1;
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].FirstClaim = false;
                         PersistentContainer.Instance.Save();
                         SdtdConsole.Instance.Output("Players first claim block reset.");
                     }

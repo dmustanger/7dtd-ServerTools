@@ -38,15 +38,13 @@ namespace ServerTools
         [OptionalField]
         public DateTime customCommand10;
         [OptionalField]
-        private bool startingItems;
-        [OptionalField]
         private string homeposition2;
         [OptionalField]
         private DateTime respawnTime;
         [OptionalField]
         private DateTime lastTravel;
         [OptionalField]
-        private int worldSeedFirstClaim;
+        private bool firstClaim;
         [OptionalField]
         private bool adminChatColor;
         [OptionalField]
@@ -246,18 +244,6 @@ namespace ServerTools
             }
         }
 
-        public bool StartingItems
-        {
-            get
-            {
-                return startingItems;
-            }
-            set
-            {
-                startingItems = value;
-            }
-        }
-
         public string HomePosition2
         {
             get
@@ -306,15 +292,15 @@ namespace ServerTools
             }
         }
 
-        public int WorldSeedFirstClaim
+        public bool FirstClaim
         {
             get
             {
-                return worldSeedFirstClaim;
+                return firstClaim;
             }
             set
             {
-                worldSeedFirstClaim = value;
+                firstClaim = value;
             }
         }
 

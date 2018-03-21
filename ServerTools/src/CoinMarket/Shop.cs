@@ -27,8 +27,11 @@ namespace ServerTools
 
         public static void Unload()
         {
-            fileWatcher.Dispose();
-            IsRunning = false;
+            if (!IsEnabled && IsRunning)
+            {
+                fileWatcher.Dispose();
+                IsRunning = false;
+            }
         }
 
         public static void LoadXml()

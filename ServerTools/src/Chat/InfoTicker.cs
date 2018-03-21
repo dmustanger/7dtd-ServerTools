@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class InfoTicker
     {
-        public static bool IsEnabled = false;
+        public static bool IsEnabled = false, IsRunning = false;
         public static bool Random = false;
         public static int Delay_Between_Messages = 5;
         private const string file = "InfoTicker.xml";
@@ -18,13 +18,21 @@ namespace ServerTools
 
         public static void Load()
         {
-            LoadXml();
-            InitFileWatcher();
+            if (IsEnabled && !IsRunning)
+            {
+                LoadXml();
+                InitFileWatcher();
+            }
         }
 
         public static void Unload()
         {
-            fileWatcher.Dispose();
+            if (!IsEnabled && IsRunning)
+            {
+                dict.Clear();
+                fileWatcher.Dispose();
+                IsRunning = false;
+            }
         }
 
         private static void LoadXml()

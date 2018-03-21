@@ -23,7 +23,6 @@ namespace ServerTools
             if (!Utils.FileExists(filePath))
             {
                 UpdateXml();
-                return;
             }
             XmlDocument xmlDoc = new XmlDocument();
             try

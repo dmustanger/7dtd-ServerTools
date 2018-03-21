@@ -12,7 +12,7 @@ namespace ServerTools
             Alert_Delay = 5;
         private static int timer1SecondInstanceCount = 0, _wV = 0, _wNV = 0, 
             _pSC = 0, _b = 0, _pL = 0, _wSD = 0, _sD = 0, _iD = 0, _eU = 0,
-            _rS = 0, _rV = 0, _rNV = 0, _eC = 0, _wL = 0, _dS = 0; 
+            _rS = 0, _rV = 0, _rNV = 0, _eC = 0, _wL = 0; 
         private static System.Timers.Timer t1 = new System.Timers.Timer();
 
         public static void TimerStart1Second()
@@ -325,19 +325,6 @@ namespace ServerTools
             else
             {
                 _eC = 0;
-            }
-            if (DeathSpot.IsEnabled)
-            {
-                _dS++;
-                if (_dS >= 5)
-                {
-                    _dS = 0;
-                    DeathSpot.CheckDead();
-                }
-            }
-            else
-            {
-                _dS = 0;
             }
             if (Watchlist.IsEnabled)
             {

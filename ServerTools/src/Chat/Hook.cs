@@ -5,31 +5,21 @@ namespace ServerTools
 {
     public class ChatHook
     {
-        public static bool ChatFlood = false;
-        public static bool Admin_Name_Coloring = false;
-        public static bool Donator_Name_Coloring = false;
-        public static bool Special_Player_Name_Coloring = false;
-        public static bool Normal_Player_Name_Coloring = false;
+        public static bool ChatFlood = false, Admin_Name_Coloring = false, Donator_Name_Coloring = false;
+        public static bool Special_Player_Name_Coloring = false, Normal_Player_Name_Coloring = false;
         public static bool Reserved_Check = false;
         public static string Admin_Color = "[FF0000]";
         public static string Mod_Color = "[008000]";
-        public static string Don_Color1 = "[009000]";
-        public static string Don_Color2 = "[FF66CC]";
-        public static string Don_Color3 = "[E9C918]";
+        public static string Don_Color1 = "[009000]", Don_Color2 = "[FF66CC]", Don_Color3 = "[E9C918]";
         public static string Special_Player_Color = "[ADAD85]";
         public static string Normal_Player_Color = "[00B3B3]";
         public static string Admin_Prefix = "(ADMIN)";
         public static string Mod_Prefix = "(MOD)";
-        public static string Don_Prefix1 = "(DON)";
-        public static string Don_Prefix2 = "(DON)";
-        public static string Don_Prefix3 = "(DON)";
+        public static string Don_Prefix1 = "(DON)", Don_Prefix2 = "(DON)", Don_Prefix3 = "(DON)";
         public static string Special_Player_Prefix = "(SPECIAL)";
         public static string Normal_Player_Prefix = "(NOOB)";
-        public static int Admin_Level = 0;
-        public static int Mod_Level = 1;
-        public static int Don_Level1 = 100;
-        public static int Don_Level2 = 101;
-        public static int Don_Level3 = 102;
+        public static int Admin_Level = 0, Mod_Level = 1;
+        public static int Don_Level1 = 100, Don_Level2 = 101, Don_Level3 = 102;
         public static string Special_Players_List = "76561191234567891,76561191987654321";
         public static bool ChatCommandPrivateEnabled = false;
         public static string Command_Private = "/";
@@ -48,7 +38,7 @@ namespace ServerTools
                 SpecialPlayers.Clear();
                 var s_Id = Special_Players_List.Split(',');
                 foreach (var specialId in s_Id)
-                {                   
+                {
                     SpecialPlayers.Add(specialId.ToString());
                 }
             }
@@ -248,10 +238,6 @@ namespace ServerTools
                             GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message1, _playerName, false, "ServerTools", false);
                             return false;
                         }
-                    }
-                    if (_message.StartsWith("player"))
-                    {
-
                     }
                     if (_message.StartsWith(Command_Private) || _message.StartsWith(Command_Public))
                     {

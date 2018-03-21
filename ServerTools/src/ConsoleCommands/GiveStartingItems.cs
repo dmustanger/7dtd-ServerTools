@@ -91,8 +91,6 @@ namespace ServerTools
                                     _phrase806 = "You have received your starting items.";
                                 }
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase806), "Server", false, "", false));
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = true;
-                                PersistentContainer.Instance.Save();
                             }
                         }
                         else
