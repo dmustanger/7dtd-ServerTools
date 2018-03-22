@@ -5,7 +5,7 @@ namespace ServerTools
 {
     class AuctionBox
     {
-        public static bool IsEnabled = true;
+        public static bool IsEnabled = false, IsRunning = false;
         public static SortedDictionary<int, string[]> AuctionItems = new SortedDictionary<int, string[]>();
         private static DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
         private static List<Chunk> chunkArray = new List<Chunk>();
@@ -33,8 +33,29 @@ namespace ServerTools
                                 Vector3i vec3i = SecureLoot.ToWorldPos();
                                 Vector3 _vec3 = vec3i.ToVector3();
                                 _distance = _player.GetDistanceSq(_vec3);
-                                if (_distance <= 1.25)
+                                if (_distance <= 1.3)
                                 {
+                                    int _playerCount = ConnectionManager.Instance.ClientCount();
+                                    if (_playerCount > 1)
+                                    {
+                                        float _distancePlayer;
+                                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                                        for (int j = 0; i < _cInfoList.Count; j++)
+                                        {
+                                            ClientInfo _cInfo2 = _cInfoList[j];
+                                            if (_cInfo != _cInfo2)
+                                            {
+                                                EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
+                                                Vector3 _player2pos = _player2.position;
+                                                _distancePlayer = _player.GetDistanceSq(_player2pos);
+                                                if (_distancePlayer < 8)
+                                                {
+                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are too close to another player to use auction. Tell them to back off and get their own moldy sandwich.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                                                    return;
+                                                }
+                                            }
+                                        }
+                                    }
                                     List<string> boxUsers = SecureLoot.GetUsers();
                                     if (!boxUsers.Contains(_cInfo.playerId) && !SecureLoot.GetOwner().Equals(_cInfo.playerId))
                                     {
@@ -43,7 +64,7 @@ namespace ServerTools
                                     }
                                     else if (SecureLoot.IsUserAccessing())
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Local box is currently open. Close the chest or wait for your friend to finish.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Local box is currently open. Close the chest first.[-]", Config.Chat_Response_Color), "Server", false, "", false));
                                         return;
                                     }
                                     ItemStack[] items = SecureLoot.items;
@@ -76,7 +97,8 @@ namespace ServerTools
                 }
                 if (!AuctionItems.ContainsKey(_cInfo.entityId))
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Auction add failed. No items were found in a secure chest you own.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Auction add failed. No items were found in a secure chest you own near by.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Place an item in a chest and stand very close to it, then use /auction sell #.[-]", Config.Chat_Response_Color), "Server", false, "", false));
                 }
             }
             else

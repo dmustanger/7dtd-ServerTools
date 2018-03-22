@@ -71,7 +71,7 @@ namespace ServerTools
                 }
                 if (!Jail.Dict.ContainsKey(_cInfo.playerId))
                 {
-                    if (Admin_Name_Coloring && !_message.StartsWith(Command_Private) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) & !AdminChatColor.AdminColorOff.Contains(_cInfo.playerId))
+                    if (Admin_Name_Coloring && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && !AdminChatColor.AdminColorOff.Contains(_cInfo.playerId))
                     {
                         AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                         if (Admin.PermissionLevel <= Admin_Level)
@@ -105,7 +105,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (Donator_Name_Coloring && !_message.StartsWith(Command_Private) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
+                    if (Donator_Name_Coloring && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
                     {
                         AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                         if (Admin.PermissionLevel == Don_Level1)
@@ -169,7 +169,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (Special_Player_Name_Coloring && !_message.StartsWith(Command_Private) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && SpecialPlayers.Contains(_cInfo.playerId) && !SpecialPlayersColorOff.Contains(_cInfo.playerId))
+                    if (Special_Player_Name_Coloring && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && SpecialPlayers.Contains(_cInfo.playerId) && !SpecialPlayersColorOff.Contains(_cInfo.playerId))
                     {
                         if (Special_Player_Prefix != "")
                         {
@@ -184,7 +184,7 @@ namespace ServerTools
                             return false;
                         }
                     }
-                    if (Normal_Player_Name_Coloring && !_message.StartsWith(Command_Private) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && !SpecialPlayers.Contains(_cInfo.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
+                    if (Normal_Player_Name_Coloring && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && !SpecialPlayers.Contains(_cInfo.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
                     {
                         if (Normal_Player_Prefix != "")
                         {
@@ -238,6 +238,10 @@ namespace ServerTools
                             GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message1, _playerName, false, "ServerTools", false);
                             return false;
                         }
+                    }
+                    if (_message.StartsWith("player"))
+                    {
+
                     }
                     if (_message.StartsWith(Command_Private) || _message.StartsWith(Command_Public))
                     {
@@ -1402,34 +1406,34 @@ namespace ServerTools
                                 }
                                 return false;
                             }
-                        }
+                        }                       
                     }
-                }
-                if (_message.StartsWith("@"))
-                {
-                    if (_message.StartsWith("@admins ") || _message.StartsWith("@ADMINS "))
+                    if (_message.StartsWith("@"))
                     {
-                        if (!AdminChat.IsEnabled)
+                        if (_message.StartsWith("@admins ") || _message.StartsWith("@ADMINS "))
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", Config.Chat_Response_Color), "Server", false, "ServerTools", false));
+                            if (!AdminChat.IsEnabled)
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", Config.Chat_Response_Color), "Server", false, "ServerTools", false));
+                            }
+                            else
+                            {
+                                AdminChat.SendAdmins(_cInfo, _message);
+                            }
+                            return false;
                         }
-                        else
+                        if (_message.StartsWith("@all ") || _message.StartsWith("@ALL "))
                         {
-                            AdminChat.SendAdmins(_cInfo, _message);
+                            if (!AdminChat.IsEnabled)
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", Config.Chat_Response_Color), "Server", false, "ServerTools", false));
+                            }
+                            else
+                            {
+                                AdminChat.SendAll(_cInfo, _message);
+                            }
+                            return false;
                         }
-                        return false;
-                    }
-                    if (_message.StartsWith("@all ") || _message.StartsWith("@ALL "))
-                    {
-                        if (!AdminChat.IsEnabled)
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", Config.Chat_Response_Color), "Server", false, "ServerTools", false));
-                        }
-                        else
-                        {
-                            AdminChat.SendAll(_cInfo, _message);
-                        }
-                        return false;
                     }
                 }
             }

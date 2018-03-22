@@ -9,9 +9,8 @@ namespace ServerTools
         public static void firstClaim(ClientInfo _cInfo)
         {
             World world = GameManager.Instance.World;
-            int worldSeed = world.Seed;
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p == null || p.WorldSeedFirstClaim != worldSeed)
+            if (p == null || !p.FirstClaim)
             {
                 string claimBlock = "keystoneBlock";
                 ItemValue itemValue;
@@ -35,7 +34,7 @@ namespace ServerTools
                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Claim block has been added to your inventory or if inventory is full, it dropped at your feet.[-]", Config.Chat_Response_Color), "Server", false, "", false));
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].WorldSeedFirstClaim = worldSeed;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].FirstClaim = true;
                 PersistentContainer.Instance.Save();
             }
             else

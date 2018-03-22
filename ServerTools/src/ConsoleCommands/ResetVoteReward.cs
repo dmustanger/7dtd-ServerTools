@@ -33,11 +33,6 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("reset"))
                 {
-                    if (_params.Count != 2)
-                    {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
-                        return;
-                    }
                     if (_params[1].Length < 1 || _params[1].Length > 17)
                     {
                         SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}", _params[1]));
@@ -45,11 +40,11 @@ namespace ServerTools
                     }
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                     Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                    if (p.LastVoteReward != null)
+                    if (p != null)
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now.AddDays(-2);
-                        PersistentContainer.Instance.Save();
                         SdtdConsole.Instance.Output("Vote reward delay reset.");
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now.AddDays(-2);
+                        PersistentContainer.Instance.Save();                        
                     }
                     else
                     {
