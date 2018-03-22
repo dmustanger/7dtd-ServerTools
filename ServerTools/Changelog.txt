@@ -1,5 +1,21 @@
 ﻿CHANGELOG
 
+v.8.3
+Note: You may see an error upon loading mentioning serialization. Disregard this notice, it will only show once
+
+Added distance check to Auction. You can not be within a close range to another player while selling to avoid duping
+Added console command @Admin. Works in the same manner as chat command @admin so you can message all online admins
+Added @Admins to HowToSetup.xml
+Added second warning to drop invalid items when set to kick. A player will have one minute total
+Changed Invalid_Item_Kicker warning to drop invalid item to red
+Fixed wallet calculation. Players have not lost anything
+Fixed Voting not giving items or full amount
+Fixed Voting reward set to random by default
+Fixed Voting causing an error
+Fixed Watchlist Alert_Delay missing from config. This was missed in earlier patch notes. Watchlist used to spam admins with alerts but it
+now only spams them at the rate of the Alert_Delay. The delay is in minutes
+Fixed public command trigger ! not working when admin or normal player color is enabled
+
 v.8.2
 Added to HowToSetup.xml Voting section
 Fixed bad phrase returning { PlayerName}
