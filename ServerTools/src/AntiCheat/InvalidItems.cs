@@ -1234,10 +1234,7 @@ namespace ServerTools
                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                 if (Admin.PermissionLevel > Admin_Level)
                 {
-                    int _bagClean = 0;
-                    int _invClean = 0;
-                    int _totalBagCount = 0;
-                    int _totalInventoryCount = 0;
+                    int _bagClean = 0, _invClean = 0, _totalBagCount = 0, _totalInventoryCount = 0;
                     for (int i = 0; i < _playerDataFile.inventory.Length; i++)
                     {
                         ItemStack _intemStack = new ItemStack();
@@ -1293,7 +1290,7 @@ namespace ServerTools
                                             int _value;
                                             if (playerflag.TryGetValue(_cInfo.entityId, out _value))
                                             {
-                                                if (_value > 1)
+                                                if (_value == 2)
                                                 {
                                                     string _phrase5;
                                                     if (!Phrases.Dict.TryGetValue(5, out _phrase5))
@@ -1312,10 +1309,12 @@ namespace ServerTools
                                                         sw.Close();
                                                     }
                                                     dropCheck.Remove(_cInfo.entityId);
+                                                    playerflag.Remove(_cInfo.entityId);
                                                 }
                                                 else
                                                 {
-                                                    playerflag.Add(_cInfo.entityId, +1);
+                                                    dropCheck.Add(_cInfo.entityId);
+                                                    playerflag[_cInfo.entityId] = 2;
                                                     string _phrase799;
                                                     if (!Phrases.Dict.TryGetValue(799, out _phrase799))
                                                     {
@@ -1329,8 +1328,7 @@ namespace ServerTools
                                         }
                                         else
                                         {
-                                            dropCheck.Add(_cInfo.entityId);
-                                            playerflag.Add(_cInfo.entityId, +1);
+                                            playerflag[_cInfo.entityId] = 1;
                                             string _phrase800;
                                             if (!Phrases.Dict.TryGetValue(800, out _phrase800))
                                             {
