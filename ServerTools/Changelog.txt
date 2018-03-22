@@ -13,8 +13,6 @@ Fixed Voting not giving items or full amount
 Fixed Voting reward set to random by default
 Fixed Voting causing an error
 Fixed Watchlist Alert_Delay missing from config. This was missed in earlier patch notes. Watchlist used to spam admins with alerts but it
-now only spams them at the rate of the Alert_Delay. The delay is in minutes
-Fixed public command trigger ! not working when admin or normal player color is enabled
 
 v.8.2
 Added to HowToSetup.xml Voting section
