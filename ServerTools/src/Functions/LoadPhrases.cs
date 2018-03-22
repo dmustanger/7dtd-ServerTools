@@ -998,6 +998,12 @@ namespace ServerTools
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ********************* More_Phrases ********************* -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase799;
+                if (!Dict.TryGetValue(799, out _phrase799))
+                {
+                    _phrase799 = "Cheat Detected: {PlayerName} you are holding a invalid item: {ItemName}. Final warning, drop it!";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"799\" Phrase=\"{0}\" />", _phrase799));
                 string _phrase800;
                 if (!Dict.TryGetValue(800, out _phrase800))
                 {

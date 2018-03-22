@@ -692,6 +692,11 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("Console commands");
                 sw.WriteLine();
+                sw.WriteLine("@Admin");
+                sw.WriteLine("Example: @Admin Hey guys, keep an eye open for OC, he is evil");
+                sw.WriteLine("Example: @Admin Hey, I will be online soon");
+                sw.WriteLine("Sends your message to all online admins. Limited to Admins of tier level 0.");
+                sw.WriteLine();
                 sw.WriteLine("AdminChatColor or acc");
                 sw.WriteLine("Example: acc off");
                 sw.WriteLine("Example: acc on");
