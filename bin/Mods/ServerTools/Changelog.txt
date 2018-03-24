@@ -1,5 +1,8 @@
 ﻿CHANGELOG
 
+v.8.5
+Fixed Voting reward not cycling the que properly
+
 Note: The serialization error should be fixed. It didn't disappear as first thought so it is hopefully corrected to prevent this
 Note: If your output log reports a mistake while loading a file from ServerTools, it can sometimes be a simple issue with a file you have edited
 or a mistake in the ServerTools config file itself. The output will let you know. If an error is detected, try to delete the file with your server
