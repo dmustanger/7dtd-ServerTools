@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Xml;
 using UnityEngine;
@@ -17,6 +18,7 @@ namespace ServerTools
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static Dictionary<string, int[]> dict = new Dictionary<string, int[]>();
         private static List<string> list = new List<string>();
+        private static List<ClientInfo> que = new List<ClientInfo>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false, posFound = false;
         public static System.Random rnd = new System.Random();
@@ -188,18 +190,18 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void CheckReward(ClientInfo _cInfo)
+        public static void Check(ClientInfo _cInfo)
         {
             if (Delay_Between_Uses == 0)
             {
-                Execute(_cInfo);
+                Open(_cInfo);
             }
             else
             {
                 Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                 if (p == null || p.LastVoteReward == null)
                 {
-                    Execute(_cInfo);
+                    Open(_cInfo);
                 }
                 else
                 {
@@ -208,7 +210,7 @@ namespace ServerTools
                     int _timepassed = (int)fractionalHours;
                     if (_timepassed >= Delay_Between_Uses)
                     {
-                        Execute(_cInfo);
+                        Open(_cInfo);
                     }
                     else
                     {
@@ -230,65 +232,88 @@ namespace ServerTools
             }
         }
 
-        private static void Execute(ClientInfo _cInfo)
+        public static void Open(ClientInfo _cInfo)
         {
             if (RewardOpen)
             {
-                RewardOpen = false;
-                ServicePointManager.ServerCertificateValidationCallback += (send, certificate, chain, sslPolicyErrors) => { return true; };
-                var VoteUrl = string.Format("https://7daystodie-servers.com/api/?object=votes&element=claim&key={0}&username={1}", Uri.EscapeUriString(API_Key), Uri.EscapeUriString(_cInfo.playerName));
-                using (var NewVote = new WebClient())
-                {
-                    var VoteResult = string.Empty;
-                    VoteResult = NewVote.DownloadString(VoteUrl);
-                    if (VoteResult == "0")
-                    {
-                        RewardOpen = true;
-                        string _phrase700;
-                        if (!Phrases.Dict.TryGetValue(700, out _phrase700))
-                        {
-                            _phrase700 = "Your vote has not been located {PlayerName}. Make sure you voted @ {VoteSite} and try again.";
-                        }
-                        _phrase700 = _phrase700.Replace("{PlayerName}", _cInfo.playerName);
-                        _phrase700 = _phrase700.Replace("{VoteSite}", Your_Voting_Site);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase700), "Server", false, "", false));
-                    }
-                    if (VoteResult == "1")
-                    {                        
-                        string _phrase701;
-                        if (!Phrases.Dict.TryGetValue(701, out _phrase701))
-                        {
-                            _phrase701 = "Thank you for your vote {PlayerName}. You can vote and receive another reward in {VoteDelay} hours.";
-                        }
-                        _phrase701 = _phrase701.Replace("{PlayerName}", _cInfo.playerName);
-                        _phrase701 = _phrase701.Replace("{VoteDelay}", Delay_Between_Uses.ToString());
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase701), "Server", false, "", false));
-                        if (!Reward_Entity)
-                        {
-                            if (dict.Count > 0 && Reward_Count > 0)
-                            {
-                                ItemOrBlock(_cInfo);
-                            }
-                        }
-                        else
-                        {
-                            Entity(_cInfo);
-                        }
-                    }
-                }
+                Execute(_cInfo);
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Another player is receiving their reward. Please try again.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                if (!que.Contains(_cInfo))
+                {
+                    que.Add(_cInfo);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward in use. You were added to the que.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                }
+                else
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward in use and you are already in the que.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                }
             }
+        }
+
+        private static void Execute(ClientInfo _cInfo)
+        {
+            RewardOpen = false;
+            ServicePointManager.ServerCertificateValidationCallback += (send, certificate, chain, sslPolicyErrors) => { return true; };
+            var VoteUrl = string.Format("https://7daystodie-servers.com/api/?object=votes&element=claim&key={0}&username={1}", Uri.EscapeUriString(API_Key), Uri.EscapeUriString(_cInfo.playerName));
+            using (var NewVote = new WebClient())
+            {
+                var VoteResult = string.Empty;
+                VoteResult = NewVote.DownloadString(VoteUrl);
+                if (VoteResult == "0")
+                {
+                    NoVote(_cInfo);
+                }
+                if (VoteResult == "1")
+                {
+                    if (!Reward_Entity)
+                    {
+                        if (dict.Count > 0 && Reward_Count > 0)
+                        {
+                            if (Reward_Count > dict.Count)
+                            {
+                                Reward_Count = dict.Count;
+                            }
+                            ItemOrBlock(_cInfo);
+                        }
+                        else
+                        {
+                            Log.Out("[SERVERTOOLS] Vote reward: dictionary empty or reward count is set to zero.");
+                        }
+                    }
+                    else
+                    {
+                        Entity(_cInfo);
+                    }
+                }
+            }
+
+        }
+
+        private static void NoVote(ClientInfo _cInfo)
+        {
+            Que();
+            string _phrase700;
+            if (!Phrases.Dict.TryGetValue(700, out _phrase700))
+            {
+                _phrase700 = "Your vote has not been located {PlayerName}. Make sure you voted @ {VoteSite} and try again.";
+            }
+            _phrase700 = _phrase700.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase700 = _phrase700.Replace("{VoteSite}", Your_Voting_Site);
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase700), "Server", false, "", false));
         }
 
         private static void ItemOrBlock(ClientInfo _cInfo)
         {
-            if (Reward_Count > dict.Count)
+            string _phrase701;
+            if (!Phrases.Dict.TryGetValue(701, out _phrase701))
             {
-                Reward_Count = dict.Count;
+                _phrase701 = "Thank you for your vote {PlayerName}. You can vote and receive another reward in {VoteDelay} hours.";
             }
+            _phrase701 = _phrase701.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase701 = _phrase701.Replace("{VoteDelay}", Delay_Between_Uses.ToString());
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase701), "Server", false, "", false));
             string _item = list.RandomObject();
             int[] _values;
             if (dict.TryGetValue(_item, out _values))
@@ -323,9 +348,9 @@ namespace ServerTools
                         ItemValue _itemValue = ItemClass.GetItem(_item, true);
                         if (_itemValue.type == ItemValue.None.type)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Item or block not found: {0}. Item or block was not given as a reward.", _item));
                             list.Remove(_item);
                             ItemOrBlock(_cInfo);
+                            Log.Warning(string.Format("[SERVERTOOLS] Item or block not found: {0}. Item or block was not given as a reward.", _item));
                             return;
                         }
                         else
@@ -359,11 +384,11 @@ namespace ServerTools
                     {
                         list.Clear();
                         list = new List<string>(dict.Keys);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward items sent to your inventory. If it is full, check the ground.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                        _counter = 0;
+                        Que();
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now;
                         PersistentContainer.Instance.Save();
-                        _counter = 0;
-                        RewardOpen = true;
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward items sent to your inventory. If it is full, check the ground.[-]", Config.Chat_Response_Color), "Server", false, "", false));
                     }
                 }
                 else
@@ -393,16 +418,32 @@ namespace ServerTools
                 EntityClass eClass = EntityClass.list[Entity_Id];
                 if (eClass.bAllowUserInstantiate)
                 {
-                    RewardOpen = true;
+                    Que();
                     Entity entity = EntityFactory.CreateEntity(Entity_Id, new Vector3((float)_x, (float)_y, (float)_z));
                     GameManager.Instance.World.SpawnEntityInWorld(entity);
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now;
+                    PersistentContainer.Instance.Save();
                     Log.Out(string.Format("[SERVERTOOLS] Spawned an entity reward {0} at {1} x, {2} y, {3} z for {4}", eClass.entityClassName, _x, _y, _z, _cInfo.playerName));
                 }
             }
             else
             {
-                RewardOpen = true;
+                Que();
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}No spawn point was found near you. Please move locations and try again.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+            }
+        }
+
+        private static void Que()
+        {
+            if (que.Count > 0)
+            {
+                ClientInfo _cInfo = que.First();
+                que.RemoveAt(0);
+                Execute(_cInfo);
+            }
+            else
+            {
+                RewardOpen = true;
             }
         }
     }

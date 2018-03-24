@@ -1066,7 +1066,7 @@ namespace ServerTools
                             if (VoteReward.IsEnabled)
                             {
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking for your vote.[-]", Config.Chat_Response_Color), "Server", false, "ServerTools", false));
-                                VoteReward.CheckReward(_cInfo);
+                                VoteReward.Check(_cInfo);
                                 return false;
                             }
                         }
