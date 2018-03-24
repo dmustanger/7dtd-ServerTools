@@ -1,11 +1,27 @@
 ﻿CHANGELOG
 
-v.8.3
-Note: You may see an error upon loading mentioning serialization. Disregard this notice, it will only show once
+Note: The serialization error should be fixed. It didn't disappear as first thought so it is hopefully corrected to prevent this
+Note: If your output log reports a mistake while loading a file from ServerTools, it can sometimes be a simple issue with a file you have edited
+or a mistake in the ServerTools config file itself. The output will let you know. If an error is detected, try to delete the file with your server
+shutdown and restart. Check your output log at this time for any errors. Please report them to us so we can address it. Check HowToSetup.xml for 
+a link to the Github page you can report bugs at or enter our discord and join the party
 
+v.8.4
+Added tool Login_Notice. Creates a file named LoginNotice.xml where you can put steam id and a custom message for that id. When that player enters
+the world, the custom message will show for everyone
+Added option to Jail called Jail_Shock. Players trying to leave the jail are teleported back and shockedBuff is applied
+Added tool Location. While enabled, players can type /loc to get their current x y z coordinates
+Added tool FPS. While enabled, players can type /fps to show the server fps normally seen in the /day7 command
+Added que system to Voting reward. If the command is in use it will que the player and run when available. This is very fast and helps
+prevent errors
+Changed console command shutdown check to Shutdowncheck or scheck
+Fixed Infoticker only showing once an hour. It will work off the custom delay again
+Fixed Voting reward. While set to entity reward. It will now set a delay against the player
+
+v.8.3
 Added distance check to Auction. You can not be within a close range to another player while selling to avoid duping
 Added console command @Admin. Works in the same manner as chat command @admin so you can message all online admins
-Added @Admins to HowToSetup.xml
+Added @Admin to HowToSetup.xml
 Added second warning to drop invalid items when set to kick. A player will have one minute total
 Changed Invalid_Item_Kicker warning to drop invalid item to red
 Fixed wallet calculation. Players have not lost anything
@@ -13,6 +29,7 @@ Fixed Voting not giving items or full amount
 Fixed Voting reward set to random by default
 Fixed Voting causing an error
 Fixed Watchlist Alert_Delay missing from config. This was missed in earlier patch notes. Watchlist used to spam admins with alerts but it
+now spams at the rate of the Alert_Delay
 
 v.8.2
 Added to HowToSetup.xml Voting section
@@ -21,12 +38,7 @@ Fixed missing default lines from Voting
 Fixed Voting unable to spawn a entity
 
 v.8.1
-Note: You will see an error upon loading mentioning serialization. Disregard this notice, it will only show once
 Note: HowToSetup.xml only generates on server startup
-Note: If your output log reports a mistake while loading a file from ServerTools, it can sometimes be a simple issue with a file you have edited
-or a mistake in the ServerTools config file itself. The output will let you know. If an error is detected, try to delete the file with your server
-shutdown and restart. Check your output log at this time for any errors. Please report them to us so we can address it. Check HowToSetup.xml for 
-a link to the Github page you can report bugs at or enter our discord and join the party
 
 Added exemption for ladders to Underground_Check to prevent false positives
 Changed Custom_Commands. In the CustomCommand.xml, responses starting with say automatically set the Chat_Command_Response color to it
