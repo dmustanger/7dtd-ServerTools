@@ -45,7 +45,7 @@ namespace ServerTools
         public static void TeleNewSpawn(ClientInfo _cInfo)
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (_player.Level == 1 && _player.totalItemsCrafted == 0 && New_Spawn_Tele_Position != "0,0,0")
+            if (_player.Level == 1 && _player.totalItemsCrafted == 0 && _player.distanceWalked <= 1 && New_Spawn_Tele_Position != "0,0,0")
             {
                 TelePlayer(_cInfo);
             }

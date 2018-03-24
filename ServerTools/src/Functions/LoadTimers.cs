@@ -11,7 +11,7 @@ namespace ServerTools
             Shutdown_Delay = 60, Infoticker_Delay = 60, Restart_Vote_Delay = 30, _sSC = 0, _sSCD = 0,
             Alert_Delay = 5;
         private static int timer1SecondInstanceCount = 0, _wV = 0, _wNV = 0, 
-            _pSC = 0, _b = 0, _pL = 0, _wSD = 0, _sD = 0, _iD = 0, _eU = 0,
+            _pSC = 0, _b = 0, _pL = 0, _wSD = 0, _sD = 0, _iT = 0, _eU = 0,
             _rS = 0, _rV = 0, _rNV = 0, _eC = 0, _wL = 0; 
         private static System.Timers.Timer t1 = new System.Timers.Timer();
 
@@ -530,25 +530,25 @@ namespace ServerTools
             }
             if (InfoTicker.IsEnabled)
             {
-                _iD++;
-                if (_iD >= Infoticker_Delay * 60)
+                _iT++;
+                if (_iT >= Infoticker_Delay * 60)
                 {
-                    _iD = 0;
+                    _iT = 0;
                     InfoTicker.StatusCheck();
                 }
             }
             else
             {
-                _iD = 0;
+                _iT = 0;
             }
         }
 
         public static void TimerCheck()
         {
-            if (!FlightCheck.IsEnabled & !HatchElevator.IsEnabled & !UndergroundCheck.IsEnabled & !ZoneProtection.IsEnabled 
-                & !WeatherVote.IsEnabled & !PlayerStatCheck.IsEnabled & !Bloodmoon.IsEnabled & !WorldRadius.IsEnabled & !PlayerLogs.IsEnabled
-                & !AutoSaveWorld.IsEnabled & !StopServer.stopServerCountingDown & !Jail.IsEnabled & !AutoShutdown.IsEnabled
-                & !InfoTicker.IsEnabled & !EntityUnderground.IsEnabled)
+            if (!FlightCheck.IsEnabled && !HatchElevator.IsEnabled && !UndergroundCheck.IsEnabled && !ZoneProtection.IsEnabled 
+                && !WeatherVote.IsEnabled && !PlayerStatCheck.IsEnabled && !Bloodmoon.IsEnabled && !WorldRadius.IsEnabled && !PlayerLogs.IsEnabled
+                && !AutoSaveWorld.IsEnabled && !StopServer.stopServerCountingDown && !Jail.IsEnabled && !AutoShutdown.IsEnabled
+                && !InfoTicker.IsEnabled && !EntityUnderground.IsEnabled)
             {
                 TimerStop1Second();
             }

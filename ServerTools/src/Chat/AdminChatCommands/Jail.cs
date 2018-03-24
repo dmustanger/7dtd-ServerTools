@@ -6,7 +6,7 @@ namespace ServerTools
 {
     public class Jail
     {
-        public static bool IsEnabled = false;
+        public static bool IsEnabled = false, Jail_Shock = false;
         public static int Jail_Size = 8;
         private static string[] _cmd = { "jail" };
         public static string Jail_Position = "0,0,0";
@@ -150,6 +150,15 @@ namespace ServerTools
             }
             _phrase500 = _phrase500.Replace("{PlayerName}", _PlayertoJail.playerName);
             _PlayertoJail.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase500), "Server", false, "", false));
+            if (Jail_Shock)
+            {
+                string _phrase507;
+                if (!Phrases.Dict.TryGetValue(507, out _phrase507))
+                {
+                    _phrase507 = "The jail is electrified. Do not try to leave it.";
+                }
+                _PlayertoJail.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase507), "Server", false, "", false));
+            }
             string _phrase505;
             if (!Phrases.Dict.TryGetValue(505, out _phrase505))
             {
@@ -321,6 +330,16 @@ namespace ServerTools
                         if (_dis > _jailSize)
                         {
                             SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, x, y, z), (ClientInfo)null);
+                            if (Jail_Shock)
+                            {
+                                _cInfo.SendPackage(new NetPackageConsoleCmdClient("buff " + "shockedBuff", true));
+                                string _phrase508;
+                                if (!Phrases.Dict.TryGetValue(508, out _phrase508))
+                                {
+                                    _phrase508 = "Don't pee on the electric fence.";
+                                }
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase508), "Server", false, "", false));
+                            }
                         }
                     }
                 }

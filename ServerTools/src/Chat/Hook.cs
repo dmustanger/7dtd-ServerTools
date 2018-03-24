@@ -8,23 +8,18 @@ namespace ServerTools
         public static bool ChatFlood = false, Admin_Name_Coloring = false, Donator_Name_Coloring = false;
         public static bool Special_Player_Name_Coloring = false, Normal_Player_Name_Coloring = false;
         public static bool Reserved_Check = false;
-        public static string Admin_Color = "[FF0000]";
-        public static string Mod_Color = "[008000]";
+        public static string Admin_Color = "[FF0000]", Mod_Color = "[008000]";
         public static string Don_Color1 = "[009000]", Don_Color2 = "[FF66CC]", Don_Color3 = "[E9C918]";
-        public static string Special_Player_Color = "[ADAD85]";
-        public static string Normal_Player_Color = "[00B3B3]";
-        public static string Admin_Prefix = "(ADMIN)";
-        public static string Mod_Prefix = "(MOD)";
+        public static string Special_Player_Color = "[ADAD85]", Normal_Player_Color = "[00B3B3]";
+        public static string Admin_Prefix = "(ADMIN)", Mod_Prefix = "(MOD)";
         public static string Don_Prefix1 = "(DON)", Don_Prefix2 = "(DON)", Don_Prefix3 = "(DON)";
         public static string Special_Player_Prefix = "(SPECIAL)";
         public static string Normal_Player_Prefix = "(NOOB)";
         public static int Admin_Level = 0, Mod_Level = 1;
         public static int Don_Level1 = 100, Don_Level2 = 101, Don_Level3 = 102;
         public static string Special_Players_List = "76561191234567891,76561191987654321";
-        public static bool ChatCommandPrivateEnabled = false;
-        public static string Command_Private = "/";
-        public static bool ChatCommandPublicEnabled = false;
-        public static string Command_Public = "!";
+        public static bool ChatCommandPrivateEnabled = false, ChatCommandPublicEnabled = false;
+        public static string Command_Private = "/", Command_Public = "!";
         private static string filepath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
         private static SortedDictionary<string, DateTime> Dict = new SortedDictionary<string, DateTime>();
         private static SortedDictionary<string, string> Dict1 = new SortedDictionary<string, string>();
@@ -71,7 +66,7 @@ namespace ServerTools
                 }
                 if (!Jail.Dict.ContainsKey(_cInfo.playerId))
                 {
-                    if (Admin_Name_Coloring && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && !AdminChatColor.AdminColorOff.Contains(_cInfo.playerId))
+                    if (Admin_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && !_message.Contains(Command_Private) && !_message.Contains(Command_Public) && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && !AdminChatColor.AdminColorOff.Contains(_cInfo.playerId) && (!_message.StartsWith("[") && !_message.Contains("]")))
                     {
                         AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                         if (Admin.PermissionLevel <= Admin_Level)
@@ -105,7 +100,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (Donator_Name_Coloring && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
+                    if (Donator_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && !_message.Contains(Command_Private) && !_message.Contains(Command_Public) && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && (!_message.StartsWith("[") && !_message.Contains("]")))
                     {
                         AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                         if (Admin.PermissionLevel == Don_Level1)
@@ -169,7 +164,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (Special_Player_Name_Coloring && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && SpecialPlayers.Contains(_cInfo.playerId) && !SpecialPlayersColorOff.Contains(_cInfo.playerId))
+                    if (Special_Player_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && !_message.Contains(Command_Private) && !_message.Contains(Command_Public) && SpecialPlayers.Contains(_cInfo.playerId) && !SpecialPlayersColorOff.Contains(_cInfo.playerId) && (!_message.StartsWith("[") && !_message.Contains("]")))
                     {
                         if (Special_Player_Prefix != "")
                         {
@@ -184,7 +179,7 @@ namespace ServerTools
                             return false;
                         }
                     }
-                    if (Normal_Player_Name_Coloring && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && !SpecialPlayers.Contains(_cInfo.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
+                    if (Normal_Player_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && !_message.Contains(Command_Private) && !_message.Contains(Command_Public) && !SpecialPlayers.Contains(_cInfo.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && (!_message.StartsWith("[") && !_message.Contains("]")))
                     {
                         if (Normal_Player_Prefix != "")
                         {
@@ -239,12 +234,16 @@ namespace ServerTools
                             return false;
                         }
                     }
-                    if (_message.StartsWith("player"))
+                    if ((_message.StartsWith("[") && _message.Contains("]")) && (_message.Contains(Command_Private) || _message.Contains(Command_Public)) || _message.StartsWith(Command_Private) || _message.StartsWith(Command_Public))
                     {
-
-                    }
-                    if (_message.StartsWith(Command_Private) || _message.StartsWith(Command_Public))
-                    {
+                        if (_message.StartsWith("[") && _message.Contains("]"))
+                        {
+                            _message = _message.Replace("(\\[.*\\] )", "");
+                        }
+                        if (_message.StartsWith("(") && _message.Contains(")"))
+                        {
+                            _message = _message.Replace("(\\(.*\\) )", "");
+                        }
                         bool _announce = false;
                         if (_message.StartsWith(Command_Public))
                         {
@@ -1032,7 +1031,7 @@ namespace ServerTools
                                         else
                                         {
                                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status has expired on {2}.[-]", Config.Chat_Response_Color, _playerName, _dt), "Server", false, "ServerTools", false));
-                                        }                                        
+                                        }
                                     }
                                 }
                                 else
@@ -1060,7 +1059,7 @@ namespace ServerTools
                                     }
                                 }
                                 return false;
-                            }                              
+                            }
                         }
                         if (_message == "reward")
                         {
@@ -1369,71 +1368,105 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (_message.StartsWith("auction"))
+                        if (_message == "auction")
                         {
                             if (AuctionBox.IsEnabled)
                             {
-                                if (_message == "auction")
-                                {
-                                    AuctionBox.AuctionList(_cInfo);
-                                }
-                                else if (_message == "auction cancel")
-                                {
-                                    AuctionBox.CancelAuction(_cInfo);
-                                }
-                                else if (_message.StartsWith("auction buy"))
-                                {
-                                    _message = _message.Replace("auction buy ", "");
-                                    {
-                                        int _purchase;
-                                        if (int.TryParse(_message, out _purchase))
-                                        {
-                                            if (AuctionBox.AuctionItems.ContainsKey(_purchase))
-                                            {
-                                                AuctionBox.WalletCheck(_cInfo, _purchase);
-                                            }
-                                            else
-                                            {
-                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have used an auction item # that does not exist or has sold. Type /auction.[-]", Config.Chat_Response_Color), "Server", false, "ServerTools", false));
-                                            }
-                                        }
-                                    }
-                                }
-                                else if (_message.StartsWith("auction sell"))
-                                {
-                                    _message = _message.Replace("auction sell ", "");
-                                    AuctionBox.CheckBox(_cInfo, _message);
-                                }
+                                AuctionBox.AuctionList(_cInfo);
                                 return false;
                             }
-                        }                       
+                        }
+                        if (_message == "auction cancel")
+                        {
+                            if (AuctionBox.IsEnabled)
+                            {
+                                AuctionBox.CancelAuction(_cInfo);
+                                return false;
+                            }
+                        }
+                        if (_message.StartsWith("auction buy"))
+                        {
+                            _message = _message.Replace("auction buy ", "");
+                            {
+                                int _purchase;
+                                if (int.TryParse(_message, out _purchase))
+                                {
+                                    if (AuctionBox.AuctionItems.ContainsKey(_purchase))
+                                    {
+                                        AuctionBox.WalletCheck(_cInfo, _purchase);
+                                        return false;
+                                    }
+                                    else
+                                    {
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have used an auction item # that does not exist or has sold. Type /auction.[-]", Config.Chat_Response_Color), "Server", false, "ServerTools", false));
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                        if (_message.StartsWith("auction sell"))
+                        {
+                            _message = _message.Replace("auction sell ", "");
+                            AuctionBox.CheckBox(_cInfo, _message);
+                            return false;
+                        }
+                        if (_message == "fps")
+                        {
+                            if (Fps.IsEnabled)
+                            {
+                                if (_announce)
+                                {
+                                    Fps.FPS(_cInfo, _announce);
+                                }
+                                else
+                                {
+                                    Fps.FPS(_cInfo, _announce);
+                                    return false;
+                                }
+                            }
+                        }
+                        if (_message == "loc")
+                        {
+                            if (Loc.IsEnabled)
+                            {
+                                if (_announce)
+                                {
+                                    Loc.Exec(_cInfo);
+                                }
+                                else
+                                {
+                                    Loc.Exec(_cInfo);
+                                    return false;
+                                }
+                            }
+                        }
                     }
-                    if (_message.StartsWith("@"))
+                }
+                if (_message.StartsWith("@"))
+                {
+                    if (_message.StartsWith("@admins ") || _message.StartsWith("@ADMINS "))
                     {
-                        if (_message.StartsWith("@admins ") || _message.StartsWith("@ADMINS "))
+                        if (!AdminChat.IsEnabled)
                         {
-                            if (!AdminChat.IsEnabled)
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", Config.Chat_Response_Color), "Server", false, "ServerTools", false));
-                            }
-                            else
-                            {
-                                AdminChat.SendAdmins(_cInfo, _message);
-                            }
-                            return false;
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", Config.Chat_Response_Color), "Server", false, "ServerTools", false));
                         }
-                        if (_message.StartsWith("@all ") || _message.StartsWith("@ALL "))
+                        else
                         {
-                            if (!AdminChat.IsEnabled)
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", Config.Chat_Response_Color), "Server", false, "ServerTools", false));
-                            }
-                            else
-                            {
-                                AdminChat.SendAll(_cInfo, _message);
-                            }
-                            return false;
+                            AdminChat.SendAdmins(_cInfo, _message);
                         }
+                        return false;
+                    }
+                    if (_message.StartsWith("@all ") || _message.StartsWith("@ALL "))
+                    {
+                        if (!AdminChat.IsEnabled)
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}AdminChat is not enabled.[-]", Config.Chat_Response_Color), "Server", false, "ServerTools", false));
+                        }
+                        else
+                        {
+                            AdminChat.SendAll(_cInfo, _message);
+                        }
+                        return false;
                     }
                 }
             }

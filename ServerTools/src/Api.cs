@@ -26,6 +26,14 @@ namespace ServerTools
             {
                 Animals.BuildList();
             }
+            if (StartingItems.IsEnabled)
+            {
+                StartingItems.BuildList();
+            }
+            if (Fps.IsEnabled)
+            {
+                Fps._0_();
+            }
             Timers.LoadAlert();
         }
 
@@ -90,6 +98,10 @@ namespace ServerTools
             {
                 Bloodmoon.GetBloodmoon(_cInfo);
             }
+            if (LoginNotice.IsEnabled)
+            {
+                LoginNotice.PlayerCheck(_cInfo);
+            }
         }
 
         public override void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
@@ -98,7 +110,7 @@ namespace ServerTools
             {
                 Jail.CheckPlayer(_cInfo);
             }
-            if (StartingItems.IsEnabled & _respawnReason == RespawnType.NewGame)
+            if (StartingItems.IsEnabled & _respawnReason == RespawnType.JoinMultiplayer)
             {
                 StartingItems.StartingItemCheck(_cInfo);
             }
@@ -124,23 +136,11 @@ namespace ServerTools
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /forgive to release your killer from jail.[-]", Config.Chat_Response_Color), "Server", false, "", false));
                 }
             }
-            if (DeathSpot.IsEnabled && _respawnReason == RespawnType.Died)
-            {
-                if (DeathSpot.Died.ContainsKey(_cInfo.entityId))
-                {
-                    DeathSpot.Died.Remove(_cInfo.entityId);
-                    DeathSpot.Died.Add(_cInfo.entityId, DateTime.Now);
-                }
-                else
-                {
-                    DeathSpot.Died.Add(_cInfo.entityId, DateTime.Now);
-                }
-            }
-            if (NewSpawnTele.IsEnabled & _respawnReason == RespawnType.NewGame)
+            if (NewSpawnTele.IsEnabled & _respawnReason == RespawnType.JoinMultiplayer)
             {
                 NewSpawnTele.TeleNewSpawn(_cInfo);
             }
-            if (_respawnReason == RespawnType.Died)
+            if (DeathSpot.IsEnabled && _respawnReason == RespawnType.Died)
             {
                 EntityPlayer ep = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 var _position = ep.GetDroppedBackpackPosition();

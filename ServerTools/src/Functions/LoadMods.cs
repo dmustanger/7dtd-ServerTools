@@ -178,6 +178,14 @@
             {
                 Badwords.Load();
             }
+            if (!LoginNotice.IsRunning && LoginNotice.IsEnabled)
+            {
+                LoginNotice.Load();
+            }
+            if (LoginNotice.IsRunning && !LoginNotice.IsEnabled)
+            {
+                LoginNotice.Unload();
+            }
             if (!ZoneProtection.IsRunning && ZoneProtection.IsEnabled)
             {
                 ZoneProtection.Load();

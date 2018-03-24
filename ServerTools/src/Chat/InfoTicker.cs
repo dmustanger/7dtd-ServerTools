@@ -7,12 +7,10 @@ namespace ServerTools
 {
     public class InfoTicker
     {
-        public static bool IsEnabled = false, IsRunning = false;
-        public static bool Random = false;
-        public static int Delay_Between_Messages = 5;
+        public static bool IsEnabled = false, IsRunning = false, Random = false;
         private const string file = "InfoTicker.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static SortedDictionary<string, int> dict = new SortedDictionary<string, int>();
+        private static Dictionary<string, string> dict = new Dictionary<string, string>();
         private static List<string> msgList = new List<string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
@@ -70,35 +68,43 @@ namespace ServerTools
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("id"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Message entry because of missing 'id' attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
                         if (!_line.HasAttribute("Message"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Message entry because of missing a Message attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        int _id;
-                        if (!int.TryParse(_line.GetAttribute("id"), out _id))
+                        string _message = _line.GetAttribute("Message");
+                        if (!dict.ContainsKey(_message))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Message entry because of invalid (non-numeric) value for 'id' attribute: {0}", subChild.OuterXml));
+                            dict.Add(_message, null);
+                        }
+                        else
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Message entry because this message already exists: {0}", subChild.OuterXml));
                             continue;
-                        }
-                        if (!dict.ContainsKey(_line.GetAttribute("Message")))
-                        {
-                            dict.Add(_line.GetAttribute("Message"), _id);
-                        }
-                        foreach (var msg in dict.Keys)
-                        {
-                            if (!msgList.Contains(msg))
-                            {
-                                msgList.Add(msg);
-                            }
                         }
                     }
                 }
+            }
+            if (dict.Count == 0)
+            {
+                Log.Warning("[SERVERTOOLS] Ignoring infoticker because no messages from your file could be added.");
+            }
+            else
+            {
+                BuildList();
+            }
+        }
+
+        public static void BuildList()
+        {
+            if (dict.Count > 0)
+            {
+                msgList = new List<string>(dict.Keys);
+            }
+            else
+            {
+                Log.Warning("[SERVERTOOLS] Ignoring infoticker because no messages from your file could be added.");
             }
         }
 
@@ -113,19 +119,19 @@ namespace ServerTools
                 sw.WriteLine("        <!-- possible variables {EntityId} {SteamId} {PlayerName}-->");
                 if (dict.Count > 0)
                 {
-                    foreach (KeyValuePair<string, int> kvp in dict)
+                    foreach (KeyValuePair<string, string> kvp in dict)
                     {
-                        sw.WriteLine(string.Format("        <Message id=\"{0}\" Message=\"{1}\" />", kvp.Value, kvp.Key));
+                        sw.WriteLine(string.Format("        <Ticker Message=\"{0}\" />", kvp.Key));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <!-- <Message id=\"1\" Message=\"Type /gimme once an hour for a free gift!\" /> -->");
-                    sw.WriteLine("        <!-- <Message id=\"1\" Message=\"Typ /gimme, einmal pro Stunde für ein freies Geschenk!\" /> -->");
-                    sw.WriteLine("        <!-- <Message id=\"2\" Message=\"Visit Yoursitehere for rules, custom recipes and forum discussions!\" /> -->");
-                    sw.WriteLine("        <!-- <Message id=\"2\" Message=\"Besuchen Yoursitehere für Regelungen , kundenspezifische Rezepturen und Forumsdiskussionen!\" /> -->");
-                    sw.WriteLine("        <!-- <Message id=\"3\" Message=\"Have a suggestion or complaint? Post on our forums and let us know  at Yoursitehere!\" /> -->");
-                    sw.WriteLine("        <!-- <Message id=\"4\" Message=\"Type /commands for a list of the chat commands.\" /> -->");
+                    sw.WriteLine("        <!-- <Ticker Message=\"Type /gimme once an hour for a free gift!\" /> -->");
+                    sw.WriteLine("        <!-- <Ticker Message=\"Typ /gimme, einmal pro Stunde für ein freies Geschenk!\" /> -->");
+                    sw.WriteLine("        <!-- <Ticker Message=\"Visit Yoursitehere for rules, custom recipes and forum discussions!\" /> -->");
+                    sw.WriteLine("        <!-- <Ticker Message=\"Besuchen Yoursitehere für Regelungen , kundenspezifische Rezepturen und Forumsdiskussionen!\" /> -->");
+                    sw.WriteLine("        <!-- <Ticker Message=\"Have a suggestion or complaint? Post on our forums and let us know  at Yoursitehere!\" /> -->");
+                    sw.WriteLine("        <!-- <Ticker Message=\"Type /commands for a list of the chat commands.\" /> -->");
                 }
                 sw.WriteLine("    </Messages>");
                 sw.WriteLine("</InfoTicketer>");
@@ -156,56 +162,25 @@ namespace ServerTools
         {
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
-                if (msgList.Count > 0)
+                if (Random)
                 {
-                    if (Random)
+                    msgList.RandomizeList();
+                    var _message = msgList.First();
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
+                    msgList.RemoveAt(0);
+                    if (msgList.Count == 0)
                     {
-                        msgList.RandomizeList();
-                        var _message = msgList.First();
-                        if (_message != null)
-                        {
-
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
-                            msgList.RemoveAt(0);
-                        }
-                    }
-                    else
-                    {
-                        var _message = msgList.First();
-                        if (_message != null)
-                        {
-
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
-                            msgList.RemoveAt(0);
-                        }
+                        BuildList();
                     }
                 }
                 else
                 {
-                    LoadXml();
-                    if (msgList.Count > 0)
+                    var _message = msgList.First();
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
+                    msgList.RemoveAt(0);
+                    if (msgList.Count == 0)
                     {
-                        if (Random)
-                        {
-                            msgList.RandomizeList();
-                            var _message = msgList.First();
-                            if (_message != null)
-                            {
-
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
-                                msgList.RemoveAt(0);
-                            }
-                        }
-                        else
-                        {
-                            var _message = msgList.First();
-                            if (_message != null)
-                            {
-
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
-                                msgList.RemoveAt(0);
-                            }
-                        }
+                        BuildList();
                     }
                 }
             }

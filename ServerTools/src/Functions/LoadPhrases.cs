@@ -593,6 +593,18 @@ namespace ServerTools
                     _phrase506 = "{AdminPlayerName} player {PlayerName} is not in jail.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"506\" Phrase=\"{0}\" />", _phrase506));
+                string _phrase507;
+                if (!Dict.TryGetValue(507, out _phrase507))
+                {
+                    _phrase507 = "The jail is electrified. Do not try to leave it.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"507\" Phrase=\"{0}\" />", _phrase507));
+                string _phrase508;
+                if (!Dict.TryGetValue(508, out _phrase508))
+                {
+                    _phrase508 = "Don't pee on the electric fence.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"508\" Phrase=\"{0}\" />", _phrase508));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ******************** New_Spawn_Tele ******************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -995,6 +1007,24 @@ namespace ServerTools
                     _phrase751 = "Detected items in a pile and cleaned it up. Last removed item was @";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"751\" Phrase=\"{0}\" />", _phrase751));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ************************* FPS ************************** -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase755;
+                if (!Dict.TryGetValue(755, out _phrase755))
+                {
+                    _phrase755 = "Server FPS: {Fps}";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"755\" Phrase=\"{0}\" />", _phrase755));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- *********************** Location *********************** -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase760;
+                if (!Dict.TryGetValue(760, out _phrase760))
+                {
+                    _phrase760 = "Your current position is X {X}, Y {Y}, Z {Z}.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"760\" Phrase=\"{0}\" />", _phrase760));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ********************* More_Phrases ********************* -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
