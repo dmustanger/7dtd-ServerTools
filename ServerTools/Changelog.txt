@@ -1,5 +1,16 @@
 ﻿CHANGELOG
 
+v.8.6
+Added tool Real_World_Time. This will display the local real world time of the server. Add your time zone to the phrase so players know which one
+It will show the time automatically each time the delay time is met
+Added the hidden FPS option to set target fps on world load. Thank you SLipKnot for letting us reveal this
+Added one extra line to /commands response due to so many commands
+Changed Invalid_Item_Kicker to simplify some code. Works just the same as before
+Fixed Starting Items and added check for New Spawn Tele
+Fixed /died sending players to the wrong spot
+Fixed /loc and /fps missing from /commands response
+Fixed chat color and prefix not applying if the message contained a command trigger instead of starting with one
+
 v.8.5
 Fixed Voting reward not cycling the que properly
 
