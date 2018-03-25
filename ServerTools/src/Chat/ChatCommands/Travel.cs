@@ -13,10 +13,7 @@ namespace ServerTools
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, string[]> Box = new SortedDictionary<string, string[]>();
         private static SortedDictionary<string, string> Destination = new SortedDictionary<string, string>();
-        private static SortedDictionary<int, Entity> Bike = new SortedDictionary<int, Entity>();
-        public static SortedDictionary<int, DateTime> BikeTime = new SortedDictionary<int, DateTime>();
-        public static List<int> TeleportCheckProtection = new List<int>();
-        private static List<int> Flag = new List<int>();
+        public static List<int> Flag = new List<int>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
         private static int _xMinCheck = 0, _yMinCheck = 0, _zMinCheck = 0, _xMaxCheck = 0, _yMaxCheck = 0, _zMaxCheck = 0;
@@ -605,15 +602,6 @@ namespace ServerTools
 
                         if (_xMinCheck == 1 & _yMinCheck == 1 & _zMinCheck == 1 & _xMaxCheck == 1 & _yMaxCheck == 1 & _zMaxCheck == 1)
                         {
-                            if (!TeleportCheckProtection.Contains(_cInfo.entityId))
-                            {
-                                TeleportCheckProtection.Add(_cInfo.entityId);
-                            }
-                            else
-                            {
-                                TeleportCheckProtection.Remove(_cInfo.entityId);
-                                TeleportCheckProtection.Add(_cInfo.entityId);
-                            }
                             SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, _xDest, _yDest, _zDest), (ClientInfo)null);
                             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastTravel = DateTime.Now;
                             PersistentContainer.Instance.Save();

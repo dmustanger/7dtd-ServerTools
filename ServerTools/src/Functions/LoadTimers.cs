@@ -9,10 +9,10 @@ namespace ServerTools
         public static int Player_Log_Interval = 60, Auto_Show_Bloodmoon_Delay = 30,
             Delay_Between_World_Saves = 15, Stop_Server_Time = 1, _newCount = 0, Weather_Vote_Delay = 30,
             Shutdown_Delay = 60, Infoticker_Delay = 60, Restart_Vote_Delay = 30, _sSC = 0, _sSCD = 0,
-            Alert_Delay = 5;
+            Alert_Delay = 5, Real_Time_Delay = 60;
         private static int timer1SecondInstanceCount = 0, _wV = 0, _wNV = 0, 
             _pSC = 0, _b = 0, _pL = 0, _wSD = 0, _sD = 0, _iT = 0, _eU = 0,
-            _rS = 0, _rV = 0, _rNV = 0, _eC = 0, _wL = 0; 
+            _rS = 0, _rV = 0, _rNV = 0, _eC = 0, _wL = 0, _dS = 0, _rWT = 0; 
         private static System.Timers.Timer t1 = new System.Timers.Timer();
 
         public static void TimerStart1Second()
@@ -171,6 +171,10 @@ namespace ServerTools
             {
                 Log.Out("First claim block enabled");
             }
+            if (Fps.IsEnabled)
+            {
+                Log.Out("FPS enabled");
+            }
             if (FriendTeleport.IsEnabled)
             {
                 Log.Out("Friend teleport enabled");
@@ -191,6 +195,10 @@ namespace ServerTools
             {
                 Log.Out("Kill me command enabled");
             }
+            if (Loc.IsEnabled)
+            {
+                Log.Out("Location enabled");
+            }
             if (Motd.IsEnabled)
             {
                 Log.Out("Motd enabled");
@@ -198,6 +206,10 @@ namespace ServerTools
             if (NewSpawnTele.IsEnabled)
             {
                 Log.Out("New spawn teleport enabled");
+            }
+            if (RealWorldTime.IsEnabled)
+            {
+                Log.Out("Real world time enabled");
             }
             if (ReservedSlots.IsEnabled)
             {
@@ -286,6 +298,19 @@ namespace ServerTools
                 _wV = 0;
                 _wNV = 0;
             }
+            if (RealWorldTime.IsEnabled)
+            {
+                _rWT++;
+                if (_rWT >= Real_Time_Delay * 60)
+                {
+                    _rWT = 0;
+                    RealWorldTime.Time();
+                }
+            }
+            else
+            {
+                _rWT = 0;
+            }
             if (RestartVote.IsEnabled)
             {
                 if (RestartVote.VoteOpen)
@@ -313,7 +338,20 @@ namespace ServerTools
                 _rV = 0;
                 _rNV = 0;
             }
-            if (EntityCleanup.IsEnabled)
+            if (DeathSpot.IsEnabled)
+            {
+                _dS++;
+                if (_dS >= 5)
+                {
+                    _dS = 0;
+                    DeathSpot.Check();
+                }
+            }
+            else
+            {
+                _dS = 0;
+            }
+            if (DeathSpot.IsEnabled)
             {
                 _eC++;
                 if (_eC >= 15)
@@ -352,19 +390,6 @@ namespace ServerTools
             {
                 _pSC = 0;
             }
-            //if (WorldRadius.IsEnabled)
-            //{
-            //    _wR++;
-            //    if (_wR >= 2)
-            //    {
-            //        _wR = 0;
-            //        WorldRadius.WorldRad();
-            //    }
-            //}
-            //else
-            //{
-            //    _wR = 0;
-            //}
             if (EntityUnderground.IsEnabled)
             {
                 _eU++;
@@ -384,10 +409,10 @@ namespace ServerTools
                 if (_rS >= 300)
                 {
                     _rS = 0;
-                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                    foreach (var _cInfo in _cInfoList)
+                    int _playerCount = ConnectionManager.Instance.ClientCount();
+                    if (_playerCount == API.MaxPlayers)
                     {
-                        ReservedSlots.CheckReservedSlot(_cInfo);
+                        ReservedSlots.OpenSlot2();
                     }
                 }
             }
@@ -548,7 +573,7 @@ namespace ServerTools
             if (!FlightCheck.IsEnabled && !HatchElevator.IsEnabled && !UndergroundCheck.IsEnabled && !ZoneProtection.IsEnabled 
                 && !WeatherVote.IsEnabled && !PlayerStatCheck.IsEnabled && !Bloodmoon.IsEnabled && !WorldRadius.IsEnabled && !PlayerLogs.IsEnabled
                 && !AutoSaveWorld.IsEnabled && !StopServer.stopServerCountingDown && !Jail.IsEnabled && !AutoShutdown.IsEnabled
-                && !InfoTicker.IsEnabled && !EntityUnderground.IsEnabled)
+                && !InfoTicker.IsEnabled && !EntityUnderground.IsEnabled && !DeathSpot.IsEnabled && !RealWorldTime.IsEnabled)
             {
                 TimerStop1Second();
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -26,13 +27,9 @@ namespace ServerTools
             {
                 Animals.BuildList();
             }
-            if (StartingItems.IsEnabled)
-            {
-                StartingItems.BuildList();
-            }
             if (Fps.IsEnabled)
             {
-                Fps._0_();
+                Fps.SetTarget();
             }
             Timers.LoadAlert();
         }
@@ -69,7 +66,7 @@ namespace ServerTools
             if (ReservedSlots.IsEnabled)
             {
                 ReservedSlots.SessionTime(_cInfo);
-                ReservedSlots.CheckReservedSlot(_cInfo);
+                ReservedSlots.CheckReservedSlot1(_cInfo);
             }
         }
 
@@ -110,9 +107,9 @@ namespace ServerTools
             {
                 Jail.CheckPlayer(_cInfo);
             }
-            if (StartingItems.IsEnabled & _respawnReason == RespawnType.JoinMultiplayer)
+            if (NewSpawnTele.IsEnabled & _respawnReason == RespawnType.EnterMultiplayer)
             {
-                StartingItems.StartingItemCheck(_cInfo);
+                NewSpawnTele.TeleNewSpawn(_cInfo);
             }
             if (Motd.IsEnabled & Motd.Show_On_Respawn)
             {
@@ -136,18 +133,13 @@ namespace ServerTools
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /forgive to release your killer from jail.[-]", Config.Chat_Response_Color), "Server", false, "", false));
                 }
             }
-            if (NewSpawnTele.IsEnabled & _respawnReason == RespawnType.JoinMultiplayer)
+            if (StartingItems.IsEnabled && _respawnReason == RespawnType.EnterMultiplayer && !StartingItems.Received.Contains(_cInfo.playerId) || StartingItems.IsEnabled && _respawnReason == RespawnType.Teleport && !StartingItems.Received.Contains(_cInfo.playerId))
             {
-                NewSpawnTele.TeleNewSpawn(_cInfo);
+                StartingItems.StartingItemCheck(_cInfo);
             }
-            if (DeathSpot.IsEnabled && _respawnReason == RespawnType.Died)
+            if (DeathSpot.Flag.Contains(_cInfo.entityId))
             {
-                EntityPlayer ep = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                var _position = ep.GetDroppedBackpackPosition();
-                DeathSpot.Died.Remove(_cInfo.entityId);
-                DeathSpot.Died.Add(_cInfo.entityId, DateTime.Now);
-                DeathSpot.Position.Remove(_cInfo.entityId);
-                DeathSpot.Position.Add(_cInfo.entityId, _position);
+                DeathSpot.Flag.Remove(_cInfo.entityId);
             }
         }
 
@@ -163,17 +155,14 @@ namespace ServerTools
                 FriendTeleport.Dict.Remove(_cInfo.entityId);
                 FriendTeleport.Dict1.Remove(_cInfo.entityId);
             }
-            if (Travel.TeleportCheckProtection.Contains(_cInfo.entityId))
+            if (DeathSpot.IsEnabled)
             {
-                Travel.TeleportCheckProtection.Remove(_cInfo.entityId);
-            }
-            if (CustomCommands.TeleportCheckProtection.Contains(_cInfo.entityId))
-            {
-                CustomCommands.TeleportCheckProtection.Remove(_cInfo.entityId);
-            }
-            if (TeleportHome.TeleportCheckProtection.Contains(_cInfo.entityId))
-            {
-                TeleportHome.TeleportCheckProtection.Remove(_cInfo.entityId);
+                if (DeathSpot.Died.ContainsKey(_cInfo.entityId))
+                {
+                    DeathSpot.Died.Remove(_cInfo.entityId);
+                    DeathSpot.Position.Remove(_cInfo.entityId);
+                    DeathSpot.Flag.Remove(_cInfo.entityId);
+                }
             }
             if (Jail.Dict.ContainsKey(_cInfo.playerId))
             {
@@ -182,6 +171,9 @@ namespace ServerTools
             if (ZoneProtection.PvEFlag.ContainsKey(_cInfo.entityId))
             {
                 ZoneProtection.PvEFlag.Remove(_cInfo.entityId);
+                ZoneProtection.PlayerKills.Remove(_cInfo.entityId);
+                ZoneProtection.Forgive.Remove(_cInfo.entityId);
+                ZoneProtection.Victim.Remove(_cInfo.entityId);
             }
             if (FlightCheck.Flag.ContainsKey(_cInfo.playerId))
             {
@@ -194,6 +186,22 @@ namespace ServerTools
             if (FlightCheck.fLastPositionY.ContainsKey(_cInfo.entityId))
             {
                 FlightCheck.fLastPositionY.Remove(_cInfo.entityId);
+            }
+            if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
+            {
+                FriendTeleport.Dict.Remove(_cInfo.entityId);
+            }
+            if (FriendTeleport.Dict1.ContainsKey(_cInfo.entityId))
+            {
+                FriendTeleport.Dict1.Remove(_cInfo.entityId);
+            }
+            if (ReservedSlots.Session.ContainsKey(_cInfo.playerId))
+            {
+                ReservedSlots.Session.Remove(_cInfo.playerId);
+            }
+            if (Travel.Flag.Contains(_cInfo.entityId))
+            {
+                Travel.Flag.Remove(_cInfo.entityId);
             }
             if (UndergroundCheck.Flag.ContainsKey(_cInfo.playerId))
             {

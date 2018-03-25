@@ -1026,6 +1026,15 @@ namespace ServerTools
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"760\" Phrase=\"{0}\" />", _phrase760));
                 sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ******************* Real_World_Time ******************** -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase765;
+                if (!Dict.TryGetValue(765, out _phrase765))
+                {
+                    _phrase765 = "The real world time is {Time} UTC.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"765\" Phrase=\"{0}\" />", _phrase765));
+                sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ********************* More_Phrases ********************* -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 string _phrase799;

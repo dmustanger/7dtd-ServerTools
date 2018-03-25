@@ -66,7 +66,7 @@ namespace ServerTools
                 }
                 if (!Jail.Dict.ContainsKey(_cInfo.playerId))
                 {
-                    if (Admin_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && !_message.Contains(Command_Private) && !_message.Contains(Command_Public) && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && !AdminChatColor.AdminColorOff.Contains(_cInfo.playerId) && (!_message.StartsWith("[") && !_message.Contains("]")))
+                    if (Admin_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && _secondaryName != "Coppis" && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && !AdminChatColor.AdminColorOff.Contains(_cInfo.playerId) && (!_message.StartsWith("[") && !_message.Contains("]")))
                     {
                         AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                         if (Admin.PermissionLevel <= Admin_Level)
@@ -100,7 +100,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (Donator_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && !_message.Contains(Command_Private) && !_message.Contains(Command_Public) && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && (!_message.StartsWith("[") && !_message.Contains("]")))
+                    if (Donator_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && _secondaryName != "Coppis" && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && (!_message.StartsWith("[") && !_message.Contains("]")))
                     {
                         AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                         if (Admin.PermissionLevel == Don_Level1)
@@ -164,7 +164,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (Special_Player_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && !_message.Contains(Command_Private) && !_message.Contains(Command_Public) && SpecialPlayers.Contains(_cInfo.playerId) && !SpecialPlayersColorOff.Contains(_cInfo.playerId) && (!_message.StartsWith("[") && !_message.Contains("]")))
+                    if (Special_Player_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && _secondaryName != "Coppis" && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && SpecialPlayers.Contains(_cInfo.playerId) && !SpecialPlayersColorOff.Contains(_cInfo.playerId) && (!_message.StartsWith("[") && !_message.Contains("]")))
                     {
                         if (Special_Player_Prefix != "")
                         {
@@ -179,7 +179,7 @@ namespace ServerTools
                             return false;
                         }
                     }
-                    if (Normal_Player_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && !_message.Contains(Command_Private) && !_message.Contains(Command_Public) && !SpecialPlayers.Contains(_cInfo.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && (!_message.StartsWith("[") && !_message.Contains("]")))
+                    if (Normal_Player_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && _secondaryName != "Coppis" && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && !SpecialPlayers.Contains(_cInfo.playerId) && !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && (!_message.StartsWith("[") && !_message.Contains("]")))
                     {
                         if (Normal_Player_Prefix != "")
                         {
@@ -641,6 +641,7 @@ namespace ServerTools
                         {
                             string _commands1 = CustomCommands.GetChatCommands1(_cInfo);
                             string _commands2 = CustomCommands.GetChatCommands2(_cInfo);
+                            string _commands3 = CustomCommands.GetChatCommands3(_cInfo);
                             string _commandsCustom = CustomCommands.GetChatCommandsCustom(_cInfo);
                             string _commandsAdmin = CustomCommands.GetChatCommandsAdmin(_cInfo);
                             if (_announce)
@@ -648,6 +649,7 @@ namespace ServerTools
                                 GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}", Command_Public, _message), _playerName, false, "ServerTools", true);
                                 GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _commands1, "Server", false, "ServerTools", false);
                                 GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _commands2, "Server", false, "ServerTools", false);
+                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _commands3, "Server", false, "ServerTools", false);
                                 if (CustomCommands.IsEnabled)
                                 {
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _commandsCustom, "Server", false, "ServerTools", false);
@@ -662,6 +664,7 @@ namespace ServerTools
                             {
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commands1, "Server", false, "ServerTools", false));
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commands2, "Server", false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commands3, "Server", false, "ServerTools", false));
                                 if (CustomCommands.IsEnabled)
                                 {
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commandsCustom, "Server", false, "ServerTools", false));

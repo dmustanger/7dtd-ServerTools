@@ -166,74 +166,73 @@ namespace ServerTools
         public static void StartingItemCheck(ClientInfo _cInfo)
         {
             if (startItemList != null)
-            {               
+            {
                 World world = GameManager.Instance.World;
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null)
+                foreach (KeyValuePair<string, int[]> kvp in startItemList)
                 {
-                    if (_player.Level == 1 && _player.totalItemsCrafted == 0)
+                    ItemValue itemValue;
+                    var itemId = 4096;
+                    int _itemId;
+                    if (int.TryParse(kvp.Key, out _itemId))
                     {
-                        foreach (KeyValuePair<string, int[]> kvp in startItemList)
-                        {
-                            ItemValue itemValue;
-                            var itemId = 4096;
-                            int _itemId;
-                            if (int.TryParse(kvp.Key, out _itemId))
-                            {
-                                int calc = (_itemId + 4096);
-                                itemId = calc;
-                                itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, kvp.Value[1], kvp.Value[1], true);
-                            }
-                            else
-                            {
-                                if (!ItemClass.ItemNames.Contains(kvp.Key))
-                                {
-                                    Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0} for Starting_Items", kvp.Key));
-                                }
-
-                                itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], true);
-                            }
-
-                            if (Equals(itemValue, ItemValue.None))
-                            {
-                                Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0} for Starting_Items", kvp.Key));
-                            }
-                            var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                            {
-                                entityClass = EntityClass.FromString("item"),
-                                id = EntityFactory.nextEntityID++,
-                                itemStack = new ItemStack(itemValue, kvp.Value[0]),
-                                pos = world.Players.dict[_cInfo.entityId].position,
-                                rot = new Vector3(20f, 0f, 20f),
-                                lifetime = 60f,
-                                belongsPlayerId = _cInfo.entityId
-                            });
-                            world.SpawnEntityInWorld(entityItem);
-                            _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
-                            world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                            Received.Add(_cInfo.playerId);
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = true;
-                            PersistentContainer.Instance.Save();
-                            Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
-                        }
+                        int calc = (_itemId + 4096);
+                        itemId = calc;
+                        itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, kvp.Value[1], kvp.Value[1], true);
                     }
+                    else
+                    {
+                        if (!ItemClass.ItemNames.Contains(kvp.Key))
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0} for Starting_Items", kvp.Key));
+                        }
+
+                        itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], true);
+                    }
+
+                    if (Equals(itemValue, ItemValue.None))
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0} for Starting_Items", kvp.Key));
+                    }
+                    var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                    {
+                        entityClass = EntityClass.FromString("item"),
+                        id = EntityFactory.nextEntityID++,
+                        itemStack = new ItemStack(itemValue, kvp.Value[0]),
+                        pos = world.Players.dict[_cInfo.entityId].position,
+                        rot = new Vector3(20f, 0f, 20f),
+                        lifetime = 60f,
+                        belongsPlayerId = _cInfo.entityId
+                    });
+                    world.SpawnEntityInWorld(entityItem);
+                    _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
+                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+                    Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
                 }
+                Received.Add(_cInfo.playerId);
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = true;
+                PersistentContainer.Instance.Save();
+            }
+            else
+            {
+                Log.Out("[SERVERTOOLS] Starting items list empty. No items found in the file have been added.");
             }
         }
 
         public static void BuildList()
         {
-            List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
-            for (int i = 0; i < playerlist.Count; i++)
+            if (startItemList.Count > 0)
             {
-                string _steamId = playerlist[i];
-                Player p = PersistentContainer.Instance.Players[_steamId, false];
-                if (p != null)
+                List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
+                for (int i = 0; i < playerlist.Count; i++)
                 {
-                    if (p.StartingItems)
+                    string _steamId = playerlist[i];
+                    Player p = PersistentContainer.Instance.Players[_steamId, false];
+                    if (p != null)
                     {
-                        Received.Add(_steamId);
+                        if (p.StartingItems)
+                        {
+                            Received.Add(_steamId);
+                        }
                     }
                 }
             }

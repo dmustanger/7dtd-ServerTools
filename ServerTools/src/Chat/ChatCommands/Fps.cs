@@ -3,8 +3,8 @@ namespace ServerTools
 {
     class Fps
     {
-        public static bool IsEnabled = false, Set = false;
-        public static int Target = 0;
+        public static bool IsEnabled = false;
+        public static int Set_Target = 30;
 
         public static void FPS(ClientInfo _cInfo, bool _announce)
         {
@@ -25,12 +25,10 @@ namespace ServerTools
             }
         }
 
-        public static void _0_()
+        public static void SetTarget()
         {
-            if (Set)
-            {
-                SdtdConsole.Instance.ExecuteSync(string.Format("SetTargetFps {0}", Target), null);
-            }
+            SdtdConsole.Instance.ExecuteSync(string.Format("SetTargetFps {0}", Set_Target), null);
+            Log.Out(string.Format("[SERVERTOOLS] Set target FPS to {0}", Set_Target));
         }
     }
 }

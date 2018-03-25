@@ -192,43 +192,50 @@ namespace ServerTools
 
         public static void Check(ClientInfo _cInfo)
         {
-            if (Delay_Between_Uses == 0)
+            if (dict.Count > 0)
             {
-                Open(_cInfo);
-            }
-            else
-            {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null || p.LastVoteReward == null)
+                if (Delay_Between_Uses == 0)
                 {
                     Open(_cInfo);
                 }
                 else
                 {
-                    TimeSpan varTime = DateTime.Now - p.LastVoteReward;
-                    double fractionalHours = varTime.TotalHours;
-                    int _timepassed = (int)fractionalHours;
-                    if (_timepassed >= Delay_Between_Uses)
+                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                    if (p == null || p.LastVoteReward == null)
                     {
                         Open(_cInfo);
                     }
                     else
                     {
-                        int _timeleft = Delay_Between_Uses - _timepassed;
-                        string _phrase602;
-                        if (!Phrases.Dict.TryGetValue(602, out _phrase602))
+                        TimeSpan varTime = DateTime.Now - p.LastVoteReward;
+                        double fractionalHours = varTime.TotalHours;
+                        int _timepassed = (int)fractionalHours;
+                        if (_timepassed >= Delay_Between_Uses)
                         {
-                            _phrase602 = "{PlayerName} you can only use /reward once every {DelayBetweenRewards} hours. Time remaining: {TimeRemaining} hour(s).";
+                            Open(_cInfo);
                         }
-                        string cinfoName = _cInfo.playerName;
-                        _phrase602 = _phrase602.Replace("{PlayerName}", cinfoName);
-                        _phrase602 = _phrase602.Replace("{DelayBetweenRewards}", Delay_Between_Uses.ToString());
-                        _phrase602 = _phrase602.Replace("{TimeRemaining}", _timeleft.ToString());
+                        else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase602), "Server", false, "", false));
+                            int _timeleft = Delay_Between_Uses - _timepassed;
+                            string _phrase602;
+                            if (!Phrases.Dict.TryGetValue(602, out _phrase602))
+                            {
+                                _phrase602 = "{PlayerName} you can only use /reward once every {DelayBetweenRewards} hours. Time remaining: {TimeRemaining} hour(s).";
+                            }
+                            string cinfoName = _cInfo.playerName;
+                            _phrase602 = _phrase602.Replace("{PlayerName}", cinfoName);
+                            _phrase602 = _phrase602.Replace("{DelayBetweenRewards}", Delay_Between_Uses.ToString());
+                            _phrase602 = _phrase602.Replace("{TimeRemaining}", _timeleft.ToString());
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase602), "Server", false, "", false));
+                            }
                         }
                     }
                 }
+            }
+            else
+            {
+                Log.Out(string.Format("No items available for reward. Check for an error in the file."));
             }
         }
 

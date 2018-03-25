@@ -7,10 +7,9 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int Delay_Between_Uses = 60;
-        public static SortedDictionary<int, int> Dict = new SortedDictionary<int, int>();
-        public static SortedDictionary<int, DateTime> Dict1 = new SortedDictionary<int, DateTime>();
-        public static List<int> TeleportCheckProtection = new List<int>();
-        public static SortedDictionary<int, int> Count = new SortedDictionary<int, int>();
+        public static Dictionary<int, int> Dict = new Dictionary<int, int>();
+        public static Dictionary<int, DateTime> Dict1 = new Dictionary<int, DateTime>();
+        public static Dictionary<int, int> Count = new Dictionary<int, int>();
 
         public static void ListFriends(ClientInfo _cInfo, string _message)
         {

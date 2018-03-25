@@ -154,6 +154,17 @@
             {
                 Timers.TimerCheck();
             }
+            if (DeathSpot.IsEnabled)
+            {
+                if (!Timers.timer1Running)
+                {
+                    Timers.TimerStart1Second();
+                }
+            }
+            if (!DeathSpot.IsEnabled)
+            {
+                Timers.TimerCheck();
+            }
             if (!InfoTicker.IsEnabled && InfoTicker.IsRunning)
             {
                 InfoTicker.Unload();
@@ -297,6 +308,10 @@
             if (!CustomCommands.IsRunning && CustomCommands.IsEnabled)
             {
                 CustomCommands.Load();
+            }
+            if (StartingItems.IsEnabled)
+            {
+                StartingItems.BuildList();
             }
         }
     }

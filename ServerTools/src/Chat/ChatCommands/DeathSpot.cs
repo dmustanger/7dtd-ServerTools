@@ -9,7 +9,30 @@ namespace ServerTools
         public static bool IsEnabled = false;
         public static int Delay = 120;
         public static Dictionary<int, DateTime> Died = new Dictionary<int, DateTime>();
-        public static Dictionary<int, Vector3i> Position = new Dictionary<int, Vector3i>();
+        public static Dictionary<int, Vector3> Position = new Dictionary<int, Vector3>();
+        public static List<int> Flag = new List<int>();
+
+        public static void Check()
+        {
+            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+            for (int i = 0; i < _cInfoList.Count; i++)
+            {
+                ClientInfo _cInfo = _cInfoList[i];
+                if (!Flag.Contains(_cInfo.entityId))
+                {
+                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                    if (_player.IsDead())
+                    {
+                        Vector3 _pos = _player.position;
+                        Died.Remove(_cInfo.entityId);
+                        Died.Add(_cInfo.entityId, DateTime.Now);
+                        Position.Remove(_cInfo.entityId);
+                        Position.Add(_cInfo.entityId, _pos);
+                        Flag.Add(_cInfo.entityId);
+                    }
+                }
+            }
+        }
 
         public static void DeathDelay(ClientInfo _cInfo, bool _announce, string _playerName)
         {
@@ -69,13 +92,14 @@ namespace ServerTools
                     int _timepassed = (int)fractionalMinutes;
                     if (_timepassed < 2)
                     {
-                        Vector3i _value;
+                        Vector3 _value;
                         if (Position.TryGetValue(_cInfo.entityId, out _value))
                         {
-                            Vector3 _vec3 = _value.ToVector3();
-                            _cInfo.SendPackage(new NetPackageTeleportPlayer(_vec3, false));
+                            _cInfo.SendPackage(new NetPackageTeleportPlayer(_value, false));
                             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastDied = DateTime.Now;
                             PersistentContainer.Instance.Save();
+                            Died.Remove(_cInfo.entityId);
+                            Position.Remove(_cInfo.entityId);
                             string _phrase736;
                             if (!Phrases.Dict.TryGetValue(736, out _phrase736))
                             {
@@ -95,6 +119,7 @@ namespace ServerTools
                     else
                     {
                         Died.Remove(_cInfo.entityId);
+                        Position.Remove(_cInfo.entityId);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your last death time is over two minutes. Command unavailable.[-]", Config.Chat_Response_Color), "Server", false, "", false));
                     }
                 }

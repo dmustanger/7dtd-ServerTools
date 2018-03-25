@@ -8,8 +8,8 @@ namespace ServerTools
     public class CustomCommands
     {
         public static bool IsEnabled = false, IsRunning = false;     
-        public static SortedDictionary<string, string> Dict = new SortedDictionary<string, string>();
-        public static SortedDictionary<string, int[]> Dict1 = new SortedDictionary<string, int[]>();
+        public static Dictionary<string, string> Dict = new Dictionary<string, string>();
+        public static Dictionary<string, int[]> Dict1 = new Dictionary<string, int[]>();
         public static List<int> TeleportCheckProtection = new List<int>();
         private const string file = "CustomChatCommands.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -132,11 +132,11 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine("        <Command Number=\"1\" Trigger=\"help\" Response=\"say Type /commands for a list of chat commands.\" DelayBetweenUses=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"2\" Trigger=\"info\" Response=\"say Type /commands for a list of chat commands.\" DelayBetweenUses=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"3\" Trigger=\"rules\" Response=\"say Visit YourSiteHere to see the rules.\" DelayBetweenUses=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"say Visit YourSiteHere.\" DelayBetweenUses=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"say The Teamspeak3 info is YourInfoHere.\" DelayBetweenUses=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"1\" Trigger=\"help\" Response=\"say &quot;Type /commands for a list of chat commands.&quot;\" DelayBetweenUses=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"2\" Trigger=\"info\" Response=\"say &quot;Type /commands for a list of chat commands.&quot;\" DelayBetweenUses=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"3\" Trigger=\"rules\" Response=\"say &quot;Visit YourSiteHere to see the rules.&quot;\" DelayBetweenUses=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"say &quot;Visit YourSiteHere.&quot;\" DelayBetweenUses=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"say &quot;The Teamspeak3 info is YourInfoHere.&quot;\" DelayBetweenUses=\"0\" />");
                     sw.WriteLine("        <Command Number=\"6\" Trigger=\"market\" Response=\"tele {EntityId} 0 -1 0\" DelayBetweenUses=\"60\" />");
                     sw.WriteLine("        <Command Number=\"7\" Trigger=\"spawnZ\" Response=\"ser {EntityId} 20 @ 4 9 11\" DelayBetweenUses=\"60\" />");
                     sw.WriteLine("        <Command Number=\"8\" Trigger=\"test3\" Response=\"Your command here\" DelayBetweenUses=\"20\" />");
@@ -208,24 +208,24 @@ namespace ServerTools
             {
                 _commands_1 = string.Format("{0} /clancommands", _commands_1);
             }
-            if (FirstClaimBlock.IsEnabled)
-            {
-                _commands_1 = string.Format("{0} /claim", _commands_1);
-            }
-            if (RestartVote.IsEnabled)
-            {
-                _commands_1 = string.Format("{0} /restart", _commands_1);
-                if (RestartVote.VoteOpen)
-                {
-                    _commands_1 = string.Format("{0} /yes /no", _commands_1);
-                }
-            }
             return _commands_1;
         }
 
         public static string GetChatCommands2(ClientInfo _cInfo)
         {
             string _commands_2 = string.Format("{0}More Commands:", Config.Chat_Response_Color);
+            if (FirstClaimBlock.IsEnabled)
+            {
+                _commands_2 = string.Format("{0} /claim", _commands_2);
+            }
+            if (RestartVote.IsEnabled)
+            {
+                _commands_2 = string.Format("{0} /restart", _commands_2);
+                if (RestartVote.VoteOpen)
+                {
+                    _commands_2 = string.Format("{0} /yes /no", _commands_2);
+                }
+            }
             if (Animals.IsEnabled)
             {
                 _commands_2 = string.Format("{0} /trackanimal /track", _commands_2);
@@ -262,23 +262,37 @@ namespace ServerTools
             {
                 _commands_2 = string.Format("{0} /sethome2 /home2 /delhome2", _commands_2);
             }
+            return _commands_2;
+        }
+
+        public static string GetChatCommands3(ClientInfo _cInfo)
+        {
+            string _commands_3 = string.Format("{0}More Commands:", Config.Chat_Response_Color);
             if (WeatherVote.IsEnabled)
             {
-                _commands_2 = string.Format("{0} /weather", _commands_2);
+                _commands_3 = string.Format("{0} /weather", _commands_3);
                 if (WeatherVote.VoteOpen)
                 {
-                    _commands_2 = string.Format("{0} /sun /rain /snow /fog /wind", _commands_2);
+                    _commands_3 = string.Format("{0} /sun /rain /snow /fog /wind", _commands_3);
                 }
-            }            
+            }
             if (AuctionBox.IsEnabled)
             {
-                _commands_2 = string.Format("{0} /auction /auction sell # /auction buy #", _commands_2);
+                _commands_3 = string.Format("{0} /auction /auction sell # /auction buy #", _commands_3);
             }
             if (DeathSpot.IsEnabled)
             {
-                _commands_2 = string.Format("{0} /died", _commands_2);
+                _commands_3 = string.Format("{0} /died", _commands_3);
             }
-            return _commands_2;
+            if (Fps.IsEnabled)
+            {
+                _commands_3 = string.Format("{0} /fps", _commands_3);
+            }
+            if (Loc.IsEnabled)
+            {
+                _commands_3 = string.Format("{0} /loc", _commands_3);
+            }
+            return _commands_3;
         }
 
         public static string GetChatCommandsCustom(ClientInfo _cInfo)
