@@ -28,6 +28,8 @@ Automatically detects and deals with cheaters. Customizable<br>
 Detects: flying above or below ground, hatch elevator, teleport, invalid items, invalid stack sized, family share accounts, <br>
 player stats such as height, speed, jump strength, max stamina, max health, available skill points.<br>
 <br>
+Control the world radius and how far players can travel.<br>
+<br>
 Logs all player's inventory to a file for later review. Set the time between loggings. Default is once per minute.<br>
 <br>
 Records player's IP address and location to the inventory log.<br>
@@ -39,7 +41,7 @@ Logs of violators are auto created and deleted based on your settings.<br>
 Other Tools<br>
 <br>
 <br>
-Auction box: players can one item or stack at a time by placing it in a box and selling it through the auction system<br>
+Auction box: players can sell one item or stack at a time by placing it in a box and selling it through the auction system<br>
 Players can buy it as they please with their wallet coins<br>
 <br>
 Shop: setup a list of items and prices for players to purchase inside or outside of a trader zone. Includes a wallet system<br>
@@ -52,7 +54,7 @@ Bag return: after dying players can teleport their bag items back to their inven
 <br>
 Vote: To kick or mute a player<br>
 <br>
-World Radius: control normal and donators world size<br>
+World Radius: control normal and donators world size as an anti cheat or feature for donators to travel further<br>
 <br>
 Day7 alerts: automatically receive in game alerts to the upcoming bloodmoon. Can set a custom horde night value<br>
 <br>
