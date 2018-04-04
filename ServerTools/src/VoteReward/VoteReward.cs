@@ -222,12 +222,11 @@ namespace ServerTools
                             {
                                 _phrase602 = "{PlayerName} you can only use /reward once every {DelayBetweenRewards} hours. Time remaining: {TimeRemaining} hour(s).";
                             }
-                            string cinfoName = _cInfo.playerName;
-                            _phrase602 = _phrase602.Replace("{PlayerName}", cinfoName);
+                            _phrase602 = _phrase602.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase602 = _phrase602.Replace("{DelayBetweenRewards}", Delay_Between_Uses.ToString());
                             _phrase602 = _phrase602.Replace("{TimeRemaining}", _timeleft.ToString());
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase602), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase602), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                         }
                     }
@@ -250,11 +249,11 @@ namespace ServerTools
                 if (!que.Contains(_cInfo))
                 {
                     que.Add(_cInfo);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward in use. You were added to the que.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward in use. You were added to the que.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward in use and you are already in the que.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward in use and you are already in the que.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
         }
@@ -266,8 +265,7 @@ namespace ServerTools
             var VoteUrl = string.Format("https://7daystodie-servers.com/api/?object=votes&element=claim&key={0}&username={1}", Uri.EscapeUriString(API_Key), Uri.EscapeUriString(_cInfo.playerName));
             using (var NewVote = new WebClient())
             {
-                var VoteResult = string.Empty;
-                VoteResult = NewVote.DownloadString(VoteUrl);
+                string VoteResult = NewVote.DownloadString(VoteUrl);
                 if (VoteResult == "0")
                 {
                     NoVote(_cInfo);
@@ -308,7 +306,7 @@ namespace ServerTools
             }
             _phrase700 = _phrase700.Replace("{PlayerName}", _cInfo.playerName);
             _phrase700 = _phrase700.Replace("{VoteSite}", Your_Voting_Site);
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase700), "Server", false, "", false));
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase700), Config.Server_Response_Name, false, "ServerTools", false));
         }
 
         private static void ItemOrBlock(ClientInfo _cInfo)
@@ -320,7 +318,7 @@ namespace ServerTools
             }
             _phrase701 = _phrase701.Replace("{PlayerName}", _cInfo.playerName);
             _phrase701 = _phrase701.Replace("{VoteDelay}", Delay_Between_Uses.ToString());
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase701), "Server", false, "", false));
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase701), Config.Server_Response_Name, false, "ServerTools", false));
             string _item = list.RandomObject();
             int[] _values;
             if (dict.TryGetValue(_item, out _values))
@@ -392,10 +390,10 @@ namespace ServerTools
                         list.Clear();
                         list = new List<string>(dict.Keys);
                         _counter = 0;
-                        Que();
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now;
                         PersistentContainer.Instance.Save();
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward items sent to your inventory. If it is full, check the ground.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward items sent to your inventory. If it is full, check the ground.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                        Que();
                     }
                 }
                 else
@@ -425,18 +423,18 @@ namespace ServerTools
                 EntityClass eClass = EntityClass.list[Entity_Id];
                 if (eClass.bAllowUserInstantiate)
                 {
-                    Que();
                     Entity entity = EntityFactory.CreateEntity(Entity_Id, new Vector3((float)_x, (float)_y, (float)_z));
                     GameManager.Instance.World.SpawnEntityInWorld(entity);
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now;
                     PersistentContainer.Instance.Save();
                     Log.Out(string.Format("[SERVERTOOLS] Spawned an entity reward {0} at {1} x, {2} y, {3} z for {4}", eClass.entityClassName, _x, _y, _z, _cInfo.playerName));
+                    Que();
                 }
             }
             else
             {
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}No spawn point was found near you. Please move locations and try again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                 Que();
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}No spawn point was found near you. Please move locations and try again.[-]", Config.Chat_Response_Color), "Server", false, "", false));
             }
         }
 
@@ -445,8 +443,8 @@ namespace ServerTools
             if (que.Count > 0)
             {
                 ClientInfo _cInfo = que.First();
-                que.RemoveAt(0);
                 Execute(_cInfo);
+                que.RemoveAt(0);
             }
             else
             {

@@ -8,73 +8,151 @@ namespace ServerTools
     {
         private readonly string steamId;
         [OptionalField]
+        private int bikeId;
+        private int jailTime;
+        private int muteTime;
+        private int worldSeedCoins;
+        private int zkills;
+        private int kills;
+        private int deaths;
         private int auctionData;
-        [OptionalField]
-        private string[] auctionItem;
-        [OptionalField]
-        private DateTime lastDied;
-        [OptionalField]
-        private DateTime lastFriendTele;
-        [OptionalField]
         private int playerSpentCoins;
-        [OptionalField]
-        public DateTime customCommand1;
-        [OptionalField]
-        public DateTime customCommand2;
-        [OptionalField]
-        public DateTime customCommand3;
-        [OptionalField]
-        public DateTime customCommand4;
-        [OptionalField]
-        public DateTime customCommand5;
-        [OptionalField]
-        public DateTime customCommand6;
-        [OptionalField]
-        public DateTime customCommand7;
-        [OptionalField]
-        public DateTime customCommand8;
-        [OptionalField]
-        public DateTime customCommand9;
-        [OptionalField]
-        public DateTime customCommand10;
-        [OptionalField]
-        private string homeposition2;
-        [OptionalField]
-        private DateTime respawnTime;
-        [OptionalField]
-        private DateTime lastTravel;
-        [OptionalField]
-        private bool firstClaim;
-        [OptionalField]
-        private bool adminChatColor;
-        [OptionalField]
-        private DateTime lastAnimals;
-        [OptionalField]
-        private DateTime lastVoteReward;
-        [OptionalField]
-        private DateTime lastgimme;
-        [OptionalField]
-        private DateTime lastkillme;
-        [OptionalField]
+        private string[] auctionItem;
+        private string jailName;
+        private string muteName;
         private string homeposition;
-        [OptionalField]
-        private DateTime lastsethome;
-        [OptionalField]
+        private string homeposition2;
         private string clanname;
-        [OptionalField]
-        private bool isclanowner;
-        [OptionalField]
-        private bool isclanofficer;
-        [OptionalField]
         private string invitedtoclan;
-        [OptionalField]
         private string lastwhisper;
-        [OptionalField]
+        private DateTime log;
+        private DateTime jailDate;
+        private DateTime muteDate;
+        private DateTime lastBike;
+        private DateTime lastBackpack;
+        private DateTime lastDied;
+        private DateTime lastFriendTele;
+        private DateTime customCommand1;
+        private DateTime customCommand2;
+        private DateTime customCommand3;
+        private DateTime customCommand4;
+        private DateTime customCommand5;
+        private DateTime customCommand6;
+        private DateTime customCommand7;
+        private DateTime customCommand8;
+        private DateTime customCommand9;
+        private DateTime customCommand10;
+        private DateTime respawnTime;
+        private DateTime lastTravel;
+        private DateTime lastAnimals;
+        private DateTime lastVoteReward;
+        private DateTime lastgimme;
+        private DateTime lastkillme;
+        private DateTime lastsethome;
+        private bool firstClaim;
+        private bool adminChatColor;
+        private bool isclanowner;
+        private bool isclanofficer;
         private bool ismuted;
-        [OptionalField]
         private bool isjailed;
-        [OptionalField]
         private bool isremovedfromjail = true;
+        private bool startingItems;
+
+        public int BikeId
+        {
+            get
+            {
+                return bikeId;
+            }
+            set
+            {
+                bikeId = value;
+            }
+        }
+
+        public int JailTime
+        {
+            get
+            {
+                return jailTime;
+            }
+            set
+            {
+                jailTime = value;
+            }
+        }
+
+        public int MuteTime
+        {
+            get
+            {
+                return muteTime;
+            }
+            set
+            {
+                muteTime = value;
+            }
+        }
+
+        public int ZKills
+        {
+            get
+            {
+                return zkills;
+            }
+            set
+            {
+                zkills = value;
+            }
+        }
+
+        public int Kills
+        {
+            get
+            {
+                return kills;
+            }
+            set
+            {
+                kills = value;
+            }
+        }
+
+        public int Deaths
+        {
+            get
+            {
+                return deaths;
+            }
+            set
+            {
+                deaths = value;
+            }
+        }
+
+        public bool StartingItems
+        {
+            get
+            {
+                return startingItems;
+            }
+            set
+            {
+                startingItems = value;
+            }
+        }
+
+        public int WorldSeedCoins
+        {
+            get
+            {
+                return worldSeedCoins;
+            }
+            set
+            {
+                worldSeedCoins = value;
+            }
+        }
 
         public int AuctionData
         {
@@ -97,6 +175,66 @@ namespace ServerTools
             set
             {
                 auctionItem = value;
+            }
+        }
+
+        public DateTime Log
+        {
+            get
+            {
+                return log;
+            }
+            set
+            {
+                log = value;
+            }
+        }
+
+        public DateTime JailDate
+        {
+            get
+            {
+                return jailDate;
+            }
+            set
+            {
+                jailDate = value;
+            }
+        }
+
+        public DateTime MuteDate
+        {
+            get
+            {
+                return muteDate;
+            }
+            set
+            {
+                muteDate = value;
+            }
+        }
+
+        public DateTime LastBike
+        {
+            get
+            {
+                return lastBike;
+            }
+            set
+            {
+                lastBike = value;
+            }
+        }
+
+        public DateTime LastBackpack
+        {
+            get
+            {
+                return lastBackpack;
+            }
+            set
+            {
+                lastBackpack = value;
             }
         }
 
@@ -244,18 +382,6 @@ namespace ServerTools
             }
         }
 
-        public string HomePosition2
-        {
-            get
-            {
-                return homeposition2;
-            }
-            set
-            {
-                homeposition2 = value;
-            }
-        }
-
         public DateTime RespawnTime
         {
             get
@@ -364,6 +490,42 @@ namespace ServerTools
             }
         }
 
+        public DateTime LastSetHome
+        {
+            get
+            {
+                return lastsethome;
+            }
+            set
+            {
+                lastsethome = value;
+            }
+        }
+
+        public string JailName
+        {
+            get
+            {
+                return jailName;
+            }
+            set
+            {
+                jailName = value;
+            }
+        }
+
+        public string MuteName
+        {
+            get
+            {
+                return muteName;
+            }
+            set
+            {
+                muteName = value;
+            }
+        }
+
         public string HomePosition
         {
             get
@@ -376,15 +538,15 @@ namespace ServerTools
             }
         }
 
-        public DateTime LastSetHome
+        public string HomePosition2
         {
             get
             {
-                return lastsethome;
+                return homeposition2;
             }
             set
             {
-                lastsethome = value;
+                homeposition2 = value;
             }
         }
 

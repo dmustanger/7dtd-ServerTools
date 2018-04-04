@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ServerTools
 {
@@ -19,7 +18,7 @@ namespace ServerTools
                     _phrase200 = "{PlayerName} you do not have permissions to use this command.";
                 }
                 _phrase200 = _phrase200.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase200), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase200), Config.Server_Response_Name, false, "ServerTools", false));
             }
             else
             {
@@ -37,7 +36,7 @@ namespace ServerTools
                 }
                 _phrase525 = _phrase525.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase525 = _phrase525.Replace("{NewSpawnTelePosition}", New_Spawn_Tele_Position);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase525), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase525), Config.Server_Response_Name, false, "ServerTools", false));
                 Config.UpdateXml();
             }
         }
@@ -53,24 +52,19 @@ namespace ServerTools
 
         public static void TelePlayer(ClientInfo _cInfo)
         {
-            float xf;
-            float yf;
-            float zf;
+            int x, y, z;
             string[] _cords = New_Spawn_Tele_Position.Split(',');
-            float.TryParse(_cords[0], out xf);
-            float.TryParse(_cords[1], out yf);
-            float.TryParse(_cords[2], out zf);
-            int x = (int)xf;
-            int y = (int)yf;
-            int z = (int)zf;
-            SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, x, y, z), (ClientInfo)null);
+            int.TryParse(_cords[0], out x);
+            int.TryParse(_cords[1], out y);
+            int.TryParse(_cords[2], out z);
+            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
             string _phrase526;
             if (!Phrases.Dict.TryGetValue(526, out _phrase526))
             {
                 _phrase526 = "{PlayerName} you have been teleported to the new spawn location.";
             }
             _phrase526 = _phrase526.Replace("{PlayerName}", _cInfo.playerName);
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase526), "Server", false, "", false));
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase526), Config.Server_Response_Name, false, "ServerTools", false));
         }
     }
 }

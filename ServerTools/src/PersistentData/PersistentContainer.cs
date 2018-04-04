@@ -11,7 +11,6 @@ namespace ServerTools
         private Players players;
         private static PersistentContainer instance;
 
-
         public Players Players
         {
             get

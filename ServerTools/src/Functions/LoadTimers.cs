@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Timers;
+﻿using System.Timers;
 
 namespace ServerTools
 {
@@ -9,13 +8,12 @@ namespace ServerTools
         public static int Player_Log_Interval = 60, Auto_Show_Bloodmoon_Delay = 30,
             Delay_Between_World_Saves = 15, Stop_Server_Time = 1, _newCount = 0, Weather_Vote_Delay = 30,
             Shutdown_Delay = 60, Infoticker_Delay = 60, Restart_Vote_Delay = 30, _sSC = 0, _sSCD = 0,
-            Alert_Delay = 5, Real_Time_Delay = 60;
-        private static int timer1SecondInstanceCount = 0, _wV = 0, _wNV = 0, 
-            _pSC = 0, _b = 0, _pL = 0, _wSD = 0, _sD = 0, _iT = 0, _eU = 0,
-            _rS = 0, _rV = 0, _rNV = 0, _eC = 0, _wL = 0, _dS = 0, _rWT = 0; 
+            Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120;
+        private static int timer1SecondInstanceCount, _wV, _wNV, _pSC, _b, _pL, _mC, _wSD, _sD, _iT, _eU,
+            _rS, _rV, _rNV, _eC, _wL, _dS, _rWT, _rE, _bR, _aSB, _wR, _nA, _jR, _h; 
         private static System.Timers.Timer t1 = new System.Timers.Timer();
 
-        public static void TimerStart1Second()
+        public static void TimerStart()
         {
             timer1SecondInstanceCount++;
             if (timer1SecondInstanceCount <= 1)
@@ -25,12 +23,6 @@ namespace ServerTools
                 t1.Start();
                 t1.Elapsed += new ElapsedEventHandler(Init);
             }
-        }
-
-        public static void TimerStop1Second()
-        {
-            timer1Running = false;
-            t1.Stop();
         }
 
         public static void LogAlert()
@@ -80,6 +72,10 @@ namespace ServerTools
             if (Watchlist.IsEnabled)
             {
                 Log.Out("Watchlist started");
+            }
+            if (WorldRadius.IsEnabled)
+            {
+                Log.Out("World radius started");
             }
             Log.Out("--------------------------------------");
             Log.Out("[SERVERTOOLS] Chat prefix-color tools:");
@@ -131,6 +127,10 @@ namespace ServerTools
             {
                 Log.Out("Badword filter enabled");
             }
+            if (EntityCleanup.BlockIsEnabled)
+            {
+                Log.Out("Block cleanup enabled");
+            }
             if (Bloodmoon.IsEnabled)
             {
                 Log.Out("Bloodmoon enabled");
@@ -159,13 +159,13 @@ namespace ServerTools
             {
                 Log.Out("Death spot enabled");
             }
-            if (EntityCleanup.IsEnabled)
-            {
-                Log.Out("Entity cleanup enabled");
-            }
             if (EntityUnderground.IsEnabled)
             {
                 Log.Out("Entity underground enabled");
+            }
+            if (EntityCleanup.FallingTreeEnabled)
+            {
+                Log.Out("Falling tree cleanup enabled");
             }
             if (FirstClaimBlock.IsEnabled)
             {
@@ -187,9 +187,17 @@ namespace ServerTools
             {
                 Log.Out("High ping kicker enabled");
             }
+            if (Hordes.IsEnabled)
+            {
+                Log.Out("Hordes enabled");
+            }
             if (InfoTicker.IsEnabled)
             {
                 Log.Out("Info ticker enabled");
+            }
+            if (EntityCleanup.ItemIsEnabled)
+            {
+                Log.Out("Item cleanup enabled");
             }
             if (KillMe.IsEnabled)
             {
@@ -203,9 +211,17 @@ namespace ServerTools
             {
                 Log.Out("Motd enabled");
             }
+            if (Muted.IsEnabled)
+            {
+                Log.Out("Mute enabled");
+            }
             if (NewSpawnTele.IsEnabled)
             {
                 Log.Out("New spawn teleport enabled");
+            }
+            if (NightAlert.IsEnabled)
+            {
+                Log.Out("Night alert enabled");
             }
             if (RealWorldTime.IsEnabled)
             {
@@ -270,6 +286,19 @@ namespace ServerTools
             {
                 Jail.StatusCheck();
             }
+            if (Jail.Jailed.Count > 0)
+            {
+                _jR++;
+                if (_jR >= 60)
+                {
+                    _jR = 0;
+                    Jail.Clear();
+                }
+            }
+            else
+            {
+                _jR = 0;
+            }
             if (WeatherVote.IsEnabled)
             {
                 if (WeatherVote.VoteOpen)
@@ -298,6 +327,19 @@ namespace ServerTools
                 _wV = 0;
                 _wNV = 0;
             }
+            if (Muted.Mutes.Count > 0)
+            {
+                _mC++;
+                if (_mC >= 60)
+                {
+                    _mC = 0;
+                    Muted.Clear();
+                }
+            }
+            else
+            {
+                _mC = 0;
+            }
             if (RealWorldTime.IsEnabled)
             {
                 _rWT++;
@@ -319,7 +361,7 @@ namespace ServerTools
                     if (_rV >= 30)
                     {
                         _rV = 0;
-                        RestartVote.VoteOpen = false;
+                        RestartVote.VoteNew = false;
                         RestartVote.CallForVote2();
                     }
                 }
@@ -338,6 +380,19 @@ namespace ServerTools
                 _rV = 0;
                 _rNV = 0;
             }
+            if (Hordes.IsEnabled)
+            {
+                _h++;
+                if (_h >= 1200)
+                {
+                    _h = 0;
+                    Hordes.Exec();
+                }
+            }
+            else
+            {
+                _h = 0;
+            }
             if (DeathSpot.IsEnabled)
             {
                 _dS++;
@@ -351,10 +406,10 @@ namespace ServerTools
             {
                 _dS = 0;
             }
-            if (DeathSpot.IsEnabled)
+            if (EntityCleanup.ItemIsEnabled || EntityCleanup.BlockIsEnabled || ZoneProtection.No_Zombie)
             {
                 _eC++;
-                if (_eC >= 15)
+                if (_eC >= 30)
                 {
                     _eC = 0;
                     EntityCleanup.EntityCheck();
@@ -363,6 +418,32 @@ namespace ServerTools
             else
             {
                 _eC = 0;
+            }
+            if (ZoneProtection.IsEnabled && ZoneProtection.No_Zombie)
+            {
+                _rE++;
+                if (_rE >= 5)
+                {
+                    _rE = 0;
+                    EntityCleanup.ZombieCheck();
+                }
+            }
+            else
+            {
+                _rE = 0;
+            }
+            if (NightAlert.IsEnabled)
+            {
+                _nA++;
+                if (_nA >= Night_Time_Delay * 60)
+                {
+                    _nA = 0;
+                    NightAlert.Exec();
+                }
+            }
+            else
+            {
+                _nA = 0;
             }
             if (Watchlist.IsEnabled)
             {
@@ -442,18 +523,7 @@ namespace ServerTools
                 if (_pL >= Player_Log_Interval)
                 {
                     _pL = 0;
-                    if (PlayerLogs.Position)
-                    {
-                        PlayerLogs.Move_Log();
-                    }
-                    if (PlayerLogs.Inventory)
-                    {
-                        PlayerLogs.Player_InvLog();
-                    }
-                    if (PlayerLogs.P_Data)
-                    {
-                        PlayerLogs.Player_Data();
-                    }
+                    PlayerLogs.Exec();
                 }
             }
             else
@@ -537,10 +607,6 @@ namespace ServerTools
             }
             if (AutoShutdown.IsEnabled)
             {
-                if (AutoShutdown.IsEnabled & _sD == 0)
-                {
-                    AutoShutdown.ShutdownList();
-                }
                 _sD++;
                 if (_sD >= Shutdown_Delay * 60)
                 {
@@ -552,6 +618,19 @@ namespace ServerTools
             else
             {
                 _sD = 0;
+            }
+            if (AutoShutdown.Bloodmoon)
+            {
+                _aSB++;
+                if (_aSB >= 1800)
+                {
+                    _aSB = 0;
+                    AutoShutdown.Auto_Shutdown();
+                }
+            }
+            else
+            {
+                _aSB = 0;
             }
             if (InfoTicker.IsEnabled)
             {
@@ -566,16 +645,31 @@ namespace ServerTools
             {
                 _iT = 0;
             }
-        }
-
-        public static void TimerCheck()
-        {
-            if (!FlightCheck.IsEnabled && !HatchElevator.IsEnabled && !UndergroundCheck.IsEnabled && !ZoneProtection.IsEnabled 
-                && !WeatherVote.IsEnabled && !PlayerStatCheck.IsEnabled && !Bloodmoon.IsEnabled && !WorldRadius.IsEnabled && !PlayerLogs.IsEnabled
-                && !AutoSaveWorld.IsEnabled && !StopServer.stopServerCountingDown && !Jail.IsEnabled && !AutoShutdown.IsEnabled
-                && !InfoTicker.IsEnabled && !EntityUnderground.IsEnabled && !DeathSpot.IsEnabled && !RealWorldTime.IsEnabled)
+            if (Backpack.IsEnabled && Backpack.Observer)
             {
-                TimerStop1Second();
+                _bR++;
+                if (_bR >= 3)
+                {
+                    _bR = 0;
+                    Backpack.Que();
+                }
+            }
+            else
+            {
+                _bR = 0;
+            }
+            if (WorldRadius.IsEnabled)
+            {
+                _wR++;
+                if (_wR >= 2)
+                {
+                    _wR = 0;
+                    WorldRadius.Exec();
+                }
+            }
+            else
+            {
+                _wR = 0;
             }
         }
     }

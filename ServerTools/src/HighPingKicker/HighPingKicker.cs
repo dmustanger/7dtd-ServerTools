@@ -182,7 +182,7 @@ namespace ServerTools
             _phrase2 = _phrase2.Replace("{PlayerPing}", _cInfo.ping.ToString());
             _phrase2 = _phrase2.Replace("{MaxPing}", Max_Ping.ToString());
             Log.Out(string.Format("[SERVERTOOLS] {0}", _phrase1));
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase1), "Server", false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase1), Config.Server_Response_Name, false, "", false);
             SdtdConsole.Instance.ExecuteSync(string.Format("Kick {0} \"{1}\"", _cInfo.entityId, _phrase2), (ClientInfo)null);
         }
     }
