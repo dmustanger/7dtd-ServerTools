@@ -134,13 +134,15 @@ Custom phrases: any phrases list in the phrase file can be set a custom response
 <br>
 Admin chat: admins can send all other online admins a direct private message<br>
 <br>
-Clan manager: create clan tags, add players, hire officers and rule the server as a elite crew<br>
+Clan manager: create clan tags, add players, hire officers and rule the server as a elite crew. Clan name is set in chat<br>
 <br>
 Remove entity: remove a live entity from the game using its entity id via console<br>
 <br>
 Reset player profile: an easy console command will kick and delete the saved data of a player<br>
 <br>
 Stopserver command: easily shutdown your server with an alert system and countdown so players are aware<br>
+<br>
+Login notices : show unique alerts to players as a listed player joins the game<br>
 <br>
 <br> 
 <br>
