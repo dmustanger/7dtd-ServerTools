@@ -1,7 +1,7 @@
 ﻿CHANGELOG
 
 v.9.0
-Phrases file does update if it exists. This is so you can edit it. Recommend deleting this file and let it rebuild when upgrading to a new version
+Phrases file doesn't update if it exists. This is so you can edit it. Recommend deleting this file and let it rebuild when upgrading to a new version
 
 Added tool Report. Players can type /report message to leave a message or report in a Report.xml. If online, admins are given the
 message direct as well. Optional delay. Delay is in minutes
