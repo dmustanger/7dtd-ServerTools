@@ -7,7 +7,7 @@ namespace ServerTools
     public class Watchlist
     {
         public static bool IsEnabled = false, IsRunning = false;
-        public static int Admin_Level = 0, Alert_Delay = 5;
+        public static int Admin_Level = 0;
         public static SortedDictionary<string, string> Dict = new SortedDictionary<string, string>();
         private static string file = "Watchlist.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -150,7 +150,7 @@ namespace ServerTools
                             {
                                 _phrase350 = _phrase350.Replace("{PlayerName}", _cInfo.playerName);
                                 _phrase350 = _phrase350.Replace("{Reason}", _reason);
-                                _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase350), "Server", false, "", false));
+                                _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase350), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                         }
                     }

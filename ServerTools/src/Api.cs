@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using UnityEngine;
 
 namespace ServerTools
 {
@@ -22,10 +21,6 @@ namespace ServerTools
             if (AuctionBox.IsEnabled)
             {
                 AuctionBox.BuildAuctionList();
-            }
-            if (Animals.IsEnabled)
-            {
-                Animals.BuildList();
             }
             if (Fps.IsEnabled)
             {
@@ -76,11 +71,7 @@ namespace ServerTools
             {
                 CredentialCheck.AccCheck(_cInfo);
             }
-            if (ClanManager.IsEnabled)
-            {
-                ClanManager.CheckforClantag(_cInfo);
-            }
-            if (Motd.IsEnabled & !Motd.Show_On_Respawn)
+            if (Motd.IsEnabled && !Motd.Show_On_Respawn)
             {
                 Motd.Send(_cInfo);
             }
@@ -91,7 +82,7 @@ namespace ServerTools
                     AutoShutdown.CheckNextShutdown(_cInfo, false);
                 }
             }
-            if (Bloodmoon.Show_On_Login & !Bloodmoon.Show_On_Respawn)
+            if (Bloodmoon.Show_On_Login && !Bloodmoon.Show_On_Respawn)
             {
                 Bloodmoon.GetBloodmoon(_cInfo);
             }
@@ -103,43 +94,61 @@ namespace ServerTools
 
         public override void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
         {
-            if (Jail.IsEnabled)
-            {
-                Jail.CheckPlayer(_cInfo);
-            }
-            if (NewSpawnTele.IsEnabled & _respawnReason == RespawnType.EnterMultiplayer)
-            {
-                NewSpawnTele.TeleNewSpawn(_cInfo);
-            }
             if (Motd.IsEnabled & Motd.Show_On_Respawn)
             {
                 Motd.Send(_cInfo);
             }
-            if (HatchElevator.IsEnabled & _respawnReason == RespawnType.Teleport)
+            if (HatchElevator.IsEnabled && _respawnReason == RespawnType.Teleport)
             {
                 HatchElevator.LastPositionY.Remove(_cInfo.entityId);
             }
-            if (Bloodmoon.Show_On_Login & Bloodmoon.Show_On_Respawn)
+            if (Bloodmoon.Show_On_Login && Bloodmoon.Show_On_Respawn)
             {
                 Bloodmoon.GetBloodmoon(_cInfo);
-            }
-            if (ZoneProtection.Victim.ContainsKey(_cInfo.entityId))
-            {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /return to teleport back to your death position. There is a two minute limit.[-]", Config.Chat_Response_Color), "Server", false, "", false));
-                PersistentContainer.Instance.Players[_cInfo.playerId, false].RespawnTime = DateTime.Now;
-                PersistentContainer.Instance.Save();
-                if (ZoneProtection.Forgive.ContainsKey(_cInfo.entityId))
-                {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /forgive to release your killer from jail.[-]", Config.Chat_Response_Color), "Server", false, "", false));
-                }
             }
             if (StartingItems.IsEnabled && _respawnReason == RespawnType.EnterMultiplayer && !StartingItems.Received.Contains(_cInfo.playerId) || StartingItems.IsEnabled && _respawnReason == RespawnType.Teleport && !StartingItems.Received.Contains(_cInfo.playerId))
             {
                 StartingItems.StartingItemCheck(_cInfo);
             }
-            if (DeathSpot.Flag.Contains(_cInfo.entityId))
+            if (_respawnReason == RespawnType.EnterMultiplayer)
             {
-                DeathSpot.Flag.Remove(_cInfo.entityId);
+                if (NewSpawnTele.IsEnabled)
+                {
+                    NewSpawnTele.TeleNewSpawn(_cInfo);
+                }
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = 0;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = 0;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = 0;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = 0;
+                PersistentContainer.Instance.Save();
+            }
+            if (_respawnReason == RespawnType.JoinMultiplayer)
+            {
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                int _zCount = XUiM_Player.GetZombieKills(_player);
+                int _deathCount = XUiM_Player.GetDeaths(_player);
+                int _killCount = XUiM_Player.GetPlayerKills(_player);
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = _zCount;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = _deathCount;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = _killCount;
+                PersistentContainer.Instance.Save();
+            }
+            if (_respawnReason == RespawnType.Died)
+            {
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                int _deathCount = XUiM_Player.GetDeaths(_player);
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = _deathCount;
+                PersistentContainer.Instance.Save();
+                if (ZoneProtection.IsEnabled && ZoneProtection.Victim.ContainsKey(_cInfo.entityId))
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /return to teleport back to your death position. There is a two minute limit.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].RespawnTime = DateTime.Now;
+                    PersistentContainer.Instance.Save();
+                    if (ZoneProtection.Forgive.ContainsKey(_cInfo.entityId))
+                    {
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /forgive to release your killer from jail.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
+                }
             }
         }
 
@@ -163,10 +172,6 @@ namespace ServerTools
                     DeathSpot.Position.Remove(_cInfo.entityId);
                     DeathSpot.Flag.Remove(_cInfo.entityId);
                 }
-            }
-            if (Jail.Dict.ContainsKey(_cInfo.playerId))
-            {
-                Jail.Dict.Remove(_cInfo.playerId);
             }
             if (ZoneProtection.PvEFlag.ContainsKey(_cInfo.entityId))
             {
@@ -210,7 +215,15 @@ namespace ServerTools
             if (UndergroundCheck.uLastPositionXZ.ContainsKey(_cInfo.entityId))
             {
                 UndergroundCheck.uLastPositionXZ.Remove(_cInfo.entityId);
-            }   
+            }
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            int _zCount = XUiM_Player.GetZombieKills(_player);
+            int _deathCount = XUiM_Player.GetDeaths(_player);
+            int _killCount = XUiM_Player.GetPlayerKills(_player);
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = _zCount;
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = _deathCount;
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = _killCount;
+            PersistentContainer.Instance.Save();
         }
     }
 }
