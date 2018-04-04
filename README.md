@@ -28,6 +28,8 @@ Automatically detects and deals with cheaters. Customizable<br>
 Detects: flying above or below ground, hatch elevator, teleport, invalid items, invalid stack sized, family share accounts, <br>
 player stats such as height, speed, jump strength, max stamina, max health, available skill points.<br>
 <br>
+Punish violators automatically with: Kill, Jail, Kick, Ban.<br>
+<br>
 Control the world radius and how far players can travel.<br>
 <br>
 Logs all player's inventory to a file for later review. Set the time between loggings. Default is once per minute.<br>
@@ -143,6 +145,8 @@ Reset player profile: an easy console command will kick and delete the saved dat
 Stopserver command: easily shutdown your server with an alert system and countdown so players are aware<br>
 <br>
 Login notices : show unique alerts to players as a listed player joins the game<br>
+<br>
+Teleport new players : send new players to a designated location when they first join your server<br>
 <br>
 <br> 
 <br>
