@@ -1,5 +1,56 @@
 ﻿CHANGELOG
 
+v.9.0
+Phrases file does update if it exists. This is so you can edit it. Recommend deleting this file and let it rebuild when upgrading to a new version
+
+Added tool Report. Players can type /report message to leave a message or report in a Report.xml. If online, admins are given the
+message direct as well. Optional delay. Delay is in minutes
+Added tool Bike. Type /bike while on a bike in your own claim space to set it as yours. Type /bike while off a bike to try to find and teleport
+the saved bike to the player. Can be set on any bike. Bike must be within 50 blocks and not used by another player after saving
+Added option Falling_Tree to Entity_Cleanup. Checks for trees stuck falling down and removes them
+Added tool Hordes. Spawns a horde every 20 minutes if player count is over 5 and zombie count is less than 30. Skips if bloodmoon
+Added Night_Alert. Shows automatically upon reaching the delay time. Displays the time left before night. Does not show during night
+Added clan prefix based on clan name. Their color change will stay the same but their prefix will be the clan name
+Added option to Clan_Manager called Private_Chat_Color. Controls the chat color when clan members send clan messages to each other
+Added AntiCheat: World_Radius. Limits how far a player can travel away from map center. Option to allow donators to travel further
+Added option to Auto_Shutdown. Set Days_Until_Horde to match your server so it does not run during a horde night
+Added vote to mute. Can only start with 10 or more players. Requires 8 players to vote yes
+Added vote to kick. Can only start with 10 or more players. Requires 8 players to vote yes
+Added tool called Bag. After dying, players can type /bag to have their backpack items go into their inventory. Custom delay. Delay is in minutes.
+An item returned with parts, has all the parts set to the same quality
+Added option to Chat_Command_Response called Server_Response_Name. Use this to change the server name when a chat response is given by ServerTools
+Added option to Reserved_Slots called Reduced_Delay. If true, donators will have their command delays reduced by half and given more time to use
+Death_Spot after a death or accept a friend through Friend_Teleport
+Added option to Zone_Protection called No_Zombie. Removes all zombies in protected zones. Runs every 5 seconds
+Added console command to check a players wallet value
+Added internal check for player riding a bike to Underground_Check
+Added option to Invalid_Item_Kicker named Days_Before_Log_Delete. Just as other tools, it will delete the old logs if too old
+Added option to Entity_Cleanup called Blocks. While enabled, it will clean up collapses every 30 seconds if more than 12 blocks are falling in a
+20 block radius
+Added general speed improvements to ServerTools code
+Changed Jail. Jail is temporary by default. Set the time to -1 via console for infinite
+Changed Player_Logs to reduce the chance of missing some of the data and speed up the process slightly
+Changed console command mute to allow a time span before it is automatically removed from the player. Time is in minutes. Default is 60 minutes.
+Setting the time to -1 is infinite
+Changed Entity_Underground_Check. Merged the tool into Entity_Cleanup. Option Underground will turn this feature on...
+Changed console command wallet to require steam id. Do not use the entity id
+Changed Underground_Check. It will create a file called UndergroundBlocks.xml. Block names listed here are added to a list of blocks the detection
+will omit. This must be done for some blocks that give false positives due to the player standing inside the block space such as bedrolls, plants
+Changed Item_Cleanup to Entity_Cleanup. Items controls the automated dropped item cleanup. Removed extra options from the config. Checks every 
+30 seconds
+Changed Auto_Save_World to only run when a player is online and it uses a player's id to run it
+Changed Auto_Shutdown to not run during a horde night. It will try again approximately 30 to 60 minutes after it reaches day time
+Fixed console command ResetPlayerProfile error. If the player is online you can use the entity id otherwise you must use their steam id
+Fixed chat command auction sell giving a error when trying to sell an item
+Fixed chat command /setjail setting x, y, z coordinates with decimals that do not work when teleporting a player in to jail
+Fixed Underground_Check and Flight_Check catching players while on a bike
+Fixed Animal_Tracking list not building on load, requiring a player to initiate it with /track first
+Fixed Gimme not spawning a zombie when enabled and chosen
+Fixed help response for @Admin
+Fixed a custom command giving an error when a player had no saved data
+Fixed Reserved_Slots kicking too many players
+Removed clan name check. Players can use a clan name in their player name. Real clan members will always have the prefix with the clan name
+
 v.8.6
 Added tool Real_World_Time. This will display the local real world time of the server. Add your time zone to the phrase so players know which one
 It will show the time automatically each time the delay time is met
