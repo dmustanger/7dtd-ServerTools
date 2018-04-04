@@ -39,6 +39,21 @@ Logs of violators are auto created and deleted based on your settings.<br>
 Other Tools<br>
 <br>
 <br>
+Auction box: players can one item or stack at a time by placing it in a box and selling it through the auction system<br>
+Players can buy it as they please with their wallet coins<br>
+<br>
+Shop: setup a list of items and prices for players to purchase inside or outside of a trader zone. Includes a wallet system<br>
+<br>
+Entity Cleanup: removed items in a pile, blocks if too many are dropping, fallen trees stuck at 0 hp<br>
+<br>
+Bike return: teleport a saved bike if close enough, back to the player<br>
+<br>
+Bag return: after dying players can teleport their bag items back to their inventory<br>
+<br>
+Vote: To kick or mute a player<br>
+<br>
+World Radius: control normal and donators world size<br>
+<br>
 Day7 alerts: automatically receive in game alerts to the upcoming bloodmoon. Can set a custom horde night value<br>
 <br>
 Zone protection: set an area as a protected space. PvP inside is dealt with automatically. Alert upon entry/exit<br>
