@@ -1,4 +1,4 @@
-﻿
+﻿using System.Collections.Generic;
 
 namespace ServerTools
 {
@@ -8,8 +8,21 @@ namespace ServerTools
 
         public static void Save()
         {
-            SdtdConsole.Instance.ExecuteSync("saveworld", (ClientInfo)null);
-            Log.Out("[SERVERTOOLS] World Saved.");
+            int _playerCount = ConnectionManager.Instance.ClientCount();
+            if (_playerCount > 0)
+            {
+                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                for (int i = 0; i < _cInfoList.Count; i++)
+                {
+                    ClientInfo _cInfo = _cInfoList[i];
+                    if (_cInfo != null)
+                    {
+                        SdtdConsole.Instance.ExecuteSync("saveworld", _cInfo);
+                        Log.Out("[SERVERTOOLS] World Saved.");
+                        break;
+                    }
+                }
+            }
         }
     }
 }

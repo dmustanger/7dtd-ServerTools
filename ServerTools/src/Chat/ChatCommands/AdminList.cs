@@ -50,8 +50,8 @@ namespace ServerTools
                 {
                     _phrase726 = "Server moderators in game: [FF8000]";
                 }
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase725, _adminList), "Server", false, "", false);
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase726, _modList), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase725, _adminList), Config.Server_Response_Name, false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase726, _modList), Config.Server_Response_Name, false, "", false);
             }
             else
             {
@@ -65,8 +65,8 @@ namespace ServerTools
                 {
                     _phrase726 = "Server moderators in game: [FF8000]";
                 }
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase725, _adminList), "Server", false, "", false));
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase726, _modList), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase725, _adminList), Config.Server_Response_Name, false, "ServerTools", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase726, _modList), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
     }

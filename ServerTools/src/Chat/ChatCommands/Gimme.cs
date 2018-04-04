@@ -240,6 +240,19 @@ namespace ServerTools
                     TimeSpan varTime = DateTime.Now - p.LastGimme;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
+                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                    {
+                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        {
+                            DateTime _dt;
+                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                            if (DateTime.Now < _dt)
+                            {
+                                int _newTime = _timepassed * 2;
+                                _timepassed = _newTime;
+                            }
+                        }
+                    }
                     if (_timepassed >= Delay_Between_Uses)
                     {
                         _GiveItem(_cInfo, _announce);
@@ -247,6 +260,21 @@ namespace ServerTools
                     else
                     {
                         int _timeleft = Delay_Between_Uses - _timepassed;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                        {
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            {
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
+                                {
+                                    int _newTime = _timeleft / 2;
+                                    _timeleft = _newTime;
+                                    int _newDelay = Delay_Between_Uses / 2;
+                                    Delay_Between_Uses = _newDelay;
+                                }
+                            }
+                        }
                         string _phrase6;
                         if (!Phrases.Dict.TryGetValue(6, out _phrase6))
                         {
@@ -257,11 +285,11 @@ namespace ServerTools
                         _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
                         if (_announce)
                         {
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase6), "Server", false, "", false);
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase6), Config.Server_Response_Name, false, "", false);
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase6), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase6), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                 }
@@ -341,11 +369,11 @@ namespace ServerTools
                 }
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase7), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase7), Config.Server_Response_Name, false, "", false);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase7), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase7), Config.Server_Response_Name, false, "ServerTools", false));
                 }
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].LastGimme = DateTime.Now;
                 PersistentContainer.Instance.Save();
@@ -354,59 +382,35 @@ namespace ServerTools
 
         private static void RandomZombie(ClientInfo _cInfo, bool _announce)
         {
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            Vector3 pos = _player.GetPosition();
-            float x = (int)pos.x;
-            float y = (int)pos.y;
-            float z = (int)pos.z;
-            int _x, _y, _z;
-            bool posFound = true;
-            posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(new Vector3((float)x, (float)y, (float)z), 15, out _x, out _y, out _z, new Vector3((float)5, (float)5, (float)5), true);
-            if (!posFound)
+            Log.Out("[SERVERTOOLS] Spawning zombie for player's gimme");
+            int _rndZ = random.Next(1, 4);
+            if (_rndZ == 1)
             {
-                posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(new Vector3((float)x, (float)y, (float)z), 15, out _x, out _y, out _z, new Vector3((float)5 + 5, (float)5 + 5, (float)5 + 5), true);
+                SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} 10 @ 4", _cInfo.entityId), (ClientInfo)null);
             }
-            if (posFound)
+            if (_rndZ == 2)
             {
-                Log.Out("[SERVERTOOLS] Spawning zombie for player's gimme");
-                int _rndZ = random.Next(1, 4);
-                if (_rndZ == 1)
-                {
-                    SdtdConsole.Instance.ExecuteSync(string.Format("sea 4 {0} {1} {2}", _x, _y, _z), (ClientInfo)null);
-                }
-                if (_rndZ == 2)
-                {
-                    SdtdConsole.Instance.ExecuteSync(string.Format("sea 9 {0} {1} {2}", _x, _y, _z), (ClientInfo)null);
-                }
-                else
-                {
-                    SdtdConsole.Instance.ExecuteSync(string.Format("sea 11 {0} {1} {2}", _x, _y, _z), (ClientInfo)null);
-                }
-                string _phrase807;
-                if (!Phrases.Dict.TryGetValue(807, out _phrase807))
-                {
-                    _phrase807 = "OH NO! How did that get in there? You have received a zombie.";
-                }
-                if (_announce)
-                {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase807), "Server", false, "", false);
-                }
-                else
-                {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase807), "Server", false, "", false));
-                }
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].LastGimme = DateTime.Now;
-                PersistentContainer.Instance.Save();
+                SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} 10 @ 9", _cInfo.entityId), (ClientInfo)null);
             }
             else
             {
-                string _phrase808;
-                if (!Phrases.Dict.TryGetValue(808, out _phrase808))
-                {
-                    _phrase808 = "No spawn points were found near you. Move locations and try /reward again.";
-                }
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase808), "Server", false, "", false));
+                SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} 10 @ 11", _cInfo.entityId), (ClientInfo)null);
             }
+            string _phrase807;
+            if (!Phrases.Dict.TryGetValue(807, out _phrase807))
+            {
+                _phrase807 = "OH NO! How did that get in there? You have received a zombie.";
+            }
+            if (_announce)
+            {
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase807), Config.Server_Response_Name, false, "", false);
+            }
+            else
+            {
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase807), Config.Server_Response_Name, false, "ServerTools", false));
+            }
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastGimme = DateTime.Now;
+            PersistentContainer.Instance.Save();
         }
     }
 }

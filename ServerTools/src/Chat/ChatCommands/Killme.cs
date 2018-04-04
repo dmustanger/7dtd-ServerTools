@@ -25,6 +25,19 @@ namespace ServerTools
                     TimeSpan varTime = DateTime.Now - p.LastKillme;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
+                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                    {
+                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        {
+                            DateTime _dt;
+                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                            if (DateTime.Now < _dt)
+                            {
+                                int _newTime = _timepassed * 2;
+                                _timepassed = _newTime;
+                            }
+                        }
+                    }
                     if (_timepassed >= Delay_Between_Uses)
                     {
                         KillPlayer(_cInfo);
@@ -32,6 +45,21 @@ namespace ServerTools
                     else
                     {
                         int _timeremaining = Delay_Between_Uses - _timepassed;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                        {
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            {
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
+                                {
+                                    int _newTime = _timeremaining / 2;
+                                    _timeremaining = _newTime;
+                                    int _newDelay = Delay_Between_Uses / 2;
+                                    Delay_Between_Uses = _newDelay;
+                                }
+                            }
+                        }
                         string _phrase8;
                         if (!Phrases.Dict.TryGetValue(8, out _phrase8))
                         {
@@ -42,11 +70,11 @@ namespace ServerTools
                         _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeremaining.ToString());
                         if (_announce)
                         {
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), "Server", false, "", false);
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), Config.Server_Response_Name, false, "", false);
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                 }

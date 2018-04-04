@@ -1,98 +1,119 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ServerTools
 {
     class WorldRadius
     {
-        public static bool IsEnabled = false, ZoneWarnings = false;
-        public static int AdminLevel = 0, WorldSize = 10000;
-        public static string PZone1 = "0,75,0", PZone2 = "0,75,0", PZone3 = "0,75,0", PZone4 = "0,75,0";
-        private static SortedDictionary<int, int[]> LastPosition = new SortedDictionary<int, int[]>();
-        private static List<int> ZoneEdge = new List<int>();
-        
-        //public static void WorldRad()
-        //{
-        //    if (ConnectionManager.Instance.ClientCount() > 0)
-        //    {
-        //        World world = GameManager.Instance.World;
-        //        var enumerator = world.Players.list;
-        //        foreach (var _player in enumerator)
-        //        {
-        //            Vector3i _playerVector = new Vector3i(_player.GetPosition());
-        //            int player_Pos_X = _playerVector.x, player_Pos_Z = _playerVector.z;
-        //            int[] XZ = { player_Pos_X, player_Pos_Z };
-        //            if (LastPosition.ContainsKey(_player.entityId))
-        //            {
-        //                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
-        //                if (player_Pos_X < 0)
-        //                {
-        //                    player_Pos_X = (player_Pos_X * -1);
-        //                }
-        //                if (player_Pos_Z < 0)
-        //                {
-        //                    player_Pos_Z = (player_Pos_Z * -1);
-        //                }
-        //                var playerRadius = Math.Sqrt((Math.Sqrt(player_Pos_X)) + (Math.Sqrt(player_Pos_Z)));
-        //                var worldRadius = Math.Sqrt(Math.Sqrt(WorldSize));                       
-        //                if (ZoneWarnings & !ZoneEdge.Contains(_player.entityId))
-        //                {
-        //                    var worldRadiusWarning = Math.Sqrt(Math.Sqrt(WorldSize - 75));
-        //                    if (playerRadius >= worldRadiusWarning)
-        //                    {
-        //                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are near the edge of the world {1}[-]", Config.Chat_Response_Color, _cInfo.playerName), "Server", false, "", false));
-        //                        ZoneEdge.Add(_player.entityId);
-        //                    }
-        //                }
-        //                if (ZoneWarnings & ZoneEdge.Contains(_player.entityId))
-        //                {
-        //                    var worldRadiusWarning = Math.Sqrt(Math.Sqrt(WorldSize - 75));
-        //                    if (playerRadius < worldRadiusWarning)
-        //                    {
-        //                        ZoneEdge.Remove(_player.entityId);
-        //                    }
-        //                }
-        //                if (playerRadius > worldRadius)
-        //                {
-        //                    if (_player.Spawned)
-        //                    {
-        //                        int[] _xz;
-        //                        if (LastPosition.TryGetValue(_player.entityId, out _xz))
-        //                        {
-        //                            int _x = _xz[0], _z = _xz[1];
-        //                            if (_x < 0)
-        //                            {
-        //                                _x = (_x + 5);
-        //                            }
-        //                            if (_x > 0)
-        //                            {
-        //                                _x = (_x - 5);
-        //                            }
-        //                            if (_z < 0)
-        //                            {
-        //                                _z = (_z + 5);
-        //                            }
-        //                            if (_z > 0)
-        //                            {
-        //                                _z = (_z - 5);
-        //                            }
-        //                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reached world border limit[-]", Config.Chat_Response_Color, WorldSize), "Server", false, "", false));
-        //                            SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, _x, -1, _z), (ClientInfo)null);
-        //                        }
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    LastPosition.Remove(_player.entityId);
-        //                    LastPosition.Add(_player.entityId, XZ);
-        //                }
-        //            }
-        //            else
-        //            {
-        //                LastPosition.Add(_player.entityId, XZ);
-        //            }
-        //        }
-        //    }
-        //}
+        public static bool IsEnabled = false;
+        public static int Admin_Level = 0, Normal_Player = 8000, Donator = 10000;
+
+        public static void Exec()
+        {
+            if (ConnectionManager.Instance.ClientCount() > 0)
+            {
+                World world = GameManager.Instance.World;
+                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                for (int i = 0; i < _cInfoList.Count; i++)
+                {
+                    ClientInfo _cInfo = _cInfoList[i];
+                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                    if (Admin.PermissionLevel > Admin_Level)
+                    {
+                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                        if (ReservedSlots.IsEnabled)
+                        {
+                            DateTime _dt;
+                            if (ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt))
+                            {
+                                if (DateTime.Now < _dt)
+                                {
+                                    DonatorRad(_player);
+                                }
+                                else
+                                {
+                                    NormalRad(_player);
+                                }
+                            }
+                            else
+                            {
+                                NormalRad(_player);
+                            }
+                        }
+                        else
+                        {
+                            NormalRad(_player);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void NormalRad(EntityPlayer _player)
+        {
+            if ((0 - _player.position.x) * (0 - _player.position.x) + (0 - _player.position.z) * (0 - _player.position.z) >= Normal_Player * Normal_Player)
+            {
+                int _vec3x, _vec3z;
+                if (_player.position.x >= 0)
+                {
+                    _vec3x = (int)_player.position.x - 6;
+                }
+                else
+                {
+                    _vec3x = (int)_player.position.x + 6;
+                }
+                if (_player.position.z >= 0)
+                {
+                    _vec3z = (int)_player.position.z - 6;
+                }
+                else
+                {
+                    _vec3z = (int)_player.position.z + 6;
+                }
+                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
+                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_vec3x, -1, _vec3z), false));
+                string _phrase790;
+                if (!Phrases.Dict.TryGetValue(790, out _phrase790))
+                {
+                    _phrase790 = "{PlayerName} you have reached the world border.";
+                }
+                _phrase790 = _phrase790.Replace("{PlayerName}", _cInfo.playerName);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase790), Config.Server_Response_Name, false, "ServerTools", false));
+            }
+        }
+
+        public static void DonatorRad(EntityPlayer _player)
+        {
+            if ((0 - _player.position.x) * (0 - _player.position.x) + (0 - _player.position.z) * (0 - _player.position.z) >= Donator * Donator)
+            {
+                int _vec3x, _vec3z;
+                if (_player.position.x >= 0)
+                {
+                    _vec3x = (int)_player.position.x - 6;
+                }
+                else
+                {
+                    _vec3x = (int)_player.position.x + 6;
+                }
+                if (_player.position.z >= 0)
+                {
+                    _vec3z = (int)_player.position.z - 6;
+                }
+                else
+                {
+                    _vec3z = (int)_player.position.z + 6;
+                }
+                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
+                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_vec3x, -1, _vec3z), false));
+                    string _phrase790;
+                    if (!Phrases.Dict.TryGetValue(790, out _phrase790))
+                    {
+                    _phrase790 = "{PlayerName} you have reached the world border.";
+                    }
+                    _phrase790 = _phrase790.Replace("{PlayerName}", _cInfo.playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase790), Config.Server_Response_Name, false, "ServerTools", false));
+            }
+        }
     }
 }

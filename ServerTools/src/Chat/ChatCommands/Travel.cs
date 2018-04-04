@@ -169,6 +169,19 @@ namespace ServerTools
                     TimeSpan varTime = DateTime.Now - p.LastTravel;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
+                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                    {
+                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        {
+                            DateTime _dt;
+                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                            if (DateTime.Now < _dt)
+                            {
+                                int _newTime = _timepassed * 2;
+                                _timepassed = _newTime;
+                            }
+                        }
+                    }
                     if (_timepassed >= Delay_Between_Uses)
                     {
                         Tele(_cInfo, _announce);
@@ -176,6 +189,21 @@ namespace ServerTools
                     else
                     {
                         int _timeleft = Delay_Between_Uses - _timepassed;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                        {
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            {
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
+                                {
+                                    int _newTime = _timeleft / 2;
+                                    _timeleft = _newTime;
+                                    int _newDelay = Delay_Between_Uses / 2;
+                                    Delay_Between_Uses = _newDelay;
+                                }
+                            }
+                        }
                         string _phrase605;
                         if (!Phrases.Dict.TryGetValue(605, out _phrase605))
                         {
@@ -186,11 +214,11 @@ namespace ServerTools
                         _phrase605 = _phrase605.Replace("{TimeRemaining}", _timeleft.ToString());
                         if (_announce)
                         {
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase605), "Server", false, "", false);
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase605), Config.Server_Response_Name, false, "", false);
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase605), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase605), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                 }
@@ -200,126 +228,33 @@ namespace ServerTools
         public static void Tele(ClientInfo _cInfo, bool _announce)
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (_player.entityId == _cInfo.entityId)
+            Flag.Clear();
+            int _playerX = (int)_player.position.x;
+            int _playerY = (int)_player.position.y;
+            int _playerZ = (int)_player.position.z;
+            if (Box.Count > 0)
             {
-                Flag.Clear();
-
-                int _playerX = (int)_player.position.x;
-                int _playerY = (int)_player.position.y;
-                int _playerZ = (int)_player.position.z;
-
-                if (Box.Count > 0)
+                foreach (KeyValuePair<string, string[]> kvpCorners in Box)
                 {
-                    foreach (KeyValuePair<string, string[]> kvpCorners in Box)
-                    {
-                        float xMin;
-                        float yMin;
-                        float zMin;
-                        string[] _xyzCorner1 = kvpCorners.Value[0].Split(',');
-                        float.TryParse(_xyzCorner1[0], out xMin);
-                        float.TryParse(_xyzCorner1[1], out yMin);
-                        float.TryParse(_xyzCorner1[2], out zMin);
-                        float xMax;
-                        float yMax;
-                        float zMax;
-                        string[] _xyzCorner2 = kvpCorners.Value[1].Split(',');
-                        float.TryParse(_xyzCorner2[0], out xMax);
-                        float.TryParse(_xyzCorner2[1], out yMax);
-                        float.TryParse(_xyzCorner2[2], out zMax);
-                        float xDest;
-                        float yDest;
-                        float zDest;
-                        string[] _xyzDestCords = kvpCorners.Value[2].Split(',');
-                        float.TryParse(_xyzDestCords[0], out xDest);
-                        float.TryParse(_xyzDestCords[1], out yDest);
-                        float.TryParse(_xyzDestCords[2], out zDest);
-                        int _xDest = (int)xDest;
-                        int _yDest = (int)yDest;
-                        int _zDest = (int)zDest;
+                    int xMin, yMin, zMin;
+                    string[] _xyzCorner1 = kvpCorners.Value[0].Split(',');
+                    int.TryParse(_xyzCorner1[0], out xMin);
+                    int.TryParse(_xyzCorner1[1], out yMin);
+                    int.TryParse(_xyzCorner1[2], out zMin);
+                    int xMax, yMax, zMax;
+                    string[] _xyzCorner2 = kvpCorners.Value[1].Split(',');
+                    int.TryParse(_xyzCorner2[0], out xMax);
+                    int.TryParse(_xyzCorner2[1], out yMax);
+                    int.TryParse(_xyzCorner2[2], out zMax);
+                    int xDest, yDest, zDest;
+                    string[] _xyzDestCords = kvpCorners.Value[2].Split(',');
+                    int.TryParse(_xyzDestCords[0], out xDest);
+                    int.TryParse(_xyzDestCords[1], out yDest);
+                    int.TryParse(_xyzDestCords[2], out zDest);
 
-                        if (xMin >= 0 & xMax >= 0)
-                        {
-                            if (xMin < xMax)
-                            {
-                                if (_playerX >= xMin)
-                                {
-                                    _xMinCheck = 1;
-                                }
-                                else
-                                {
-                                    _xMinCheck = 0;
-                                }
-                                if (_playerX <= xMax)
-                                {
-                                    _xMaxCheck = 1;
-                                }
-                                else
-                                {
-                                    _xMaxCheck = 0;
-                                }
-                            }
-                            else
-                            {
-                                if (_playerX <= xMin)
-                                {
-                                    _xMinCheck = 1;
-                                }
-                                else
-                                {
-                                    _xMinCheck = 0;
-                                }
-                                if (_playerX >= xMax)
-                                {
-                                    _xMaxCheck = 1;
-                                }
-                                else
-                                {
-                                    _xMaxCheck = 0;
-                                }
-                            }
-                        }
-                        else if (xMin <= 0 & xMax <= 0)
-                        {
-                            if (xMin < xMax)
-                            {
-                                if (_playerX >= xMin)
-                                {
-                                    _xMinCheck = 1;
-                                }
-                                else
-                                {
-                                    _xMinCheck = 0;
-                                }
-                                if (_playerX <= xMax)
-                                {
-                                    _xMaxCheck = 1;
-                                }
-                                else
-                                {
-                                    _xMaxCheck = 0;
-                                }
-                            }
-                            else
-                            {
-                                if (_playerX <= xMin)
-                                {
-                                    _xMinCheck = 1;
-                                }
-                                else
-                                {
-                                    _xMinCheck = 0;
-                                }
-                                if (_playerX >= xMax)
-                                {
-                                    _xMaxCheck = 1;
-                                }
-                                else
-                                {
-                                    _xMaxCheck = 0;
-                                }
-                            }
-                        }
-                        else if (xMin <= 0 & xMax >= 0)
+                    if (xMin >= 0 & xMax >= 0)
+                    {
+                        if (xMin < xMax)
                         {
                             if (_playerX >= xMin)
                             {
@@ -338,7 +273,7 @@ namespace ServerTools
                                 _xMaxCheck = 0;
                             }
                         }
-                        else if (xMin >= 0 & xMax <= 0)
+                        else
                         {
                             if (_playerX <= xMin)
                             {
@@ -357,90 +292,90 @@ namespace ServerTools
                                 _xMaxCheck = 0;
                             }
                         }
+                    }
+                    else if (xMin <= 0 & xMax <= 0)
+                    {
+                        if (xMin < xMax)
+                        {
+                            if (_playerX >= xMin)
+                            {
+                                _xMinCheck = 1;
+                            }
+                            else
+                            {
+                                _xMinCheck = 0;
+                            }
+                            if (_playerX <= xMax)
+                            {
+                                _xMaxCheck = 1;
+                            }
+                            else
+                            {
+                                _xMaxCheck = 0;
+                            }
+                        }
+                        else
+                        {
+                            if (_playerX <= xMin)
+                            {
+                                _xMinCheck = 1;
+                            }
+                            else
+                            {
+                                _xMinCheck = 0;
+                            }
+                            if (_playerX >= xMax)
+                            {
+                                _xMaxCheck = 1;
+                            }
+                            else
+                            {
+                                _xMaxCheck = 0;
+                            }
+                        }
+                    }
+                    else if (xMin <= 0 & xMax >= 0)
+                    {
+                        if (_playerX >= xMin)
+                        {
+                            _xMinCheck = 1;
+                        }
+                        else
+                        {
+                            _xMinCheck = 0;
+                        }
+                        if (_playerX <= xMax)
+                        {
+                            _xMaxCheck = 1;
+                        }
+                        else
+                        {
+                            _xMaxCheck = 0;
+                        }
+                    }
+                    else if (xMin >= 0 & xMax <= 0)
+                    {
+                        if (_playerX <= xMin)
+                        {
+                            _xMinCheck = 1;
+                        }
+                        else
+                        {
+                            _xMinCheck = 0;
+                        }
+                        if (_playerX >= xMax)
+                        {
+                            _xMaxCheck = 1;
+                        }
+                        else
+                        {
+                            _xMaxCheck = 0;
+                        }
+                    }
 
-                        if (yMin >= 0 & yMax >= 0)
-                        {
-                            if (yMin < yMax)
-                            {
-                                if (_playerY >= yMin)
-                                {
-                                    _yMinCheck = 1;
-                                }
-                                else
-                                {
-                                    _yMinCheck = 0;
-                                }
-                                if (_playerY <= yMax)
-                                {
-                                    _yMaxCheck = 1;
-                                }
-                                else
-                                {
-                                    _yMaxCheck = 0;
-                                }
-                            }
-                            else
-                            {
-                                if (_playerY <= yMin)
-                                {
-                                    _yMinCheck = 1;
-                                }
-                                else
-                                {
-                                    _yMinCheck = 0;
-                                }
-                                if (_playerY >= yMax)
-                                {
-                                    _yMaxCheck = 1;
-                                }
-                                else
-                                {
-                                    _yMaxCheck = 0;
-                                }
-                            }
-                        }
-                        else if (yMin <= 0 & yMax <= 0)
-                        {
-                            if (yMin < yMax)
-                            {
-                                if (_playerY >= yMin)
-                                {
-                                    _yMinCheck = 1;
-                                }
-                                else
-                                {
-                                    _yMinCheck = 0;
-                                }
-                                if (_playerY <= yMax)
-                                {
-                                    _yMaxCheck = 1;
-                                }
-                                else
-                                {
-                                    _yMaxCheck = 0;
-                                }
-                            }
-                            else
-                            {
-                                if (_playerY <= yMin)
-                                {
-                                    _yMinCheck = 1;
-                                }
-                                else
-                                {
-                                    _yMinCheck = 0;
-                                }
-                                if (_playerY >= yMax)
-                                {
-                                    _yMaxCheck = 1;
-                                }
-                                else
-                                {
-                                    _yMaxCheck = 0;
-                                }
-                            }
-                        }
-                        else if (yMin <= 0 & yMax >= 0)
+                    if (yMin >= 0 & yMax >= 0)
+                    {
+                        if (yMin < yMax)
                         {
                             if (_playerY >= yMin)
                             {
@@ -459,7 +394,7 @@ namespace ServerTools
                                 _yMaxCheck = 0;
                             }
                         }
-                        else if (yMin >= 0 & yMax <= 0)
+                        else
                         {
                             if (_playerY <= yMin)
                             {
@@ -478,90 +413,90 @@ namespace ServerTools
                                 _yMaxCheck = 0;
                             }
                         }
+                    }
+                    else if (yMin <= 0 & yMax <= 0)
+                    {
+                        if (yMin < yMax)
+                        {
+                            if (_playerY >= yMin)
+                            {
+                                _yMinCheck = 1;
+                            }
+                            else
+                            {
+                                _yMinCheck = 0;
+                            }
+                            if (_playerY <= yMax)
+                            {
+                                _yMaxCheck = 1;
+                            }
+                            else
+                            {
+                                _yMaxCheck = 0;
+                            }
+                        }
+                        else
+                        {
+                            if (_playerY <= yMin)
+                            {
+                                _yMinCheck = 1;
+                            }
+                            else
+                            {
+                                _yMinCheck = 0;
+                            }
+                            if (_playerY >= yMax)
+                            {
+                                _yMaxCheck = 1;
+                            }
+                            else
+                            {
+                                _yMaxCheck = 0;
+                            }
+                        }
+                    }
+                    else if (yMin <= 0 & yMax >= 0)
+                    {
+                        if (_playerY >= yMin)
+                        {
+                            _yMinCheck = 1;
+                        }
+                        else
+                        {
+                            _yMinCheck = 0;
+                        }
+                        if (_playerY <= yMax)
+                        {
+                            _yMaxCheck = 1;
+                        }
+                        else
+                        {
+                            _yMaxCheck = 0;
+                        }
+                    }
+                    else if (yMin >= 0 & yMax <= 0)
+                    {
+                        if (_playerY <= yMin)
+                        {
+                            _yMinCheck = 1;
+                        }
+                        else
+                        {
+                            _yMinCheck = 0;
+                        }
+                        if (_playerY >= yMax)
+                        {
+                            _yMaxCheck = 1;
+                        }
+                        else
+                        {
+                            _yMaxCheck = 0;
+                        }
+                    }
 
-                        if (zMin >= 0 & zMax >= 0)
-                        {
-                            if (zMin < zMax)
-                            {
-                                if (_playerZ >= zMin)
-                                {
-                                    _zMinCheck = 1;
-                                }
-                                else
-                                {
-                                    _zMinCheck = 0;
-                                }
-                                if (_playerZ <= zMax)
-                                {
-                                    _zMaxCheck = 1;
-                                }
-                                else
-                                {
-                                    _zMaxCheck = 0;
-                                }
-                            }
-                            else
-                            {
-                                if (_playerZ <= zMin)
-                                {
-                                    _zMinCheck = 1;
-                                }
-                                else
-                                {
-                                    _zMinCheck = 0;
-                                }
-                                if (_playerZ >= zMax)
-                                {
-                                    _zMaxCheck = 1;
-                                }
-                                else
-                                {
-                                    _zMaxCheck = 0;
-                                }
-                            }
-                        }
-                        else if (zMin <= 0 & zMax <= 0)
-                        {
-                            if (zMin < zMax)
-                            {
-                                if (_playerZ >= zMin)
-                                {
-                                    _zMinCheck = 1;
-                                }
-                                else
-                                {
-                                    _zMinCheck = 0;
-                                }
-                                if (_playerZ <= zMax)
-                                {
-                                    _zMaxCheck = 1;
-                                }
-                                else
-                                {
-                                    _zMaxCheck = 0;
-                                }
-                            }
-                            else
-                            {
-                                if (_playerZ <= zMin)
-                                {
-                                    _zMinCheck = 1;
-                                }
-                                else
-                                {
-                                    _zMinCheck = 0;
-                                }
-                                if (_playerZ >= zMax)
-                                {
-                                    _zMaxCheck = 1;
-                                }
-                                else
-                                {
-                                    _zMaxCheck = 0;
-                                }
-                            }
-                        }
-                        else if (zMin <= 0 & zMax >= 0)
+                    if (zMin >= 0 & zMax >= 0)
+                    {
+                        if (zMin < zMax)
                         {
                             if (_playerZ >= zMin)
                             {
@@ -580,9 +515,9 @@ namespace ServerTools
                                 _zMaxCheck = 0;
                             }
                         }
-                        else if (zMin >= 0 & zMax <= 0)
+                        else
                         {
-                            if (_playerY <= zMin)
+                            if (_playerZ <= zMin)
                             {
                                 _zMinCheck = 1;
                             }
@@ -590,7 +525,7 @@ namespace ServerTools
                             {
                                 _zMinCheck = 0;
                             }
-                            if (_playerY >= zMax)
+                            if (_playerZ >= zMax)
                             {
                                 _zMaxCheck = 1;
                             }
@@ -599,32 +534,110 @@ namespace ServerTools
                                 _zMaxCheck = 0;
                             }
                         }
-
-                        if (_xMinCheck == 1 & _yMinCheck == 1 & _zMinCheck == 1 & _xMaxCheck == 1 & _yMaxCheck == 1 & _zMaxCheck == 1)
+                    }
+                    else if (zMin <= 0 & zMax <= 0)
+                    {
+                        if (zMin < zMax)
                         {
-                            SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} {2} {3}", _cInfo.entityId, _xDest, _yDest, _zDest), (ClientInfo)null);
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastTravel = DateTime.Now;
-                            PersistentContainer.Instance.Save();
-                            string _phrase603;
-                            if (!Phrases.Dict.TryGetValue(603, out _phrase603))
+                            if (_playerZ >= zMin)
                             {
-                                _phrase603 = "You have traveled to {Destination}.";
+                                _zMinCheck = 1;
                             }
-                            _phrase603 = _phrase603.Replace("{Destination}", kvpCorners.Key);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase603), "Server", false, "", false));                            
+                            else
+                            {
+                                _zMinCheck = 0;
+                            }
+                            if (_playerZ <= zMax)
+                            {
+                                _zMaxCheck = 1;
+                            }
+                            else
+                            {
+                                _zMaxCheck = 0;
+                            }
                         }
                         else
                         {
-                            Flag.Add(_cInfo.entityId + 1);
-                            if (Flag.Count == Box.Count)
+                            if (_playerZ <= zMin)
                             {
-                                string _phrase604;
-                                if (!Phrases.Dict.TryGetValue(604, out _phrase604))
-                                {
-                                    _phrase604 = "You are not in a travel location.";
-                                }
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase604), "Server", false, "", false));
+                                _zMinCheck = 1;
                             }
+                            else
+                            {
+                                _zMinCheck = 0;
+                            }
+                            if (_playerZ >= zMax)
+                            {
+                                _zMaxCheck = 1;
+                            }
+                            else
+                            {
+                                _zMaxCheck = 0;
+                            }
+                        }
+                    }
+                    else if (zMin <= 0 & zMax >= 0)
+                    {
+                        if (_playerZ >= zMin)
+                        {
+                            _zMinCheck = 1;
+                        }
+                        else
+                        {
+                            _zMinCheck = 0;
+                        }
+                        if (_playerZ <= zMax)
+                        {
+                            _zMaxCheck = 1;
+                        }
+                        else
+                        {
+                            _zMaxCheck = 0;
+                        }
+                    }
+                    else if (zMin >= 0 & zMax <= 0)
+                    {
+                        if (_playerY <= zMin)
+                        {
+                            _zMinCheck = 1;
+                        }
+                        else
+                        {
+                            _zMinCheck = 0;
+                        }
+                        if (_playerY >= zMax)
+                        {
+                            _zMaxCheck = 1;
+                        }
+                        else
+                        {
+                            _zMaxCheck = 0;
+                        }
+                    }
+                    if (_xMinCheck == 1 & _yMinCheck == 1 & _zMinCheck == 1 & _xMaxCheck == 1 & _yMaxCheck == 1 & _zMaxCheck == 1)
+                    {
+                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new UnityEngine.Vector3(xDest, yDest, zDest), false));
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].LastTravel = DateTime.Now;
+                        PersistentContainer.Instance.Save();
+                        string _phrase603;
+                        if (!Phrases.Dict.TryGetValue(603, out _phrase603))
+                        {
+                            _phrase603 = "You have traveled to {Destination}.";
+                        }
+                        _phrase603 = _phrase603.Replace("{Destination}", kvpCorners.Key);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase603), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
+                    else
+                    {
+                        Flag.Add(_cInfo.entityId + 1);
+                        if (Flag.Count == Box.Count)
+                        {
+                            string _phrase604;
+                            if (!Phrases.Dict.TryGetValue(604, out _phrase604))
+                            {
+                                _phrase604 = "You are not in a travel location.";
+                            }
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase604), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                 }

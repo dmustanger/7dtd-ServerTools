@@ -166,7 +166,7 @@ namespace ServerTools
                 {
                     msgList.RandomizeList();
                     var _message = msgList.First();
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "", false);
                     msgList.RemoveAt(0);
                     if (msgList.Count == 0)
                     {
@@ -176,7 +176,7 @@ namespace ServerTools
                 else
                 {
                     var _message = msgList.First();
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "", false);
                     msgList.RemoveAt(0);
                     if (msgList.Count == 0)
                     {

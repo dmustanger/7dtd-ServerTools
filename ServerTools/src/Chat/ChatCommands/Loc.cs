@@ -23,7 +23,7 @@ namespace ServerTools
             _phrase760 = _phrase760.Replace("{X}", _x.ToString());
             _phrase760 = _phrase760.Replace("{Y}", _y.ToString());
             _phrase760 = _phrase760.Replace("{Z}", _z.ToString());
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase760), "Server", false, "", false));
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase760), Config.Server_Response_Name, false, "ServerTools", false));
         }
     }
 }

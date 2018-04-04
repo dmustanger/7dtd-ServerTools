@@ -10,7 +10,7 @@ public class @Admins : ConsoleCmdAbstract
 
     public override string GetDescription()
     {
-        return "[ServerTools]-Gives a item directly to a players inventory. Drops to the ground if full.";
+        return "[ServerTools]-Sends a message to all online admins.";
     }
     public override string GetHelp()
     {

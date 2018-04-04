@@ -6,7 +6,7 @@ namespace ServerTools
 {
     public class Animals
     {
-        public static bool IsEnabled = false, IsRunning = false, Always_Show_Response = false;
+        public static bool IsEnabled = false, Always_Show_Response = false;
         public static int Delay_Between_Uses = 60, Minimum_Spawn_Radius = 20, Maximum_Spawn_Radius = 30;
         public static List<string> entities = new List<string>();
         public static string Animal_List = "59,60,61";
@@ -32,6 +32,19 @@ namespace ServerTools
                         TimeSpan varTime = DateTime.Now - p.LastAnimals;
                         double fractionalMinutes = varTime.TotalMinutes;
                         int _timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                        {
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            {
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
+                                {
+                                    int _newTime = _timepassed * 2;
+                                    _timepassed = _newTime;
+                                }
+                            }
+                        }
                         if (_timepassed >= Delay_Between_Uses)
                         {
                             GiveAnimals(_cInfo, _announce);
@@ -39,6 +52,19 @@ namespace ServerTools
                         else
                         {
                             int _timeleft = Delay_Between_Uses - _timepassed;
+                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                            {
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                {
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
+                                    {
+                                        int _newTime = _timeleft / 2;
+                                        _timeleft = _newTime;
+                                    }
+                                }
+                            }
                             string _phrase601;
                             if (!Phrases.Dict.TryGetValue(601, out _phrase601))
                             {
@@ -47,11 +73,11 @@ namespace ServerTools
                             _phrase601 = _phrase601.Replace("{TimeRemaining}", _timeleft.ToString());
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase601), "Server", false, "", false);
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase601), Config.Server_Response_Name, false, "", false);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase601), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase601), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                         }
                     }
@@ -114,7 +140,7 @@ namespace ServerTools
                     }
                     _phrase715 = _phrase715.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase715 = _phrase715.Replace("{Radius}", _nextRadius.ToString());
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase715), "Server", false, "", false);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase715), Config.Server_Response_Name, false, "", false);
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
                     PersistentContainer.Instance.Save();
                 }
@@ -128,7 +154,7 @@ namespace ServerTools
                     }
                     _phrase715 = _phrase715.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase715 = _phrase715.Replace("{Radius}", _nextRadius.ToString());
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase715), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase715), Config.Server_Response_Name, false, "ServerTools", false));
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
                     PersistentContainer.Instance.Save();
                 }
@@ -136,7 +162,7 @@ namespace ServerTools
             else
             {
                 BuildList();
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Animal list was empty. Attempting to rebuild. Type /track again. If this repeats, contact an administrator.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Animal list was empty. Attempting to rebuild. Type /track again. If this repeats, contact an administrator.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
     }

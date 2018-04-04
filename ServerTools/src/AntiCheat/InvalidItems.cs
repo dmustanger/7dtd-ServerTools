@@ -8,7 +8,7 @@ namespace ServerTools
     public class InventoryCheck
     {
         public static bool IsEnabled = false, IsRunning = false, Anounce_Invalid_Stack = false, Ban_Player = false;
-        public static int Admin_Level = 0;
+        public static int Admin_Level = 0, Days_Before_Log_Delete = 5;
         private static string file = "InvalidItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, string> dict = new SortedDictionary<string, string>();
@@ -18,6 +18,25 @@ namespace ServerTools
         private static bool updateConfig = false;
         private static string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
+
+        public static void PlayerLogsDir()
+        {
+            if (!Directory.Exists(API.GamePath + "/DetectionLogs"))
+            {
+                Directory.CreateDirectory(API.GamePath + "/DetectionLogs");
+            }
+
+            string[] files = Directory.GetFiles(API.GamePath + "/DetectionLogs");
+            int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
+            foreach (string file in files)
+            {
+                FileInfo fi = new FileInfo(file);
+                if (fi.CreationTime <= DateTime.Now.AddDays(_daysBeforeDeleted))
+                {
+                    fi.Delete();
+                }
+            }
+        }
 
         public static void Load()
         {
@@ -1237,10 +1256,10 @@ namespace ServerTools
                     int _bagClean = 0, _invClean = 0, _totalBagCount = 0, _totalInventoryCount = 0;
                     for (int i = 0; i < _playerDataFile.inventory.Length; i++)
                     {
-                        ItemStack _intemStack = new ItemStack();
+                        ItemStack _itemStack = new ItemStack();
                         ItemValue _itemValue = new ItemValue();
-                        _intemStack = _playerDataFile.inventory[i];
-                        _itemValue = _intemStack.itemValue;
+                        _itemStack = _playerDataFile.inventory[i];
+                        _itemValue = _itemStack.itemValue;
                         int _count = _playerDataFile.inventory[i].count;
                         if (_count > 0 && _itemValue != null && !_itemValue.Equals(ItemValue.None) && _cInfo != null)
                         {
@@ -1257,8 +1276,8 @@ namespace ServerTools
                                 _phrase3 = _phrase3.Replace("{ItemName}", _name);
                                 _phrase3 = _phrase3.Replace("{ItemCount}", _count.ToString());
                                 _phrase3 = _phrase3.Replace("{MaxPerStack}", _maxAllowed.ToString());
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase3), "Server", false, "", false));
-                                ChatLog.Log(_phrase3, "Server");
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase3), Config.Server_Response_Name, false, "ServerTools", false));
+                                ChatLog.Log(_phrase3, Config.Server_Response_Name);
                             }
                             if (IsEnabled && dict.ContainsKey(_name))
                             {
@@ -1271,8 +1290,8 @@ namespace ServerTools
                                     }
                                     _phrase4 = _phrase4.Replace("{PlayerName}", _cInfo.playerName);
                                     _phrase4 = _phrase4.Replace("{ItemName}", _name);
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase4), "Server", false, "", false);
-                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Invalid Item {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
+                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase4), Config.Server_Response_Name, false, "", false);
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Invalid Item {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                     {
                                         sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, with invalid item: {2}. Banned the player.", _cInfo.playerName, _cInfo.playerId, _name));
@@ -1283,83 +1302,66 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    if (!dropCheck.Contains(_cInfo.entityId))
-                                    {                                        
-                                        if (playerflag.ContainsKey(_cInfo.entityId))
+                                    if (playerflag.ContainsKey(_cInfo.entityId))
+                                    {
+                                        int _value;
+                                        if (playerflag.TryGetValue(_cInfo.entityId, out _value))
                                         {
-                                            int _value;
-                                            if (playerflag.TryGetValue(_cInfo.entityId, out _value))
+                                            if (_value == 2)
                                             {
-                                                if (_value == 2)
+                                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
+                                                string _phrase5;
+                                                if (!Phrases.Dict.TryGetValue(5, out _phrase5))
                                                 {
-                                                    string _phrase5;
-                                                    if (!Phrases.Dict.TryGetValue(5, out _phrase5))
-                                                    {
-                                                        _phrase5 = "Cheat Detected: Auto kicked {PlayerName} for having a invalid item: {ItemName}.";
-                                                    }
-                                                    _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
-                                                    _phrase5 = _phrase5.Replace("{ItemName}", _name);
-                                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase5), "Server", false, "", false);
-                                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
-                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
-                                                    {
-                                                        sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, with invalid item: {2}. Kicked the player.", _cInfo.playerName, _cInfo.playerId, _name));
-                                                        sw.WriteLine();
-                                                        sw.Flush();
-                                                        sw.Close();
-                                                    }
-                                                    dropCheck.Remove(_cInfo.entityId);
-                                                    playerflag.Remove(_cInfo.entityId);
+                                                    _phrase5 = "Cheat Detected: Auto kicked {PlayerName} for having a invalid item: {ItemName}.";
                                                 }
-                                                else
+                                                _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
+                                                _phrase5 = _phrase5.Replace("{ItemName}", _name);
+                                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase5), Config.Server_Response_Name, false, "", false);                                                
+                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                 {
-                                                    dropCheck.Add(_cInfo.entityId);
-                                                    playerflag[_cInfo.entityId] = 2;
-                                                    string _phrase799;
-                                                    if (!Phrases.Dict.TryGetValue(799, out _phrase799))
-                                                    {
-                                                        _phrase799 = "Cheat Detected: {PlayerName} you are holding a invalid item: {ItemName}. Final warning, drop it!";
-                                                    }
-                                                    _phrase799 = _phrase799.Replace("{PlayerName}", _cInfo.playerName);
-                                                    _phrase799 = _phrase799.Replace("{ItemName}", _name);
-                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase799), "Server", false, "", false));
+                                                    sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, with invalid item: {2}. Kicked the player.", _cInfo.playerName, _cInfo.playerId, _name));
+                                                    sw.WriteLine();
+                                                    sw.Flush();
+                                                    sw.Close();
                                                 }
+                                                playerflag.Remove(_cInfo.entityId);
                                             }
-                                        }
-                                        else
-                                        {
-                                            playerflag[_cInfo.entityId] = 1;
-                                            string _phrase800;
-                                            if (!Phrases.Dict.TryGetValue(800, out _phrase800))
+                                            else
                                             {
-                                                _phrase800 = "Cheat Detected: {PlayerName} you are holding a invalid item: {ItemName}. You have 30 seconds to drop it.";
+                                                playerflag.Remove(_cInfo.entityId);
+                                                playerflag[_cInfo.entityId] = 2;
+                                                string _phrase799;
+                                                if (!Phrases.Dict.TryGetValue(799, out _phrase799))
+                                                {
+                                                    _phrase799 = "Cheat Detected: {PlayerName} you are holding a invalid item: {ItemName}. Final warning, drop it!";
+                                                }
+                                                _phrase799 = _phrase799.Replace("{PlayerName}", _cInfo.playerName);
+                                                _phrase799 = _phrase799.Replace("{ItemName}", _name);
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase799), Config.Server_Response_Name, false, "ServerTools", false));
                                             }
-                                            _phrase800 = _phrase800.Replace("{PlayerName}", _cInfo.playerName);
-                                            _phrase800 = _phrase800.Replace("{ItemName}", _name);
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase800), "Server", false, "", false));
                                         }
                                     }
                                     else
                                     {
-                                        string _phrase5;
-                                        if (!Phrases.Dict.TryGetValue(5, out _phrase5))
+                                        playerflag.Add(_cInfo.entityId, 1);
+                                        string _phrase800;
+                                        if (!Phrases.Dict.TryGetValue(800, out _phrase800))
                                         {
-                                            _phrase5 = "Cheat Detected: Auto kicked {PlayerName} for having a invalid item: {ItemName}.";
+                                            _phrase800 = "Cheat Detected: {PlayerName} you are holding a invalid item: {ItemName}. You have 30 seconds to drop it.";
                                         }
-                                        _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
-                                        _phrase5 = _phrase5.Replace("{ItemName}", _name);
-                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase5), "Server", false, "", false);
-                                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
-                                        dropCheck.Remove(_cInfo.entityId);
+                                        _phrase800 = _phrase800.Replace("{PlayerName}", _cInfo.playerName);
+                                        _phrase800 = _phrase800.Replace("{ItemName}", _name);
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase800), Config.Server_Response_Name, false, "ServerTools", false));
                                     }
                                 }
-                                break;
                             }
                             else if (IsEnabled)
                             {
-                                _totalInventoryCount = +1;
+                                _totalInventoryCount++;
                                 if (_totalInventoryCount == _count)
                                 {
+                                    _totalInventoryCount = 0;
                                     _invClean = 1;
                                 }
                             }
@@ -1387,15 +1389,16 @@ namespace ServerTools
                                 _phrase3 = _phrase3.Replace("{ItemName}", _name);
                                 _phrase3 = _phrase3.Replace("{ItemCount}", _count.ToString());
                                 _phrase3 = _phrase3.Replace("{MaxPerStack}", _maxAllowed.ToString());
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase3), "Server", false, "", false));
-                                ChatLog.Log(_phrase3, "Server");
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase3), Config.Server_Response_Name, false, "ServerTools", false));
+                                ChatLog.Log(_phrase3, Config.Server_Response_Name);
 
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase3), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase3), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                             if (IsEnabled && dict.ContainsKey(_name))
                             {
                                 if (Ban_Player)
                                 {
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Invalid Item {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
                                     string _phrase4;
                                     if (!Phrases.Dict.TryGetValue(4, out _phrase4))
                                     {
@@ -1403,68 +1406,79 @@ namespace ServerTools
                                     }
                                     _phrase4 = _phrase4.Replace("{PlayerName}", _cInfo.playerName);
                                     _phrase4 = _phrase4.Replace("{ItemName}", _name);
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase4), "Server", false, "", false);
-                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Invalid Item {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
+                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase4), Config.Server_Response_Name, false, "", false);
                                 }
                                 else
                                 {
-                                    if (!dropCheck.Contains(_cInfo.entityId))
+                                    if (playerflag.ContainsKey(_cInfo.entityId))
                                     {
-                                        if (playerflag.ContainsKey(_cInfo.entityId))
+                                        int _value;
+                                        if (playerflag.TryGetValue(_cInfo.entityId, out _value))
                                         {
-                                            string _phrase5;
-                                            if (!Phrases.Dict.TryGetValue(5, out _phrase5))
+                                            if (_value == 2)
                                             {
-                                                _phrase5 = "Cheat Detected: Auto kicked {PlayerName} for having a invalid item: {ItemName}.";
+                                                string _phrase5;
+                                                if (!Phrases.Dict.TryGetValue(5, out _phrase5))
+                                                {
+                                                    _phrase5 = "Cheat Detected: Auto kicked {PlayerName} for having a invalid item: {ItemName}.";
+                                                }
+                                                _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
+                                                _phrase5 = _phrase5.Replace("{ItemName}", _name);
+                                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase5), Config.Server_Response_Name, false, "", false);
+                                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
+                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                {
+                                                    sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, with invalid item: {2}. Kicked the player.", _cInfo.playerName, _cInfo.playerId, _name));
+                                                    sw.WriteLine();
+                                                    sw.Flush();
+                                                    sw.Close();
+                                                }
+                                                playerflag.Remove(_cInfo.entityId);
                                             }
-                                            _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
-                                            _phrase5 = _phrase5.Replace("{ItemName}", _name);
-                                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase5), "Server", false, "", false);
-                                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
-                                            dropCheck.Remove(_cInfo.entityId);
-                                        }
-                                        else
-                                        {
-                                            dropCheck.Add(_cInfo.entityId);
-                                            playerflag.Add(_cInfo.entityId, +1);
-                                            string _phrase800;
-                                            if (!Phrases.Dict.TryGetValue(800, out _phrase800))
+                                            else
                                             {
-                                                _phrase800 = "Cheat Detected: {PlayerName} you are holding a invalid item: {ItemName}. You have 30 seconds to drop it.";
+                                                playerflag.Remove(_cInfo.entityId);
+                                                playerflag[_cInfo.entityId] = 2;
+                                                string _phrase799;
+                                                if (!Phrases.Dict.TryGetValue(799, out _phrase799))
+                                                {
+                                                    _phrase799 = "Cheat Detected: {PlayerName} you are holding a invalid item: {ItemName}. Final warning, drop it!";
+                                                }
+                                                _phrase799 = _phrase799.Replace("{PlayerName}", _cInfo.playerName);
+                                                _phrase799 = _phrase799.Replace("{ItemName}", _name);
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase799), Config.Server_Response_Name, false, "ServerTools", false));
                                             }
-                                            _phrase800 = _phrase800.Replace("{PlayerName}", _cInfo.playerName);
-                                            _phrase800 = _phrase800.Replace("{ItemName}", _name);
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase800), "Server", false, "", false));
                                         }
                                     }
                                     else
                                     {
-                                        string _phrase5;
-                                        if (!Phrases.Dict.TryGetValue(5, out _phrase5))
+                                        playerflag.Add(_cInfo.entityId, 1);
+                                        string _phrase800;
+                                        if (!Phrases.Dict.TryGetValue(800, out _phrase800))
                                         {
-                                            _phrase5 = "Cheat Detected: Auto kicked {PlayerName} for having a invalid item: {ItemName}.";
+                                            _phrase800 = "Cheat Detected: {PlayerName} you are holding a invalid item: {ItemName}. You have 30 seconds to drop it.";
                                         }
-                                        _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
-                                        _phrase5 = _phrase5.Replace("{ItemName}", _name);
-                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase5), "Server", false, "", false);
-                                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
-                                        dropCheck.Remove(_cInfo.entityId);
+                                        _phrase800 = _phrase800.Replace("{PlayerName}", _cInfo.playerName);
+                                        _phrase800 = _phrase800.Replace("{ItemName}", _name);
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase800), Config.Server_Response_Name, false, "ServerTools", false));
                                     }
                                 }
-                                break;
                             }
                             else if (IsEnabled)
                             {
-                                _totalBagCount = +1;
+                                _totalBagCount++;
                                 if (_totalBagCount == _count)
                                 {
+                                    _totalBagCount = 0;
                                     _bagClean = 1;
-                                }                              
+                                }
                             }
                         }
                     }
                     if (_bagClean == 1 && _invClean == 1)
                     {
+                        _bagClean = 0;
+                        _invClean = 0;
                         if (dropCheck.Contains(_cInfo.entityId))
                         {
                             dropCheck.Remove(_cInfo.entityId);

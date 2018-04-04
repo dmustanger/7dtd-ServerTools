@@ -8,16 +8,17 @@ namespace ServerTools
 {
     class ZoneProtection
     {
-        public static bool IsEnabled = false, IsRunning = false, Kill_Enabled = false, Jail_Enabled = false, Kick_Enabled = false, Ban_Enabled = false, Zone_Message = false, Set_Home = false;
+        public static bool IsEnabled = false, IsRunning = false, Kill_Enabled = false, Jail_Enabled = false, Kick_Enabled = false,
+            Ban_Enabled = false, Zone_Message = false, Set_Home = false, No_Zombie = false;
         public static int Days_Before_Log_Delete = 5;      
         private const string file = "ZoneProtection.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static SortedDictionary<string, string[]> Box = new SortedDictionary<string, string[]>();
-        private static SortedDictionary<int, int> PlayerKills = new SortedDictionary<int, int>();
-        private static SortedDictionary<int, int> Flag = new SortedDictionary<int, int>();
-        public static SortedDictionary<int, Vector3> Victim = new SortedDictionary<int, Vector3>();
-        public static SortedDictionary<int, int> Forgive = new SortedDictionary<int, int>();
-        public static SortedDictionary<int, string> PvEFlag = new SortedDictionary<int, string>();
+        public static Dictionary<string, string[]> Box = new Dictionary<string, string[]>();
+        public static Dictionary<int, int> PlayerKills = new Dictionary<int, int>();
+        private static Dictionary<int, int> Flag = new Dictionary<int, int>();
+        public static Dictionary<int, Vector3> Victim = new Dictionary<int, Vector3>();
+        public static Dictionary<int, int> Forgive = new Dictionary<int, int>();
+        public static Dictionary<int, string> PvEFlag = new Dictionary<int, string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
         private static int _xMinCheck = 0, _yMinCheck = 0, _zMinCheck = 0, _xMaxCheck = 0, _yMaxCheck = 0, _zMaxCheck = 0;
@@ -162,13 +163,14 @@ namespace ServerTools
         public static void Check()
         {
             List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-            foreach (var _cInfoKiller in _cInfoList)
+            for (int i = 0; i < _cInfoList.Count; i++)
             {
+                ClientInfo _cInfoKiller = _cInfoList[i];
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoKiller.entityId];
                 int _playerKills = _player.KilledPlayers;
                 if (!PlayerKills.ContainsKey(_cInfoKiller.entityId))
                 {
-                    PlayerKills.Add(_cInfoKiller.entityId, _playerKills);
+                    PlayerKills[_cInfoKiller.entityId] = _playerKills;
                 }
                 else
                 {
@@ -177,8 +179,7 @@ namespace ServerTools
                     {
                         if (_playerKills > _kills)
                         {
-                            PlayerKills.Remove(_cInfoKiller.entityId);
-                            PlayerKills.Add(_cInfoKiller.entityId, _playerKills);
+                            PlayerKills[_cInfoKiller.entityId] = _playerKills;
                             var _victim = _player.GetDamagedTarget();
                             if (_victim != null && _cInfoKiller.entityId != _victim.entityId)
                             {
@@ -193,20 +194,16 @@ namespace ServerTools
                                             _phrase801 = "{Killer} has murdered you while you were in a protected zone.";
                                         }
                                         _phrase801 = _phrase801.Replace("{Killer}", _cInfoKiller.playerName);
-                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase801), "Server", false, "", false));
+                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase801), Config.Server_Response_Name, false, "ServerTools", false));
                                         string _phrase802;
                                         if (!Phrases.Dict.TryGetValue(802, out _phrase802))
                                         {
                                             _phrase802 = "You have murdered a player inside a protected zone. Their name was {Victim}";
                                         }
                                         _phrase802 = _phrase802.Replace("{Victim}", _cInfoVictim.playerName);
-                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase802), "Server", false, "", false));
+                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase802), Config.Server_Response_Name, false, "ServerTools", false));
                                         Penalty(_cInfoKiller, _cInfoVictim);
-                                        if (Victim.ContainsKey(_cInfoVictim.entityId))
-                                        {
-                                            Victim.Remove(_cInfoVictim.entityId);
-                                        }
-                                        Victim.Add(_cInfoVictim.entityId, _victim.position);
+                                        Victim[_cInfoVictim.entityId] = _victim.position;
                                         continue;                                                                             
                                     }
                                     if (PvEFlag.ContainsKey(_cInfoVictim.entityId) & !PvEFlag.ContainsKey(_cInfoKiller.entityId))
@@ -217,20 +214,16 @@ namespace ServerTools
                                             _phrase801 = "{Killer} has murdered you while you were in a protected zone.";
                                         }
                                         _phrase801 = _phrase801.Replace("{Killer}", _cInfoKiller.playerName);
-                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase801), "Server", false, "", false));
+                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase801), Config.Server_Response_Name, false, "ServerTools", false));
                                         string _phrase802;
                                         if (!Phrases.Dict.TryGetValue(802, out _phrase802))
                                         {
                                             _phrase802 = "You have murdered a player inside a protected zone. Their name was {Victim}";
                                         }
                                         _phrase802 = _phrase802.Replace("{Victim}", _cInfoVictim.playerName);
-                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase802), "Server", false, "", false));
+                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase802), Config.Server_Response_Name, false, "ServerTools", false));
                                         Penalty(_cInfoKiller, _cInfoVictim);
-                                        if (Victim.ContainsKey(_cInfoVictim.entityId))
-                                        {
-                                            Victim.Remove(_cInfoVictim.entityId);
-                                        }
-                                        Victim.Add(_cInfoVictim.entityId, _victim.position);
+                                        Victim[_cInfoVictim.entityId] = _victim.position;
                                         continue;
                                     }
                                     if (!PvEFlag.ContainsKey(_cInfoVictim.entityId) & PvEFlag.ContainsKey(_cInfoKiller.entityId))
@@ -241,20 +234,16 @@ namespace ServerTools
                                             _phrase803 = "{Killer} has murdered you while they were in a protected zone.";
                                         }
                                         _phrase803 = _phrase803.Replace("{Killer}", _cInfoKiller.playerName);
-                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase803), "Server", false, "", false));
+                                        _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase803), Config.Server_Response_Name, false, "ServerTools", false));
                                         string _phrase802;
                                         if (!Phrases.Dict.TryGetValue(802, out _phrase802))
                                         {
                                             _phrase802 = "You have murdered a player inside a protected zone. Their name was {Victim}";
                                         }
                                         _phrase802 = _phrase802.Replace("{Victim}", _cInfoVictim.playerName);
-                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase802), "Server", false, "", false));
+                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase802), Config.Server_Response_Name, false, "ServerTools", false));
                                         Penalty(_cInfoKiller, _cInfoVictim);
-                                        if (Victim.ContainsKey(_cInfoVictim.entityId))
-                                        {
-                                            Victim.Remove(_cInfoVictim.entityId);
-                                        }
-                                        Victim.Add(_cInfoVictim.entityId, _victim.position);
+                                        Victim[_cInfoVictim.entityId] = _victim.position;
                                         string _file1 = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
                                         string _filepath1 = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file1);
                                         using (StreamWriter sw = new StreamWriter(_filepath1, true))
@@ -663,9 +652,9 @@ namespace ServerTools
                                 {
                                     if (Zone_Message)
                                     {
-                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, kvpCorners.Value[2]), "Server", false, "", false));
+                                        _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, kvpCorners.Value[2]), Config.Server_Response_Name, false, "ServerTools", false));
                                     }
-                                    PvEFlag.Add(_cInfoKiller.entityId, kvpCorners.Value[3]);
+                                    PvEFlag[_cInfoKiller.entityId] = kvpCorners.Value[3];
                                 }
                                 else
                                 {
@@ -674,8 +663,7 @@ namespace ServerTools
                                     {
                                         if (_msg != kvpCorners.Value[2])
                                         {
-                                            PvEFlag.Remove(_cInfoKiller.entityId);
-                                            PvEFlag.Add(_cInfoKiller.entityId, kvpCorners.Value[3]);
+                                            PvEFlag[_cInfoKiller.entityId] = kvpCorners.Value[3];
                                         }
                                     }
                                 }
@@ -695,36 +683,32 @@ namespace ServerTools
                                                 string _msg;
                                                 if (PvEFlag.TryGetValue(_cInfoKiller.entityId, out _msg))
                                                 {
-                                                    _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _msg), "Server", false, "", false));
+                                                    _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _msg), Config.Server_Response_Name, false, "ServerTools", false));
                                                 }
                                             }
                                             PvEFlag.Remove(_cInfoKiller.entityId);
                                         }
                                         else
                                         {
-                                            Flag.Remove(_cInfoKiller.entityId);
-                                            Flag.Add(_cInfoKiller.entityId, _flag1);
+                                            Flag[_cInfoKiller.entityId] = _flag1;
                                         }
                                     }
                                 }
                                 else
                                 {
                                     int _flag = 1;
-                                    Flag.Add(_cInfoKiller.entityId, _flag);
-                                    if (Flag.TryGetValue(_cInfoKiller.entityId, out _flag))
+                                    Flag[_cInfoKiller.entityId] = _flag;
+                                    if (_flag == Box.Count & PvEFlag.ContainsKey(_cInfoKiller.entityId))
                                     {
-                                        if (_flag == Box.Count & PvEFlag.ContainsKey(_cInfoKiller.entityId))
+                                        if (Zone_Message)
                                         {
-                                            if (Zone_Message)
+                                            string _msg;
+                                            if (PvEFlag.TryGetValue(_cInfoKiller.entityId, out _msg))
                                             {
-                                                string _msg;
-                                                if (PvEFlag.TryGetValue(_cInfoKiller.entityId, out _msg))
-                                                {
-                                                    _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _msg), "Server", false, "", false));
-                                                }
+                                                _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _msg), Config.Server_Response_Name, false, "ServerTools", false));
                                             }
-                                            PvEFlag.Remove(_cInfoKiller.entityId);
                                         }
+                                        PvEFlag.Remove(_cInfoKiller.entityId);
                                     }
                                 }
                             }
@@ -784,27 +768,23 @@ namespace ServerTools
         {
             if (Jail_Enabled)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been jailed for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), "Server", false, "", false);
-                SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0}", _cInfoKiller.playerId), (ClientInfo)null);
-                if (Forgive.ContainsKey(_cInfoVictim.entityId))
-                {
-                    Forgive.Remove(_cInfoVictim.entityId);
-                }
-                Forgive.Add(_cInfoVictim.entityId, _cInfoKiller.entityId);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been jailed for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), Config.Server_Response_Name, false, "", false);
+                SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0} 120", _cInfoKiller.playerId), (ClientInfo)null);
+                Forgive[_cInfoVictim.entityId] = _cInfoKiller.entityId;
             }
             if (Kill_Enabled)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been executed for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been executed for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), Config.Server_Response_Name, false, "", false);
                 SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfoKiller.playerId), (ClientInfo)null);
             }
             if (Kick_Enabled)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been kicked for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been kicked for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), Config.Server_Response_Name, false, "", false);
                 SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for murder in a protected zone\"", _cInfoKiller.playerId), (ClientInfo)null);
             }
             if (Ban_Enabled)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been banned for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), "Server", false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been banned for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), Config.Server_Response_Name, false, "", false);
                 SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for murder in a protected zone\"", _cInfoKiller.playerId), (ClientInfo)null);
             }
         }

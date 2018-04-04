@@ -33,14 +33,14 @@ namespace ServerTools
                                 Vector3i vec3i = SecureLoot.ToWorldPos();
                                 Vector3 _vec3 = vec3i.ToVector3();
                                 _distance = _player.GetDistanceSq(_vec3);
-                                if (_distance <= 1.3)
+                                if (_distance <= 1.5)
                                 {
                                     int _playerCount = ConnectionManager.Instance.ClientCount();
                                     if (_playerCount > 1)
                                     {
                                         float _distancePlayer;
                                         List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                                        for (int j = 0; i < _cInfoList.Count; j++)
+                                        for (int j = 0; j < _cInfoList.Count; j++)
                                         {
                                             ClientInfo _cInfo2 = _cInfoList[j];
                                             if (_cInfo != _cInfo2)
@@ -50,7 +50,7 @@ namespace ServerTools
                                                 _distancePlayer = _player.GetDistanceSq(_player2pos);
                                                 if (_distancePlayer < 8)
                                                 {
-                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are too close to another player to use auction. Tell them to back off and get their own moldy sandwich.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You are too close to another player to use auction. Tell them to back off and get their own moldy sandwich.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                                                     return;
                                                 }
                                             }
@@ -59,12 +59,12 @@ namespace ServerTools
                                     List<string> boxUsers = SecureLoot.GetUsers();
                                     if (!boxUsers.Contains(_cInfo.playerId) && !SecureLoot.GetOwner().Equals(_cInfo.playerId))
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Local secure loot is not owned by you or a friend. You can only auction an item through a secure loot you own.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Local secure loot is not owned by you or a friend. You can only auction an item through a secure loot you own.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                                         return;
                                     }
                                     else if (SecureLoot.IsUserAccessing())
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Local box is currently open. Close the chest first.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Local box is currently open. Close the chest first.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                                         return;
                                     }
                                     ItemStack[] items = SecureLoot.items;
@@ -84,7 +84,7 @@ namespace ServerTools
                                                 PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = _cInfo.entityId;
                                                 PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionItem = _auctionItem;
                                                 PersistentContainer.Instance.Save();
-                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your auction item {1} has been removed from the secure loot and added to the auction.[-]", Config.Chat_Response_Color, _itemName), "Server", false, "", false));
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your auction item {1} has been removed from the secure loot and added to the auction.[-]", Config.Chat_Response_Color, _itemName), Config.Server_Response_Name, false, "ServerTools", false));
                                                 count++;
                                             }
                                         }
@@ -97,13 +97,13 @@ namespace ServerTools
                 }
                 if (!AuctionItems.ContainsKey(_cInfo.entityId))
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Auction add failed. No items were found in a secure chest you own near by.[-]", Config.Chat_Response_Color), "Server", false, "", false));
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Place an item in a chest and stand very close to it, then use /auction sell #.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Auction add failed. No items were found in a secure chest you own near by.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Place an item in a chest and stand very close to it, then use /auction sell #.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have auction item # {1} in the auction already. Wait for it to sell or cancel it with /auction cancel.[-]", Config.Chat_Response_Color, _cInfo.entityId), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have auction item # {1} in the auction already. Wait for it to sell or cancel it with /auction cancel.[-]", Config.Chat_Response_Color, _cInfo.entityId), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -137,17 +137,17 @@ namespace ServerTools
                     int.TryParse(_auctionItem.Value[2], out _quality);
                     if (_quality > 1)
                     {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} at {4} quality, for {5} {6}[-]", Config.Chat_Response_Color, _auctionItem.Key, _auctionItem.Value[0], _auctionItem.Value[1], _auctionItem.Value[2], _auctionItem.Value[3], Wallet.Coin_Name), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} at {4} quality, for {5} {6}[-]", Config.Chat_Response_Color, _auctionItem.Key, _auctionItem.Value[0], _auctionItem.Value[1], _auctionItem.Value[2], _auctionItem.Value[3], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                     else
                     {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, _auctionItem.Key, _auctionItem.Value[0], _auctionItem.Value[1], _auctionItem.Value[3], Wallet.Coin_Name), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, _auctionItem.Key, _auctionItem.Value[0], _auctionItem.Value[1], _auctionItem.Value[3], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}No items are currently for sale.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}No items are currently for sale.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -164,18 +164,25 @@ namespace ServerTools
                 if (gameMode == 7)
                 {
                     currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                    if (!Wallet.Negative_Wallet)
+                    {
+                        if (currentCoins < 0)
+                        {
+                            currentCoins = 0;
+                        }
+                    }
                 }
                 else
                 {
                     currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                }
-                if (!Wallet.Negative_Wallet)
-                {
-                    if (currentCoins < 0)
+                    if (!Wallet.Negative_Wallet)
                     {
-                        currentCoins = 0;
+                        if (currentCoins < 0)
+                        {
+                            currentCoins = 0;
+                        }
                     }
-                }
+                }                
                 string[] _value;
                 List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
                 int _count = 0;
@@ -205,7 +212,7 @@ namespace ServerTools
                                 {
                                     _missing = _coinValue + currentCoins;
                                 }
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You can not make this purchase. You need {1} more {2}.[-]", Config.Chat_Response_Color, _missing, Wallet.Coin_Name), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You can not make this purchase. You need {1} more {2}.[-]", Config.Chat_Response_Color, _missing, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                         }
                         else
@@ -213,7 +220,7 @@ namespace ServerTools
                             _count++;
                             if (_count == playerlist.Count)
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}This # could not be found. Please check the auction list by typing /auction.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}This # could not be found. Please check the auction list by typing /auction.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                             else
                             {
@@ -268,7 +275,7 @@ namespace ServerTools
             int _newCoin = p.PlayerSpentCoins - _price;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _newCoin;
             PersistentContainer.Instance.Save();
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have purchased {1} {2} from the auction for {3} {4}.[-]", Config.Chat_Response_Color, _value[0], _value[1], _value[3], Wallet.Coin_Name), "Server", false, "", false));
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have purchased {1} {2} from the auction for {3} {4}.[-]", Config.Chat_Response_Color, _value[0], _value[1], _value[3], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
 
             int count = 0;
             List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
@@ -285,8 +292,8 @@ namespace ServerTools
                     PersistentContainer.Instance.Players[_cInfo1.playerId, true].AuctionItem = null;                    
                     PersistentContainer.Instance.Save();
                     AuctionItems.Remove(_cInfo1.entityId);
-                    _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your auction item was purchased and the value placed in your wallet.[-]", Config.Chat_Response_Color), "Server", false, "", false));
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Seller has received the funds in their wallet.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                    _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your auction item was purchased and the value placed in your wallet.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Seller has received the funds in their wallet.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                 }
                 else
                 {
@@ -299,7 +306,7 @@ namespace ServerTools
                     PersistentContainer.Instance.Players[_cInfo1.playerId, true].AuctionItem = null;
                     PersistentContainer.Instance.Save();
                     AuctionItems.Remove(_cInfo1.entityId);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Seller has received the funds in their wallet.[-]", Config.Chat_Response_Color), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Seller has received the funds in their wallet.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             
@@ -345,7 +352,7 @@ namespace ServerTools
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionItem = null;
                     PersistentContainer.Instance.Save();
                     AuctionItems.Remove(_cInfo.entityId);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your auction item has returned to you.[-]", Config.Chat_Response_Color), "Server", false, "", false));                   
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your auction item has returned to you.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));                   
                 }
             }
             else

@@ -14,8 +14,9 @@ namespace ServerTools
         public static void ListFriends(ClientInfo _cInfo, string _message)
         {
             List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-            foreach (var _player in _cInfoList)
+            for (int i = 0; i < _cInfoList.Count; i++)
             {
+                ClientInfo _player = _cInfoList[i];
                 EntityPlayer ent1 = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 EntityPlayer ent2 = GameManager.Instance.World.Players.dict[_player.entityId];
                 if (ent1.IsFriendsWith(ent2))
@@ -27,7 +28,7 @@ namespace ServerTools
                     }
                     _phrase625 = _phrase625.Replace("{FriendName}", _player.playerName);
                     _phrase625 = _phrase625.Replace("{EntityId}", _player.entityId.ToString());
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase625), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase625), Config.Server_Response_Name, false, "ServerTools", false));
                 }
                 else
                 {
@@ -51,6 +52,19 @@ namespace ServerTools
                 TimeSpan varTime = DateTime.Now - p.LastFriendTele;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int _timepassed = (int)fractionalMinutes;
+                if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                {
+                    if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                    {
+                        DateTime _dt;
+                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                        if (DateTime.Now < _dt)
+                        {
+                            int _newTime = _timepassed * 2;
+                            _timepassed = _newTime;
+                        }
+                    }
+                }
                 if (_timepassed >= Delay_Between_Uses)
                 {
                     MessageFriend(_cInfo, _message);
@@ -58,6 +72,21 @@ namespace ServerTools
                 else
                 {
                     int _timeleft = Delay_Between_Uses - _timepassed;
+                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                    {
+                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        {
+                            DateTime _dt;
+                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                            if (DateTime.Now < _dt)
+                            {
+                                int _newTime = _timeleft / 2;
+                                _timeleft = _newTime;
+                                int _newDelay = Delay_Between_Uses / 2;
+                                Delay_Between_Uses = _newDelay;
+                            }
+                        }
+                    }
                     string _phrase630;
                     if (!Phrases.Dict.TryGetValue(630, out _phrase630))
                     {
@@ -68,11 +97,11 @@ namespace ServerTools
                     _phrase630 = _phrase630.Replace("{TimeRemaining}", _timeleft.ToString());
                     if (_announce)
                     {
-                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase630), "Server", false, "", false);
+                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase630), Config.Server_Response_Name, false, "", false);
                     }
                     else
                     {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase630), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase630), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
             }
@@ -89,7 +118,7 @@ namespace ServerTools
                     _phrase626 = "This {EntityId} is not valid. Only intergers accepted.";
                 }
                 _phrase626 = _phrase626.Replace("{EntityId}", _Id.ToString());
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase626), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase626), Config.Server_Response_Name, false, "ServerTools", false));
             }
             ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForEntityId(_Id);
             if (_cInfo2 != null)
@@ -100,14 +129,14 @@ namespace ServerTools
                     _phrase627 = "Sent your friend {FriendsName} a teleport request.";
                 }
                 _phrase627 = _phrase627.Replace("{FriendsName}", _cInfo2.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase627), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase627), Config.Server_Response_Name, false, "ServerTools", false));
                 string _phrase628;
                 if (!Phrases.Dict.TryGetValue(628, out _phrase628))
                 {
                     _phrase628 = "{SenderName} would like to teleport to you. Type /accept in chat to accept the request.";
                 }
                 _phrase628 = _phrase628.Replace("{SenderName}", _cInfo.playerName);
-                _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase628), "Server", false, "", false));
+                _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase628), Config.Server_Response_Name, false, "ServerTools", false));
                 if (Dict.ContainsKey(_cInfo2.entityId))
                 {
                     Dict.Remove(_cInfo2.entityId);
@@ -129,7 +158,7 @@ namespace ServerTools
                     _phrase629 = "Did not find EntityId {EntityId}. No teleport request sent.";
                 }
                 _phrase629 = _phrase629.Replace("{EntityId}", _Id.ToString());
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase629), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase629), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -144,7 +173,7 @@ namespace ServerTools
             {
                 _phrase631 = "Your request was accepted. Teleported you to your friend.";
             }
-            _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase631), "Server", false, "", false));
+            _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase631), Config.Server_Response_Name, false, "ServerTools", false));
         }
     }
 }

@@ -232,12 +232,7 @@ namespace ServerTools
                 if (world.IsWithinTraderArea(playerPos))
                 {
                     Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                    if (p == null)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = 0;
-                        PersistentContainer.Instance.Save();
-                    }
-                    else
+                    if (p != null)
                     {
                         int spentCoins = p.PlayerSpentCoins;
                         int currentCoins = 0;
@@ -250,20 +245,17 @@ namespace ServerTools
                         {
                             currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
                         }
-                        if (!Wallet.Negative_Wallet)
+                        if (!Wallet.Negative_Wallet && currentCoins < 0)
                         {
-                            if (currentCoins < 0)
-                            {
-                                currentCoins = 0;
-                            }
+                            currentCoins = 0;
                         }
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, currentCoins, Wallet.Coin_Name), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, currentCoins, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                         string _phrase617;
                         if (!Phrases.Dict.TryGetValue(617, out _phrase617))
                         {
                             _phrase617 = "The shop contains the following:";
                         }
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase617), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase617), Config.Server_Response_Name, false, "ServerTools", false));
                         foreach (var _sellable in dict)
                         {
                             int[] _values;
@@ -271,11 +263,11 @@ namespace ServerTools
                             {
                                 if (_values[1] > 1)
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[1], _values[2], Wallet.Coin_Name), "Server", false, "", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[2], Wallet.Coin_Name), "Server", false, "", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                             }
                         }
@@ -284,7 +276,7 @@ namespace ServerTools
                         {
                             _phrase618 = "Type /buy # to purchase the corresponding value from the shop list.";
                         }
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase618), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase618), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
                 else
@@ -295,7 +287,7 @@ namespace ServerTools
                         _phrase619 = "{PlayerName} you are not inside a trade area. Find a trader and use /shop again.";
                     }
                     _phrase619 = _phrase619.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase619), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase619), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             else
@@ -316,26 +308,33 @@ namespace ServerTools
                     if (gameMode == 7)
                     {
                         currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                        if (!Wallet.Negative_Wallet)
+                        {
+                            if (currentCoins < 0)
+                            {
+                                currentCoins = 0;
+                            }
+                        }
                     }
                     else
                     {
                         currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                    }
-                    if (!Wallet.Negative_Wallet)
-                    {
-                        if (currentCoins < 0)
+                        if (!Wallet.Negative_Wallet)
                         {
-                            currentCoins = 0;
+                            if (currentCoins < 0)
+                            {
+                                currentCoins = 0;
+                            }
                         }
                     }
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, currentCoins, Wallet.Coin_Name), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, currentCoins, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                 }
                 string _phrase617;
                 if (!Phrases.Dict.TryGetValue(617, out _phrase617))
                 {
                     _phrase617 = "The shop contains the following:";
                 }
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase617), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase617), Config.Server_Response_Name, false, "ServerTools", false));
                 foreach (var _sellable in dict)
                 {
                     int[] _values;
@@ -343,11 +342,11 @@ namespace ServerTools
                     {
                         if (_values[1] > 1)
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}#{1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[1], _values[2], Wallet.Coin_Name), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}#{1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}#{1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[2], Wallet.Coin_Name), "Server", false, "", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}#{1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                 }
@@ -356,7 +355,7 @@ namespace ServerTools
                 {
                     _phrase618 = "Type /buy # to purchase the corresponding value from the shop list.";
                 }
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase618), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase618), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -371,7 +370,7 @@ namespace ServerTools
                     _phrase620 = "{PlayerName} the item # you are trying to buy is not an interger. Please input /buy 1 for example.";
                 }
                 _phrase620 = _phrase620.Replace("{PlayerName}", _playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase620), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase620), Config.Server_Response_Name, false, "ServerTools", false));
             }
             else
             {
@@ -417,7 +416,7 @@ namespace ServerTools
                                 _phrase621 = _phrase621.Replace("{PlayerName}", _playerName);
                                 _phrase621 = _phrase621.Replace("{CoinName}", Wallet.Coin_Name);
                                 _phrase621 = _phrase621.Replace("{WalletBalance}", currentCoins.ToString());
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase621), "Server", false, "", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase621), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                         }
                     }
@@ -430,7 +429,7 @@ namespace ServerTools
                         _phrase622 = "{PlayerName} there was no item # matching the shop goods. Type /shop to review the list.";
                     }
                     _phrase622 = _phrase622.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase622), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase622), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
         }
@@ -465,7 +464,7 @@ namespace ServerTools
                         _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                         world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                         SdtdConsole.Instance.Output(string.Format("Sold {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was purchased through the shop. If your bag is full, check the ground.[-]", Config.Chat_Response_Color, _count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was purchased through the shop. If your bag is full, check the ground.[-]", Config.Chat_Response_Color, _count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), Config.Server_Response_Name, false, "ServerTools", false));
                         int newCoins = p.PlayerSpentCoins - _price;
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = newCoins;
                         PersistentContainer.Instance.Save();
@@ -479,7 +478,7 @@ namespace ServerTools
                             Log.Out(string.Format("Player {0} tried to buy item {1} from the shop. The item name in the Market.xml does not match an existing item. Check your Item.xml for the correct item name. It is case sensitive.", _cInfo.playerName, _itemName));
                         }
                         _phrase623 = _phrase623.Replace("{PlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase623), "Server", false, "", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase623), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
                 else
@@ -490,7 +489,7 @@ namespace ServerTools
                         _phrase624 = "{PlayerName} you are not inside a trade area. Find a trader and use /buy again.";
                     }
                     _phrase624 = _phrase624.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase624), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase624), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             else
@@ -515,7 +514,7 @@ namespace ServerTools
                     _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                     world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                     SdtdConsole.Instance.Output(string.Format("Sold {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was purchased through the shop. If your bag is full, check the ground.[-]", Config.Chat_Response_Color, _count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was purchased through the shop. If your bag is full, check the ground.[-]", Config.Chat_Response_Color, _count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), Config.Server_Response_Name, false, "ServerTools", false));
                     int newCoins = p.PlayerSpentCoins - _price;
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = newCoins;
                     PersistentContainer.Instance.Save();
@@ -529,7 +528,7 @@ namespace ServerTools
                         Log.Out(string.Format("Player {0} tried to buy item {1} from the shop. The item name in the Market.xml does not match an existing item. Check your Item.xml for the correct item name. It is case sensitive.", _cInfo.playerName, _itemName));
                     }
                     _phrase623 = _phrase623.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase623), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase623), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
         }

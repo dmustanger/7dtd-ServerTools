@@ -32,7 +32,7 @@
                 }
                 _phrase14 = _phrase14.Replace("{SenderName}", _cInfo.playerName);
                 _phrase14 = _phrase14.Replace("{TargetName}", _strings[0]);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase14, Config.Chat_Response_Color), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase14, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
             }
             else
             {
@@ -68,7 +68,7 @@
                     _phrase15 = "{SenderName} no one has pm'd you.";
                 }
                 _phrase15 = _phrase15.Replace("{SenderName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase15, Config.Chat_Response_Color), "Server", false, "", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase15, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
             }
             else
             {
@@ -81,7 +81,7 @@
                         _phrase16 = "{SenderName} the player is not online.";
                     }
                     _phrase16 = _phrase16.Replace("{SenderName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase16, Config.Chat_Response_Color), "Server", false, "", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase16, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                 }
                 else
                 {

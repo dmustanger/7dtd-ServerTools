@@ -43,6 +43,7 @@ namespace ServerTools
                     {
                         stopServerCountingDown = false;
                         NoEntry = false;
+                        AutoShutdown.ShutdownList();
                         SdtdConsole.Instance.Output("Stopserver has stopped.");
                     }
                 }
@@ -76,11 +77,7 @@ namespace ServerTools
             if (Kick_Login)
             {
                 NoEntry = true;
-            }
-            if (!Timers.timer1Running)
-            {
-                Timers.TimerStart1Second();
-            }                       
+            }                      
             if (Timers.Stop_Server_Time < 1)
             {
                 Timers.Stop_Server_Time = 1;
@@ -93,8 +90,8 @@ namespace ServerTools
                 _phrase450 = "Server Shutdown In {Minutes} Minutes.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", Timers.Stop_Server_Time.ToString());
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase450), "Server", false, "", false);
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase450), "Server", false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase450), Config.Server_Response_Name, false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase450), Config.Server_Response_Name, false, "", false);
         }
 
         public static void StartShutdown2(int _newCount)
@@ -105,8 +102,8 @@ namespace ServerTools
                 _phrase450 = "Server Shutdown In {Minutes} Minutes.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", _newCount.ToString());
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase450), "Server", false, "", false);
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase450), "Server", false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase450), Config.Server_Response_Name, false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase450), Config.Server_Response_Name, false, "", false);
         }
 
         public static void StartShutdown3()
@@ -122,39 +119,39 @@ namespace ServerTools
                 _phrase450 = "Server Shutdown In {Minutes} Minutes.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", "1");
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase451), "Server", false, "", false);
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase450), "Server", false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase451), Config.Server_Response_Name, false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase450), Config.Server_Response_Name, false, "", false);
             SdtdConsole.Instance.ExecuteSync("saveworld", (ClientInfo)null);
         }
 
         public static void StartShutdown4()
         {
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, ("[FF0000]10 seconds until shutdown[-]"), "Server", false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, ("[FF0000]10 seconds until shutdown[-]"), Config.Server_Response_Name, false, "", false);
         }
 
         public static void StartShutdown5()
         {
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, ("[FF0000]5[-]"), "Server", false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, ("[FF0000]5[-]"), Config.Server_Response_Name, false, "", false);
         }
 
         public static void StartShutdown6()
         {
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, ("[FF0000]4[-]"), "Server", false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, ("[FF0000]4[-]"), Config.Server_Response_Name, false, "", false);
         }
 
         public static void StartShutdown7()
         {
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, ("[FF0000]3[-]"), "Server", false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, ("[FF0000]3[-]"), Config.Server_Response_Name, false, "", false);
         }
 
         public static void StartShutdown8()
         {
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, ("[FF0000]2[-]"), "Server", false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, ("[FF0000]2[-]"), Config.Server_Response_Name, false, "", false);
         }
 
         public static void StartShutdown9()
         {
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, ("[FF0000]1[-]"), "Server", false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, ("[FF0000]1[-]"), Config.Server_Response_Name, false, "", false);
         }
 
         public static void Stop()
