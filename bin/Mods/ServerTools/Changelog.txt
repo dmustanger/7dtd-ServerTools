@@ -1,5 +1,10 @@
 ﻿CHANGELOG
 
+v.9.1
+Added some missing entries to the HowToSetup.xml
+Fixed Night_Time_Alert set to true by default
+Fixed multiple commands responding with the wallet response when Shop was enabled
+
 v.9.0
 Phrases file doesn't update if it exists. This is so you can edit it. Recommend deleting this file and let it rebuild when upgrading to a new version
 
