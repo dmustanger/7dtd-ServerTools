@@ -146,6 +146,8 @@ Stopserver command: easily shutdown your server with an alert system and countdo
 <br>
 Login notices : show unique alerts to players as a listed player joins the game<br>
 <br>
+Real world time : displayer the real world time in chat so your players dont become real zombies<br>
+<br>
 Teleport new players : send new players to a designated location when they first join your server<br>
 <br>
 <br> 
