@@ -4,7 +4,7 @@ namespace ServerTools
 {
     class HowToSetup
     {
-        public static bool IsEnabled = true, IsRunning = false;
+        public static bool IsEnabled = true;
         private const string file = "HowToSetup.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private const double version = Config.version;
@@ -108,16 +108,18 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("<Tool Name=\"Auto_Shutdown\" Enable =\"False\" Countdown_Timer =\"5\" Delay_Before_Shutdown =\"60\" />");
+                sw.WriteLine("<Tool Name=\"Auto_Shutdown\" Enable =\"False\" Countdown_Timer =\"5\" Delay_Before_Shutdown =\"60\" Days_Until_Horde =\"7\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set a numeric value for Countdown_Timer");
                 sw.WriteLine("Set a numeric value for Delay_Before_Shutdown");
+                sw.WriteLine("Set a numeric value for Days_Until_Horde");
                 sw.WriteLine();
                 sw.WriteLine("Automatically begins the shutdown process for the server after the Delay_Before_Shutdown time runs out.");
                 sw.WriteLine("Begins a warning of the coming shutdown with a timer based on the Countdown_Timer after the Delay_Before_Shutdown time has run out.");
                 sw.WriteLine("Saves the world at one minute remaining of the count down and gives the players a warning not to exchange items or build during the final minute.");                
                 sw.WriteLine("If the server is set as a service on the host hardware, it will automatically restart. ServerTools can not automatically restart a server.");
+                sw.WriteLine("Days_Until_Horde controls how many days before a horde night. Some mods change this from the default 7 days. This prevent shutdown during a bloodmoon.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -170,15 +172,17 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("<Tool Name=\"Chat_Command_Response\" Color=\"[00FF00]\" Chat_Command_Private=\"/\" Chat_Command_Public=\"!\" />");
+                sw.WriteLine("<Tool Name=\"Chat_Command_Response\" Color=\"[00FF00]\" Chat_Command_Private=\"/\" Chat_Command_Public=\"!\"  Mute=\"false\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set a color using a html value in brackets for Color");
                 sw.WriteLine("Set a symbol ServerTools will use for private chat based commands");
                 sw.WriteLine("Set a symbol ServerTools will use for public chat based commands");
+                sw.WriteLine("Set True or False for Mute");
                 sw.WriteLine();
                 sw.WriteLine("The color that all chat command responses will respond with and general ServerTools based messages. Always enabled.");
                 sw.WriteLine("The Chat_Command_Private is the symbol that players will use to initiate a private chat command such as /gimme");
                 sw.WriteLine("The Chat_Command_Public is the symbol that players will use to initiate a public chat command such as !gimme");
+                sw.WriteLine("If you mute a player via chat commands, they are muted for 60 minutes. Players sent via console can be adjusted to suit your needs.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -445,7 +449,7 @@ namespace ServerTools
                 sw.WriteLine("Jail_Size controls how far a player can stray from the jail before it teleports them back to the Jail_Position.");
                 sw.WriteLine("Jail_Position controls where a jailed player is sent to. This is the x, y, z position.");
                 sw.WriteLine("Jail shock will apply the shock buff to them if they try to leave the prison area.");
-                sw.WriteLine("If you send a player to jail via chat commands, they are sent to jail for 60 minutes. Players sent via console can be adjusted to suit your needs.");
+                sw.WriteLine("If you send a player to jail via chat commands, are sent to jail for 60 minutes. Players sent via console can be adjusted to suit your needs.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();

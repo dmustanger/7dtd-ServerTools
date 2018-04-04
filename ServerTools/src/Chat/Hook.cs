@@ -1120,7 +1120,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (Shop.IsEnabled || AuctionBox.IsEnabled && _message == "wallet")
+                        if ((Shop.IsEnabled || AuctionBox.IsEnabled) && _message == "wallet")
                         {
                             Wallet.WalletValue(_cInfo, _playerName);
                             return false;
