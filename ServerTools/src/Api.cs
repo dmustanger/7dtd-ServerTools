@@ -180,9 +180,9 @@ namespace ServerTools
                 ZoneProtection.Forgive.Remove(_cInfo.entityId);
                 ZoneProtection.Victim.Remove(_cInfo.entityId);
             }
-            if (FlightCheck.Flag.ContainsKey(_cInfo.playerId))
+            if (FlightCheck.Flag.Contains(_cInfo.entityId))
             {
-                FlightCheck.Flag.Remove(_cInfo.playerId);
+                FlightCheck.Flag.Remove(_cInfo.entityId);
             }
             if (FlightCheck.fLastPositionXZ.ContainsKey(_cInfo.entityId))
             {
@@ -208,9 +208,9 @@ namespace ServerTools
             {
                 Travel.Flag.Remove(_cInfo.entityId);
             }
-            if (UndergroundCheck.Flag.ContainsKey(_cInfo.playerId))
+            if (UndergroundCheck.Flag.Contains(_cInfo.entityId))
             {
-                UndergroundCheck.Flag.Remove(_cInfo.playerId);
+                UndergroundCheck.Flag.Remove(_cInfo.entityId);
             }
             if (UndergroundCheck.uLastPositionXZ.ContainsKey(_cInfo.entityId))
             {

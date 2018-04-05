@@ -25,6 +25,8 @@ namespace ServerTools
         private string clanname;
         private string invitedtoclan;
         private string lastwhisper;
+        private DateTime cancelTime;
+        private DateTime sellDate;
         private DateTime log;
         private DateTime jailDate;
         private DateTime muteDate;
@@ -187,6 +189,30 @@ namespace ServerTools
             set
             {
                 log = value;
+            }
+        }
+
+        public DateTime CancelTime
+        {
+            get
+            {
+                return cancelTime;
+            }
+            set
+            {
+                cancelTime = value;
+            }
+        }
+
+        public DateTime SellDate
+        {
+            get
+            {
+                return sellDate;
+            }
+            set
+            {
+                sellDate = value;
             }
         }
 

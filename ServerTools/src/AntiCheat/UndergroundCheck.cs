@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -12,7 +13,7 @@ namespace ServerTools
         public static int Admin_Level = 0, Max_Ping = 300, Days_Before_Log_Delete = 5;
         private const string file = "UndergroundBlocks.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        public static Dictionary<string, int> Flag = new Dictionary<string, int>();
+        public static List<int> Flag = new List<int>();
         public static Dictionary<int, int[]> uLastPositionXZ = new Dictionary<int, int[]>();
         public static List<string> dict = new List<string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
@@ -125,6 +126,7 @@ namespace ServerTools
         {
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
+                World world = GameManager.Instance.World;
                 List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                 for (int i = 0; i < _cInfoList.Count; i++)
                 {
@@ -133,89 +135,64 @@ namespace ServerTools
                     AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                     if (Admin.PermissionLevel > Admin_Level)
                     {
-                        World world = GameManager.Instance.World;
-                        List<EntityPlayer>.Enumerator enumerator2 = world.Players.list.GetEnumerator();
-                        using (List<EntityPlayer>.Enumerator enumerator = enumerator2)
-                            while (enumerator.MoveNext())
+                        EntityPlayer ep = world.Players.dict[_cInfo.entityId];
+                        if (autoGetPlayerUnderground(ep, _cInfo) && ep.AttachedToEntity == null)
+                        {
+                            if (!Flag.Contains(_cInfo.entityId))
                             {
-                                EntityPlayer ep = enumerator.Current;
-                                if (ep.entityId == _cInfo.entityId && ep.AttachedToEntity == null)
+                                Flag.Add(_cInfo.entityId);
+                            }
+                            else
+                            {
+                                int x = (int)ep.position.x;
+                                int y = (int)ep.position.y;
+                                int z = (int)ep.position.z;
+                                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, -1, z), false));
+                                Penalty(_cInfo);
+                                Log.Warning(string.Format("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z));
+                                string _file1 = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+                                string _filepath1 = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file1);
+                                using (StreamWriter sw = new StreamWriter(_filepath1, true))
                                 {
-                                    var playerInGround = autoGetPlayerUnderground(ep, _cInfo);
-                                    if (playerInGround == true)
+                                    sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z));
+                                    sw.WriteLine();
+                                    sw.Flush();
+                                    sw.Close();
+                                }
+                                for (int j = 0; j < _cInfoList.Count; j++)
+                                {
+                                    ClientInfo _cInfo1 = _cInfoList[j];
+                                    AdminToolsClientInfo Admin1 = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo1.playerId);
+                                    if (Admin1.PermissionLevel <= Admin_Level)
                                     {
-                                        if (!Flag.ContainsKey(_cInfo.playerId))
+                                        string _phrase710;
+                                        if (!Phrases.Dict.TryGetValue(710, out _phrase710))
                                         {
-                                            Flag.Add(_cInfo.playerId, 1);
+                                            _phrase710 = "Detected {PlayerName} flying underground @ {X} {Y} {Z}.";
                                         }
-                                        else
-                                        {
-                                            int _flag = 0;
-                                            if (Flag.TryGetValue(_cInfo.playerId, out _flag))
-                                            {
-                                                int x = (int)ep.position.x;
-                                                int y = (int)ep.position.y;
-                                                int z = (int)ep.position.z;
-                                                {
-                                                    Flag.Remove(_cInfo.playerId);
-                                                    Flag.Add(_cInfo.playerId, _flag + 1);
-                                                }
-                                                if (_flag == 2)
-                                                {
-                                                    SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1} -1 {2}", ep.entityId, x, z), (ClientInfo)null);
-                                                    Penalty(_cInfo);
-                                                    Log.Warning(string.Format("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z));
-                                                    string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                                                    string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
-                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
-                                                    {
-                                                        sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z));
-                                                        sw.WriteLine();
-                                                        sw.Flush();
-                                                        sw.Close();
-                                                    }                                                    
-                                                    List<ClientInfo> _cInfoList2 = ConnectionManager.Instance.GetClients();
-                                                    foreach (var _cInfo2 in _cInfoList2)
-                                                    {
-                                                        AdminToolsClientInfo Admin2 = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo2.playerId);
-                                                        if (Admin2.PermissionLevel <= Admin_Level)
-                                                        {
-                                                            string _phrase710;
-                                                            if (!Phrases.Dict.TryGetValue(710, out _phrase710))
-                                                            {
-                                                                _phrase710 = "Detected {PlayerName} flying underground @ {X} {Y} {Z}.";
-                                                            }
-                                                            _phrase710 = _phrase710.Replace("{PlayerName}", _cInfo.playerName);
-                                                            _phrase710 = _phrase710.Replace("{X}", x.ToString());
-                                                            _phrase710 = _phrase710.Replace("{Y}", y.ToString());
-                                                            _phrase710 = _phrase710.Replace("{Z}", z.ToString());
-                                                            _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase710), Config.Server_Response_Name, false, "ServerTools", false));
-                                                        }
-                                                    }
-                                                    Flag.Remove(_cInfo.playerId);
-                                                    if (Announce)
-                                                    {
-                                                        string _phrase711;
-                                                        if (!Phrases.Dict.TryGetValue(711, out _phrase711))
-                                                        {
-                                                            _phrase711 = "{PlayerName} has been detected flying underground.";
-                                                        }
-                                                        _phrase711 = _phrase711.Replace("{PlayerName}", _cInfo.playerName);
-                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase711), Config.Server_Response_Name, false, "", false);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Flag.ContainsKey(_cInfo.playerId))
-                                        {
-                                            Flag.Remove(_cInfo.playerId);
-                                        }
+                                        _phrase710 = _phrase710.Replace("{PlayerName}", _cInfo.playerName);
+                                        _phrase710 = _phrase710.Replace("{X}", x.ToString());
+                                        _phrase710 = _phrase710.Replace("{Y}", y.ToString());
+                                        _phrase710 = _phrase710.Replace("{Z}", z.ToString());
+                                        _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase710), Config.Server_Response_Name, false, "ServerTools", false));
                                     }
                                 }
+                                if (Announce)
+                                {
+                                    string _phrase711;
+                                    if (!Phrases.Dict.TryGetValue(711, out _phrase711))
+                                    {
+                                        _phrase711 = "{PlayerName} has been detected flying underground.";
+                                    }
+                                    _phrase711 = _phrase711.Replace("{PlayerName}", _cInfo.playerName);
+                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase711), Config.Server_Response_Name, false, "", false);
+                                }
                             }
+                        }
+                        else
+                        {
+                            Flag.Remove(_cInfo.entityId);
+                        }
                     }
                 }
             }
@@ -263,7 +240,6 @@ namespace ServerTools
                 }
                 else
                 {
-                    Flag.Remove(_cInfo.playerId);
                     uLastPositionXZ[Id] = xz;
                     return false;
                 }
@@ -279,26 +255,26 @@ namespace ServerTools
         {
             if (Jail_Enabled)
             {
-                Flag.Remove(_cInfo.playerId);
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been jailed for flying underground[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                Flag.Remove(_cInfo.entityId);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0} has been jailed for flying underground[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
                 SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0}", _cInfo.playerId), (ClientInfo)null);
             }
             if (Kill_Player)
             {
-                Flag.Remove(_cInfo.playerId);
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been killed for flying underground[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                Flag.Remove(_cInfo.entityId);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0} has been killed for flying underground[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
                 SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), (ClientInfo)null);
             }
             if (Kick_Enabled)
             {
-                Flag.Remove(_cInfo.playerId);
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been kicked for flying underground[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                Flag.Remove(_cInfo.entityId);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0} has been kicked for flying underground[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
                 SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for flying\"", _cInfo.playerId), (ClientInfo)null);
             }
             if (Ban_Enabled)
             {
-                Flag.Remove(_cInfo.playerId);
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been banned for flying underground[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                Flag.Remove(_cInfo.entityId);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0} has been banned for flying underground[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
                 SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for flying\"", _cInfo.playerId), (ClientInfo)null);
             }
         }

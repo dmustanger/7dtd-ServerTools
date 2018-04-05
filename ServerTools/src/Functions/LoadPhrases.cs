@@ -1206,6 +1206,12 @@ namespace ServerTools
                     _phrase809 = "{PlayerName} you have been sent to jail for life.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"809\" Phrase=\"{0}\" />", _phrase809));
+                string _phrase810;
+                if (!Dict.TryGetValue(810, out _phrase810))
+                {
+                    _phrase810 = "{PlayerName} you can only use /auction sell 24 hours after a sale. Time remaining: {TimeRemaining} hours.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"810\" Phrase=\"{0}\" />", _phrase810));
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();

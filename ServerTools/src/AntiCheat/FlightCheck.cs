@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -8,7 +9,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Kill_Player = false, Announce = false, Jail_Enabled = false, Kick_Enabled = false, Ban_Enabled = false;
         public static int Admin_Level = 0, Max_Height = 2, Max_Ping = 300, Days_Before_Log_Delete = 5;
-        public static Dictionary<string, int> Flag = new Dictionary<string, int>();
+        public static List<int> Flag = new List<int>();
         public static Dictionary<int, int> fLastPositionY = new Dictionary<int, int>();
         public static Dictionary<int, int[]> fLastPositionXZ = new Dictionary<int, int[]>();
 
@@ -133,7 +134,6 @@ namespace ServerTools
             int x = (int)ep.position.x;
             int y = (int)ep.position.y;
             int z = (int)ep.position.z;
-
             int Id = ep.entityId;
             int[] xz = { x, z };
 
@@ -182,7 +182,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    Flag.Remove(_cInfo.playerId);
+                    Flag.Remove(_cInfo.entityId);
                     fLastPositionXZ[Id] = xz;
                     return false;
                 }
@@ -206,86 +206,65 @@ namespace ServerTools
                     GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
                     AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                     if (Admin.PermissionLevel > Admin_Level)
-                    {                       
-                        List<EntityPlayer>.Enumerator enumerator2 = world.Players.list.GetEnumerator();
-                        using (List<EntityPlayer>.Enumerator enumerator = enumerator2)
-                            while (enumerator.MoveNext())
+                    {
+                        EntityPlayer ep = world.Players.dict[_cInfo.entityId];
+                        if (autoGetFlightCheck(ep, _cInfo) && ep.AttachedToEntity == null)
+                        {
+                            if (!Flag.Contains(_cInfo.entityId))
                             {
-                                EntityPlayer ep = enumerator.Current;
-                                if (ep.entityId == _cInfo.entityId && ep.AttachedToEntity == null)
+                                Flag.Add(_cInfo.entityId);
+                            }
+                            else
+                            {
+                                int x = (int)ep.position.x;
+                                int y = (int)ep.position.y;
+                                int z = (int)ep.position.z;
+                                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, -1, z), false));
+                                Penalty(_cInfo);
+                                Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.playerId, x, y, z);
+                                string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+                                string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
+                                using (StreamWriter sw = new StreamWriter(_filepath, true))
                                 {
-                                    var playerDistanceFromGround = autoGetFlightCheck(ep, _cInfo);
-                                    if (playerDistanceFromGround == true)
+                                    sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.playerId, x, y, z));
+                                    sw.WriteLine();
+                                    sw.Flush();
+                                    sw.Close();
+                                }
+                                for (int j = 0; j < _cInfoList.Count; j++)
+                                {
+                                    ClientInfo _cInfo1 = _cInfoList[j];
+                                    AdminToolsClientInfo Admin1 = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo1.playerId);
+                                    if (Admin1.PermissionLevel <= Admin_Level)
                                     {
-                                        if (!Flag.ContainsKey(_cInfo.playerId))
+                                        string _phrase705;
+                                        if (!Phrases.Dict.TryGetValue(705, out _phrase705))
                                         {
-                                            Flag[_cInfo.playerId] = 1;
+                                            _phrase705 = "Cheat Detected: {PlayerName} flying @ {X} {Y} {Z}";
                                         }
-                                        else
-                                        {
-                                            int _flag;
-                                            if (Flag.TryGetValue(_cInfo.playerId, out _flag))
-                                            {
-                                                Flag[_cInfo.playerId] = _flag + 1;
-                                                if (_flag + 1 >= 2)
-                                                {
-                                                    int x = (int)ep.position.x;
-                                                    int y = (int)ep.position.y;
-                                                    int z = (int)ep.position.z;
-                                                    ep.SetPosition(new UnityEngine.Vector3(x, -1, z));
-                                                    Penalty(_cInfo);
-                                                    Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.playerId, x, y, z);
-                                                    string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                                                    string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
-                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
-                                                    {
-                                                        sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.playerId, x, y, z));
-                                                        sw.WriteLine();
-                                                        sw.Flush();
-                                                        sw.Close();
-                                                    }
-                                                    for (int j = 0; j < _cInfoList.Count; j++)
-                                                    {
-                                                        ClientInfo _cInfo2 = _cInfoList[j];
-                                                        AdminToolsClientInfo Admin2 = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo2.playerId);
-                                                        if (Admin2.PermissionLevel <= Admin_Level)
-                                                        {
-                                                            string _phrase705;
-                                                            if (!Phrases.Dict.TryGetValue(705, out _phrase705))
-                                                            {
-                                                                _phrase705 = "Cheat Detected: {PlayerName} flying @ {X} {Y} {Z}";
-                                                            }
-                                                            _phrase705 = _phrase705.Replace("{PlayerName}", _cInfo.playerName);
-                                                            _phrase705 = _phrase705.Replace("{X}", x.ToString());
-                                                            _phrase705 = _phrase705.Replace("{Y}", y.ToString());
-                                                            _phrase705 = _phrase705.Replace("{Z}", z.ToString());
-                                                            _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase705), Config.Server_Response_Name, false, "ServerTools", false));
-                                                        }
-                                                    }
-                                                    Flag.Remove(_cInfo.playerId);
-                                                    if (Announce)
-                                                    {
-                                                        string _phrase706;
-                                                        if (!Phrases.Dict.TryGetValue(706, out _phrase706))
-                                                        {
-                                                            _phrase706 = "Cheat Detected: {PlayerName} has been detected flying.";
-                                                        }
-                                                        _phrase706 = _phrase706.Replace("{PlayerName}", _cInfo.playerName);
-                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase706), Config.Server_Response_Name, false, "ServerTools", false);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Flag.ContainsKey(_cInfo.playerId))
-                                        {
-                                            Flag.Remove(_cInfo.playerId);
-                                        }
+                                        _phrase705 = _phrase705.Replace("{PlayerName}", _cInfo.playerName);
+                                        _phrase705 = _phrase705.Replace("{X}", x.ToString());
+                                        _phrase705 = _phrase705.Replace("{Y}", y.ToString());
+                                        _phrase705 = _phrase705.Replace("{Z}", z.ToString());
+                                        _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase705), Config.Server_Response_Name, false, "ServerTools", false));
                                     }
                                 }
+                                if (Announce)
+                                {
+                                    string _phrase706;
+                                    if (!Phrases.Dict.TryGetValue(706, out _phrase706))
+                                    {
+                                        _phrase706 = "Cheat Detected: {PlayerName} has been detected flying.";
+                                    }
+                                    _phrase706 = _phrase706.Replace("{PlayerName}", _cInfo.playerName);
+                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase706), Config.Server_Response_Name, false, "ServerTools", false);
+                                }
                             }
+                        }
+                        else
+                        {
+                            Flag.Remove(_cInfo.entityId);
+                        }
                     }
                 }
             }
@@ -295,25 +274,25 @@ namespace ServerTools
         {
             if (Jail_Enabled)
             {
-                Flag.Remove(_cInfo.playerId);
+                Flag.Remove(_cInfo.entityId);
                 GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0} has been jailed for flying[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
                 SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0}", _cInfo.playerId), _cInfo);
             }
             if (Kill_Player)
             {
-                Flag.Remove(_cInfo.playerId);
+                Flag.Remove(_cInfo.entityId);
                 GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0} has been killed for flying[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
                 SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), (ClientInfo)null);
             }
             if (Kick_Enabled)
             {
-                Flag.Remove(_cInfo.playerId);
+                Flag.Remove(_cInfo.entityId);
                 GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0} has been kicked for flying[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
                 SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for flying\"", _cInfo.playerId), (ClientInfo)null);
             }
             if (Ban_Enabled)
             {
-                Flag.Remove(_cInfo.playerId);
+                Flag.Remove(_cInfo.entityId);
                 GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0} has been banned for flying[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
                 SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for flying\"", _cInfo.playerId), (ClientInfo)null);
             }
