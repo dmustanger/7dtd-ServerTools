@@ -1,5 +1,16 @@
 ﻿CHANGELOG
 
+v.9.2
+Added /auction cancel to /commands response
+Added limit to auction box sell. After successfully selling an item a player must wait 24 hours before they can sell another item
+Added limit to auction box cancel. Players can only cancel an item after it has been in the auction for 15 minutes to prevent misuse
+Added warning about selling an item in the auction box for nothing. You must input a value greater than zero
+Changed Flight detection and Underground detection logic method for faster response time
+Changed Flight detection warning color to red
+Fixed bug in Auction system
+Fixed Underground_Check using the same stream writer file allocation. Should prevent the error some were seeing about a missing path
+Fixed Flight detection not teleporting a caught player to the surface
+
 v.9.1
 Added some missing entries to the HowToSetup.xml
 Fixed Night_Time_Alert set to true by default
