@@ -68,7 +68,7 @@
     <Compile Include="src\Chat\ChatCommands\FriendTeleport.cs" />
     <Compile Include="src\Chat\ChatCommands\Gimme.cs" />
     <Compile Include="src\Chat\AdminChatCommands\Jail.cs" />
-    <Compile Include="src\Chat\ChatCommands\Killme.cs" />
+    <Compile Include="src\Chat\ChatCommands\Suicide.cs" />
     <Compile Include="src\Chat\ChatCommands\MuteVote.cs" />
     <Compile Include="src\Chat\ChatCommands\Report.cs" />
     <Compile Include="src\Chat\ChatCommands\RestartVote.cs" />
