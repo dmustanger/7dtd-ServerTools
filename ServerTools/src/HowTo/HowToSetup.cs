@@ -4,7 +4,6 @@ namespace ServerTools
 {
     class HowToSetup
     {
-        public static bool IsEnabled = true;
         private const string file = "HowToSetup.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private const double version = Config.version;
@@ -88,14 +87,16 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("<Tool Name=\"Auction\" Enable =\"False\" />");
+                sw.WriteLine("<Tool Name=\"Auction\" Enable =\"False\" Delay_Between_Uses =\"24\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
+                sw.WriteLine("Set a numeric value for Delay_Between_Uses");
                 sw.WriteLine();
                 sw.WriteLine("Players can sell one item stack at a time by putting it into a secure chest they own and typing /auction sell #. The number is how much the price is.");
                 sw.WriteLine("Typing /auction shows available items in the auction. /auction buy # will attempt to purchase the corresponding item # from the auction.");
                 sw.WriteLine("Profits are sent to the sellers wallet.");
                 sw.WriteLine("A player can cancel their auction by typing /auction cancel.");
+                sw.WriteLine("Delay_Between_Uses controls how long a player must wait to sell a new item after selling one through the auction. Delay is in hours.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();

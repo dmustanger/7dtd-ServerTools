@@ -123,7 +123,9 @@ namespace ServerTools
                         ItemValue _itemValue = ItemClass.GetItem(_item, true);
                         if (_itemValue.type == ItemValue.None.type)
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Gimme item not found.: {0}", _item));
+                            Log.Out("------------------------------------------------");
+                            Log.Out(string.Format("[SERVERTOOLS] Gimme item not found: {0}", _item));
+                            Log.Out("------------------------------------------------");
                             continue;
                         }
                         if (!dict.ContainsKey(_item))

@@ -17,11 +17,8 @@ namespace ServerTools
             }
             StateManager.Awake();
             Config.Load();
+            HowToSetup.Load();
             Timers.LogAlert();
-            if (AuctionBox.IsEnabled)
-            {
-                AuctionBox.BuildAuctionList();
-            }
             if (Fps.IsEnabled)
             {
                 Fps.SetTarget();

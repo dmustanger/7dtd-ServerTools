@@ -114,7 +114,6 @@ namespace ServerTools
             int.TryParse(_cords[0], out x);
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_PlayertoJail.entityId];
             _PlayertoJail.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
             Jailed.Add(_PlayertoJail.playerId);
             PersistentContainer.Instance.Players[_PlayertoJail.playerId, false].JailDate = DateTime.Now;
@@ -356,12 +355,12 @@ namespace ServerTools
                                         EntityBedrollPositionList _position = _player.SpawnPoints;
                                         if (_position.Count > 0)
                                         {
-                                            _player.SetPosition(new Vector3(_position[0].x, _position[0].y, _position[0].z));
+                                            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_position[0].x, _position[0].y, _position[0].z), false));
                                         }
                                         else
                                         {
                                             Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                            _player.SetPosition(new Vector3(_pos[0].x, _pos[0].y, _pos[0].z));
+                                            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, _pos[0].y, _pos[0].z), false));
                                         }
                                         string _phrase501;
                                         if (!Phrases.Dict.TryGetValue(501, out _phrase501))

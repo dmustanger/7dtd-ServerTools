@@ -272,7 +272,7 @@ namespace ServerTools
 
         public static void Penalty(ClientInfo _cInfo)
         {
-            if (Jail_Enabled)
+            if (Jail_Enabled && Jail.IsEnabled && Jail.Jail_Position != "0,0,0")
             {
                 Flag.Remove(_cInfo.entityId);
                 GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0} has been jailed for flying[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);

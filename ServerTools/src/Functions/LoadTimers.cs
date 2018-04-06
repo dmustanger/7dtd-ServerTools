@@ -127,6 +127,14 @@ namespace ServerTools
             {
                 Log.Out("Badword filter enabled");
             }
+            if (Backpack.IsEnabled)
+            {
+                Log.Out("Bag enabled");
+            }
+            if (BikeReturn.IsEnabled)
+            {
+                Log.Out("Bike enabled");
+            }
             if (EntityCleanup.BlockIsEnabled)
             {
                 Log.Out("Block cleanup enabled");
@@ -193,19 +201,23 @@ namespace ServerTools
             }
             if (InfoTicker.IsEnabled)
             {
-                Log.Out("Info ticker enabled");
+                Log.Out("Infoticker enabled");
             }
             if (EntityCleanup.ItemIsEnabled)
             {
                 Log.Out("Item cleanup enabled");
             }
-            if (KillMe.IsEnabled)
+            if (KickVote.IsEnabled)
             {
-                Log.Out("Kill me command enabled");
+                Log.Out("Kick vote enabled");
             }
             if (Loc.IsEnabled)
             {
                 Log.Out("Location enabled");
+            }
+            if (LoginNotice.IsEnabled)
+            {
+                Log.Out("Login notice enabled");
             }
             if (Motd.IsEnabled)
             {
@@ -214,6 +226,10 @@ namespace ServerTools
             if (Muted.IsEnabled)
             {
                 Log.Out("Mute enabled");
+            }
+            if (MuteVote.IsEnabled)
+            {
+                Log.Out("Mute vote enabled");
             }
             if (NewSpawnTele.IsEnabled)
             {
@@ -242,6 +258,10 @@ namespace ServerTools
             if (StartingItems.IsEnabled)
             {
                 Log.Out("Starting items enabled");
+            }
+            if (Suicide.IsEnabled)
+            {
+                Log.Out("Suicide enabled");
             }
             if (Travel.IsEnabled)
             {

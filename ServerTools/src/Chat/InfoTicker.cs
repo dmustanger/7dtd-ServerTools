@@ -88,7 +88,9 @@ namespace ServerTools
             }
             if (dict.Count == 0)
             {
+                Log.Warning("------------------------------------------------------------------------------------");
                 Log.Warning("[SERVERTOOLS] Ignoring infoticker because no messages from your file could be added.");
+                Log.Warning("------------------------------------------------------------------------------------");
             }
             else
             {
@@ -126,11 +128,11 @@ namespace ServerTools
                 }
                 else
                 {
+                    sw.WriteLine("        <Ticker Message=\"Have a suggestion or complaint? Post on our forums or discord and let us know.\" />");
                     sw.WriteLine("        <!-- <Ticker Message=\"Type /gimme once an hour for a free gift!\" /> -->");
                     sw.WriteLine("        <!-- <Ticker Message=\"Typ /gimme, einmal pro Stunde für ein freies Geschenk!\" /> -->");
                     sw.WriteLine("        <!-- <Ticker Message=\"Visit Yoursitehere for rules, custom recipes and forum discussions!\" /> -->");
                     sw.WriteLine("        <!-- <Ticker Message=\"Besuchen Yoursitehere für Regelungen , kundenspezifische Rezepturen und Forumsdiskussionen!\" /> -->");
-                    sw.WriteLine("        <!-- <Ticker Message=\"Have a suggestion or complaint? Post on our forums and let us know  at Yoursitehere!\" /> -->");
                     sw.WriteLine("        <!-- <Ticker Message=\"Type /commands for a list of the chat commands.\" /> -->");
                 }
                 sw.WriteLine("    </Messages>");
@@ -165,7 +167,7 @@ namespace ServerTools
                 if (Random)
                 {
                     msgList.RandomizeList();
-                    var _message = msgList.First();
+                    var _message = msgList[0];
                     GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "", false);
                     msgList.RemoveAt(0);
                     if (msgList.Count == 0)
@@ -175,7 +177,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    var _message = msgList.First();
+                    var _message = msgList[0];
                     GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "", false);
                     msgList.RemoveAt(0);
                     if (msgList.Count == 0)

@@ -715,15 +715,15 @@ namespace ServerTools
                                 Bloodmoon.GetBloodmoon(_cInfo);
                                 return false;
                         }
-                        if (KillMe.IsEnabled && (_message == "killme" || _message == "wrist" || _message == "suicide"))
+                        if (Suicide.IsEnabled && (_message == "killme" || _message == "wrist" || _message == "hang" || _message == "suicide"))
                         {
                             if (_announce)
                             {
-                                KillMe.CheckPlayer(_cInfo, _announce);
+                                Suicide.CheckPlayer(_cInfo, _announce);
                             }
                             else
                             {
-                                KillMe.CheckPlayer(_cInfo, _announce);
+                                Suicide.CheckPlayer(_cInfo, _announce);
                             }
                             return false;
                         }
@@ -1357,7 +1357,7 @@ namespace ServerTools
                         if (AuctionBox.IsEnabled && _message.StartsWith("auction sell"))
                         {
                             _message = _message.Replace("auction sell ", "");
-                            AuctionBox.CheckBox(_cInfo, _message);
+                            AuctionBox.Delay(_cInfo, _message);
                             return false;
                         }
                         if (Fps.IsEnabled && _message == "fps")

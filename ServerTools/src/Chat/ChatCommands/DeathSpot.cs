@@ -144,7 +144,7 @@ namespace ServerTools
                             string _phrase736;
                             if (!Phrases.Dict.TryGetValue(736, out _phrase736))
                             {
-                                _phrase736 = "Teleported you to your last death position. You can use this again in {DelayBetweenUses} minutes.";
+                                _phrase736 = "{PlayerName} teleported you to your last death position. You can use this again in {DelayBetweenUses} minutes.";
                             }
                             _phrase736 = _phrase736.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                             if (_announce)

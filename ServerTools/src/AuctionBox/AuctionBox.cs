@@ -7,10 +7,10 @@ namespace ServerTools
     class AuctionBox
     {
         public static bool IsEnabled = false, IsRunning = false;
+        public static int Delay_Between_Uses = 24;
         public static SortedDictionary<int, string[]> AuctionItems = new SortedDictionary<int, string[]>();
         private static DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
         private static List<Chunk> chunkArray = new List<Chunk>();
-        private static int Delay_Between_Uses = 24;
 
         public static void Delay(ClientInfo _cInfo, string _price)
         {

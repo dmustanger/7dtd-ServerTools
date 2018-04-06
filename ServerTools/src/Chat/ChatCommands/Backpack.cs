@@ -24,7 +24,7 @@ namespace ServerTools
             else
             {
                 Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null || p.LastDied == null)
+                if (p == null || p.LastBackpack == null)
                 {
                     Check(_cInfo);
                 }
@@ -68,15 +68,15 @@ namespace ServerTools
                                 }
                             }
                         }
-                        string _phrase735;
-                        if (!Phrases.Dict.TryGetValue(735, out _phrase735))
+                        string _phrase771;
+                        if (!Phrases.Dict.TryGetValue(771, out _phrase771))
                         {
-                            _phrase735 = "{PlayerName} you can only use /died once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                            _phrase771 = "{PlayerName} you can only use /bag once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                         }
-                        _phrase735 = _phrase735.Replace("{PlayerName}", _playerName);
-                        _phrase735 = _phrase735.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                        _phrase735 = _phrase735.Replace("{TimeRemaining}", _timeleft.ToString());
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase735), Config.Server_Response_Name, false, "ServerTools", false));
+                        _phrase771 = _phrase771.Replace("{PlayerName}", _playerName);
+                        _phrase771 = _phrase771.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                        _phrase771 = _phrase771.Replace("{TimeRemaining}", _timeleft.ToString());
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase771), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
             }

@@ -936,7 +936,7 @@ namespace ServerTools
                 string _phrase736;
                 if (!Dict.TryGetValue(736, out _phrase736))
                 {
-                    _phrase736 = "Teleported you to your last death position. You can use this again in {DelayBetweenUses} minutes.";
+                    _phrase736 = "{PlayerName} teleported you to your last death position. You can use this again in {DelayBetweenUses} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"736\" Phrase=\"{0}\" />", _phrase736));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1044,9 +1044,15 @@ namespace ServerTools
                 string _phrase770;
                 if (!Dict.TryGetValue(770, out _phrase770))
                 {
-                    _phrase770 = "The items from your dropped bag were sent to your inventory. If your bag is full, check the ground.";
+                    _phrase770 = "{PlayerName} the items from your dropped bag were sent to your inventory. If your bag is full, check the ground.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"770\" Phrase=\"{0}\" />", _phrase770));
+                string _phrase771;
+                if (!Dict.TryGetValue(771, out _phrase771))
+                {
+                    _phrase771 = "{PlayerName} you can only use /bag once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"771\" Phrase=\"{0}\" />", _phrase771));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ********************** Mute_Player ********************* -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");

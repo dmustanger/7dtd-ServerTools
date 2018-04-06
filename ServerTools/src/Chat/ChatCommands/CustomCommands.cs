@@ -188,10 +188,6 @@ namespace ServerTools
             {
                 _commands_1 = string.Format("{0} /sethome /home /delhome", _commands_1);
             }
-            if (KillMe.IsEnabled)
-            {
-                _commands_1 = string.Format("{0} /killme", _commands_1);
-            }
             if (Day7.IsEnabled)
             {
                 _commands_1 = string.Format("{0} /day7", _commands_1);
@@ -278,7 +274,7 @@ namespace ServerTools
             }
             if (AuctionBox.IsEnabled)
             {
-                _commands_3 = string.Format("{0} /auction /auction sell # /auction buy #", _commands_3);
+                _commands_3 = string.Format("{0} /auction /auction sell # /auction buy # /auction cancel", _commands_3);
             }
             if (DeathSpot.IsEnabled)
             {
@@ -303,6 +299,10 @@ namespace ServerTools
             if (KickVote.IsEnabled)
             {
                 _commands_3 = string.Format("{0} /kick", _commands_3);
+            }
+            if (Suicide.IsEnabled)
+            {
+                _commands_3 = string.Format("{0} /killme /wrist /hang /suicide", _commands_3);
             }
             return _commands_3;
         }
@@ -681,6 +681,7 @@ namespace ServerTools
                     }
                     else
                     {
+                        _response = _response.Replace("say ", "");
                         _response = _response.Replace("\"", "");
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format(Config.Chat_Response_Color + _response), Config.Server_Response_Name, false, "ServerTools", false));
                     }
