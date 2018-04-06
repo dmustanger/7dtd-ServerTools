@@ -1,5 +1,14 @@
 ﻿CHANGELOG
 
+9.3
+Added option to Auction. Delay_Between_Uses controls the time before a player can sell another item. Delay is in hours
+Changed KillMe tool name to Suicide. Players can kill them self with /killme /wrist /hang or /suicide. They all kill the player
+Fixed CustomCommands starting with say not removing the say
+Fixed load error and file build
+Fixed teleport in the jail system
+Fixed delay on backpack return
+Fixed Infoticker
+
 v.9.2
 Added /auction cancel to /commands response
 Added limit to auction box sell. After successfully selling an item a player must wait 24 hours before they can sell another item
