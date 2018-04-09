@@ -1,5 +1,34 @@
 ﻿CHANGELOG
 
+9.4
+Added tool Kill_Notice. A chat message is shown if a player kills another player and the item name they used to do it
+Added tool Lobby. Players can type /lobby to go to a set location and return by typing /lobby return if Return is set to true. They must be within
+the Lobby_Size from the set lobby location to use /return
+Added option to New_Spawn_Tele called Return. Players are alerted after teleport to type /ready. This will send them back to where they started
+Added automatic coins on disconnect based on session time. Every hour adds ten coins
+Added tool Wallet. Shifted wallet value calculation options to it from Shop
+Added tool Lotto. Players can start a lotto by betting any amount they choose. Other players must match the bet to enter. If ten players enter,
+the lotto starts. If an hour has passed since a lotto started, it will start. The winner receives all of the entry fees. Bonus applies when
+the lottery entries are full
+Added 5% charge on the sale of items through the auction. This is taken when the item sells
+Added tool Bounties. /bountylist will show the online players id, current bounty and bounty cost. The cost is based on their level multiplied by the
+Bounty set in the config. As long as the player has enough coins, they can place more bounties
+Fixed a load error causing files to not generate in rare cases
+Fixed Auto_Shutdown starting on horde nights
+Fixed Night time alert reporting incorrect hours
+Fixed Shop buy wallet values
+Fixed delays and response for reserved players when reduced delays are turned on
+Fixed Reserved_Slots kicking the wrong people
+Fixed Restart_vote getting stuck in a loop
+Fixed console command reservedslot list not showing the reserved players
+Fixed suicide not working
+Fixed some persistent data saves
+Fixed bike return
+Fixed bike delay
+Fixed next shutdown response and added one for bloodmoon when the server is waiting to shutdown
+Fixed public chat command not working with custom commands
+Removed tool Bag. Engine limitations are too strict to make it work
+
 9.3
 Added option to Auction. Delay_Between_Uses controls the time before a player can sell another item. Delay is in hours
 Changed KillMe tool name to Suicide. Players can kill them self with /killme /wrist /hang or /suicide. They all kill the player

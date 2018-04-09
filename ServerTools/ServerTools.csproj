@@ -51,12 +51,13 @@
     <Compile Include="src\AuctionBox\AuctionBox.cs" />
     <Compile Include="src\AutoShutdown\AutoShutdown.cs" />
     <Compile Include="src\AutoSaveWorld\AutoSaveWorld.cs" />
+    <Compile Include="src\Bounty\Bounty.cs" />
+    <Compile Include="src\Chat\AdminChatCommands\SetLobby.cs" />
     <Compile Include="src\Chat\ChatCommands\BikeReturn.cs" />
     <Compile Include="src\Chat\AdminChatCommands\AdminChat.cs" />
     <Compile Include="src\Chat\AdminChatCommands\MutePlayer.cs" />
     <Compile Include="src\Chat\BadWordFilter.cs" />
     <Compile Include="src\Chat\ChatCommands\AdminList.cs" />
-    <Compile Include="src\Chat\ChatCommands\Backpack.cs" />
     <Compile Include="src\Chat\ChatCommands\DeathSpot.cs" />
     <Compile Include="src\Chat\ChatCommands\Bloodmoon.cs" />
     <Compile Include="src\Chat\ChatCommands\Animals.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="src\Chat\ChatCommands\Travel.cs" />
     <Compile Include="src\Chat\ChatCommands\WeatherVote.cs" />
     <Compile Include="src\Chat\LoginNotice.cs" />
+    <Compile Include="src\Chat\Lottery.cs" />
     <Compile Include="src\Chat\NightTimeAlert.cs" />
     <Compile Include="src\Chat\RealWorldTime.cs" />
     <Compile Include="src\Chat\Whisper.cs" />
@@ -92,6 +94,7 @@
     <Compile Include="src\ConsoleCommands\GiveBlock.cs" />
     <Compile Include="src\ConsoleCommands\GiveItem.cs" />
     <Compile Include="src\ConsoleCommands\GiveStartingItems.cs" />
+    <Compile Include="src\ConsoleCommands\Lobby.cs" />
     <Compile Include="src\ConsoleCommands\NextShutdown.cs" />
     <Compile Include="src\ConsoleCommands\ResetAnimalTracking.cs" />
     <Compile Include="src\ConsoleCommands\ResetFirstClaimBlock.cs" />
@@ -103,8 +106,9 @@
     <Compile Include="src\ConsoleCommands\Jail.cs" />
     <Compile Include="src\ConsoleCommands\MutePlayer.cs" />
     <Compile Include="src\ConsoleCommands\ReservedSlots.cs" />
-    <Compile Include="src\ConsoleCommands\StopServer.cs" />
+    <Compile Include="src\ConsoleCommands\StopServerCommand.cs" />
     <Compile Include="src\ConsoleCommands\TempBan.cs" />
+    <Compile Include="src\ConsoleCommands\Underground.cs" />
     <Compile Include="src\ConsoleCommands\WalletCoins.cs" />
     <Compile Include="src\CountryCheck\CountryCheck.cs" />
     <Compile Include="src\EntityUnderground\EntityUnderground.cs" />
@@ -119,6 +123,7 @@
     <Compile Include="src\ConsoleCommands\EntityRemove.cs" />
     <Compile Include="src\Hordes\Hordes.cs" />
     <Compile Include="src\HowTo\HowToSetup.cs" />
+    <Compile Include="src\Chat\ChatCommands\LobbyChat.cs" />
     <Compile Include="src\NewSpawnTele\NewSpawnTele.cs" />
     <Compile Include="src\OutputLog\SdtdLog.cs" />
     <Compile Include="src\PersistentData\PersistentContainer.cs" />
@@ -129,6 +134,7 @@
     <Compile Include="src\ConsoleCommands\Watchlist.cs" />
     <Compile Include="src\ReservedSlots\ReservedSlots.cs" />
     <Compile Include="src\StartingItems\StartingItems.cs" />
+    <Compile Include="src\StopServer\StopServer.cs" />
     <Compile Include="src\VoteReward\VoteReward.cs" />
     <Compile Include="src\Watchlist\Watchlist.cs" />
   </ItemGroup>
