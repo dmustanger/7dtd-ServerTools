@@ -288,10 +288,6 @@ namespace ServerTools
             {
                 _commands_3 = string.Format("{0} /loc", _commands_3);
             }
-            if (Backpack.IsEnabled)
-            {
-                _commands_3 = string.Format("{0} /bag", _commands_3);
-            }
             if (MuteVote.IsEnabled)
             {
                 _commands_3 = string.Format("{0} /mute", _commands_3);
@@ -305,6 +301,36 @@ namespace ServerTools
                 _commands_3 = string.Format("{0} /killme /wrist /hang /suicide", _commands_3);
             }
             return _commands_3;
+        }
+
+        public static string GetChatCommands4(ClientInfo _cInfo)
+        {
+            string _commands_4 = string.Format("{0}More Commands:", Config.Chat_Response_Color);
+            if (LobbyChat.IsEnabled)
+            {
+                _commands_4 = string.Format("{0} /lobby", _commands_4);
+                if (LobbyChat.Return)
+                {
+                    _commands_4 = string.Format("{0} /return", _commands_4);
+                }
+            }
+            if (Bounties.IsEnabled)
+            {
+                _commands_4 = string.Format("{0} /bountylist /bounty #", _commands_4);
+            }
+            if (Lottery.IsEnabled)
+            {
+                _commands_4 = string.Format("{0} /lotto /lotto # /lotto enter", _commands_4);
+            }
+            if (Report.IsEnabled)
+            {
+                _commands_4 = string.Format("{0} /report", _commands_4);
+            }
+            if (BikeReturn.IsEnabled)
+            {
+                _commands_4 = string.Format("{0} /bike", _commands_4);
+            }
+            return _commands_4;
         }
 
         public static string GetChatCommandsCustom(ClientInfo _cInfo)
@@ -374,289 +400,408 @@ namespace ServerTools
                 }
                 else
                 {
+                    bool _donator = false;
                     Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                     if (_c[0] == 1)
                     {
-                        if (p == null)
+                        if (p.CustomCommand1 != null)
                         {
-                            _timepassed = -1;
-                            goto Skip;
-                        }
-                        TimeSpan varTime = DateTime.Now - p.CustomCommand1;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            TimeSpan varTime = DateTime.Now - p.CustomCommand1;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            _timepassed = (int)fractionalMinutes;
+                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    int _newTime = _timepassed * 2;
-                                    _timepassed = _newTime;
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
+                                    {
+                                        _donator = true;
+                                        int _newDelay = _c[1] / 2;
+                                        if (_timepassed >= _newDelay)
+                                        {
+                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                        }
+                                        else
+                                        {
+                                            int _timeleft = _newDelay - _timepassed;
+                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
+                                        }
+                                    }
                                 }
                             }
+                        }
+                        else
+                        {
+                            _timepassed = -1;
                         }
                     }
                     if (_c[0] == 2)
                     {
-                        if (p == null)
+                        if (p.CustomCommand2 != null)
                         {
-                            _timepassed = -1;
-                            goto Skip;
-                        }
-                        TimeSpan varTime = DateTime.Now - p.CustomCommand2;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            TimeSpan varTime = DateTime.Now - p.CustomCommand2;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            _timepassed = (int)fractionalMinutes;
+                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    int _newTime = _timepassed * 2;
-                                    _timepassed = _newTime;
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
+                                    {
+                                        _donator = true;
+                                        int _newDelay = _c[1] / 2;
+                                        if (_timepassed >= _newDelay)
+                                        {
+                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                        }
+                                        else
+                                        {
+                                            int _timeleft = _newDelay - _timepassed;
+                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
+                                        }
+                                    }
                                 }
                             }
+                        }
+                        else
+                        {
+                            _timepassed = -1;
                         }
                     }
                     if (_c[0] == 3)
                     {
-                        if (p == null)
+                        if (p.CustomCommand3 != null)
                         {
-                            _timepassed = -1;
-                            goto Skip;
-                        }
-                        TimeSpan varTime = DateTime.Now - p.CustomCommand3;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            TimeSpan varTime = DateTime.Now - p.CustomCommand3;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            _timepassed = (int)fractionalMinutes;
+                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    int _newTime = _timepassed * 2;
-                                    _timepassed = _newTime;
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
+                                    {
+                                        _donator = true;
+                                        int _newDelay = _c[1] / 2;
+                                        if (_timepassed >= _newDelay)
+                                        {
+                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                        }
+                                        else
+                                        {
+                                            int _timeleft = _newDelay - _timepassed;
+                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
+                                        }
+                                    }
                                 }
                             }
+                        }
+                        else
+                        {
+                            _timepassed = -1;
                         }
                     }
                     if (_c[0] == 4)
                     {
-                        if (p == null)
+                        if (p.CustomCommand4 != null)
                         {
-                            _timepassed = -1;
-                            goto Skip;
-                        }
-                        TimeSpan varTime = DateTime.Now - p.CustomCommand4;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            TimeSpan varTime = DateTime.Now - p.CustomCommand4;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            _timepassed = (int)fractionalMinutes;
+                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    int _newTime = _timepassed * 2;
-                                    _timepassed = _newTime;
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
+                                    {
+                                        _donator = true;
+                                        int _newDelay = _c[1] / 2;
+                                        if (_timepassed >= _newDelay)
+                                        {
+                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                        }
+                                        else
+                                        {
+                                            int _timeleft = _newDelay - _timepassed;
+                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
+                                        }
+                                    }
                                 }
                             }
+                        }
+                        else
+                        {
+                            _timepassed = -1;
                         }
                     }
                     if (_c[0] == 5)
                     {
-                        if (p == null)
+                        if (p.CustomCommand5 != null)
                         {
-                            _timepassed = -1;
-                            goto Skip;
-                        }
-                        TimeSpan varTime = DateTime.Now - p.CustomCommand5;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            TimeSpan varTime = DateTime.Now - p.CustomCommand5;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            _timepassed = (int)fractionalMinutes;
+                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    int _newTime = _timepassed * 2;
-                                    _timepassed = _newTime;
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
+                                    {
+                                        _donator = true;
+                                        int _newDelay = _c[1] / 2;
+                                        if (_timepassed >= _newDelay)
+                                        {
+                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                        }
+                                        else
+                                        {
+                                            int _timeleft = _newDelay - _timepassed;
+                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
+                                        }
+                                    }
                                 }
                             }
+                        }
+                        else
+                        {
+                            _timepassed = -1;
                         }
                     }
                     if (_c[0] == 6)
                     {
-                        if (p == null)
+                        if (p.CustomCommand6 != null)
                         {
-                            _timepassed = -1;
-                            goto Skip;
-                        }
-                        TimeSpan varTime = DateTime.Now - p.CustomCommand6;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            TimeSpan varTime = DateTime.Now - p.CustomCommand6;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            _timepassed = (int)fractionalMinutes;
+                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    int _newTime = _timepassed * 2;
-                                    _timepassed = _newTime;
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
+                                    {
+                                        _donator = true;
+                                        int _newDelay = _c[1] / 2;
+                                        if (_timepassed >= _newDelay)
+                                        {
+                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                        }
+                                        else
+                                        {
+                                            int _timeleft = _newDelay - _timepassed;
+                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
+                                        }
+                                    }
                                 }
                             }
+                        }
+                        else
+                        {
+                            _timepassed = -1;
                         }
                     }
                     if (_c[0] == 7)
                     {
-                        if (p == null)
+                        if (p.CustomCommand7 != null)
                         {
-                            _timepassed = -1;
-                            goto Skip;
-                        }
-                        TimeSpan varTime = DateTime.Now - p.CustomCommand7;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            TimeSpan varTime = DateTime.Now - p.CustomCommand7;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            _timepassed = (int)fractionalMinutes;
+                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    int _newTime = _timepassed * 2;
-                                    _timepassed = _newTime;
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
+                                    {
+                                        _donator = true;
+                                        int _newDelay = _c[1] / 2;
+                                        if (_timepassed >= _newDelay)
+                                        {
+                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                        }
+                                        else
+                                        {
+                                            int _timeleft = _newDelay - _timepassed;
+                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
+                                        }
+                                    }
                                 }
                             }
+                        }
+                        else
+                        {
+                            _timepassed = -1;
                         }
                     }
                     if (_c[0] == 8)
                     {
-                        if (p == null)
+                        if (p.CustomCommand8 != null)
                         {
-                            _timepassed = -1;
-                            goto Skip;
-                        }
-                        TimeSpan varTime = DateTime.Now - p.CustomCommand8;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            TimeSpan varTime = DateTime.Now - p.CustomCommand8;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            _timepassed = (int)fractionalMinutes;
+                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    int _newTime = _timepassed * 2;
-                                    _timepassed = _newTime;
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
+                                    {
+                                        _donator = true;
+                                        int _newDelay = _c[1] / 2;
+                                        if (_timepassed >= _newDelay)
+                                        {
+                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                        }
+                                        else
+                                        {
+                                            int _timeleft = _newDelay - _timepassed;
+                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
+                                        }
+                                    }
                                 }
                             }
+                        }
+                        else
+                        {
+                            _timepassed = -1;
                         }
                     }
                     if (_c[0] == 9)
                     {
-                        if (p == null)
+                        if (p.CustomCommand9 != null)
                         {
-                            _timepassed = -1;
-                            goto Skip;
-                        }
-                        TimeSpan varTime = DateTime.Now - p.CustomCommand9;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            TimeSpan varTime = DateTime.Now - p.CustomCommand9;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            _timepassed = (int)fractionalMinutes;
+                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    int _newTime = _timepassed * 2;
-                                    _timepassed = _newTime;
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
+                                    {
+                                        _donator = true;
+                                        int _newDelay = _c[1] / 2;
+                                        if (_timepassed >= _newDelay)
+                                        {
+                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                        }
+                                        else
+                                        {
+                                            int _timeleft = _newDelay - _timepassed;
+                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
+                                        }
+                                    }
                                 }
                             }
+                        }
+                        else
+                        {
+                            _timepassed = -1;
                         }
                     }
                     if (_c[0] == 10)
                     {
-                        if (p == null)
+                        if (p.CustomCommand10 != null)
                         {
-                            _timepassed = -1;
-                            goto Skip;
-                        }
-                        TimeSpan varTime = DateTime.Now - p.CustomCommand10;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            TimeSpan varTime = DateTime.Now - p.CustomCommand10;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            _timepassed = (int)fractionalMinutes;
+                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    int _newTime = _timepassed * 2;
-                                    _timepassed = _newTime;
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
+                                    {
+                                        _donator = true;
+                                        int _newDelay = _c[1] / 2;
+                                        if (_timepassed >= _newDelay)
+                                        {
+                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                        }
+                                        else
+                                        {
+                                            int _timeleft = _newDelay - _timepassed;
+                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
-                    Skip:
-                    if (_timepassed >= _c[1] || _timepassed == -1)
-                    {
-                        CommandResponse(_cInfo, _message, _playerName, _announce, _c);
-                    }
-                    else
-                    {
-                        int _timeleft = _c[1] - _timepassed;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
-                                {
-                                    int _newTime = _timeleft / 2;
-                                    _timeleft = _newTime;
-                                    int _newDelay = _c[1] / 2;
-                                    _c[1] = _newDelay;
-                                }
-                            }
-                        }
-                        string _phrase616;
-                        if (!Phrases.Dict.TryGetValue(616, out _phrase616))
-                        {
-                            _phrase616 = "{PlayerName} you can only use {Command} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                        }
-                        _phrase616 = _phrase616.Replace("{Command}", _message);
-                        _phrase616 = _phrase616.Replace("{PlayerName}", _playerName);
-                        _phrase616 = _phrase616.Replace("{DelayBetweenUses}", _c[1].ToString());
-                        _phrase616 = _phrase616.Replace("{TimeRemaining}", _timeleft.ToString());
-                        if (_announce)
-                        {
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase616), Config.Server_Response_Name, false, "", false);
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase616), Config.Server_Response_Name, false, "ServerTools", false));
+                            _timepassed = -1;
+                        }
+                    }
+                    if (!_donator)
+                    {
+                        if (_timepassed >= _c[1] || _timepassed == -1)
+                        {
+                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                        }
+                        else
+                        {
+                            int _timeleft = _c[1] - _timepassed;
+                            string _phrase616;
+                            if (!Phrases.Dict.TryGetValue(616, out _phrase616))
+                            {
+                                _phrase616 = "{PlayerName} you can only use {Command} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                            }
+                            _phrase616 = _phrase616.Replace("{Command}", _message);
+                            _phrase616 = _phrase616.Replace("{PlayerName}", _playerName);
+                            _phrase616 = _phrase616.Replace("{DelayBetweenUses}", _c[1].ToString());
+                            _phrase616 = _phrase616.Replace("{TimeRemaining}", _timeleft.ToString());
+                            if (_announce)
+                            {
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase616), Config.Server_Response_Name, false, "ServerTools", false);
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase616), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
                         }
                     }
                 }
+            }
+        }
+
+        public static void DelayResponse(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int _timeleft, int _newDelay)
+        {
+            string _phrase616;
+            if (!Phrases.Dict.TryGetValue(616, out _phrase616))
+            {
+                _phrase616 = "{PlayerName} you can only use {Command} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+            }
+            _phrase616 = _phrase616.Replace("{Command}", _message);
+            _phrase616 = _phrase616.Replace("{PlayerName}", _playerName);
+            _phrase616 = _phrase616.Replace("{DelayBetweenUses}", _newDelay.ToString());
+            _phrase616 = _phrase616.Replace("{TimeRemaining}", _timeleft.ToString());
+            if (_announce)
+            {
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase616), Config.Server_Response_Name, false, "ServerTools", false);
+            }
+            else
+            {
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase616), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -669,21 +814,16 @@ namespace ServerTools
                 _response = _response.Replace("{EntityId}", _cInfo.entityId.ToString());
                 _response = _response.Replace("{SteamId}", _cInfo.playerId);
                 _response = _response.Replace("{PlayerName}", _playerName);
-                if (_announce)
-                {
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("!{0}", _message), _playerName, false, "ServerTools", true);
-                }
                 if (_response.StartsWith("say "))
                 {
+                    _response = _response.Replace("say ", "");
                     if (_announce)
                     {
-                        SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false);
                     }
                     else
                     {
-                        _response = _response.Replace("say ", "");
-                        _response = _response.Replace("\"", "");
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format(Config.Chat_Response_Color + _response), Config.Server_Response_Name, false, "ServerTools", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
                 else

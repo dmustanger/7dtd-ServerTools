@@ -13,8 +13,9 @@ namespace ServerTools
         {
             bool adminOnline = false;
             List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-            foreach (var _cInfoAdmins in _cInfoList)
+            for (int i = 0; i < _cInfoList.Count; i++)
             {
+                ClientInfo _cInfoAdmins = _cInfoList[i];
                 GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins.playerId);
                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfoAdmins.playerId);
                 if (Admin.PermissionLevel <= Admin_Level)
@@ -26,7 +27,7 @@ namespace ServerTools
                         _phrase748 = "{Player} has requested a restart vote.";
                     }
                     _phrase748 = _phrase748.Replace("{Player}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase748), Config.Server_Response_Name, false, "ServerTools", false));
+                    _cInfoAdmins.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase748), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             if (!adminOnline)
@@ -79,11 +80,12 @@ namespace ServerTools
 
         public static void CallForVote2()
         {
+            VoteOpen = false;
+            VoteNew = false;
             if (yes.Count > 0)
             {
                 if (yes.Count >= Minimum_Players / 2 + 1)
                 {
-                    VoteNew = false;
                     SdtdConsole.Instance.ExecuteSync(string.Format("stopserver 1"), (ClientInfo)null);
                     string _phrase742;
                     if (!Phrases.Dict.TryGetValue(742, out _phrase742))
@@ -95,7 +97,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    VoteNew = false;
+                    
                     string _phrase743;
                     if (!Phrases.Dict.TryGetValue(743, out _phrase743))
                     {
@@ -107,7 +109,6 @@ namespace ServerTools
             }
             else
             {
-                VoteNew = false;
                 string _phrase746;
                 if (!Phrases.Dict.TryGetValue(746, out _phrase746))
                 {

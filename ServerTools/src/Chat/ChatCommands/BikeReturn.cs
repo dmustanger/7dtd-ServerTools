@@ -10,6 +10,7 @@ namespace ServerTools
 
         public static void BikeDelay(ClientInfo _cInfo, string _playerName)
         {
+            bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
                 Exec(_cInfo);
@@ -23,7 +24,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    TimeSpan varTime = DateTime.Now - p.LastBackpack;
+                    TimeSpan varTime = DateTime.Now - p.LastBike;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
                     if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -34,42 +35,47 @@ namespace ServerTools
                             ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                             if (DateTime.Now < _dt)
                             {
-                                int _newTime = _timepassed * 2;
-                                _timepassed = _newTime;
-                            }
-                        }
-                    }
-                    if (_timepassed >= Delay_Between_Uses)
-                    {
-                        Exec(_cInfo);
-                    }
-                    else
-                    {
-                        int _timeleft = Delay_Between_Uses - _timepassed;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                _donator = true;
+                                int _newDelay = Delay_Between_Uses / 2;
+                                if (_timepassed >= _newDelay)
                                 {
-                                    int _newTime = _timeleft / 2;
-                                    _timeleft = _newTime;
-                                    int _newDelay = Delay_Between_Uses / 2;
-                                    Delay_Between_Uses = _newDelay;
+                                    Exec(_cInfo);
+                                }
+                                else
+                                {
+                                    int _timeleft = _newDelay - _timepassed;
+                                    string _phrase786;
+                                    if (!Phrases.Dict.TryGetValue(786, out _phrase786))
+                                    {
+                                        _phrase786 = "{PlayerName} you can only use /bike once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                    }
+                                    _phrase786 = _phrase786.Replace("{PlayerName}", _playerName);
+                                    _phrase786 = _phrase786.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                                    _phrase786 = _phrase786.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase786), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                             }
                         }
-                        string _phrase786;
-                        if (!Phrases.Dict.TryGetValue(786, out _phrase786))
+                    }
+                    if (!_donator)
+                    {
+                        if (_timepassed >= Delay_Between_Uses)
                         {
-                            _phrase786 = "{PlayerName} you can only use /bike once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                            Exec(_cInfo);
                         }
-                        _phrase786 = _phrase786.Replace("{PlayerName}", _playerName);
-                        _phrase786 = _phrase786.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                        _phrase786 = _phrase786.Replace("{TimeRemaining}", _timeleft.ToString());
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase786), Config.Server_Response_Name, false, "ServerTools", false));
+                        else
+                        {
+                            int _timeleft = Delay_Between_Uses - _timepassed;
+                            string _phrase786;
+                            if (!Phrases.Dict.TryGetValue(786, out _phrase786))
+                            {
+                                _phrase786 = "{PlayerName} you can only use /bike once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                            }
+                            _phrase786 = _phrase786.Replace("{PlayerName}", _playerName);
+                            _phrase786 = _phrase786.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                            _phrase786 = _phrase786.Replace("{TimeRemaining}", _timeleft.ToString());
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase786), Config.Server_Response_Name, false, "ServerTools", false));
+                        }
                     }
                 }
             }
@@ -97,7 +103,7 @@ namespace ServerTools
                         }
                         _phrase781 = _phrase781.Replace("{PlayerName}", _cInfo.playerName);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase781), Config.Server_Response_Name, false, "ServerTools", false));
-                        PersistentContainer.Instance.Players[_cInfo.playerId, false].BikeId = _player.AttachedToEntity.entityId;
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].BikeId = _player.AttachedToEntity.entityId;
                         PersistentContainer.Instance.Save();
                     }
                     else
@@ -137,7 +143,7 @@ namespace ServerTools
                                 {
                                     if (_entity.entityId == p.BikeId)
                                     {
-                                        if (_entity.AttachedToEntity != GameManager.Instance.World.Players.dict[_cInfo.entityId])
+                                        if (_entity.AttachedToEntity == false)
                                         {
                                             _entity.SetPosition(_player.position);
                                             string _phrase782;
@@ -147,6 +153,8 @@ namespace ServerTools
                                             }
                                             _phrase782 = _phrase782.Replace("{PlayerName}", _cInfo.playerName);
                                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase782), Config.Server_Response_Name, false, "ServerTools", false));
+                                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastBike = DateTime.Now;
+                                            PersistentContainer.Instance.Save();
                                             Found = true;
                                         }
                                         else
@@ -154,7 +162,7 @@ namespace ServerTools
                                             string _phrase785;
                                             if (!Phrases.Dict.TryGetValue(785, out _phrase785))
                                             {
-                                                _phrase785 = "{PlayerName} found your bike but someone else has used it. Save it again first.";
+                                                _phrase785 = "{PlayerName} found your bike but someone else is on it.";
                                             }
                                             _phrase785 = _phrase785.Replace("{PlayerName}", _cInfo.playerName);
                                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase785), Config.Server_Response_Name, false, "ServerTools", false));

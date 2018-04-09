@@ -6,103 +6,19 @@ using UnityEngine;
 
 namespace ServerTools
 {
-    class UndergroundCheck : ConsoleCmdAbstract
+    class UndergroundCheck
     {
         public static bool IsEnabled = false, IsRunning = false, Kill_Player = false, Announce = false, Jail_Enabled = false, Kick_Enabled = false,
             Ban_Enabled = false;
         public static int Admin_Level = 0, Max_Ping = 300, Days_Before_Log_Delete = 5;
         private const string file = "UndergroundBlocks.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        public static List<int> Flag = new List<int>();
+        public static Dictionary<int, int> Flag = new Dictionary<int, int>();
         public static Dictionary<int, int[]> uLastPositionXZ = new Dictionary<int, int[]>();
         public static List<string> dict = new List<string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
 
-        public override string GetDescription()
-        {
-            return "Check if a player is underground with no clip or stuck";
-        }
-
-        public override string GetHelp()
-        {
-            return "Usage:\n" +
-                "  1. uc <steam id / player name / entity id> \n" +
-                "  2. uc \n\n" +
-                "1. List 1 players underground check\n" +
-                "2. List all players underground check\n";
-        }
-
-        public override string[] GetCommands()
-        {
-            return new string[] { "st-UndergroundCheck", "undergroundcheck", "uc" };
-        }
-
-        public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
-        {
-            try
-            {
-                if (_params.Count > 1)
-                {
-                    SdtdConsole.Instance.Output("Wrong number of arguments, expected 0 or 1, found " + _params.Count + ".");
-                    return;
-                }
-                else
-                {
-                    if (_params.Count == 1)
-                    {
-                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
-                        if (_cInfo == null)
-                        {
-                            SdtdConsole.Instance.Output("Playername or entity/steamid id not found.");
-                            return;
-                        }
-                        EntityPlayer ep = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                        SdtdConsole.Instance.Output("UC: entity_id=" + ep.entityId + " isUnderGround=" + getPlayerUnderground(ep));
-                    }
-                    else
-                    {
-                        World world = GameManager.Instance.World;
-                        List<EntityPlayer>.Enumerator enumerator2 = world.Players.list.GetEnumerator();
-                        using (List<EntityPlayer>.Enumerator enumerator = enumerator2)
-                        {
-                            while (enumerator.MoveNext())
-                            {
-                                EntityPlayer ep = enumerator.Current;
-                                SdtdConsole.Instance.Output("UC: entity_id=" + ep.entityId + " isUnderGround=" + getPlayerUnderground(ep));
-                            }
-                        }
-                    }
-
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out("Error in UndergroundCheck.Run: " + e);
-            }
-        }
-
-        public bool getPlayerUnderground(EntityPlayer ep)
-        {
-            int x = (int)ep.position.x;
-            int y = (int)ep.position.y;
-            int z = (int)ep.position.z;
-            for (int i = x - 2; i <= (x + 2); i++)
-            {
-                for (int j = z - 2; j <= (z + 2); j++)
-                {
-                    for (int k = y - 3; k <= (y + 2); k++)
-                    {
-                        BlockValue Block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
-                        if (Block.type == BlockValue.Air.type || ep.IsInElevator() || ep.IsInWater())
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
 
         public static void DetectionLogsDir()
         {
@@ -112,9 +28,9 @@ namespace ServerTools
             }
             string[] files = Directory.GetFiles(API.GamePath + "/DetectionLogs");
             int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
-            foreach (string file in files)
+            foreach (string _file in files)
             {
-                FileInfo fi = new FileInfo(file);
+                FileInfo fi = new FileInfo(_file);
                 if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
                 {
                     fi.Delete();
@@ -138,54 +54,65 @@ namespace ServerTools
                         EntityPlayer ep = world.Players.dict[_cInfo.entityId];
                         if (autoGetPlayerUnderground(ep, _cInfo) && ep.AttachedToEntity == null)
                         {
-                            if (!Flag.Contains(_cInfo.entityId))
+                            if (!Flag.ContainsKey(_cInfo.entityId))
                             {
-                                Flag.Add(_cInfo.entityId);
+                                Flag[_cInfo.entityId] = 1;
                             }
                             else
                             {
-                                int x = (int)ep.position.x;
-                                int y = (int)ep.position.y;
-                                int z = (int)ep.position.z;
-                                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, -1, z), false));
-                                Penalty(_cInfo);
-                                Log.Warning(string.Format("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z));
-                                string _file1 = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                                string _filepath1 = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file1);
-                                using (StreamWriter sw = new StreamWriter(_filepath1, true))
+                                int _value;
+                                if (Flag.TryGetValue(_cInfo.entityId, out _value))
                                 {
-                                    sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z));
-                                    sw.WriteLine();
-                                    sw.Flush();
-                                    sw.Close();
-                                }
-                                for (int j = 0; j < _cInfoList.Count; j++)
-                                {
-                                    ClientInfo _cInfo1 = _cInfoList[j];
-                                    AdminToolsClientInfo Admin1 = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo1.playerId);
-                                    if (Admin1.PermissionLevel <= Admin_Level)
+                                    if (_value == 1)
                                     {
-                                        string _phrase710;
-                                        if (!Phrases.Dict.TryGetValue(710, out _phrase710))
+                                        Flag[_cInfo.entityId] = 2;
+                                    }
+                                    else
+                                    {
+                                        int x = (int)ep.position.x;
+                                        int y = (int)ep.position.y;
+                                        int z = (int)ep.position.z;
+                                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, -1, z), false));
+                                        Penalty(_cInfo);
+                                        Log.Warning(string.Format("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z));
+                                        string _file1 = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+                                        string _filepath1 = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file1);
+                                        using (StreamWriter sw = new StreamWriter(_filepath1, true))
                                         {
-                                            _phrase710 = "Detected {PlayerName} flying underground @ {X} {Y} {Z}.";
+                                            sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z));
+                                            sw.WriteLine();
+                                            sw.Flush();
+                                            sw.Close();
                                         }
-                                        _phrase710 = _phrase710.Replace("{PlayerName}", _cInfo.playerName);
-                                        _phrase710 = _phrase710.Replace("{X}", x.ToString());
-                                        _phrase710 = _phrase710.Replace("{Y}", y.ToString());
-                                        _phrase710 = _phrase710.Replace("{Z}", z.ToString());
-                                        _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase710), Config.Server_Response_Name, false, "ServerTools", false));
+                                        for (int j = 0; j < _cInfoList.Count; j++)
+                                        {
+                                            ClientInfo _cInfo1 = _cInfoList[j];
+                                            AdminToolsClientInfo Admin1 = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo1.playerId);
+                                            if (Admin1.PermissionLevel <= Admin_Level)
+                                            {
+                                                string _phrase710;
+                                                if (!Phrases.Dict.TryGetValue(710, out _phrase710))
+                                                {
+                                                    _phrase710 = "Detected {PlayerName} flying underground @ {X} {Y} {Z}.";
+                                                }
+                                                _phrase710 = _phrase710.Replace("{PlayerName}", _cInfo.playerName);
+                                                _phrase710 = _phrase710.Replace("{X}", x.ToString());
+                                                _phrase710 = _phrase710.Replace("{Y}", y.ToString());
+                                                _phrase710 = _phrase710.Replace("{Z}", z.ToString());
+                                                _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase710), Config.Server_Response_Name, false, "ServerTools", false));
+                                            }
+                                        }
+                                        if (Announce)
+                                        {
+                                            string _phrase711;
+                                            if (!Phrases.Dict.TryGetValue(711, out _phrase711))
+                                            {
+                                                _phrase711 = "{PlayerName} has been detected flying underground.";
+                                            }
+                                            _phrase711 = _phrase711.Replace("{PlayerName}", _cInfo.playerName);
+                                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase711), Config.Server_Response_Name, false, "", false);
+                                        }
                                     }
-                                }
-                                if (Announce)
-                                {
-                                    string _phrase711;
-                                    if (!Phrases.Dict.TryGetValue(711, out _phrase711))
-                                    {
-                                        _phrase711 = "{PlayerName} has been detected flying underground.";
-                                    }
-                                    _phrase711 = _phrase711.Replace("{PlayerName}", _cInfo.playerName);
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase711), Config.Server_Response_Name, false, "", false);
                                 }
                             }
                         }

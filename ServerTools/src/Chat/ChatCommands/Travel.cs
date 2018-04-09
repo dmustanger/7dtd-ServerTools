@@ -153,6 +153,7 @@ namespace ServerTools
 
         public static void Check(ClientInfo _cInfo, bool _announce, string _playerName)
         {
+            bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
                 Tele(_cInfo, _announce);
@@ -177,48 +178,60 @@ namespace ServerTools
                             ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                             if (DateTime.Now < _dt)
                             {
-                                int _newTime = _timepassed * 2;
-                                _timepassed = _newTime;
-                            }
-                        }
-                    }
-                    if (_timepassed >= Delay_Between_Uses)
-                    {
-                        Tele(_cInfo, _announce);
-                    }
-                    else
-                    {
-                        int _timeleft = Delay_Between_Uses - _timepassed;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                _donator = true;
+                                int _newDelay = Delay_Between_Uses / 2;
+                                if (_timepassed >= _newDelay)
                                 {
-                                    int _newTime = _timeleft / 2;
-                                    _timeleft = _newTime;
-                                    int _newDelay = Delay_Between_Uses / 2;
-                                    Delay_Between_Uses = _newDelay;
+                                    Tele(_cInfo, _announce);
+                                }
+                                else
+                                {
+                                    int _timeleft = _newDelay - _timepassed;
+                                    string _phrase605;
+                                    if (!Phrases.Dict.TryGetValue(605, out _phrase605))
+                                    {
+                                        _phrase605 = "{PlayerName} you can only use /travel once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                    }
+                                    _phrase605 = _phrase605.Replace("{PlayerName}", _playerName);
+                                    _phrase605 = _phrase605.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                                    _phrase605 = _phrase605.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    if (_announce)
+                                    {
+                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase605), Config.Server_Response_Name, false, "", false);
+                                    }
+                                    else
+                                    {
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase605), Config.Server_Response_Name, false, "ServerTools", false));
+                                    }
                                 }
                             }
                         }
-                        string _phrase605;
-                        if (!Phrases.Dict.TryGetValue(605, out _phrase605))
+                    }
+                    if (!_donator)
+                    {
+                        if (_timepassed >= Delay_Between_Uses)
                         {
-                            _phrase605 = "{PlayerName} you can only use /travel once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                        }
-                        _phrase605 = _phrase605.Replace("{PlayerName}", _playerName);
-                        _phrase605 = _phrase605.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                        _phrase605 = _phrase605.Replace("{TimeRemaining}", _timeleft.ToString());
-                        if (_announce)
-                        {
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase605), Config.Server_Response_Name, false, "", false);
+                            Tele(_cInfo, _announce);
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase605), Config.Server_Response_Name, false, "ServerTools", false));
+                            int _timeleft = Delay_Between_Uses - _timepassed;
+                            string _phrase605;
+                            if (!Phrases.Dict.TryGetValue(605, out _phrase605))
+                            {
+                                _phrase605 = "{PlayerName} you can only use /travel once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                            }
+                            _phrase605 = _phrase605.Replace("{PlayerName}", _playerName);
+                            _phrase605 = _phrase605.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                            _phrase605 = _phrase605.Replace("{TimeRemaining}", _timeleft.ToString());
+                            if (_announce)
+                            {
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase605), Config.Server_Response_Name, false, "", false);
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase605), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
                         }
                     }
                 }

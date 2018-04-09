@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ServerTools
 {
     public class MutePlayer
     {
+        public static bool IsEnabled = false;
+        public static List<string> Mutes = new List<string>();
         private static string[] _cmd = { "mute" };
 
         public static void Add(ClientInfo _cInfo, string _playerName)
@@ -64,10 +67,10 @@ namespace ServerTools
 
         public static void Mute (ClientInfo _admin, ClientInfo _player)
         {
-            Muted.Mutes.Add(_player.playerId);
-            PersistentContainer.Instance.Players[_player.playerId, false].MuteTime = 60;
-            PersistentContainer.Instance.Players[_player.playerId, false].MuteName = _player.playerName;
-            PersistentContainer.Instance.Players[_player.playerId, false].MuteDate = DateTime.Now;
+            Mutes.Add(_player.playerId);
+            PersistentContainer.Instance.Players[_player.playerId, true].MuteTime = 60;
+            PersistentContainer.Instance.Players[_player.playerId, true].MuteName = _player.playerName;
+            PersistentContainer.Instance.Players[_player.playerId, true].MuteDate = DateTime.Now;
             PersistentContainer.Instance.Save();
             string _phrase203;
             if (!Phrases.Dict.TryGetValue(203, out _phrase203))
@@ -122,7 +125,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        if (!Muted.Mutes.Contains(_PlayertoUnMute.playerId))
+                        if (!Mutes.Contains(_PlayertoUnMute.playerId))
                         {
                             string _phrase204;
                             if (!Phrases.Dict.TryGetValue(204, out _phrase204))
@@ -135,8 +138,8 @@ namespace ServerTools
                         }
                         else
                         {
-                            Muted.Mutes.Remove(_PlayertoUnMute.playerId);
-                            PersistentContainer.Instance.Players[_PlayertoUnMute.playerId, false].MuteTime = 0;
+                            Mutes.Remove(_PlayertoUnMute.playerId);
+                            PersistentContainer.Instance.Players[_PlayertoUnMute.playerId, true].MuteTime = 0;
                             PersistentContainer.Instance.Save();
                             string _phrase205;
                             if (!Phrases.Dict.TryGetValue(205, out _phrase205))
@@ -146,6 +149,63 @@ namespace ServerTools
                             _phrase205 = _phrase205.Replace("{AdminPlayerName}", _cInfo.playerName);
                             _phrase205 = _phrase205.Replace("{UnMutedPlayerName}", _PlayertoUnMute.playerName);
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase205, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void MuteList()
+        {
+            for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+            {
+                string _id = PersistentContainer.Instance.Players.SteamIDs[i];
+                Player p = PersistentContainer.Instance.Players[_id, false];
+                {
+                    if (p.MuteTime > 0 || p.MuteTime == -1)
+                    {
+                        if (p.MuteTime == -1)
+                        {
+                            Mutes.Add(_id);
+                            break;
+                        }
+                        else
+                        {
+                            TimeSpan varTime = DateTime.Now - p.MuteDate;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            int _timepassed = (int)fractionalMinutes;
+                            if (_timepassed < p.MuteTime)
+                            {
+                                Mutes.Add(_id);
+                            }
+                            else
+                            {
+                                PersistentContainer.Instance.Players[_id, true].MuteTime = 0;
+                                PersistentContainer.Instance.Save();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void Clear()
+        {
+            for (int i = 0; i < Mutes.Count; i++)
+            {
+                string _id = Mutes[i];
+                Player p = PersistentContainer.Instance.Players[_id, false];
+                {
+                    if (p.MuteTime != -1)
+                    {
+                        TimeSpan varTime = DateTime.Now - p.MuteDate;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        int _timepassed = (int)fractionalMinutes;
+                        if (_timepassed >= p.MuteTime)
+                        {
+                            Mutes.Remove(_id);
+                            PersistentContainer.Instance.Players[_id, true].MuteTime = 0;
+                            PersistentContainer.Instance.Save();
                         }
                     }
                 }

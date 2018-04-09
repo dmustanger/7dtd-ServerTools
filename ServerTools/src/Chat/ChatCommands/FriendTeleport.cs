@@ -42,6 +42,7 @@ namespace ServerTools
 
         public static void CheckDelay(ClientInfo _cInfo, string _message, bool _announce)
         {
+            bool _donator = false;
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
             if (Delay_Between_Uses < 1 || p == null || p.LastFriendTele == null)
             {
@@ -60,48 +61,60 @@ namespace ServerTools
                         ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                         if (DateTime.Now < _dt)
                         {
-                            int _newTime = _timepassed * 2;
-                            _timepassed = _newTime;
-                        }
-                    }
-                }
-                if (_timepassed >= Delay_Between_Uses)
-                {
-                    MessageFriend(_cInfo, _message);
-                }
-                else
-                {
-                    int _timeleft = Delay_Between_Uses - _timepassed;
-                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                    {
-                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                        {
-                            DateTime _dt;
-                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                            if (DateTime.Now < _dt)
+                            _donator = true;
+                            int _newDelay = Delay_Between_Uses / 2;
+                            if (_timepassed >= _newDelay)
                             {
-                                int _newTime = _timeleft / 2;
-                                _timeleft = _newTime;
-                                int _newDelay = Delay_Between_Uses / 2;
-                                Delay_Between_Uses = _newDelay;
+                                MessageFriend(_cInfo, _message);
+                            }
+                            else
+                            {
+                                int _timeleft = _newDelay - _timepassed;
+                                string _phrase630;
+                                if (!Phrases.Dict.TryGetValue(630, out _phrase630))
+                                {
+                                    _phrase630 = "{PlayerName} you can only teleport to a friend once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                }
+                                _phrase630 = _phrase630.Replace("{PlayerName}", _cInfo.playerName);
+                                _phrase630 = _phrase630.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                                _phrase630 = _phrase630.Replace("{TimeRemaining}", _timeleft.ToString());
+                                if (_announce)
+                                {
+                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase630), Config.Server_Response_Name, false, "", false);
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase630), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
                             }
                         }
                     }
-                    string _phrase630;
-                    if (!Phrases.Dict.TryGetValue(630, out _phrase630))
+                }
+                if (!_donator)
+                {
+                    if (_timepassed >= Delay_Between_Uses)
                     {
-                        _phrase630 = "{PlayerName} you can only teleport to a friend once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                    }
-                    _phrase630 = _phrase630.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase630 = _phrase630.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                    _phrase630 = _phrase630.Replace("{TimeRemaining}", _timeleft.ToString());
-                    if (_announce)
-                    {
-                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase630), Config.Server_Response_Name, false, "", false);
+                        MessageFriend(_cInfo, _message);
                     }
                     else
                     {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase630), Config.Server_Response_Name, false, "ServerTools", false));
+                        int _timeleft = Delay_Between_Uses - _timepassed;
+                        string _phrase630;
+                        if (!Phrases.Dict.TryGetValue(630, out _phrase630))
+                        {
+                            _phrase630 = "{PlayerName} you can only teleport to a friend once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                        }
+                        _phrase630 = _phrase630.Replace("{PlayerName}", _cInfo.playerName);
+                        _phrase630 = _phrase630.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                        _phrase630 = _phrase630.Replace("{TimeRemaining}", _timeleft.ToString());
+                        if (_announce)
+                        {
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase630), Config.Server_Response_Name, false, "", false);
+                        }
+                        else
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase630), Config.Server_Response_Name, false, "ServerTools", false));
+                        }
                     }
                 }
             }

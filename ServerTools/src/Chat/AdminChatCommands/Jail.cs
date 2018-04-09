@@ -116,9 +116,9 @@ namespace ServerTools
             int.TryParse(_cords[2], out z);
             _PlayertoJail.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
             Jailed.Add(_PlayertoJail.playerId);
-            PersistentContainer.Instance.Players[_PlayertoJail.playerId, false].JailDate = DateTime.Now;
-            PersistentContainer.Instance.Players[_PlayertoJail.playerId, false].JailTime = 60;
-            PersistentContainer.Instance.Players[_PlayertoJail.playerId, false].JailName = _PlayertoJail.playerName;
+            PersistentContainer.Instance.Players[_PlayertoJail.playerId, true].JailDate = DateTime.Now;
+            PersistentContainer.Instance.Players[_PlayertoJail.playerId, true].JailTime = 60;
+            PersistentContainer.Instance.Players[_PlayertoJail.playerId, true].JailName = _PlayertoJail.playerName;
             PersistentContainer.Instance.Save();
             string _phrase500;
             if (!Phrases.Dict.TryGetValue(500, out _phrase500))
@@ -215,7 +215,7 @@ namespace ServerTools
                                 Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
                                 _PlayertoUnJail.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, -1, _pos[0].z), false));
                             }
-                            PersistentContainer.Instance.Players[_PlayertoUnJail.playerId, false].JailTime = 0;
+                            PersistentContainer.Instance.Players[_PlayertoUnJail.playerId, true].JailTime = 0;
                             PersistentContainer.Instance.Save();
                             string _phrase501;
                             if (!Phrases.Dict.TryGetValue(501, out _phrase501))
@@ -307,14 +307,13 @@ namespace ServerTools
                                     Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
                                     _cInfoKiller.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, -1, _pos[0].z), false));
                                 }
-                                PersistentContainer.Instance.Players[_cInfoKiller.playerId, false].JailTime = 0;
                             }
                             else
                             {
-                                PersistentContainer.Instance.Players[_cInfoKiller.playerId, false].JailTime = 0;
+                                _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have been forgiven and released from jail by {2}.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                PersistentContainer.Instance.Players[_cInfoKiller.playerId, true].JailTime = 0;
+                                PersistentContainer.Instance.Save();
                             }
-                            _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have been forgiven and released from jail by {2}.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                            PersistentContainer.Instance.Save();
                         }
                     }
                 }
@@ -338,47 +337,44 @@ namespace ServerTools
                         {
                             break;
                         }
-                        else if (p.JailTime > 0)
+                        TimeSpan varTime = DateTime.Now - p.JailDate;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        int _timepassed = (int)fractionalMinutes;
+                        if (_timepassed >= p.JailTime)
                         {
-                            TimeSpan varTime = DateTime.Now - p.JailDate;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
-                            if (_timepassed >= p.JailTime)
+                            ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_id);
+                            if (_cInfo != null)
                             {
-                                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_id);
-                                if (_cInfo != null)
-                                {
-                                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                    if (_player.IsSpawned())
-                                    {
-                                        Jailed.Remove(_id);
-                                        EntityBedrollPositionList _position = _player.SpawnPoints;
-                                        if (_position.Count > 0)
-                                        {
-                                            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_position[0].x, _position[0].y, _position[0].z), false));
-                                        }
-                                        else
-                                        {
-                                            Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, _pos[0].y, _pos[0].z), false));
-                                        }
-                                        string _phrase501;
-                                        if (!Phrases.Dict.TryGetValue(501, out _phrase501))
-                                        {
-                                            _phrase501 = "{PlayerName} you have been released from jail.";
-                                        }
-                                        _phrase501 = _phrase501.Replace("{PlayerName}", _cInfo.playerName);
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase501, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                        PersistentContainer.Instance.Players[_cInfo.playerId, false].JailTime = 0;
-                                        PersistentContainer.Instance.Save();
-                                    }
-                                }
-                                else
+                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                if (_player.IsSpawned())
                                 {
                                     Jailed.Remove(_id);
-                                    PersistentContainer.Instance.Players[_cInfo.playerId, false].JailTime = 0;
+                                    EntityBedrollPositionList _position = _player.SpawnPoints;
+                                    if (_position.Count > 0)
+                                    {
+                                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_position[0].x, _position[0].y, _position[0].z), false));
+                                    }
+                                    else
+                                    {
+                                        Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
+                                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, _pos[0].y, _pos[0].z), false));
+                                    }
+                                    string _phrase501;
+                                    if (!Phrases.Dict.TryGetValue(501, out _phrase501))
+                                    {
+                                        _phrase501 = "{PlayerName} you have been released from jail.";
+                                    }
+                                    _phrase501 = _phrase501.Replace("{PlayerName}", _cInfo.playerName);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase501, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].JailTime = 0;
                                     PersistentContainer.Instance.Save();
                                 }
+                            }
+                            else
+                            {
+                                Jailed.Remove(_id);
+                                PersistentContainer.Instance.Players[_cInfo.playerId, true].JailTime = 0;
+                                PersistentContainer.Instance.Save();
                             }
                         }
                     }
@@ -411,7 +407,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                PersistentContainer.Instance.Players[_id, false].JailTime = 0;
+                                PersistentContainer.Instance.Players[_id, true].JailTime = 0;
                                 PersistentContainer.Instance.Save();
                             }
                         }

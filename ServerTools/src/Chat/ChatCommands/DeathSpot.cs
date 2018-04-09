@@ -36,6 +36,7 @@ namespace ServerTools
 
         public static void DeathDelay(ClientInfo _cInfo, bool _announce, string _playerName)
         {
+            bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
                 TeleportPlayer(_cInfo, _announce);
@@ -60,48 +61,60 @@ namespace ServerTools
                             ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                             if (DateTime.Now < _dt)
                             {
-                                int _newTime = _timepassed * 2;
-                                _timepassed = _newTime;
-                            }
-                        }
-                    }
-                    if (_timepassed >= Delay_Between_Uses)
-                    {
-                        TeleportPlayer(_cInfo, _announce);
-                    }
-                    else
-                    {
-                        int _timeleft = Delay_Between_Uses - _timepassed;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                _donator = true;
+                                int _newDelay = Delay_Between_Uses / 2;
+                                if (_timepassed >= _newDelay)
                                 {
-                                    int _newTime = _timeleft / 2;
-                                    _timeleft = _newTime;
-                                    int _newDelay = Delay_Between_Uses / 2;
-                                    Delay_Between_Uses = _newDelay;
+                                    TeleportPlayer(_cInfo, _announce);
+                                }
+                                else
+                                {
+                                    int _timeleft = _newDelay - _timepassed;
+                                    string _phrase735;
+                                    if (!Phrases.Dict.TryGetValue(735, out _phrase735))
+                                    {
+                                        _phrase735 = "{PlayerName} you can only use /died once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                    }
+                                    _phrase735 = _phrase735.Replace("{PlayerName}", _playerName);
+                                    _phrase735 = _phrase735.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                                    _phrase735 = _phrase735.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    if (_announce)
+                                    {
+                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase735), Config.Server_Response_Name, false, "", false);
+                                    }
+                                    else
+                                    {
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase735), Config.Server_Response_Name, false, "ServerTools", false));
+                                    }
                                 }
                             }
                         }
-                        string _phrase735;
-                        if (!Phrases.Dict.TryGetValue(735, out _phrase735))
+                    }
+                    if (!_donator)
+                    {
+                        if (_timepassed >= Delay_Between_Uses)
                         {
-                            _phrase735 = "{PlayerName} you can only use /died once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                        }
-                        _phrase735 = _phrase735.Replace("{PlayerName}", _playerName);
-                        _phrase735 = _phrase735.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                        _phrase735 = _phrase735.Replace("{TimeRemaining}", _timeleft.ToString());
-                        if (_announce)
-                        {
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase735), Config.Server_Response_Name, false, "", false);
+                            TeleportPlayer(_cInfo, _announce);
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase735), Config.Server_Response_Name, false, "ServerTools", false));
+                            int _timeleft = Delay_Between_Uses - _timepassed;
+                            string _phrase735;
+                            if (!Phrases.Dict.TryGetValue(735, out _phrase735))
+                            {
+                                _phrase735 = "{PlayerName} you can only use /died once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                            }
+                            _phrase735 = _phrase735.Replace("{PlayerName}", _playerName);
+                            _phrase735 = _phrase735.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                            _phrase735 = _phrase735.Replace("{TimeRemaining}", _timeleft.ToString());
+                            if (_announce)
+                            {
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase735), Config.Server_Response_Name, false, "", false);
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase735), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
                         }
                     }
                 }
@@ -137,10 +150,10 @@ namespace ServerTools
                         if (Position.TryGetValue(_cInfo.entityId, out _value))
                         {
                             _cInfo.SendPackage(new NetPackageTeleportPlayer(_value, false));
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastDied = DateTime.Now;
-                            PersistentContainer.Instance.Save();
                             Died.Remove(_cInfo.entityId);
                             Position.Remove(_cInfo.entityId);
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastDied = DateTime.Now;
+                            PersistentContainer.Instance.Save();
                             string _phrase736;
                             if (!Phrases.Dict.TryGetValue(736, out _phrase736))
                             {

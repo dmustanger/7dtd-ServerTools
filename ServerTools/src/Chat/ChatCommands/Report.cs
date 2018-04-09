@@ -71,25 +71,28 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo, string _message)
         {
+            _message = _message.Replace("report ", "");
             List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
             for (int i = 0; i < _cInfoList.Count; i++)
             {
                 ClientInfo _cInfoAdmins = _cInfoList[i];
-                GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins.playerId);
                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfoAdmins.playerId);
                 if (Admin.PermissionLevel <= Admin_Level)
                 {
+                    
                     _cInfoAdmins.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Report from {1}: {2}[-]", Config.Chat_Response_Color, _cInfo.playerName, _message), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
-                sw.WriteLine(string.Format("Report from {1}: {2}.", DateTime.Now, _cInfo.playerName, _message));
+                sw.WriteLine(string.Format("{0}: {1} Reports: {2}.", DateTime.Now, _cInfo.playerName, _message));
                 sw.WriteLine();
                 sw.Flush();
                 sw.Close();
             }
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}Your report has been sent to online administrators and logged.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your report has been sent to online administrators and logged.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].Log = DateTime.Now;
+            PersistentContainer.Instance.Save();
             Log.Out(string.Format("[SERVERTOOLS] Report sent by player name {0}", _cInfo.playerName));
         }
     }

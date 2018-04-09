@@ -14,37 +14,60 @@ namespace ServerTools
 
         public static void Checkplayer(ClientInfo _cInfo, bool _announce, string _playerName)
         {
-            if (IsEnabled)
+            bool _donator = false;
+            if (Delay_Between_Uses < 1)
             {
-                if (Delay_Between_Uses < 1)
+                GiveAnimals(_cInfo, _announce);
+            }
+            else
+            {
+                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                if (p == null || p.LastAnimals == null)
                 {
                     GiveAnimals(_cInfo, _announce);
                 }
                 else
                 {
-                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                    if (p == null || p.LastAnimals == null)
+                    TimeSpan varTime = DateTime.Now - p.LastAnimals;
+                    double fractionalMinutes = varTime.TotalMinutes;
+                    int _timepassed = (int)fractionalMinutes;
+                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                     {
-                        GiveAnimals(_cInfo, _announce);
-                    }
-                    else
-                    {
-                        TimeSpan varTime = DateTime.Now - p.LastAnimals;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        int _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            DateTime _dt;
+                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                            if (DateTime.Now < _dt)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                _donator = true;
+                                int _newDelay = Delay_Between_Uses / 2;
+                                if (_timepassed >= _newDelay)
                                 {
-                                    int _newTime = _timepassed * 2;
-                                    _timepassed = _newTime;
+                                    GiveAnimals(_cInfo, _announce);
+                                }
+                                else
+                                {
+                                    int _timeleft = _newDelay - _timepassed;
+                                    string _phrase601;
+                                    if (!Phrases.Dict.TryGetValue(601, out _phrase601))
+                                    {
+                                        _phrase601 = "You have taxed your tracking ability. Wait {TimeRemaining} minutes and try again.";
+                                    }
+                                    _phrase601 = _phrase601.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    if (_announce)
+                                    {
+                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase601), Config.Server_Response_Name, false, "", false);
+                                    }
+                                    else
+                                    {
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase601), Config.Server_Response_Name, false, "ServerTools", false));
+                                    }
                                 }
                             }
                         }
+                    }
+                    if (!_donator)
+                    {
                         if (_timepassed >= Delay_Between_Uses)
                         {
                             GiveAnimals(_cInfo, _announce);
@@ -52,19 +75,6 @@ namespace ServerTools
                         else
                         {
                             int _timeleft = Delay_Between_Uses - _timepassed;
-                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                            {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                                {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        int _newTime = _timeleft / 2;
-                                        _timeleft = _newTime;
-                                    }
-                                }
-                            }
                             string _phrase601;
                             if (!Phrases.Dict.TryGetValue(601, out _phrase601))
                             {
@@ -85,7 +95,7 @@ namespace ServerTools
             }
         }
 
-        public static void BuildList()
+        public static void AnimalList()
         {
             string[] _animalList = Animal_List.Split(',').ToArray();
             for (int i = 0; i < _animalList.Length; i++)
@@ -146,7 +156,6 @@ namespace ServerTools
                 }
                 else
                 {
-                    Log.Out("GiveAnimals 10");
                     string _phrase715;
                     if (!Phrases.Dict.TryGetValue(715, out _phrase715))
                     {
@@ -161,7 +170,7 @@ namespace ServerTools
             }
             else
             {
-                BuildList();
+                AnimalList();
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Animal list was empty. Attempting to rebuild. Type /track again. If this repeats, contact an administrator.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }

@@ -74,13 +74,13 @@ namespace ServerTools
                 {
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Player name = {1} # = {2}.[-]", Config.Chat_Response_Color, _cInfo2.playerName, _cInfo2.entityId), Config.Server_Response_Name, false, "ServerTools", false));
                 }
-                string _phrase778;
-                if (!Phrases.Dict.TryGetValue(778, out _phrase778))
-                {
-                    _phrase778 = "Type /mute # to start a vote to mute that player in chat.";
-                }
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase778), Config.Server_Response_Name, false, "ServerTools", false));
             }
+            string _phrase778;
+            if (!Phrases.Dict.TryGetValue(778, out _phrase778))
+            {
+                _phrase778 = "Type /mute # to start a vote to mute that player from chat.";
+            }
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase778), Config.Server_Response_Name, false, "ServerTools", false));
         }
     }
 }

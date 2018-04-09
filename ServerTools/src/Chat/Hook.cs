@@ -55,9 +55,9 @@ namespace ServerTools
                 {
                     ChatLog.Log(_message, _playerName);
                 }
-                if (Muted.IsEnabled)
+                if (MutePlayer.IsEnabled)
                 {
-                    if (Muted.Mutes.Contains(_cInfo.playerId))
+                    if (MutePlayer.Mutes.Contains(_cInfo.playerId))
                     {
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, "You are muted.", Config.Server_Response_Name, false, "ServerTools", false));
                         return false;
@@ -662,14 +662,15 @@ namespace ServerTools
                             string _commands1 = CustomCommands.GetChatCommands1(_cInfo);
                             string _commands2 = CustomCommands.GetChatCommands2(_cInfo);
                             string _commands3 = CustomCommands.GetChatCommands3(_cInfo);
+                            string _commands4 = CustomCommands.GetChatCommands4(_cInfo);
                             string _commandsCustom = CustomCommands.GetChatCommandsCustom(_cInfo);
                             string _commandsAdmin = CustomCommands.GetChatCommandsAdmin(_cInfo);
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}", Command_Public, _message), _playerName, false, "ServerTools", true);
                                 GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _commands1, Config.Server_Response_Name, false, "ServerTools", false);
                                 GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _commands2, Config.Server_Response_Name, false, "ServerTools", false);
                                 GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _commands3, Config.Server_Response_Name, false, "ServerTools", false);
+                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _commands4, Config.Server_Response_Name, false, "ServerTools", false);
                                 if (CustomCommands.IsEnabled)
                                 {
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _commandsCustom, Config.Server_Response_Name, false, "ServerTools", false);
@@ -685,6 +686,7 @@ namespace ServerTools
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commands1, Config.Server_Response_Name, false, "ServerTools", false));
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commands2, Config.Server_Response_Name, false, "ServerTools", false));
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commands3, Config.Server_Response_Name, false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commands4, Config.Server_Response_Name, false, "ServerTools", false));
                                 if (CustomCommands.IsEnabled)
                                 {
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _commandsCustom, Config.Server_Response_Name, false, "ServerTools", false));
@@ -1120,14 +1122,14 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if ((Shop.IsEnabled || AuctionBox.IsEnabled) && _message == "wallet")
+                        if ((Shop.IsEnabled || AuctionBox.IsEnabled || Bounties.IsEnabled || Lottery.IsEnabled) && _message == "wallet")
                         {
                             Wallet.WalletValue(_cInfo, _playerName);
                             return false;
                         }
                         if (Shop.IsEnabled && _message == "shop")
                         {
-                            Shop.List(_cInfo, _playerName);
+                            Shop.Check(_cInfo, _playerName);
                             return false;
                         }
                         if (Shop.IsEnabled && _message.StartsWith("buy"))
@@ -1139,7 +1141,7 @@ namespace ServerTools
                             else
                             {
                                 _message = _message.Replace("buy ", "");
-                                Shop.Walletcheck(_cInfo, _message, _playerName);
+                                Shop.BuyCheck(_cInfo, _message, _playerName);
                             }
                             return false;
                         }
@@ -1384,12 +1386,6 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (Backpack.IsEnabled && _message == ("bag"))
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking for delay and dropped bag.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                            Backpack.BackpackDelay(_cInfo, _playerName);
-                            return false;
-                        }
                         if (BikeReturn.IsEnabled && _message == "bike")
                         {
                             BikeReturn.BikeDelay(_cInfo, _playerName);
@@ -1399,6 +1395,53 @@ namespace ServerTools
                         {
                             _message = _message.Replace("report ", "");
                             Report.Check(_cInfo, _message);
+                            return false;
+                        }
+                        if (Bounties.IsEnabled && _message == "bounty")
+                        {
+                            Bounties.BountyList(_cInfo, _playerName);
+                            return false;
+                        }
+                        if (Bounties.IsEnabled && _message.StartsWith("bounty"))
+                        {
+                            _message = _message.Replace("bounty ", "");
+                            Bounties.NewBounty(_cInfo, _message, _playerName);
+                            return false;
+                        }
+                        if (Lottery.IsEnabled && _message == "lotto")
+                        {
+                            Lottery.Response(_cInfo);
+                            return false;
+                        }
+                        if (Lottery.IsEnabled && _message == "lotto enter")
+                        {
+                            Lottery.EnterLotto(_cInfo);
+                            return false;
+                        }
+                        if (Lottery.IsEnabled && _message.StartsWith("lotto"))
+                        {
+                            _message = _message.Replace("lotto ", "");
+                            Lottery.NewLotto(_cInfo, _message, _playerName);
+                            return false;
+                        }
+                        if (NewSpawnTele.IsEnabled && NewSpawnTele.Return && _message == "ready")
+                        {
+                            NewSpawnTele.ReturnPlayer(_cInfo);
+                            return false;
+                        }
+                        if (LobbyChat.IsEnabled && _message == "setlobby")
+                        {
+                            SetLobby.Set(_cInfo);
+                            return false;
+                        }
+                        if (LobbyChat.IsEnabled && _message == "lobby")
+                        {
+                            LobbyChat.Delay(_cInfo, _playerName, _announce);
+                            return false;
+                        }
+                        if (LobbyChat.IsEnabled && LobbyChat.Return && _message == "return")
+                        {
+                            LobbyChat.SendBack(_cInfo, _playerName);
                             return false;
                         }
                         if (CustomCommands.IsEnabled && CustomCommands.Dict.ContainsKey(_message))

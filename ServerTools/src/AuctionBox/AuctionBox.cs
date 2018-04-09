@@ -8,59 +8,79 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false;
         public static int Delay_Between_Uses = 24;
-        public static SortedDictionary<int, string[]> AuctionItems = new SortedDictionary<int, string[]>();
+        public static Dictionary<int, string[]> AuctionItems = new Dictionary<int, string[]>();
         private static DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
         private static List<Chunk> chunkArray = new List<Chunk>();
 
         public static void Delay(ClientInfo _cInfo, string _price)
         {
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p == null || p.SellDate == null)
+            bool _donator = false;
+            if (Delay_Between_Uses < 1)
             {
                 CheckBox(_cInfo, _price);
             }
             else
             {
-                TimeSpan varTime = DateTime.Now - p.SellDate;
-                double fractionalHours = varTime.TotalHours;
-                int _timepassed = (int)fractionalHours;
-                if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                {
-                    DateTime _dt;
-                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                    if (DateTime.Now < _dt)
-                    {
-                        int _newTime = _timepassed * 2;
-                        _timepassed = _newTime;
-                    }
-                }
-                if (_timepassed >= Delay_Between_Uses)
+                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                if (p == null || p.SellDate == null)
                 {
                     CheckBox(_cInfo, _price);
                 }
                 else
                 {
-                    int _timeleft = Delay_Between_Uses - _timepassed;
-                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                    TimeSpan varTime = DateTime.Now - p.SellDate;
+                    double fractionalHours = varTime.TotalHours;
+                    int _timepassed = (int)fractionalHours;
+                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                     {
-                        DateTime _dt;
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                        if (DateTime.Now < _dt)
+                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            int _newTime = _timeleft / 2;
-                            _timeleft = _newTime;
-                            int _newDelay = Delay_Between_Uses / 2;
-                            Delay_Between_Uses = _newDelay;
+                            DateTime _dt;
+                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                            if (DateTime.Now < _dt)
+                            {
+                                _donator = true;
+                                int _newDelay = Delay_Between_Uses / 2;
+                                if (_timepassed >= _newDelay)
+                                {
+                                    CheckBox(_cInfo, _price);
+                                }
+                                else
+                                {
+                                    int _timeleft = _newDelay - _timepassed;
+                                    string _phrase900;
+                                    if (!Phrases.Dict.TryGetValue(900, out _phrase900))
+                                    {
+                                        _phrase900 = "{PlayerName} you can only use /auction sell {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
+                                    }
+                                    _phrase900 = _phrase900.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase900 = _phrase900.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                                    _phrase900 = _phrase900.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase900), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                            }
                         }
                     }
-                    string _phrase810;
-                    if (!Phrases.Dict.TryGetValue(810, out _phrase810))
+                    if (!_donator)
                     {
-                        _phrase810 = "{PlayerName} you can only use /auction sell 24 hours after a sale. Time remaining: {TimeRemaining} hours.";
+                        if (_timepassed >= Delay_Between_Uses)
+                        {
+                            CheckBox(_cInfo, _price);
+                        }
+                        else
+                        {
+                            int _timeleft = Delay_Between_Uses - _timepassed;
+                            string _phrase810;
+                            if (!Phrases.Dict.TryGetValue(810, out _phrase810))
+                            {
+                                _phrase810 = "{PlayerName} you can only use /auction sell {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
+                            }
+                            _phrase810 = _phrase810.Replace("{PlayerName}", _cInfo.playerName);
+                            _phrase810 = _phrase810.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                            _phrase810 = _phrase810.Replace("{TimeRemaining}", _timeleft.ToString());
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase810), Config.Server_Response_Name, false, "ServerTools", false));
+                        }
                     }
-                    _phrase810 = _phrase810.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase810 = _phrase810.Replace("{TimeRemaining}", _timeleft.ToString());
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase810), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
         }
@@ -131,9 +151,9 @@ namespace ServerTools
                                                         string[] _auctionItem = { item.count.ToString(), _itemName, item.itemValue.Quality.ToString(), _price };
                                                         SecureLoot.UpdateSlot(slotNumber, ItemStack.Empty);
                                                         AuctionItems.Add(_cInfo.entityId, _auctionItem);
-                                                        PersistentContainer.Instance.Players[_cInfo.playerId, false].CancelTime = DateTime.Now;
-                                                        PersistentContainer.Instance.Players[_cInfo.playerId, false].AuctionData = _cInfo.entityId;
-                                                        PersistentContainer.Instance.Players[_cInfo.playerId, false].AuctionItem = _auctionItem;
+                                                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CancelTime = DateTime.Now;
+                                                        PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = _cInfo.entityId;
+                                                        PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionItem = _auctionItem;
                                                         PersistentContainer.Instance.Save();
                                                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your auction item {1} has been removed from the secure loot and added to the auction.[-]", Config.Chat_Response_Color, _itemName), Config.Server_Response_Name, false, "ServerTools", false));
                                                         count++;
@@ -168,7 +188,7 @@ namespace ServerTools
             }
         }
 
-        public static void BuildAuctionList()
+        public static void AuctionList()
         {
             List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
             for (int i = 0; i < playerlist.Count; i++)
@@ -183,9 +203,6 @@ namespace ServerTools
                     }
                 }
             }
-            Log.Out("---------------------------------");
-            Log.Out("[SERVERTOOLS] Auction list loaded");
-            Log.Out("---------------------------------");
         }
 
         public static void AuctionList(ClientInfo _cInfo)
@@ -327,16 +344,13 @@ namespace ServerTools
             int.TryParse(_value[3], out _price);
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
             int _newCoin = p.PlayerSpentCoins - _price;
-            PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins = _newCoin;
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _newCoin;
             PersistentContainer.Instance.Save();
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have purchased {1} {2} from the auction for {3} {4}.[-]", Config.Chat_Response_Color, _value[0], _value[1], _value[3], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
-
-            Player _p = PersistentContainer.Instance.Players[_steamId, false];
-            int _newCoin1 = _p.PlayerSpentCoins + _price;
-            PersistentContainer.Instance.Players[_steamId, false].SellDate = DateTime.Now;
-            PersistentContainer.Instance.Players[_steamId, false].PlayerSpentCoins = _newCoin1;
-            PersistentContainer.Instance.Players[_steamId, false].AuctionData = 0;
-            PersistentContainer.Instance.Players[_steamId, false].AuctionItem = null;
+            PersistentContainer.Instance.Players[_steamId, true].SellDate = DateTime.Now;
+            PersistentContainer.Instance.Players[_steamId, true].PlayerSpentCoins = PersistentContainer.Instance.Players[_steamId, false].PlayerSpentCoins + (_price - (_price % 5));
+            PersistentContainer.Instance.Players[_steamId, true].AuctionData = 0;
+            PersistentContainer.Instance.Players[_steamId, true].AuctionItem = null;
             PersistentContainer.Instance.Save();
             AuctionItems.Remove(_purchase);
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Seller has received the funds in their wallet.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
@@ -391,8 +405,8 @@ namespace ServerTools
                             _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                             world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                             AuctionItems.Remove(_cInfo.entityId);
-                            PersistentContainer.Instance.Players[_cInfo.playerId, false].AuctionData = 0;
-                            PersistentContainer.Instance.Players[_cInfo.playerId, false].AuctionItem = null;
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = 0;
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionItem = null;
                             PersistentContainer.Instance.Save();
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your auction item has returned to you.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                         }

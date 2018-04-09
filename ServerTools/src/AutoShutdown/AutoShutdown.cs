@@ -8,7 +8,7 @@ namespace ServerTools
         public static bool IsEnabled = false, Alert_On_Login = false, Bloodmoon = false;
         public static int Countdown_Timer = 2, Days_Until_Horde = 7;
         public static List<DateTime> timerStart = new List<DateTime>();
-        private static bool Wait = false;
+        private static int _duskTime = (int)SkyManager.GetDuskTime();
 
         public static void ShutdownList()
         {
@@ -16,54 +16,38 @@ namespace ServerTools
             timerStart.Add(DateTime.Now);
         }
 
-        public static void Auto_Shutdown()
+        public static void CheckBloodmoon()
         {
-            if (!Bloodmoon)
+            ulong _worldTime = GameManager.Instance.World.worldTime;
+            int _daysUntilHorde = Days_Until_Horde - GameUtils.WorldTimeToDays(_worldTime) % Days_Until_Horde;
+            int _daysUntilHorde1 = (Days_Until_Horde + 1) - GameUtils.WorldTimeToDays(_worldTime) % (Days_Until_Horde + 1);
+            int _worldHours = (int)(_worldTime / 1000UL) % 24;
+            if (_daysUntilHorde == Days_Until_Horde && (_worldHours >= _duskTime - 3) || _daysUntilHorde1 == (Days_Until_Horde + 1) && (_worldHours < _duskTime - 17) && GameManager.Instance.World.IsDaytime())
             {
-                ulong _worldTime = GameManager.Instance.World.worldTime;
-                int _daysUntilHorde = Days_Until_Horde - GameUtils.WorldTimeToDays(_worldTime) % Days_Until_Horde;
-                int _daysUntil1 = Days_Until_Horde + 1;
-                int _daysUntilHorde1 = _daysUntil1 - GameUtils.WorldTimeToDays(_worldTime) % _daysUntil1;
-                int _worldHours = GameUtils.WorldTimeToHours(_worldTime);
-                float _duskTime = SkyManager.GetDuskTime();
-                if ((_daysUntilHorde == Days_Until_Horde && (_worldHours >= _duskTime - 2 && _worldHours <= _duskTime + 2)) || (_daysUntilHorde1 == _daysUntil1 && (_worldHours >= _duskTime - 22 && _worldHours <= _duskTime - 16)))
-                {
-                    Bloodmoon = true;
-                }
-                if (!Bloodmoon)
-                {
-                    if (Countdown_Timer < 1)
-                    {
-                        Countdown_Timer = 1;
-                    }
-                    Log.Out("[SERVERTOOLS] Running auto shutdown.");
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, ("[FF0000]Auto shutdown initiated[-]"), Config.Server_Response_Name, false, "ServerTools", false);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("stopserver {0}", Countdown_Timer), (ClientInfo)null);
-                }
+                Bloodmoon = true;
             }
             else
             {
-                if (Wait)
+                if (Lottery.OpenLotto)
                 {
-                    Bloodmoon = false;
-                    Wait = false;
-                    Auto_Shutdown();
+                    Lottery.StartLotto();
                 }
-                else
-                {
-                    World world = GameManager.Instance.World;
-                    bool _day = world.IsDaytime();
-                    if (_day)
-                    {
-                        Wait = true;
-                    }
-                }
+                Lottery.ShuttingDown = true;
+                Bloodmoon = false;
+                Auto_Shutdown();
             }
+        }
+
+        public static void Auto_Shutdown()
+        {
+            Log.Out("[SERVERTOOLS] Running auto shutdown.");
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, ("[FF0000]Auto shutdown initiated[-]"), Config.Server_Response_Name, false, "ServerTools", false);
+            SdtdConsole.Instance.ExecuteSync(string.Format("stopserver {0}", Countdown_Timer), (ClientInfo)null);
         }
 
         public static void CheckNextShutdown(ClientInfo _cInfo, bool _announce)
         {
-            if (IsEnabled)
+            if (!Bloodmoon)
             {
                 DateTime _timeStart = timerStart[0];
                 TimeSpan varTime = DateTime.Now - _timeStart;
@@ -94,6 +78,17 @@ namespace ServerTools
                         _phrase730 = _phrase730.Replace("{TimeLeft}", TimeLeft);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase730), Config.Server_Response_Name, false, "ServerTools", false));
                     }
+                }
+            }
+            else
+            {
+                if (_announce)
+                {
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}A bloodmoon is currently active. The server is set to shutdown after it finishes.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false);
+                }
+                else
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A bloodmoon is currently active. The server is set to shutdown after it finishes.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
         }
