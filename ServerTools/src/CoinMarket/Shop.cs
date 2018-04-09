@@ -219,72 +219,26 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void List(ClientInfo _cInfo, string _playerName)
+        public static void Check(ClientInfo _cInfo, string _playerName)
         {
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             if (!Anywhere)
             {
                 World world = GameManager.Instance.World;
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 int x = (int)_player.position.x;
                 int y = (int)_player.position.y;
                 int z = (int)_player.position.z;
                 Vector3i playerPos = new Vector3i(x, y, z);
                 if (world.IsWithinTraderArea(playerPos))
                 {
-                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                    if (p != null)
-                    {
-                        int spentCoins = p.PlayerSpentCoins;
-                        int currentCoins = 0;
-                        int gameMode = world.GetGameMode();
-                        if (gameMode == 7)
-                        {
-                            currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                        }
-                        else
-                        {
-                            currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                        }
-                        if (!Wallet.Negative_Wallet && currentCoins < 0)
-                        {
-                            currentCoins = 0;
-                        }
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, currentCoins, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
-                        string _phrase617;
-                        if (!Phrases.Dict.TryGetValue(617, out _phrase617))
-                        {
-                            _phrase617 = "The shop contains the following:";
-                        }
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase617), Config.Server_Response_Name, false, "ServerTools", false));
-                        foreach (var _sellable in dict)
-                        {
-                            int[] _values;
-                            if (dict1.TryGetValue(_sellable.Key, out _values))
-                            {
-                                if (_values[1] > 1)
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
-                        }
-                        string _phrase618;
-                        if (!Phrases.Dict.TryGetValue(618, out _phrase618))
-                        {
-                            _phrase618 = "Type /buy # to purchase the corresponding value from the shop list.";
-                        }
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase618), Config.Server_Response_Name, false, "ServerTools", false));
-                    }
+                    Exec(_cInfo, _playerName, _player);
                 }
                 else
                 {
                     string _phrase619;
                     if (!Phrases.Dict.TryGetValue(619, out _phrase619))
                     {
-                        _phrase619 = "{PlayerName} you are not inside a trade area. Find a trader and use /shop again.";
+                        _phrase619 = "{PlayerName} you are not inside a trader area. Find a trader and use /shop again.";
                     }
                     _phrase619 = _phrase619.Replace("{PlayerName}", _playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase619), Config.Server_Response_Name, false, "ServerTools", false));
@@ -292,43 +246,32 @@ namespace ServerTools
             }
             else
             {
+                Exec(_cInfo, _playerName, _player);
+            }
+        }
+
+        public static void Exec(ClientInfo _cInfo, string _playerName, EntityPlayer _player)
+        {
+            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            if (p != null)
+            {
                 World world = GameManager.Instance.World;
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null)
+                int spentCoins = p.PlayerSpentCoins;
+                int currentCoins = 0;
+                int gameMode = world.GetGameMode();
+                if (gameMode == 7)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = 0;
-                    PersistentContainer.Instance.Save();
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
                 }
                 else
                 {
-                    int spentCoins = p.PlayerSpentCoins;
-                    int currentCoins = 0;
-                    int gameMode = world.GetGameMode();
-                    if (gameMode == 7)
-                    {
-                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                        if (!Wallet.Negative_Wallet)
-                        {
-                            if (currentCoins < 0)
-                            {
-                                currentCoins = 0;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                        if (!Wallet.Negative_Wallet)
-                        {
-                            if (currentCoins < 0)
-                            {
-                                currentCoins = 0;
-                            }
-                        }
-                    }
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, currentCoins, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
                 }
+                if (!Wallet.Negative_Wallet && currentCoins < 0)
+                {
+                    currentCoins = 0;
+                }
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, currentCoins, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                 string _phrase617;
                 if (!Phrases.Dict.TryGetValue(617, out _phrase617))
                 {
@@ -342,11 +285,11 @@ namespace ServerTools
                     {
                         if (_values[1] > 1)
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}#{1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}#{1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                 }
@@ -356,6 +299,43 @@ namespace ServerTools
                     _phrase618 = "Type /buy # to purchase the corresponding value from the shop list.";
                 }
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase618), Config.Server_Response_Name, false, "ServerTools", false));
+            }
+            else
+            {
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = 0;
+                PersistentContainer.Instance.Save();
+                Exec(_cInfo, _playerName, _player);
+            }
+        }
+
+        public static void BuyCheck(ClientInfo _cInfo, string _item, string _playerName)
+        {
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            if (!Anywhere)
+            {
+                World world = GameManager.Instance.World;
+                int x = (int)_player.position.x;
+                int y = (int)_player.position.y;
+                int z = (int)_player.position.z;
+                Vector3i playerPos = new Vector3i(x, y, z);
+                if (world.IsWithinTraderArea(playerPos))
+                {
+                    Walletcheck(_cInfo, _item, _playerName);
+                }
+                else
+                {
+                    string _phrase619;
+                    if (!Phrases.Dict.TryGetValue(619, out _phrase619))
+                    {
+                        _phrase619 = "{PlayerName} you are not inside a trader area. Find a trader and use /shop again.";
+                    }
+                    _phrase619 = _phrase619.Replace("{PlayerName}", _playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase619), Config.Server_Response_Name, false, "ServerTools", false));
+                }
+            }
+            else
+            {
+                Walletcheck(_cInfo, _item, _playerName);
             }
         }
 
@@ -389,11 +369,11 @@ namespace ServerTools
                             int gameMode = world.GetGameMode();
                             if (gameMode == 7)
                             {
-                                currentCoins = (_player.KilledZombies * 10) + (_player.KilledPlayers * 50) - (XUiM_Player.GetDeaths(_player) * -25) + p.PlayerSpentCoins;
+                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
                             }
                             else
                             {
-                                currentCoins = (_player.KilledZombies * 10) - (XUiM_Player.GetDeaths(_player) * -25) + p.PlayerSpentCoins;
+                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
                             }
                             if (!Wallet.Negative_Wallet)
                             {
@@ -436,66 +416,14 @@ namespace ServerTools
 
         public static void ShopPurchase(ClientInfo _cInfo, string _itemName, int _count, int _quality, int _price, string _playerName, int currentCoins, Player p)
         {
-            if (!Anywhere)
+            World world = GameManager.Instance.World;
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            int x = (int)_player.position.x;
+            int y = (int)_player.position.y;
+            int z = (int)_player.position.z;
+            Vector3i playerPos = new Vector3i(x, y, z);
+            if (world.IsWithinTraderArea(playerPos))
             {
-                World world = GameManager.Instance.World;
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                int x = (int)_player.position.x;
-                int y = (int)_player.position.y;
-                int z = (int)_player.position.z;
-                Vector3i playerPos = new Vector3i(x, y, z);
-                if (world.IsWithinTraderArea(playerPos))
-                {
-                    ItemValue _itemValue = ItemClass.GetItem(_itemName, true);
-                    if (_itemValue.type != ItemValue.None.type)
-                    {
-                        ItemValue itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, true);
-                        var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                        {
-                            entityClass = EntityClass.FromString("item"),
-                            id = EntityFactory.nextEntityID++,
-                            itemStack = new ItemStack(itemValue, _count),
-                            pos = world.Players.dict[_cInfo.entityId].position,
-                            rot = new Vector3(20f, 0f, 20f),
-                            lifetime = 60f,
-                            belongsPlayerId = _cInfo.entityId
-                        });
-                        world.SpawnEntityInWorld(entityItem);
-                        _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
-                        world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                        SdtdConsole.Instance.Output(string.Format("Sold {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was purchased through the shop. If your bag is full, check the ground.[-]", Config.Chat_Response_Color, _count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), Config.Server_Response_Name, false, "ServerTools", false));
-                        int newCoins = p.PlayerSpentCoins - _price;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = newCoins;
-                        PersistentContainer.Instance.Save();
-                    }
-                    else
-                    {
-                        string _phrase623;
-                        if (!Phrases.Dict.TryGetValue(623, out _phrase623))
-                        {
-                            _phrase623 = "{PlayerName} there was an error in the shop list. Unable to buy this item. Please alert an administrator.";
-                            Log.Out(string.Format("Player {0} tried to buy item {1} from the shop. The item name in the Market.xml does not match an existing item. Check your Item.xml for the correct item name. It is case sensitive.", _cInfo.playerName, _itemName));
-                        }
-                        _phrase623 = _phrase623.Replace("{PlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase623), Config.Server_Response_Name, false, "ServerTools", false));
-                    }
-                }
-                else
-                {
-                    string _phrase624;
-                    if (!Phrases.Dict.TryGetValue(624, out _phrase624))
-                    {
-                        _phrase624 = "{PlayerName} you are not inside a trade area. Find a trader and use /buy again.";
-                    }
-                    _phrase624 = _phrase624.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase624), Config.Server_Response_Name, false, "ServerTools", false));
-                }
-            }
-            else
-            {
-                World world = GameManager.Instance.World;
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 ItemValue _itemValue = ItemClass.GetItem(_itemName, true);
                 if (_itemValue.type != ItemValue.None.type)
                 {
@@ -530,6 +458,16 @@ namespace ServerTools
                     _phrase623 = _phrase623.Replace("{PlayerName}", _playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase623), Config.Server_Response_Name, false, "ServerTools", false));
                 }
+            }
+            else
+            {
+                string _phrase624;
+                if (!Phrases.Dict.TryGetValue(624, out _phrase624))
+                {
+                    _phrase624 = "{PlayerName} you are not inside a trade area. Find a trader and use /buy again.";
+                }
+                _phrase624 = _phrase624.Replace("{PlayerName}", _playerName);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase624), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
     }

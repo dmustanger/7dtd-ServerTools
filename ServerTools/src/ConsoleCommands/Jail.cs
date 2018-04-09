@@ -110,9 +110,9 @@ namespace ServerTools
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase500), Config.Server_Response_Name, false, "ServerTools", false));
                                     SdtdConsole.Instance.Output(string.Format("You have put {0} in jail for life.", _cInfo.playerName));
                                 }
-                                PersistentContainer.Instance.Players[_cInfo.playerId, false].JailDate = DateTime.Now;
-                                PersistentContainer.Instance.Players[_cInfo.playerId, false].JailTime = _jailTime;
-                                PersistentContainer.Instance.Players[_cInfo.playerId, false].JailName = _cInfo.playerName;
+                                PersistentContainer.Instance.Players[_cInfo.playerId, true].JailDate = DateTime.Now;
+                                PersistentContainer.Instance.Players[_cInfo.playerId, true].JailTime = _jailTime;
+                                PersistentContainer.Instance.Players[_cInfo.playerId, true].JailName = _cInfo.playerName;
                                 PersistentContainer.Instance.Save();
                             }
                         }
@@ -166,7 +166,7 @@ namespace ServerTools
                                 }
                                 _phrase501 = _phrase501.Replace("{PlayerName}", _cInfo.playerName);
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase501), Config.Server_Response_Name, false, "ServerTools", false));
-                                PersistentContainer.Instance.Players[_cInfo.playerId, false].JailTime = 0;
+                                PersistentContainer.Instance.Players[_cInfo.playerId, true].JailTime = 0;
                                 PersistentContainer.Instance.Save();
                                 SdtdConsole.Instance.Output(string.Format("You have released a player with id {0} from jail. ", _params[1]));
                                 return;
@@ -174,7 +174,7 @@ namespace ServerTools
                             else
                             {
                                 Jail.Jailed.Remove(_cInfo.playerId);
-                                PersistentContainer.Instance.Players[_cInfo.playerId, false].JailTime = 0;
+                                PersistentContainer.Instance.Players[_cInfo.playerId, true].JailTime = 0;
                                 PersistentContainer.Instance.Save();
                                 SdtdConsole.Instance.Output(string.Format("Player with Id {0} has been removed from the jail list.", _params[1]));
                                 return;

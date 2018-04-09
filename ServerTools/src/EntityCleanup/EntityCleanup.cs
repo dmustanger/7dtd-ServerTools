@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Xml;
 using UnityEngine;
 
 namespace ServerTools
@@ -10,7 +8,7 @@ namespace ServerTools
         public static bool ItemIsEnabled = false, BlockIsEnabled = false, FallingTreeEnabled = false;
         private static List<Entity> Entities = new List<Entity>();
         private static List<int> FallingTree = new List<int>();
-        private static int _xMinCheck = 0, _yMinCheck = 0, _zMinCheck = 0, _xMaxCheck = 0, _yMaxCheck = 0, _zMaxCheck = 0;
+        private static int _xMinCheck, _yMinCheck, _zMinCheck, _xMaxCheck, _yMaxCheck, _zMaxCheck;
 
         public static void EntityCheck()
         {
@@ -40,8 +38,7 @@ namespace ServerTools
                                             string _name2 = EntityClass.list[_entity2.entityClass].entityClassName;
                                             if (_name2 == "item")
                                             {
-                                                float _distance = _entity.GetDistance(_entity2);
-                                                if (_distance <= 3)
+                                                if ((_entity.position.x - _entity2.position.x) * (_entity.position.x - _entity2.position.x) + (_entity.position.z - _entity2.position.z) * (_entity.position.z - _entity2.position.z) <= 3 * 3)
                                                 {
                                                     _itemCounter++;
                                                 }
@@ -71,8 +68,7 @@ namespace ServerTools
                                             string _name2 = EntityClass.list[_entity2.entityClass].entityClassName;
                                             if (_name2 == "fallingBlock")
                                             {
-                                                float _distance = _entity.GetDistance(_entity2);
-                                                if (_distance <= 20)
+                                                if ((_entity.position.x - _entity2.position.x) * (_entity.position.x - _entity2.position.x) + (_entity.position.z - _entity2.position.z) * (_entity.position.z - _entity2.position.z) <= 20 * 20)
                                                 {
                                                     _blockCounter++;
                                                 }
@@ -82,10 +78,9 @@ namespace ServerTools
                                 }
                                 if (_blockCounter >= 12)
                                 {
-                                    Vector3 _pos = _entity.position;
                                     GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                    EntityPlayer _douche = world.GetClosestPlayer(_pos.x, _pos.y, _pos.z, 10, false);
-                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed falling block id {0} @ {1} {2} {3}. Closest player is {4}", _entity.entityId, _pos.x, _pos.y, _pos.z, _douche.EntityName));
+                                    EntityPlayer _douche = world.GetClosestPlayer(_entity.position.x, _entity.position.y, _entity.position.z, 10, false);
+                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed falling block id {0} @ {1} {2} {3}. Closest player is {4}", _entity.entityId, _entity.position.x, _entity.position.y, _entity.position.z, _douche.EntityName));
                                 }
                             }
                         }

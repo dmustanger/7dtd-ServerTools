@@ -107,12 +107,6 @@ namespace ServerTools
                             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                             if (p != null)
                             {
-                                string _phrase400;
-                                if (!Phrases.Dict.TryGetValue(400, out _phrase400))
-                                {
-                                    _phrase400 = "Reseting players profile.";
-                                }
-                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase400), _cInfo);
                                 if (!File.Exists(_filepath))
                                 {
                                     SdtdConsole.Instance.Output(string.Format("Could not find file {0}.map", _params[0]));

@@ -8,9 +8,9 @@ namespace ServerTools
         public static int Player_Log_Interval = 60, Auto_Show_Bloodmoon_Delay = 30,
             Delay_Between_World_Saves = 15, Stop_Server_Time = 1, _newCount = 0, Weather_Vote_Delay = 30,
             Shutdown_Delay = 60, Infoticker_Delay = 60, Restart_Vote_Delay = 30, _sSC = 0, _sSCD = 0,
-            Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120;
-        private static int timer1SecondInstanceCount, _wV, _wNV, _pSC, _b, _pL, _mC, _wSD, _sD, _iT, _eU,
-            _rS, _rV, _rNV, _eC, _wL, _dS, _rWT, _rE, _bR, _aSB, _wR, _nA, _jR, _h; 
+            Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0;
+        private static int timer1SecondInstanceCount, _wV, _wNV, _pSC, _b, _pL, _mC, _wSD, _iT, _eU,
+            _rS, _rV, _rNV, _eC, _wL, _dS, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l; 
         private static System.Timers.Timer t1 = new System.Timers.Timer();
 
         public static void TimerStart()
@@ -27,9 +27,6 @@ namespace ServerTools
 
         public static void LogAlert()
         {
-            Log.Out("---------------------------------");
-            Log.Out("[SERVERTOOLS] Beginning tool load");
-            Log.Out("---------------------------------");
             Log.Out("-------------------------------");
             Log.Out("[SERVERTOOLS] Anti-Cheat tools:");
             Log.Out("-------------------------------");
@@ -127,10 +124,6 @@ namespace ServerTools
             {
                 Log.Out("Badword filter enabled");
             }
-            if (Backpack.IsEnabled)
-            {
-                Log.Out("Bag enabled");
-            }
             if (BikeReturn.IsEnabled)
             {
                 Log.Out("Bike enabled");
@@ -142,6 +135,10 @@ namespace ServerTools
             if (Bloodmoon.IsEnabled)
             {
                 Log.Out("Bloodmoon enabled");
+            }
+            if (Bounties.IsEnabled)
+            {
+                Log.Out("Bounties enabled");
             }
             if (ChatHook.ChatFlood)
             {
@@ -211,6 +208,14 @@ namespace ServerTools
             {
                 Log.Out("Kick vote enabled");
             }
+            if (Players.Kill_Notice)
+            {
+                Log.Out("Kill notice enabled");
+            }
+            if (LobbyChat.IsEnabled)
+            {
+                Log.Out("Lobby enabled");
+            }
             if (Loc.IsEnabled)
             {
                 Log.Out("Location enabled");
@@ -219,11 +224,15 @@ namespace ServerTools
             {
                 Log.Out("Login notice enabled");
             }
+            if (Lottery.IsEnabled)
+            {
+                Log.Out("Lottery enabled");
+            }
             if (Motd.IsEnabled)
             {
                 Log.Out("Motd enabled");
             }
-            if (Muted.IsEnabled)
+            if (MutePlayer.IsEnabled)
             {
                 Log.Out("Mute enabled");
             }
@@ -306,6 +315,10 @@ namespace ServerTools
             {
                 Jail.StatusCheck();
             }
+            if (Bounties.IsEnabled || Players.Kill_Notice)
+            {
+                Players.KillCount();
+            }
             if (Jail.Jailed.Count > 0)
             {
                 _jR++;
@@ -347,13 +360,13 @@ namespace ServerTools
                 _wV = 0;
                 _wNV = 0;
             }
-            if (Muted.Mutes.Count > 0)
+            if (MutePlayer.Mutes.Count > 0)
             {
                 _mC++;
                 if (_mC >= 60)
                 {
                     _mC = 0;
-                    Muted.Clear();
+                    MutePlayer.Clear();
                 }
             }
             else
@@ -372,6 +385,23 @@ namespace ServerTools
             else
             {
                 _rWT = 0;
+            }
+            if (Lottery.IsEnabled && Lottery.OpenLotto)
+            {
+                _l++;
+                if (_l == 3300)
+                {
+                    Lottery.Alert();
+                }
+                if (_l >= 3600)
+                {
+                    _l = 0;
+                    Lottery.StartLotto();
+                }
+            }
+            else
+            {
+                _l = 0;
             }
             if (RestartVote.IsEnabled)
             {
@@ -507,13 +537,13 @@ namespace ServerTools
             if (ReservedSlots.IsEnabled)
             {
                 _rS++;
-                if (_rS >= 300)
+                if (_rS >= 120)
                 {
                     _rS = 0;
                     int _playerCount = ConnectionManager.Instance.ClientCount();
                     if (_playerCount == API.MaxPlayers)
                     {
-                        ReservedSlots.OpenSlot2();
+                        ReservedSlots.OpenSlot();
                     }
                 }
             }
@@ -631,8 +661,7 @@ namespace ServerTools
                 if (_sD >= Shutdown_Delay * 60)
                 {
                     _sD = 0;
-                    AutoShutdown.ShutdownList();
-                    AutoShutdown.Auto_Shutdown();
+                    AutoShutdown.CheckBloodmoon();
                 }
             }
             else
@@ -645,7 +674,7 @@ namespace ServerTools
                 if (_aSB >= 1800)
                 {
                     _aSB = 0;
-                    AutoShutdown.Auto_Shutdown();
+                    AutoShutdown.CheckBloodmoon();
                 }
             }
             else
@@ -664,19 +693,6 @@ namespace ServerTools
             else
             {
                 _iT = 0;
-            }
-            if (Backpack.IsEnabled && Backpack.Observer)
-            {
-                _bR++;
-                if (_bR >= 3)
-                {
-                    _bR = 0;
-                    Backpack.Que();
-                }
-            }
-            else
-            {
-                _bR = 0;
             }
             if (WorldRadius.IsEnabled)
             {

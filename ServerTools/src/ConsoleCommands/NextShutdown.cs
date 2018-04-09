@@ -19,25 +19,37 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Shutdowncheck", "shutdowncheck" ,"scheck" };
+            return new string[] { "st-Shutdowncheck" ,"scheck" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
-            try
+            if (AutoShutdown.IsEnabled)
             {
-                var _timeStart = AutoShutdown.timerStart[0];
-                TimeSpan varTime = DateTime.Now - _timeStart;
-                double fractionalMinutes = varTime.TotalMinutes;
-                int _timeMinutes = (int)fractionalMinutes;
-                int _timeleftMinutes = Timers.Shutdown_Delay - _timeMinutes;
-                string TimeLeft;
-                TimeLeft = string.Format("{0:00} H :{1:00} M", _timeleftMinutes / 60, _timeleftMinutes % 60);
-                SdtdConsole.Instance.Output(TimeLeft);
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ShutdownCheck.Run: {0}.", e));
+                if (!AutoShutdown.Bloodmoon)
+                {
+                    try
+                    {
+                        var _timeStart = AutoShutdown.timerStart[0];
+                        TimeSpan varTime = DateTime.Now - _timeStart;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        int _timeMinutes = (int)fractionalMinutes;
+                        int _timeleftMinutes = Timers.Shutdown_Delay - _timeMinutes;
+                        string TimeLeft;
+                        TimeLeft = string.Format("{0:00} H :{1:00} M", _timeleftMinutes / 60, _timeleftMinutes % 60);
+                        SdtdConsole.Instance.Output(TimeLeft);
+                        return;
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Error in ShutdownCheck.Run: {0}.", e));
+                    }
+                }
+                else
+                {
+                    SdtdConsole.Instance.Output("The server is set to shutdown after the bloodmoon is over.");
+                    return;
+                }
             }
         }
     }

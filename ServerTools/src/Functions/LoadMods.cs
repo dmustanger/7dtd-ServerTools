@@ -5,27 +5,9 @@
         public static void Load()
         {
             Timers.TimerStart();
-            if (Animals.IsEnabled)
+            if (TeleportCheck.IsEnabled)
             {
-                Animals.BuildList();
-            }
-            if (AutoShutdown.IsEnabled)
-            {
-                AutoShutdown.ShutdownList();
-            }
-            if (ChatHook.Special_Player_Name_Coloring)
-            {
-                ChatHook.SpecialIdCheck();
-            }
-            if (ClanManager.IsEnabled)
-            {
-                PersistentContainer.Instance.Players.GetClans();
-                ClanManager.BuildList();
-            }
-            if (!ClanManager.IsEnabled)
-            {
-                PersistentContainer.Instance.Players.clans.Clear();
-                ClanManager.ClanMember.Clear();
+                TeleportCheck.DetectionLogsDir();
             }
             if (FlightCheck.IsEnabled)
             {
@@ -51,6 +33,20 @@
             {
                 UndergroundCheck.DetectionLogsDir();
             }
+            if (ChatHook.Special_Player_Name_Coloring)
+            {
+                ChatHook.SpecialIdCheck();
+            }
+            if (ClanManager.IsEnabled)
+            {
+                PersistentContainer.Instance.Players.GetClans();
+                ClanManager.BuildList();
+            }
+            if (!ClanManager.IsEnabled)
+            {
+                PersistentContainer.Instance.Players.clans.Clear();
+                ClanManager.ClanMember.Clear();
+            }
             if (!InfoTicker.IsEnabled && InfoTicker.IsRunning)
             {
                 InfoTicker.Unload();
@@ -62,10 +58,6 @@
             if (Gimme.IsRunning && !Gimme.IsEnabled)
             {
                 Gimme.Unload();
-            }
-            if (AuctionBox.IsEnabled)
-            {
-                AuctionBox.BuildAuctionList();
             }
             if (!Gimme.IsRunning && Gimme.IsEnabled)
             {
@@ -97,7 +89,6 @@
             }
             if (!ZoneProtection.IsRunning && ZoneProtection.IsEnabled)
             {
-                ZoneProtection.DetectionLogsDir();
                 ZoneProtection.Load();
             }
             if (ZoneProtection.IsRunning && !ZoneProtection.IsEnabled)
@@ -120,34 +111,21 @@
             {
                 Watchlist.Unload();
             }
-            if (!ReservedSlots.IsRunning && ReservedSlots.IsEnabled)
+            if (!ReservedSlots.IsRunning && (ReservedSlots.IsEnabled || ReservedSlots.Donator_Name_Coloring))
             {
                 ReservedSlots.Load();
             }
-            if (ReservedSlots.IsRunning && !ReservedSlots.IsEnabled)
-            {
-                ReservedSlots.Unload();
-            }
-            if (!ReservedSlots.IsRunning && ReservedSlots.Donator_Name_Coloring)
-            {
-                ReservedSlots.Load();
-            }
-            if (ReservedSlots.IsRunning && !ReservedSlots.Donator_Name_Coloring)
+            if (ReservedSlots.IsRunning && !ReservedSlots.IsEnabled && !ReservedSlots.Donator_Name_Coloring)
             {
                 ReservedSlots.Unload();
             }
             if (!StartingItems.IsRunning && StartingItems.IsEnabled)
             {
-                StartingItems.BuildList();
                 StartingItems.Load();
             }
             if (StartingItems.IsRunning && !StartingItems.IsEnabled)
             {
                 StartingItems.Unload();
-            }
-            if (TeleportCheck.IsEnabled)
-            {
-                TeleportCheck.DetectionLogsDir();
             }
             if (!Travel.IsRunning && Travel.IsEnabled)
             {
@@ -205,13 +183,25 @@
             {
                 CustomCommands.Load();
             }
-            if (Muted.IsEnabled)
+            if (AuctionBox.IsEnabled)
             {
-                Muted.MuteList();
+                AuctionBox.AuctionList();
+            }
+            if (MutePlayer.IsEnabled)
+            {
+                MutePlayer.MuteList();
             }
             if (Jail.IsEnabled)
             {
                 Jail.JailList();
+            }
+            if (Animals.IsEnabled)
+            {
+                Animals.AnimalList();
+            }
+            if (AutoShutdown.IsEnabled)
+            {
+                AutoShutdown.ShutdownList();
             }
         }
     }

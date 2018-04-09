@@ -85,7 +85,7 @@ namespace ServerTools
                     }
                     if (_params[1].Length < 1 || _params[1].Length > 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not add Id: Invalid Id {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("Can not remove Id: Invalid Id {0}", _params[1]));
                         return;
                     }
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
@@ -93,13 +93,27 @@ namespace ServerTools
                     {
                         if (!ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            SdtdConsole.Instance.Output(string.Format("Id {0} was not found in .", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Id {0} was not found on the Reserved Slots list.", _params[1]));
                             return;
                         }
                         ReservedSlots.Dict.Remove(_cInfo.playerId);
                         ReservedSlots.Dict1.Remove(_cInfo.playerId);
                         SdtdConsole.Instance.Output(string.Format("Removed Id {0} from Reserved Slots list.", _params[1]));
                         ReservedSlots.UpdateXml();
+                    }
+                    else
+                    {
+                        if (ReservedSlots.Dict.ContainsKey(_params[1]))
+                        {
+                            ReservedSlots.Dict.Remove(_params[1]);
+                            ReservedSlots.Dict1.Remove(_params[1]);
+                            SdtdConsole.Instance.Output(string.Format("Removed Id {0} from Reserved Slots list.", _params[1]));
+                            ReservedSlots.UpdateXml();
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Id {0} was not found on the Reserved Slots list.", _params[1]));
+                        }
                     }
                 }
                 else if (_params[0].ToLower().Equals("list"))
@@ -109,17 +123,20 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
                         return;
                     }
-                    if (ReservedSlots.Dict.Count < 1)
+                    if (ReservedSlots.Dict.Count == 0)
                     {
-                        SdtdConsole.Instance.Output("There are no steamIds on the Reserved Slots list.");
+                        SdtdConsole.Instance.Output("There are no players on the Reserved Slots list.");
                         return;
                     }
-                    foreach (KeyValuePair<string, DateTime> _key in ReservedSlots.Dict)
+                    else
                     {
-                        string _name;
-                        if (ReservedSlots.Dict1.TryGetValue(_key.Key, out _name))
+                        foreach (var _key in ReservedSlots.Dict)
                         {
-                            SdtdConsole.Instance.Output(string.Format("{0} {1} {2}", _key.Key, _name, _key.Value));
+                            string _name;
+                            if (ReservedSlots.Dict1.TryGetValue(_key.Key, out _name))
+                            {
+                                SdtdConsole.Instance.Output(string.Format("{0} {1} {2}", _key.Key, _name, _key.Value));
+                            }
                         }
                     }
                 }
