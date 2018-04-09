@@ -8,6 +8,8 @@ namespace ServerTools
     {
         private readonly string steamId;
         [OptionalField]
+        private int bounty;
+        private int sessionTime;
         private int bikeId;
         private int jailTime;
         private int muteTime;
@@ -18,6 +20,8 @@ namespace ServerTools
         private int auctionData;
         private int playerSpentCoins;
         private string[] auctionItem;
+        private string lobbyReturn;
+        private string newTeleSpawn;
         private string jailName;
         private string muteName;
         private string homeposition;
@@ -25,6 +29,7 @@ namespace ServerTools
         private string clanname;
         private string invitedtoclan;
         private string lastwhisper;
+        private DateTime lastLobby;
         private DateTime cancelTime;
         private DateTime sellDate;
         private DateTime log;
@@ -59,6 +64,42 @@ namespace ServerTools
         private bool isjailed;
         private bool isremovedfromjail = true;
         private bool startingItems;
+
+        public string[] AuctionItem
+        {
+            get
+            {
+                return auctionItem;
+            }
+            set
+            {
+                auctionItem = value;
+            }
+        }
+
+        public int Bounty
+        {
+            get
+            {
+                return bounty;
+            }
+            set
+            {
+                bounty = value;
+            }
+        }
+
+        public int SessionTime
+        {
+            get
+            {
+                return sessionTime;
+            }
+            set
+            {
+                sessionTime = value;
+            }
+        }
 
         public int BikeId
         {
@@ -168,15 +209,15 @@ namespace ServerTools
             }
         }
 
-        public string[] AuctionItem
+        public DateTime LastLobby
         {
             get
             {
-                return auctionItem;
+                return lastLobby;
             }
             set
             {
-                auctionItem = value;
+                lastLobby = value;
             }
         }
 
@@ -525,6 +566,30 @@ namespace ServerTools
             set
             {
                 lastsethome = value;
+            }
+        }
+
+        public string LobbyReturn
+        {
+            get
+            {
+                return lobbyReturn;
+            }
+            set
+            {
+                lobbyReturn = value;
+            }
+        }
+
+        public string NewTeleSpawn
+        {
+            get
+            {
+                return newTeleSpawn;
+            }
+            set
+            {
+                newTeleSpawn = value;
             }
         }
 

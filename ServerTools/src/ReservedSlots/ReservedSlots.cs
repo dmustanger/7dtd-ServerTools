@@ -12,14 +12,13 @@ namespace ServerTools
         public static int Session_Time = 30, Admin_Level = 0;
         public static Dictionary<string, DateTime> Dict = new Dictionary<string, DateTime>();
         public static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
-        public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
         private static string file = "ReservedSlots.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
-            if (IsEnabled && !IsRunning || Donator_Name_Coloring && !IsRunning)
+            if (IsEnabled && !IsRunning)
             {
                 LoadXml();
                 InitFileWatcher();
@@ -150,7 +149,6 @@ namespace ServerTools
             fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
             fileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
-            Donator_Name_Coloring = true;
         }
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
@@ -162,105 +160,79 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void SessionTime(ClientInfo _cInfo)
+        public static void CheckReservedSlot(ClientInfo _cInfo)
         {
-            Session[_cInfo.playerId] = DateTime.Now;
+            int _playerCount = ConnectionManager.Instance.ClientCount();
+            if (_playerCount == API.MaxPlayers)
+            {
+                OpenSlot();
+            }
         }
 
-        public static void CheckReservedSlot1(ClientInfo _cInfo)
+        public static void OpenSlot()
         {
-            if (IsEnabled)
+            int _counter = 0;
+            List<string> _sessionList = new List<string>(Players.Session.Keys);
+            for (int i = 0; i < _sessionList.Count; i++)
             {
-                int _playerCount = ConnectionManager.Instance.ClientCount();
-                if (_playerCount == API.MaxPlayers)
+                string _player = _sessionList[i];
+                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_player);
+                if (_cInfo != null)
                 {
                     AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                     if (Admin.PermissionLevel > Admin_Level)
                     {
-                        OpenSlot(_cInfo);
-                    }
-                    if (Admin.PermissionLevel <= Admin_Level)
-                    {
-                        OpenSlot2();
-                    }
-                }
-            }
-        }
-
-        public static void OpenSlot(ClientInfo _cInfo)
-        {
-            if (!Dict.ContainsKey(_cInfo.playerId))
-            {
-                string _phrase20;
-                if (!Phrases.Dict.TryGetValue(20, out _phrase20))
-                {
-                    _phrase20 = "Sorry {PlayerName} server is at max capacity and this slot is reserved.";
-                }
-                _phrase20 = _phrase20.Replace("{PlayerName}", _cInfo.playerName);
-                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase20), (ClientInfo)null);
-                Session.Remove(_cInfo.playerId);
-            }
-            else
-            {
-                DateTime _dt;
-                Dict.TryGetValue(_cInfo.playerId, out _dt);
-                if (DateTime.Now > _dt)
-                {
-                    string _phrase21;
-                    if (!Phrases.Dict.TryGetValue(21, out _phrase21))
-                    {
-                        _phrase21 = "Sorry {PlayerName} server is at max capacity and your reserved status has expired.";
-                    }
-                    _phrase21 = _phrase21.Replace("{PlayerName}", _cInfo.playerName);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase21), (ClientInfo)null);
-                    Session.Remove(_cInfo.playerId);
-                }
-                else
-                {
-                    int _counter = 0;
-                    foreach (var _dateTime in Session)
-                    {
-                        TimeSpan varTime = DateTime.Now - _dateTime.Value;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        int _timepassed = (int)fractionalMinutes;
-                        if (_timepassed >= Session_Time)
+                        if (!Dict.ContainsKey(_cInfo.playerId))
                         {
-                            _counter++;
-                            if (_counter <= 1)
+                            DateTime _dateTime;
+                            Players.Session.TryGetValue(_cInfo.playerId, out _dateTime);
+                            TimeSpan varTime = DateTime.Now - _dateTime;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            int _timepassed = (int)fractionalMinutes;
+                            if (_timepassed >= Session_Time)
                             {
-                                string _phrase22;
-                                if (!Phrases.Dict.TryGetValue(22, out _phrase22))
+                                _counter++;
+                                if (_counter <= 1)
                                 {
-                                    _phrase22 = "Sorry, server is at max capacity and this slot is reserved.";
+                                    string _phrase22;
+                                    if (!Phrases.Dict.TryGetValue(22, out _phrase22))
+                                    {
+                                        _phrase22 = "Sorry {PlayerName} server is at max capacity and this slot is reserved.";
+                                    }
+
+                                    _phrase22 = _phrase22.Replace("{PlayerName}", _cInfo.playerName);
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase22), (ClientInfo)null);
                                 }
-                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _dateTime.Key, _phrase22), (ClientInfo)null);
-                                Session.Remove(_cInfo.playerId);
                             }
                         }
-                    }
-                }
-            }
-        }
-
-        public static void OpenSlot2()
-        {
-            int _counter = 0;
-            foreach (var _dateTime in Session)
-            {
-                TimeSpan varTime = DateTime.Now - _dateTime.Value;
-                double fractionalMinutes = varTime.TotalMinutes;
-                int _timepassed = (int)fractionalMinutes;
-                if (_timepassed >= Session_Time)
-                {
-                    _counter++;
-                    if (_counter <= 1)
-                    {
-                        string _phrase22;
-                        if (!Phrases.Dict.TryGetValue(22, out _phrase22))
+                        else
                         {
-                            _phrase22 = "Sorry, server is at max capacity and this slot is reserved.";
+                            DateTime _dt;
+                            Dict.TryGetValue(_cInfo.playerId, out _dt);
+                            if (DateTime.Now > _dt)
+                            {
+                                DateTime _dateTime;
+                                Players.Session.TryGetValue(_cInfo.playerId, out _dateTime);
+                                TimeSpan varTime = DateTime.Now - _dateTime;
+                                double fractionalMinutes = varTime.TotalMinutes;
+                                int _timepassed = (int)fractionalMinutes;
+                                if (_timepassed >= Session_Time)
+                                {
+                                    _counter++;
+                                    if (_counter <= 1)
+                                    {
+                                        string _phrase21;
+                                        if (!Phrases.Dict.TryGetValue(21, out _phrase21))
+                                        {
+                                            _phrase21 = "Sorry {PlayerName} server is at max capacity and your reserved status has expired.";
+                                        }
+
+                                        _phrase21 = _phrase21.Replace("{PlayerName}", _cInfo.playerName);
+                                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase21), (ClientInfo)null);
+                                    }
+                                }
+                            }
                         }
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _dateTime.Key, _phrase22), (ClientInfo)null);
                     }
                 }
             }

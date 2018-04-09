@@ -57,8 +57,7 @@ namespace ServerTools
             }
             if (ReservedSlots.IsEnabled)
             {
-                ReservedSlots.SessionTime(_cInfo);
-                ReservedSlots.CheckReservedSlot1(_cInfo);
+                ReservedSlots.CheckReservedSlot(_cInfo);
             }
         }
 
@@ -87,6 +86,7 @@ namespace ServerTools
             {
                 LoginNotice.PlayerCheck(_cInfo);
             }
+            Players.SessionTime(_cInfo);
         }
 
         public override void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
@@ -103,16 +103,28 @@ namespace ServerTools
             {
                 Bloodmoon.GetBloodmoon(_cInfo);
             }
-            if (StartingItems.IsEnabled && _respawnReason == RespawnType.EnterMultiplayer && !StartingItems.Received.Contains(_cInfo.playerId) || StartingItems.IsEnabled && _respawnReason == RespawnType.Teleport && !StartingItems.Received.Contains(_cInfo.playerId))
-            {
-                StartingItems.StartingItemCheck(_cInfo);
-            }
             if (_respawnReason == RespawnType.EnterMultiplayer)
             {
                 if (NewSpawnTele.IsEnabled)
                 {
                     NewSpawnTele.TeleNewSpawn(_cInfo);
                 }
+                if (StartingItems.IsEnabled)
+                {
+                    if (!NewSpawnTele.IsEnabled)
+                    {
+                        StartingItems.StartingItemCheck(_cInfo);
+                    }
+                    else
+                    {
+                        StartingItems.Que.Add(_cInfo.playerId);
+                    }
+                }
+                if (Bounties.IsEnabled || Players.Kill_Notice)
+                {
+                    Players.Kills[_cInfo.entityId] = 0;
+                }
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].SessionTime = 0;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = 0;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = 0;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = 0;
@@ -125,6 +137,10 @@ namespace ServerTools
                 int _zCount = XUiM_Player.GetZombieKills(_player);
                 int _deathCount = XUiM_Player.GetDeaths(_player);
                 int _killCount = XUiM_Player.GetPlayerKills(_player);
+                if (Bounties.IsEnabled || Players.Kill_Notice)
+                {
+                    Players.Kills[_cInfo.entityId] = _killCount;
+                }
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = _zCount;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = _deathCount;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = _killCount;
@@ -133,18 +149,25 @@ namespace ServerTools
             if (_respawnReason == RespawnType.Died)
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                int _deathCount = XUiM_Player.GetDeaths(_player);
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = _deathCount;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = XUiM_Player.GetDeaths(_player);
                 PersistentContainer.Instance.Save();
                 if (ZoneProtection.IsEnabled && ZoneProtection.Victim.ContainsKey(_cInfo.entityId))
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /return to teleport back to your death position. There is a two minute limit.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /return to teleport back to your death position. There is a time limit.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].RespawnTime = DateTime.Now;
                     PersistentContainer.Instance.Save();
                     if (ZoneProtection.Forgive.ContainsKey(_cInfo.entityId))
                     {
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /forgive to release your killer from jail.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                     }
+                }
+            }
+            if (_respawnReason == RespawnType.Teleport)
+            {
+                if (StartingItems.IsEnabled && StartingItems.Que.Contains(_cInfo.playerId))
+                {
+                    StartingItems.StartingItemCheck(_cInfo);
+                    StartingItems.Que.Remove(_cInfo.playerId);
                 }
             }
         }
@@ -156,19 +179,20 @@ namespace ServerTools
 
         public override void PlayerDisconnected(ClientInfo _cInfo, bool _bShutdown)
         {
+            if (HatchElevator.LastPositionY.ContainsKey(_cInfo.entityId))
+            {
+                HatchElevator.LastPositionY.Remove(_cInfo.entityId);
+            }
             if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
             {
                 FriendTeleport.Dict.Remove(_cInfo.entityId);
                 FriendTeleport.Dict1.Remove(_cInfo.entityId);
             }
-            if (DeathSpot.IsEnabled)
+            if (DeathSpot.Died.ContainsKey(_cInfo.entityId))
             {
-                if (DeathSpot.Died.ContainsKey(_cInfo.entityId))
-                {
-                    DeathSpot.Died.Remove(_cInfo.entityId);
-                    DeathSpot.Position.Remove(_cInfo.entityId);
-                    DeathSpot.Flag.Remove(_cInfo.entityId);
-                }
+                DeathSpot.Died.Remove(_cInfo.entityId);
+                DeathSpot.Position.Remove(_cInfo.entityId);
+                DeathSpot.Flag.Remove(_cInfo.entityId);
             }
             if (ZoneProtection.PvEFlag.ContainsKey(_cInfo.entityId))
             {
@@ -177,7 +201,7 @@ namespace ServerTools
                 ZoneProtection.Forgive.Remove(_cInfo.entityId);
                 ZoneProtection.Victim.Remove(_cInfo.entityId);
             }
-            if (FlightCheck.Flag.Contains(_cInfo.entityId))
+            if (FlightCheck.Flag.ContainsKey(_cInfo.entityId))
             {
                 FlightCheck.Flag.Remove(_cInfo.entityId);
             }
@@ -197,15 +221,11 @@ namespace ServerTools
             {
                 FriendTeleport.Dict1.Remove(_cInfo.entityId);
             }
-            if (ReservedSlots.Session.ContainsKey(_cInfo.playerId))
-            {
-                ReservedSlots.Session.Remove(_cInfo.playerId);
-            }
             if (Travel.Flag.Contains(_cInfo.entityId))
             {
                 Travel.Flag.Remove(_cInfo.entityId);
             }
-            if (UndergroundCheck.Flag.Contains(_cInfo.entityId))
+            if (UndergroundCheck.Flag.ContainsKey(_cInfo.entityId))
             {
                 UndergroundCheck.Flag.Remove(_cInfo.entityId);
             }
@@ -213,14 +233,30 @@ namespace ServerTools
             {
                 UndergroundCheck.uLastPositionXZ.Remove(_cInfo.entityId);
             }
+            DateTime _time;
+            if (Players.Session.TryGetValue(_cInfo.playerId, out _time))
+            {
+                TimeSpan varTime = DateTime.Now - _time;
+                double fractionalMinutes = varTime.TotalMinutes;
+                int _timepassed = (int)fractionalMinutes;
+                if (_timepassed > 60)
+                {
+                    int _hours = _timepassed / 60 * 10;
+                    int _oldCoin = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoin + _hours;
+                }
+                int _oldSession = PersistentContainer.Instance.Players[_cInfo.playerId, false].SessionTime;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].SessionTime = _oldSession + _timepassed;
+            }
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            int _zCount = XUiM_Player.GetZombieKills(_player);
-            int _deathCount = XUiM_Player.GetDeaths(_player);
-            int _killCount = XUiM_Player.GetPlayerKills(_player);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = _zCount;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = _deathCount;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = _killCount;
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = XUiM_Player.GetZombieKills(_player);
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = XUiM_Player.GetDeaths(_player);
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = XUiM_Player.GetPlayerKills(_player);
             PersistentContainer.Instance.Save();
+            if (Players.Session.ContainsKey(_cInfo.playerId))
+            {
+                Players.Session.Remove(_cInfo.playerId);
+            }
         }
     }
 }

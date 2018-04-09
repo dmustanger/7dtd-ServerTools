@@ -11,7 +11,7 @@ namespace ServerTools
         private const string file = "StartingItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         public static Dictionary<string, int[]> startItemList = new Dictionary<string, int[]>();
-        public static List<string> Received = new List<string>();
+        public static List<string> Que = new List<string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
 
@@ -165,52 +165,20 @@ namespace ServerTools
 
         public static void StartingItemCheck(ClientInfo _cInfo)
         {
-            if (startItemList != null)
+            if (startItemList.Count > 0)
             {
-                World world = GameManager.Instance.World;
-                foreach (KeyValuePair<string, int[]> kvp in startItemList)
+                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                if (p == null)
                 {
-                    ItemValue itemValue;
-                    var itemId = 4096;
-                    int _itemId;
-                    if (int.TryParse(kvp.Key, out _itemId))
-                    {
-                        int calc = (_itemId + 4096);
-                        itemId = calc;
-                        itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, kvp.Value[1], kvp.Value[1], true);
-                    }
-                    else
-                    {
-                        if (!ItemClass.ItemNames.Contains(kvp.Key))
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0} for Starting_Items", kvp.Key));
-                        }
-
-                        itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], true);
-                    }
-
-                    if (Equals(itemValue, ItemValue.None))
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0} for Starting_Items", kvp.Key));
-                    }
-                    var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                    {
-                        entityClass = EntityClass.FromString("item"),
-                        id = EntityFactory.nextEntityID++,
-                        itemStack = new ItemStack(itemValue, kvp.Value[0]),
-                        pos = world.Players.dict[_cInfo.entityId].position,
-                        rot = new Vector3(20f, 0f, 20f),
-                        lifetime = 60f,
-                        belongsPlayerId = _cInfo.entityId
-                    });
-                    world.SpawnEntityInWorld(entityItem);
-                    _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
-                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                    Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
+                    Exec(_cInfo);
                 }
-                Received.Add(_cInfo.playerId);
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = true;
-                PersistentContainer.Instance.Save();
+                else
+                {
+                    if (!p.StartingItems)
+                    {
+                        Exec(_cInfo);
+                    }
+                }
             }
             else
             {
@@ -218,24 +186,51 @@ namespace ServerTools
             }
         }
 
-        public static void BuildList()
+        public static void Exec(ClientInfo _cInfo)
         {
-            if (startItemList.Count > 0)
+            World world = GameManager.Instance.World;
+            foreach (KeyValuePair<string, int[]> kvp in startItemList)
             {
-                List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
-                for (int i = 0; i < playerlist.Count; i++)
+                ItemValue itemValue;
+                var itemId = 4096;
+                int _itemId;
+                if (int.TryParse(kvp.Key, out _itemId))
                 {
-                    string _steamId = playerlist[i];
-                    Player p = PersistentContainer.Instance.Players[_steamId, false];
-                    if (p != null)
-                    {
-                        if (p.StartingItems)
-                        {
-                            Received.Add(_steamId);
-                        }
-                    }
+                    int calc = (_itemId + 4096);
+                    itemId = calc;
+                    itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, kvp.Value[1], kvp.Value[1], true);
                 }
+                else
+                {
+                    if (!ItemClass.ItemNames.Contains(kvp.Key))
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0} for Starting_Items", kvp.Key));
+                    }
+
+                    itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], true);
+                }
+
+                if (Equals(itemValue, ItemValue.None))
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0} for Starting_Items", kvp.Key));
+                }
+                var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                {
+                    entityClass = EntityClass.FromString("item"),
+                    id = EntityFactory.nextEntityID++,
+                    itemStack = new ItemStack(itemValue, kvp.Value[0]),
+                    pos = world.Players.dict[_cInfo.entityId].position,
+                    rot = new Vector3(20f, 0f, 20f),
+                    lifetime = 60f,
+                    belongsPlayerId = _cInfo.entityId
+                });
+                world.SpawnEntityInWorld(entityItem);
+                _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
+                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+                Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
             }
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = true;
+            PersistentContainer.Instance.Save();
         }
     }
 }
