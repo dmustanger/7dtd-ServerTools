@@ -203,20 +203,19 @@ namespace ServerTools
                         else
                         {
                             Jailed.Remove(_PlayertoUnJail.playerId);
+                            PersistentContainer.Instance.Players[_PlayertoUnJail.playerId, true].JailTime = 0;
+                            PersistentContainer.Instance.Save();
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_PlayertoUnJail.entityId];
                             EntityBedrollPositionList _position = _player.SpawnPoints;
-                            Jailed.Remove(_cInfo.playerId);
                             if (_position.Count > 0)
                             {
-                                _PlayertoUnJail.SendPackage(new NetPackageTeleportPlayer(new Vector3(_position[0].x, -1, _position[0].z), false));
+                                _PlayertoUnJail.SendPackage(new NetPackageTeleportPlayer(new Vector3(_position[0].x, _position[0].y + 1, _position[0].z), false));
                             }
                             else
                             {
                                 Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                _PlayertoUnJail.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, -1, _pos[0].z), false));
+                                _PlayertoUnJail.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), false));
                             }
-                            PersistentContainer.Instance.Players[_PlayertoUnJail.playerId, true].JailTime = 0;
-                            PersistentContainer.Instance.Save();
                             string _phrase501;
                             if (!Phrases.Dict.TryGetValue(501, out _phrase501))
                             {
@@ -300,12 +299,12 @@ namespace ServerTools
                                 EntityBedrollPositionList _position = _player.SpawnPoints;
                                 if (_position.Count > 0)
                                 {
-                                    _cInfoKiller.SendPackage(new NetPackageTeleportPlayer(new Vector3(_position[0].x, -1, _position[0].z), false));
+                                    _cInfoKiller.SendPackage(new NetPackageTeleportPlayer(new Vector3(_position[0].x, _position[0].y + 1, _position[0].z), false));
                                 }
                                 else
                                 {
                                     Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                    _cInfoKiller.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, -1, _pos[0].z), false));
+                                    _cInfoKiller.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), false));
                                 }
                             }
                             else
@@ -349,15 +348,17 @@ namespace ServerTools
                                 if (_player.IsSpawned())
                                 {
                                     Jailed.Remove(_id);
+                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].JailTime = 0;
+                                    PersistentContainer.Instance.Save();
                                     EntityBedrollPositionList _position = _player.SpawnPoints;
                                     if (_position.Count > 0)
                                     {
-                                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_position[0].x, _position[0].y, _position[0].z), false));
+                                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_position[0].x, _position[0].y + 1, _position[0].z), false));
                                     }
                                     else
                                     {
                                         Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, _pos[0].y, _pos[0].z), false));
+                                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), false));
                                     }
                                     string _phrase501;
                                     if (!Phrases.Dict.TryGetValue(501, out _phrase501))
@@ -366,8 +367,6 @@ namespace ServerTools
                                     }
                                     _phrase501 = _phrase501.Replace("{PlayerName}", _cInfo.playerName);
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase501, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].JailTime = 0;
-                                    PersistentContainer.Instance.Save();
                                 }
                             }
                             else

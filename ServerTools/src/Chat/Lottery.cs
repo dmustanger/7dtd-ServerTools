@@ -18,11 +18,12 @@ namespace ServerTools
                 string _phrase536;
                 if (!Phrases.Dict.TryGetValue(536, out _phrase536))
                 {
-                    _phrase536 = "{PlayerName} a lottery is open for {Value} {CoinName}. Enter it by typing /lotto enter.";
+                    _phrase536 = "{PlayerName} a lottery is open for {Value} {CoinName}. Minimum buy in is {BuyIn}. Enter it by typing /lotto enter.";
                 }
                 _phrase536 = _phrase536.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase536 = _phrase536.Replace("{Value}", _winnings.ToString());
                 _phrase536 = _phrase536.Replace("{CoinName}", Wallet.Coin_Name);
+                _phrase536 = _phrase536.Replace("{BuyIn}", Lotto[0].ToString());
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase536), Config.Server_Response_Name, false, "ServerTools", false));
             }
             else
@@ -43,15 +44,16 @@ namespace ServerTools
             {
                 if (OpenLotto)
                 {
-                    int _winnings = Lotto[0];
+                    int _winnings = Lotto[0] * LottoEntries.Count;
                     string _phrase536;
                     if (!Phrases.Dict.TryGetValue(536, out _phrase536))
                     {
-                        _phrase536 = "{PlayerName} a lottery is open for {Value} {CoinName} to enter. Enter it by typing /lotto enter.";
+                        _phrase536 = "{PlayerName} a lottery is open for {Value} {CoinName}. Minimum buy in is {BuyIn}. Enter it by typing /lotto enter.";
                     }
                     _phrase536 = _phrase536.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase536 = _phrase536.Replace("{Value}", _winnings.ToString());
                     _phrase536 = _phrase536.Replace("{CoinName}", Wallet.Coin_Name);
+                    _phrase536 = _phrase536.Replace("{BuyIn}", Lotto[0].ToString());
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase536), Config.Server_Response_Name, false, "ServerTools", false));
                 }
                 else

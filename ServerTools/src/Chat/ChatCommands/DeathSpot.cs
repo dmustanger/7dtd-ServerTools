@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace ServerTools
@@ -8,31 +7,6 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int Delay_Between_Uses = 120;
-        public static Dictionary<int, DateTime> Died = new Dictionary<int, DateTime>();
-        public static Dictionary<int, Vector3> Position = new Dictionary<int, Vector3>();
-        public static List<int> Flag = new List<int>();
-
-        public static void Check()
-        {
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-            for (int i = 0; i < _cInfoList.Count; i++)
-            {
-                ClientInfo _cInfo = _cInfoList[i];
-                if (!Flag.Contains(_cInfo.entityId))
-                {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    if (_player.IsDead())
-                    {
-                        Vector3 _pos = _player.position;
-                        Died.Remove(_cInfo.entityId);
-                        Died.Add(_cInfo.entityId, DateTime.Now);
-                        Position.Remove(_cInfo.entityId);
-                        Position.Add(_cInfo.entityId, _pos);
-                        Flag.Add(_cInfo.entityId);
-                    }
-                }
-            }
-        }
 
         public static void DeathDelay(ClientInfo _cInfo, bool _announce, string _playerName)
         {
@@ -123,10 +97,10 @@ namespace ServerTools
 
         private static void TeleportPlayer(ClientInfo _cInfo, bool _announce)
         {
-            if (Died.ContainsKey(_cInfo.entityId))
+            if (Players.DeathTime.ContainsKey(_cInfo.entityId))
             {
                 DateTime _time;
-                if (Died.TryGetValue(_cInfo.entityId, out _time))
+                if (Players.DeathTime.TryGetValue(_cInfo.entityId, out _time))
                 {
                     TimeSpan varTime = DateTime.Now - _time;
                     double fractionalMinutes = varTime.TotalMinutes;
@@ -147,11 +121,10 @@ namespace ServerTools
                     if (_timepassed < 2)
                     {
                         Vector3 _value;
-                        if (Position.TryGetValue(_cInfo.entityId, out _value))
+                        if (Players.LastDeathPos.TryGetValue(_cInfo.entityId, out _value))
                         {
                             _cInfo.SendPackage(new NetPackageTeleportPlayer(_value, false));
-                            Died.Remove(_cInfo.entityId);
-                            Position.Remove(_cInfo.entityId);
+                            Players.DeathTime.Remove(_cInfo.entityId);
                             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastDied = DateTime.Now;
                             PersistentContainer.Instance.Save();
                             string _phrase736;
@@ -159,6 +132,7 @@ namespace ServerTools
                             {
                                 _phrase736 = "{PlayerName} teleported you to your last death position. You can use this again in {DelayBetweenUses} minutes.";
                             }
+                            _phrase736 = _phrase736.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase736 = _phrase736.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                             if (_announce)
                             {
@@ -172,15 +146,14 @@ namespace ServerTools
                     }
                     else
                     {
-                        Died.Remove(_cInfo.entityId);
-                        Position.Remove(_cInfo.entityId);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your last death occurred too long ago. Command unavailable.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                        Players.DeathTime.Remove(_cInfo.entityId);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your last death occurred too long ago. Command unavailable.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}No death position recorded.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have no death position. Die first.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
     }

@@ -12,9 +12,9 @@ namespace ServerTools
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             Vector3 _position = _player.GetPosition();
-            string x = _position.x.ToString();
-            string y = _position.y.ToString();
-            string z = _position.z.ToString();
+            int x = (int)_position.x;
+            int y = (int)_position.y;
+            int z = (int)_position.z;
             string _sposition = x + "," + y + "," + z;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition = _sposition;
             PersistentContainer.Instance.Save();
@@ -26,7 +26,7 @@ namespace ServerTools
             _phrase10 = _phrase10.Replace("{PlayerName}", _cInfo.playerName);
             if (_announce)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase10, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", true);
             }
             else
             {
@@ -47,7 +47,7 @@ namespace ServerTools
                 _phrase11 = _phrase11.Replace("{PlayerName}", _cInfo.playerName);
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase11, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase11, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", true);
                 }
                 else
                 {
@@ -99,7 +99,7 @@ namespace ServerTools
                                         _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
                                         if (_announce)
                                         {
-                                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase13, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
+                                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase13, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", true);
                                         }
                                         else
                                         {
@@ -128,7 +128,7 @@ namespace ServerTools
                                 _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
                                 if (_announce)
                                 {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase13, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
+                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase13, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", true);
                                 }
                                 else
                                 {
@@ -161,7 +161,7 @@ namespace ServerTools
             {
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} deleted home.[-]", Config.Chat_Response_Color, _playerName), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} deleted home.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", true);
                 }
                 else
                 {
@@ -174,7 +174,7 @@ namespace ServerTools
             {
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} you have no home to delete.[-]", Config.Chat_Response_Color, _playerName), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} you have no home to delete.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", true);
                 }
                 else
                 {
@@ -187,9 +187,9 @@ namespace ServerTools
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             Vector3 _position = _player.GetPosition();
-            string x = _position.x.ToString();
-            string y = _position.y.ToString();
-            string z = _position.z.ToString();
+            int x = (int)_position.x;
+            int y = (int)_position.y;
+            int z = (int)_position.z;
             string _sposition = x + "," + y + "," + z;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition2 = _sposition;
             PersistentContainer.Instance.Save();
@@ -201,7 +201,7 @@ namespace ServerTools
             _phrase607 = _phrase607.Replace("{PlayerName}", _cInfo.playerName);
             if (_announce)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase607, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", true);
             }
             else
             {
@@ -222,7 +222,7 @@ namespace ServerTools
                 _phrase608 = _phrase608.Replace("{PlayerName}", _cInfo.playerName);
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase608, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase608, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", true);
                 }
                 else
                 {
@@ -274,7 +274,7 @@ namespace ServerTools
                                         _phrase609 = _phrase609.Replace("{TimeRemaining}", _timeleft.ToString());
                                         if (_announce)
                                         {
-                                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase609, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
+                                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase609, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", true);
                                         }
                                         else
                                         {
@@ -303,7 +303,7 @@ namespace ServerTools
                                 _phrase609 = _phrase609.Replace("{TimeRemaining}", _timeleft.ToString());
                                 if (_announce)
                                 {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase609, Config.Chat_Response_Color), _playerName, false, "ServerTools", true);
+                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase609, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", true);
                                 }
                                 else
                                 {
@@ -336,7 +336,7 @@ namespace ServerTools
             {
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} deleted home2.[-]", Config.Chat_Response_Color, _playerName), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} deleted home2.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", true);
                 }
                 else
                 {
@@ -349,7 +349,7 @@ namespace ServerTools
             {
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} you have no home2 to delete.[-]", Config.Chat_Response_Color, _playerName), _playerName, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} you have no home2 to delete.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", true);
                 }
                 else
                 {
