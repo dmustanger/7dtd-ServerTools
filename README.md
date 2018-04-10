@@ -68,11 +68,9 @@ Day7 alerts: automatically receive in game alerts to the upcoming bloodmoon. Can
 <br>
 Zone protection: set an area as a protected space. PvP inside is dealt with automatically. Alert upon entry/exit<br>
 <br>
-Weather vote: vote to change the weather<br>
-<br>
 Teleport to friend: request to teleport to a friend. They must accept the request in a time limit<br>
 <br>
-Shop and wallet: make a custom shop list for players to buy from. Wallet is calculated automatically. Can only shop in trader zone<br>
+Shop and wallet: make a custom shop list for players to buy from. Wallet is calculated automatically. Can shop in trader zone or anywhere optionally<br>
 <br>
 Vote rewards: for players voting your server at https://7daystodie-servers.com website<br>
 <br>
