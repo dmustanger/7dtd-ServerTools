@@ -516,13 +516,15 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("<Tool Name=\"Lottery\" Enable =\"False\" />");
+                sw.WriteLine("<Tool Name=\"Lottery\" Enable =\"False\" Bonus =\"25\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
+                sw.WriteLine("Set a numeric value for Bonus");
                 sw.WriteLine();
                 sw.WriteLine("Players can start a new lottery by typing /lotto #. They can check the current lotto with /lotto.");
                 sw.WriteLine("To enter a lotto, players must match what the first player opened the lotto value as.");
                 sw.WriteLine("When an hour has passed or ten players have entered the lotto, it will draw the winner.");
+                sw.WriteLine("If the lotto is full, the winner also gets the Bonus.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();

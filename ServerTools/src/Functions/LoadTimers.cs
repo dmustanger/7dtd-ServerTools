@@ -10,7 +10,7 @@ namespace ServerTools
             Shutdown_Delay = 60, Infoticker_Delay = 60, Restart_Vote_Delay = 30, _sSC = 0, _sSCD = 0,
             Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0;
         private static int timer1SecondInstanceCount, _wV, _wNV, _pSC, _b, _pL, _mC, _wSD, _iT, _eU,
-            _rS, _rV, _rNV, _eC, _wL, _dS, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l; 
+            _rS, _rV, _rNV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l; 
         private static System.Timers.Timer t1 = new System.Timers.Timer();
 
         public static void TimerStart()
@@ -442,19 +442,6 @@ namespace ServerTools
             else
             {
                 _h = 0;
-            }
-            if (DeathSpot.IsEnabled)
-            {
-                _dS++;
-                if (_dS >= 5)
-                {
-                    _dS = 0;
-                    DeathSpot.Check();
-                }
-            }
-            else
-            {
-                _dS = 0;
             }
             if (EntityCleanup.ItemIsEnabled || EntityCleanup.BlockIsEnabled || ZoneProtection.No_Zombie)
             {

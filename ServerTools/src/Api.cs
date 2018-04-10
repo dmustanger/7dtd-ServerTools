@@ -120,10 +120,6 @@ namespace ServerTools
                         StartingItems.Que.Add(_cInfo.playerId);
                     }
                 }
-                if (Bounties.IsEnabled || Players.Kill_Notice)
-                {
-                    Players.Kills[_cInfo.entityId] = 0;
-                }
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].SessionTime = 0;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = 0;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = 0;
@@ -137,10 +133,6 @@ namespace ServerTools
                 int _zCount = XUiM_Player.GetZombieKills(_player);
                 int _deathCount = XUiM_Player.GetDeaths(_player);
                 int _killCount = XUiM_Player.GetPlayerKills(_player);
-                if (Bounties.IsEnabled || Players.Kill_Notice)
-                {
-                    Players.Kills[_cInfo.entityId] = _killCount;
-                }
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = _zCount;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = _deathCount;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = _killCount;
@@ -170,6 +162,10 @@ namespace ServerTools
                     StartingItems.Que.Remove(_cInfo.playerId);
                 }
             }
+            if (Players.Dead.Contains(_cInfo.entityId))
+            {
+                Players.Dead.Remove(_cInfo.entityId);
+            }
         }
 
         public override bool ChatMessage(ClientInfo _cInfo, EnumGameMessages _type, string _message, string _playerName, bool _localizeMain, string _secondaryName, bool _localizeSecondary)
@@ -187,12 +183,6 @@ namespace ServerTools
             {
                 FriendTeleport.Dict.Remove(_cInfo.entityId);
                 FriendTeleport.Dict1.Remove(_cInfo.entityId);
-            }
-            if (DeathSpot.Died.ContainsKey(_cInfo.entityId))
-            {
-                DeathSpot.Died.Remove(_cInfo.entityId);
-                DeathSpot.Position.Remove(_cInfo.entityId);
-                DeathSpot.Flag.Remove(_cInfo.entityId);
             }
             if (ZoneProtection.PvEFlag.ContainsKey(_cInfo.entityId))
             {

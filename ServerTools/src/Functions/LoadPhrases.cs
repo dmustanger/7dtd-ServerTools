@@ -94,7 +94,7 @@ namespace ServerTools
                 sw.WriteLine("<ServerTools>");
                 sw.WriteLine("    <Phrases>");
                 sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- *********************** V.9.0 ************************** -->");
+                sw.WriteLine("        <!-- *********************** V.9.5 ************************** -->");
                 sw.WriteLine("        <!-- ******* If your version is incorrect, shutdown, ******** -->");
                 sw.WriteLine("        <!-- ************* delete this file, restart **************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -564,13 +564,13 @@ namespace ServerTools
                 string _phrase502;
                 if (!Dict.TryGetValue(502, out _phrase502))
                 {
-                    _phrase502 = "{AdminPlayerName} you have set the jail position as {JailPosition}.";
+                    _phrase502 = "{PlayerName} you have set the jail position as {JailPosition}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"502\" Phrase=\"{0}\" />", _phrase502));
                 string _phrase503;
                 if (!Dict.TryGetValue(503, out _phrase503))
                 {
-                    _phrase503 = "{AdminPlayerName} the jail position has not been set.";
+                    _phrase503 = "{PlayerName} the jail position has not been set.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"503\" Phrase=\"{0}\" />", _phrase503));
                 string _phrase504;
@@ -654,7 +654,7 @@ namespace ServerTools
                 string _phrase536;
                 if (!Dict.TryGetValue(536, out _phrase536))
                 {
-                    _phrase536 = "{PlayerName} a lottery is open for {Value} {CoinName} to enter. Enter it by typing /lotto enter.";
+                    _phrase536 = "{PlayerName} a lottery is open for {Value} {CoinName}. Minimum buy in is {BuyIn}. Enter it by typing /lotto enter.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"536\" Phrase=\"{0}\" />", _phrase536));
                 string _phrase537;
@@ -1359,19 +1359,19 @@ namespace ServerTools
                 string _phrase910;
                 if (!Dict.TryGetValue(910, out _phrase910))
                 {
-                    _phrase910 = "Type /bounty # to add a bounty against that player.";
+                    _phrase910 = "Type /bounty Id# Value or /bounty Id# for the minimum bounty against this player.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"910\" Phrase=\"{0}\" />", _phrase910));
                 string _phrase911;
                 if (!Dict.TryGetValue(911, out _phrase911))
                 {
-                    _phrase911 = "{PlayerName}, # {EntityId}. Current bounty is at {CurrentBounty}. Bounty costs {Cost} {CoinName}.";
+                    _phrase911 = "{PlayerName}, # {EntityId}. Current bounty: {CurrentBounty}. Minimum buy in {Cost} {CoinName}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"911\" Phrase=\"{0}\" />", _phrase911));
                 string _phrase912;
                 if (!Dict.TryGetValue(912, out _phrase912))
                 {
-                    _phrase912 = "{PlayerName} is a bounty hunter! {Victim} was taken out.";
+                    _phrase912 = "{PlayerName} is a bounty hunter! {Victim} was snuffed out.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"912\" Phrase=\"{0}\" />", _phrase912));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1380,7 +1380,7 @@ namespace ServerTools
                 string _phrase915;
                 if (!Dict.TryGetValue(915, out _phrase915))
                 {
-                    _phrase915 = "Type /bounty # to add a bounty against that player.";
+                    _phrase915 = "{PlayerName} has killed {Victim} with {Item}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"915\" Phrase=\"{0}\" />", _phrase915));
                 sw.WriteLine("    </Phrases>");

@@ -280,6 +280,14 @@ namespace ServerTools
                             {
                                 Reward_Count = dict.Count;
                             }
+                            string _phrase701;
+                            if (!Phrases.Dict.TryGetValue(701, out _phrase701))
+                            {
+                                _phrase701 = "Thank you for your vote {PlayerName}. You can vote and receive another reward in {VoteDelay} hours.";
+                            }
+                            _phrase701 = _phrase701.Replace("{PlayerName}", _cInfo.playerName);
+                            _phrase701 = _phrase701.Replace("{VoteDelay}", Delay_Between_Uses.ToString());
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase701), Config.Server_Response_Name, false, "ServerTools", false));
                             ItemOrBlock(_cInfo);
                         }
                         else
@@ -311,14 +319,6 @@ namespace ServerTools
 
         private static void ItemOrBlock(ClientInfo _cInfo)
         {
-            string _phrase701;
-            if (!Phrases.Dict.TryGetValue(701, out _phrase701))
-            {
-                _phrase701 = "Thank you for your vote {PlayerName}. You can vote and receive another reward in {VoteDelay} hours.";
-            }
-            _phrase701 = _phrase701.Replace("{PlayerName}", _cInfo.playerName);
-            _phrase701 = _phrase701.Replace("{VoteDelay}", Delay_Between_Uses.ToString());
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase701), Config.Server_Response_Name, false, "ServerTools", false));
             string _item = list.RandomObject();
             int[] _values;
             if (dict.TryGetValue(_item, out _values))
@@ -392,7 +392,7 @@ namespace ServerTools
                         _counter = 0;
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now;
                         PersistentContainer.Instance.Save();
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward items sent to your inventory. If it is full, check the ground.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward items were sent to your inventory. If it is full, check the ground.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                         Que();
                     }
                 }
@@ -442,7 +442,7 @@ namespace ServerTools
         {
             if (que.Count > 0)
             {
-                ClientInfo _cInfo = que.First();
+                ClientInfo _cInfo = que[0];
                 Execute(_cInfo);
                 que.RemoveAt(0);
             }
