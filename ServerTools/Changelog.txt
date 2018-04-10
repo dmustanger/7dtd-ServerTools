@@ -1,5 +1,18 @@
 ﻿CHANGELOG
 
+9.5
+Added to lotto response when a lotto is open. It will say how much the lotto is worth based on player entries
+Added option to Lottery named Bonus. If a lotto is full, a bonus is given to the winner
+Changed Kill_Notice and Bounty system to prevent missing the events
+Changed tool Died to grab the death location differently. Should improve the accuracy of the tool and prevent issues
+Changed Bounties so players can add the minimum or a custom value. Example: /bounty 171 to add the min or /bounty 171 100 to add 100 coin
+Fixed two phrases
+Fixed /home and /home2 sending players to strange locations. Players must reset their home locations to correct the issue
+Fixed prison release teleporting all over the place
+Fixed phrase file version note to 9.5
+Fixed Lobby return
+Fixed Voting reward response showing multiple times
+
 9.4
 Added tool Kill_Notice. A chat message is shown if a player kills another player and the item name they used to do it
 Added tool Lobby. Players can type /lobby to go to a set location and return by typing /lobby return if Return is set to true. They must be within
