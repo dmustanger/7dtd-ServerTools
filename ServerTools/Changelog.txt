@@ -1,5 +1,18 @@
 ﻿CHANGELOG
 
+9.6
+Changed Entity_Underground. The entire tool is merged into Entity_Cleanup
+Added falling block removal to Entity_Underground, all other entities that are not players are teleported to the surface
+Added Bounty log. If a player received a bounty, it is logged to a file in Bounties folder
+Added option Bikes to Entity_Cleanup. If a bike is found, it will be removed
+Fixed Shop buy returning not in trade area with Shop_Anywhere turned on
+Fixed Auto_Shutdown miscalculating the bloodmoon time in the AM
+Fixed custom bounties being added if below the minimum. It will change it to the minimum
+Fixed clan commands returning without the Chat_Response_Color
+Fixed two Auction responses and added to the existing responses
+Fixed and improved Bounties to help prevent exploits
+Fixed error on player disconnect if they joined and left before loading
+
 9.5
 Added to lotto response when a lotto is open. It will say how much the lotto is worth based on player entries
 Added option to Lottery named Bonus. If a lotto is full, a bonus is given to the winner

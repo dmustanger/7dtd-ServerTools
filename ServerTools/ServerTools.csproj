@@ -111,7 +111,6 @@
     <Compile Include="src\ConsoleCommands\Underground.cs" />
     <Compile Include="src\ConsoleCommands\WalletCoins.cs" />
     <Compile Include="src\CountryCheck\CountryCheck.cs" />
-    <Compile Include="src\EntityUnderground\EntityUnderground.cs" />
     <Compile Include="src\EntityCleanup\EntityCleanup.cs" />
     <Compile Include="src\Functions\LoadConfig.cs" />
     <Compile Include="src\Functions\LoadMods.cs" />
