@@ -417,57 +417,39 @@ namespace ServerTools
         public static void ShopPurchase(ClientInfo _cInfo, string _itemName, int _count, int _quality, int _price, string _playerName, int currentCoins, Player p)
         {
             World world = GameManager.Instance.World;
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            int x = (int)_player.position.x;
-            int y = (int)_player.position.y;
-            int z = (int)_player.position.z;
-            Vector3i playerPos = new Vector3i(x, y, z);
-            if (world.IsWithinTraderArea(playerPos))
+            ItemValue _itemValue = ItemClass.GetItem(_itemName, true);
+            if (_itemValue.type != ItemValue.None.type)
             {
-                ItemValue _itemValue = ItemClass.GetItem(_itemName, true);
-                if (_itemValue.type != ItemValue.None.type)
+                ItemValue itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, true);
+                var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                 {
-                    ItemValue itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, true);
-                    var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                    {
-                        entityClass = EntityClass.FromString("item"),
-                        id = EntityFactory.nextEntityID++,
-                        itemStack = new ItemStack(itemValue, _count),
-                        pos = world.Players.dict[_cInfo.entityId].position,
-                        rot = new Vector3(20f, 0f, 20f),
-                        lifetime = 60f,
-                        belongsPlayerId = _cInfo.entityId
-                    });
-                    world.SpawnEntityInWorld(entityItem);
-                    _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
-                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                    SdtdConsole.Instance.Output(string.Format("Sold {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was purchased through the shop. If your bag is full, check the ground.[-]", Config.Chat_Response_Color, _count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), Config.Server_Response_Name, false, "ServerTools", false));
-                    int newCoins = p.PlayerSpentCoins - _price;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = newCoins;
-                    PersistentContainer.Instance.Save();
-                }
-                else
-                {
-                    string _phrase623;
-                    if (!Phrases.Dict.TryGetValue(623, out _phrase623))
-                    {
-                        _phrase623 = "{PlayerName} there was an error in the shop list. Unable to buy this item. Please alert an administrator.";
-                        Log.Out(string.Format("Player {0} tried to buy item {1} from the shop. The item name in the Market.xml does not match an existing item. Check your Item.xml for the correct item name. It is case sensitive.", _cInfo.playerName, _itemName));
-                    }
-                    _phrase623 = _phrase623.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase623), Config.Server_Response_Name, false, "ServerTools", false));
-                }
+                    entityClass = EntityClass.FromString("item"),
+                    id = EntityFactory.nextEntityID++,
+                    itemStack = new ItemStack(itemValue, _count),
+                    pos = world.Players.dict[_cInfo.entityId].position,
+                    rot = new Vector3(20f, 0f, 20f),
+                    lifetime = 60f,
+                    belongsPlayerId = _cInfo.entityId
+                });
+                world.SpawnEntityInWorld(entityItem);
+                _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
+                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+                SdtdConsole.Instance.Output(string.Format("Sold {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was purchased through the shop. If your bag is full, check the ground.[-]", Config.Chat_Response_Color, _count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), Config.Server_Response_Name, false, "ServerTools", false));
+                int newCoins = p.PlayerSpentCoins - _price;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = newCoins;
+                PersistentContainer.Instance.Save();
             }
             else
             {
-                string _phrase624;
-                if (!Phrases.Dict.TryGetValue(624, out _phrase624))
+                string _phrase623;
+                if (!Phrases.Dict.TryGetValue(623, out _phrase623))
                 {
-                    _phrase624 = "{PlayerName} you are not inside a trade area. Find a trader and use /buy again.";
+                    _phrase623 = "{PlayerName} there was an error in the shop list. Unable to buy this item. Please alert an administrator.";
+                    Log.Out(string.Format("Player {0} tried to buy item {1} from the shop. The item name in the Market.xml does not match an existing item. Check your Item.xml for the correct item name. It is case sensitive.", _cInfo.playerName, _itemName));
                 }
-                _phrase624 = _phrase624.Replace("{PlayerName}", _playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase624), Config.Server_Response_Name, false, "ServerTools", false));
+                _phrase623 = _phrase623.Replace("{PlayerName}", _playerName);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase623), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
     }

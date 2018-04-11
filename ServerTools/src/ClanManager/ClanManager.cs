@@ -602,7 +602,7 @@ namespace ServerTools
             string _commands = string.Format("{0}Clan commands are:", Config.Chat_Response_Color); ;
             if (!p.IsClanOwner && !p.IsClanOfficer && p.ClanName == null && p.InvitedToClan == null)
             {
-                _commands = string.Format("{0} /clanadd", _commands);
+                _commands = string.Format("{0} /clanadd {ClanName}", _commands);
             }
             if (p.IsClanOwner)
             {
@@ -621,15 +621,16 @@ namespace ServerTools
                 _commands = string.Format("{0} /clanleave", _commands);
             }
             _commands = string.Format("{0}[-]", _commands);
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}", _commands), Config.Server_Response_Name, false, "ServerTools", false));
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}", Config.Chat_Response_Color, _commands), Config.Server_Response_Name, false, "ServerTools", false));
         }
 
         public static void Clan(ClientInfo _cInfo, string _message)
         {
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
             List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-            foreach (ClientInfo _cInfo1 in _cInfoList)
+            for (int i = 0; i < _cInfoList.Count; i++)
             {
+                ClientInfo _cInfo1 = _cInfoList[i];
                 Player p1 = PersistentContainer.Instance.Players[_cInfo1.playerId, false];
                 if (p.ClanName == p1.ClanName)
                 {

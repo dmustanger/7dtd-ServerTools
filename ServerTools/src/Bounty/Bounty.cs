@@ -59,6 +59,11 @@ namespace ServerTools
                             if (p != null)
                             {
                                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
+                                int _minimum = _player.Level * Bounty;
+                                if (_cost < (_player.Level * Bounty))
+                                {
+                                    _cost = _minimum;
+                                }
                                 int spentCoins = p.PlayerSpentCoins;
                                 int currentCoins = 0;
                                 int gameMode = GameManager.Instance.World.GetGameMode();
