@@ -635,6 +635,10 @@ namespace ServerTools
                 if (p.ClanName == p1.ClanName)
                 {
                     _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Private_Chat_Color, _message), _cInfo.playerName, false, "", false));
+                    if (ChatLog.IsEnabled)
+                    {
+                        ChatLog.Log(_message, _cInfo.playerName);
+                    }
                 }
             }
         }

@@ -64,6 +64,7 @@ namespace ServerTools
             int.TryParse(_cords[0], out x);
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
+            Players.NoFlight.Add(_cInfo.entityId);
             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
             if (!Return)
             {
@@ -105,6 +106,7 @@ namespace ServerTools
                         int.TryParse(_oldCoords[0], out x);
                         int.TryParse(_oldCoords[1], out y);
                         int.TryParse(_oldCoords[2], out z);
+                        Players.NoFlight.Add(_cInfo.entityId);
                         _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].NewTeleSpawn = ("0, 0, 0");
                         PersistentContainer.Instance.Save();

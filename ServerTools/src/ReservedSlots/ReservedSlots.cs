@@ -172,13 +172,13 @@ namespace ServerTools
         public static void OpenSlot()
         {
             bool Kicked = false;
-            List<string> _sessionList = new List<string>(Players.Session.Keys);
+            List<int> _sessionList = new List<int>(Players.Session.Keys);
             for (int i = 0; i < _sessionList.Count; i++)
             {
                 if (!Kicked)
                 {
-                    string _player = _sessionList[i];
-                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_player);
+                    int _player = _sessionList[i];
+                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player);
                     if (_cInfo != null)
                     {
                         AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
@@ -187,7 +187,7 @@ namespace ServerTools
                             if (!Dict.ContainsKey(_cInfo.playerId))
                             {
                                 DateTime _dateTime;
-                                Players.Session.TryGetValue(_cInfo.playerId, out _dateTime);
+                                Players.Session.TryGetValue(_cInfo.entityId, out _dateTime);
                                 TimeSpan varTime = DateTime.Now - _dateTime;
                                 double fractionalMinutes = varTime.TotalMinutes;
                                 int _timepassed = (int)fractionalMinutes;
@@ -210,7 +210,7 @@ namespace ServerTools
                                 if (DateTime.Now > _dt)
                                 {
                                     DateTime _dateTime;
-                                    Players.Session.TryGetValue(_cInfo.playerId, out _dateTime);
+                                    Players.Session.TryGetValue(_cInfo.entityId, out _dateTime);
                                     TimeSpan varTime = DateTime.Now - _dateTime;
                                     double fractionalMinutes = varTime.TotalMinutes;
                                     int _timepassed = (int)fractionalMinutes;

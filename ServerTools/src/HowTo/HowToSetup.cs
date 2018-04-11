@@ -13,7 +13,7 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine("This was drafted for version 9.6");
+                sw.WriteLine("This was drafted for version 9.7");
                 sw.WriteLine();
                 sw.WriteLine("ServerTools was coded and tested under a Windows operating system. It should operate on other major O.S. but if you find bugs, report them to");
                 sw.WriteLine("https://github.com/dmustanger/7dtd-ServerTools/issues");
@@ -108,14 +108,14 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("<Tool Name=\"Auto_Shutdown\" Enable =\"False\" Countdown_Timer =\"5\" Delay_Before_Shutdown =\"60\" Days_Until_Horde =\"7\" />");
+                sw.WriteLine("<Tool Name=\"Auto_Shutdown\" Enable =\"False\" Countdown_Timer =\"5\" Time_Before_Shutdown =\"60\" Days_Until_Horde =\"7\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set a numeric value for Countdown_Timer");
                 sw.WriteLine("Set a numeric value for Delay_Before_Shutdown");
                 sw.WriteLine("Set a numeric value for Days_Until_Horde");
                 sw.WriteLine();
-                sw.WriteLine("Automatically begins the shutdown process for the server after the Delay_Before_Shutdown time runs out.");
+                sw.WriteLine("Automatically begins the shutdown process for the server after the Time_Before_Shutdown runs out.");
                 sw.WriteLine("Begins a warning of the coming shutdown with a timer based on the Countdown_Timer after the Delay_Before_Shutdown time has run out.");
                 sw.WriteLine("Saves the world at one minute remaining of the count down and gives the players a warning not to exchange items or build during the final minute.");                
                 sw.WriteLine("If the server is set as a service on the host hardware, it will automatically restart. ServerTools can not automatically restart a server.");
@@ -303,7 +303,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("If any of these are active, they are triggered every 30 seconds.");
                 sw.WriteLine("Items will automatically clean up too many items found in a pile in a area.");
-                sw.WriteLine("Blocks will automatically clean up too many falling blocks in a area.");
+                sw.WriteLine("Blocks will automatically clean up falling blocks.");
                 sw.WriteLine("Falling_Tree will automatically clean up a falling tree that gets stuck at 0 health and does not disappear.");
                 sw.WriteLine("Entity_Underground will automatically send entities to the surface except falling blocks are removed.");
                 sw.WriteLine("Bikes will automatically remove a bike if found in the world.");

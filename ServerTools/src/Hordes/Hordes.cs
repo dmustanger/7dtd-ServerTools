@@ -20,7 +20,7 @@ namespace ServerTools
                         Entity _entity = Entities[i];
                         if (_entity != null)
                         {
-                            if (!_entity.IsClientControlled() && !_entity.IsDead())
+                            if (!_entity.IsClientControlled())
                             {
                                 EntityType _type = _entity.entityType;
                                 if (_type == EntityType.Zombie)

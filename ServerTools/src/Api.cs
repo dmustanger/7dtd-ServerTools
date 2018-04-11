@@ -162,6 +162,10 @@ namespace ServerTools
                     StartingItems.StartingItemCheck(_cInfo);
                     StartingItems.Que.Remove(_cInfo.playerId);
                 }
+                if (Players.NoFlight.Contains(_cInfo.entityId))
+                {
+                    Players.NoFlight.Remove(_cInfo.entityId);
+                }
             }
             if (Players.Dead.Contains(_cInfo.entityId))
             {
@@ -225,7 +229,7 @@ namespace ServerTools
                 UndergroundCheck.uLastPositionXZ.Remove(_cInfo.entityId);
             }
             DateTime _time;
-            if (Players.Session.TryGetValue(_cInfo.playerId, out _time))
+            if (Players.Session.TryGetValue(_cInfo.entityId, out _time))
             {
                 TimeSpan varTime = DateTime.Now - _time;
                 double fractionalMinutes = varTime.TotalMinutes;
@@ -247,9 +251,9 @@ namespace ServerTools
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = XUiM_Player.GetPlayerKills(_player);
                 PersistentContainer.Instance.Save();
             }
-            if (Players.Session.ContainsKey(_cInfo.playerId))
+            if (Players.Session.ContainsKey(_cInfo.entityId))
             {
-                Players.Session.Remove(_cInfo.playerId);
+                Players.Session.Remove(_cInfo.entityId);
             }
         }
     }

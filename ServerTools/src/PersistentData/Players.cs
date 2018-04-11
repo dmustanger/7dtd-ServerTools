@@ -12,10 +12,11 @@ namespace ServerTools
         public static bool Kill_Notice = false;
         public Dictionary<string, Player> players = new Dictionary<string, Player>();
         public Dictionary<string, string> clans = new Dictionary<string, string>();
-        public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
+        public static Dictionary<int, DateTime> Session = new Dictionary<int, DateTime>();
         public static Dictionary<int, DateTime> DeathTime = new Dictionary<int, DateTime>();
         public static Dictionary<int, Vector3> LastDeathPos = new Dictionary<int, Vector3>();
         public static List<int> Dead = new List<int>();
+        public static List<int> NoFlight = new List<int>();
         private static Dictionary<int, string> Friends = new Dictionary<int, string>();
         private static string file = string.Format("Bounty_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string filepath = string.Format("{0}/Bounties/{1}", API.GamePath, file);
@@ -81,7 +82,7 @@ namespace ServerTools
 
         public static void SessionTime(ClientInfo _cInfo)
         {
-            Session[_cInfo.playerId] = DateTime.Now;
+            Session[_cInfo.entityId] = DateTime.Now;
         }
 
         public static void FriendList(ClientInfo _cInfo)
@@ -128,6 +129,7 @@ namespace ServerTools
                                 Entity _target = _player2.GetDamagedTarget();
                                 if (_target == _player)
                                 {
+                                    _player2.ClearDamagedTarget();
                                     ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
                                     ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForEntityId(_player2.entityId);
                                     if (_cInfo != null && _cInfo2 != null)
