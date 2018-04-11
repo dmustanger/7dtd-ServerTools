@@ -9,7 +9,7 @@ namespace ServerTools
             Delay_Between_World_Saves = 15, Stop_Server_Time = 1, _newCount = 0, Weather_Vote_Delay = 30,
             Shutdown_Delay = 60, Infoticker_Delay = 60, Restart_Vote_Delay = 30, _sSC = 0, _sSCD = 0,
             Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0;
-        private static int timer1SecondInstanceCount, _wV, _wNV, _pSC, _b, _pL, _mC, _wSD, _iT, _eU,
+        private static int timer1SecondInstanceCount, _wV, _wNV, _pSC, _b, _pL, _mC, _wSD, _iT,
             _rS, _rV, _rNV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l; 
         private static System.Timers.Timer t1 = new System.Timers.Timer();
 
@@ -164,9 +164,9 @@ namespace ServerTools
             {
                 Log.Out("Death spot enabled");
             }
-            if (EntityUnderground.IsEnabled)
+            if (EntityCleanup.Underground)
             {
-                Log.Out("Entity underground enabled");
+                Log.Out("Entity underground cleanup enabled");
             }
             if (EntityCleanup.FallingTreeEnabled)
             {
@@ -297,7 +297,10 @@ namespace ServerTools
         {
             if (FlightCheck.IsEnabled)
             {
-                FlightCheck.AutoFlightCheck();
+                if ((int)GameManager.Instance.fps.Counter > 5)
+                {
+                    FlightCheck.AutoFlightCheck();
+                }
             }
             if (HatchElevator.IsEnabled)
             {
@@ -305,7 +308,10 @@ namespace ServerTools
             }
             if (UndergroundCheck.IsEnabled)
             {
-                UndergroundCheck.AutoUndergroundCheck();
+                if ((int)GameManager.Instance.fps.Counter > 5)
+                {
+                    UndergroundCheck.AutoUndergroundCheck();
+                }
             }
             if (ZoneProtection.IsEnabled)
             {
@@ -443,7 +449,7 @@ namespace ServerTools
             {
                 _h = 0;
             }
-            if (EntityCleanup.ItemIsEnabled || EntityCleanup.BlockIsEnabled || ZoneProtection.No_Zombie)
+            if (EntityCleanup.ItemIsEnabled || EntityCleanup.BlockIsEnabled || ZoneProtection.No_Zombie || EntityCleanup.Underground)
             {
                 _eC++;
                 if (_eC >= 30)
@@ -507,19 +513,6 @@ namespace ServerTools
             else
             {
                 _pSC = 0;
-            }
-            if (EntityUnderground.IsEnabled)
-            {
-                _eU++;
-                if (_eU >= 10)
-                {
-                    _eU = 0;
-                    EntityUnderground.AutoEntityUnderground();
-                }
-            }
-            else
-            {
-                _eU = 0;
             }
             if (ReservedSlots.IsEnabled)
             {
@@ -642,7 +635,7 @@ namespace ServerTools
             {
                 _wSD = 0;
             }
-            if (AutoShutdown.IsEnabled)
+            if (AutoShutdown.IsEnabled && !AutoShutdown.Bloodmoon && !StopServer.stopServerCountingDown)
             {
                 _sD++;
                 if (_sD >= Shutdown_Delay * 60)

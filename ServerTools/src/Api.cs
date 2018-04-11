@@ -87,6 +87,7 @@ namespace ServerTools
                 LoginNotice.PlayerCheck(_cInfo);
             }
             Players.SessionTime(_cInfo);
+            Players.FriendList(_cInfo);
         }
 
         public override void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
@@ -239,10 +240,13 @@ namespace ServerTools
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].SessionTime = _oldSession + _timepassed;
             }
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = XUiM_Player.GetZombieKills(_player);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = XUiM_Player.GetDeaths(_player);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = XUiM_Player.GetPlayerKills(_player);
-            PersistentContainer.Instance.Save();
+            if (_player != null)
+            {
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = XUiM_Player.GetZombieKills(_player);
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = XUiM_Player.GetDeaths(_player);
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = XUiM_Player.GetPlayerKills(_player);
+                PersistentContainer.Instance.Save();
+            }
             if (Players.Session.ContainsKey(_cInfo.playerId))
             {
                 Players.Session.Remove(_cInfo.playerId);

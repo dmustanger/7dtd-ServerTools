@@ -5,14 +5,15 @@ namespace ServerTools
 {
     class EntityCleanup
     {
-        public static bool ItemIsEnabled = false, BlockIsEnabled = false, FallingTreeEnabled = false;
+        public static bool ItemIsEnabled = false, BlockIsEnabled = false, FallingTreeEnabled = false, Underground = false, Bikes = false;
         private static List<Entity> Entities = new List<Entity>();
         private static List<int> FallingTree = new List<int>();
         private static int _xMinCheck, _yMinCheck, _zMinCheck, _xMaxCheck, _yMaxCheck, _zMaxCheck;
 
         public static void EntityCheck()
         {
-            Entities = GameManager.Instance.World.Entities.list;
+            World world = GameManager.Instance.World;
+            Entities = world.Entities.list;
             for (int i = 0; i < Entities.Count; i++)
             {
                 int _itemCounter = 0;
@@ -38,7 +39,7 @@ namespace ServerTools
                                             string _name2 = EntityClass.list[_entity2.entityClass].entityClassName;
                                             if (_name2 == "item")
                                             {
-                                                if ((_entity.position.x - _entity2.position.x) * (_entity.position.x - _entity2.position.x) + (_entity.position.z - _entity2.position.z) * (_entity.position.z - _entity2.position.z) <= 3 * 3)
+                                                if (((int)_entity.position.x - (int)_entity2.position.x) * ((int)_entity.position.x - (int)_entity2.position.x) + ((int)_entity.position.z - (int)_entity2.position.z) * ((int)_entity.position.z - (int)_entity2.position.z) <= 3 * 3)
                                                 {
                                                     _itemCounter++;
                                                 }
@@ -46,16 +47,16 @@ namespace ServerTools
                                         }
                                     }
                                 }
-                                if (_itemCounter >= 11)
+                                if (_itemCounter >= 12)
                                 {
                                     GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed item id {0} @ {1} {2} {3}", _entity.entityId, _vec.x, _vec.y, _vec.z));
+                                    EntityPlayer _douche = world.GetClosestPlayer(_entity.position.x, _entity.position.y, _entity.position.z, 10, false);
+                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed item id {0} @ {1} {2} {3}. Closest player is {4}", _entity.entityId, (int)_vec.x, (int)_vec.y, (int)_vec.z, _douche.EntityName));
                                 }
                             }
                         }
                         if (BlockIsEnabled)
                         {
-                            World world = GameManager.Instance.World;
                             if (_name == "fallingBlock")
                             {
                                 for (int j = 0; j < Entities.Count; j++)
@@ -68,7 +69,7 @@ namespace ServerTools
                                             string _name2 = EntityClass.list[_entity2.entityClass].entityClassName;
                                             if (_name2 == "fallingBlock")
                                             {
-                                                if ((_entity.position.x - _entity2.position.x) * (_entity.position.x - _entity2.position.x) + (_entity.position.z - _entity2.position.z) * (_entity.position.z - _entity2.position.z) <= 20 * 20)
+                                                if (((int)_entity.position.x - (int)_entity2.position.x) * ((int)_entity.position.x - (int)_entity2.position.x) + ((int)_entity.position.z - (int)_entity2.position.z) * ((int)_entity.position.z - (int)_entity2.position.z) <= 20 * 20)
                                                 {
                                                     _blockCounter++;
                                                 }
@@ -80,7 +81,7 @@ namespace ServerTools
                                 {
                                     GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
                                     EntityPlayer _douche = world.GetClosestPlayer(_entity.position.x, _entity.position.y, _entity.position.z, 10, false);
-                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed falling block id {0} @ {1} {2} {3}. Closest player is {4}", _entity.entityId, _entity.position.x, _entity.position.y, _entity.position.z, _douche.EntityName));
+                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed falling block id {0} @ {1} {2} {3}. Closest player is {4}", _entity.entityId, (int)_entity.position.x, (int)_entity.position.y, (int)_entity.position.z, _douche.EntityName));
                                 }
                             }
                         }
@@ -98,6 +99,34 @@ namespace ServerTools
                                     FallingTree.Remove(_entity.entityId);
                                     Log.Out("[SERVERTOOLS] Entity cleanup: Removed falling tree");
                                 }
+                            }
+                        }
+                        if (Underground)
+                        {
+                            int y = (int)_entity.position.y;
+                            if (y <= -60)
+                            {
+                                if (_name == "fallingBlock")
+                                {
+                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
+                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed falling block id {0} from underground", _entity.entityId));
+                                }
+                                else
+                                {
+                                    int x = (int)_entity.position.x;
+                                    int z = (int)_entity.position.z;
+                                    _entity.SetPosition(new Vector3(x, -1, z));
+                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Teleported entity id {0} to the surface @ {1} -1 {2}", _entity.entityId, x, z));
+                                }
+                            }
+                        }
+                        if (Bikes)
+                        {
+                            if (_name == "minibike")
+                            {
+                                GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
+                                EntityPlayer _douche = world.GetClosestPlayer(_entity.position.x, _entity.position.y, _entity.position.z, 10, false);
+                                Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed minibike id {0}. Closest player is {1}", _entity.entityId, _douche.EntityName));
                             }
                         }
                     }

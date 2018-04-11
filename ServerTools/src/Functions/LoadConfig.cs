@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        public const double version = 9.5;
+        public const double version = 9.6;
         public static bool UpdateConfigs = false;
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
@@ -775,36 +775,24 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry because of invalid (true/false) value for 'Falling_Tree' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                break;
-                            case "Entity_Underground_Check":
-                                if (!_line.HasAttribute("Enable"))
+                                if (!_line.HasAttribute("Entity_Underground"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Underground_Check entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry because of missing 'Entity_Underground' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out EntityUnderground.IsEnabled))
+                                if (!bool.TryParse(_line.GetAttribute("Entity_Underground"), out EntityCleanup.Underground))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Underground_Check entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry because of invalid (true/false) value for 'Entity_Underground' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Alert_Admin"))
+                                if (!_line.HasAttribute("Bikes"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Underground_Check entry because of missing 'Alert_Admin' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry because of missing 'Bikes' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Alert_Admin"), out EntityUnderground.Alert_Admin))
+                                if (!bool.TryParse(_line.GetAttribute("Bikes"), out EntityCleanup.Bikes))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Underground_Check entry because of invalid (true/false) value for 'Alert_Admin' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Admin_Level"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Underground_Check entry because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out EntityUnderground.Admin_Level))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Underground_Check entry because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Entity_Cleanup entry because of invalid (true/false) value for 'Bikes' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -2280,8 +2268,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Day7\" Enable=\"{0}\" Days_Until_Horde=\"{1}\" />", Day7.IsEnabled, Day7.Days_Until_Horde));
                 sw.WriteLine(string.Format("        <Tool Name=\"Death_Spot\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" />", DeathSpot.IsEnabled, DeathSpot.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Donator_Name_Coloring\" Enable=\"{0}\" Donator_Level1=\"{1}\" Donator_Level2=\"{2}\" Donator_Level3=\"{3}\" Donator_Prefix1=\"{4}\" Donator_Prefix2=\"{5}\" Donator_Prefix3=\"{6}\" Donator_Color1=\"{7}\" Donator_Color2=\"{8}\" Donator_Color3=\"{9}\" />", ChatHook.Donator_Name_Coloring && ReservedSlots.Donator_Name_Coloring, ChatHook.Don_Level1, ChatHook.Don_Level2, ChatHook.Don_Level3, ChatHook.Don_Prefix1, ChatHook.Don_Prefix2, ChatHook.Don_Prefix3, ChatHook.Don_Color1, ChatHook.Don_Color2, ChatHook.Don_Color3));
-                sw.WriteLine(string.Format("        <Tool Name=\"Entity_Cleanup\" Items=\"{0}\" Blocks=\"{1}\" Falling_Tree=\"{2}\" />", EntityCleanup.ItemIsEnabled, EntityCleanup.BlockIsEnabled, EntityCleanup.FallingTreeEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Entity_Underground_Check\" Enable=\"{0}\" Alert_Admin=\"{1}\" Admin_Level=\"{2}\" />", EntityUnderground.IsEnabled, EntityUnderground.Alert_Admin, EntityUnderground.Admin_Level));
+                sw.WriteLine(string.Format("        <Tool Name=\"Entity_Cleanup\" Items=\"{0}\" Blocks=\"{1}\" Falling_Tree=\"{2}\" Entity_Underground=\"{3}\" Bikes=\"{4}\" />", EntityCleanup.ItemIsEnabled, EntityCleanup.BlockIsEnabled, EntityCleanup.FallingTreeEnabled, EntityCleanup.Underground, EntityCleanup.Bikes));
                 sw.WriteLine(string.Format("        <Tool Name=\"First_Claim_Block\" Enable=\"{0}\" />", FirstClaimBlock.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Flight_Check\" Enable=\"{0}\" Admin_Level=\"{1}\" Max_Ping=\"{2}\" Max_Height=\"{3}\" Kill_Enabled=\"{4}\" Announce=\"{5}\" Jail_Enabled=\"{6}\" Kick_Enabled=\"{7}\" Ban_Enabled=\"{8}\" Days_Before_Log_Delete=\"{9}\" />", FlightCheck.IsEnabled, FlightCheck.Admin_Level, FlightCheck.Max_Ping, FlightCheck.Max_Height, FlightCheck.Kill_Player, FlightCheck.Announce, FlightCheck.Jail_Enabled, FlightCheck.Kick_Enabled, FlightCheck.Ban_Enabled, FlightCheck.Days_Before_Log_Delete));
                 sw.WriteLine(string.Format("        <Tool Name=\"FPS\" Enable=\"{0}\" Set_Target=\"{1}\" />", Fps.IsEnabled, Fps.Set_Target));
