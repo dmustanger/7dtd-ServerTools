@@ -1,5 +1,13 @@
 ﻿CHANGELOG
 
+9.7
+Added clan chat to chat logger
+Added to flight detection so players teleporting are not caught
+Added to Entity_Cleanup output logs to show the closest player when it removes an item or block
+Changed falling block cleanup. It will remove them if they exist at all. Previously it checked for more blocks near it but this is faster
+Fixed Bounty list returning incorrect open bounty values
+Fixed Kill_Notice repeating at a later death point when not killed by a player
+
 9.6
 Changed Entity_Underground. The entire tool is merged into Entity_Cleanup
 Added falling block removal to Entity_Underground, all other entities that are not players are teleported to the surface
