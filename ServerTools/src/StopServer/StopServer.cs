@@ -3,11 +3,12 @@ namespace ServerTools
 {
     class StopServer
     {
-        public static bool Ten_Second_Countdown = false, stopServerCountingDown = false, Kick_30_Seconds = false, NoEntry = false;
+        public static bool Ten_Second_Countdown = false, stopServerCountingDown = false, Kick_30_Seconds = false, NoEntry = false,
+            Kick_Login = false;
 
         public static void StartShutdown()
         {
-            if (AutoShutdown.Kick_Login)
+            if (Kick_Login)
             {
                 NoEntry = true;
             }
