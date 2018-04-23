@@ -1,5 +1,61 @@
 ﻿CHANGELOG
 
+10.0
+
+Added Event system for admins to orchestrate events easier. Event system will guide you through the process. One event can run at a time only. Players
+are returned to the position they accepted the event invite at. Autoshutdown is automatically adjusted for the event time
+Added tool Anti-Cheat: Dupe_Log. Checks a player's bag and inventory for identical items or stacks. Checks crafted items. DupeLogs folder contains reports of
+items added that are identical to each other or an existing item. This does not always mean they have duped, but you have a report to review and their location
+Added tool Bank. Players can put a custom coin type into a chest and stand near it, then type /deposit. The coins are removed and put into the
+bank. /wallet deposit 100 will take 100 from their wallet and place it into the bank. /withdraw wallet 100 will remove 100 coins from their bank account and put it into the wallet
+/withdraw 100 will remove 100 coins from the bank account and give it to them as the custom coin type. /deposit charges a 5% fee
+Added tool Hardcore. BE CAUTIOUS USING THIS! Players will only have a set amount of lives. Upon losing them all, their zombie kills, player kills, life time, 
+deaths and score are recorded. They are kicked from the server telling them their final stats and asked to return. They can check their last score 
+and stats with chat command /score while playing with their new character
+Added command /top3 when Hardcore is active. This will reveal the top 3 life times and top 3 scores
+Added exemption to speed check while teleporting
+Added /fhome and /fhome2. If /home or /home2 are enabled, players can use the new commands instead. They will teleport home immediately. Friends within 10 blocks
+will receive a invite to teleport with them. They gain no delay by accepting. Two minutes to accept
+Added second response to custom commands. Each command can trigger two responses but not required
+	- reminder: console commands can be utilized through custom commands
+Added to ReservedSlot system. The last slot can only be filled by an admin or reserved player
+Added flight check omission for custom commands and trigger events that utilize tele, tp, or teleportplayer
+Added console command to add, remove, and list FamilyShare accounts from the FamilyShare.xml
+Added a que release to vote reward if it runs too long
+Added Vote_Night. Players can vote to skip the current night. It must be night time to open the vote. Requires at least 10 players online and 8 must vote yes
+Added console command Poll. Type help poll for more instructions. While active, players see a poll question when they login and can vote
+Added check for players putting a space infront of a message. The space is removed
+Added location of the player when they use /report. Only seen in the log, not the admin response
+Added caht command Stuck. Players can type /stuck to teleport to the surface. Can not be used inside another players claimed area unless an online friend
+Added location to report log
+Added bounty log. Added and awarded bounties are added to a log file under BountyLog folder
+Added auction log. All items entered, sold, and cancelled are added to a log file under AuctionLog folder
+Added option to Bounties. Kill_Streak will automatically add the minimum bounty after every player kill past the Kill_Streak value. Set 0
+for no auto bounty. If the player dies, their kill streak is over
+Added tool Player_List. Player can type /list to show all online players names and Id
+Added options to Auction. No_Admins and Admin_Level. If you want to stop admins from using auction, turn this on and set the level range
+for admins. Example: Setting level 3 will make it so admins or mods level 0-3 can not use the auction to sell or buy
+Added option to Zones.xml. Set PvE to true or false for each zone
+Changed Zone_Protection tool name to Zones. Same options are available but in the xml you can fill in response="" for each zone or leave it blank. The response 
+can be a console command of your choice. Example: response="tele {EntityId} x y z". Example 2: response="say &quot;{PlayerName} has won the race.&quot;"
+Changed ZoneProtection.xml to Zones.xml
+Changed console command PingImmunity to add or remove steam id if the player is offline
+Changed option Bikes under Entity_Cleanup to Delete_Bikes. It will remove a bike if found. This is meant for no bike servers only. Be careful!
+Changed option Kick_Login from tool Stopserver and put it under Auto_Shutdown where it belongs. This boots players during the countdown if they join
+Changed internal code for resetplayerprofile console command. Should stop the invalid integer response
+Fixed error when a player joins the server from their friend list being compiled
+Fixed occasion that new players do not get their starting items from Starting_Items tool if New_Spawn_Tele had coordinates of 0,0,0 and was enabled
+Fixed /died sending players to improper locations
+Fixed vote triggers conflicting with each other
+Fixed vote reward que getting stuck if set to entity
+Fixed Lotto entries not reducing a wallet
+Fixed tool Died not working if one tool was not on as well
+Fixed Login_Notice replacing {PlayerName} properly
+Fixed /return sending players to the wrong location
+Fixed Auction sales not taking the 5% fee
+Reduced the potential for a Kill_notice to alert at the wrong time
+Removed option Items from Entity_Cleanup. Report of the ability to freeze a server cpu to 100% when a player augered with a full bag
+
 9.7
 Added clan chat to chat logger
 Added to flight detection so players teleporting are not caught
@@ -198,7 +254,7 @@ Changed Custom_Commands. In the CustomCommand.xml, responses starting with say a
 Fixed Custom command delays not working
 Fixed FamilyShareAccount.xml not generating
 Fixed InfoTicker.xml not generating
-Fixed ZoneProtection.xml not generating
+Fixed Zones.xml not generating
 Fixed Market.xml not generating
 Fixed multiple bugs in the CustomCommand.xml generation
 Fixed null ref errors on player login and respawn
@@ -216,7 +272,7 @@ Added Death_Spot. Players can type /died in chat up to the 2 minute after dying 
 Added option to Gimme called Zombies. While true, players can spawn a zombie on themselves when using chat command /gimme
 Added options to Vote rewards. Block names can be used instead of item names. Entity can be spawn by setting Reward_Entity to true. Entity_Id 
 is the id of the entity that will spawn
-Added custom Zone_Protection exit messages to the ZoneProtection.xml
+Added custom Zone_Protection exit messages to the Zones.xml
 Added option to Shop called Shop_Anywhere. Setting true allows players to use /shop anywhere instead of a trader zone
 Added more of the response phrases for customization
 Added option to Auto_Shutdown. Alert_On_Login controls if the player is alerted to the next scheduled shutdown time on login
@@ -316,10 +372,10 @@ Fixed WeatherVote /clear not clearing the weather completely
 Fixed WeatherVote completed vote response
 
 v.6.41
-Fixed ZoneProtection and Travel detection formula. Some combinations of interger did not respond after last patch
+Fixed ZoneProtection and Travel detection formula. Some combinations of integer did not respond after last patch
 Fixed WeatherVote not responding
 Fixed some phrases in ServerToolsPhrases.xml
-Changed ZoneProtection.xml and TravelLocations.xml. xyzMin is now corner1 and xyzMax is now corner2. Just as before, corner to corner x, y, z coordinates
+Changed Zones.xml and TravelLocations.xml. xyzMin is now corner1 and xyzMax is now corner2. Just as before, corner to corner x, y, z coordinates
 Updated HowToSetup.xml with some missing info and one command
 
 v.6.4
