@@ -33,6 +33,31 @@
             {
                 UndergroundCheck.DetectionLogsDir();
             }
+            if (Bank.IsEnabled)
+            {
+                Bank.CreateFolder();
+            }
+            if (AuctionBox.IsEnabled)
+            {
+                AuctionBox.CreateFolder();
+            }
+            if (Bounties.IsEnabled)
+            {
+                Players.CreateFolder();
+            }
+            if (CredentialCheck.IsEnabled)
+            {
+                CredentialCheck.CreateFolder();
+            }
+            if (DupeLog.IsEnabled)
+            {
+                DupeLog.CreateFolder();
+            }
+            Poll.CreateFolder();
+            if (PersistentContainer.Instance.PollOpen)
+            {
+                Poll.Check();
+            }
             if (ChatHook.Special_Player_Name_Coloring)
             {
                 ChatHook.SpecialIdCheck();
@@ -87,13 +112,13 @@
             {
                 LoginNotice.Unload();
             }
-            if (!ZoneProtection.IsRunning && ZoneProtection.IsEnabled)
+            if (!Zones.IsRunning && Zones.IsEnabled)
             {
-                ZoneProtection.Load();
+                Zones.Load();
             }
-            if (ZoneProtection.IsRunning && !ZoneProtection.IsEnabled)
+            if (Zones.IsRunning && !Zones.IsEnabled)
             {
-                ZoneProtection.Unload();
+                Zones.Unload();
             }
             if (!VoteReward.IsRunning && VoteReward.IsEnabled)
             {

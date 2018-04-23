@@ -16,9 +16,10 @@ namespace ServerTools
                    "  1. pingimmunity add <steamId/entityId> <playerName>\n" +
                    "  2. pingimmunity remove <steamId/entityId> <playerName>\n" +
                    "  3. pingimmunity list\n" +
-                   "1. Adds a steamID  and name to the Ping Immunity list\n" +
-                   "2. Removes a steamID from the Ping Immunity list\n" +
-                   "3. Lists all steamIDs that have Ping Immunity";
+                   "1. Adds a steam ID and name to the Ping Immunity list\n" +
+                   "2. Removes a steam ID from the Ping Immunity list\n" +
+                   "3. Lists all steam IDs that have Ping Immunity" +
+                   "4. *Note* You can use the player id or name if they are online otherwise use their steam Id";
         }
 
         public override string[] GetCommands()
@@ -64,6 +65,28 @@ namespace ServerTools
                                 HighPingKicker.UpdateXml();
                             }
                         }
+                        else
+                        {
+                            if (_params[1].Length != 17)
+                            {
+                                SdtdConsole.Instance.Output(string.Format("You can only use a player id or their name if online. Can not add Id: Invalid Id {0}", _params[1]));
+                                return;
+                            }
+                            else
+                            {
+                                if (HighPingKicker.Dict.ContainsKey(_params[1]))
+                                {
+                                    SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} is already in the Ping Immunity list.", _params[1]));
+                                    return;
+                                }
+                                else
+                                {
+                                    HighPingKicker.Dict.Add(_params[1], _params[2]);
+                                    SdtdConsole.Instance.Output(string.Format("Added Id {0} with the name of {1} to the Ping Immunity list.", _params[1], _params[2]));
+                                    HighPingKicker.UpdateXml();
+                                }
+                            }
+                        }
                     }
                 }
                 else if (_params[0].ToLower().Equals("remove"))
@@ -84,6 +107,28 @@ namespace ServerTools
                         HighPingKicker.Dict.Remove(_cInfo.playerId);
                         SdtdConsole.Instance.Output(string.Format("Removed Id {0} from Ping Immunity list.", _params[1]));
                         HighPingKicker.UpdateXml();
+                    }
+                    else
+                    {
+                        if (_params[1].Length != 17)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("You can only use a player id or their name if online. Can not remove Id: Invalid Id {0}", _params[1]));
+                            return;
+                        }
+                        else
+                        {
+                            if (HighPingKicker.Dict.ContainsKey(_params[1]))
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Id {0} was not found.", _params[1]));
+                                return;
+                            }
+                            else
+                            {
+                                HighPingKicker.Dict.Remove(_params[1]);
+                                SdtdConsole.Instance.Output(string.Format("Removed Id {0} from the Ping Immunity list.", _params[1]));
+                                HighPingKicker.UpdateXml();
+                            }
+                        }
                     }
                 }
                 else if (_params[0].ToLower().Equals("list"))

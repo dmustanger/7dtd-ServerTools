@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Xml;
 using UnityEngine;
@@ -11,14 +10,14 @@ namespace ServerTools
     class VoteReward
     {
         public static bool IsEnabled = false, IsRunning = false, RandomListRunning = false, Reward_Entity = false,
-            RewardOpen = true;
-        public static int Reward_Count = 1, Delay_Between_Uses = 24, Entity_Id = 74, _counter = 0;
+            RewardOpen = true, QueOpen = false;
+        public static int Reward_Count = 1, Delay_Between_Uses = 24, Entity_Id = 73, _counter = 0;
         public static string Your_Voting_Site = ("https://7daystodie-servers.com/server/12345"), API_Key = ("xxxxxxxx");
         private const string file = "VoteReward.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static Dictionary<string, int[]> dict = new Dictionary<string, int[]>();
         private static List<string> list = new List<string>();
-        private static List<ClientInfo> que = new List<ClientInfo>();
+        public static List<ClientInfo> que = new List<ClientInfo>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false, posFound = false;
         public static System.Random rnd = new System.Random();
@@ -234,7 +233,7 @@ namespace ServerTools
             }
             else
             {
-                Log.Out(string.Format("No items available for reward. Check for an error in the file."));
+                Log.Out(string.Format("[SERVERTOOLS] No items available for reward. Check for an error in the file."));
             }
         }
 
@@ -249,6 +248,7 @@ namespace ServerTools
                 if (!que.Contains(_cInfo))
                 {
                     que.Add(_cInfo);
+                    QueOpen = true;
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward in use. You were added to the que.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                 }
                 else
@@ -300,6 +300,17 @@ namespace ServerTools
                         Entity(_cInfo);
                     }
                 }
+                else
+                {
+                    Que();
+                    string _phrase702;
+                    if (!Phrases.Dict.TryGetValue(702, out _phrase702))
+                    {
+                        _phrase702 = "Unable to get a result from the website, {PlayerName}. Please try /reward again.";
+                    }
+                    _phrase702 = _phrase702.Replace("{PlayerName}", _cInfo.playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase702), Config.Server_Response_Name, false, "ServerTools", false));
+                }
             }
 
         }
@@ -319,121 +330,149 @@ namespace ServerTools
 
         private static void ItemOrBlock(ClientInfo _cInfo)
         {
-            string _item = list.RandomObject();
-            int[] _values;
-            if (dict.TryGetValue(_item, out _values))
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            if (_player.IsSpawned())
             {
-                int count = 0;
-                if (_values[0] != _values[1])
+                string _item = list.RandomObject();
+                int[] _values;
+                if (dict.TryGetValue(_item, out _values))
                 {
-                    count = rnd.Next(_values[0], _values[1] + 1);
-                }
-                else
-                {
-                    count = _values[0];
-                }
-                if (count > 0)
-                {
-                    int quality = rnd.Next(_values[2], _values[3] + 1);
-                    if (quality < 1 || quality > 600)
+                    int count = 0;
+                    if (_values[0] != _values[1])
                     {
-                        quality = rnd.Next(1, 601);
-                    }
-                    ItemValue itemValue;
-                    var itemId = 4096;
-                    int _itemId;
-                    if (int.TryParse(_item, out _itemId))
-                    {
-                        int calc = (_itemId + 4096);
-                        itemId = calc;
-                        itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, quality, quality, true);
+                        count = rnd.Next(_values[0], _values[1] + 1);
                     }
                     else
                     {
-                        ItemValue _itemValue = ItemClass.GetItem(_item, true);
-                        if (_itemValue.type == ItemValue.None.type)
+                        count = _values[0];
+                    }
+                    if (count > 0)
+                    {
+                        int quality = rnd.Next(_values[2], _values[3] + 1);
+                        if (quality < 1 || quality > 600)
                         {
-                            list.Remove(_item);
-                            ItemOrBlock(_cInfo);
-                            Log.Warning(string.Format("[SERVERTOOLS] Item or block not found: {0}. Item or block was not given as a reward.", _item));
-                            return;
+                            quality = rnd.Next(1, 601);
+                        }
+                        ItemValue itemValue;
+                        var itemId = 4096;
+                        int _itemId;
+                        if (int.TryParse(_item, out _itemId))
+                        {
+                            int calc = (_itemId + 4096);
+                            itemId = calc;
+                            itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, quality, quality, true);
                         }
                         else
                         {
-                            itemValue = new ItemValue(ItemClass.GetItem(_item).type, quality, quality, true);
+                            ItemValue _itemValue = ItemClass.GetItem(_item, true);
+                            if (_itemValue.type == ItemValue.None.type)
+                            {
+                                list.Remove(_item);
+                                ItemOrBlock(_cInfo);
+                                Log.Warning(string.Format("[SERVERTOOLS] Item or block not found: {0}. Item or block was not given as a reward.", _item));
+                                return;
+                            }
+                            else
+                            {
+                                itemValue = new ItemValue(ItemClass.GetItem(_item).type, quality, quality, true);
+                            }
                         }
-                    }
-                    World world = GameManager.Instance.World;
-                    if (world.Players.dict[_cInfo.entityId].IsSpawned())
-                    {
-                        var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                        World world = GameManager.Instance.World;
+                        if (world.Players.dict[_cInfo.entityId].IsSpawned())
                         {
-                            entityClass = EntityClass.FromString("item"),
-                            id = EntityFactory.nextEntityID++,
-                            itemStack = new ItemStack(itemValue, count),
-                            pos = world.Players.dict[_cInfo.entityId].position,
-                            rot = new Vector3(20f, 0f, 20f),
-                            lifetime = 60f,
-                            belongsPlayerId = _cInfo.entityId
-                        });
-                        world.SpawnEntityInWorld(entityItem);
-                        _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
-                        world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                        _counter++;
-                    }
-                    if (_counter != Reward_Count)
-                    {
-                        ItemOrBlock(_cInfo);
+                            var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                            {
+                                entityClass = EntityClass.FromString("item"),
+                                id = EntityFactory.nextEntityID++,
+                                itemStack = new ItemStack(itemValue, count),
+                                pos = world.Players.dict[_cInfo.entityId].position,
+                                rot = new Vector3(20f, 0f, 20f),
+                                lifetime = 60f,
+                                belongsPlayerId = _cInfo.entityId
+                            });
+                            world.SpawnEntityInWorld(entityItem);
+                            _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
+                            world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+                            _counter++;
+                        }
+                        if (_counter != Reward_Count)
+                        {
+                            ItemOrBlock(_cInfo);
+                        }
+                        else
+                        {
+                            list.Clear();
+                            list = new List<string>(dict.Keys);
+                            _counter = 0;
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now;
+                            PersistentContainer.Instance.Save();
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward items were sent to your inventory. If it is full, check the ground.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                            Que();
+                        }
                     }
                     else
                     {
-                        list.Clear();
-                        list = new List<string>(dict.Keys);
-                        _counter = 0;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now;
-                        PersistentContainer.Instance.Save();
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward items were sent to your inventory. If it is full, check the ground.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                        Que();
+                        list.Remove(_item);
+                        ItemOrBlock(_cInfo);
                     }
                 }
-                else
-                {
-                    list.Remove(_item);
-                    ItemOrBlock(_cInfo);
-                }
+            }
+            else
+            {
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Can not give you a vote reward unless spawned. Please type /reward again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                Que();
             }
         }
 
         private static void Entity(ClientInfo _cInfo)
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            Vector3 pos = _player.GetPosition();
-            float x = pos.x;
-            float y = pos.y;
-            float z = pos.z;
-            int _x, _y, _z;
-            posFound = true;
-            posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(new Vector3((float)x, (float)y, (float)z), 15, out _x, out _y, out _z, new Vector3((float)5, (float)5, (float)5), true);
-            if (!posFound)
+            if (_player.IsSpawned())
             {
-                posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(new Vector3((float)x, (float)y, (float)z), 15, out _x, out _y, out _z, new Vector3((float)5 + 5, (float)5 + 10, (float)5 + 5), true);
-            }
-            if (posFound)
-            {
-                EntityClass eClass = EntityClass.list[Entity_Id];
-                if (eClass.bAllowUserInstantiate)
+                Vector3 pos = _player.GetPosition();
+                float x = pos.x;
+                float y = pos.y;
+                float z = pos.z;
+                int _x, _y, _z;
+                posFound = true;
+                posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(new Vector3((float)x, (float)y, (float)z), 15, out _x, out _y, out _z, new Vector3((float)5, (float)5, (float)5), true);
+                if (!posFound)
                 {
-                    Entity entity = EntityFactory.CreateEntity(Entity_Id, new Vector3((float)_x, (float)_y, (float)_z));
-                    GameManager.Instance.World.SpawnEntityInWorld(entity);
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now;
-                    PersistentContainer.Instance.Save();
-                    Log.Out(string.Format("[SERVERTOOLS] Spawned an entity reward {0} at {1} x, {2} y, {3} z for {4}", eClass.entityClassName, _x, _y, _z, _cInfo.playerName));
+                    posFound = GameManager.Instance.World.FindRandomSpawnPointNearPosition(new Vector3((float)x, (float)y, (float)z), 15, out _x, out _y, out _z, new Vector3((float)5 + 5, (float)5 + 10, (float)5 + 5), true);
+                }
+                if (posFound)
+                {
+                    int counter = 1;
+                    Dictionary<int, EntityClass>.KeyCollection entityTypesCollection = EntityClass.list.Keys;
+                    foreach (int i in entityTypesCollection)
+                    {
+                        EntityClass eClass = EntityClass.list[i];
+                        if (!eClass.bAllowUserInstantiate)
+                        {
+                            continue;
+                        }
+                        if (Entity_Id == counter)
+                        {
+                            Entity entity = EntityFactory.CreateEntity(i, new Vector3((float)_x, (float)_y, (float)_z));
+                            GameManager.Instance.World.SpawnEntityInWorld(entity);
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now;
+                            PersistentContainer.Instance.Save();
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Spawned a {1} near you.[-]", Config.Chat_Response_Color, eClass.entityClassName), Config.Server_Response_Name, false, "ServerTools", false));
+                            Log.Out(string.Format("[SERVERTOOLS] Spawned an entity reward {0} at {1} x, {2} y, {3} z for {4}", eClass.entityClassName, _x, _y, _z, _cInfo.playerName));
+                            Que();
+                        }
+                        counter++;
+                    }
+                }
+                else
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}No spawn point was found near you. Please move locations and try again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                     Que();
                 }
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}No spawn point was found near you. Please move locations and try again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Can not give you a vote reward unless spawned. Please type /reward again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                 Que();
             }
         }
@@ -444,7 +483,7 @@ namespace ServerTools
             {
                 ClientInfo _cInfo = que[0];
                 Execute(_cInfo);
-                que.RemoveAt(0);
+                que.Remove(_cInfo);
             }
             else
             {

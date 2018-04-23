@@ -165,20 +165,52 @@ namespace ServerTools
             int _playerCount = ConnectionManager.Instance.ClientCount();
             if (_playerCount == API.MaxPlayers)
             {
-                OpenSlot();
+                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                if (Admin.PermissionLevel > Admin_Level)
+                {
+                    if (Dict.ContainsKey(_cInfo.playerId))
+                    {
+                        DateTime _dt;
+                        Dict.TryGetValue(_cInfo.playerId, out _dt);
+                        if (DateTime.Now < _dt)
+                        {
+                            OpenSlot();
+                        }
+                        else
+                        {
+                            string _phrase22;
+                            if (!Phrases.Dict.TryGetValue(22, out _phrase22))
+                            {
+                                _phrase22 = "Sorry {PlayerName} server is at max capacity and this slot is reserved.";
+                            }
+                            _phrase22 = _phrase22.Replace("{PlayerName}", _cInfo.playerName);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase22), (ClientInfo)null);
+                        }
+                    }
+                    else
+                    {
+                        string _phrase22;
+                        if (!Phrases.Dict.TryGetValue(22, out _phrase22))
+                        {
+                            _phrase22 = "Sorry {PlayerName} server is at max capacity and this slot is reserved.";
+                        }
+                        _phrase22 = _phrase22.Replace("{PlayerName}", _cInfo.playerName);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase22), (ClientInfo)null);
+                    }
+                }
             }
         }
 
         public static void OpenSlot()
         {
             bool Kicked = false;
-            List<int> _sessionList = new List<int>(Players.Session.Keys);
+            List<string> _sessionList = new List<string>(Players.Session.Keys);
             for (int i = 0; i < _sessionList.Count; i++)
             {
                 if (!Kicked)
                 {
-                    int _player = _sessionList[i];
-                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player);
+                    string _player = _sessionList[i];
+                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_player);
                     if (_cInfo != null)
                     {
                         AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
@@ -187,7 +219,7 @@ namespace ServerTools
                             if (!Dict.ContainsKey(_cInfo.playerId))
                             {
                                 DateTime _dateTime;
-                                Players.Session.TryGetValue(_cInfo.entityId, out _dateTime);
+                                Players.Session.TryGetValue(_cInfo.playerId, out _dateTime);
                                 TimeSpan varTime = DateTime.Now - _dateTime;
                                 double fractionalMinutes = varTime.TotalMinutes;
                                 int _timepassed = (int)fractionalMinutes;
@@ -210,7 +242,7 @@ namespace ServerTools
                                 if (DateTime.Now > _dt)
                                 {
                                     DateTime _dateTime;
-                                    Players.Session.TryGetValue(_cInfo.entityId, out _dateTime);
+                                    Players.Session.TryGetValue(_cInfo.playerId, out _dateTime);
                                     TimeSpan varTime = DateTime.Now - _dateTime;
                                     double fractionalMinutes = varTime.TotalMinutes;
                                     int _timepassed = (int)fractionalMinutes;

@@ -8,9 +8,9 @@ namespace ServerTools
         public static int Player_Log_Interval = 60, Auto_Show_Bloodmoon_Delay = 30,
             Delay_Between_World_Saves = 15, Stop_Server_Time = 1, _newCount = 0, Weather_Vote_Delay = 30,
             Shutdown_Delay = 60, Infoticker_Delay = 60, Restart_Vote_Delay = 30, _sSC = 0, _sSCD = 0,
-            Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0;
+            Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0, _eventTime = 0;
         private static int timer1SecondInstanceCount, _wV, _wNV, _pSC, _b, _pL, _mC, _wSD, _iT,
-            _rS, _rV, _rNV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l; 
+            _rS, _rV, _rNV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _nV, _vR, _eS, _eI, _eO; 
         private static System.Timers.Timer t1 = new System.Timers.Timer();
 
         public static void TimerStart()
@@ -33,6 +33,10 @@ namespace ServerTools
             if (CredentialCheck.IsEnabled)
             {
                 Log.Out("Credential started");
+            }
+            if (DupeLog.IsEnabled)
+            {
+                Log.Out("Dupe Log enabled");
             }
             if (FlightCheck.IsEnabled)
             {
@@ -124,6 +128,10 @@ namespace ServerTools
             {
                 Log.Out("Badword filter enabled");
             }
+            if (Bank.IsEnabled)
+            {
+                Log.Out("Bank enabled");
+            }
             if (BikeReturn.IsEnabled)
             {
                 Log.Out("Bike enabled");
@@ -200,10 +208,6 @@ namespace ServerTools
             {
                 Log.Out("Infoticker enabled");
             }
-            if (EntityCleanup.ItemIsEnabled)
-            {
-                Log.Out("Item cleanup enabled");
-            }
             if (KickVote.IsEnabled)
             {
                 Log.Out("Kick vote enabled");
@@ -248,6 +252,10 @@ namespace ServerTools
             {
                 Log.Out("Night alert enabled");
             }
+            if (NightVote.IsEnabled)
+            {
+                Log.Out("Night vote enabled");
+            }
             if (RealWorldTime.IsEnabled)
             {
                 Log.Out("Real world time enabled");
@@ -280,7 +288,7 @@ namespace ServerTools
             {
                 Log.Out("Vote reward enabled");
             }
-            if (ZoneProtection.IsEnabled)
+            if (Zones.IsEnabled)
             {
                 Log.Out("Zone protection enabled");
             }            
@@ -313,17 +321,13 @@ namespace ServerTools
                     UndergroundCheck.AutoUndergroundCheck();
                 }
             }
-            if (ZoneProtection.IsEnabled)
-            {
-                ZoneProtection.Check();
-            }
             if (Jail.IsEnabled)
             {
                 Jail.StatusCheck();
             }
-            if (Bounties.IsEnabled || Players.Kill_Notice)
+            if (Bounties.IsEnabled || Players.Kill_Notice || DeathSpot.IsEnabled || Zones.IsEnabled)
             {
-                Players.KillCount();
+                Players.Exec();
             }
             if (Jail.Jailed.Count > 0)
             {
@@ -436,6 +440,22 @@ namespace ServerTools
                 _rV = 0;
                 _rNV = 0;
             }
+            if (NightVote.IsEnabled)
+            {
+                if (NightVote.VoteOpen)
+                {
+                    _nV++;
+                    if (_nV >= 30)
+                    {
+                        _nV = 0;
+                        NightVote.VoteCount();
+                    }
+                }
+            }
+            else
+            {
+                _nV = 0;
+            }
             if (Hordes.IsEnabled)
             {
                 _h++;
@@ -449,10 +469,10 @@ namespace ServerTools
             {
                 _h = 0;
             }
-            if (EntityCleanup.ItemIsEnabled || EntityCleanup.BlockIsEnabled || ZoneProtection.No_Zombie || EntityCleanup.Underground)
+            if (EntityCleanup.BlockIsEnabled || EntityCleanup.FallingTreeEnabled || EntityCleanup.Underground)
             {
                 _eC++;
-                if (_eC >= 30)
+                if (_eC >= 15)
                 {
                     _eC = 0;
                     EntityCleanup.EntityCheck();
@@ -462,7 +482,7 @@ namespace ServerTools
             {
                 _eC = 0;
             }
-            if (ZoneProtection.IsEnabled && ZoneProtection.No_Zombie)
+            if (Zones.IsEnabled && Zones.No_Zombie)
             {
                 _rE++;
                 if (_rE >= 5)
@@ -638,7 +658,7 @@ namespace ServerTools
             if (AutoShutdown.IsEnabled && !AutoShutdown.Bloodmoon && !StopServer.stopServerCountingDown)
             {
                 _sD++;
-                if (_sD >= Shutdown_Delay * 60)
+                if (!Event.Open && _sD >= Shutdown_Delay * 60)
                 {
                     _sD = 0;
                     AutoShutdown.CheckBloodmoon();
@@ -686,6 +706,70 @@ namespace ServerTools
             else
             {
                 _wR = 0;
+            }
+            if (VoteReward.IsEnabled && VoteReward.QueOpen)
+            {
+                _vR++;
+                if (_vR >= 60)
+                {
+                    _vR = 0;
+                    VoteReward.que.Clear();
+                    VoteReward.QueOpen = false;
+                    VoteReward.RewardOpen = true;
+                }
+            }
+            else
+            {
+                _vR = 0;
+            }
+            if (Event.Setup)
+            {
+                _eS++;
+                if (_eS >= 900)
+                {
+                    _eS = 0;
+                    Event.Setup = false;
+                    Event.CheckOpen();
+                }
+            }
+            else
+            {
+                _eS = 0;
+            }
+            if (Event.Invited)
+            {
+                _eI++;
+                if (_eI >= 900)
+                {
+                    _eI = 0;
+                    Event.Invited = false;
+                    Event.CheckOpen2();
+                }
+            }
+            else
+            {
+                _eI = 0;
+            }
+            if (Event.Open)
+            {
+                _eO++;
+                if (_eO == _eventTime / 2)
+                {
+                    Event.HalfTime();
+                }
+                if (_eO == _eventTime - 300)
+                {
+                    Event.FiveMin();
+                }
+                if (_eO >= _eventTime)
+                {
+                    _eO = 0;
+                    Event.EndEvent();
+                }
+            }
+            else
+            {
+                _eO = 0;
             }
         }
     }

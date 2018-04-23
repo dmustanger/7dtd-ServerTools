@@ -5,7 +5,7 @@ namespace ServerTools
 {
     class EntityCleanup
     {
-        public static bool ItemIsEnabled = false, BlockIsEnabled = false, FallingTreeEnabled = false, Underground = false, Bikes = false;
+        public static bool BlockIsEnabled = false, FallingTreeEnabled = false, Underground = false, Bikes = false;
         private static List<Entity> Entities = new List<Entity>();
         private static List<int> FallingTree = new List<int>();
         private static int _xMinCheck, _yMinCheck, _zMinCheck, _xMaxCheck, _yMaxCheck, _zMaxCheck;
@@ -16,53 +16,12 @@ namespace ServerTools
             Entities = world.Entities.list;
             for (int i = 0; i < Entities.Count; i++)
             {
-                int _itemCounter = 0;
                 Entity _entity = Entities[i];
                 if (_entity != null)
                 {
                     if (!_entity.IsClientControlled())
                     {
                         string _name = EntityClass.list[_entity.entityClass].entityClassName;
-                        if (ItemIsEnabled)
-                        {
-                            if (_name == "item" && _name != "Backpack" && _name != "DroppedLootContainer" && !_name.StartsWith("NPC") && _name != "sc_General")
-                            {
-                                Vector3 _vec = _entity.position;
-                                for (int j = 0; j < Entities.Count; j++)
-                                {
-                                    Entity _entity2 = Entities[j];
-                                    if (_entity2 != null)
-                                    {
-                                        if (_entity != _entity2)
-                                        {
-                                            string _name2 = EntityClass.list[_entity2.entityClass].entityClassName;
-                                            if (_name2 == "item")
-                                            {
-                                                Vector3 _vec2 = _entity2.position;
-                                                if (((int)_vec.x - (int)_vec2.x) * ((int)_vec.x - (int)_vec2.x) + ((int)_vec.z - (int)_vec2.z) * ((int)_vec.z - (int)_vec2.z) <= 2 * 2)
-                                                {
-                                                    _itemCounter++;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                if (_itemCounter >= 12)
-                                {
-                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                    EntityPlayer _douche = world.GetClosestPlayer((int)_vec.x, (int)_vec.y, (int)_vec.z, 10, false);
-                                    if (_douche == null)
-                                    {
-                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed item id {0} @ {1} {2} {3}", _entity.entityId, (int)_vec.x, (int)_vec.y, (int)_vec.z));
-                                    }
-                                    else
-                                    {
-                                        ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_douche.entityId);
-                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed item id {0} @ {1} {2} {3}. Closest player is {4}", _entity.entityId, (int)_vec.x, (int)_vec.y, (int)_vec.z, _cInfo.playerName));
-                                    }
-                                }
-                            }
-                        }
                         if (BlockIsEnabled)
                         {
                             if (_name == "fallingBlock")
@@ -72,12 +31,12 @@ namespace ServerTools
                                 EntityPlayer _douche = world.GetClosestPlayer((int)_vec.x, (int)_vec.y, (int)_vec.z, 10, false);
                                 if (_douche == null)
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed item id {0} @ {1} {2} {3}", _entity.entityId, (int)_vec.x, (int)_vec.y, (int)_vec.z));
+                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed falling block id {0} @ {1} {2} {3}", _entity.entityId, (int)_vec.x, (int)_vec.y, (int)_vec.z));
                                 }
                                 else
                                 {
                                     ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_douche.entityId);
-                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed item id {0} @ {1} {2} {3}. Closest player is {4}", _entity.entityId, (int)_vec.x, (int)_vec.y, (int)_vec.z, _cInfo.playerName));
+                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed falling block id {0} @ {1} {2} {3}. Closest player is {4}", _entity.entityId, (int)_vec.x, (int)_vec.y, (int)_vec.z, _cInfo.playerName));
                                 }
                             }
                         }
@@ -142,7 +101,7 @@ namespace ServerTools
         public static void ZombieCheck()
         {
             Entities = GameManager.Instance.World.Entities.list;
-            if (ZoneProtection.Box.Count > 0)
+            if (Players.Box.Count > 0)
             {
                 for (int i = 0; i < Entities.Count; i++)
                 {
@@ -158,7 +117,7 @@ namespace ServerTools
                                 int _X = (int)_entity.position.x;
                                 int _Y = (int)_entity.position.y;
                                 int _Z = (int)_entity.position.z;
-                                foreach (KeyValuePair<string, string[]> kvpCorners in ZoneProtection.Box)
+                                foreach (KeyValuePair<string, string[]> kvpCorners in Players.Box)
                                 {
                                     int xMin, yMin, zMin;
                                     string[] _corner1 = kvpCorners.Value[0].Split(',');

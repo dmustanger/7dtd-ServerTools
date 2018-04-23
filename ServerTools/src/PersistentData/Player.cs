@@ -8,6 +8,12 @@ namespace ServerTools
     {
         private readonly string steamId;
         [OptionalField]
+        private int bank;
+        private int hardcoreSessionTime;
+        private int hardcoreKills;
+        private int hardcoreZKills;
+        private int hardcoreScore;
+        private int hardcoreDeaths;
         private int bounty;
         private int sessionTime;
         private int bikeId;
@@ -20,6 +26,7 @@ namespace ServerTools
         private int auctionData;
         private int playerSpentCoins;
         private string[] auctionItem;
+        private string hardcoreName;
         private string lobbyReturn;
         private string newTeleSpawn;
         private string jailName;
@@ -29,6 +36,7 @@ namespace ServerTools
         private string clanname;
         private string invitedtoclan;
         private string lastwhisper;
+        private DateTime lastStuck;
         private DateTime lastLobby;
         private DateTime cancelTime;
         private DateTime sellDate;
@@ -56,8 +64,8 @@ namespace ServerTools
         private DateTime lastgimme;
         private DateTime lastkillme;
         private DateTime lastsethome;
+        private bool poll;
         private bool firstClaim;
-        private bool adminChatColor;
         private bool isclanowner;
         private bool isclanofficer;
         private bool ismuted;
@@ -74,6 +82,78 @@ namespace ServerTools
             set
             {
                 auctionItem = value;
+            }
+        }
+
+        public int Bank
+        {
+            get
+            {
+                return bank;
+            }
+            set
+            {
+                bank = value;
+            }
+        }
+
+        public int HardcoreKills
+        {
+            get
+            {
+                return hardcoreKills;
+            }
+            set
+            {
+                hardcoreKills = value;
+            }
+        }
+
+        public int HardcoreSessionTime
+        {
+            get
+            {
+                return hardcoreSessionTime;
+            }
+            set
+            {
+                hardcoreSessionTime = value;
+            }
+        }
+
+        public int HardcoreZKills
+        {
+            get
+            {
+                return hardcoreZKills;
+            }
+            set
+            {
+                hardcoreZKills = value;
+            }
+        }
+
+        public int HardcoreScore
+        {
+            get
+            {
+                return hardcoreScore;
+            }
+            set
+            {
+                hardcoreScore = value;
+            }
+        }
+
+        public int HardcoreDeaths
+        {
+            get
+            {
+                return hardcoreDeaths;
+            }
+            set
+            {
+                hardcoreDeaths = value;
             }
         }
 
@@ -206,6 +286,18 @@ namespace ServerTools
             set
             {
                 auctionData = value;
+            }
+        }
+
+        public DateTime LastStuck
+        {
+            get
+            {
+                return lastStuck;
+            }
+            set
+            {
+                lastStuck = value;
             }
         }
 
@@ -473,54 +565,6 @@ namespace ServerTools
             }
         }
 
-        public int PlayerSpentCoins
-        {
-            get
-            {
-                return playerSpentCoins;
-            }
-            set
-            {
-                playerSpentCoins = value;
-            }
-        }
-
-        public bool FirstClaim
-        {
-            get
-            {
-                return firstClaim;
-            }
-            set
-            {
-                firstClaim = value;
-            }
-        }
-
-        public bool AdminChatColor
-        {
-            get
-            {
-                return adminChatColor;
-            }
-            set
-            {
-                adminChatColor = value;
-            }
-        }
-
-        public DateTime LastVoteReward
-        {
-            get
-            {
-                return lastVoteReward;
-            }
-            set
-            {
-                lastVoteReward = value;
-            }
-        }
-
         public DateTime LastAnimals
         {
             get
@@ -566,6 +610,42 @@ namespace ServerTools
             set
             {
                 lastsethome = value;
+            }
+        }
+
+        public DateTime LastVoteReward
+        {
+            get
+            {
+                return lastVoteReward;
+            }
+            set
+            {
+                lastVoteReward = value;
+            }
+        }
+
+        public int PlayerSpentCoins
+        {
+            get
+            {
+                return playerSpentCoins;
+            }
+            set
+            {
+                playerSpentCoins = value;
+            }
+        }
+
+        public string HardcoreName
+        {
+            get
+            {
+                return hardcoreName;
+            }
+            set
+            {
+                hardcoreName = value;
             }
         }
 
@@ -653,6 +733,42 @@ namespace ServerTools
             }
         }
 
+        public string InvitedToClan
+        {
+            get
+            {
+                return invitedtoclan;
+            }
+            set
+            {
+                invitedtoclan = value;
+            }
+        }
+
+        public string LastWhisper
+        {
+            get
+            {
+                return lastwhisper;
+            }
+            set
+            {
+                lastwhisper = value;
+            }
+        }
+
+        public bool Poll
+        {
+            get
+            {
+                return poll;
+            }
+            set
+            {
+                poll = value;
+            }
+        }
+
         public bool IsClanOwner
         {
             get
@@ -677,27 +793,15 @@ namespace ServerTools
             }
         }
 
-        public string InvitedToClan
+        public bool FirstClaim
         {
             get
             {
-                return invitedtoclan;
+                return firstClaim;
             }
             set
             {
-                invitedtoclan = value;
-            }
-        }
-
-        public string LastWhisper
-        {
-            get
-            {
-                return lastwhisper;
-            }
-            set
-            {
-                lastwhisper = value;
+                firstClaim = value;
             }
         }
 

@@ -12,7 +12,7 @@ namespace ServerTools
         }
         public override string GetHelp()
         {
-            return "Usage: resetplayer <steamId/entityId>";
+            return "Usage: resetplayerprofile <steamId/entityId>";
         }
         public override string[] GetCommands()
         {
@@ -29,7 +29,7 @@ namespace ServerTools
                 }
                 if (_params[0].Length < 1 || _params[0].Length > 17)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Can not add Id: Invalid Id {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}", _params[0]));
                     return;
                 }
                 string _filepath = string.Format("{0}/Player/{1}.map", GameUtils.GetSaveGameDir(), _params[0]);
@@ -77,73 +77,45 @@ namespace ServerTools
                 }
                 else
                 {
-                    int _counter = 0;
-                    string _id = "";
-                    if (_params[0].Length == 17)
+                    int _value = 0;
+                    if (int.TryParse(_params[0], out _value))
                     {
-                        int _value = 0;
-                        if (!int.TryParse(_params[0], out _value))
+                        Player p = PersistentContainer.Instance.Players[_value.ToString(), false];
+                        if (p != null)
                         {
-
-                            SdtdConsole.Instance.Output(string.Format("Player id {0} is not a valid interger", _params[0]));
-                            return;
+                            if (!File.Exists(_filepath))
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Could not find file {0}.map", _params[0]));
+                            }
+                            else
+                            {
+                                File.Delete(_filepath);
+                            }
+                            if (!File.Exists(_filepath1))
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Could not find file {0}.ttp", _params[0]));
+                            }
+                            else
+                            {
+                                File.Delete(_filepath1);
+                            }
+                            string _phrase401;
+                            if (!Phrases.Dict.TryGetValue(401, out _phrase401))
+                            {
+                                _phrase401 = "You have reset the profile for Player {SteamId}.";
+                            }
+                            _phrase401 = _phrase401.Replace("{SteamId}", _params[0]);
+                            SdtdConsole.Instance.Output(string.Format("{0}", _phrase401));
                         }
                         else
                         {
-                            _id = _value.ToString();
+                            SdtdConsole.Instance.Output(string.Format("Player file {0}.ttp does not exist", _params[0]));
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Player id {0} is not a valid steam id", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("Player id {0} is not a valid integer", _params[0]));
                         return;
-                    }
-                    List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
-                    for (int i = 0; i < playerlist.Count; i++)
-                    {
-                        string _steamId = playerlist[i];
-                        if (_steamId == _id)
-                        {
-                            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                            if (p != null)
-                            {
-                                if (!File.Exists(_filepath))
-                                {
-                                    SdtdConsole.Instance.Output(string.Format("Could not find file {0}.map", _params[0]));
-                                }
-                                else
-                                {
-                                    File.Delete(_filepath);
-                                }
-                                if (!File.Exists(_filepath1))
-                                {
-                                    SdtdConsole.Instance.Output(string.Format("Could not find file {0}.ttp", _params[0]));
-                                }
-                                else
-                                {
-                                    File.Delete(_filepath1);
-                                }
-                                string _phrase401;
-                                if (!Phrases.Dict.TryGetValue(401, out _phrase401))
-                                {
-                                    _phrase401 = "You have reset the profile for Player {SteamId}.";
-                                }
-                                _phrase401 = _phrase401.Replace("{SteamId}", _params[0]);
-                                SdtdConsole.Instance.Output(string.Format("{0}", _phrase401));
-                            }
-                            else
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Player file {0}.ttp does not exist", _params[0]));
-                            }
-                        }
-                        else
-                        {
-                            _counter++;
-                            if (_counter == playerlist.Count)
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Player file {0}.ttp does not exist", _params[0]));
-                            }
-                        }
                     }
                 }
             }

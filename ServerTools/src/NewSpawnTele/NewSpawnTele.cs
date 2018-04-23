@@ -44,7 +44,7 @@ namespace ServerTools
         public static void TeleNewSpawn(ClientInfo _cInfo)
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (_player.Level == 1 && _player.totalItemsCrafted == 0 && _player.distanceWalked <= 0.5 && New_Spawn_Tele_Position != "0,0,0")
+            if (_player.Level == 1 && _player.totalItemsCrafted == 0 && _player.distanceWalked <= 1 && New_Spawn_Tele_Position != "0,0,0")
             {
                 TelePlayer(_cInfo, _player);
             }
@@ -96,16 +96,16 @@ namespace ServerTools
                 if (p.NewTeleSpawn != ("0, 0, 0"))
                 {
                     int x, y, z;
-                    string[] _coords = New_Spawn_Tele_Position.Split(',');
-                    int.TryParse(_coords[0], out x);
-                    int.TryParse(_coords[2], out z);
+                    string[] _cords = New_Spawn_Tele_Position.Split(',');
+                    int.TryParse(_cords[0], out x);
+                    int.TryParse(_cords[2], out z);
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                     if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= 50 * 50)
                     {
-                        string[] _oldCoords = p.NewTeleSpawn.Split(',');
-                        int.TryParse(_oldCoords[0], out x);
-                        int.TryParse(_oldCoords[1], out y);
-                        int.TryParse(_oldCoords[2], out z);
+                        string[] _oldCords = p.NewTeleSpawn.Split(',');
+                        int.TryParse(_oldCords[0], out x);
+                        int.TryParse(_oldCords[1], out y);
+                        int.TryParse(_oldCords[2], out z);
                         Players.NoFlight.Add(_cInfo.entityId);
                         _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].NewTeleSpawn = ("0, 0, 0");

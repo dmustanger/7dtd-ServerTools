@@ -28,7 +28,7 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count > 4)
+                if (_params.Count != 4)
                 {
                     SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 4, found {0}", _params.Count));
                     return;
