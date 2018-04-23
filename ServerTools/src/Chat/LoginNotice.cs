@@ -153,7 +153,7 @@ namespace ServerTools
                 string _value;
                 if (dict.TryGetValue(_cInfo.playerId, out _value))
                 {
-                    _value = _value.Replace("{PlayerName}", "");
+                    _value = _value.Replace("{PlayerName}", _cInfo.playerName);
                     GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _value), Config.Server_Response_Name, false, "", false);
                 }
             }

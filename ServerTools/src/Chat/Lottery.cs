@@ -95,6 +95,9 @@ namespace ServerTools
                                     OpenLotto = true;
                                     Lotto.Add(_lottoValue);
                                     LottoEntries.Add(_cInfo);
+                                    int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins;
+                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - _lottoValue;
+                                    PersistentContainer.Instance.Save();
                                     string _phrase538;
                                     if (!Phrases.Dict.TryGetValue(538, out _phrase538))
                                     {
@@ -131,7 +134,7 @@ namespace ServerTools
                             string _phrase537;
                             if (!Phrases.Dict.TryGetValue(537, out _phrase537))
                             {
-                                _phrase537 = "{PlayerName} you must type a valid interger above zero for the lottery #.";
+                                _phrase537 = "{PlayerName} you must type a valid integer above zero for the lottery #.";
                             }
                             _phrase537 = _phrase537.Replace("{PlayerName}", _cInfo.playerName);
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase537), Config.Server_Response_Name, false, "ServerTools", false));
@@ -142,7 +145,7 @@ namespace ServerTools
                         string _phrase537;
                         if (!Phrases.Dict.TryGetValue(537, out _phrase537))
                         {
-                            _phrase537 = "{PlayerName} you must type a valid interger above zero for the lottery #.";
+                            _phrase537 = "{PlayerName} you must type a valid integer above zero for the lottery #.";
                         }
                         _phrase537 = _phrase537.Replace("{PlayerName}", _cInfo.playerName);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase537), Config.Server_Response_Name, false, "ServerTools", false));
@@ -189,6 +192,9 @@ namespace ServerTools
                         if (!LottoEntries.Contains(_cInfo))
                         {
                             LottoEntries.Add(_cInfo);
+                            int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins;
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - _winnings;
+                            PersistentContainer.Instance.Save();
                             string _phrase541;
                             if (!Phrases.Dict.TryGetValue(541, out _phrase541))
                             {

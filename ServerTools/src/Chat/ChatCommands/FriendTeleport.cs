@@ -128,7 +128,7 @@ namespace ServerTools
                 string _phrase626;
                 if (!Phrases.Dict.TryGetValue(626, out _phrase626))
                 {
-                    _phrase626 = "This {EntityId} is not valid. Only intergers accepted.";
+                    _phrase626 = "This {EntityId} is not valid. Only integers accepted.";
                 }
                 _phrase626 = _phrase626.Replace("{EntityId}", _Id.ToString());
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase626), Config.Server_Response_Name, false, "ServerTools", false));
@@ -177,6 +177,7 @@ namespace ServerTools
 
         public static void TeleFriend(ClientInfo _cInfo, int _friendToTele)
         {
+            Players.NoFlight.Add(_friendToTele);
             SdtdConsole.Instance.ExecuteSync(string.Format("tele {0} {1}", _friendToTele, _cInfo.entityId), (ClientInfo)null);           
             ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForEntityId(_friendToTele);
             PersistentContainer.Instance.Players[_cInfo2.playerId, true].LastFriendTele = DateTime.Now;

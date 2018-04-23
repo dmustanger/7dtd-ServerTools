@@ -121,10 +121,11 @@ namespace ServerTools
                     _phrase552 = _phrase552.Replace("{PlayerName}", _playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase552), Config.Server_Response_Name, false, "ServerTools", false));
                 }
-                string[] _coords = SetLobby.Lobby_Position.Split(',');
-                int.TryParse(_coords[0], out x);
-                int.TryParse(_coords[1], out y);
-                int.TryParse(_coords[2], out z);
+                string[] _cords = SetLobby.Lobby_Position.Split(',');
+                int.TryParse(_cords[0], out x);
+                int.TryParse(_cords[1], out y);
+                int.TryParse(_cords[2], out z);
+                Players.NoFlight.Add(_cInfo.entityId);
                 _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
                 string _phrase553;
                 if (!Phrases.Dict.TryGetValue(553, out _phrase553))
@@ -150,57 +151,45 @@ namespace ServerTools
 
         public static void SendBack(ClientInfo _cInfo, string _playerName)
         {
-            if (LobbyPlayers.Contains(_cInfo.entityId))
+            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            if (p != null)
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p != null)
+                if (p.LobbyReturn != null)
                 {
-                    if (p.LobbyReturn != null)
+                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                    int x, y, z;
+                    string[] _cords = SetLobby.Lobby_Position.Split(',');
+                    int.TryParse(_cords[0], out x);
+                    int.TryParse(_cords[1], out y);
+                    int.TryParse(_cords[2], out z);
+                    if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= Lobby_Size * Lobby_Size)
                     {
-                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                        int x, y, z;
-                        string[] _coords = SetLobby.Lobby_Position.Split(',');
-                        int.TryParse(_coords[0], out x);
-                        int.TryParse(_coords[1], out y);
-                        int.TryParse(_coords[2], out z);
-                        if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= Lobby_Size * Lobby_Size)
+                        string[] _returnCoords = p.LobbyReturn.Split(',');
+                        int.TryParse(_returnCoords[0], out x);
+                        int.TryParse(_returnCoords[1], out y);
+                        int.TryParse(_returnCoords[2], out z);
+                        Players.NoFlight.Add(_cInfo.entityId);
+                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                        LobbyPlayers.Remove(_cInfo.entityId);
+                        string _phrase555;
+                        if (!Phrases.Dict.TryGetValue(555, out _phrase555))
                         {
-                            string[] _returnCoords = p.LobbyReturn.Split(',');
-                            int.TryParse(_returnCoords[0], out x);
-                            int.TryParse(_returnCoords[1], out y);
-                            int.TryParse(_returnCoords[2], out z);
-                            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
-                            LobbyPlayers.Remove(_cInfo.entityId);
-                            string _phrase555;
-                            if (!Phrases.Dict.TryGetValue(555, out _phrase555))
-                            {
-                                _phrase555 = "{PlayerName} you have been sent back to your saved location.";
-                            }
-                            _phrase555 = _phrase555.Replace("{PlayerName}", _playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase555), Config.Server_Response_Name, false, "ServerTools", false));
+                            _phrase555 = "{PlayerName} you have been sent back to your saved location.";
                         }
-                        else
+                        _phrase555 = _phrase555.Replace("{PlayerName}", _playerName);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase555), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
+                    else
+                    {
+                        string _phrase556;
+                        if (!Phrases.Dict.TryGetValue(556, out _phrase556))
                         {
-                            string _phrase556;
-                            if (!Phrases.Dict.TryGetValue(556, out _phrase556))
-                            {
-                                _phrase556 = "{PlayerName} you are outside the lobby. Get inside it and try again.";
-                            }
-                            _phrase556 = _phrase556.Replace("{PlayerName}", _playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase556), Config.Server_Response_Name, false, "ServerTools", false));
+                            _phrase556 = "{PlayerName} you are outside the lobby. Get inside it and try again.";
                         }
+                        _phrase556 = _phrase556.Replace("{PlayerName}", _playerName);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase556), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
-            }
-            else
-            {
-                string _phrase557;
-                if (!Phrases.Dict.TryGetValue(557, out _phrase557))
-                {
-                    _phrase557 = "{PlayerName} you have already used /return, or you have not travelled to the lobby.";
-                }
-                _phrase557 = _phrase557.Replace("{PlayerName}", _playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase557), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
     }

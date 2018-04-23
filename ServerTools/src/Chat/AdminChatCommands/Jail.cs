@@ -116,6 +116,7 @@ namespace ServerTools
             int.TryParse(_cords[2], out z);
             _PlayertoJail.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
             Jailed.Add(_PlayertoJail.playerId);
+            Players.NoFlight.Add(_PlayertoJail.entityId);
             PersistentContainer.Instance.Players[_PlayertoJail.playerId, true].JailDate = DateTime.Now;
             PersistentContainer.Instance.Players[_PlayertoJail.playerId, true].JailTime = 60;
             PersistentContainer.Instance.Players[_PlayertoJail.playerId, true].JailName = _PlayertoJail.playerName;
@@ -203,6 +204,7 @@ namespace ServerTools
                         else
                         {
                             Jailed.Remove(_PlayertoUnJail.playerId);
+                            Players.NoFlight.Add(_PlayertoUnJail.entityId);
                             PersistentContainer.Instance.Players[_PlayertoUnJail.playerId, true].JailTime = 0;
                             PersistentContainer.Instance.Save();
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_PlayertoUnJail.entityId];
@@ -271,7 +273,7 @@ namespace ServerTools
         public static void Forgive(ClientInfo _cInfo)
         {
             int _killId;
-            if (ZoneProtection.Forgive.TryGetValue(_cInfo.entityId, out _killId))
+            if (Players.Forgive.TryGetValue(_cInfo.entityId, out _killId))
             {
                 ClientInfo _cInfoKiller = ConnectionManager.Instance.GetClientInfoForEntityId(_killId);
                 if (_cInfoKiller != null)
@@ -279,23 +281,24 @@ namespace ServerTools
                     Player p = PersistentContainer.Instance.Players[_cInfoKiller.playerId, false];
                     if (p == null)
                     {
-                        ZoneProtection.Forgive.Remove(_cInfo.entityId);
+                        Players.Forgive.Remove(_cInfo.entityId);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this player is not in jail.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                     else
                     {
                         if (!Jailed.Contains(_cInfoKiller.playerId))
                         {
-                            ZoneProtection.Forgive.Remove(_cInfo.entityId);
+                            Players.Forgive.Remove(_cInfo.entityId);
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this player is not in jail.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                         else
                         {
-                            ZoneProtection.Forgive.Remove(_cInfo.entityId);
+                            Players.Forgive.Remove(_cInfo.entityId);
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoKiller.entityId];
                             if (_player.IsSpawned())
                             {
                                 Jailed.Remove(_cInfoKiller.playerId);
+                                Players.NoFlight.Add(_cInfoKiller.entityId);
                                 EntityBedrollPositionList _position = _player.SpawnPoints;
                                 if (_position.Count > 0)
                                 {
@@ -319,7 +322,7 @@ namespace ServerTools
             }
             else
             {
-                ZoneProtection.Forgive.Remove(_cInfo.entityId);
+                Players.Forgive.Remove(_cInfo.entityId);
             }
         }
 

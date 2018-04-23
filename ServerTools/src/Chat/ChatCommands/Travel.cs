@@ -629,6 +629,7 @@ namespace ServerTools
                     }
                     if (_xMinCheck == 1 & _yMinCheck == 1 & _zMinCheck == 1 & _xMaxCheck == 1 & _yMaxCheck == 1 & _zMaxCheck == 1)
                     {
+                        Players.NoFlight.Add(_cInfo.entityId);
                         _cInfo.SendPackage(new NetPackageTeleportPlayer(new UnityEngine.Vector3(xDest, yDest, zDest), false));
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastTravel = DateTime.Now;
                         PersistentContainer.Instance.Save();

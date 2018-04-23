@@ -120,11 +120,16 @@ namespace ServerTools
                     }
                     if (_timepassed < 2)
                     {
-                        Vector3 _value;
+                        string _value;
                         if (Players.LastDeathPos.TryGetValue(_cInfo.entityId, out _value))
                         {
-                            _cInfo.SendPackage(new NetPackageTeleportPlayer(_value, false));
-                            Players.DeathTime.Remove(_cInfo.entityId);
+                            Players.NoFlight.Add(_cInfo.entityId);
+                            int x, y, z;
+                            string[] _cords = _value.Split(',');
+                            int.TryParse(_cords[0], out x);
+                            int.TryParse(_cords[1], out y);
+                            int.TryParse(_cords[2], out z);
+                            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
                             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastDied = DateTime.Now;
                             PersistentContainer.Instance.Save();
                             string _phrase736;
@@ -146,7 +151,6 @@ namespace ServerTools
                     }
                     else
                     {
-                        Players.DeathTime.Remove(_cInfo.entityId);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your last death occurred too long ago. Command unavailable.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }

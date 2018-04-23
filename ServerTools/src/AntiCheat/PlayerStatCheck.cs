@@ -183,25 +183,28 @@ namespace ServerTools
                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat height\"", _cInfo.playerId), (ClientInfo)null);
                                 }
                             }
-                            if (p_speedForward > 14)
+                            if (!Players.NoFlight.Contains(_cInfo.entityId))
                             {
-                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                if (p_speedForward > 14)
                                 {
-                                    sw.WriteLine(string.Format("{0} {1} steamId {2} was detected with an illegal run speed value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_speedForward));
-                                    sw.WriteLine();
-                                    sw.Flush();
-                                    sw.Close();
-                                }
-                                Log.Warning("Detected player {0} steamId {1} speed hacking", _cInfo.playerName, _cInfo.playerId);
-                                if (Kick_Enabled)
-                                {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player speed[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
-                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat speed\"", _cInfo.playerId), (ClientInfo)null);
-                                }
-                                if (Ban_Enabled)
-                                {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player speed[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
-                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat speed\"", _cInfo.playerId), (ClientInfo)null);
+                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                    {
+                                        sw.WriteLine(string.Format("{0} {1} steamId {2} was detected with an illegal run speed value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_speedForward));
+                                        sw.WriteLine();
+                                        sw.Flush();
+                                        sw.Close();
+                                    }
+                                    Log.Warning("Detected player {0} steamId {1} speed hacking", _cInfo.playerName, _cInfo.playerId);
+                                    if (Kick_Enabled)
+                                    {
+                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player speed[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat speed\"", _cInfo.playerId), (ClientInfo)null);
+                                    }
+                                    if (Ban_Enabled)
+                                    {
+                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player speed[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat speed\"", _cInfo.playerId), (ClientInfo)null);
+                                    }
                                 }
                             }
                         }

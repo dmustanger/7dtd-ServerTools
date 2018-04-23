@@ -7,7 +7,7 @@ namespace ServerTools
         public static bool IsEnabled = false, Show_On_Login = false, Show_On_Respawn = false, Auto_Enabled = false;
         public static int Days_Until_Horde = 7;
 
-        public static void GetBloodmoon(ClientInfo _cInfo)
+        public static void GetBloodmoon(ClientInfo _cInfo, bool _announce)
         {
             int _daysUntilHorde = Days_Until_Horde - GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()) % Days_Until_Horde;
             string _phrase301;
@@ -23,11 +23,25 @@ namespace ServerTools
             _phrase301 = _phrase301.Replace("{DaysUntilHorde}", _daysUntilHorde.ToString());
             if (_daysUntilHorde == Days_Until_Horde)
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase306, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                if (_announce)
+                {
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase306), Config.Server_Response_Name, false, "", false);
+                }
+                else
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase306), Config.Server_Response_Name, false, "ServerTools", false));
+                }
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                if (_announce)
+                {
+                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase301), Config.Server_Response_Name, false, "", false);
+                }
+                else
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase301), Config.Server_Response_Name, false, "ServerTools", false));
+                }
             }
         }
 

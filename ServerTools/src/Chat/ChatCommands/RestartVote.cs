@@ -6,7 +6,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, VoteOpen = false, VoteNew = true;
         public static int Minimum_Players = 10, Admin_Level = 0;
-        public static List<int> yes = new List<int>();
+        public static List<int> Restart = new List<int>();
         public static List<int> StartedVote = new List<int>();
 
         public static void CallForVote1(ClientInfo _cInfo)
@@ -82,9 +82,9 @@ namespace ServerTools
         {
             VoteOpen = false;
             VoteNew = false;
-            if (yes.Count > 0)
+            if (Restart.Count > 0)
             {
-                if (yes.Count >= Minimum_Players / 2 + 1)
+                if (Restart.Count >= Minimum_Players / 2 + 1)
                 {
                     SdtdConsole.Instance.ExecuteSync(string.Format("stopserver 1"), (ClientInfo)null);
                     string _phrase742;

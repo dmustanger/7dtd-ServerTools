@@ -1,16 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace ServerTools
 {
     class AuctionBox
     {
-        public static bool IsEnabled = false, IsRunning = false;
-        public static int Delay_Between_Uses = 24;
+        public static bool IsEnabled = false, IsRunning = false, No_Admins = false;
+        public static int Delay_Between_Uses = 24, Admin_Level = 0;
         public static Dictionary<int, string[]> AuctionItems = new Dictionary<int, string[]>();
         private static DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
         private static List<Chunk> chunkArray = new List<Chunk>();
+        private static string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static string filepath = string.Format("{0}/AuctionLog/{1}", API.GamePath, file);
+
+        public static void CreateFolder()
+        {
+            if (!Directory.Exists(API.GamePath + "/AuctionLog"))
+            {
+                Directory.CreateDirectory(API.GamePath + "/AuctionLog");
+            }
+        }
 
         public static void Delay(ClientInfo _cInfo, string _price)
         {
@@ -156,6 +167,13 @@ namespace ServerTools
                                                         PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionItem = _auctionItem;
                                                         PersistentContainer.Instance.Save();
                                                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your auction item {2} has been removed from the secure loot and added to the auction.[-]", Config.Chat_Response_Color, _cInfo.playerName, _itemName), Config.Server_Response_Name, false, "ServerTools", false));
+                                                        using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                        {
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} {3}, {4} quality to the auction for {5} {6}. Entry # {7}", DateTime.Now, _cInfo.playerName, item.count, _itemName, item.itemValue.Quality, _price, Wallet.Coin_Name, _cInfo.entityId));
+                                                            sw.WriteLine();
+                                                            sw.Flush();
+                                                            sw.Close();
+                                                        }
                                                         count++;
                                                     }
                                                 }
@@ -184,7 +202,7 @@ namespace ServerTools
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your sell price must be an interger and greater than zero.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your sell price must be an integer and greater than zero.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -347,8 +365,10 @@ namespace ServerTools
             PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _newCoin;
             PersistentContainer.Instance.Save();
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have purchased {2} {3} from the auction for {4} {5}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _value[0], _value[1], _value[3], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+            double _percent = _price * 0.05;
+            int _newCoin2 = _price - (int)_percent;
             PersistentContainer.Instance.Players[_steamId, true].SellDate = DateTime.Now;
-            PersistentContainer.Instance.Players[_steamId, true].PlayerSpentCoins = PersistentContainer.Instance.Players[_steamId, false].PlayerSpentCoins + (_price - (_price % 5));
+            PersistentContainer.Instance.Players[_steamId, true].PlayerSpentCoins = PersistentContainer.Instance.Players[_steamId, true].PlayerSpentCoins + _newCoin2;
             PersistentContainer.Instance.Players[_steamId, true].AuctionData = 0;
             PersistentContainer.Instance.Players[_steamId, true].AuctionItem = null;
             PersistentContainer.Instance.Save();
@@ -358,6 +378,13 @@ namespace ServerTools
             if (_cInfo1 != null)
             {
                 _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your auction item was purchased and the value placed in your wallet.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+            }
+            using (StreamWriter sw = new StreamWriter(filepath, true))
+            {
+                sw.WriteLine(string.Format("{0}: {1} has purchased auction entry {2}, profits went to steam id {3}", DateTime.Now, _cInfo.playerName, _purchase, _steamId));
+                sw.WriteLine();
+                sw.Flush();
+                sw.Close();
             }
         }
 
@@ -409,6 +436,13 @@ namespace ServerTools
                             PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionItem = null;
                             PersistentContainer.Instance.Save();
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your auction item has returned to you.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                            using (StreamWriter sw = new StreamWriter(filepath, true))
+                            {
+                                sw.WriteLine(string.Format("{0}: {1} has cancelled their auction entry # {2}.", DateTime.Now, _cInfo.playerName, _cInfo.entityId));
+                                sw.WriteLine();
+                                sw.Flush();
+                                sw.Close();
+                            }
                         }
                     }
                     else

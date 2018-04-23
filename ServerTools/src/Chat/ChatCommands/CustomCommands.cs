@@ -8,7 +8,7 @@ namespace ServerTools
     public class CustomCommands
     {
         public static bool IsEnabled = false, IsRunning = false;     
-        public static Dictionary<string, string> Dict = new Dictionary<string, string>();
+        public static Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
         public static Dictionary<string, int[]> Dict1 = new Dictionary<string, int[]>();
         public static List<int> TeleportCheckProtection = new List<int>();
         private const string file = "CustomChatCommands.xml";
@@ -97,7 +97,9 @@ namespace ServerTools
                         string _trigger = _line.GetAttribute("Trigger");
                         if (!Dict.ContainsKey(_trigger))
                         {
-                            string _response = _line.GetAttribute("Response");
+                            string _response1 = _line.GetAttribute("Response");
+                            string _response2 = _line.GetAttribute("Response2");
+                            string[] _response = { _response1, _response2 };
                             Dict.Add(_trigger, _response);
                         }
                         if (!Dict1.ContainsKey(_trigger))
@@ -121,27 +123,27 @@ namespace ServerTools
                 sw.WriteLine("        <!-- possible variables {EntityId} {SteamId} {PlayerName}-->");
                 if (Dict.Count > 0)
                 {
-                    foreach (KeyValuePair<string, string> kvp in Dict)
+                    foreach (KeyValuePair<string, string[]> kvp in Dict)
                     {
                         int[] _value;
                         if (Dict1.TryGetValue(kvp.Key, out _value))
                         {
-                            sw.WriteLine(string.Format("        <Command Number=\"{0}\" Trigger=\"{1}\" Response=\"{2}\" DelayBetweenUses=\"{3}\" />", _value[0], kvp.Key, kvp.Value, _value[1]));
+                            sw.WriteLine(string.Format("        <Command Number=\"{0}\" Trigger=\"{1}\" Response=\"{2}\" Response2=\"{3}\" DelayBetweenUses=\"{4}\" />", _value[0], kvp.Key, kvp.Value[0], kvp.Value[1], _value[1]));
                         }
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <Command Number=\"1\" Trigger=\"help\" Response=\"say &quot;Type /commands for a list of chat commands.&quot;\" DelayBetweenUses=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"2\" Trigger=\"info\" Response=\"say &quot;Type /commands for a list of chat commands.&quot;\" DelayBetweenUses=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"3\" Trigger=\"rules\" Response=\"say &quot;Visit YourSiteHere to see the rules.&quot;\" DelayBetweenUses=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"say &quot;Visit YourSiteHere.&quot;\" DelayBetweenUses=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"say &quot;The Teamspeak3 info is YourInfoHere.&quot;\" DelayBetweenUses=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"6\" Trigger=\"market\" Response=\"tele {EntityId} 0 -1 0\" DelayBetweenUses=\"60\" />");
-                    sw.WriteLine("        <Command Number=\"7\" Trigger=\"spawnZ\" Response=\"ser {EntityId} 20 @ 4 9 11\" DelayBetweenUses=\"60\" />");
-                    sw.WriteLine("        <Command Number=\"8\" Trigger=\"test3\" Response=\"Your command here\" DelayBetweenUses=\"20\" />");
-                    sw.WriteLine("        <Command Number=\"9\" Trigger=\"test4\" Response=\"Your command here\" DelayBetweenUses=\"30\" />");
-                    sw.WriteLine("        <Command Number=\"10\" Trigger=\"test5\" Response=\"Your command here\" DelayBetweenUses=\"40\" />");
+                    sw.WriteLine("        <Command Number=\"1\" Trigger=\"help\" Response=\"say &quot;Type /commands for a list of chat commands.&quot;\" Response2=\"\" DelayBetweenUses=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"2\" Trigger=\"info\" Response=\"say &quot;Type /commands for a list of chat commands.&quot;\" Response2=\"\" DelayBetweenUses=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"3\" Trigger=\"rules\" Response=\"say &quot;Visit YourSiteHere to see the rules.&quot;\" Response2=\"\" DelayBetweenUses=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"say &quot;Visit YourSiteHere.&quot;\" Response2=\"\" DelayBetweenUses=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"say &quot;The Teamspeak3 info is YourInfoHere.&quot;\" Response2=\"\" DelayBetweenUses=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"6\" Trigger=\"market\" Response=\"tele {EntityId} 0 -1 0\" Response2=\"pm {EntityId} &quot;{PlayerName} you have been sent to the market.&quot;\" DelayBetweenUses=\"60\" />");
+                    sw.WriteLine("        <Command Number=\"7\" Trigger=\"spawnZ\" Response=\"ser {EntityId} 20 @ 4 9 11\" Response2=\"pm {EntityId} &quot;Spawned zombies on you.&quot;\" DelayBetweenUses=\"60\" />");
+                    sw.WriteLine("        <Command Number=\"8\" Trigger=\"test3\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"20\" />");
+                    sw.WriteLine("        <Command Number=\"9\" Trigger=\"test4\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"30\" />");
+                    sw.WriteLine("        <Command Number=\"10\" Trigger=\"test5\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"40\" />");
                 }
                 sw.WriteLine("    </Commands>");
                 sw.WriteLine("</CustomCommands>");
@@ -338,7 +340,7 @@ namespace ServerTools
             string _commandsCustom = string.Format("{0}Custom commands are:", Config.Chat_Response_Color);
             if (Dict.Count > 0)
             {
-                foreach (KeyValuePair<string, string> kvp in Dict)
+                foreach (KeyValuePair<string, string[]> kvp in Dict)
                 {
                     string _c = kvp.Key;
                     _commandsCustom = string.Format("{0} /{1}", _commandsCustom, _c);
@@ -807,10 +809,10 @@ namespace ServerTools
 
         public static string CommandResponse(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int[] _c)
         {
-            string _r;
+            string[] _r;
             if (Dict.TryGetValue(_message, out _r))
             {
-                string _response = _r;
+                string _response = _r[0];
                 _response = _response.Replace("{EntityId}", _cInfo.entityId.ToString());
                 _response = _response.Replace("{SteamId}", _cInfo.playerId);
                 _response = _response.Replace("{PlayerName}", _playerName);
@@ -826,59 +828,96 @@ namespace ServerTools
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
+                if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
+                {
+                    Players.NoFlight.Add(_cInfo.entityId);
+                    if (Players.ZoneFlag.ContainsKey(_cInfo.entityId))
+                    {
+                        Players.ZoneFlag.Remove(_cInfo.entityId);
+                    }
+                    SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                }
                 else
                 {
                     SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
                 }
-                if (_c[0] == 1)
+                string _response2 = _r[1];
+                if (_response2 != null)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand1 = DateTime.Now;
-                    PersistentContainer.Instance.Save();
-                }
-                if (_c[0] == 2)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand2 = DateTime.Now;
-                    PersistentContainer.Instance.Save();
-                }
-                if (_c[0] == 3)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand3 = DateTime.Now;
-                    PersistentContainer.Instance.Save();
-                }
-                if (_c[0] == 4)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand4 = DateTime.Now;
-                    PersistentContainer.Instance.Save();
-                }
-                if (_c[0] == 5)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand5 = DateTime.Now;
-                    PersistentContainer.Instance.Save();
-                }
-                if (_c[0] == 6)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand6 = DateTime.Now;
-                    PersistentContainer.Instance.Save();
-                }
-                if (_c[0] == 7)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand7 = DateTime.Now;
-                    PersistentContainer.Instance.Save();
-                }
-                if (_c[0] == 8)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand8 = DateTime.Now;
-                    PersistentContainer.Instance.Save();
-                }
-                if (_c[0] == 9)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand9 = DateTime.Now;
-                    PersistentContainer.Instance.Save();
-                }
-                if (_c[0] == 10)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand10 = DateTime.Now;
-                    PersistentContainer.Instance.Save();
+                    _response2 = _response2.Replace("{EntityId}", _cInfo.entityId.ToString());
+                    _response2 = _response2.Replace("{SteamId}", _cInfo.playerId);
+                    _response2 = _response2.Replace("{PlayerName}", _playerName);
+                    if (_response2.StartsWith("say "))
+                    {
+                        _response2 = _response2.Replace("say ", "");
+                        if (_announce)
+                        {
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false);
+                        }
+                        else
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false));
+                        }
+                    }
+                    if (_response2.StartsWith("tele ") || _response2.StartsWith("tp ") || _response2.StartsWith("teleportplayer "))
+                    {
+                        Players.NoFlight.Add(_cInfo.entityId);
+                        SdtdConsole.Instance.ExecuteSync(_response2, _cInfo);
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.ExecuteSync(_response2, _cInfo);
+                    }
+                    if (_c[0] == 1)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand1 = DateTime.Now;
+                        PersistentContainer.Instance.Save();
+                    }
+                    if (_c[0] == 2)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand2 = DateTime.Now;
+                        PersistentContainer.Instance.Save();
+                    }
+                    if (_c[0] == 3)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand3 = DateTime.Now;
+                        PersistentContainer.Instance.Save();
+                    }
+                    if (_c[0] == 4)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand4 = DateTime.Now;
+                        PersistentContainer.Instance.Save();
+                    }
+                    if (_c[0] == 5)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand5 = DateTime.Now;
+                        PersistentContainer.Instance.Save();
+                    }
+                    if (_c[0] == 6)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand6 = DateTime.Now;
+                        PersistentContainer.Instance.Save();
+                    }
+                    if (_c[0] == 7)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand7 = DateTime.Now;
+                        PersistentContainer.Instance.Save();
+                    }
+                    if (_c[0] == 8)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand8 = DateTime.Now;
+                        PersistentContainer.Instance.Save();
+                    }
+                    if (_c[0] == 9)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand9 = DateTime.Now;
+                        PersistentContainer.Instance.Save();
+                    }
+                    if (_c[0] == 10)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand10 = DateTime.Now;
+                        PersistentContainer.Instance.Save();
+                    }
                 }
             }
             return null;

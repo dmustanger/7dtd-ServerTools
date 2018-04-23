@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -72,6 +73,8 @@ namespace ServerTools
         public static void Exec(ClientInfo _cInfo, string _message)
         {
             _message = _message.Replace("report ", "");
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            Vector3 _pos = _player.position;
             List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
             for (int i = 0; i < _cInfoList.Count; i++)
             {
@@ -85,7 +88,7 @@ namespace ServerTools
             }
             using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
-                sw.WriteLine(string.Format("{0}: {1} Reports: {2}.", DateTime.Now, _cInfo.playerName, _message));
+                sw.WriteLine(string.Format("{0}: Location: {1} {2} {3}. Player {4} reports: {5}.", DateTime.Now, (int)_pos.x, (int)_pos.y, (int)_pos.z, _cInfo.playerName, _message));
                 sw.WriteLine();
                 sw.Flush();
                 sw.Close();

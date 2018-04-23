@@ -15,8 +15,16 @@ namespace ServerTools
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
-        private static SortedDictionary<string, string> OmittedPlayers = new SortedDictionary<string, string>();
+        public static SortedDictionary<string, string> OmittedPlayers = new SortedDictionary<string, string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        public static void CreateFolder()
+        {
+            if (!Directory.Exists(API.GamePath + "/DetectionLogs"))
+            {
+                Directory.CreateDirectory(API.GamePath + "/DetectionLogs");
+            }
+        }
 
         public static void Load()
         {

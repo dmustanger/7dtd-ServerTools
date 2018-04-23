@@ -150,7 +150,7 @@ namespace ServerTools
             }
             else
             {
-                fLastPositionY[Id] = y;
+                fLastPositionY.Add(Id, y);
             }
 
             if (fLastPositionXZ.ContainsKey(Id))
@@ -178,17 +178,12 @@ namespace ServerTools
                         }
                         return true;
                     }
-                    return false;
                 }
-                else
-                {
-                    fLastPositionXZ[Id] = xz;
-                    return false;
-                }
+                return false;
             }
             else
             {
-                fLastPositionXZ[Id] = xz;
+                fLastPositionXZ.Add(Id, xz);
                 return false;
             }
         }
@@ -213,7 +208,7 @@ namespace ServerTools
                             {
                                 if (!Flag.ContainsKey(_cInfo.entityId))
                                 {
-                                    Flag[_cInfo.entityId] = 1;
+                                    Flag.Add(_cInfo.entityId, 1);
                                 }
                                 else
                                 {
