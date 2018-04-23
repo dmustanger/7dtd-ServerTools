@@ -37,6 +37,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="src\AntiCheat\DupeLog.cs" />
+    <Compile Include="src\Bank\Bank.cs" />
+    <Compile Include="src\ConsoleCommands\EventCommands.cs" />
+    <Compile Include="src\Event\Event.cs" />
+    <Compile Include="src\Hardcore\Hardcore.cs" />
     <Compile Include="src\AntiCheat\CredentialCheck.cs" />
     <Compile Include="src\AntiCheat\HatchElevator.cs" />
     <Compile Include="src\AntiCheat\TeleportCheck.cs" />
@@ -46,7 +51,7 @@
     <Compile Include="src\AntiCheat\UndergroundCheck.cs" />
     <Compile Include="src\AntiCheat\FlightCheck.cs" />
     <Compile Include="src\AntiCheat\InvalidItems.cs" />
-    <Compile Include="src\AntiCheat\ZoneProtection.cs" />
+    <Compile Include="src\AntiCheat\Zones.cs" />
     <Compile Include="src\Api.cs" />
     <Compile Include="src\AuctionBox\AuctionBox.cs" />
     <Compile Include="src\AutoShutdown\AutoShutdown.cs" />
@@ -63,12 +68,15 @@
     <Compile Include="src\Chat\ChatCommands\Animals.cs" />
     <Compile Include="src\Chat\ChatCommands\CustomCommands.cs" />
     <Compile Include="src\Chat\ChatCommands\day7.cs" />
+    <Compile Include="src\Chat\ChatCommands\NightVote.cs" />
     <Compile Include="src\Chat\ChatCommands\KickVote.cs" />
     <Compile Include="src\Chat\ChatCommands\Loc.cs" />
     <Compile Include="src\Chat\ChatCommands\Fps.cs" />
     <Compile Include="src\Chat\ChatCommands\FriendTeleport.cs" />
     <Compile Include="src\Chat\ChatCommands\Gimme.cs" />
     <Compile Include="src\Chat\AdminChatCommands\Jail.cs" />
+    <Compile Include="src\Chat\ChatCommands\PlayerList.cs" />
+    <Compile Include="src\Chat\ChatCommands\Stuck.cs" />
     <Compile Include="src\Chat\ChatCommands\Suicide.cs" />
     <Compile Include="src\Chat\ChatCommands\MuteVote.cs" />
     <Compile Include="src\Chat\ChatCommands\Report.cs" />
@@ -91,6 +99,7 @@
     <Compile Include="src\CoinMarket\Wallet.cs" />
     <Compile Include="src\ConsoleCommands\%40Admin.cs" />
     <Compile Include="src\ConsoleCommands\AdminChatColor.cs" />
+    <Compile Include="src\ConsoleCommands\FamilyShare.cs" />
     <Compile Include="src\ConsoleCommands\GiveBlock.cs" />
     <Compile Include="src\ConsoleCommands\GiveItem.cs" />
     <Compile Include="src\ConsoleCommands\GiveStartingItems.cs" />
@@ -108,6 +117,7 @@
     <Compile Include="src\ConsoleCommands\ReservedSlots.cs" />
     <Compile Include="src\ConsoleCommands\StopServerCommand.cs" />
     <Compile Include="src\ConsoleCommands\TempBan.cs" />
+    <Compile Include="src\ConsoleCommands\Poll.cs" />
     <Compile Include="src\ConsoleCommands\Underground.cs" />
     <Compile Include="src\ConsoleCommands\WalletCoins.cs" />
     <Compile Include="src\CountryCheck\CountryCheck.cs" />
