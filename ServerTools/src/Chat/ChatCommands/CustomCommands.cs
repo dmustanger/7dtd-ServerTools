@@ -188,7 +188,7 @@ namespace ServerTools
             }
             if (TeleportHome.IsEnabled)
             {
-                _commands_1 = string.Format("{0} /sethome /home /delhome", _commands_1);
+                _commands_1 = string.Format("{0} /sethome /home /fhome /delhome", _commands_1);
             }
             if (Day7.IsEnabled)
             {
@@ -258,7 +258,7 @@ namespace ServerTools
             }
             if (TeleportHome.IsEnabled & TeleportHome.Set_Home2_Enabled)
             {
-                _commands_2 = string.Format("{0} /sethome2 /home2 /delhome2", _commands_2);
+                _commands_2 = string.Format("{0} /sethome2 /home2 /fhome2 /delhome2", _commands_2);
             }
             return _commands_2;
         }
@@ -331,6 +331,14 @@ namespace ServerTools
             if (BikeReturn.IsEnabled)
             {
                 _commands_4 = string.Format("{0} /bike", _commands_4);
+            }
+            if (Stuck.IsEnabled)
+            {
+                _commands_4 = string.Format("{0} /stuck", _commands_4);
+            }
+            if (RestartVote.IsEnabled)
+            {
+                _commands_4 = string.Format("{0} /restart", _commands_4);
             }
             return _commands_4;
         }
