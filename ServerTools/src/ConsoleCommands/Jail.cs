@@ -117,7 +117,11 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Player with Id {0} can not be found.", _params[1]));
+                            PersistentContainer.Instance.Players[_params[1], true].JailDate = DateTime.Now;
+                            PersistentContainer.Instance.Players[_params[1], true].JailTime = _jailTime;
+                            PersistentContainer.Instance.Players[_params[1], true].JailName = "Offline, name unknown";
+                            PersistentContainer.Instance.Save();
+                            SdtdConsole.Instance.Output(string.Format("Player with Id {0} can not be found online but has been set for jail.", _params[1]));
                             return;
                         }
                     }

@@ -18,10 +18,12 @@ namespace ServerTools
                 "  2. event check" +
                 "  3. event cancel" +
                 "  4. event last" +
+                "  5. event remove <Id>" +
                 "1. Starts a new event. No other admin can be running an event at the same time\n" +
                 "2. Shows the settings and player list of the running event\n" +
                 "3. Stops the current event and sends players back to their return points\n" +
-                "4. Shows the last event settings and starts a setup with them.\n";
+                "4. Shows the last event settings and starts a setup with them.\n" +
+                "5. Remove a single player from a running event, sending them back to their return point.\n";
         }
 
         public override string[] GetCommands()
@@ -334,7 +336,13 @@ namespace ServerTools
                                 {
                                     int _team;
                                     Event.PlayersTeam.TryGetValue(_playerEntId, out _team);
-                                    SdtdConsole.Instance.Output(string.Format("Player name {0} is on team {1}.", _cInfo.playerName, _team));
+                                    SdtdConsole.Instance.Output(string.Format("Player name {0}, Id {1}, is on team {2}.", _cInfo.playerName, _cInfo.entityId, _team));
+                                }
+                                else
+                                {
+                                    int _team;
+                                    Event.PlayersTeam.TryGetValue(_playerEntId, out _team);
+                                    SdtdConsole.Instance.Output(string.Format("Offline player: Player name unknown, Id {0}, is on team {1}.", _playerEntId, _team));
                                 }
                             }
                             return;
@@ -390,9 +398,17 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        Event.PlayersReturn.Remove(_playerEntId);
+                                        PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_playerEntId);
+                                        string _steamId = _persistentPlayerData.PlayerId;
+                                        string _pos;
+                                        Event.PlayersReturn.TryGetValue(_playerEntId, out _pos);
+                                        PersistentContainer.Instance.Players[_steamId, true].EventReturn = _pos;
+                                        PersistentContainer.Instance.Save();
                                         Event.Players.Remove(_playerEntId);
+                                        Event.PlayersTeam.Remove(_playerEntId);
+                                        Event.PlayersReturn.Remove(_playerEntId);
                                         Event.SpawnList.Remove(_playerEntId);
+                                        SdtdConsole.Instance.Output(string.Format("Player with Id {0} was offline but they have been removed and set for their return point.", _params[1]));
                                     }
                                 }
                                 if (Event.PlayersReturn.Count == 0)
@@ -463,66 +479,77 @@ namespace ServerTools
                 }
                 if (_params[0] == ("return"))
                 {
-                    if (Event.Return)
+                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerName)
                     {
-                        for (int i = 0; i < Event.Players.Count; i++)
-                        {
-                            int _playerEntId = Event.Players[i];
-                            ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_playerEntId);
-                            if (_cInfo != null)
-                            {
-                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                if (_player.IsSpawned())
-                                {
-                                    string _position;
-                                    Event.PlayersReturn.TryGetValue(_playerEntId, out _position);
-                                    int x, y, z;
-                                    string[] _cords = _position.Split(',');
-                                    int.TryParse(_cords[0], out x);
-                                    int.TryParse(_cords[1], out y);
-                                    int.TryParse(_cords[2], out z);
-                                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
-                                    Event.PlayersReturn.Remove(_playerEntId);
-                                    Event.Players.Remove(_playerEntId);
-                                    Event.SpawnList.Remove(_playerEntId);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event has ended. Thank you for playing.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
-                            else
-                            {
-                                Event.PlayersReturn.Remove(_playerEntId);
-                                Event.Players.Remove(_playerEntId);
-                                Event.SpawnList.Remove(_playerEntId);
-                            }
-                        }
-                        if (Event.Players.Count == 0)
-                        {
-                            Event.Return = false;
-                            Event.Open = false;
-                            Event.PlayersTeam.Clear();
-                            Event.Players.Clear();
-                            Event.SpawnList.Clear();
-                            Event.Admin = null;
-                            PersistentContainer.Instance.EventName = null;
-                            PersistentContainer.Instance.EventInvite = null;
-                            PersistentContainer.Instance.EventPlayerCount = 0;
-                            PersistentContainer.Instance.EventTeams = 0;
-                            PersistentContainer.Instance.EventTime = 0;
-                            PersistentContainer.Instance.EventSpawn = null;
-                            PersistentContainer.Instance.EventRespawn = null;
-                            PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output("All players have been sent to their return point and the event has been cleaned up.");
-                            return;
-                        }
-                        else
+                        if (Event.Return)
                         {
                             for (int i = 0; i < Event.Players.Count; i++)
                             {
                                 int _playerEntId = Event.Players[i];
-                                SdtdConsole.Instance.Output("Player with entity Id {0} is still in the event.");
+                                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_playerEntId);
+                                if (_cInfo != null)
+                                {
+                                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                    if (_player.IsSpawned())
+                                    {
+                                        string _position;
+                                        Event.PlayersReturn.TryGetValue(_playerEntId, out _position);
+                                        int x, y, z;
+                                        string[] _cords = _position.Split(',');
+                                        int.TryParse(_cords[0], out x);
+                                        int.TryParse(_cords[1], out y);
+                                        int.TryParse(_cords[2], out z);
+                                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                                        Event.PlayersReturn.Remove(_playerEntId);
+                                        Event.Players.Remove(_playerEntId);
+                                        Event.SpawnList.Remove(_playerEntId);
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event has ended. Thank you for playing.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                    }
+                                }
+                                else
+                                {
+                                    PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_playerEntId);
+                                    string _steamId = _persistentPlayerData.PlayerId;
+                                    string _pos;
+                                    Event.PlayersReturn.TryGetValue(_playerEntId, out _pos);
+                                    PersistentContainer.Instance.Players[_steamId, true].EventReturn = _pos;
+                                    PersistentContainer.Instance.Save();
+                                    Event.Players.Remove(_playerEntId);
+                                    Event.PlayersTeam.Remove(_playerEntId);
+                                    Event.PlayersReturn.Remove(_playerEntId);
+                                    Event.SpawnList.Remove(_playerEntId);
+                                    SdtdConsole.Instance.Output(string.Format("Player with Id {0} was offline but they have been removed and set for their return point.", _params[1]));
+                                }
                             }
-                            SdtdConsole.Instance.Output("Type event return after they respawn or kick them and run event cancel.");
-                            return;
+                            if (Event.Players.Count == 0)
+                            {
+                                Event.Return = false;
+                                Event.Open = false;
+                                Event.PlayersTeam.Clear();
+                                Event.Players.Clear();
+                                Event.SpawnList.Clear();
+                                Event.Admin = null;
+                                PersistentContainer.Instance.EventName = null;
+                                PersistentContainer.Instance.EventInvite = null;
+                                PersistentContainer.Instance.EventPlayerCount = 0;
+                                PersistentContainer.Instance.EventTeams = 0;
+                                PersistentContainer.Instance.EventTime = 0;
+                                PersistentContainer.Instance.EventSpawn = null;
+                                PersistentContainer.Instance.EventRespawn = null;
+                                PersistentContainer.Instance.Save();
+                                SdtdConsole.Instance.Output("All players have been sent to their return point and the event has been cleaned up.");
+                                return;
+                            }
+                            else
+                            {
+                                for (int i = 0; i < Event.Players.Count; i++)
+                                {
+                                    int _playerEntId = Event.Players[i];
+                                    SdtdConsole.Instance.Output("Player with entity Id {0} is still in the event.");
+                                }
+                                SdtdConsole.Instance.Output("Type event return after they respawn or kick them and run event cancel.");
+                                return;
+                            }
                         }
                     }
                 }
@@ -616,6 +643,66 @@ namespace ServerTools
                     {
                         SdtdConsole.Instance.Output(string.Format("You are not the organizer for this event. Contact {0}.", Event.Admin));
                         return;
+                    }
+                }
+                if (_params[0] == ("remove"))
+                {
+                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerName)
+                    {
+                        if (Event.Open)
+                        {
+                            int _id;
+                            if (int.TryParse(_params[1], out _id))
+                            {
+                                if (Event.Players.Contains(_id))
+                                {
+                                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_id);
+                                    if (_cInfo != null)
+                                    {
+                                        string _pos;
+                                        Event.PlayersReturn.TryGetValue(_cInfo.entityId, out _pos);
+                                        int x, y, z;
+                                        string[] _cords = _pos.Split(',');
+                                        int.TryParse(_cords[0], out x);
+                                        int.TryParse(_cords[1], out y);
+                                        int.TryParse(_cords[2], out z);
+                                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                                        Event.Players.Remove(_id);
+                                        Event.PlayersTeam.Remove(_id);
+                                        Event.PlayersReturn.Remove(_id);
+                                        Event.SpawnList.Remove(_id);
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have been removed from the event and sent to your return point.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                        SdtdConsole.Instance.Output(string.Format("Player with Id {0} was removed from the event and sent to their return point.", _params[1]));
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_id);
+                                        string _steamId = _persistentPlayerData.PlayerId;
+                                        string _pos;
+                                        Event.PlayersReturn.TryGetValue(_id, out _pos);
+                                        PersistentContainer.Instance.Players[_steamId, true].EventReturn = _pos;
+                                        PersistentContainer.Instance.Save();
+                                        Event.Players.Remove(_id);
+                                        Event.PlayersTeam.Remove(_id);
+                                        Event.PlayersReturn.Remove(_id);
+                                        Event.SpawnList.Remove(_id);
+                                        SdtdConsole.Instance.Output(string.Format("Player with Id {0} was offline but they have been removed and set for their return point.", _params[1]));
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    SdtdConsole.Instance.Output(string.Format("Invalid Id: {0}.", _params[1]));
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Invalid integer: {0}.", _params[1]));
+                                return;
+                            }
+                        }
                     }
                 }
             }
