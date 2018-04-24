@@ -325,7 +325,7 @@ namespace ServerTools
             {
                 Jail.StatusCheck();
             }
-            if (Bounties.IsEnabled || Players.Kill_Notice || DeathSpot.IsEnabled || Zones.IsEnabled)
+            if (Bounties.IsEnabled || Players.Kill_Notice || DeathSpot.IsEnabled || Zones.IsEnabled || Event.Open)
             {
                 Players.Exec();
             }

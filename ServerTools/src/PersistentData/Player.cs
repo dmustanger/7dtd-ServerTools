@@ -26,6 +26,7 @@ namespace ServerTools
         private int auctionData;
         private int playerSpentCoins;
         private string[] auctionItem;
+        private string eventReturn;
         private string hardcoreName;
         private string lobbyReturn;
         private string newTeleSpawn;
@@ -36,6 +37,7 @@ namespace ServerTools
         private string clanname;
         private string invitedtoclan;
         private string lastwhisper;
+        private string ipAddress;
         private DateTime lastStuck;
         private DateTime lastLobby;
         private DateTime cancelTime;
@@ -637,6 +639,18 @@ namespace ServerTools
             }
         }
 
+        public string EventReturn
+        {
+            get
+            {
+                return eventReturn;
+            }
+            set
+            {
+                eventReturn = value;
+            }
+        }
+
         public string HardcoreName
         {
             get
@@ -754,6 +768,18 @@ namespace ServerTools
             set
             {
                 lastwhisper = value;
+            }
+        }
+
+        public string IP
+        {
+            get
+            {
+                return ipAddress;
+            }
+            set
+            {
+                ipAddress = value;
             }
         }
 

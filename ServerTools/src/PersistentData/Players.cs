@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -145,7 +146,11 @@ namespace ServerTools
                             Dead.Add(_player.entityId);
                             if (!DeathTime.ContainsKey(_player.entityId))
                             {
-                                string _dposition = _player.position.x + "," + _player.position.y + "," + _player.position.z;
+                                Vector3 _position = _player.GetPosition();
+                                int x = (int)_position.x;
+                                int y = (int)_position.y;
+                                int z = (int)_position.z;
+                                string _dposition = x + "," + y + "," + z;
                                 DeathTime.Add(_player.entityId, DateTime.Now);
                                 LastDeathPos.Add(_player.entityId, _dposition);
                             }

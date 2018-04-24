@@ -237,6 +237,12 @@ namespace ServerTools
                 }
                 else
                 {
+                    PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_playerEntId);
+                    string _steamId = _persistentPlayerData.PlayerId;
+                    string _pos;
+                    PlayersReturn.TryGetValue(_playerEntId, out _pos);
+                    PersistentContainer.Instance.Players[_steamId, true].EventReturn = _pos;
+                    PersistentContainer.Instance.Save();
                     PlayersReturn.Remove(_playerEntId);
                     PlayersTeam.Remove(_playerEntId);
                     Players.Remove(_playerEntId);
@@ -279,6 +285,20 @@ namespace ServerTools
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} not all players were spawned. Let them respawn and type event return in console.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
+        }
+
+        public static void OfflineReturn(ClientInfo _cInfo)
+        {
+            string _pos = PersistentContainer.Instance.Players[_cInfo.playerId, true].EventReturn;
+            int x, y, z;
+            string[] _cords = _pos.Split(',');
+            int.TryParse(_cords[0], out x);
+            int.TryParse(_cords[1], out y);
+            int.TryParse(_cords[2], out z);
+            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].EventReturn = null;
+            PersistentContainer.Instance.Save();
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event ended while you were offline. You have been sent to your return point.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
         }
     }
 }

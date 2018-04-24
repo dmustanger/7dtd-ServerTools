@@ -158,6 +158,10 @@ namespace ServerTools
                 {
                     Hardcore.Check(_cInfo);
                 }
+                if (PersistentContainer.Instance.Players[_cInfo.playerId, true].EventReturn != null)
+                {
+                    Event.OfflineReturn(_cInfo);
+                }
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = _zCount;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = _deathCount;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = _killCount;
@@ -276,20 +280,24 @@ namespace ServerTools
                 {
                     UndergroundCheck.uLastPositionXZ.Remove(_cInfo.entityId);
                 }
-                DateTime _time;
-                if (Players.Session.TryGetValue(_cInfo.playerId, out _time))
+                if (PersistentContainer.Instance.Players[_cInfo.playerId, false] != null)
                 {
-                    TimeSpan varTime = DateTime.Now - _time;
-                    double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
-                    if (_timepassed > 60)
+                    DateTime _time;
+                    if (Players.Session.TryGetValue(_cInfo.playerId, out _time))
                     {
-                        int _hours = _timepassed / 60 * 10;
-                        int _oldCoin = PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoin + _hours;
+                        TimeSpan varTime = DateTime.Now - _time;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        int _timepassed = (int)fractionalMinutes;
+                        if (_timepassed > 60)
+                        {
+                            int _hours = _timepassed / 60 * 10;
+                            int _oldCoin = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoin + _hours;
+                        }
+                        int _oldSession = PersistentContainer.Instance.Players[_cInfo.playerId, false].SessionTime;
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].SessionTime = _oldSession + _timepassed;
+                        PersistentContainer.Instance.Save();
                     }
-                    int _oldSession = PersistentContainer.Instance.Players[_cInfo.playerId, true].SessionTime;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].SessionTime = _oldSession + _timepassed;
                 }
                 if (Players.Session.ContainsKey(_cInfo.playerId))
                 {
