@@ -1,7 +1,6 @@
 ﻿CHANGELOG
 
 10.1
-Added internal storage of IP address so Allocs Server Fixes are not required to run ST
 Added ability to jail a player when offline
 Added to event system. If a player is offline when an event ends, they are marked for return when they log back in
 Added event command to remove a single player from a running event. They will be sent to their return point or marked for return if offline
