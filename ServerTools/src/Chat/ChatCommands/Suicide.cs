@@ -46,7 +46,7 @@ namespace ServerTools
                                     string _phrase8;
                                     if (!Phrases.Dict.TryGetValue(8, out _phrase8))
                                     {
-                                        _phrase8 = "{PlayerName} you can only use /killme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                        _phrase8 = "{PlayerName} you can only use /killme, /wrist, /hang, or /suicide once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                     }
                                     _phrase8 = _phrase8.Replace("{PlayerName}", _cInfo.playerName);
                                     _phrase8 = _phrase8.Replace("{DelayBetweenUses}", _newDelay.ToString());
@@ -75,7 +75,7 @@ namespace ServerTools
                             string _phrase8;
                             if (!Phrases.Dict.TryGetValue(8, out _phrase8))
                             {
-                                _phrase8 = "{PlayerName} you can only use /killme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                _phrase8 = "{PlayerName} you can only use /killme, /wrist, /hang, or /suicide once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
                             _phrase8 = _phrase8.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase8 = _phrase8.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());

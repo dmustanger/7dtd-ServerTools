@@ -82,8 +82,14 @@ namespace ServerTools
                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfoAdmins.playerId);
                 if (Admin.PermissionLevel <= Admin_Level)
                 {
-                    
-                    _cInfoAdmins.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Report from {1}: {2}[-]", Config.Chat_Response_Color, _cInfo.playerName, _message), Config.Server_Response_Name, false, "ServerTools", false));
+                    string _phrase796;
+                    if (!Phrases.Dict.TryGetValue(796, out _phrase796))
+                    {
+                        _phrase796 = "Report from {PlayerName}: {Message}";
+                    }
+                    _phrase796 = _phrase796.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase796 = _phrase796.Replace("{Message}", _message);
+                    _cInfoAdmins.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase796), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             using (StreamWriter sw = new StreamWriter(_filepath, true))
@@ -93,7 +99,13 @@ namespace ServerTools
                 sw.Flush();
                 sw.Close();
             }
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your report has been sent to online administrators and logged.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+            string _phrase797;
+            if (!Phrases.Dict.TryGetValue(797, out _phrase797))
+            {
+                _phrase797 = "{PlayerName} your report has been sent to online administrators and logged.";
+            }
+            _phrase797 = _phrase797.Replace("{PlayerName}", _cInfo.playerName);
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase797), Config.Server_Response_Name, false, "ServerTools", false));
             PersistentContainer.Instance.Players[_cInfo.playerId, true].Log = DateTime.Now;
             PersistentContainer.Instance.Save();
             Log.Out(string.Format("[SERVERTOOLS] Report sent by player name {0}", _cInfo.playerName));
