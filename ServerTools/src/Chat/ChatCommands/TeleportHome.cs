@@ -237,13 +237,13 @@ namespace ServerTools
                 bool _donator = false;
                 if (Delay_Between_Uses < 1)
                 {
-                    Home2(_cInfo, p.HomePosition2, _playerName, _announce);
+                    Home2(_cInfo, p.HomePosition2, _announce);
                 }
                 else
                 {
                     if (p.LastSetHome == null)
                     {
-                        Home2(_cInfo, p.HomePosition2, _playerName, _announce);
+                        Home2(_cInfo, p.HomePosition2, _announce);
                     }
                     else
                     {
@@ -262,7 +262,7 @@ namespace ServerTools
                                     int _newDelay = Delay_Between_Uses / 2;
                                     if (_timepassed >= _newDelay)
                                     {
-                                        Home2(_cInfo, p.HomePosition2, _playerName, _announce);
+                                        Home2(_cInfo, p.HomePosition2, _announce);
                                     }
                                     else
                                     {
@@ -291,7 +291,7 @@ namespace ServerTools
                         {
                             if (_timepassed >= Delay_Between_Uses)
                             {
-                                Home2(_cInfo, p.HomePosition2, _playerName, _announce);
+                                Home2(_cInfo, p.HomePosition2, _announce);
                             }
                             else
                             {
@@ -320,7 +320,7 @@ namespace ServerTools
         }
 
 
-        private static void Home2(ClientInfo _cInfo, string _home2, string _playerName, bool _announce)
+        private static void Home2(ClientInfo _cInfo, string _home2, bool _announce)
         {
             int x, y, z;
             string[] _cords = _home2.Split(',');
@@ -503,7 +503,7 @@ namespace ServerTools
                 if (Delay_Between_Uses < 1)
                 {
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    Home2(_cInfo, p.HomePosition2, _playerName, _announce);
+                    Home2(_cInfo, p.HomePosition2, _announce);
                     FriendInvite(_cInfo, _player.position, p.HomePosition2);
                 }
                 else
@@ -511,7 +511,7 @@ namespace ServerTools
                     if (p.LastSetHome == null)
                     {
                         EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                        Home2(_cInfo, p.HomePosition2, _playerName, _announce);
+                        Home2(_cInfo, p.HomePosition2, _announce);
                         FriendInvite(_cInfo, _player.position, p.HomePosition2);
                     }
                     else
@@ -532,7 +532,7 @@ namespace ServerTools
                                     if (_timepassed >= _newDelay)
                                     {
                                         EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                        Home2(_cInfo, p.HomePosition2, _playerName, _announce);
+                                        Home2(_cInfo, p.HomePosition2, _announce);
                                         FriendInvite(_cInfo, _player.position, p.HomePosition2);
                                     }
                                     else
@@ -563,7 +563,7 @@ namespace ServerTools
                             if (_timepassed >= Delay_Between_Uses)
                             {
                                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                Home2(_cInfo, p.HomePosition2, _playerName, _announce);
+                                Home2(_cInfo, p.HomePosition2, _announce);
                                 FriendInvite(_cInfo, _player.position, p.HomePosition2);
                             }
                             else
@@ -597,7 +597,6 @@ namespace ServerTools
             int x = (int)_position.x;
             int y = (int)_position.y;
             int z = (int)_position.z;
-            string _sposition = x + "," + y + "," + z;
             World world = GameManager.Instance.World;
             EntityPlayer _player = world.Players.dict[_cInfo.entityId];
             List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
@@ -614,7 +613,7 @@ namespace ServerTools
                             _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your friend {2} has invited you to their saved home. Type /go to accept.[-]", Config.Chat_Response_Color, _cInfo2.playerName, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Invited your friend {1} to your saved home.[-]", Config.Chat_Response_Color, _cInfo2.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                             Invite.Add(_cInfo2.entityId, DateTime.Now);
-                            FriendPosition.Add(_cInfo2.entityId, _sposition);
+                            FriendPosition.Add(_cInfo2.entityId, _destination);
                         }
                     }
                 }
