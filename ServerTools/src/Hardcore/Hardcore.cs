@@ -10,7 +10,14 @@ namespace ServerTools
 
         public static void Announce(ClientInfo _cInfo)
         {
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, hardcore mode is enabled! You have {2} lives remaining...[-]", Config.Chat_Response_Color, _cInfo.playerName, Max_Deaths), Config.Server_Response_Name, false, "ServerTools", false));
+            string _phrase949;
+            if (!Phrases.Dict.TryGetValue(949, out _phrase949))
+            {
+                _phrase949 = "{PlayerName}, hardcore mode is enabled! You have {Lives} lives remaining...";
+            }
+            _phrase949 = _phrase949.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase949 = _phrase949.Replace("{Lives}", Max_Deaths.ToString());
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase949), Config.Server_Response_Name, false, "ServerTools", false));
         }
 
         public static void Check(ClientInfo _cInfo)
@@ -24,7 +31,16 @@ namespace ServerTools
                     if (_deaths < Max_Deaths)
                     {
                         int _lives = Max_Deaths - _deaths;
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Hardcore: Zombie Kills {1}, Player Kills {2}, Score {3}, Lives remaining {4}...[-]", Config.Chat_Response_Color, _player.KilledZombies, _player.KilledPlayers, _player.Score, _lives), Config.Server_Response_Name, false, "ServerTools", false));
+                        string _phrase950;
+                        if (!Phrases.Dict.TryGetValue(950, out _phrase950))
+                        {
+                            _phrase950 = "Hardcore: Zombie Kills {ZombieKills}, Player Kills {PlayerKills}, Score {Score}, Lives remaining {Lives}...";
+                        }
+                        _phrase950 = _phrase950.Replace("{ZombieKills}", _player.KilledZombies.ToString());
+                        _phrase950 = _phrase950.Replace("{PlayerKills}", _player.KilledPlayers.ToString());
+                        _phrase950 = _phrase950.Replace("{Score}", _player.Score.ToString());
+                        _phrase950 = _phrase950.Replace("{Lives}", _lives.ToString());
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase950), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                     else
                     {
@@ -56,7 +72,6 @@ namespace ServerTools
             PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = 0;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = false;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].FirstClaim = false;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].Poll = false;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].IsClanOwner = false;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].IsClanOfficer = false;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].IsMuted = false;
@@ -121,7 +136,18 @@ namespace ServerTools
                     File.Delete(_filepath1);
                 }
             }
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}Hardcore Game Over: Player {1}, Zombie Kills {2}, Player Kills {3}, Deaths {4}, Score {5}, Playtime {6}[-]", Config.Chat_Response_Color, _cInfo.playerName, _player.KilledZombies, _player.KilledPlayers, _deaths, _player.Score, _session), Config.Server_Response_Name, false, "ServerTools", false);
+            string _phrase951;
+            if (!Phrases.Dict.TryGetValue(951, out _phrase951))
+            {
+                _phrase951 = "Hardcore Game Over: Player {PlayerName}, Zombie Kills {ZombieKills}, Player Kills {PlayerKills}, Deaths {Deaths}, Score {Score}, Playtime {Playtime}";
+            }
+            _phrase951 = _phrase951.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase951 = _phrase951.Replace("{ZombieKills}", _player.KilledZombies.ToString());
+            _phrase951 = _phrase951.Replace("{PlayerKills}", _player.KilledPlayers.ToString());
+            _phrase951 = _phrase951.Replace("{Deaths}", _deaths.ToString());
+            _phrase951 = _phrase951.Replace("{Score}", _player.Score.ToString());
+            _phrase951 = _phrase951.Replace("{Playtime}", _session);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase951), Config.Server_Response_Name, false, "ServerTools", false);
         }
 
         public static void TopThree(ClientInfo _cInfo, bool _announce)
@@ -194,17 +220,44 @@ namespace ServerTools
                     }
                 }
             }
+            string _phrase945;
+            if (!Phrases.Dict.TryGetValue(945, out _phrase945))
+            {
+                _phrase945 = "Hardcore Top Players";
+            }
+            string _phrase946;
+            if (!Phrases.Dict.TryGetValue(946, out _phrase946))
+            {
+                _phrase946 = "Playtime #1 {Name1}, {Session1} Playtime #2 {Name2}, {Session2} Playtime #3 {Name3}, {Session3}";
+            }
+            _phrase946 = _phrase946.Replace("{Name1}", _sessionName1);
+            _phrase946 = _phrase946.Replace("{Session1}", _topSession1.ToString());
+            _phrase946 = _phrase946.Replace("{Name2}", _sessionName2);
+            _phrase946 = _phrase946.Replace("{Session2}", _topSession2.ToString());
+            _phrase946 = _phrase946.Replace("{Name3}", _sessionName3);
+            _phrase946 = _phrase946.Replace("{Session3}", _topSession3.ToString());
+            string _phrase947;
+            if (!Phrases.Dict.TryGetValue(947, out _phrase947))
+            {
+                _phrase947 = "Score #1 {Name1}, {Score1} Score #2 {Name2}, {Score2} Score #3 {Name3}, {Score3}";
+            }
+            _phrase947 = _phrase947.Replace("{Name1}", _ScoreName1);
+            _phrase947 = _phrase947.Replace("{Score1}", _topScore1.ToString());
+            _phrase947 = _phrase947.Replace("{Name2}", _ScoreName2);
+            _phrase947 = _phrase947.Replace("{Score2}", _topScore2.ToString());
+            _phrase947 = _phrase947.Replace("{Name3}", _ScoreName3);
+            _phrase947 = _phrase947.Replace("{Score3}", _topScore3.ToString());
             if (_announce)
             {
-                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}Hardcore Top Players[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false);
-                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}Playtime #1 {1}, {2} Playtime #2 {3}, {4} Playtime #3 {5}, {6}[-]", Config.Chat_Response_Color, _sessionName1, _topSession1, _sessionName2, _topSession2, _sessionName3, _topSession3), Config.Server_Response_Name, false, "ServerTools", false);
-                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}Score #1 {1}, {2} Score #2 {3}, {4} Score #3 {5}, {6}[-]", Config.Chat_Response_Color, _ScoreName1, _topScore1, _ScoreName2, _topScore2, _ScoreName3, _topScore3), Config.Server_Response_Name, false, "ServerTools", false);
+                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase945), Config.Server_Response_Name, false, "ServerTools", false);
+                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase946), Config.Server_Response_Name, false, "ServerTools", false);
+                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase947), Config.Server_Response_Name, false, "ServerTools", false);
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Hardcore Top Players[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Playtime #1 {1}, {2} Playtime #2 {3}, {4} Playtime #3 {5}, {6}[-]", Config.Chat_Response_Color, _sessionName1, _topSession1, _sessionName2, _topSession2, _sessionName3, _topSession3), Config.Server_Response_Name, false, "ServerTools", false));
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Score #1 {1}, {2} Score #2 {3}, {4} Score #3 {5}, {6}[-]", Config.Chat_Response_Color, _ScoreName1, _topScore1, _ScoreName2, _topScore2, _ScoreName3, _topScore3), Config.Server_Response_Name, false, "ServerTools", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase945), Config.Server_Response_Name, false, "ServerTools", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase946), Config.Server_Response_Name, false, "ServerTools", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase947), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -214,13 +267,25 @@ namespace ServerTools
             {
                 if (p != null)
                 {
+                    string _phrase948;
+                    if (!Phrases.Dict.TryGetValue(948, out _phrase948))
+                    {
+                        _phrase948 = "{PlayerName} your last hardcore stats: Name {LastName} Zombie Kills {ZombieKills}, Player Kills {PlayerKills}, Deaths {Deaths}, Score {Score}, Playtime {Playtime} Minutes";
+                    }
+                    _phrase948 = _phrase948.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase948 = _phrase948.Replace("{LastName}", p.HardcoreName);
+                    _phrase948 = _phrase948.Replace("{ZombieKills}", p.HardcoreZKills.ToString());
+                    _phrase948 = _phrase948.Replace("{PlayerKills}", p.HardcoreKills.ToString());
+                    _phrase948 = _phrase948.Replace("{Deaths}", p.HardcoreDeaths.ToString());
+                    _phrase948 = _phrase948.Replace("{Score}", p.HardcoreScore.ToString());
+                    _phrase948 = _phrase948.Replace("{Playtime}", p.HardcoreSessionTime.ToString());
                     if (_announce)
                     {
-                        GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} your last hardcore stats: Name {2} Zombie Kills {3}, Player Kills {4}, Deaths {5}, Score {6}, Playtime {7}[-]", Config.Chat_Response_Color, _cInfo.playerName, p.HardcoreName, p.HardcoreZKills, p.HardcoreKills, p.HardcoreDeaths, p.HardcoreScore, p.HardcoreSessionTime), Config.Server_Response_Name, false, "ServerTools", false);
+                        GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase948), Config.Server_Response_Name, false, "ServerTools", false);
                     }
                     else
                     {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your last hardcore stats: Name {2} Zombie Kills {3}, Player Kills {4}, Deaths {5}, Score {6}, Playtime {7}[-]", Config.Chat_Response_Color, _cInfo.playerName, p.HardcoreName, p.HardcoreZKills, p.HardcoreKills, p.HardcoreDeaths, p.HardcoreScore, p.HardcoreSessionTime), Config.Server_Response_Name, false, "ServerTools", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase948), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
             }

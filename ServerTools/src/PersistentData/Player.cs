@@ -65,9 +65,7 @@ namespace ServerTools
         private DateTime lastVoteReward;
         private DateTime lastgimme;
         private DateTime lastkillme;
-        private DateTime lastsethome;
-        private bool poll;
-        private bool firstClaim;
+        private DateTime lastsethome;        private bool firstClaim;
         private bool isclanowner;
         private bool isclanofficer;
         private bool ismuted;
@@ -780,18 +778,6 @@ namespace ServerTools
             set
             {
                 ipAddress = value;
-            }
-        }
-
-        public bool Poll
-        {
-            get
-            {
-                return poll;
-            }
-            set
-            {
-                poll = value;
             }
         }
 

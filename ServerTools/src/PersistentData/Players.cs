@@ -156,7 +156,11 @@ namespace ServerTools
                             }
                             else
                             {
-                                string _dposition = _player.position.x + "," + _player.position.y + "," + _player.position.z;
+                                Vector3 _position = _player.GetPosition();
+                                int x = (int)_position.x;
+                                int y = (int)_position.y;
+                                int z = (int)_position.z;
+                                string _dposition = x + "," + y + "," + z;
                                 DeathTime[_player.entityId] = DateTime.Now;
                                 LastDeathPos[_player.entityId] = _dposition;
                             }

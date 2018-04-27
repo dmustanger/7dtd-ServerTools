@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace ServerTools
@@ -93,7 +94,12 @@ namespace ServerTools
             Players.SessionTime(_cInfo);
             if (PersistentContainer.Instance.PollOpen)
             {
-                Poll.Message(_cInfo);
+                List<int> _polledPlayerYes = PersistentContainer.Instance.PolledYes;
+                List<int> _polledPlayerNo = PersistentContainer.Instance.PolledNo;
+                if (!_polledPlayerYes.Contains(_cInfo.entityId) && !_polledPlayerNo.Contains(_cInfo.entityId))
+                {
+                    Poll.Message(_cInfo);
+                }
             }
         }
 
@@ -128,7 +134,7 @@ namespace ServerTools
                         StartingItems.StartingItemCheck(_cInfo);
                     }
                 }
-                if (PersistentContainer.Instance.PollOpen && !PersistentContainer.Instance.Players[_cInfo.playerId, true].Poll)
+                if (PersistentContainer.Instance.PollOpen && !Poll.PolledYes.Contains(_cInfo.entityId) && !Poll.PolledNo.Contains(_cInfo.entityId))
                 {
                     Poll.Message(_cInfo);
                 }
@@ -150,7 +156,7 @@ namespace ServerTools
                 int _deathCount = XUiM_Player.GetDeaths(_player);
                 int _killCount = XUiM_Player.GetPlayerKills(_player);
                 Players.FriendList(_cInfo);
-                if (PersistentContainer.Instance.PollOpen && !PersistentContainer.Instance.Players[_cInfo.playerId, true].Poll)
+                if (PersistentContainer.Instance.PollOpen && !Poll.PolledYes.Contains(_cInfo.entityId) && !Poll.PolledNo.Contains(_cInfo.entityId))
                 {
                     Poll.Message(_cInfo);
                 }

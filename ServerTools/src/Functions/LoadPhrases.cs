@@ -94,7 +94,7 @@ namespace ServerTools
                 sw.WriteLine("<ServerTools>");
                 sw.WriteLine("    <Phrases>");
                 sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- *********************** V.10.1 ************************** -->");
+                sw.WriteLine("        <!-- *********************** V.10.2 ************************** -->");
                 sw.WriteLine("        <!-- ******* If your version is incorrect, shutdown, ******** -->");
                 sw.WriteLine("        <!-- ************* delete this file, restart **************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -156,7 +156,7 @@ namespace ServerTools
                 string _phrase8;
                 if (!Dict.TryGetValue(8, out _phrase8))
                 {
-                    _phrase8 = "{PlayerName} you can only use /killme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase8 = "{PlayerName} you can only use /killme, /wrist, /hang, or /suicide once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"8\" Phrase=\"{0}\" />", _phrase8));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -648,13 +648,13 @@ namespace ServerTools
                 string _phrase535;
                 if (!Dict.TryGetValue(535, out _phrase535))
                 {
-                    _phrase535 = "{PlayerName} there is no open lottery. Type /lotto # to open a new lottery at that buy in price. You must have enough in your wallet.";
+                    _phrase535 = "{PlayerName} there is no open lottery. Type /lottery # to open a new lottery at that buy in price. You must have enough in your wallet.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"535\" Phrase=\"{0}\" />", _phrase535));
                 string _phrase536;
                 if (!Dict.TryGetValue(536, out _phrase536))
                 {
-                    _phrase536 = "{PlayerName} a lottery is open for {Value} {CoinName}. Minimum buy in is {BuyIn}. Enter it by typing /lotto enter.";
+                    _phrase536 = "{PlayerName} a lottery is open for {Value} {CoinName}. Minimum buy in is {BuyIn}. Enter it by typing /lottery enter.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"536\" Phrase=\"{0}\" />", _phrase536));
                 string _phrase537;
@@ -672,7 +672,7 @@ namespace ServerTools
                 string _phrase539;
                 if (!Dict.TryGetValue(539, out _phrase539))
                 {
-                    _phrase539 = "A lottery has opened for {Value} {CoinName} and will draw soon. Type /lotto enter to join.";
+                    _phrase539 = "A lottery has opened for {Value} {CoinName} and will draw soon. Type /lottery enter to join.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"539\" Phrase=\"{0}\" />", _phrase539));
                 string _phrase540;
@@ -696,7 +696,7 @@ namespace ServerTools
                 string _phrase543;
                 if (!Dict.TryGetValue(543, out _phrase543))
                 {
-                    _phrase543 = "A lottery draw will begin in five minutes. Get your entries in before it starts.";
+                    _phrase543 = "A lottery draw will begin in five minutes. Get your entries in before it starts. Type /lottery enter.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"543\" Phrase=\"{0}\" />", _phrase543));
                 string _phrase544;
@@ -984,6 +984,12 @@ namespace ServerTools
                     _phrase702 = "Unable to get a result from the website, {PlayerName}. Please try again.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"702\" Phrase=\"{0}\" />", _phrase702));
+                string _phrase703;
+                if (!Dict.TryGetValue(703, out _phrase703))
+                {
+                    _phrase703 = "{PlayerName} reward items were sent to your inventory. If it is full, check the ground.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"703\" Phrase=\"{0}\" />", _phrase703));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ********************* Flight_Check ********************* -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1275,6 +1281,18 @@ namespace ServerTools
                     _phrase795 = "{PlayerName} you can only use /report once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"795\" Phrase=\"{0}\" />", _phrase795));
+                string _phrase796;
+                if (!Dict.TryGetValue(796, out _phrase796))
+                {
+                    _phrase796 = "Report from {PlayerName}: {Message}";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"796\" Phrase=\"{0}\" />", _phrase796));
+                string _phrase797;
+                if (!Dict.TryGetValue(797, out _phrase797))
+                {
+                    _phrase797 = "{PlayerName} your report has been sent to online administrators and logged.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"797\" Phrase=\"{0}\" />", _phrase797));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ******************* Unsorted_Phrases ******************* -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1356,6 +1374,12 @@ namespace ServerTools
                     _phrase811 = "{PlayerName} you can only use /return for four minutes after respawn. Time has expired.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"811\" Phrase=\"{0}\" />", _phrase811));
+                string _phrase812;
+                if (!Dict.TryGetValue(812, out _phrase812))
+                {
+                    _phrase812 = "Currently, the pole is yes {YesCount} / no {NoCount}.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"812\" Phrase=\"{0}\" />", _phrase812));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- *********************** Auction ************************ -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1437,6 +1461,31 @@ namespace ServerTools
                     _phrase925 = "Poll results: Yes {YesVote} / No {NoVote}";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"925\" Phrase=\"{0}\" />", _phrase925));
+                string _phrase926;
+                if (!Dict.TryGetValue(926, out _phrase926))
+                {
+                    _phrase926 = "Poll: {Message}";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"926\" Phrase=\"{0}\" />", _phrase926));
+                string _phrase927;
+                if (!Dict.TryGetValue(927, out _phrase927))
+                {
+                    _phrase927 = "Type /pollyes or /pollno to vote.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"927\" Phrase=\"{0}\" />", _phrase927));
+                string _phrase928;
+                if (!Dict.TryGetValue(928, out _phrase928))
+                {
+                    _phrase928 = "You have cast a vote for yes. Currently, the pole is yes {Yes} / no {No}.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"928\" Phrase=\"{0}\" />", _phrase928));
+                string _phrase929;
+                if (!Dict.TryGetValue(929, out _phrase929))
+                {
+                    _phrase929 = "You have cast a vote for no. Currently, the pole is yes {Yes} / no {No}.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"929\" Phrase=\"{0}\" />", _phrase929));
+
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ********************* Night_Vote *********************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1470,9 +1519,8 @@ namespace ServerTools
                     _phrase934 = "Players voted yes to skip this night. Good morning.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"934\" Phrase=\"{0}\" />", _phrase934));
-                sw.WriteLine(string.Format("        <Phrase id=\"925\" Phrase=\"{0}\" />", _phrase925));
                 sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- ****************** Night_Time_Alert ******************** -->");
+                sw.WriteLine("        <!-- ******************* Night_Time_Alert ******************* -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 string _phrase940;
                 if (!Dict.TryGetValue(940, out _phrase940))
@@ -1480,6 +1528,84 @@ namespace ServerTools
                     _phrase940 = "{Time} hours until night time.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"940\" Phrase=\"{0}\" />", _phrase940));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ********************** Hardcore ************************ -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase945;
+                if (!Dict.TryGetValue(945, out _phrase945))
+                {
+                    _phrase945 = "Hardcore Top Players";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"945\" Phrase=\"{0}\" />", _phrase945));
+                string _phrase946;
+                if (!Dict.TryGetValue(946, out _phrase946))
+                {
+                    _phrase946 = "Playtime #1 {Name1}, {Session1} Playtime #2 {Name2}, {Session2} Playtime #3 {Name3}, {Session3}";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"946\" Phrase=\"{0}\" />", _phrase946));
+                string _phrase947;
+                if (!Dict.TryGetValue(947, out _phrase947))
+                {
+                    _phrase947 = "Score #1 {Name1}, {Score1} Score #2 {Name2}, {Score2} Score #3 {Name3}, {Score3}";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"947\" Phrase=\"{0}\" />", _phrase947));
+                string _phrase948;
+                if (!Dict.TryGetValue(948, out _phrase948))
+                {
+                    _phrase948 = "{PlayerName} your last hardcore stats: Name {LastName} Zombie Kills {ZombieKills}, Player Kills {PlayerKills}, Deaths {Deaths}, Score {Score}, Playtime {Playtime} Minutes";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"948\" Phrase=\"{0}\" />", _phrase948));
+                string _phrase949;
+                if (!Dict.TryGetValue(949, out _phrase949))
+                {
+                    _phrase949 = "{PlayerName}, hardcore mode is enabled! You have {Lives} lives remaining...";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"949\" Phrase=\"{0}\" />", _phrase949));
+                string _phrase950;
+                if (!Dict.TryGetValue(950, out _phrase950))
+                {
+                    _phrase950 = "Hardcore: Zombie Kills {ZombieKills}, Player Kills {PlayerKills}, Score {Score}, Lives remaining {Lives}...";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"950\" Phrase=\"{0}\" />", _phrase950));
+                string _phrase951;
+                if (!Dict.TryGetValue(951, out _phrase951))
+                {
+                    _phrase951 = "Hardcore Game Over: Player {PlayerName}, Zombie Kills {ZombieKills}, Player Kills {PlayerKills}, Deaths {Deaths}, Score {Score}, Playtime {Playtime}";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"951\" Phrase=\"{0}\" />", _phrase951));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ********************* Kick_Vote ************************ -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase955;
+                if (!Dict.TryGetValue(955, out _phrase955))
+                {
+                    _phrase955 = "A vote to kick {PlayerName} has begun and will close in 30 seconds.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"955\" Phrase=\"{0}\" />", _phrase955));
+                string _phrase956;
+                if (!Dict.TryGetValue(956, out _phrase956))
+                {
+                    _phrase956 = "This player id was not found.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"956\" Phrase=\"{0}\" />", _phrase956));
+                string _phrase957;
+                if (!Dict.TryGetValue(957, out _phrase957))
+                {
+                    _phrase957 = "Not enough players are online to start a vote to kick.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"957\" Phrase=\"{0}\" />", _phrase957));
+                string _phrase958;
+                if (!Dict.TryGetValue(958, out _phrase958))
+                {
+                    _phrase958 = "PlayerName = {PlayerName}, # = {Id}.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"958\" Phrase=\"{0}\" />", _phrase958));
+                string _phrase959;
+                if (!Dict.TryGetValue(959, out _phrase959))
+                {
+                    _phrase959 = "Type /kick # to start a vote to kick that player.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"959\" Phrase=\"{0}\" />", _phrase959));
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();

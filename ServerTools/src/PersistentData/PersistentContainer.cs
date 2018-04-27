@@ -24,6 +24,8 @@ namespace ServerTools
         private int lastPollHours;
         private int lastPollYes;
         private int lastPollNo;
+        private List<int> polledYes;
+        private List<int> polledNo;
         private List<string> eventSpawn;
         private List<string> eventRespawn;
         private List<string> eventSpawnOld;
@@ -259,6 +261,30 @@ namespace ServerTools
             set
             {
                 lastPollNo = value;
+            }
+        }
+
+        public List<int> PolledYes
+        {
+            get
+            {
+                return polledYes;
+            }
+            set
+            {
+                polledYes = value;
+            }
+        }
+
+        public List<int> PolledNo
+        {
+            get
+            {
+                return polledNo;
+            }
+            set
+            {
+                polledNo = value;
             }
         }
 
