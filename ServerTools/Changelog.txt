@@ -1,5 +1,15 @@
 ﻿CHANGELOG
 
+10.2
+Added some phrases to ServerToolsPhrases.xml. Make sure to update it by stopping the server and deleting the file. It will now rebuild when you start your server
+Added /bank to /commands
+Added to HowTo.xml
+Changed /lotto to /lottery. Players were confused by the short form for lottery
+Fixed another bug when using /died
+Fixed bugs with the Poll tool such as being able to vote more than once
+Fixed Vote_Kick phrase
+Removed tool Bag from HowTo.xml
+
 10.1
 Added ability to jail a player when offline
 Added to event system. If a player is offline when an event ends, they are marked for return when they log back in
