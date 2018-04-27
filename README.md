@@ -163,5 +163,7 @@ Bike: save a bike id while inside a claimed space. Return a saved bike if close 
 <br>
 Death return: while enabled, players can return to where they died<br>
 <br>
+Entity cleanup: removes falling blocks, stuck falling trees<br>
+<br>
 <br> 
 <br>
