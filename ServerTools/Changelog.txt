@@ -1,5 +1,15 @@
 ﻿CHANGELOG
 
+10.3
+Added some phrases to ServerToolsPhrases.xml. Make sure to update it by stopping the server and deleting the file. It will now rebuild when you start your server
+Added to /bank response. Shows a bank account transfer id
+Added bank command /transfer Id #. Players can tranfer from their bank to another bank account by asking for a transfer id. Each transfer sets a new id
+Added Dupe_Log exemption list. If there is an item or block name you do not want reported in the log, add it to DuplicateItems.xml
+Fixed Poll phrase when a player had already voted
+Fixed /fhome and /fhome2 not sending player to their friend's saved home
+Fixed potential of a null reference when a player joins the server
+*Note* An open lottery lasts for one hour or until ten players enter it. If a shutdown begins, the lottery is drawn
+
 10.2
 Added some phrases to ServerToolsPhrases.xml. Make sure to update it by stopping the server and deleting the file. It will now rebuild when you start your server
 Added /bank to /commands
