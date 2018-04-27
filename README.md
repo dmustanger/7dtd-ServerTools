@@ -43,7 +43,7 @@ Other Tools<br>
 <br>
 Day7 alerts: automatically receive in game alerts to the upcoming bloodmoon. Can set a custom horde night value<br>
 <br>
-Zone protection: set an area as a protected space. PvP inside is dealt with automatically. Alert upon entry/exit<br>
+Zones: set an area as a protected space. PvP inside is dealt with automatically. Alert upon entry/exit<br>
 <br>
 Weather vote: vote to change the weather<br>
 <br>
