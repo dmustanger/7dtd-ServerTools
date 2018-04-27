@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 
 namespace ServerTools
 {
     class DupeLog
     {
-        public static bool IsEnabled = false;
+        public static bool IsEnabled = false, IsRunning = false;
         private static Dictionary<int, ItemStack[]> Bag = new Dictionary<int, ItemStack[]>();
         private static Dictionary<int, ItemStack[]> Inventory = new Dictionary<int, ItemStack[]>();
         private static Dictionary<int, int> Crafted = new Dictionary<int, int>();
-        private static string file = string.Format("DupeLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string filepath = string.Format("{0}/DupeLogs/{1}", API.GamePath, file);
+        private static string _file = string.Format("DupeLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static string _filepath = string.Format("{0}/DupeLogs/{1}", API.GamePath, _file);
+        private const string file = "DuplicateItems.xml";
+        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        public static List<string> dict = new List<string>();
+        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static bool updateConfig = false;
 
         public static void CreateFolder()
         {
@@ -19,6 +25,129 @@ namespace ServerTools
             {
                 Directory.CreateDirectory(API.GamePath + "/DupeLogs");
             }
+        }
+
+        public static void Load()
+        {
+            if (IsEnabled && !IsRunning)
+            {
+                LoadXml();
+                InitFileWatcher();
+            }
+        }
+
+        public static void Unload()
+        {
+            if (!IsEnabled && IsRunning)
+            {
+                dict.Clear();
+                fileWatcher.Dispose();
+                IsRunning = false;
+            }
+        }
+
+        public static void LoadXml()
+        {
+            if (!Utils.FileExists(filePath))
+            {
+                UpdateXml();
+            }
+            XmlDocument xmlDoc = new XmlDocument();
+            try
+            {
+                xmlDoc.Load(filePath);
+            }
+            catch (XmlException e)
+            {
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                return;
+            }
+            XmlNode _XmlNode = xmlDoc.DocumentElement;
+            foreach (XmlNode childNode in _XmlNode.ChildNodes)
+            {
+                if (childNode.Name == "duplicates")
+                {
+                    dict.Clear();
+                    foreach (XmlNode subChild in childNode.ChildNodes)
+                    {
+                        if (subChild.NodeType == XmlNodeType.Comment)
+                        {
+                            continue;
+                        }
+                        if (subChild.NodeType != XmlNodeType.Element)
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'duplicates' section: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        XmlElement _line = (XmlElement)subChild;
+                        if (!_line.HasAttribute("name"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring duplicates entry because of missing name attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        string _name = _line.GetAttribute("name");
+                        if (!dict.Contains(_name))
+                        {
+                            dict.Add(_name);
+                        }
+                    }
+                }
+            }
+            if (updateConfig)
+            {
+                updateConfig = false;
+                UpdateXml();
+            }
+        }
+
+        private static void UpdateXml()
+        {
+            fileWatcher.EnableRaisingEvents = false;
+            using (StreamWriter sw = new StreamWriter(filePath))
+            {
+                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                sw.WriteLine("<DuplicateItems>");
+                sw.WriteLine("    <duplicates>");
+                if (dict.Count > 0)
+                {
+                    for (int i = 0; i < dict.Count; i++)
+                    {
+                        string _name = dict[i];
+                        sw.WriteLine(string.Format("        <duplicate name=\"{0}\" />", _name));
+                    }
+                }
+                else
+                {
+                    sw.WriteLine("        <duplicate name=\"sand\" />");
+                    sw.WriteLine("        <duplicate name=\"dirt\" />");
+                    sw.WriteLine("        <duplicate name=\"rockSmall\" />");
+                    sw.WriteLine("        <duplicate name=\"yuccaFibers\" />");
+                    sw.WriteLine("        <duplicate name=\"stoneAxe\" />");
+                }
+                sw.WriteLine("    </duplicates>");
+                sw.WriteLine("</DuplicateItems>");
+                sw.Flush();
+                sw.Close();
+            }
+            fileWatcher.EnableRaisingEvents = true;
+        }
+
+        private static void InitFileWatcher()
+        {
+            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            fileWatcher.EnableRaisingEvents = true;
+            IsRunning = true;
+        }
+
+        private static void OnFileChanged(object source, FileSystemEventArgs e)
+        {
+            if (!Utils.FileExists(filePath))
+            {
+                UpdateXml();
+            }
+            LoadXml();
         }
 
         public static void Exec(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
@@ -66,229 +195,97 @@ namespace ServerTools
                         if (!_bagStackNew.Equals(_bagStackOld) && !_bagStackNew.IsEmpty())
                         {
                             string _name = _bagStackNew.itemValue.ItemClass.Name;
-                            for (int j = 0; j < _bagSize; j++)
+                            if (!dict.Contains(_name))
                             {
-                                _CompareBagOld = _bagStacks[j];
-                                if (!_CompareBagOld.IsEmpty() && _name == _CompareBagOld.itemValue.ItemClass.Name)
+                                for (int j = 0; j < _bagSize; j++)
                                 {
-                                    _newCount = _oldTotal + _CompareBagOld.count;
-                                    _oldTotal = _newCount;
+                                    _CompareBagOld = _bagStacks[j];
+                                    if (!_CompareBagOld.IsEmpty() && _name == _CompareBagOld.itemValue.ItemClass.Name)
+                                    {
+                                        _newCount = _oldTotal + _CompareBagOld.count;
+                                        _oldTotal = _newCount;
+                                    }
                                 }
-                            }
-                            for (int j = 0; j < _invSize; j++)
-                            {
-                                _CompareInvOld = _invStacks[j];
-                                if (!_CompareInvOld.IsEmpty() && _name == _CompareInvOld.itemValue.ItemClass.Name)
+                                for (int j = 0; j < _invSize; j++)
                                 {
-                                    _newCount = _oldTotal + _CompareInvOld.count;
-                                    _oldTotal = _newCount;
+                                    _CompareInvOld = _invStacks[j];
+                                    if (!_CompareInvOld.IsEmpty() && _name == _CompareInvOld.itemValue.ItemClass.Name)
+                                    {
+                                        _newCount = _oldTotal + _CompareInvOld.count;
+                                        _oldTotal = _newCount;
+                                    }
                                 }
-                            }
 
-                            for (int j = 0; j < _bagSize; j++)
-                            {
-                                _CompareBagNew = _bag[j];
-                                if (!_CompareBagNew.IsEmpty() && _name == _CompareBagNew.itemValue.ItemClass.Name)
+                                for (int j = 0; j < _bagSize; j++)
                                 {
-                                    _newCount = _newTotal + _CompareBagNew.count;
-                                    _newTotal = _newCount;
-                                }
-                            }
-                            for (int j = 0; j < _invSize; j++)
-                            {
-                                _CompareInvNew = _inventory[j];
-                                if (!_CompareInvNew.IsEmpty() && _name == _CompareInvNew.itemValue.ItemClass.Name)
-                                {
-                                    _newCount = _newTotal + _CompareInvNew.count;
-                                    _newTotal = _newCount;
-                                }
-                            }
-                            if (_oldTotal == _newTotal)
-                            {
-                                BagNext = false;
-                            }
-                            if (BagNext)
-                            {
-                                if (_bagStackNew.count == 1)
-                                {
-                                    int _counter1 = 0, _counter2 = 0;
-                                    for (int j = 0; j < _bagSize; j++)
+                                    _CompareBagNew = _bag[j];
+                                    if (!_CompareBagNew.IsEmpty() && _name == _CompareBagNew.itemValue.ItemClass.Name)
                                     {
-                                        _CompareBagNew = _bag[j];
-                                        if (!_CompareBagNew.IsEmpty() && _name == _CompareBagNew.itemValue.ItemClass.Name && _CompareBagNew.count == 1)
-                                        {
-                                            _counter1++;
-                                        }
+                                        _newCount = _newTotal + _CompareBagNew.count;
+                                        _newTotal = _newCount;
                                     }
-                                    for (int j = 0; j < _invSize; j++)
+                                }
+                                for (int j = 0; j < _invSize; j++)
+                                {
+                                    _CompareInvNew = _inventory[j];
+                                    if (!_CompareInvNew.IsEmpty() && _name == _CompareInvNew.itemValue.ItemClass.Name)
                                     {
-                                        _CompareInvNew = _inventory[j];
-                                        if (!_CompareInvNew.IsEmpty() && _name == _CompareInvNew.itemValue.ItemClass.Name && _CompareInvNew.count == 1)
-                                        {
-                                            _counter2++;
-                                        }
+                                        _newCount = _newTotal + _CompareInvNew.count;
+                                        _newTotal = _newCount;
                                     }
-                                    if (_counter1 + _counter2 > 1)
+                                }
+                                if (_oldTotal == _newTotal)
+                                {
+                                    BagNext = false;
+                                }
+                                if (BagNext)
+                                {
+                                    if (_bagStackNew.count == 1)
                                     {
+                                        int _counter1 = 0, _counter2 = 0;
                                         for (int j = 0; j < _bagSize; j++)
                                         {
-                                            _CompareBagOld = _bagStacks[j];
-                                            if (!_CompareBagOld.IsEmpty() && _name == _CompareBagOld.itemValue.ItemClass.Name && _CompareBagOld.count >= _counter1)
+                                            _CompareBagNew = _bag[j];
+                                            if (!_CompareBagNew.IsEmpty() && _name == _CompareBagNew.itemValue.ItemClass.Name && _CompareBagNew.count == 1)
                                             {
-                                                BagNext = false;
+                                                _counter1++;
                                             }
                                         }
-                                        if (BagNext)
+                                        for (int j = 0; j < _invSize; j++)
                                         {
-                                            for (int j = 0; j < _invSize; j++)
+                                            _CompareInvNew = _inventory[j];
+                                            if (!_CompareInvNew.IsEmpty() && _name == _CompareInvNew.itemValue.ItemClass.Name && _CompareInvNew.count == 1)
                                             {
-                                                _CompareInvOld = _invStacks[j];
-                                                if (!_CompareInvOld.IsEmpty() && _name == _CompareInvOld.itemValue.ItemClass.Name && _CompareInvOld.count >= _counter1)
+                                                _counter2++;
+                                            }
+                                        }
+                                        if (_counter1 + _counter2 > 1)
+                                        {
+                                            for (int j = 0; j < _bagSize; j++)
+                                            {
+                                                _CompareBagOld = _bagStacks[j];
+                                                if (!_CompareBagOld.IsEmpty() && _name == _CompareBagOld.itemValue.ItemClass.Name && _CompareBagOld.count >= _counter1)
                                                 {
                                                     BagNext = false;
                                                 }
                                             }
-                                        }
-                                    }
-                                }
-                            }
-                            if (BagNext)
-                            {
-                                if (_bagStackNew.itemValue.ItemClass.HasParts)
-                                {
-                                    for (int j = 0; j < _bagSize; j++)
-                                    {
-                                        _CompareBagNew = _bag[j];
-                                        if (!_CompareBagNew.IsEmpty() && _bagStackNew.Equals(_CompareBagNew) && i != j && !BagSlot.Contains(j))
-                                        {
-                                            BagSlot.Add(i);
-                                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                            PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
-                                            EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
-                                            if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+                                            if (BagNext)
                                             {
-                                                using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                for (int j = 0; j < _invSize; j++)
                                                 {
-                                                    sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their bag inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                    sw.WriteLine();
-                                                    sw.Flush();
-                                                    sw.Close();
-                                                }
-                                            }
-                                            else
-                                            {
-                                                using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                {
-                                                    sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their bag, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                    sw.WriteLine();
-                                                    sw.Flush();
-                                                    sw.Close();
-                                                }
-                                            }
-                                            BagNext = false;
-                                        }
-                                    }
-                                    for (int j = 0; j < _invSize; j++)
-                                    {
-                                        _CompareInvNew = _inventory[j];
-                                        if (!_CompareInvNew.IsEmpty() && _bagStackNew.Equals(_CompareInvNew) && !InvSlot.Contains(j))
-                                        {
-                                            InvSlot.Add(i);
-                                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                            PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
-                                            EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
-                                            if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
-                                            {
-                                                using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                {
-                                                    sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their bag inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                    sw.WriteLine();
-                                                    sw.Flush();
-                                                    sw.Close();
-                                                }
-                                            }
-                                            else
-                                            {
-                                                using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                {
-                                                    sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their bag, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                    sw.WriteLine();
-                                                    sw.Flush();
-                                                    sw.Close();
-                                                }
-                                            }
-                                            BagNext = false;
-                                        }
-                                    }
-                                }
-                                else if (_bagStackNew.itemValue.HasQuality)
-                                {
-                                    for (int j = 0; j < _bagSize; j++)
-                                    {
-                                        _CompareBagNew = _bag[j];
-                                        if (!_CompareBagNew.IsEmpty() && _bagStackNew.Equals(_CompareBagNew) && i != j && !BagSlot.Contains(j))
-                                        {
-                                            BagSlot.Add(i);
-                                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                            PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
-                                            EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
-                                            if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
-                                            {
-                                                using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                {
-                                                    sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their bag inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                    sw.WriteLine();
-                                                    sw.Flush();
-                                                    sw.Close();
-                                                }
-                                            }
-                                            else
-                                            {
-                                                using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                {
-                                                    sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their bag, standing  @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                    sw.WriteLine();
-                                                    sw.Flush();
-                                                    sw.Close();
-                                                }
-                                            }
-                                        }
-                                    }
-                                    for (int j = 0; j < _invSize; j++)
-                                    {
-                                        _CompareInvNew = _inventory[j];
-                                        if (!_CompareInvNew.IsEmpty() && _bagStackNew.Equals(_CompareInvNew) && !InvSlot.Contains(j))
-                                        {
-                                            InvSlot.Add(i);
-                                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                            PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
-                                            EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
-                                            if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
-                                            {
-                                                using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                {
-                                                    sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their bag inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                    sw.WriteLine();
-                                                    sw.Flush();
-                                                    sw.Close();
-                                                }
-                                            }
-                                            else
-                                            {
-                                                using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                {
-                                                    sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their bag, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                    sw.WriteLine();
-                                                    sw.Flush();
-                                                    sw.Close();
+                                                    _CompareInvOld = _invStacks[j];
+                                                    if (!_CompareInvOld.IsEmpty() && _name == _CompareInvOld.itemValue.ItemClass.Name && _CompareInvOld.count >= _counter1)
+                                                    {
+                                                        BagNext = false;
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
-                                else
+                                if (BagNext)
                                 {
-                                    if (_bagStackNew.count > 1)
+                                    if (_bagStackNew.itemValue.ItemClass.HasParts)
                                     {
                                         for (int j = 0; j < _bagSize; j++)
                                         {
@@ -301,9 +298,9 @@ namespace ServerTools
                                                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                 if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                 {
-                                                    using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                     {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their bag, identical to another stack, inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their bag inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                         sw.WriteLine();
                                                         sw.Flush();
                                                         sw.Close();
@@ -311,9 +308,76 @@ namespace ServerTools
                                                 }
                                                 else
                                                 {
-                                                    using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                     {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their bag, identical to another stack, standing @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their bag, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine();
+                                                        sw.Flush();
+                                                        sw.Close();
+                                                    }
+                                                }
+                                                BagNext = false;
+                                            }
+                                        }
+                                        for (int j = 0; j < _invSize; j++)
+                                        {
+                                            _CompareInvNew = _inventory[j];
+                                            if (!_CompareInvNew.IsEmpty() && _bagStackNew.Equals(_CompareInvNew) && !InvSlot.Contains(j))
+                                            {
+                                                InvSlot.Add(i);
+                                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                                PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
+                                                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
+                                                if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+                                                {
+                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                    {
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their bag inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine();
+                                                        sw.Flush();
+                                                        sw.Close();
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                    {
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their bag, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine();
+                                                        sw.Flush();
+                                                        sw.Close();
+                                                    }
+                                                }
+                                                BagNext = false;
+                                            }
+                                        }
+                                    }
+                                    else if (_bagStackNew.itemValue.HasQuality)
+                                    {
+                                        for (int j = 0; j < _bagSize; j++)
+                                        {
+                                            _CompareBagNew = _bag[j];
+                                            if (!_CompareBagNew.IsEmpty() && _bagStackNew.Equals(_CompareBagNew) && i != j && !BagSlot.Contains(j))
+                                            {
+                                                BagSlot.Add(i);
+                                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                                PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
+                                                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
+                                                if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+                                                {
+                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                    {
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their bag inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine();
+                                                        sw.Flush();
+                                                        sw.Close();
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                    {
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their bag, standing  @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                         sw.WriteLine();
                                                         sw.Flush();
                                                         sw.Close();
@@ -332,9 +396,9 @@ namespace ServerTools
                                                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                 if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                 {
-                                                    using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                     {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their bag, identical to another stack, inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their bag inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                         sw.WriteLine();
                                                         sw.Flush();
                                                         sw.Close();
@@ -342,12 +406,80 @@ namespace ServerTools
                                                 }
                                                 else
                                                 {
-                                                    using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                     {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their bag, identical to another stack, standing at {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their bag, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                         sw.WriteLine();
                                                         sw.Flush();
                                                         sw.Close();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (_bagStackNew.count > 1)
+                                        {
+                                            for (int j = 0; j < _bagSize; j++)
+                                            {
+                                                _CompareBagNew = _bag[j];
+                                                if (!_CompareBagNew.IsEmpty() && _bagStackNew.Equals(_CompareBagNew) && i != j && !BagSlot.Contains(j))
+                                                {
+                                                    BagSlot.Add(i);
+                                                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                                    PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
+                                                    EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
+                                                    if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+                                                    {
+                                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                        {
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their bag, identical to another stack, inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine();
+                                                            sw.Flush();
+                                                            sw.Close();
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                        {
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their bag, identical to another stack, standing @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine();
+                                                            sw.Flush();
+                                                            sw.Close();
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            for (int j = 0; j < _invSize; j++)
+                                            {
+                                                _CompareInvNew = _inventory[j];
+                                                if (!_CompareInvNew.IsEmpty() && _bagStackNew.Equals(_CompareInvNew) && !InvSlot.Contains(j))
+                                                {
+                                                    InvSlot.Add(i);
+                                                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                                    PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
+                                                    EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
+                                                    if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+                                                    {
+                                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                        {
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their bag, identical to another stack, inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine();
+                                                            sw.Flush();
+                                                            sw.Close();
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                        {
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their bag, identical to another stack, standing at {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _bagStackNew.count, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine();
+                                                            sw.Flush();
+                                                            sw.Close();
+                                                        }
                                                     }
                                                 }
                                             }
@@ -367,227 +499,97 @@ namespace ServerTools
                             if (!_invStackNew.IsEmpty())
                             {
                                 string _invName = _invStackNew.itemValue.ItemClass.Name;
-                                int _oldTotal = 0, _newTotal = 0, _newCount;
-                                for (int j = 0; j < _invSize; j++)
+                                if (!dict.Contains(_invName))
                                 {
-                                    _CompareInvOld = _invStacks[j];
-                                    if (!_CompareInvOld.IsEmpty() && _invName == _CompareInvOld.itemValue.ItemClass.Name)
+                                    int _oldTotal = 0, _newTotal = 0, _newCount;
+                                    for (int j = 0; j < _invSize; j++)
                                     {
-                                        _newCount = _oldTotal + _CompareInvOld.count;
-                                        _oldTotal = _newCount;
-                                    }
-                                }
-                                for (int j = 0; j < _bagSize; j++)
-                                {
-                                    _CompareBagOld = _bagStacks[j];
-                                    if (!_CompareBagOld.IsEmpty() && _invName == _CompareBagOld.itemValue.ItemClass.Name)
-                                    {
-                                        _newCount = _oldTotal + _CompareBagOld.count;
-                                        _oldTotal = _newCount;
-                                    }
-                                }
-                                for (int j = 0; j < _invSize; j++)
-                                {
-                                    _CompareInvNew = _inventory[j];
-                                    if (!_CompareInvNew.IsEmpty() && _invName == _CompareInvNew.itemValue.ItemClass.Name)
-                                    {
-                                        _newCount = _newTotal + _CompareInvNew.count;
-                                        _newTotal = _newCount;
-                                    }
-                                }
-                                for (int j = 0; j < _bagSize; j++)
-                                {
-                                    _CompareBagNew = _bag[j];
-                                    if (!_CompareBagNew.IsEmpty() && _invName == _CompareBagNew.itemValue.ItemClass.Name)
-                                    {
-                                        _newCount = _newTotal + _CompareBagNew.count;
-                                        _newTotal = _newCount;
-                                    }
-                                }
-                                if (_oldTotal == _newTotal)
-                                {
-                                    InvNext = false;
-                                }
-                                if (InvNext)
-                                {
-                                    if (_invStackNew.count == 1)
-                                    {
-                                        int _counter1 = 0, _counter2 = 0;
-                                        for (int j = 0; j < _invSize; j++)
+                                        _CompareInvOld = _invStacks[j];
+                                        if (!_CompareInvOld.IsEmpty() && _invName == _CompareInvOld.itemValue.ItemClass.Name)
                                         {
-                                            _CompareInvNew = _inventory[j];
-                                            if (!_CompareInvNew.IsEmpty() && _invName == _CompareInvNew.itemValue.ItemClass.Name && _CompareInvNew.count == 1)
-                                            {
-                                                _counter1++;
-                                            }
+                                            _newCount = _oldTotal + _CompareInvOld.count;
+                                            _oldTotal = _newCount;
                                         }
-                                        for (int j = 0; j < _bagSize; j++)
+                                    }
+                                    for (int j = 0; j < _bagSize; j++)
+                                    {
+                                        _CompareBagOld = _bagStacks[j];
+                                        if (!_CompareBagOld.IsEmpty() && _invName == _CompareBagOld.itemValue.ItemClass.Name)
                                         {
-                                            _CompareBagNew = _bag[j];
-                                            if (!_CompareBagNew.IsEmpty() && _invName == _CompareBagNew.itemValue.ItemClass.Name && _CompareBagNew.count == 1)
-                                            {
-                                                _counter2++;
-                                            }
+                                            _newCount = _oldTotal + _CompareBagOld.count;
+                                            _oldTotal = _newCount;
                                         }
-                                        if (_counter1 + _counter2 > 1)
+                                    }
+                                    for (int j = 0; j < _invSize; j++)
+                                    {
+                                        _CompareInvNew = _inventory[j];
+                                        if (!_CompareInvNew.IsEmpty() && _invName == _CompareInvNew.itemValue.ItemClass.Name)
                                         {
+                                            _newCount = _newTotal + _CompareInvNew.count;
+                                            _newTotal = _newCount;
+                                        }
+                                    }
+                                    for (int j = 0; j < _bagSize; j++)
+                                    {
+                                        _CompareBagNew = _bag[j];
+                                        if (!_CompareBagNew.IsEmpty() && _invName == _CompareBagNew.itemValue.ItemClass.Name)
+                                        {
+                                            _newCount = _newTotal + _CompareBagNew.count;
+                                            _newTotal = _newCount;
+                                        }
+                                    }
+                                    if (_oldTotal == _newTotal)
+                                    {
+                                        InvNext = false;
+                                    }
+                                    if (InvNext)
+                                    {
+                                        if (_invStackNew.count == 1)
+                                        {
+                                            int _counter1 = 0, _counter2 = 0;
                                             for (int j = 0; j < _invSize; j++)
                                             {
-                                                _CompareInvOld = _invStacks[j];
-                                                if (!_CompareInvOld.IsEmpty() && _invName == _CompareInvOld.itemValue.ItemClass.Name && _CompareInvOld.count >= _counter1)
+                                                _CompareInvNew = _inventory[j];
+                                                if (!_CompareInvNew.IsEmpty() && _invName == _CompareInvNew.itemValue.ItemClass.Name && _CompareInvNew.count == 1)
                                                 {
-                                                    InvNext = false;
+                                                    _counter1++;
                                                 }
                                             }
-                                            if (InvNext)
+                                            for (int j = 0; j < _bagSize; j++)
                                             {
-                                                for (int j = 0; j < _bagSize; j++)
+                                                _CompareBagNew = _bag[j];
+                                                if (!_CompareBagNew.IsEmpty() && _invName == _CompareBagNew.itemValue.ItemClass.Name && _CompareBagNew.count == 1)
                                                 {
-                                                    _CompareBagOld = _bagStacks[j];
-                                                    if (!_CompareBagOld.IsEmpty() && _invName == _CompareBagOld.itemValue.ItemClass.Name && _CompareBagOld.count >= _counter1)
+                                                    _counter2++;
+                                                }
+                                            }
+                                            if (_counter1 + _counter2 > 1)
+                                            {
+                                                for (int j = 0; j < _invSize; j++)
+                                                {
+                                                    _CompareInvOld = _invStacks[j];
+                                                    if (!_CompareInvOld.IsEmpty() && _invName == _CompareInvOld.itemValue.ItemClass.Name && _CompareInvOld.count >= _counter1)
                                                     {
                                                         InvNext = false;
                                                     }
                                                 }
-                                            }
-                                        }
-                                    }
-                                }
-                                if (InvNext)
-                                {
-                                    if (_invStackNew.itemValue.ItemClass.HasParts)
-                                    {
-                                        for (int j = 0; j < _invSize; j++)
-                                        {
-                                            _CompareInvNew = _inventory[j];
-                                            if (!_CompareInvNew.IsEmpty() && _invStackNew.Equals(_CompareInvNew) && i != j && !InvSlot.Contains(j))
-                                            {
-                                                InvSlot.Add(i);
-                                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                                PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
-                                                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
-                                                if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+                                                if (InvNext)
                                                 {
-                                                    using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                    for (int j = 0; j < _bagSize; j++)
                                                     {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their inventory inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                        sw.WriteLine();
-                                                        sw.Flush();
-                                                        sw.Close();
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                    {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their inventory, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                        sw.WriteLine();
-                                                        sw.Flush();
-                                                        sw.Close();
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        for (int j = 0; j < _bagSize; j++)
-                                        {
-                                            _CompareBagNew = _bag[j];
-                                            if (!_CompareBagNew.IsEmpty() && (_invStackNew.Equals(_CompareBagNew)) && !InvSlot.Contains(j))
-                                            {
-                                                InvSlot.Add(i);
-                                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                                PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
-                                                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
-                                                if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
-                                                {
-                                                    using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                    {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their inventory inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                        sw.WriteLine();
-                                                        sw.Flush();
-                                                        sw.Close();
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                    {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their inventory, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                        sw.WriteLine();
-                                                        sw.Flush();
-                                                        sw.Close();
+                                                        _CompareBagOld = _bagStacks[j];
+                                                        if (!_CompareBagOld.IsEmpty() && _invName == _CompareBagOld.itemValue.ItemClass.Name && _CompareBagOld.count >= _counter1)
+                                                        {
+                                                            InvNext = false;
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
                                     }
-                                    else if (_invStackNew.itemValue.HasQuality)
+                                    if (InvNext)
                                     {
-                                        for (int j = 0; j < _invSize; j++)
-                                        {
-                                            _CompareInvNew = _inventory[j];
-                                            if (!_CompareInvNew.IsEmpty() && _invStackNew.Equals(_CompareInvNew) && i != j && !InvSlot.Contains(j))
-                                            {
-                                                InvSlot.Add(i);
-                                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                                PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
-                                                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
-                                                if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
-                                                {
-                                                    using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                    {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their inventory inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                        sw.WriteLine();
-                                                        sw.Flush();
-                                                        sw.Close();
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                    {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their inventory, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                        sw.WriteLine();
-                                                        sw.Flush();
-                                                        sw.Close();
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        for (int j = 0; j < _bagSize; j++)
-                                        {
-                                            _CompareBagNew = _bag[j];
-                                            if (!_CompareBagNew.IsEmpty() && _invStackNew.Equals(_CompareBagNew) && !InvSlot.Contains(j))
-                                            {
-                                                InvSlot.Add(i);
-                                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                                PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
-                                                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
-                                                if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
-                                                {
-                                                    using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                    {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their inventory inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                        sw.WriteLine();
-                                                        sw.Flush();
-                                                        sw.Close();
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                    {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their inventory, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
-                                                        sw.WriteLine();
-                                                        sw.Flush();
-                                                        sw.Close();
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (_invStackNew.count > 1)
+                                        if (_invStackNew.itemValue.ItemClass.HasParts)
                                         {
                                             for (int j = 0; j < _invSize; j++)
                                             {
@@ -600,9 +602,9 @@ namespace ServerTools
                                                     EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                     if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                     {
-                                                        using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                         {
-                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their inventory, identical to another stack, inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their inventory inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                             sw.WriteLine();
                                                             sw.Flush();
                                                             sw.Close();
@@ -610,9 +612,74 @@ namespace ServerTools
                                                     }
                                                     else
                                                     {
-                                                        using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                         {
-                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their inventory, identical to another stack, standing at {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their inventory, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine();
+                                                            sw.Flush();
+                                                            sw.Close();
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            for (int j = 0; j < _bagSize; j++)
+                                            {
+                                                _CompareBagNew = _bag[j];
+                                                if (!_CompareBagNew.IsEmpty() && (_invStackNew.Equals(_CompareBagNew)) && !InvSlot.Contains(j))
+                                                {
+                                                    InvSlot.Add(i);
+                                                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                                    PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
+                                                    EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
+                                                    if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+                                                    {
+                                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                        {
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their inventory inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine();
+                                                            sw.Flush();
+                                                            sw.Close();
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                        {
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their inventory, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine();
+                                                            sw.Flush();
+                                                            sw.Close();
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else if (_invStackNew.itemValue.HasQuality)
+                                        {
+                                            for (int j = 0; j < _invSize; j++)
+                                            {
+                                                _CompareInvNew = _inventory[j];
+                                                if (!_CompareInvNew.IsEmpty() && _invStackNew.Equals(_CompareInvNew) && i != j && !InvSlot.Contains(j))
+                                                {
+                                                    InvSlot.Add(i);
+                                                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                                    PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
+                                                    EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
+                                                    if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+                                                    {
+                                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                        {
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their inventory inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine();
+                                                            sw.Flush();
+                                                            sw.Close();
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                        {
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their inventory, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                             sw.WriteLine();
                                                             sw.Flush();
                                                             sw.Close();
@@ -631,9 +698,9 @@ namespace ServerTools
                                                     EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
                                                     if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                                                     {
-                                                        using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                         {
-                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their inventory, identical to another stack, inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their inventory inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                             sw.WriteLine();
                                                             sw.Flush();
                                                             sw.Close();
@@ -641,12 +708,80 @@ namespace ServerTools
                                                     }
                                                     else
                                                     {
-                                                        using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                         {
-                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their inventory, identical to another stack, standing @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their inventory, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                             sw.WriteLine();
                                                             sw.Flush();
                                                             sw.Close();
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (_invStackNew.count > 1)
+                                            {
+                                                for (int j = 0; j < _invSize; j++)
+                                                {
+                                                    _CompareInvNew = _inventory[j];
+                                                    if (!_CompareInvNew.IsEmpty() && _invStackNew.Equals(_CompareInvNew) && i != j && !InvSlot.Contains(j))
+                                                    {
+                                                        InvSlot.Add(i);
+                                                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                                        PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
+                                                        EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
+                                                        if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+                                                        {
+                                                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                            {
+                                                                sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their inventory, identical to another stack, inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                sw.WriteLine();
+                                                                sw.Flush();
+                                                                sw.Close();
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                            {
+                                                                sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their inventory, identical to another stack, standing at {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                sw.WriteLine();
+                                                                sw.Flush();
+                                                                sw.Close();
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                for (int j = 0; j < _bagSize; j++)
+                                                {
+                                                    _CompareBagNew = _bag[j];
+                                                    if (!_CompareBagNew.IsEmpty() && _invStackNew.Equals(_CompareBagNew) && !InvSlot.Contains(j))
+                                                    {
+                                                        InvSlot.Add(i);
+                                                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                                        PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_player.entityId);
+                                                        EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(new Vector3i(_player.position.x, _player.position.y, _player.position.z), _persistentPlayerData);
+                                                        if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+                                                        {
+                                                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                            {
+                                                                sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their inventory, identical to another stack, inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                sw.WriteLine();
+                                                                sw.Flush();
+                                                                sw.Close();
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                            {
+                                                                sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their inventory, identical to another stack, standing @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                sw.WriteLine();
+                                                                sw.Flush();
+                                                                sw.Close();
+                                                            }
                                                         }
                                                     }
                                                 }
