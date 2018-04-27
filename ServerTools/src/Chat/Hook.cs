@@ -1590,7 +1590,7 @@ namespace ServerTools
                                     string _phrase812;
                                     if (!Phrases.Dict.TryGetValue(812, out _phrase812))
                                     {
-                                        _phrase812 = "{PlayerName} you have already voted on the poll";
+                                        _phrase812 = "{PlayerName} you have already voted on the poll.";
                                     }
                                     _phrase812 = _phrase812.Replace("{PlayerName}", _playerName);
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase812), Config.Server_Response_Name, false, "ServerTools", false));
@@ -1608,22 +1608,22 @@ namespace ServerTools
                                     _phrase926 = "Poll: {Message}";
                                 }
                                 _phrase926 = _phrase926.Replace("{Message}", PersistentContainer.Instance.PollMessage);
-                                string _phrase812;
-                                if (!Phrases.Dict.TryGetValue(812, out _phrase812))
+                                string _phrase813;
+                                if (!Phrases.Dict.TryGetValue(813, out _phrase813))
                                 {
-                                    _phrase812 = "Currently, the pole is yes {YesCount} / no {NoCount}.";
+                                    _phrase813 = "Currently, the pole is yes {YesCount} / no {NoCount}.";
                                 }
-                                _phrase812 = _phrase812.Replace("{YesCount}", PersistentContainer.Instance.PollYes.ToString());
-                                _phrase812 = _phrase812.Replace("{NoCount}", PersistentContainer.Instance.PollNo.ToString());
+                                _phrase813 = _phrase813.Replace("{YesCount}", PersistentContainer.Instance.PollYes.ToString());
+                                _phrase813 = _phrase813.Replace("{NoCount}", PersistentContainer.Instance.PollNo.ToString());
                                 if (_announce)
                                 {
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase926), Config.Server_Response_Name, false, "ServerTools", true);
-                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase812), Config.Server_Response_Name, false, "ServerTools", true);
+                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase813), Config.Server_Response_Name, false, "ServerTools", true);
                                 }
                                 else
                                 {
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase926), Config.Server_Response_Name, false, "ServerTools", false));
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase812), Config.Server_Response_Name, false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase813), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                                 return false;
                             }
@@ -1655,6 +1655,12 @@ namespace ServerTools
                         {
                             _message = _message.Replace("wallet withdraw ", "");
                             Bank.WalletWithdraw(_cInfo, _message);
+                            return false;
+                        }
+                        if (Bank.IsEnabled && _message.StartsWith("transfer "))
+                        {
+                            _message = _message.Replace("transfer ", "");
+                            Bank.Transfer(_cInfo, _message);
                             return false;
                         }
                         if (Event.Invited && _message == "event")
