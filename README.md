@@ -28,13 +28,11 @@ Automatically detects and deals with cheaters. Customizable<br>
 Detects: flying above or below ground, hatch elevator, teleport, invalid items, invalid stack sized, family share accounts, <br>
 player stats such as height, speed, jump strength, max stamina, max health, available skill points.<br>
 <br>
-Punish violators automatically with: Kill, Jail, Kick, Ban.<br>
-<br>
-Control the world radius and how far players can travel.<br>
-<br>
 Logs all player's inventory to a file for later review. Set the time between loggings. Default is once per minute.<br>
 <br>
 Records player's IP address and location to the inventory log.<br>
+<br>
+Records identical items and stacks found in a players inventory. These are not necessarily duped but this gives a record.<br>
 <br>
 Logs of violators are auto created and deleted based on your settings.<br>
 <br>
@@ -43,34 +41,15 @@ Logs of violators are auto created and deleted based on your settings.<br>
 Other Tools<br>
 <br>
 <br>
-Reports: Players can leave reports for admins to review later<br>
-<br>
-Bounties: Put bounties on players and hunt them down for coin<br>
-<br>
-Lottery: Open lotteries, ten player draws or if one hour has passed, winner takes all<br>
-<br>
-Lobby: Teleport to a set lobby point and return to where you came from<br>
-<br>
-Auction box: players can sell one item or stack at a time by placing it in a box and selling it through the auction system<br>
-Players can buy it as they please with their wallet coins<br>
-<br>
-Shop: setup a list of items and prices for players to purchase inside or outside of a trader zone. Includes a wallet system<br>
-<br>
-Entity Cleanup: removes items in a pile, blocks if too many are dropping in an area, fallen trees stuck at 0 hp<br>
-<br>
-Bike return: teleport a saved bike if close enough, back to the player<br>
-<br>
-Vote: To kick or mute a player, restart the server, change the weather<br>
-<br>
-World Radius: control normal and donators world size as an anti cheat or feature for donators to travel further<br>
-<br>
 Day7 alerts: automatically receive in game alerts to the upcoming bloodmoon. Can set a custom horde night value<br>
 <br>
 Zone protection: set an area as a protected space. PvP inside is dealt with automatically. Alert upon entry/exit<br>
 <br>
+Weather vote: vote to change the weather<br>
+<br>
 Teleport to friend: request to teleport to a friend. They must accept the request in a time limit<br>
 <br>
-Shop and wallet: make a custom shop list for players to buy from. Wallet is calculated automatically. Can shop in trader zone or anywhere optionally<br>
+Shop and wallet: make a custom shop list for players to buy from. Wallet is calculated automatically. Can only shop in trader zone<br>
 <br>
 Vote rewards: for players voting your server at https://7daystodie-servers.com website<br>
 <br>
@@ -140,7 +119,7 @@ Custom phrases: any phrases list in the phrase file can be set a custom response
 <br>
 Admin chat: admins can send all other online admins a direct private message<br>
 <br>
-Clan manager: create clan tags, add players, hire officers and rule the server as a elite crew. Clan name is set in chat<br>
+Clan manager: create clan tags, add players, hire officers and rule the server as a elite crew<br>
 <br>
 Remove entity: remove a live entity from the game using its entity id via console<br>
 <br>
@@ -148,11 +127,41 @@ Reset player profile: an easy console command will kick and delete the saved dat
 <br>
 Stopserver command: easily shutdown your server with an alert system and countdown so players are aware<br>
 <br>
-Login notices : show unique alerts to players as a listed player joins the game<br>
+Lottery: players can open a lottery for any players to buy in. Lottery draws after 10 players join or 1 hour has gone by<br>
 <br>
-Real world time : display the real world time in chat so your players dont become real zombies<br>
+Hardcore: limited life count. Kicked and profile deleted if out of lives. Stats recorded<br>
 <br>
-Teleport new players : send new players to a designated location when they first join your server<br>
+Friend teleports: players can teleport to saved home points and send invites to near by friends to teleport as well<br>
+<br>
+Kill notice: alerts when a player kills another player and what weapon was used<br>
+<br>
+Bounties: players can put bounties on each other. If a player kills another player with a bounty on them, the value is added to their wallet<br>
+<br>
+Kill streaks: while bounties are active, a kill streak can add to a player's bounty automatically<br>
+<br>
+Kick vote: vote to kick a player. Requires at least 10 players online and 8 must vote yes<br>
+<br>
+Restart vote: vote to restart the server. Requires at least 10 players online and 8 must vote yes<br>
+<br>
+Player list: shows all online player names and entity id so players can use commands against them<br>
+<br>
+Lobby: teleports to a defined location. Allows players to return when finished but they must be with in 50 blocks to the lobby location<br>
+<br>
+Real world time: displays the real world time based on the servers local time<br>
+<br>
+Fps: allows you to set the target server fps on server load up<br>
+<br>
+Location: players can check their world location, response is their x, y, z cordinates<br>
+<br>
+Auction: place an item inside a secure loot and use commands to remove it and sell it in the auction<br>
+<br>
+Wallet: takes note of player kills, zombie kills, deaths and spent coins. Calculates a total for use in the shop, auction, bounties<br>
+<br>
+Bank: allows players to deposit in game coins or wallet coins to a bank account. Exchange coin types through the bank<br>
+<br>
+Bike: save a bike id while inside a claimed space. Return a saved bike if close enough to it<br>
+<br>
+Death return: while enabled, players can return to where they died<br>
 <br>
 <br> 
 <br>
