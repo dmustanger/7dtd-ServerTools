@@ -18,7 +18,7 @@ namespace ServerTools
                 string _phrase536;
                 if (!Phrases.Dict.TryGetValue(536, out _phrase536))
                 {
-                    _phrase536 = "{PlayerName} a lottery is open for {Value} {CoinName}. Minimum buy in is {BuyIn}. Enter it by typing /lotto enter.";
+                    _phrase536 = "{PlayerName} a lottery is open for {Value} {CoinName}. Minimum buy in is {BuyIn}. Enter it by typing /lottery enter.";
                 }
                 _phrase536 = _phrase536.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase536 = _phrase536.Replace("{Value}", _winnings.ToString());
@@ -31,7 +31,7 @@ namespace ServerTools
                 string _phrase535;
                 if (!Phrases.Dict.TryGetValue(535, out _phrase535))
                 {
-                    _phrase535 = "{PlayerName} there is no open lottery. Type /lotto # to open a new lottery at that buy in price. You must have enough in your wallet.";
+                    _phrase535 = "{PlayerName} there is no open lottery. Type /lottery # to open a new lottery at that buy in price. You must have enough in your wallet.";
                 }
                 _phrase535 = _phrase535.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase535), Config.Server_Response_Name, false, "ServerTools", false));
@@ -48,7 +48,7 @@ namespace ServerTools
                     string _phrase536;
                     if (!Phrases.Dict.TryGetValue(536, out _phrase536))
                     {
-                        _phrase536 = "{PlayerName} a lottery is open for {Value} {CoinName}. Minimum buy in is {BuyIn}. Enter it by typing /lotto enter.";
+                        _phrase536 = "{PlayerName} a lottery is open for {Value} {CoinName}. Minimum buy in is {BuyIn}. Enter it by typing /lottery enter.";
                     }
                     _phrase536 = _phrase536.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase536 = _phrase536.Replace("{Value}", _winnings.ToString());
@@ -110,7 +110,7 @@ namespace ServerTools
                                     string _phrase539;
                                     if (!Phrases.Dict.TryGetValue(539, out _phrase539))
                                     {
-                                        _phrase539 = "A lottery has opened for {Value} {CoinName} and will draw soon. Type /lotto enter to join.";
+                                        _phrase539 = "A lottery has opened for {Value} {CoinName} and will draw soon. Type /lottery enter to join.";
                                     }
                                     _phrase539 = _phrase539.Replace("{Value}", _lottoValue.ToString());
                                     _phrase539 = _phrase539.Replace("{CoinName}", Wallet.Coin_Name);
@@ -121,7 +121,7 @@ namespace ServerTools
                                     string _phrase540;
                                     if (!Phrases.Dict.TryGetValue(540, out _phrase540))
                                     {
-                                        _phrase540 = "{PlayerName} you do not have enough {CoinName}. Earn some more and enter the lotto before it ends.";
+                                        _phrase540 = "{PlayerName} you do not have enough {CoinName}. Earn some more and enter the lottery before it ends.";
                                     }
                                     _phrase540 = _phrase540.Replace("{PlayerName}", _cInfo.playerName);
                                     _phrase540 = _phrase540.Replace("{CoinName}", Wallet.Coin_Name);
@@ -231,7 +231,7 @@ namespace ServerTools
                 string _phrase535;
                 if (!Phrases.Dict.TryGetValue(535, out _phrase535))
                 {
-                    _phrase535 = "{PlayerName} there is no open lottery. Type /lotto # to open a new lottery at that buy in price. You must have enough in your wallet.";
+                    _phrase535 = "{PlayerName} there is no open lottery. Type /lottery # to open a new lottery at that buy in price. You must have enough in your wallet.";
                 }
                 _phrase535 = _phrase535.Replace("{PlayerName}", _cInfo.playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase535), Config.Server_Response_Name, false, "ServerTools", false));
@@ -276,7 +276,7 @@ namespace ServerTools
             string _phrase543;
             if (!Phrases.Dict.TryGetValue(543, out _phrase543))
             {
-                _phrase543 = "A lottery draw will begin in five minutes. Get your entries in before it starts.";
+                _phrase543 = "A lottery draw will begin in five minutes. Get your entries in before it starts. Type /lottery enter.";
             }
             GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase543), Config.Server_Response_Name, false, "ServerTools", false);
         }

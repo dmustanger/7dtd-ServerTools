@@ -1392,8 +1392,34 @@ namespace ServerTools
                         }
                         if (AuctionBox.IsEnabled && _message.StartsWith("auction buy"))
                         {
-                            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                            if (Admin.PermissionLevel > Admin_Level)
+                            if (AuctionBox.No_Admins)
+                            {
+                                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                                if (Admin.PermissionLevel > Admin_Level)
+                                {
+                                    _message = _message.Replace("auction buy ", "");
+                                    {
+                                        int _purchase;
+                                        if (int.TryParse(_message, out _purchase))
+                                        {
+                                            if (AuctionBox.AuctionItems.ContainsKey(_purchase))
+                                            {
+                                                AuctionBox.WalletCheck(_cInfo, _purchase);
+                                            }
+                                            else
+                                            {
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have used an auction item # that does not exist or has sold. Type /auction.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                                
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}The auction is disabled for your tier.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                            }
+                            else
                             {
                                 _message = _message.Replace("auction buy ", "");
                                 {
@@ -1403,26 +1429,37 @@ namespace ServerTools
                                         if (AuctionBox.AuctionItems.ContainsKey(_purchase))
                                         {
                                             AuctionBox.WalletCheck(_cInfo, _purchase);
-                                            return false;
                                         }
                                         else
                                         {
                                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have used an auction item # that does not exist or has sold. Type /auction.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                            return false;
                                         }
                                     }
                                 }
                             }
+                            return false;
                         }
                         if (AuctionBox.IsEnabled && _message.StartsWith("auction sell"))
                         {
-                            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                            if (Admin.PermissionLevel > Admin_Level)
+                            if (AuctionBox.No_Admins)
+                            {
+                                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                                if (Admin.PermissionLevel > Admin_Level)
+                                {
+                                    _message = _message.Replace("auction sell ", "");
+                                    AuctionBox.Delay(_cInfo, _message);
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}The auction is disabled for your tier.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                            }
+                            else
                             {
                                 _message = _message.Replace("auction sell ", "");
                                 AuctionBox.Delay(_cInfo, _message);
-                                return false;
                             }
+                            return false;
                         }
                         if (Fps.IsEnabled && _message == "fps")
                         {
@@ -1470,19 +1507,19 @@ namespace ServerTools
                             Bounties.NewBounty(_cInfo, _message, _playerName);
                             return false;
                         }
-                        if (Lottery.IsEnabled && _message == "lotto")
+                        if (Lottery.IsEnabled && _message == "lottery")
                         {
                             Lottery.Response(_cInfo);
                             return false;
                         }
-                        if (Lottery.IsEnabled && _message == "lotto enter")
+                        if (Lottery.IsEnabled && _message == "lottery enter")
                         {
                             Lottery.EnterLotto(_cInfo);
                             return false;
                         }
-                        if (Lottery.IsEnabled && _message.StartsWith("lotto"))
+                        if (Lottery.IsEnabled && _message.StartsWith("lottery"))
                         {
-                            _message = _message.Replace("lotto ", "");
+                            _message = _message.Replace("lottery ", "");
                             Lottery.NewLotto(_cInfo, _message, _playerName);
                             return false;
                         }
@@ -1523,7 +1560,20 @@ namespace ServerTools
                         {
                             if (PersistentContainer.Instance.PollOpen)
                             {
-                                Poll.VoteYes(_cInfo);
+                                if (!Poll.PolledYes.Contains(_cInfo.entityId) && !Poll.PolledNo.Contains(_cInfo.entityId))
+                                {
+                                    Poll.VoteYes(_cInfo);
+                                }
+                                else
+                                {
+                                    string _phrase812;
+                                    if (!Phrases.Dict.TryGetValue(812, out _phrase812))
+                                    {
+                                        _phrase812 = "{PlayerName} you have already voted on the poll";
+                                    }
+                                    _phrase812 = _phrase812.Replace("{PlayerName}", _playerName);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase812), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
                                 return false;
                             }
                         }
@@ -1531,7 +1581,20 @@ namespace ServerTools
                         {
                             if (PersistentContainer.Instance.PollOpen)
                             {
-                                Poll.VoteNo(_cInfo);
+                                if (!Poll.PolledYes.Contains(_cInfo.entityId) && !Poll.PolledNo.Contains(_cInfo.entityId))
+                                {
+                                    Poll.VoteNo(_cInfo);
+                                }
+                                else
+                                {
+                                    string _phrase812;
+                                    if (!Phrases.Dict.TryGetValue(812, out _phrase812))
+                                    {
+                                        _phrase812 = "{PlayerName} you have already voted on the poll";
+                                    }
+                                    _phrase812 = _phrase812.Replace("{PlayerName}", _playerName);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase812), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
                                 return false;
                             }
                         }
@@ -1539,15 +1602,28 @@ namespace ServerTools
                         {
                             if (PersistentContainer.Instance.PollOpen)
                             {
+                                string _phrase926;
+                                if (!Phrases.Dict.TryGetValue(926, out _phrase926))
+                                {
+                                    _phrase926 = "Poll: {Message}";
+                                }
+                                _phrase926 = _phrase926.Replace("{Message}", PersistentContainer.Instance.PollMessage);
+                                string _phrase812;
+                                if (!Phrases.Dict.TryGetValue(812, out _phrase812))
+                                {
+                                    _phrase812 = "Currently, the pole is yes {YesCount} / no {NoCount}.";
+                                }
+                                _phrase812 = _phrase812.Replace("{YesCount}", PersistentContainer.Instance.PollYes.ToString());
+                                _phrase812 = _phrase812.Replace("{NoCount}", PersistentContainer.Instance.PollNo.ToString());
                                 if (_announce)
                                 {
-                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}Poll: {1}[-]", Config.Chat_Response_Color, PersistentContainer.Instance.PollMessage), Config.Server_Response_Name, false, "ServerTools", true);
-                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}Currently, the pole is yes {1} / no {2}.[-]", Config.Chat_Response_Color, PersistentContainer.Instance.PollYes, PersistentContainer.Instance.PollNo), Config.Server_Response_Name, false, "ServerTools", true);
+                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase926), Config.Server_Response_Name, false, "ServerTools", true);
+                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase812), Config.Server_Response_Name, false, "ServerTools", true);
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Poll: {1}[-]", Config.Chat_Response_Color, PersistentContainer.Instance.PollMessage), Config.Server_Response_Name, false, "ServerTools", false));
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Currently, the pole is yes {1} / no {2}.[-]", Config.Chat_Response_Color, PersistentContainer.Instance.PollYes, PersistentContainer.Instance.PollNo), Config.Server_Response_Name, false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase926), Config.Server_Response_Name, false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase812), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                                 return false;
                             }
