@@ -7,6 +7,8 @@ namespace ServerTools
     class Poll : ConsoleCmdAbstract
     {
         public static List<string> PollMessage = new List<string>();
+        public static List<int> PolledYes = new List<int>();
+        public static List<int> PolledNo = new List<int>();
         private static string _file = string.Format("PollLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string _filepath = string.Format("{0}/PollLogs/{1}", API.GamePath, _file);
 
@@ -71,8 +73,19 @@ namespace ServerTools
                             PersistentContainer.Instance.PollHours = _hours;
                             PersistentContainer.Instance.PollMessage = _message;
                             PersistentContainer.Instance.Save();
-                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}Poll: {1}[-]", Config.Chat_Response_Color, PersistentContainer.Instance.PollMessage), Config.Server_Response_Name, false, "ServerTools", true);
-                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}Type /pollyes or /pollno to vote.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", true);
+                            string _phrase926;
+                            if (!Phrases.Dict.TryGetValue(926, out _phrase926))
+                            {
+                                _phrase926 = "Poll: {Message}";
+                            }
+                            _phrase926 = _phrase926.Replace("{Message}", PersistentContainer.Instance.PollMessage);
+                            string _phrase927;
+                            if (!Phrases.Dict.TryGetValue(927, out _phrase927))
+                            {
+                                _phrase927 = "Type /pollyes or /pollno to vote.";
+                            }
+                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase926), Config.Server_Response_Name, false, "ServerTools", true);
+                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase927), Config.Server_Response_Name, false, "ServerTools", true);
                             SdtdConsole.Instance.Output(string.Format("Opened a new poll for {0} hours.", _hours));
                             using (StreamWriter sw = new StreamWriter(_filepath, true))
                             {
@@ -114,6 +127,8 @@ namespace ServerTools
                                 PersistentContainer.Instance.PollMessage = _message;
                                 PersistentContainer.Instance.PollYes = 0;
                                 PersistentContainer.Instance.PollNo = 0;
+                                PersistentContainer.Instance.PolledYes = null;
+                                PersistentContainer.Instance.PolledNo = null;
                                 PersistentContainer.Instance.Save();
                                 SdtdConsole.Instance.Output(string.Format("There was a poll open but the time expired. Opened a new poll and announced the result."));
                                 return;
@@ -173,6 +188,8 @@ namespace ServerTools
                             PersistentContainer.Instance.LastPollNo = PersistentContainer.Instance.PollNo;
                             PersistentContainer.Instance.PollYes = 0;
                             PersistentContainer.Instance.PollNo = 0;
+                            PersistentContainer.Instance.PolledYes = null;
+                            PersistentContainer.Instance.PolledNo = null;
                             PersistentContainer.Instance.Save();
                             SdtdConsole.Instance.Output(string.Format("Closed the open poll and announced the results"));
                             return;
@@ -268,7 +285,11 @@ namespace ServerTools
                             PersistentContainer.Instance.LastPollNo = PersistentContainer.Instance.PollNo;
                             PersistentContainer.Instance.PollYes = 0;
                             PersistentContainer.Instance.PollNo = 0;
+                            PersistentContainer.Instance.PolledYes = null;
+                            PersistentContainer.Instance.PolledNo = null;
                             PersistentContainer.Instance.Save();
+                            PolledYes.Clear();
+                            PolledNo.Clear();
                             SdtdConsole.Instance.Output(string.Format("The poll time expired. Announced the results"));
                             return;
                         }
@@ -307,8 +328,19 @@ namespace ServerTools
             int _timepassed = (int)fractionalHours;
             if (_timepassed <= PersistentContainer.Instance.PollHours)
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Poll: {1}[-]", Config.Chat_Response_Color, PersistentContainer.Instance.PollMessage), Config.Server_Response_Name, false, "ServerTools", false));
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /pollyes or /pollno to vote.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                string _phrase926;
+                if (!Phrases.Dict.TryGetValue(926, out _phrase926))
+                {
+                    _phrase926 = "Poll: {Message}";
+                }
+                _phrase926 = _phrase926.Replace("{Message}", PersistentContainer.Instance.PollMessage);
+                string _phrase927;
+                if (!Phrases.Dict.TryGetValue(927, out _phrase927))
+                {
+                    _phrase927 = "Type /pollyes or /pollno to vote.";
+                }
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase926), Config.Server_Response_Name, false, "ServerTools", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase927), Config.Server_Response_Name, false, "ServerTools", false));
             }
             else
             {
@@ -327,6 +359,8 @@ namespace ServerTools
                     sw.Flush();
                     sw.Close();
                 }
+                PolledYes.Clear();
+                PolledNo.Clear();
                 PersistentContainer.Instance.PollOpen = false;
                 PersistentContainer.Instance.LastPollHours = PersistentContainer.Instance.PollHours;
                 PersistentContainer.Instance.LastPollMessage = PersistentContainer.Instance.PollMessage;
@@ -334,16 +368,27 @@ namespace ServerTools
                 PersistentContainer.Instance.LastPollNo = PersistentContainer.Instance.PollNo;
                 PersistentContainer.Instance.PollYes = 0;
                 PersistentContainer.Instance.PollNo = 0;
+                PersistentContainer.Instance.PolledYes = null;
+                PersistentContainer.Instance.PolledNo = null;
                 PersistentContainer.Instance.Save();
             }
         }
 
         public static void VoteYes(ClientInfo _cInfo)
         {
+            PolledYes.Add(_cInfo.entityId);
             PersistentContainer.Instance.PollYes += 1;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].Poll = true;
+            PersistentContainer.Instance.PolledYes = PolledYes;
             PersistentContainer.Instance.Save();
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have cast a vote for yes. Currently, the pole is yes {1} / no {2}.[-]", Config.Chat_Response_Color, PersistentContainer.Instance.PollYes, PersistentContainer.Instance.PollNo), Config.Server_Response_Name, false, "ServerTools", false));
+            string _phrase928;
+            if (!Phrases.Dict.TryGetValue(928, out _phrase928))
+            {
+                _phrase928 = "{PlayerName} you have cast a vote for yes. Currently, the pole is yes {Yes} / no {No}.";
+            }
+            _phrase928 = _phrase928.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase928 = _phrase928.Replace("{Yes}", PersistentContainer.Instance.PollYes.ToString());
+            _phrase928 = _phrase928.Replace("{No}", PersistentContainer.Instance.PollNo.ToString());
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase928), Config.Server_Response_Name, false, "ServerTools", false));
             using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
                 sw.WriteLine(string.Format("{0}  Player name {1} has voted yes in the poll. Yes {2} / no {3}", DateTime.Now, _cInfo.playerName, PersistentContainer.Instance.PollYes, PersistentContainer.Instance.PollNo));
@@ -355,10 +400,19 @@ namespace ServerTools
 
         public static void VoteNo(ClientInfo _cInfo)
         {
+            PolledNo.Add(_cInfo.entityId);
             PersistentContainer.Instance.PollNo += 1;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].Poll = true;
+            PersistentContainer.Instance.PolledNo = PolledNo;
             PersistentContainer.Instance.Save();
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have cast a vote for no. Currently, the pole is yes {1} / no {2}.[-]", Config.Chat_Response_Color, PersistentContainer.Instance.PollYes, PersistentContainer.Instance.PollNo), Config.Server_Response_Name, false, "ServerTools", false));
+            string _phrase929;
+            if (!Phrases.Dict.TryGetValue(929, out _phrase929))
+            {
+                _phrase929 = "{PlayerName} you have cast a vote for no. Currently, the pole is yes {Yes} / no {No}.";
+            }
+            _phrase929 = _phrase929.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase929 = _phrase929.Replace("{Yes}", PersistentContainer.Instance.PollYes.ToString());
+            _phrase929 = _phrase929.Replace("{No}", PersistentContainer.Instance.PollNo.ToString());
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase929), Config.Server_Response_Name, false, "ServerTools", false));
             using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
                 sw.WriteLine(string.Format("{0}  Player name {1} has voted no in the poll. Yes {2} / no {3}", DateTime.Now, _cInfo.playerName, PersistentContainer.Instance.PollYes, PersistentContainer.Instance.PollNo));
@@ -372,38 +426,44 @@ namespace ServerTools
         {
             if (PersistentContainer.Instance.PollOpen)
             {
-                if (PersistentContainer.Instance.PollHours != 0)
+                TimeSpan varTime = DateTime.Now - PersistentContainer.Instance.PollTime;
+                double fractionalHours = varTime.TotalHours;
+                int _timepassed = (int)fractionalHours;
+                if (_timepassed >= PersistentContainer.Instance.PollHours)
                 {
-                    TimeSpan varTime = DateTime.Now - PersistentContainer.Instance.PollTime;
-                    double fractionalHours = varTime.TotalHours;
-                    int _timepassed = (int)fractionalHours;
-                    if (_timepassed >= PersistentContainer.Instance.PollHours)
+                    string _phrase925;
+                    if (!Phrases.Dict.TryGetValue(925, out _phrase925))
                     {
-                        string _phrase925;
-                        if (!Phrases.Dict.TryGetValue(925, out _phrase925))
-                        {
-                            _phrase925 = "Poll results: Yes {YesVote} / No {NoVote}";
-                        }
-                        _phrase925 = _phrase925.Replace("{YesVote}", PersistentContainer.Instance.PollYes.ToString());
-                        _phrase925 = _phrase925.Replace("{NoVote}", PersistentContainer.Instance.PollNo.ToString());
-                        using (StreamWriter sw = new StreamWriter(_filepath, true))
-                        {
-                            sw.WriteLine(string.Format("{0}  Poll {1} ... has completed. The final results were yes {2} / no {3}", DateTime.Now, PersistentContainer.Instance.PollMessage, PersistentContainer.Instance.PollYes, PersistentContainer.Instance.PollNo));
-                            sw.WriteLine();
-                            sw.Flush();
-                            sw.Close();
-                        }
-                        PersistentContainer.Instance.PollOpen = false;
-                        PersistentContainer.Instance.PollHours = 0;
-                        PersistentContainer.Instance.PollMessage = null;
-                        PersistentContainer.Instance.PollYes = 0;
-                        PersistentContainer.Instance.PollNo = 0;
-                        PersistentContainer.Instance.LastPollHours = PersistentContainer.Instance.PollHours;
-                        PersistentContainer.Instance.LastPollMessage = PersistentContainer.Instance.PollMessage;
-                        PersistentContainer.Instance.LastPollYes = PersistentContainer.Instance.PollYes;
-                        PersistentContainer.Instance.LastPollNo = PersistentContainer.Instance.PollNo;
-                        PersistentContainer.Instance.Save();
+                        _phrase925 = "Poll results: Yes {YesVote} / No {NoVote}";
                     }
+                    _phrase925 = _phrase925.Replace("{YesVote}", PersistentContainer.Instance.PollYes.ToString());
+                    _phrase925 = _phrase925.Replace("{NoVote}", PersistentContainer.Instance.PollNo.ToString());
+                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                    {
+                        sw.WriteLine(string.Format("{0}  Poll {1} ... has completed. The final results were yes {2} / no {3}", DateTime.Now, PersistentContainer.Instance.PollMessage, PersistentContainer.Instance.PollYes, PersistentContainer.Instance.PollNo));
+                        sw.WriteLine();
+                        sw.Flush();
+                        sw.Close();
+                    }
+                    PolledYes.Clear();
+                    PolledNo.Clear();
+                    PersistentContainer.Instance.PollOpen = false;
+                    PersistentContainer.Instance.PollHours = 0;
+                    PersistentContainer.Instance.PollMessage = null;
+                    PersistentContainer.Instance.PollYes = 0;
+                    PersistentContainer.Instance.PollNo = 0;
+                    PersistentContainer.Instance.PolledYes = null;
+                    PersistentContainer.Instance.PolledNo = null;
+                    PersistentContainer.Instance.LastPollHours = PersistentContainer.Instance.PollHours;
+                    PersistentContainer.Instance.LastPollMessage = PersistentContainer.Instance.PollMessage;
+                    PersistentContainer.Instance.LastPollYes = PersistentContainer.Instance.PollYes;
+                    PersistentContainer.Instance.LastPollNo = PersistentContainer.Instance.PollNo;
+                    PersistentContainer.Instance.Save();
+                }
+                else
+                {
+                    PolledYes = PersistentContainer.Instance.PolledYes;
+                    PolledNo = PersistentContainer.Instance.PolledNo;
                 }
             }
         }
