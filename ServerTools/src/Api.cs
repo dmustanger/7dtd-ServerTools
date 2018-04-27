@@ -92,15 +92,6 @@ namespace ServerTools
                 LoginNotice.PlayerCheck(_cInfo);
             }
             Players.SessionTime(_cInfo);
-            if (PersistentContainer.Instance.PollOpen)
-            {
-                List<int> _polledPlayerYes = PersistentContainer.Instance.PolledYes;
-                List<int> _polledPlayerNo = PersistentContainer.Instance.PolledNo;
-                if (!_polledPlayerYes.Contains(_cInfo.entityId) && !_polledPlayerNo.Contains(_cInfo.entityId))
-                {
-                    Poll.Message(_cInfo);
-                }
-            }
         }
 
         public override void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
@@ -308,6 +299,10 @@ namespace ServerTools
                 if (Players.Session.ContainsKey(_cInfo.playerId))
                 {
                     Players.Session.Remove(_cInfo.playerId);
+                }
+                if (Bank.TransferId.ContainsKey(_cInfo.playerId))
+                {
+                    Bank.TransferId.Remove(_cInfo.playerId);
                 }
             }
         }

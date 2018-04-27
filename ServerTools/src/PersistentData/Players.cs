@@ -107,22 +107,22 @@ namespace ServerTools
         {
             if (!Friends.ContainsKey(_cInfo.entityId))
             {
+                EntityPlayer ent1 = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 string _friends = "";
                 List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                 for (int i = 0; i < _cInfoList.Count; i++)
                 {
-                    ClientInfo _player = _cInfoList[i];
-                    EntityPlayer ent1 = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    EntityPlayer ent2 = GameManager.Instance.World.Players.dict[_player.entityId];
-                    if (ent1 != null && ent2 != null)
+                    ClientInfo _cInfo2 = _cInfoList[i];
+                    if (_cInfo2 != null)
                     {
+                        EntityPlayer ent2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
                         if (ent1.IsFriendsWith(ent2))
                         {
-                            _friends = string.Format("{0} {1}", _friends, _player.playerId);
+                            _friends = string.Format("{0} {1}", _friends, _cInfo2.playerId);
                         }
                     }
                 }
-                if (_friends.Length != 0)
+                if (_friends != "")
                 {
                     Friends.Add(_cInfo.entityId, _friends);
                 }

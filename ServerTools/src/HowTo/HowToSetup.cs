@@ -13,7 +13,7 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine("This was drafted for version 10.2");
+                sw.WriteLine("This was drafted for version 10.3");
                 sw.WriteLine();
                 sw.WriteLine("ServerTools was coded and tested under a Windows operating system. It should operate on other major O.S. but if you find bugs, report them to");
                 sw.WriteLine("https://github.com/dmustanger/7dtd-ServerTools/issues");
@@ -300,6 +300,7 @@ namespace ServerTools
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine();
                 sw.WriteLine("If a player adds a duplicate item or stack into their inventory, it will be logged for review.");
+                sw.WriteLine("Creates a file named DuplicateItems.xml. Items in this list will not be logged when found in player's inventory.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();

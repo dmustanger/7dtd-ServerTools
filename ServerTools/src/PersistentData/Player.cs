@@ -65,13 +65,15 @@ namespace ServerTools
         private DateTime lastVoteReward;
         private DateTime lastgimme;
         private DateTime lastkillme;
-        private DateTime lastsethome;        private bool firstClaim;
+        private DateTime lastsethome;
+        private bool firstClaim;
         private bool isclanowner;
         private bool isclanofficer;
         private bool ismuted;
         private bool isjailed;
         private bool isremovedfromjail = true;
         private bool startingItems;
+        private bool poll;
 
         public string[] AuctionItem
         {
@@ -850,6 +852,18 @@ namespace ServerTools
             set
             {
                 isremovedfromjail = value;
+            }
+        }
+
+        public bool Poll
+        {
+            get
+            {
+                return poll;
+            }
+            set
+            {
+                poll = value;
             }
         }
 

@@ -94,7 +94,7 @@ namespace ServerTools
                 sw.WriteLine("<ServerTools>");
                 sw.WriteLine("    <Phrases>");
                 sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- *********************** V.10.2 ************************** -->");
+                sw.WriteLine("        <!-- *********************** V.10.3 ************************** -->");
                 sw.WriteLine("        <!-- ******* If your version is incorrect, shutdown, ******** -->");
                 sw.WriteLine("        <!-- ************* delete this file, restart **************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1377,9 +1377,15 @@ namespace ServerTools
                 string _phrase812;
                 if (!Dict.TryGetValue(812, out _phrase812))
                 {
-                    _phrase812 = "Currently, the pole is yes {YesCount} / no {NoCount}.";
+                    _phrase812 = "{PlayerName} you have already voted on the poll.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"812\" Phrase=\"{0}\" />", _phrase812));
+                string _phrase813;
+                if (!Dict.TryGetValue(813, out _phrase813))
+                {
+                    _phrase813 = "Currently, the poll is yes {YesCount} / no {NoCount}.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"813\" Phrase=\"{0}\" />", _phrase813));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- *********************** Auction ************************ -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");

@@ -208,6 +208,14 @@
             {
                 CustomCommands.Load();
             }
+            if (DupeLog.IsRunning && !DupeLog.IsEnabled)
+            {
+                DupeLog.Unload();
+            }
+            if (!DupeLog.IsRunning && DupeLog.IsEnabled)
+            {
+                DupeLog.Load();
+            }
             if (AuctionBox.IsEnabled)
             {
                 AuctionBox.AuctionList();

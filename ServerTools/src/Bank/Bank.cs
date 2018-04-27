@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -9,10 +10,12 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static string Ingame_Coin = "casinoCoin";
+        public static Dictionary<string, int> TransferId = new Dictionary<string, int>();
         private static DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
         private static List<Chunk> chunkArray = new List<Chunk>();
         private static string file = string.Format("Bank_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string filepath = string.Format("{0}/Banking/{1}", API.GamePath, file);
+        private static System.Random random = new System.Random();
 
         public static void Check(ClientInfo _cInfo)
         {
@@ -20,8 +23,31 @@ namespace ServerTools
             {
                 if (p != null)
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank account is worth {2}[-]", Config.Chat_Response_Color, _cInfo.playerName, p.Bank), Config.Server_Response_Name, false, "ServerTools", false));
+                    if (TransferId.ContainsKey(_cInfo.playerId))
+                    {
+                        int _id;
+                        TransferId.TryGetValue(_cInfo.playerId, out _id);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank account is worth {2}. Transfer Id is {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, p.Bank, _id), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
+                    else
+                    {
+                        AddId(_cInfo, p);
+                    }
                 }
+            }
+        }
+
+        public static void AddId(ClientInfo _cInfo, Player p)
+        {
+            int _rndId = random.Next(1000, 5001);
+            if (TransferId.ContainsValue(_rndId))
+            {
+                AddId(_cInfo, p);
+            }
+            else
+            {
+                TransferId.Add(_cInfo.playerId, _rndId);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank account is worth {2}. Transfer Id is {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, p.Bank, _rndId), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -298,6 +324,81 @@ namespace ServerTools
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you input an invalid integer. Type /withdraw #.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
+            }
+        }
+
+        public static void Transfer(ClientInfo _cInfo, string _transferIdAndAmount)
+        {
+            string[] _idAndAmount = { };
+            if (_transferIdAndAmount.Contains(" "))
+            {
+                _idAndAmount = _transferIdAndAmount.Split(' ').ToArray();
+                int _id;
+                if (int.TryParse(_idAndAmount[0], out _id))
+                {
+                    int _amount;
+                    if (int.TryParse(_idAndAmount[1], out _amount))
+                    {
+                        if (TransferId.ContainsValue(_id))
+                        {
+                            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                            {
+                                if (p != null)
+                                {
+                                    int _bankAccValue = p.Bank;
+                                    if (_bankAccValue >= _amount)
+                                    {
+                                        foreach (KeyValuePair<string, int> _accountInfo in TransferId)
+                                        {
+                                            if (_accountInfo.Value == _id)
+                                            {
+                                                ClientInfo _cInfo1 = ConnectionManager.Instance.GetClientInfoForPlayerId(_accountInfo.Key);
+                                                if (_cInfo1 != null)
+                                                {
+                                                    Player p1 = PersistentContainer.Instance.Players[_cInfo1.playerId, false];
+                                                    {
+                                                        if (p1 != null)
+                                                        {
+                                                            TransferId.Remove(_cInfo1.playerId);
+                                                            int _oldBank = p1.Bank;
+                                                            PersistentContainer.Instance.Players[_cInfo.playerId, true].Bank = _bankAccValue - _amount;
+                                                            PersistentContainer.Instance.Save();
+                                                            PersistentContainer.Instance.Players[_cInfo1.playerId, true].Bank = _oldBank + _amount;
+                                                            PersistentContainer.Instance.Save();
+                                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have sent {2} from your bank to player {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _amount, _cInfo1.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                                            _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have received {2} in to your bank from player {3}.[-]", Config.Chat_Response_Color, _cInfo1.playerName, _amount, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                                            return;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you do not have enough in your bank account to make this transfer.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you input an invalid transfer Id. Ask for the transfer Id from the player you want to transfer to.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                        }
+                    }
+                    else
+                    {
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you input an invalid transfer. Type /transfer Id #. Get the Id from the player you are transferring to.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
+                }
+                else
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you input an invalid transfer. Type /transfer Id #. Get the Id from the player you are transferring to.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                }
+            }
+            else
+            {
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you input an invalid transfer. Type /transfer Id #. Get the Id from the player you are transferring to.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
     }
