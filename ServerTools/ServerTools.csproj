@@ -39,7 +39,9 @@
     </Compile>
     <Compile Include="src\AntiCheat\DupeLog.cs" />
     <Compile Include="src\Bank\Bank.cs" />
+    <Compile Include="src\ConsoleCommands\BikeList.cs" />
     <Compile Include="src\ConsoleCommands\EventCommands.cs" />
+    <Compile Include="src\ConsoleCommands\TraderList.cs" />
     <Compile Include="src\Event\Event.cs" />
     <Compile Include="src\Hardcore\Hardcore.cs" />
     <Compile Include="src\AntiCheat\CredentialCheck.cs" />

@@ -1,5 +1,13 @@
 ﻿CHANGELOG
 
+10.4
+Added console command traderlist. Shows all trader positions in the world and if they are open
+Added console command bikelist. Shows each bike id, location and the player riding it if applicable
+Added to Dupe_Log. Reports item quality when applicable
+Added command cost to /animaltracking, /bike, /died, /home, /home2, /travel and /lobby chat commands. Set each command cost or leave at zero
+Fixed /commands responding with /lottery instead of lotto
+Fixed vote reward stalling if set to entity
+
 10.3
 Added some phrases to ServerToolsPhrases.xml. Make sure to update it by stopping the server and deleting the file. It will now rebuild when you start your server
 Added to /bank response. Shows a bank account transfer id
