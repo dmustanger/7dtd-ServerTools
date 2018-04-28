@@ -94,7 +94,7 @@ namespace ServerTools
                 sw.WriteLine("<ServerTools>");
                 sw.WriteLine("    <Phrases>");
                 sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- *********************** V.10.3 ************************** -->");
+                sw.WriteLine("        <!-- *********************** V.10.4 ************************** -->");
                 sw.WriteLine("        <!-- ******* If your version is incorrect, shutdown, ******** -->");
                 sw.WriteLine("        <!-- ************* delete this file, restart **************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1386,6 +1386,12 @@ namespace ServerTools
                     _phrase813 = "Currently, the poll is yes {YesCount} / no {NoCount}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"813\" Phrase=\"{0}\" />", _phrase813));
+                string _phrase814;
+                if (!Dict.TryGetValue(814, out _phrase814))
+                {
+                    _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"814\" Phrase=\"{0}\" />", _phrase814));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- *********************** Auction ************************ -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");

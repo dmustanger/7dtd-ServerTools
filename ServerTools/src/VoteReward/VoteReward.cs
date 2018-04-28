@@ -448,21 +448,38 @@ namespace ServerTools
                 }
                 if (posFound)
                 {
-                    EntityClass eClass = EntityClass.list[Entity_Id];
-                    if (eClass != null)
+                    int counter = 1;
+                    Dictionary<int, EntityClass>.KeyCollection entityTypesCollection = EntityClass.list.Keys;
+                    foreach (int i in entityTypesCollection)
                     {
+                        EntityClass eClass = EntityClass.list[i];
                         if (!eClass.bAllowUserInstantiate)
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Error in entity reward spawn. Unable to spawn entity with Id {0}", Entity_Id));
-                            Que();
-                            return;
+                            continue;
                         }
-                        Entity entity = EntityFactory.CreateEntity(Entity_Id, new Vector3((float)_x, (float)_y, (float)_z));
-                        GameManager.Instance.World.SpawnEntityInWorld(entity);
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now;
-                        PersistentContainer.Instance.Save();
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Spawned a {1} near you.[-]", Config.Chat_Response_Color, eClass.entityClassName), Config.Server_Response_Name, false, "ServerTools", false));
-                        Log.Out(string.Format("[SERVERTOOLS] Spawned an entity reward {0} at {1} x, {2} y, {3} z for {4}", eClass.entityClassName, _x, _y, _z, _cInfo.playerName));
+                        if (Entity_Id == counter)
+                        {
+                            Entity entity = EntityFactory.CreateEntity(i, new Vector3((float)_x, (float)_y, (float)_z));
+                            GameManager.Instance.World.SpawnEntityInWorld(entity);
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now;
+                            PersistentContainer.Instance.Save();
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Spawned a {1} near you.[-]", Config.Chat_Response_Color, eClass.entityClassName), Config.Server_Response_Name, false, "ServerTools", false));
+                            string _phrase701;
+                            if (!Phrases.Dict.TryGetValue(701, out _phrase701))
+                            {
+                                _phrase701 = "Thank you for your vote {PlayerName}. You can vote and receive another reward in {VoteDelay} hours.";
+                            }
+                            _phrase701 = _phrase701.Replace("{PlayerName}", _cInfo.playerName);
+                            _phrase701 = _phrase701.Replace("{VoteDelay}", Delay_Between_Uses.ToString());
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase701), Config.Server_Response_Name, false, "ServerTools", false));
+                            Log.Out(string.Format("[SERVERTOOLS] Spawned an entity reward {0} at {1} x, {2} y, {3} z for {4}", eClass.entityClassName, _x, _y, _z, _cInfo.playerName));
+                            Que();
+                        }
+                        counter++;
+                    }
+                    if (counter == entityTypesCollection.Count + 1)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Failed to spawn entity Id {0} as a reward. Check your entity spawn list in console.", Entity_Id));
                         Que();
                     }
                 }
@@ -484,7 +501,6 @@ namespace ServerTools
             if (que.Count > 0)
             {
                 ClientInfo _cInfo = que[0];
-                Log.Out(string.Format("_cInfo.playerId = {0}, _cInfo.playerName = {1}", _cInfo.playerId, _cInfo.playerName));
                 Execute(_cInfo);
                 que.Remove(_cInfo);
             }

@@ -300,7 +300,7 @@ namespace ServerTools
                                                 {
                                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                     {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their bag inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} and identical parts to their bag inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                         sw.WriteLine();
                                                         sw.Flush();
                                                         sw.Close();
@@ -310,7 +310,7 @@ namespace ServerTools
                                                 {
                                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                     {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their bag, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} and identical parts to their bag, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                         sw.WriteLine();
                                                         sw.Flush();
                                                         sw.Close();
@@ -332,7 +332,7 @@ namespace ServerTools
                                                 {
                                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                     {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their bag inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} and identical parts to their bag inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                         sw.WriteLine();
                                                         sw.Flush();
                                                         sw.Close();
@@ -342,7 +342,7 @@ namespace ServerTools
                                                 {
                                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                     {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their bag, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} and identical parts to their bag, standing @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                         sw.WriteLine();
                                                         sw.Flush();
                                                         sw.Close();
@@ -367,7 +367,7 @@ namespace ServerTools
                                                 {
                                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                     {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their bag inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} to their bag inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                         sw.WriteLine();
                                                         sw.Flush();
                                                         sw.Close();
@@ -377,7 +377,7 @@ namespace ServerTools
                                                 {
                                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                     {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their bag, standing  @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} to their bag, standing  @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                         sw.WriteLine();
                                                         sw.Flush();
                                                         sw.Close();
@@ -398,7 +398,7 @@ namespace ServerTools
                                                 {
                                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                     {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their bag inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} to their bag inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                         sw.WriteLine();
                                                         sw.Flush();
                                                         sw.Close();
@@ -408,7 +408,7 @@ namespace ServerTools
                                                 {
                                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                     {
-                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their bag, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _name, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} to their bag, standing @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _name, _bagStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                         sw.WriteLine();
                                                         sw.Flush();
                                                         sw.Close();
@@ -604,7 +604,7 @@ namespace ServerTools
                                                     {
                                                         using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                         {
-                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their inventory inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} and identical parts to their inventory inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                             sw.WriteLine();
                                                             sw.Flush();
                                                             sw.Close();
@@ -614,7 +614,7 @@ namespace ServerTools
                                                     {
                                                         using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                         {
-                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their inventory, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} and identical parts to their inventory, standing @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                             sw.WriteLine();
                                                             sw.Flush();
                                                             sw.Close();
@@ -635,7 +635,7 @@ namespace ServerTools
                                                     {
                                                         using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                         {
-                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their inventory inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} and identical parts to their inventory inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                             sw.WriteLine();
                                                             sw.Flush();
                                                             sw.Close();
@@ -645,7 +645,7 @@ namespace ServerTools
                                                     {
                                                         using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                         {
-                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality and parts to their inventory, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} and identical parts to their inventory, standing @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                             sw.WriteLine();
                                                             sw.Flush();
                                                             sw.Close();
@@ -669,7 +669,7 @@ namespace ServerTools
                                                     {
                                                         using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                         {
-                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their inventory inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} to their inventory inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                             sw.WriteLine();
                                                             sw.Flush();
                                                             sw.Close();
@@ -679,7 +679,7 @@ namespace ServerTools
                                                     {
                                                         using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                         {
-                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their inventory, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} to their inventory, standing @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                             sw.WriteLine();
                                                             sw.Flush();
                                                             sw.Close();
@@ -700,7 +700,7 @@ namespace ServerTools
                                                     {
                                                         using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                         {
-                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their inventory inside their own or ally claimed space @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} to their inventory inside their own or ally claimed space @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                             sw.WriteLine();
                                                             sw.Flush();
                                                             sw.Close();
@@ -710,7 +710,7 @@ namespace ServerTools
                                                     {
                                                         using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                         {
-                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with identical quality to their inventory, standing @ {3} {4} {5}.", DateTime.Now, _cInfo.playerName, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} with quality {3} to their inventory, standing @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invName, _invStackNew.itemValue.Quality, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                             sw.WriteLine();
                                                             sw.Flush();
                                                             sw.Close();

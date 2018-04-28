@@ -13,7 +13,7 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine("This was drafted for version 10.3");
+                sw.WriteLine("This was drafted for version 10.4");
                 sw.WriteLine();
                 sw.WriteLine("ServerTools was coded and tested under a Windows operating system. It should operate on other major O.S. but if you find bugs, report them to");
                 sw.WriteLine("https://github.com/dmustanger/7dtd-ServerTools/issues");
@@ -924,6 +924,10 @@ namespace ServerTools
                 sw.WriteLine("Example: animaltracking reset 76561191234567891");
                 sw.WriteLine("Resets the delay on the command animal tracking for the player.");
                 sw.WriteLine();
+                sw.WriteLine("Bikelist");
+                sw.WriteLine("Example: bikelist");
+                sw.WriteLine("Shows a list of bike ids, locations and players riding them.");
+                sw.WriteLine();
                 sw.WriteLine("EntityRemove");
                 sw.WriteLine("Example: entityremove 12345");
                 sw.WriteLine("Removes an existing entity based on its entity id.");
@@ -1027,6 +1031,10 @@ namespace ServerTools
                 sw.WriteLine("TempBan");
                 sw.WriteLine("Example: tempban 12341 30");
                 sw.WriteLine("Bans the player based their entity id for small amount of time. Maximum temp ban time is 60 minutes.");
+                sw.WriteLine();
+                sw.WriteLine("Traderlist");
+                sw.WriteLine("Example: traderlist");
+                sw.WriteLine("Shows a list of trader locations.");
                 sw.WriteLine();
                 sw.WriteLine("VoteReward");
                 sw.WriteLine("Example: votereward reset 76561191234567891");
