@@ -25,7 +25,7 @@ Anti Cheat<br>
 <br>
 Automatically detects and deals with cheaters. Customizable<br>
 <br>
-Detects: flying above or below ground, hatch elevator, teleport, invalid items, invalid stack sized, family share accounts, <br>
+Detects: flying above or below ground, hatch elevator, teleport, invalid items, invalid stack sizes, family share accounts, <br>
 player stats such as height, speed, jump strength, max stamina, max health, available skill points.<br>
 <br>
 Logs all player's inventory to a file for later review. Set the time between loggings. Default is once per minute.<br>
@@ -53,11 +53,11 @@ Shop and wallet: make a custom shop list for players to buy from. Wallet is calc
 <br>
 Vote rewards: for players voting your server at https://7daystodie-servers.com website<br>
 <br>
-Travel: for players to specific locations when in the right location. Can teleport a bike. Custom delay<br>
+Travel: for players to travel to specific locations when in the right location. Can teleport a bike. Custom delay<br>
 <br>
 Starting items: new players receive all the items from the StartingItems.xml<br>
 <br>
-First claim block: players can type /claim to receive a single claim block. Prevents greifing<br>
+First claim block: players can type /claim to receive a single claim block. Prevents griefing<br>
 <br>
 Give item: give item directly into a players inventory or all online players. Drops to the ground if their inventory is full<br>
 <br>
@@ -77,21 +77,21 @@ Stuck entity: automatically sends bikes, bags, and zombies to the world surface 
 <br>
 Admin alerts: detections that require manual inspection is sent to currently online admins<br>
 <br>
-Chat colors and prefixes: administators, moderators, donators/reserved players, special players can all get custom chat colors and prefix<br>
+Chat colors and prefixes: administrators, moderators, donators/reserved players, special players can all get custom chat colors and prefix<br>
 <br>
 Auto shutdown: the server will auto shutdown after a scheduled time frame. Initiates shutdown system with alerts, world save, countdown<br>
 <br>
 Animal spawning: made to be like an animal tracking system. Players spawn a random animal from a list<br>
 <br>
-Stealh admins: while chat color and prefix is active, admins can disable their chat color to stay hidden<br>
+Stealth admins: while chat color and prefix is active, admins can disable their chat color to stay hidden<br>
 <br>
-Reserved players: automatically kick a non reserved player to let your reserved players in<br>
+Reserved players: based on session time. Final slot can only be filled by admin or reserved status player. Boots players passed max session time to make space for others. Reserved and admins are never kicked<br>
 <br>
 Custom commands: Make your own commands and set optional delays for the first ten entries<br>
 <br>
 Check next shutdown: Can check when the next scheduled shutdown period is<br>
 <br>
-Reservation check: players can check the expiration time for their reservation<br>
+Reservation check: players can check the expiration time for their reserved status<br>
 <br>
 Gimme system: players can spawn a free item periodically with a custom delay<br>
 <br>
@@ -115,7 +115,7 @@ Auto world save: automatically saves the world based on custom delay time<br>
 <br>
 Watchlist: players listed here will be able to join but send online admins an alert when they are in game<br>
 <br>
-Custom phrases: any phrases list in the phrase file can be set a custom response<br>
+Custom phrases: any phrases listed in the phrase file can be set to a custom response<br>
 <br>
 Admin chat: admins can send all other online admins a direct private message<br>
 <br>
@@ -164,6 +164,8 @@ Bike: save a bike id while inside a claimed space. Return a saved bike if close 
 Death return: while enabled, players can return to where they died<br>
 <br>
 Entity cleanup: removes falling blocks, stuck falling trees<br>
+<br>
+Command costs: set a price required to use certain commands. Dependant on ingame wallet and earning coins by killing zombies. In game coins such as casino coin can be transferred through the bank<br>
 <br>
 <br> 
 <br>
