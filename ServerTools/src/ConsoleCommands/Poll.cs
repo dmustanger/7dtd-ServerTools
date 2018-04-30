@@ -20,9 +20,9 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. Poll open <time> <message>\n" +
+                "  1. Poll new <time> <message>\n" +
                 "  2. Poll close <true/false>\n" +
-                "  3. Poll \n" +
+                "  3. Poll check\n" +
                 "  4. Poll last\n" +
                 "  5. Poll reopen <time>\n" +
                 "1. Opens a new poll for <time> in hours. The poll message will display when a player joins the server.\n" +
@@ -30,7 +30,7 @@ namespace ServerTools
                 "2. Closes an open poll and will announce the result if true.\n" +
                 "3. Shows the current poll results in console.\n" +
                 "4. Displays the last poll in console.\n" +
-                "5. Opens the last poll for <time> in hours. If no time is given, it will repeat the same time as last.\n";
+                "5. Opens the last poll for <time> in hours.\n";
         }
 
 
@@ -44,16 +44,11 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count > 3)
+                if (_params[0] == "new")
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 0 to 3, found {0}", _params.Count));
-                    return;
-                }
-                if (_params[0] == "open")
-                {
-                    if (_params.Count != 3)
+                    if (_params.Count < 3)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 3, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected at least 3, found {0}", _params.Count));
                         return;
                     }
                     else
@@ -64,7 +59,7 @@ namespace ServerTools
                             SdtdConsole.Instance.Output(string.Format("Invalid integer {0}", _params[1]));
                             return;
                         }
-                        _params.RemoveRange(0,1);
+                        _params.RemoveRange(0, 2);
                         string _message = string.Join(" ", _params.ToArray());
                         if (!PersistentContainer.Instance.PollOpen)
                         {
@@ -130,7 +125,7 @@ namespace ServerTools
                                 PersistentContainer.Instance.PolledYes = null;
                                 PersistentContainer.Instance.PolledNo = null;
                                 PersistentContainer.Instance.Save();
-                                SdtdConsole.Instance.Output(string.Format("There was a poll open but the time expired. Opened a new poll and announced the result."));
+                                SdtdConsole.Instance.Output("There was a poll open but the time expired. Opened a new poll and announced the result.");
                                 return;
                             }
                             else
@@ -143,21 +138,18 @@ namespace ServerTools
                         }
                     }
                 }
-                if (_params[0] == "close")
+                else if (_params[0] == "close")
                 {
-                    if (_params.Count < 1 || _params.Count > 2)
+                    if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
                     bool _announce = false;
-                    if (_params.Count == 2)
+                    if (!bool.TryParse(_params[1], out _announce))
                     {
-                        if (!bool.TryParse(_params[1], out _announce))
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Invalid true/false argument: {0}", _params[1]));
-                            return;
-                        }
+                        SdtdConsole.Instance.Output(string.Format("Invalid true/false argument: {0}", _params[1]));
+                        return;
                     }
                     else
                     {
@@ -190,18 +182,19 @@ namespace ServerTools
                             PersistentContainer.Instance.PollNo = 0;
                             PersistentContainer.Instance.PolledYes = null;
                             PersistentContainer.Instance.PolledNo = null;
+                            PersistentContainer.Instance.PollMessage = null;
                             PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output(string.Format("Closed the open poll and announced the results"));
+                            SdtdConsole.Instance.Output("Closed the open poll.");
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("No poll is open"));
+                            SdtdConsole.Instance.Output("No poll is open");
                             return;
                         }
                     }
                 }
-                if (_params[0] == "last")
+                else if (_params[0] == "last")
                 {
                     if (_params.Count != 1)
                     {
@@ -219,43 +212,49 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("There are no saved prior poll results"));
+                            SdtdConsole.Instance.Output("There are no saved prior poll results");
                             return;
                         }
                     }
                 }
-                if (_params[0] == "reopen")
+                else if (_params[0] == "reopen")
                 {
-                    if (_params.Count < 1 || _params.Count > 2)
+                    if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
-                    int _hours = PersistentContainer.Instance.PollHours;
-                    int.TryParse(_params[1], out _hours);
                     if (!PersistentContainer.Instance.PollOpen)
                     {
                         if (PersistentContainer.Instance.LastPollMessage != null)
                         {
+                            int _hours;
+                            int.TryParse(_params[1], out _hours);
                             PersistentContainer.Instance.PollOpen = true;
                             PersistentContainer.Instance.PollHours = _hours;
+                            PersistentContainer.Instance.PollMessage = PersistentContainer.Instance.LastPollMessage;
                             PersistentContainer.Instance.PollTime = DateTime.Now;
                             PersistentContainer.Instance.Save();
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("You have no previous poll"));
+                            SdtdConsole.Instance.Output("You have no previous poll");
                             return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("A poll is open. Can not open a new poll until it completes or is closed"));
+                        SdtdConsole.Instance.Output("A poll is open. Can not open a new poll until it completes or is closed");
                         return;
                     }
                 }
-                if (_params.Count == 0)
+                else if (_params[0] == "check")
                 {
+                    if (_params.Count != 1)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        return;
+                    }
                     if (PersistentContainer.Instance.PollOpen)
                     {
                         TimeSpan varTime = DateTime.Now - PersistentContainer.Instance.PollTime;
@@ -287,10 +286,11 @@ namespace ServerTools
                             PersistentContainer.Instance.PollNo = 0;
                             PersistentContainer.Instance.PolledYes = null;
                             PersistentContainer.Instance.PolledNo = null;
+                            PersistentContainer.Instance.PollMessage = null;
                             PersistentContainer.Instance.Save();
                             PolledYes.Clear();
                             PolledNo.Clear();
-                            SdtdConsole.Instance.Output(string.Format("The poll time expired. Announced the results"));
+                            SdtdConsole.Instance.Output("The poll time expired. Announced the results");
                             return;
                         }
                         else
@@ -302,7 +302,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("No poll is open"));
+                        SdtdConsole.Instance.Output("No poll is open");
                         return;
                     }
                 }
@@ -370,6 +370,7 @@ namespace ServerTools
                 PersistentContainer.Instance.PollNo = 0;
                 PersistentContainer.Instance.PolledYes = null;
                 PersistentContainer.Instance.PolledNo = null;
+                PersistentContainer.Instance.PollMessage = null;
                 PersistentContainer.Instance.Save();
             }
         }
