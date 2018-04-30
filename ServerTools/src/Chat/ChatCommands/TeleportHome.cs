@@ -7,7 +7,7 @@ namespace ServerTools
     public class TeleportHome
     {
         public static bool IsEnabled = false, Set_Home2_Enabled = false, Set_Home2_Donor_Only = false;
-        public static int Delay_Between_Uses = 60;
+        public static int Delay_Between_Uses = 60, Command_Cost = 0;
         public static Dictionary<int, DateTime> Invite = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> FriendPosition = new Dictionary<int, string>();
 
@@ -59,87 +59,114 @@ namespace ServerTools
             }
             else
             {
-                bool _donator = false;
-                if (Delay_Between_Uses < 1)
+                World world = GameManager.Instance.World;
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                int currentCoins = 0;
+                int spentCoins = p.PlayerSpentCoins;
+                int gameMode = world.GetGameMode();
+                if (gameMode == 7)
                 {
-                    Home(_cInfo, p.HomePosition, _announce);
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
                 }
                 else
                 {
-                    if (p.LastSetHome == null)
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                }
+                if (currentCoins >= Command_Cost)
+                {
+                    bool _donator = false;
+                    if (Delay_Between_Uses < 1)
                     {
                         Home(_cInfo, p.HomePosition, _announce);
                     }
                     else
                     {
-                        TimeSpan varTime = DateTime.Now - p.LastSetHome;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        int _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                        if (p.LastSetHome == null)
                         {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            Home(_cInfo, p.HomePosition, _announce);
+                        }
+                        else
+                        {
+                            TimeSpan varTime = DateTime.Now - p.LastSetHome;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            int _timepassed = (int)fractionalMinutes;
+                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    _donator = true;
-                                    int _newDelay = Delay_Between_Uses / 2;
-                                    if (_timepassed >= _newDelay)
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
                                     {
-                                        Home(_cInfo, p.HomePosition, _announce);
-                                    }
-                                    else
-                                    {
-                                        int _timeleft = _newDelay - _timepassed;
-                                        string _phrase13;
-                                        if (!Phrases.Dict.TryGetValue(13, out _phrase13))
+                                        _donator = true;
+                                        int _newDelay = Delay_Between_Uses / 2;
+                                        if (_timepassed >= _newDelay)
                                         {
-                                            _phrase13 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                        }
-                                        _phrase13 = _phrase13.Replace("{PlayerName}", _cInfo.playerName);
-                                        _phrase13 = _phrase13.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                        _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
-                                        if (_announce)
-                                        {
-                                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase13), Config.Server_Response_Name, false, "ServerTools", true);
+                                            Home(_cInfo, p.HomePosition, _announce);
                                         }
                                         else
                                         {
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase13), Config.Server_Response_Name, false, "ServerTools", false));
+                                            int _timeleft = _newDelay - _timepassed;
+                                            string _phrase13;
+                                            if (!Phrases.Dict.TryGetValue(13, out _phrase13))
+                                            {
+                                                _phrase13 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                            }
+                                            _phrase13 = _phrase13.Replace("{PlayerName}", _cInfo.playerName);
+                                            _phrase13 = _phrase13.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                                            _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
+                                            if (_announce)
+                                            {
+                                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase13), Config.Server_Response_Name, false, "ServerTools", true);
+                                            }
+                                            else
+                                            {
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase13), Config.Server_Response_Name, false, "ServerTools", false));
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                        if (!_donator)
-                        {
-                            if (_timepassed >= Delay_Between_Uses)
+                            if (!_donator)
                             {
-                                Home(_cInfo, p.HomePosition, _announce);
-                            }
-                            else
-                            {
-                                int _timeleft = Delay_Between_Uses - _timepassed;
-                                string _phrase13;
-                                if (!Phrases.Dict.TryGetValue(13, out _phrase13))
+                                if (_timepassed >= Delay_Between_Uses)
                                 {
-                                    _phrase13 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                }
-                                _phrase13 = _phrase13.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase13 = _phrase13.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                                _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
-                                if (_announce)
-                                {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase13), Config.Server_Response_Name, false, "ServerTools", true);
+                                    Home(_cInfo, p.HomePosition, _announce);
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase13), Config.Server_Response_Name, false, "ServerTools", false));
+                                    int _timeleft = Delay_Between_Uses - _timepassed;
+                                    string _phrase13;
+                                    if (!Phrases.Dict.TryGetValue(13, out _phrase13))
+                                    {
+                                        _phrase13 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                    }
+                                    _phrase13 = _phrase13.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase13 = _phrase13.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                                    _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    if (_announce)
+                                    {
+                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase13), Config.Server_Response_Name, false, "ServerTools", true);
+                                    }
+                                    else
+                                    {
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase13), Config.Server_Response_Name, false, "ServerTools", false));
+                                    }
                                 }
                             }
                         }
                     }
+                }
+                else
+                {
+                    string _phrase814;
+                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
+                    {
+                        _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    }
+                    _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
         }
@@ -153,6 +180,8 @@ namespace ServerTools
             int.TryParse(_cords[2], out z);
             Players.NoFlight.Add(_cInfo.entityId);
             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+            int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastSetHome = DateTime.Now;
             PersistentContainer.Instance.Save();
         }
@@ -234,91 +263,117 @@ namespace ServerTools
             }
             else
             {
-                bool _donator = false;
-                if (Delay_Between_Uses < 1)
+                World world = GameManager.Instance.World;
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                int currentCoins = 0;
+                int spentCoins = p.PlayerSpentCoins;
+                int gameMode = world.GetGameMode();
+                if (gameMode == 7)
                 {
-                    Home2(_cInfo, p.HomePosition2, _announce);
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
                 }
                 else
                 {
-                    if (p.LastSetHome == null)
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                }
+                if (currentCoins >= Command_Cost)
+                {
+                    bool _donator = false;
+                    if (Delay_Between_Uses < 1)
                     {
                         Home2(_cInfo, p.HomePosition2, _announce);
                     }
                     else
                     {
-                        TimeSpan varTime = DateTime.Now - p.LastSetHome;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        int _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                        if (p.LastSetHome == null)
                         {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            Home2(_cInfo, p.HomePosition2, _announce);
+                        }
+                        else
+                        {
+                            TimeSpan varTime = DateTime.Now - p.LastSetHome;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            int _timepassed = (int)fractionalMinutes;
+                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    _donator = true;
-                                    int _newDelay = Delay_Between_Uses / 2;
-                                    if (_timepassed >= _newDelay)
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
                                     {
-                                        Home2(_cInfo, p.HomePosition2, _announce);
-                                    }
-                                    else
-                                    {
-                                        int _timeleft = _newDelay - _timepassed;
-                                        string _phrase609;
-                                        if (!Phrases.Dict.TryGetValue(609, out _phrase609))
+                                        _donator = true;
+                                        int _newDelay = Delay_Between_Uses / 2;
+                                        if (_timepassed >= _newDelay)
                                         {
-                                            _phrase609 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                        }
-                                        _phrase609 = _phrase609.Replace("{PlayerName}", _cInfo.playerName);
-                                        _phrase609 = _phrase609.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                        _phrase609 = _phrase609.Replace("{TimeRemaining}", _timeleft.ToString());
-                                        if (_announce)
-                                        {
-                                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase609), Config.Server_Response_Name, false, "ServerTools", true);
+                                            Home2(_cInfo, p.HomePosition2, _announce);
                                         }
                                         else
                                         {
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase609), Config.Server_Response_Name, false, "ServerTools", false));
+                                            int _timeleft = _newDelay - _timepassed;
+                                            string _phrase13;
+                                            if (!Phrases.Dict.TryGetValue(13, out _phrase13))
+                                            {
+                                                _phrase13 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                            }
+                                            _phrase13 = _phrase13.Replace("{PlayerName}", _cInfo.playerName);
+                                            _phrase13 = _phrase13.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                                            _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
+                                            if (_announce)
+                                            {
+                                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase13), Config.Server_Response_Name, false, "ServerTools", true);
+                                            }
+                                            else
+                                            {
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase13), Config.Server_Response_Name, false, "ServerTools", false));
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                        if (!_donator)
-                        {
-                            if (_timepassed >= Delay_Between_Uses)
+                            if (!_donator)
                             {
-                                Home2(_cInfo, p.HomePosition2, _announce);
-                            }
-                            else
-                            {
-                                int _timeleft = Delay_Between_Uses - _timepassed;
-                                string _phrase609;
-                                if (!Phrases.Dict.TryGetValue(609, out _phrase609))
+                                if (_timepassed >= Delay_Between_Uses)
                                 {
-                                    _phrase609 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                }
-                                _phrase609 = _phrase609.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase609 = _phrase609.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                                _phrase609 = _phrase609.Replace("{TimeRemaining}", _timeleft.ToString());
-                                if (_announce)
-                                {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase609), Config.Server_Response_Name, false, "ServerTools", true);
+                                    Home2(_cInfo, p.HomePosition2, _announce);
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase609), Config.Server_Response_Name, false, "ServerTools", false));
+                                    int _timeleft = Delay_Between_Uses - _timepassed;
+                                    string _phrase13;
+                                    if (!Phrases.Dict.TryGetValue(13, out _phrase13))
+                                    {
+                                        _phrase13 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                    }
+                                    _phrase13 = _phrase13.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase13 = _phrase13.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                                    _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    if (_announce)
+                                    {
+                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase13), Config.Server_Response_Name, false, "ServerTools", true);
+                                    }
+                                    else
+                                    {
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase13), Config.Server_Response_Name, false, "ServerTools", false));
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                else
+                {
+                    string _phrase814;
+                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
+                    {
+                        _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    }
+                    _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
+                }
             }
         }
-
 
         private static void Home2(ClientInfo _cInfo, string _home2, bool _announce)
         {
@@ -329,6 +384,8 @@ namespace ServerTools
             int.TryParse(_cords[2], out z);
             Players.NoFlight.Add(_cInfo.entityId);
             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+            int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastSetHome = DateTime.Now;
             PersistentContainer.Instance.Save();
         }
@@ -384,91 +441,103 @@ namespace ServerTools
             }
             else
             {
-                bool _donator = false;
-                if (Delay_Between_Uses < 1)
+                World world = GameManager.Instance.World;
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                int currentCoins = 0;
+                int spentCoins = p.PlayerSpentCoins;
+                int gameMode = world.GetGameMode();
+                if (gameMode == 7)
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    Home(_cInfo, p.HomePosition, _announce);
-                    FriendInvite(_cInfo, _player.position, p.HomePosition);
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
                 }
                 else
                 {
-                    if (p.LastSetHome == null)
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                }
+                if (currentCoins >= Command_Cost)
+                {
+                    bool _donator = false;
+                    if (Delay_Between_Uses < 1)
                     {
-                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                         Home(_cInfo, p.HomePosition, _announce);
                         FriendInvite(_cInfo, _player.position, p.HomePosition);
                     }
                     else
                     {
-                        TimeSpan varTime = DateTime.Now - p.LastSetHome;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        int _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                        if (p.LastSetHome == null)
                         {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            Home(_cInfo, p.HomePosition, _announce);
+                            FriendInvite(_cInfo, _player.position, p.HomePosition);
+                        }
+                        else
+                        {
+                            TimeSpan varTime = DateTime.Now - p.LastSetHome;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            int _timepassed = (int)fractionalMinutes;
+                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    _donator = true;
-                                    int _newDelay = Delay_Between_Uses / 2;
-                                    if (_timepassed >= _newDelay)
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
                                     {
-                                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                        Home(_cInfo, p.HomePosition, _announce);
-                                        FriendInvite(_cInfo, _player.position, p.HomePosition);
-                                    }
-                                    else
-                                    {
-                                        int _timeleft = _newDelay - _timepassed;
-                                        string _phrase810;
-                                        if (!Phrases.Dict.TryGetValue(810, out _phrase810))
+                                        _donator = true;
+                                        int _newDelay = Delay_Between_Uses / 2;
+                                        if (_timepassed >= _newDelay)
                                         {
-                                            _phrase810 = "{PlayerName} you can only use /fhome or /fhome2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                        }
-                                        _phrase810 = _phrase810.Replace("{PlayerName}", _cInfo.playerName);
-                                        _phrase810 = _phrase810.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                        _phrase810 = _phrase810.Replace("{TimeRemaining}", _timeleft.ToString());
-                                        if (_announce)
-                                        {
-                                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase810), Config.Server_Response_Name, false, "ServerTools", true);
+                                            Home(_cInfo, p.HomePosition, _announce);
+                                            FriendInvite(_cInfo, _player.position, p.HomePosition);
                                         }
                                         else
                                         {
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase810), Config.Server_Response_Name, false, "ServerTools", false));
+                                            int _timeleft = _newDelay - _timepassed;
+                                            string _phrase815;
+                                            if (!Phrases.Dict.TryGetValue(815, out _phrase815))
+                                            {
+                                                _phrase815 = "{PlayerName} you can only use /fhome or /fhome2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                            }
+                                            _phrase815 = _phrase815.Replace("{PlayerName}", _cInfo.playerName);
+                                            _phrase815 = _phrase815.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                                            _phrase815 = _phrase815.Replace("{TimeRemaining}", _timeleft.ToString());
+                                            if (_announce)
+                                            {
+                                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase815), Config.Server_Response_Name, false, "ServerTools", true);
+                                            }
+                                            else
+                                            {
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase815), Config.Server_Response_Name, false, "ServerTools", false));
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                        if (!_donator)
-                        {
-                            if (_timepassed >= Delay_Between_Uses)
+                            if (!_donator)
                             {
-                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                Home(_cInfo, p.HomePosition, _announce);
-                                FriendInvite(_cInfo, _player.position, p.HomePosition);
-                            }
-                            else
-                            {
-                                int _timeleft = Delay_Between_Uses - _timepassed;
-                                string _phrase810;
-                                if (!Phrases.Dict.TryGetValue(810, out _phrase810))
+                                if (_timepassed >= Delay_Between_Uses)
                                 {
-                                    _phrase810 = "{PlayerName} you can only use /fhome or /fhome2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                }
-                                _phrase810 = _phrase810.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase810 = _phrase810.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                                _phrase810 = _phrase810.Replace("{TimeRemaining}", _timeleft.ToString());
-                                if (_announce)
-                                {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase810), Config.Server_Response_Name, false, "ServerTools", true);
+                                    Home(_cInfo, p.HomePosition, _announce);
+                                    FriendInvite(_cInfo, _player.position, p.HomePosition);
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase810), Config.Server_Response_Name, false, "ServerTools", false));
+                                    int _timeleft = Delay_Between_Uses - _timepassed;
+                                    string _phrase815;
+                                    if (!Phrases.Dict.TryGetValue(815, out _phrase815))
+                                    {
+                                        _phrase815 = "{PlayerName} you can only use /fhome or /fhome2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                    }
+                                    _phrase815 = _phrase815.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase815 = _phrase815.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                                    _phrase815 = _phrase815.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    if (_announce)
+                                    {
+                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase815), Config.Server_Response_Name, false, "ServerTools", true);
+                                    }
+                                    else
+                                    {
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase815), Config.Server_Response_Name, false, "ServerTools", false));
+                                    }
                                 }
                             }
                         }
@@ -499,91 +568,103 @@ namespace ServerTools
             }
             else
             {
-                bool _donator = false;
-                if (Delay_Between_Uses < 1)
+                World world = GameManager.Instance.World;
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                int currentCoins = 0;
+                int spentCoins = p.PlayerSpentCoins;
+                int gameMode = world.GetGameMode();
+                if (gameMode == 7)
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    Home2(_cInfo, p.HomePosition2, _announce);
-                    FriendInvite(_cInfo, _player.position, p.HomePosition2);
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
                 }
                 else
                 {
-                    if (p.LastSetHome == null)
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                }
+                if (currentCoins >= Command_Cost)
+                {
+                    bool _donator = false;
+                    if (Delay_Between_Uses < 1)
                     {
-                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                         Home2(_cInfo, p.HomePosition2, _announce);
                         FriendInvite(_cInfo, _player.position, p.HomePosition2);
                     }
                     else
                     {
-                        TimeSpan varTime = DateTime.Now - p.LastSetHome;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        int _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                        if (p.LastSetHome == null)
                         {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                            Home2(_cInfo, p.HomePosition2, _announce);
+                            FriendInvite(_cInfo, _player.position, p.HomePosition2);
+                        }
+                        else
+                        {
+                            TimeSpan varTime = DateTime.Now - p.LastSetHome;
+                            double fractionalMinutes = varTime.TotalMinutes;
+                            int _timepassed = (int)fractionalMinutes;
+                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                             {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
+                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    _donator = true;
-                                    int _newDelay = Delay_Between_Uses / 2;
-                                    if (_timepassed >= _newDelay)
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
                                     {
-                                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                        Home2(_cInfo, p.HomePosition2, _announce);
-                                        FriendInvite(_cInfo, _player.position, p.HomePosition2);
-                                    }
-                                    else
-                                    {
-                                        int _timeleft = _newDelay - _timepassed;
-                                        string _phrase609;
-                                        if (!Phrases.Dict.TryGetValue(609, out _phrase609))
+                                        _donator = true;
+                                        int _newDelay = Delay_Between_Uses / 2;
+                                        if (_timepassed >= _newDelay)
                                         {
-                                            _phrase609 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                        }
-                                        _phrase609 = _phrase609.Replace("{PlayerName}", _cInfo.playerName);
-                                        _phrase609 = _phrase609.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                        _phrase609 = _phrase609.Replace("{TimeRemaining}", _timeleft.ToString());
-                                        if (_announce)
-                                        {
-                                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase609), Config.Server_Response_Name, false, "ServerTools", true);
+                                            Home2(_cInfo, p.HomePosition2, _announce);
+                                            FriendInvite(_cInfo, _player.position, p.HomePosition2);
                                         }
                                         else
                                         {
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase609), Config.Server_Response_Name, false, "ServerTools", false));
+                                            int _timeleft = _newDelay - _timepassed;
+                                            string _phrase815;
+                                            if (!Phrases.Dict.TryGetValue(815, out _phrase815))
+                                            {
+                                                _phrase815 = "{PlayerName} you can only use /fhome or /fhome2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                            }
+                                            _phrase815 = _phrase815.Replace("{PlayerName}", _cInfo.playerName);
+                                            _phrase815 = _phrase815.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                                            _phrase815 = _phrase815.Replace("{TimeRemaining}", _timeleft.ToString());
+                                            if (_announce)
+                                            {
+                                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase815), Config.Server_Response_Name, false, "ServerTools", true);
+                                            }
+                                            else
+                                            {
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase815), Config.Server_Response_Name, false, "ServerTools", false));
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                        if (!_donator)
-                        {
-                            if (_timepassed >= Delay_Between_Uses)
+                            if (!_donator)
                             {
-                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                Home2(_cInfo, p.HomePosition2, _announce);
-                                FriendInvite(_cInfo, _player.position, p.HomePosition2);
-                            }
-                            else
-                            {
-                                int _timeleft = Delay_Between_Uses - _timepassed;
-                                string _phrase609;
-                                if (!Phrases.Dict.TryGetValue(609, out _phrase609))
+                                if (_timepassed >= Delay_Between_Uses)
                                 {
-                                    _phrase609 = "{PlayerName} you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                }
-                                _phrase609 = _phrase609.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase609 = _phrase609.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                                _phrase609 = _phrase609.Replace("{TimeRemaining}", _timeleft.ToString());
-                                if (_announce)
-                                {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase609), Config.Server_Response_Name, false, "ServerTools", true);
+                                    Home2(_cInfo, p.HomePosition2, _announce);
+                                    FriendInvite(_cInfo, _player.position, p.HomePosition2);
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase609), Config.Server_Response_Name, false, "ServerTools", false));
+                                    int _timeleft = Delay_Between_Uses - _timepassed;
+                                    string _phrase815;
+                                    if (!Phrases.Dict.TryGetValue(815, out _phrase815))
+                                    {
+                                        _phrase815 = "{PlayerName} you can only use /fhome or /fhome2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                    }
+                                    _phrase815 = _phrase815.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase815 = _phrase815.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                                    _phrase815 = _phrase815.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    if (_announce)
+                                    {
+                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase815), Config.Server_Response_Name, false, "ServerTools", true);
+                                    }
+                                    else
+                                    {
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase815), Config.Server_Response_Name, false, "ServerTools", false));
+                                    }
                                 }
                             }
                         }
