@@ -1,5 +1,13 @@
 ﻿CHANGELOG
 
+10.5
+Fixed console command poll. Fixed poll reopen and checking the open poll message and results
+Fixed two phrases in ServerToolsPhrases.xml. Make sure to update it by stopping the server and deleting the file. It will now rebuild when you start your server
+ -Update phrase # 810. New phrase # 815
+Fixed chat command /doncolor
+Changed console command poll. To open a new poll, you now type poll new instead of poll open. To see the currently open poll message and results type poll check
+Updated HowTo.xml
+
 10.4
 Added console command traderlist. Shows all trader positions in the world and if they are open
 Added console command bikelist. Shows each bike id, location and the player riding it if applicable
