@@ -94,7 +94,7 @@ namespace ServerTools
                 sw.WriteLine("<ServerTools>");
                 sw.WriteLine("    <Phrases>");
                 sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- *********************** V.10.4 ************************** -->");
+                sw.WriteLine("        <!-- *********************** V.10.5 ************************** -->");
                 sw.WriteLine("        <!-- ******* If your version is incorrect, shutdown, ******** -->");
                 sw.WriteLine("        <!-- ************* delete this file, restart **************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1365,7 +1365,7 @@ namespace ServerTools
                 string _phrase810;
                 if (!Dict.TryGetValue(810, out _phrase810))
                 {
-                    _phrase810 = "{PlayerName} you can only use /fhome or /fhome2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase810 = "{PlayerName} you can only use /auction sell {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"810\" Phrase=\"{0}\" />", _phrase810));
                 string _phrase811;
@@ -1392,6 +1392,12 @@ namespace ServerTools
                     _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"814\" Phrase=\"{0}\" />", _phrase814));
+                string _phrase815;
+                if (!Dict.TryGetValue(815, out _phrase815))
+                {
+                    _phrase815 = "{PlayerName} you can only use /fhome or /fhome2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"815\" Phrase=\"{0}\" />", _phrase815));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- *********************** Auction ************************ -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");

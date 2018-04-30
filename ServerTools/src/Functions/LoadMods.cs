@@ -136,11 +136,11 @@
             {
                 Watchlist.Unload();
             }
-            if (!ReservedSlots.IsRunning && (ReservedSlots.IsEnabled || ReservedSlots.Donator_Name_Coloring))
+            if (!ReservedSlots.IsRunning && ReservedSlots.IsEnabled)
             {
                 ReservedSlots.Load();
             }
-            if (ReservedSlots.IsRunning && !ReservedSlots.IsEnabled && !ReservedSlots.Donator_Name_Coloring)
+            if (ReservedSlots.IsRunning && !ReservedSlots.IsEnabled)
             {
                 ReservedSlots.Unload();
             }
