@@ -1,5 +1,21 @@
 ﻿CHANGELOG
 
+10.6
+Added option to tool Wallet. You can now enable or disable this to prevent players from using /wallet. The internal wallet still calculates and can be used
+Added two phrases in ServerToolsPhrases.xml. Make sure to update it by stopping the server and deleting the file. It will now rebuild when you start your server
+ -New phrase # 749, 816
+Added server run time check to restart vote. Players can not open a new vote until 30 minutes have passed from server startup
+Added response when depositing into the bank but not enough coins are available in the secure loot
+Changed Zones.xml. Added option noZombie allowing each zone to be custom
+Changed Zones to allow a zone with in a zone. Place the smaller inner zone in your Zones.xml list before the larger outer zone that over laps
+Changed internal code method for checking zones. Improved response time. Likely not noticable.
+Changed chat command /loc response to match the game map instead of the true world location used for teleports or seen in the console. The height in the map
+is -59 less in total height than the true world position
+Changed chance of getting a zombie from chat command /gimme. 1 in 8 chance instead of 1 in 6
+Fixed poll counts not going above 1 for yes and no
+Fixed one response while setting up an event
+Removed option No_Zombie from the configuration file. This is now set in the Zones.xml for each zone instead of all or nothing
+
 10.5
 Fixed console command poll. Fixed poll reopen and checking the open poll message and results
 Fixed two phrases in ServerToolsPhrases.xml. Make sure to update it by stopping the server and deleting the file. It will now rebuild when you start your server
