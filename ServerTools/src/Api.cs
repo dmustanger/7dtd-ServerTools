@@ -25,6 +25,7 @@ namespace ServerTools
                 Fps.SetTarget();
             }
             Timers.LoadAlert();
+            RestartVote.Startup = true;
         }
 
         public override void SavePlayerData(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
@@ -239,9 +240,9 @@ namespace ServerTools
                     FriendTeleport.Dict.Remove(_cInfo.entityId);
                     FriendTeleport.Dict1.Remove(_cInfo.entityId);
                 }
-                if (Players.ZoneFlag.ContainsKey(_cInfo.entityId))
+                if (Players.ZoneExit.ContainsKey(_cInfo.entityId))
                 {
-                    Players.ZoneFlag.Remove(_cInfo.entityId);
+                    Players.ZoneExit.Remove(_cInfo.entityId);
                     Players.Forgive.Remove(_cInfo.entityId);
                     Players.Victim.Remove(_cInfo.entityId);
                 }

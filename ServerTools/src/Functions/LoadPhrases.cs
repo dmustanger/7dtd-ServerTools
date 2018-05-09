@@ -94,7 +94,7 @@ namespace ServerTools
                 sw.WriteLine("<ServerTools>");
                 sw.WriteLine("    <Phrases>");
                 sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- *********************** V.10.5 ************************** -->");
+                sw.WriteLine("        <!-- *********************** V.10.6 ************************** -->");
                 sw.WriteLine("        <!-- ******* If your version is incorrect, shutdown, ******** -->");
                 sw.WriteLine("        <!-- ************* delete this file, restart **************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1134,6 +1134,12 @@ namespace ServerTools
                     _phrase748 = "{Player} has requested a restart vote.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"748\" Phrase=\"{0}\" />", _phrase748));
+                string _phrase749;
+                if (!Dict.TryGetValue(749, out _phrase749))
+                {
+                    _phrase749 = "A administrator is currently online. They have been alerted.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"749\" Phrase=\"{0}\" />", _phrase749));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ********************* Item_Cleanup ********************* -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1398,6 +1404,12 @@ namespace ServerTools
                     _phrase815 = "{PlayerName} you can only use /fhome or /fhome2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"815\" Phrase=\"{0}\" />", _phrase815));
+                string _phrase816;
+                if (!Dict.TryGetValue(816, out _phrase816))
+                {
+                    _phrase816 = "You must wait thirty minutes after the server starts before opening a restart vote.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"816\" Phrase=\"{0}\" />", _phrase816));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- *********************** Auction ************************ -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");

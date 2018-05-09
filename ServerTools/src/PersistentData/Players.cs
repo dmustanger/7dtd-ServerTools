@@ -16,11 +16,10 @@ namespace ServerTools
         public static Dictionary<int, DateTime> DeathTime = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> LastDeathPos = new Dictionary<int, string>();
         public static Dictionary<int, int> KillStreak = new Dictionary<int, int>();
-        public static Dictionary<string, string[]> Box = new Dictionary<string, string[]>();
         public static Dictionary<int, string> Victim = new Dictionary<int, string>();
         public static Dictionary<int, int> Forgive = new Dictionary<int, int>();
-        public static Dictionary<int, string> ZoneFlag = new Dictionary<int, string>();
-        private static Dictionary<int, int> Flag = new Dictionary<int, int>();
+        public static Dictionary<int, string> ZoneExit = new Dictionary<int, string>();
+        public static List<string[]> Box = new List<string[]>();
         public static List<int> ZonePvE = new List<int>();
         public static List<int> Dead = new List<int>();
         public static List<int> NoFlight = new List<int>();
@@ -343,461 +342,10 @@ namespace ServerTools
                     {
                         if (Zones.IsEnabled)
                         {
-                            int _X = (int)_player.position.x;
-                            int _Y = (int)_player.position.y;
-                            int _Z = (int)_player.position.z;
-                            if (Box.Count > 0)
+                            ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
+                            if (_cInfo != null)
                             {
-                                Flag.Remove(_player.entityId);
-                                foreach (KeyValuePair<string, string[]> kvpCorners in Box)
-                                {
-                                    int xMin, yMin, zMin;
-                                    string[] _corner1 = kvpCorners.Value[0].Split(',');
-                                    int.TryParse(_corner1[0], out xMin);
-                                    int.TryParse(_corner1[1], out yMin);
-                                    int.TryParse(_corner1[2], out zMin);
-                                    int xMax, yMax, zMax;
-                                    string[] _corner2 = kvpCorners.Value[1].Split(',');
-                                    int.TryParse(_corner2[0], out xMax);
-                                    int.TryParse(_corner2[1], out yMax);
-                                    int.TryParse(_corner2[2], out zMax);
-                                    if (xMin >= 0 && xMax >= 0)
-                                    {
-                                        if (xMin < xMax)
-                                        {
-                                            if (_X >= xMin)
-                                            {
-                                                _xMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _xMinCheck = 0;
-                                            }
-                                            if (_X <= xMax)
-                                            {
-                                                _xMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _xMaxCheck = 0;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (_X <= xMin)
-                                            {
-                                                _xMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _xMinCheck = 0;
-                                            }
-                                            if (_X >= xMax)
-                                            {
-                                                _xMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _xMaxCheck = 0;
-                                            }
-                                        }
-                                    }
-                                    else if (xMin <= 0 && xMax <= 0)
-                                    {
-                                        if (xMin < xMax)
-                                        {
-                                            if (_X >= xMin)
-                                            {
-                                                _xMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _xMinCheck = 0;
-                                            }
-                                            if (_X <= xMax)
-                                            {
-                                                _xMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _xMaxCheck = 0;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (_X <= xMin)
-                                            {
-                                                _xMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _xMinCheck = 0;
-                                            }
-                                            if (_X >= xMax)
-                                            {
-                                                _xMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _xMaxCheck = 0;
-                                            }
-                                        }
-                                    }
-                                    else if (xMin <= 0 && xMax >= 0)
-                                    {
-                                        if (_X >= xMin)
-                                        {
-                                            _xMinCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _xMinCheck = 0;
-                                        }
-                                        if (_X <= xMax)
-                                        {
-                                            _xMaxCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _xMaxCheck = 0;
-                                        }
-                                    }
-                                    else if (xMin >= 0 && xMax <= 0)
-                                    {
-                                        if (_X <= xMin)
-                                        {
-                                            _xMinCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _xMinCheck = 0;
-                                        }
-                                        if (_X >= xMax)
-                                        {
-                                            _xMaxCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _xMaxCheck = 0;
-                                        }
-                                    }
-
-                                    if (yMin >= 0 && yMax >= 0)
-                                    {
-                                        if (yMin < yMax)
-                                        {
-                                            if (_Y >= yMin)
-                                            {
-                                                _yMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _yMinCheck = 0;
-                                            }
-                                            if (_Y <= yMax)
-                                            {
-                                                _yMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _yMaxCheck = 0;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (_Y <= yMin)
-                                            {
-                                                _yMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _yMinCheck = 0;
-                                            }
-                                            if (_Y >= yMax)
-                                            {
-                                                _yMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _yMaxCheck = 0;
-                                            }
-                                        }
-                                    }
-                                    else if (yMin <= 0 && yMax <= 0)
-                                    {
-                                        if (yMin < yMax)
-                                        {
-                                            if (_Y >= yMin)
-                                            {
-                                                _yMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _yMinCheck = 0;
-                                            }
-                                            if (_Y <= yMax)
-                                            {
-                                                _yMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _yMaxCheck = 0;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (_Y <= yMin)
-                                            {
-                                                _yMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _yMinCheck = 0;
-                                            }
-                                            if (_Y >= yMax)
-                                            {
-                                                _yMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _yMaxCheck = 0;
-                                            }
-                                        }
-                                    }
-                                    else if (yMin <= 0 && yMax >= 0)
-                                    {
-                                        if (_Y >= yMin)
-                                        {
-                                            _yMinCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _yMinCheck = 0;
-                                        }
-                                        if (_Y <= yMax)
-                                        {
-                                            _yMaxCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _yMaxCheck = 0;
-                                        }
-                                    }
-                                    else if (yMin >= 0 && yMax <= 0)
-                                    {
-                                        if (_Y <= yMin)
-                                        {
-                                            _yMinCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _yMinCheck = 0;
-                                        }
-                                        if (_Y >= yMax)
-                                        {
-                                            _yMaxCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _yMaxCheck = 0;
-                                        }
-                                    }
-
-                                    if (zMin >= 0 && zMax >= 0)
-                                    {
-                                        if (zMin < zMax)
-                                        {
-                                            if (_Z >= zMin)
-                                            {
-                                                _zMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _zMinCheck = 0;
-                                            }
-                                            if (_Z <= zMax)
-                                            {
-                                                _zMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _zMaxCheck = 0;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (_Z <= zMin)
-                                            {
-                                                _zMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _zMinCheck = 0;
-                                            }
-                                            if (_Z >= zMax)
-                                            {
-                                                _zMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _zMaxCheck = 0;
-                                            }
-                                        }
-                                    }
-                                    else if (zMin <= 0 && zMax <= 0)
-                                    {
-                                        if (zMin < zMax)
-                                        {
-                                            if (_Z >= zMin)
-                                            {
-                                                _zMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _zMinCheck = 0;
-                                            }
-                                            if (_Z <= zMax)
-                                            {
-                                                _zMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _zMaxCheck = 0;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (_Z <= zMin)
-                                            {
-                                                _zMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _zMinCheck = 0;
-                                            }
-                                            if (_Z >= zMax)
-                                            {
-                                                _zMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _zMaxCheck = 0;
-                                            }
-                                        }
-                                    }
-                                    else if (zMin <= 0 && zMax >= 0)
-                                    {
-                                        if (_Z >= zMin)
-                                        {
-                                            _zMinCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _zMinCheck = 0;
-                                        }
-                                        if (_Z <= zMax)
-                                        {
-                                            _zMaxCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _zMaxCheck = 0;
-                                        }
-                                    }
-                                    else if (zMin >= 0 && zMax <= 0)
-                                    {
-                                        if (_Z <= zMin)
-                                        {
-                                            _zMinCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _zMinCheck = 0;
-                                        }
-                                        if (_Z >= zMax)
-                                        {
-                                            _zMaxCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _zMaxCheck = 0;
-                                        }
-                                    }
-                                    if (_xMinCheck == 1 && _yMinCheck == 1 && _zMinCheck == 1 && _xMaxCheck == 1 && _yMaxCheck == 1 && _zMaxCheck == 1)
-                                    {
-                                        if (!ZoneFlag.ContainsKey(_player.entityId))
-                                        {
-                                            ZoneFlag.Add(_player.entityId, kvpCorners.Value[3]);
-                                            if (kvpCorners.Value[5] == "true")
-                                            {
-                                                ZonePvE.Add(_player.entityId);
-                                            }
-                                            ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
-                                            if (Zones.Zone_Message)
-                                            {
-                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, kvpCorners.Value[2]), Config.Server_Response_Name, false, "ServerTools", false));
-                                            }
-                                            if (kvpCorners.Value[4] != null)
-                                            {
-                                                Zones.Response(_cInfo, kvpCorners.Value[4]);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (kvpCorners.Value[5] == "true")
-                                            {
-                                                ZonePvE[_player.entityId] = _player.entityId;
-                                            }
-                                            ZoneFlag[_player.entityId] = kvpCorners.Value[3];
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (ZoneFlag.ContainsKey(_player.entityId))
-                                        {
-                                            if (Flag.ContainsKey(_player.entityId))
-                                            {
-                                                Flag[_player.entityId] += 1;
-                                                int _flag;
-                                                Flag.TryGetValue(_player.entityId, out _flag);
-                                                {
-                                                    if (_flag == Box.Count)
-                                                    {
-                                                        if (Zones.Zone_Message)
-                                                        {
-                                                            string _msg;
-                                                            if (ZoneFlag.TryGetValue(_player.entityId, out _msg))
-                                                            {
-                                                                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
-                                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _msg), Config.Server_Response_Name, false, "ServerTools", false));
-                                                            }
-                                                        }
-                                                        ZoneFlag.Remove(_player.entityId);
-                                                        ZonePvE.Remove(_player.entityId);
-                                                    }
-                                                }
-                                            }
-                                            else
-                                            {
-                                                Flag[_player.entityId] = 1;
-                                                if (Box.Count == 1)
-                                                {
-                                                    if (Zones.Zone_Message)
-                                                    {
-                                                        string _msg;
-                                                        if (ZoneFlag.TryGetValue(_player.entityId, out _msg))
-                                                        {
-                                                            ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
-                                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _msg), Config.Server_Response_Name, false, "ServerTools", false));
-                                                        }
-                                                    }
-                                                    ZoneFlag.Remove(_player.entityId);
-                                                    ZonePvE.Remove(_player.entityId);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                ZoneCheck(_cInfo, _player);
                             }
                         }
                     }
@@ -806,7 +354,7 @@ namespace ServerTools
             if (!DP)
             {
                 _counter++;
-                if (_counter >= 10)
+                if (_counter >= 6)
                 {
                     _counter = 0;
                     for (int i = 0; i < _playerList.Count; i++)
@@ -823,6 +371,500 @@ namespace ServerTools
             {
                 _counter = 0;
             }
+        }
+
+        public static void ZoneCheck(ClientInfo _cInfo, EntityPlayer _player)
+        {
+            if (_cInfo != null)
+            {
+                if (Box.Count > 0)
+                {
+                    bool Found = false;
+                    int _flagCount = 0;
+                    int _X = (int)_player.position.x;
+                    int _Y = (int)_player.position.y;
+                    int _Z = (int)_player.position.z;
+                    for (int i = 0; i < Box.Count; i++)
+                    {
+                        string[] _box = Box[i];
+                        if (A(_box, _X, _Y, _Z))
+                        {
+                            if (!ZoneExit.ContainsKey(_player.entityId))
+                            {
+                                bool _result;
+                                for (int j = 0; j < Box.Count; j++)
+                                {
+                                    string[] _box2 = Box[j];
+                                    if (A(_box2, _X, _Y, _Z))
+                                    {
+                                        if (!Found)
+                                        {
+                                            ZoneExit.Add(_player.entityId, _box2[3]);
+                                            if (bool.TryParse(_box2[5], out _result))
+                                            {
+                                                if (_result)
+                                                {
+                                                    ZonePvE.Add(_player.entityId);
+                                                }
+                                            }
+                                            if (Zones.Zone_Message)
+                                            {
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _box2[2]), Config.Server_Response_Name, false, "ServerTools", false));
+                                            }
+                                            if (_box2[4] != "")
+                                            {
+                                                Zones.Response(_cInfo, _box2[4]);
+                                            }
+                                            Log.Out(string.Format("Added player to zone exit list with exit message {0}", _box2[3]));
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                string _exitMsg;
+                                if (ZoneExit.TryGetValue(_player.entityId, out _exitMsg))
+                                {
+                                    if (_exitMsg != _box[3])
+                                    {
+                                        bool _result;
+                                        for (int j = 0; j < Box.Count; j++)
+                                        {
+                                            string[] _box2 = Box[j];
+                                            if (A(_box2, _X, _Y, _Z))
+                                            {
+                                                ZoneExit[_player.entityId] = _box2[3];
+                                                if (bool.TryParse(_box2[5], out _result))
+                                                {
+                                                    if (_result)
+                                                    {
+                                                        if (!ZonePvE.Contains(_player.entityId))
+                                                        {
+                                                            ZonePvE.Add(_player.entityId);
+                                                        }
+                                                    }
+                                                }
+                                                if (Zones.Zone_Message)
+                                                {
+                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _box2[2]), Config.Server_Response_Name, false, "ServerTools", false));
+                                                }
+                                                if (_box2[4] != "")
+                                                {
+                                                    Zones.Response(_cInfo, _box2[4]);
+                                                }
+                                                Log.Out(string.Format("Added player to zone exit list with exit message {0}", _box2[3]));
+                                                return;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        else if (ZoneExit.ContainsKey(_player.entityId))
+                        {
+                            _flagCount++;
+                            if (_flagCount == Box.Count)
+                            {
+                                if (Zones.Zone_Message)
+                                {
+                                    string _msg;
+                                    if (ZoneExit.TryGetValue(_player.entityId, out _msg))
+                                    {
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _msg), Config.Server_Response_Name, false, "ServerTools", false));
+                                    }
+                                }
+                                ZoneExit.Remove(_player.entityId);
+                                ZonePvE.Remove(_player.entityId);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static bool A(string[] _box, int _X, int _Y, int _Z)
+        {
+            int xMin, yMin, zMin, xMax, yMax, zMax;
+            string[] _corner1 = _box[0].Split(',');
+            int.TryParse(_corner1[0], out xMin);
+            int.TryParse(_corner1[1], out yMin);
+            int.TryParse(_corner1[2], out zMin);
+            string[] _corner2 = _box[1].Split(',');
+            int.TryParse(_corner2[0], out xMax);
+            int.TryParse(_corner2[1], out yMax);
+            int.TryParse(_corner2[2], out zMax);
+            if (xMin >= 0 && xMax >= 0)
+            {
+                if (xMin < xMax)
+                {
+                    if (_X >= xMin)
+                    {
+                        _xMinCheck = 1;
+                    }
+                    else
+                    {
+                        _xMinCheck = 0;
+                    }
+                    if (_X <= xMax)
+                    {
+                        _xMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _xMaxCheck = 0;
+                    }
+                }
+                else
+                {
+                    if (_X <= xMin)
+                    {
+                        _xMinCheck = 1;
+                    }
+                    else
+                    {
+                        _xMinCheck = 0;
+                    }
+                    if (_X >= xMax)
+                    {
+                        _xMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _xMaxCheck = 0;
+                    }
+                }
+            }
+            else if (xMin <= 0 && xMax <= 0)
+            {
+                if (xMin < xMax)
+                {
+                    if (_X >= xMin)
+                    {
+                        _xMinCheck = 1;
+                    }
+                    else
+                    {
+                        _xMinCheck = 0;
+                    }
+                    if (_X <= xMax)
+                    {
+                        _xMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _xMaxCheck = 0;
+                    }
+                }
+                else
+                {
+                    if (_X <= xMin)
+                    {
+                        _xMinCheck = 1;
+                    }
+                    else
+                    {
+                        _xMinCheck = 0;
+                    }
+                    if (_X >= xMax)
+                    {
+                        _xMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _xMaxCheck = 0;
+                    }
+                }
+            }
+            else if (xMin <= 0 && xMax >= 0)
+            {
+                if (_X >= xMin)
+                {
+                    _xMinCheck = 1;
+                }
+                else
+                {
+                    _xMinCheck = 0;
+                }
+                if (_X <= xMax)
+                {
+                    _xMaxCheck = 1;
+                }
+                else
+                {
+                    _xMaxCheck = 0;
+                }
+            }
+            else if (xMin >= 0 && xMax <= 0)
+            {
+                if (_X <= xMin)
+                {
+                    _xMinCheck = 1;
+                }
+                else
+                {
+                    _xMinCheck = 0;
+                }
+                if (_X >= xMax)
+                {
+                    _xMaxCheck = 1;
+                }
+                else
+                {
+                    _xMaxCheck = 0;
+                }
+            }
+
+            if (yMin >= 0 && yMax >= 0)
+            {
+                if (yMin < yMax)
+                {
+                    if (_Y >= yMin)
+                    {
+                        _yMinCheck = 1;
+                    }
+                    else
+                    {
+                        _yMinCheck = 0;
+                    }
+                    if (_Y <= yMax)
+                    {
+                        _yMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _yMaxCheck = 0;
+                    }
+                }
+                else
+                {
+                    if (_Y <= yMin)
+                    {
+                        _yMinCheck = 1;
+                    }
+                    else
+                    {
+                        _yMinCheck = 0;
+                    }
+                    if (_Y >= yMax)
+                    {
+                        _yMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _yMaxCheck = 0;
+                    }
+                }
+            }
+            else if (yMin <= 0 && yMax <= 0)
+            {
+                if (yMin < yMax)
+                {
+                    if (_Y >= yMin)
+                    {
+                        _yMinCheck = 1;
+                    }
+                    else
+                    {
+                        _yMinCheck = 0;
+                    }
+                    if (_Y <= yMax)
+                    {
+                        _yMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _yMaxCheck = 0;
+                    }
+                }
+                else
+                {
+                    if (_Y <= yMin)
+                    {
+                        _yMinCheck = 1;
+                    }
+                    else
+                    {
+                        _yMinCheck = 0;
+                    }
+                    if (_Y >= yMax)
+                    {
+                        _yMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _yMaxCheck = 0;
+                    }
+                }
+            }
+            else if (yMin <= 0 && yMax >= 0)
+            {
+                if (_Y >= yMin)
+                {
+                    _yMinCheck = 1;
+                }
+                else
+                {
+                    _yMinCheck = 0;
+                }
+                if (_Y <= yMax)
+                {
+                    _yMaxCheck = 1;
+                }
+                else
+                {
+                    _yMaxCheck = 0;
+                }
+            }
+            else if (yMin >= 0 && yMax <= 0)
+            {
+                if (_Y <= yMin)
+                {
+                    _yMinCheck = 1;
+                }
+                else
+                {
+                    _yMinCheck = 0;
+                }
+                if (_Y >= yMax)
+                {
+                    _yMaxCheck = 1;
+                }
+                else
+                {
+                    _yMaxCheck = 0;
+                }
+            }
+
+            if (zMin >= 0 && zMax >= 0)
+            {
+                if (zMin < zMax)
+                {
+                    if (_Z >= zMin)
+                    {
+                        _zMinCheck = 1;
+                    }
+                    else
+                    {
+                        _zMinCheck = 0;
+                    }
+                    if (_Z <= zMax)
+                    {
+                        _zMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _zMaxCheck = 0;
+                    }
+                }
+                else
+                {
+                    if (_Z <= zMin)
+                    {
+                        _zMinCheck = 1;
+                    }
+                    else
+                    {
+                        _zMinCheck = 0;
+                    }
+                    if (_Z >= zMax)
+                    {
+                        _zMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _zMaxCheck = 0;
+                    }
+                }
+            }
+            else if (zMin <= 0 && zMax <= 0)
+            {
+                if (zMin < zMax)
+                {
+                    if (_Z >= zMin)
+                    {
+                        _zMinCheck = 1;
+                    }
+                    else
+                    {
+                        _zMinCheck = 0;
+                    }
+                    if (_Z <= zMax)
+                    {
+                        _zMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _zMaxCheck = 0;
+                    }
+                }
+                else
+                {
+                    if (_Z <= zMin)
+                    {
+                        _zMinCheck = 1;
+                    }
+                    else
+                    {
+                        _zMinCheck = 0;
+                    }
+                    if (_Z >= zMax)
+                    {
+                        _zMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _zMaxCheck = 0;
+                    }
+                }
+            }
+            else if (zMin <= 0 && zMax >= 0)
+            {
+                if (_Z >= zMin)
+                {
+                    _zMinCheck = 1;
+                }
+                else
+                {
+                    _zMinCheck = 0;
+                }
+                if (_Z <= zMax)
+                {
+                    _zMaxCheck = 1;
+                }
+                else
+                {
+                    _zMaxCheck = 0;
+                }
+            }
+            else if (zMin >= 0 && zMax <= 0)
+            {
+                if (_Z <= zMin)
+                {
+                    _zMinCheck = 1;
+                }
+                else
+                {
+                    _zMinCheck = 0;
+                }
+                if (_Z >= zMax)
+                {
+                    _zMaxCheck = 1;
+                }
+                else
+                {
+                    _zMaxCheck = 0;
+                }
+            }
+            if (_xMinCheck == 1 && _yMinCheck == 1 && _zMinCheck == 1 && _xMaxCheck == 1 && _yMaxCheck == 1 && _zMaxCheck == 1)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -100,401 +100,409 @@ namespace ServerTools
 
         public static void ZombieCheck()
         {
-            Entities = GameManager.Instance.World.Entities.list;
             if (Players.Box.Count > 0)
             {
-                for (int i = 0; i < Entities.Count; i++)
+                for (int i = 0; i < Players.Box.Count; i++)
                 {
-                    Entity _entity = Entities[i];
-                    if (_entity != null)
+                    string[] _box = Players.Box[i];
+                    bool _remove;
+                    if (bool.TryParse(_box[6], out _remove))
                     {
-                        if (!_entity.IsClientControlled() && !_entity.IsDead())
+                        if (_remove)
                         {
-                            EntityType _type = _entity.entityType;
-                            if (_type == EntityType.Zombie)
+                            Entities = GameManager.Instance.World.Entities.list;
+                            for (int j = 0; j < Entities.Count; j++)
                             {
-                                Vector3 _vec = _entity.position;
-                                int _X = (int)_entity.position.x;
-                                int _Y = (int)_entity.position.y;
-                                int _Z = (int)_entity.position.z;
-                                foreach (KeyValuePair<string, string[]> kvpCorners in Players.Box)
+                                Entity _entity = Entities[j];
+                                if (_entity != null)
                                 {
-                                    int xMin, yMin, zMin;
-                                    string[] _corner1 = kvpCorners.Value[0].Split(',');
-                                    int.TryParse(_corner1[0], out xMin);
-                                    int.TryParse(_corner1[1], out yMin);
-                                    int.TryParse(_corner1[2], out zMin);
-                                    int xMax, yMax, zMax;
-                                    string[] _corner2 = kvpCorners.Value[1].Split(',');
-                                    int.TryParse(_corner2[0], out xMax);
-                                    int.TryParse(_corner2[1], out yMax);
-                                    int.TryParse(_corner2[2], out zMax);
-                                    if (xMin >= 0 & xMax >= 0)
+                                    if (!_entity.IsClientControlled() && !_entity.IsDead())
                                     {
-                                        if (xMin < xMax)
+                                        EntityType _type = _entity.entityType;
+                                        if (_type == EntityType.Zombie)
                                         {
-                                            if (_X >= xMin)
+                                            Vector3 _vec = _entity.position;
+                                            int _X = (int)_entity.position.x;
+                                            int _Y = (int)_entity.position.y;
+                                            int _Z = (int)_entity.position.z;
+                                            int xMin, yMin, zMin;
+                                            string[] _corner1 = _box[0].Split(',');
+                                            int.TryParse(_corner1[0], out xMin);
+                                            int.TryParse(_corner1[1], out yMin);
+                                            int.TryParse(_corner1[2], out zMin);
+                                            int xMax, yMax, zMax;
+                                            string[] _corner2 = _box[1].Split(',');
+                                            int.TryParse(_corner2[0], out xMax);
+                                            int.TryParse(_corner2[1], out yMax);
+                                            int.TryParse(_corner2[2], out zMax);
+                                            if (xMin >= 0 & xMax >= 0)
                                             {
-                                                _xMinCheck = 1;
+                                                if (xMin < xMax)
+                                                {
+                                                    if (_X >= xMin)
+                                                    {
+                                                        _xMinCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _xMinCheck = 0;
+                                                    }
+                                                    if (_X <= xMax)
+                                                    {
+                                                        _xMaxCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _xMaxCheck = 0;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (_X <= xMin)
+                                                    {
+                                                        _xMinCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _xMinCheck = 0;
+                                                    }
+                                                    if (_X >= xMax)
+                                                    {
+                                                        _xMaxCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _xMaxCheck = 0;
+                                                    }
+                                                }
                                             }
-                                            else
+                                            else if (xMin <= 0 & xMax <= 0)
                                             {
-                                                _xMinCheck = 0;
+                                                if (xMin < xMax)
+                                                {
+                                                    if (_X >= xMin)
+                                                    {
+                                                        _xMinCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _xMinCheck = 0;
+                                                    }
+                                                    if (_X <= xMax)
+                                                    {
+                                                        _xMaxCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _xMaxCheck = 0;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (_X <= xMin)
+                                                    {
+                                                        _xMinCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _xMinCheck = 0;
+                                                    }
+                                                    if (_X >= xMax)
+                                                    {
+                                                        _xMaxCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _xMaxCheck = 0;
+                                                    }
+                                                }
                                             }
-                                            if (_X <= xMax)
+                                            else if (xMin <= 0 & xMax >= 0)
                                             {
-                                                _xMaxCheck = 1;
+                                                if (_X >= xMin)
+                                                {
+                                                    _xMinCheck = 1;
+                                                }
+                                                else
+                                                {
+                                                    _xMinCheck = 0;
+                                                }
+                                                if (_X <= xMax)
+                                                {
+                                                    _xMaxCheck = 1;
+                                                }
+                                                else
+                                                {
+                                                    _xMaxCheck = 0;
+                                                }
                                             }
-                                            else
+                                            else if (xMin >= 0 & xMax <= 0)
                                             {
-                                                _xMaxCheck = 0;
+                                                if (_X <= xMin)
+                                                {
+                                                    _xMinCheck = 1;
+                                                }
+                                                else
+                                                {
+                                                    _xMinCheck = 0;
+                                                }
+                                                if (_X >= xMax)
+                                                {
+                                                    _xMaxCheck = 1;
+                                                }
+                                                else
+                                                {
+                                                    _xMaxCheck = 0;
+                                                }
                                             }
-                                        }
-                                        else
-                                        {
-                                            if (_X <= xMin)
-                                            {
-                                                _xMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _xMinCheck = 0;
-                                            }
-                                            if (_X >= xMax)
-                                            {
-                                                _xMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _xMaxCheck = 0;
-                                            }
-                                        }
-                                    }
-                                    else if (xMin <= 0 & xMax <= 0)
-                                    {
-                                        if (xMin < xMax)
-                                        {
-                                            if (_X >= xMin)
-                                            {
-                                                _xMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _xMinCheck = 0;
-                                            }
-                                            if (_X <= xMax)
-                                            {
-                                                _xMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _xMaxCheck = 0;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (_X <= xMin)
-                                            {
-                                                _xMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _xMinCheck = 0;
-                                            }
-                                            if (_X >= xMax)
-                                            {
-                                                _xMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _xMaxCheck = 0;
-                                            }
-                                        }
-                                    }
-                                    else if (xMin <= 0 & xMax >= 0)
-                                    {
-                                        if (_X >= xMin)
-                                        {
-                                            _xMinCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _xMinCheck = 0;
-                                        }
-                                        if (_X <= xMax)
-                                        {
-                                            _xMaxCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _xMaxCheck = 0;
-                                        }
-                                    }
-                                    else if (xMin >= 0 & xMax <= 0)
-                                    {
-                                        if (_X <= xMin)
-                                        {
-                                            _xMinCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _xMinCheck = 0;
-                                        }
-                                        if (_X >= xMax)
-                                        {
-                                            _xMaxCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _xMaxCheck = 0;
-                                        }
-                                    }
 
-                                    if (yMin >= 0 & yMax >= 0)
-                                    {
-                                        if (yMin < yMax)
-                                        {
-                                            if (_Y >= yMin)
+                                            if (yMin >= 0 & yMax >= 0)
                                             {
-                                                _yMinCheck = 1;
+                                                if (yMin < yMax)
+                                                {
+                                                    if (_Y >= yMin)
+                                                    {
+                                                        _yMinCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _yMinCheck = 0;
+                                                    }
+                                                    if (_Y <= yMax)
+                                                    {
+                                                        _yMaxCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _yMaxCheck = 0;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (_Y <= yMin)
+                                                    {
+                                                        _yMinCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _yMinCheck = 0;
+                                                    }
+                                                    if (_Y >= yMax)
+                                                    {
+                                                        _yMaxCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _yMaxCheck = 0;
+                                                    }
+                                                }
                                             }
-                                            else
+                                            else if (yMin <= 0 & yMax <= 0)
                                             {
-                                                _yMinCheck = 0;
+                                                if (yMin < yMax)
+                                                {
+                                                    if (_Y >= yMin)
+                                                    {
+                                                        _yMinCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _yMinCheck = 0;
+                                                    }
+                                                    if (_Y <= yMax)
+                                                    {
+                                                        _yMaxCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _yMaxCheck = 0;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (_Y <= yMin)
+                                                    {
+                                                        _yMinCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _yMinCheck = 0;
+                                                    }
+                                                    if (_Y >= yMax)
+                                                    {
+                                                        _yMaxCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _yMaxCheck = 0;
+                                                    }
+                                                }
                                             }
-                                            if (_Y <= yMax)
+                                            else if (yMin <= 0 & yMax >= 0)
                                             {
-                                                _yMaxCheck = 1;
+                                                if (_Y >= yMin)
+                                                {
+                                                    _yMinCheck = 1;
+                                                }
+                                                else
+                                                {
+                                                    _yMinCheck = 0;
+                                                }
+                                                if (_Y <= yMax)
+                                                {
+                                                    _yMaxCheck = 1;
+                                                }
+                                                else
+                                                {
+                                                    _yMaxCheck = 0;
+                                                }
                                             }
-                                            else
+                                            else if (yMin >= 0 & yMax <= 0)
                                             {
-                                                _yMaxCheck = 0;
+                                                if (_Y <= yMin)
+                                                {
+                                                    _yMinCheck = 1;
+                                                }
+                                                else
+                                                {
+                                                    _yMinCheck = 0;
+                                                }
+                                                if (_Y >= yMax)
+                                                {
+                                                    _yMaxCheck = 1;
+                                                }
+                                                else
+                                                {
+                                                    _yMaxCheck = 0;
+                                                }
                                             }
-                                        }
-                                        else
-                                        {
-                                            if (_Y <= yMin)
-                                            {
-                                                _yMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _yMinCheck = 0;
-                                            }
-                                            if (_Y >= yMax)
-                                            {
-                                                _yMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _yMaxCheck = 0;
-                                            }
-                                        }
-                                    }
-                                    else if (yMin <= 0 & yMax <= 0)
-                                    {
-                                        if (yMin < yMax)
-                                        {
-                                            if (_Y >= yMin)
-                                            {
-                                                _yMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _yMinCheck = 0;
-                                            }
-                                            if (_Y <= yMax)
-                                            {
-                                                _yMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _yMaxCheck = 0;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (_Y <= yMin)
-                                            {
-                                                _yMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _yMinCheck = 0;
-                                            }
-                                            if (_Y >= yMax)
-                                            {
-                                                _yMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _yMaxCheck = 0;
-                                            }
-                                        }
-                                    }
-                                    else if (yMin <= 0 & yMax >= 0)
-                                    {
-                                        if (_Y >= yMin)
-                                        {
-                                            _yMinCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _yMinCheck = 0;
-                                        }
-                                        if (_Y <= yMax)
-                                        {
-                                            _yMaxCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _yMaxCheck = 0;
-                                        }
-                                    }
-                                    else if (yMin >= 0 & yMax <= 0)
-                                    {
-                                        if (_Y <= yMin)
-                                        {
-                                            _yMinCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _yMinCheck = 0;
-                                        }
-                                        if (_Y >= yMax)
-                                        {
-                                            _yMaxCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _yMaxCheck = 0;
-                                        }
-                                    }
 
-                                    if (zMin >= 0 & zMax >= 0)
-                                    {
-                                        if (zMin < zMax)
-                                        {
-                                            if (_Z >= zMin)
+                                            if (zMin >= 0 & zMax >= 0)
                                             {
-                                                _zMinCheck = 1;
+                                                if (zMin < zMax)
+                                                {
+                                                    if (_Z >= zMin)
+                                                    {
+                                                        _zMinCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _zMinCheck = 0;
+                                                    }
+                                                    if (_Z <= zMax)
+                                                    {
+                                                        _zMaxCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _zMaxCheck = 0;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (_Z <= zMin)
+                                                    {
+                                                        _zMinCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _zMinCheck = 0;
+                                                    }
+                                                    if (_Z >= zMax)
+                                                    {
+                                                        _zMaxCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _zMaxCheck = 0;
+                                                    }
+                                                }
                                             }
-                                            else
+                                            else if (zMin <= 0 & zMax <= 0)
                                             {
-                                                _zMinCheck = 0;
+                                                if (zMin < zMax)
+                                                {
+                                                    if (_Z >= zMin)
+                                                    {
+                                                        _zMinCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _zMinCheck = 0;
+                                                    }
+                                                    if (_Z <= zMax)
+                                                    {
+                                                        _zMaxCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _zMaxCheck = 0;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (_Z <= zMin)
+                                                    {
+                                                        _zMinCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _zMinCheck = 0;
+                                                    }
+                                                    if (_Z >= zMax)
+                                                    {
+                                                        _zMaxCheck = 1;
+                                                    }
+                                                    else
+                                                    {
+                                                        _zMaxCheck = 0;
+                                                    }
+                                                }
                                             }
-                                            if (_Z <= zMax)
+                                            else if (zMin <= 0 & zMax >= 0)
                                             {
-                                                _zMaxCheck = 1;
+                                                if (_Z >= zMin)
+                                                {
+                                                    _zMinCheck = 1;
+                                                }
+                                                else
+                                                {
+                                                    _zMinCheck = 0;
+                                                }
+                                                if (_Z <= zMax)
+                                                {
+                                                    _zMaxCheck = 1;
+                                                }
+                                                else
+                                                {
+                                                    _zMaxCheck = 0;
+                                                }
                                             }
-                                            else
+                                            else if (zMin >= 0 & zMax <= 0)
                                             {
-                                                _zMaxCheck = 0;
+                                                if (_Z <= zMin)
+                                                {
+                                                    _zMinCheck = 1;
+                                                }
+                                                else
+                                                {
+                                                    _zMinCheck = 0;
+                                                }
+                                                if (_Z >= zMax)
+                                                {
+                                                    _zMaxCheck = 1;
+                                                }
+                                                else
+                                                {
+                                                    _zMaxCheck = 0;
+                                                }
+                                            }
+                                            if (_xMinCheck == 1 & _yMinCheck == 1 & _zMinCheck == 1 & _xMaxCheck == 1 & _yMaxCheck == 1 & _zMaxCheck == 1)
+                                            {
+                                                GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
+                                                Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed zombie from protected zone @ {0} {1} {2}", _X, _Y, _Z));
                                             }
                                         }
-                                        else
-                                        {
-                                            if (_Z <= zMin)
-                                            {
-                                                _zMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _zMinCheck = 0;
-                                            }
-                                            if (_Z >= zMax)
-                                            {
-                                                _zMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _zMaxCheck = 0;
-                                            }
-                                        }
-                                    }
-                                    else if (zMin <= 0 & zMax <= 0)
-                                    {
-                                        if (zMin < zMax)
-                                        {
-                                            if (_Z >= zMin)
-                                            {
-                                                _zMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _zMinCheck = 0;
-                                            }
-                                            if (_Z <= zMax)
-                                            {
-                                                _zMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _zMaxCheck = 0;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (_Z <= zMin)
-                                            {
-                                                _zMinCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _zMinCheck = 0;
-                                            }
-                                            if (_Z >= zMax)
-                                            {
-                                                _zMaxCheck = 1;
-                                            }
-                                            else
-                                            {
-                                                _zMaxCheck = 0;
-                                            }
-                                        }
-                                    }
-                                    else if (zMin <= 0 & zMax >= 0)
-                                    {
-                                        if (_Z >= zMin)
-                                        {
-                                            _zMinCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _zMinCheck = 0;
-                                        }
-                                        if (_Z <= zMax)
-                                        {
-                                            _zMaxCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _zMaxCheck = 0;
-                                        }
-                                    }
-                                    else if (zMin >= 0 & zMax <= 0)
-                                    {
-                                        if (_Z <= zMin)
-                                        {
-                                            _zMinCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _zMinCheck = 0;
-                                        }
-                                        if (_Z >= zMax)
-                                        {
-                                            _zMaxCheck = 1;
-                                        }
-                                        else
-                                        {
-                                            _zMaxCheck = 0;
-                                        }
-                                    }
-                                    if (_xMinCheck == 1 & _yMinCheck == 1 & _zMinCheck == 1 & _xMaxCheck == 1 & _yMaxCheck == 1 & _zMaxCheck == 1)
-                                    {
-                                        GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed zombie from protected zone @ {0} {1} {2}", _X, _Y, _Z));
                                     }
                                 }
                             }
