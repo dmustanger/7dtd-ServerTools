@@ -148,6 +148,10 @@ namespace ServerTools
                                                     }
                                                     continue;
                                                 }
+                                                else
+                                                {
+                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} there is not enough {2} in the secure loot to deposit this value.[-]", Config.Chat_Response_Color, _cInfo.playerName, Ingame_Coin), Config.Server_Response_Name, false, "ServerTools", false));
+                                                }
                                             }
                                         }
                                         slotNumber++;
