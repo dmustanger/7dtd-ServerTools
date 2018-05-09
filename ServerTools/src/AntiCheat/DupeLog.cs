@@ -746,7 +746,7 @@ namespace ServerTools
                                                         {
                                                             using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                             {
-                                                                sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their inventory, identical to another stack, standing at {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                                sw.WriteLine(string.Format("{0}: {1} has added {2} {3} to their inventory, identical to another stack, standing @ {4} {5} {6}.", DateTime.Now, _cInfo.playerName, _invStackNew.count, _invName, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                                 sw.WriteLine();
                                                                 sw.Flush();
                                                                 sw.Close();

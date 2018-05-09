@@ -66,57 +66,62 @@ namespace ServerTools
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("name"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone Protection entry because of missing name attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
                         if (!_line.HasAttribute("corner1"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone Protection entry because of missing corner1 attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing corner1 attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("corner2"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone Protection entry because of missing corner2 attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing corner2 attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("entryMessage"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone Protection entry because of missing entryMessage attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing entryMessage attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("exitMessage"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone Protection entry because of missing exitMessage attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing exitMessage attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("response"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone Protection entry because of missing response attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing response attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("PvE"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone Protection entry because of missing response attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing PvE attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        if (!_line.HasAttribute("noZombie"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing noZombie attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         else
                         {
                             string _pve = _line.GetAttribute("PvE");
-                            bool _result;
+                            bool _result, _result2;
                             if (!bool.TryParse(_pve, out _result))
                             {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zone Protection entry because improper true/false attribute: {0}.", subChild.OuterXml));
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper true/false attribute: {0}.", subChild.OuterXml));
                                 continue;
                             }
-                        }
-                        string _name = _line.GetAttribute("name");
-                        string[] box = { _line.GetAttribute("corner1"), _line.GetAttribute("corner2"), _line.GetAttribute("entryMessage"), _line.GetAttribute("exitMessage"),
-                        _line.GetAttribute("response"), _line.GetAttribute("PvE") };
-                        if (!Players.Box.ContainsKey(_name))
-                        {
-                            Players.Box.Add(_name, box);
+                            string _noZ = _line.GetAttribute("noZombie");
+                            if (!bool.TryParse(_noZ, out _result2))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper true/false attribute: {0}.", subChild.OuterXml));
+                                continue;
+                            }
+                            string[] box = { _line.GetAttribute("corner1"), _line.GetAttribute("corner2"), _line.GetAttribute("entryMessage"), _line.GetAttribute("exitMessage"),
+                            _line.GetAttribute("response"), _line.GetAttribute("PvE"), _line.GetAttribute("noZombie") };
+                            if (!Players.Box.Contains(box))
+                            {
+                                Players.Box.Add(box);
+                            }
                         }
                     }
                 }
@@ -138,16 +143,18 @@ namespace ServerTools
                 sw.WriteLine("    <Zone>");
                 if (Players.Box.Count > 0)
                 {
-                    foreach (KeyValuePair<string, string[]> kvpBox in Players.Box)
+                    for (int i = 0; i < Players.Box.Count; i++)
                     {
-                        sw.WriteLine(string.Format("        <zone name=\"{0}\" corner1=\"{1}\" corner2=\"{2}\" entryMessage=\"{3}\" exitMessage=\"{4}\" response=\"{5}\" PvE=\"{6}\" />", kvpBox.Key, kvpBox.Value[0], kvpBox.Value[1], kvpBox.Value[2], kvpBox.Value[3], kvpBox.Value[4], kvpBox.Value[5]));
+                        string[] _box = Players.Box[i];
+                        sw.WriteLine(string.Format("        <zone corner1=\"{0}\" corner2=\"{1}\" entryMessage=\"{2}\" exitMessage=\"{3}\" response=\"{4}\" PvE=\"{5}\" noZombie=\"{6}\" />", _box[0], _box[1], _box[2], _box[3], _box[4], _box[5], _box[6]));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <zone name=\"Market\" corner1=\"-100,60,-90\" corner2=\"-140,70,-110\" entryMessage=\"You are now entering the Market\" exitMessage=\"You are exiting the Market\" response=\"\" PvE=\"true\" />");
-                    sw.WriteLine("        <zone name=\"Lobby\" corner1=\"0,100,0\" corner2=\"25,105,25\" entryMessage=\"You are now entering the Lobby\" exitMessage=\"You are exiting the Lobby\" response=\"say {PlayerName} has entered the lobby\" PvE=\"true\" />");
-                    sw.WriteLine("        <zone name=\"Lobby\" corner1=\"600,30,-50\" corner2=\"650,60,-80\" entryMessage=\"You are now entering the Arena\" exitMessage=\"You are exiting the Arena\" response=\"say {PlayerName} has entered the arena thirsting for blood\" PvE=\"false\" />");
+                    sw.WriteLine("        <zone corner1=\"-8000,-56,8000\" corner2=\"8000,200,0\" entryMessage=\"You are entering the Northern side\" exitMessage=\"You have exited the Northern Side\" response=\"\" PvE=\"false\" noZombie=\"false\" />");
+                    sw.WriteLine("        <zone corner1=\"-8000,-56,-1\" corner2=\"8000,200,-8000\" entryMessage=\"You are entering the Southern side\" exitMessage=\"You have exited the Southern Side\" response=\"\" PvE=\"false\" noZombie=\"false\" />");
+                    sw.WriteLine("        <zone corner1=\"-100,60,-90\" corner2=\"-140,70,-110\" entryMessage=\"You have entered the Market\" exitMessage=\"You have exited the Market\" response=\"say {PlayerName} has entered the market\" PvE=\"true\" noZombie=\"true\" />");
+                    sw.WriteLine("        <zone corner1=\"0,100,0\" corner2=\"25,105,25\" entryMessage=\"You have entered the Lobby\" exitMessage=\"You have exited the Lobby\" response=\"say {PlayerName} has entered the lobby\" PvE=\"true\" noZombie=\"true\" />");
                 }
                 sw.WriteLine("    </Zone>");
                 sw.WriteLine("</Zones>");
@@ -177,7 +184,7 @@ namespace ServerTools
 
         public static void Check(ClientInfo _cInfoKiller, ClientInfo _cInfoVictim)
         {
-            if (Players.ZoneFlag.ContainsKey(_cInfoVictim.entityId) || Players.ZoneFlag.ContainsKey(_cInfoKiller.entityId))
+            if (Players.ZoneExit.ContainsKey(_cInfoVictim.entityId) || Players.ZoneExit.ContainsKey(_cInfoKiller.entityId))
             {
                 if (Players.ZonePvE.Contains(_cInfoVictim.entityId) && Players.ZonePvE.Contains(_cInfoKiller.entityId))
                 {
@@ -414,10 +421,6 @@ namespace ServerTools
             if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
             {
                 Players.NoFlight.Add(_cInfo.entityId);
-                if (Players.ZoneFlag.ContainsKey(_cInfo.entityId))
-                {
-                    Players.ZoneFlag.Remove(_cInfo.entityId);
-                }
                 SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
             }
             else
