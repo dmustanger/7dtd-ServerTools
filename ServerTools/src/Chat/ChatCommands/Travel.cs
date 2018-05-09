@@ -8,7 +8,7 @@ namespace ServerTools
     class Travel
     {
         public static bool IsEnabled = false, IsRunning = false;
-        public static int Delay_Between_Uses = 60;
+        public static int Delay_Between_Uses = 60, Command_Cost = 0;
         private const string file = "TravelLocations.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, string[]> Box = new SortedDictionary<string, string[]>();
@@ -156,14 +156,14 @@ namespace ServerTools
             bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
-                Tele(_cInfo, _announce);
+                CommandCost(_cInfo, _announce);
             }
             else
             {
                 Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                 if (p == null || p.LastTravel == null)
                 {
-                    Tele(_cInfo, _announce);
+                    CommandCost(_cInfo, _announce);
                 }
                 else
                 {
@@ -182,7 +182,7 @@ namespace ServerTools
                                 int _newDelay = Delay_Between_Uses / 2;
                                 if (_timepassed >= _newDelay)
                                 {
-                                    Tele(_cInfo, _announce);
+                                    CommandCost(_cInfo, _announce);
                                 }
                                 else
                                 {
@@ -211,7 +211,7 @@ namespace ServerTools
                     {
                         if (_timepassed >= Delay_Between_Uses)
                         {
-                            Tele(_cInfo, _announce);
+                            CommandCost(_cInfo, _announce);
                         }
                         else
                         {
@@ -234,6 +234,42 @@ namespace ServerTools
                             }
                         }
                     }
+                }
+            }
+        }
+
+        public static void CommandCost(ClientInfo _cInfo, bool _announce)
+        {
+            World world = GameManager.Instance.World;
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            int currentCoins = 0;
+            if (p != null)
+            {
+                int spentCoins = p.PlayerSpentCoins;
+                int gameMode = world.GetGameMode();
+                if (gameMode == 7)
+                {
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                }
+                else
+                {
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                }
+                if (currentCoins >= Command_Cost)
+                {
+                    Tele(_cInfo, _announce);
+                }
+                else
+                {
+                    string _phrase814;
+                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
+                    {
+                        _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    }
+                    _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
         }
@@ -631,6 +667,8 @@ namespace ServerTools
                     {
                         Players.NoFlight.Add(_cInfo.entityId);
                         _cInfo.SendPackage(new NetPackageTeleportPlayer(new UnityEngine.Vector3(xDest, yDest, zDest), false));
+                        int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastTravel = DateTime.Now;
                         PersistentContainer.Instance.Save();
                         string _phrase603;

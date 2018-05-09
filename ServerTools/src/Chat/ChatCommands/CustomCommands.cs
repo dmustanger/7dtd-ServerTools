@@ -300,7 +300,7 @@ namespace ServerTools
             }
             if (Suicide.IsEnabled)
             {
-                _commands_3 = string.Format("{0} /killme /wrist /hang /suicide", _commands_3);
+                _commands_3 = string.Format("{0} /killme /suicide", _commands_3);
             }
             return _commands_3;
         }
@@ -322,7 +322,7 @@ namespace ServerTools
             }
             if (Lottery.IsEnabled)
             {
-                _commands_4 = string.Format("{0} /lotto /lotto # /lotto enter", _commands_4);
+                _commands_4 = string.Format("{0} /lottery /lottery # /lottery enter", _commands_4);
             }
             if (Report.IsEnabled)
             {
@@ -339,6 +339,10 @@ namespace ServerTools
             if (RestartVote.IsEnabled)
             {
                 _commands_4 = string.Format("{0} /restart", _commands_4);
+            }
+            if (Bank.IsEnabled)
+            {
+                _commands_4 = string.Format("{0} /bank /deposit /withdraw /wallet deposit /wallet withdraw", _commands_4);
             }
             return _commands_4;
         }
@@ -839,9 +843,9 @@ namespace ServerTools
                 if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
                 {
                     Players.NoFlight.Add(_cInfo.entityId);
-                    if (Players.ZoneFlag.ContainsKey(_cInfo.entityId))
+                    if (Players.ZoneExit.ContainsKey(_cInfo.entityId))
                     {
-                        Players.ZoneFlag.Remove(_cInfo.entityId);
+                        Players.ZoneExit.Remove(_cInfo.entityId);
                     }
                     SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
                 }

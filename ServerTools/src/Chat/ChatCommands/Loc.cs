@@ -13,7 +13,7 @@ namespace ServerTools
             Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             Vector3 _position = _player.position;
             int _x = (int)_position.x;
-            int _y = (int)_position.y;
+            int _y = (int)_position.y - 59;
             int _z = (int)_position.z;
             string _phrase760;
             if (!Phrases.Dict.TryGetValue(760, out _phrase760))

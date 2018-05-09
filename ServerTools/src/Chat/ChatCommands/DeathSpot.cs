@@ -6,21 +6,21 @@ namespace ServerTools
     class DeathSpot
     {
         public static bool IsEnabled = false;
-        public static int Delay_Between_Uses = 120;
+        public static int Delay_Between_Uses = 120, Command_Cost = 0;
 
         public static void DeathDelay(ClientInfo _cInfo, bool _announce, string _playerName)
         {
             bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
-                TeleportPlayer(_cInfo, _announce);
+                CommandCost(_cInfo, _announce);
             }
             else
             {
                 Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                 if (p == null || p.LastDied == null)
                 {
-                    TeleportPlayer(_cInfo, _announce);
+                    CommandCost(_cInfo, _announce);
                 }
                 else
                 {
@@ -39,7 +39,7 @@ namespace ServerTools
                                 int _newDelay = Delay_Between_Uses / 2;
                                 if (_timepassed >= _newDelay)
                                 {
-                                    TeleportPlayer(_cInfo, _announce);
+                                    CommandCost(_cInfo, _announce);
                                 }
                                 else
                                 {
@@ -68,7 +68,7 @@ namespace ServerTools
                     {
                         if (_timepassed >= Delay_Between_Uses)
                         {
-                            TeleportPlayer(_cInfo, _announce);
+                            CommandCost(_cInfo, _announce);
                         }
                         else
                         {
@@ -91,6 +91,42 @@ namespace ServerTools
                             }
                         }
                     }
+                }
+            }
+        }
+
+        public static void CommandCost(ClientInfo _cInfo, bool _announce)
+        {
+            World world = GameManager.Instance.World;
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            int currentCoins = 0;
+            if (p != null)
+            {
+                int spentCoins = p.PlayerSpentCoins;
+                int gameMode = world.GetGameMode();
+                if (gameMode == 7)
+                {
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                }
+                else
+                {
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                }
+                if (currentCoins >= Command_Cost)
+                {
+                    TeleportPlayer(_cInfo, _announce);
+                }
+                else
+                {
+                    string _phrase814;
+                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
+                    {
+                        _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    }
+                    _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
         }
@@ -131,6 +167,8 @@ namespace ServerTools
                             int.TryParse(_cords[2], out z);
                             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
                             Players.LastDeathPos.Remove(_cInfo.entityId);
+                            int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
                             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastDied = DateTime.Now;
                             PersistentContainer.Instance.Save();
                             string _phrase736;

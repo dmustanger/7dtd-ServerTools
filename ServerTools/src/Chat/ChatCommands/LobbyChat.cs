@@ -7,7 +7,7 @@ namespace ServerTools
     class LobbyChat
     {
         public static bool IsEnabled = false, Return = false;
-        public static int Delay_Between_Uses = 5, Lobby_Size = 25;
+        public static int Delay_Between_Uses = 5, Lobby_Size = 25, Command_Cost = 0;
         public static List<int> LobbyPlayers = new List<int>();
 
         public static void Delay(ClientInfo _cInfo, string _playerName, bool _announce)
@@ -15,14 +15,14 @@ namespace ServerTools
             bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
-                Exec(_cInfo, _playerName);
+                CommandCost(_cInfo, _playerName);
             }
             else
             {
                 Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                 if (p == null || p.LastLobby == null)
                 {
-                    Exec(_cInfo, _playerName);
+                    CommandCost(_cInfo, _playerName);
                 }
                 else
                 {
@@ -41,7 +41,7 @@ namespace ServerTools
                                 int _newDelay = Delay_Between_Uses / 2;
                                 if (_timepassed >= _newDelay)
                                 {
-                                    Exec(_cInfo, _playerName);
+                                    CommandCost(_cInfo, _playerName);
                                 }
                                 else
                                 {
@@ -70,7 +70,7 @@ namespace ServerTools
                     {
                         if (_timepassed >= Delay_Between_Uses)
                         {
-                            Exec(_cInfo, _playerName);
+                            CommandCost(_cInfo, _playerName);
                         }
                         else
                         {
@@ -93,6 +93,42 @@ namespace ServerTools
                             }
                         }
                     }
+                }
+            }
+        }
+
+        public static void CommandCost(ClientInfo _cInfo, string _playerName)
+        {
+            World world = GameManager.Instance.World;
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            int currentCoins = 0;
+            if (p != null)
+            {
+                int spentCoins = p.PlayerSpentCoins;
+                int gameMode = world.GetGameMode();
+                if (gameMode == 7)
+                {
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                }
+                else
+                {
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                }
+                if (currentCoins >= Command_Cost)
+                {
+                    Exec(_cInfo, _playerName);
+                }
+                else
+                {
+                    string _phrase814;
+                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
+                    {
+                        _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    }
+                    _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
         }
@@ -134,6 +170,8 @@ namespace ServerTools
                 }
                 _phrase553 = _phrase553.Replace("{PlayerName}", _playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase553), Config.Server_Response_Name, false, "ServerTools", false));
+                int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].LastLobby = DateTime.Now;
                 PersistentContainer.Instance.Save();
             }

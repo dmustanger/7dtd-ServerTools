@@ -360,7 +360,7 @@ namespace ServerTools
                         {
                             if (!Zones.Set_Home)
                             {
-                                if (!Players.ZoneFlag.ContainsKey(_cInfo.entityId))
+                                if (!Players.ZoneExit.ContainsKey(_cInfo.entityId))
                                 {
                                     TeleportHome.SetHome(_cInfo, _playerName, _announce);
                                 }
@@ -407,7 +407,7 @@ namespace ServerTools
                             {
                                 if (!Zones.Set_Home)
                                 {
-                                    if (!Players.ZoneFlag.ContainsKey(_cInfo.entityId))
+                                    if (!Players.ZoneExit.ContainsKey(_cInfo.entityId))
                                     {
                                         if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                         {
@@ -493,7 +493,7 @@ namespace ServerTools
                             {
                                 if (!Zones.Set_Home)
                                 {
-                                    if (!Players.ZoneFlag.ContainsKey(_cInfo.entityId))
+                                    if (!Players.ZoneExit.ContainsKey(_cInfo.entityId))
                                     {
                                         TeleportHome.SetHome2(_cInfo, _playerName, _announce);
                                     }
@@ -1158,7 +1158,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (_message == "wallet")
+                        if (Wallet.IsEnabled && _message == "wallet")
                         {
                             Wallet.WalletValue(_cInfo, _playerName);
                             return false;

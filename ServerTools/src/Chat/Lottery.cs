@@ -218,6 +218,17 @@ namespace ServerTools
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase542), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
+                    else
+                    {
+                        string _phrase540;
+                        if (!Phrases.Dict.TryGetValue(540, out _phrase540))
+                        {
+                            _phrase540 = "{PlayerName} you do not have enough {CoinName}. Earn some more and enter the lottery before it ends.";
+                        }
+                        _phrase540 = _phrase540.Replace("{PlayerName}", _cInfo.playerName);
+                        _phrase540 = _phrase540.Replace("{CoinName}", Wallet.Coin_Name);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase540), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
                 }
                 else
                 {

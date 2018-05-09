@@ -10,7 +10,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Always_Show_Response = false,
             Zombies = false;
-        public static int Delay_Between_Uses = 60;
+        public static int Delay_Between_Uses = 60, Command_Cost = 0;
         private const string file = "GimmeItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static Dictionary<string, int[]> dict = new Dictionary<string, int[]>();
@@ -227,14 +227,14 @@ namespace ServerTools
             bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
-                GiveItem(_cInfo, _announce);
+                CommandCost(_cInfo, _announce);
             }
             else
             {
                 Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                 if (p == null || p.LastGimme == null)
                 {
-                    GiveItem(_cInfo, _announce);
+                    CommandCost(_cInfo, _announce);
                 }
                 else
                 {
@@ -253,7 +253,7 @@ namespace ServerTools
                                 int _newDelay = Delay_Between_Uses / 2;
                                 if (_timepassed >= _newDelay)
                                 {
-                                    GiveItem(_cInfo, _announce);
+                                    CommandCost(_cInfo, _announce);
                                 }
                                 else
                                 {
@@ -282,7 +282,7 @@ namespace ServerTools
                     {
                         if (_timepassed >= Delay_Between_Uses)
                         {
-                            GiveItem(_cInfo, _announce);
+                            CommandCost(_cInfo, _announce);
                         }
                         else
                         {
@@ -309,11 +309,47 @@ namespace ServerTools
             }
         }
 
+        public static void CommandCost(ClientInfo _cInfo, bool _announce)
+        {
+            World world = GameManager.Instance.World;
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            int currentCoins = 0;
+            if (p != null)
+            {
+                int spentCoins = p.PlayerSpentCoins;
+                int gameMode = world.GetGameMode();
+                if (gameMode == 7)
+                {
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                }
+                else
+                {
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                }
+                if (currentCoins >= Command_Cost)
+                {
+                    GiveItem(_cInfo, _announce);
+                }
+                else
+                {
+                    string _phrase814;
+                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
+                    {
+                        _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    }
+                    _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
+                }
+            }
+        }
+
         private static void GiveItem(ClientInfo _cInfo, bool _announce)
         {
             if (Zombies)
             {
-                int itemOrEntity = random.Next(1, 7);
+                int itemOrEntity = random.Next(1, 9);
                 if (itemOrEntity != 4)
                 {
                     RandomItem(_cInfo, _announce);
@@ -388,6 +424,8 @@ namespace ServerTools
                 {
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase7), Config.Server_Response_Name, false, "ServerTools", false));
                 }
+                int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].LastGimme = DateTime.Now;
                 PersistentContainer.Instance.Save();
             }
@@ -422,6 +460,8 @@ namespace ServerTools
             {
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase807), Config.Server_Response_Name, false, "ServerTools", false));
             }
+            int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastGimme = DateTime.Now;
             PersistentContainer.Instance.Save();
         }
