@@ -347,7 +347,7 @@ namespace ServerTools
                 string _phrase620;
                 if (!Phrases.Dict.TryGetValue(620, out _phrase620))
                 {
-                    _phrase620 = "{PlayerName} the item # you are trying to buy is not an interger. Please input /buy 1 for example.";
+                    _phrase620 = "{PlayerName} the item # you are trying to buy is not an integer. Please input /buy 1 for example.";
                 }
                 _phrase620 = _phrase620.Replace("{PlayerName}", _playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase620), Config.Server_Response_Name, false, "ServerTools", false));
@@ -359,8 +359,8 @@ namespace ServerTools
                     string[] _stringValues;
                     if (dict.TryGetValue(_id, out _stringValues))
                     {
-                        int[] _intergerValues;
-                        if (dict1.TryGetValue(_id, out _intergerValues))
+                        int[] _integerValues;
+                        if (dict1.TryGetValue(_id, out _integerValues))
                         {
                             World world = GameManager.Instance.World;
                             int currentCoins = 0;
@@ -382,9 +382,9 @@ namespace ServerTools
                                     currentCoins = 0;
                                 }
                             }
-                            if (currentCoins >= _intergerValues[2])
+                            if (currentCoins >= _integerValues[2])
                             {
-                                ShopPurchase(_cInfo, _stringValues[0], _intergerValues[0], _intergerValues[1], _intergerValues[2], _playerName, currentCoins, p);
+                                ShopPurchase(_cInfo, _stringValues[0], _integerValues[0], _integerValues[1], _integerValues[2], _playerName, currentCoins, p);
                             }
                             else
                             {

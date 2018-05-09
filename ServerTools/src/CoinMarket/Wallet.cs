@@ -3,7 +3,7 @@ namespace ServerTools
 {
     class Wallet
     {
-        public static bool Negative_Wallet = false;
+        public static bool IsEnabled = false, Negative_Wallet = false;
         public static string Coin_Name = "coin";
         public static int Zombie_Kills = 10;
         public static int Player_Kills = 50;
