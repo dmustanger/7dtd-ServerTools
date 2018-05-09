@@ -378,7 +378,8 @@ namespace ServerTools
         public static void VoteYes(ClientInfo _cInfo)
         {
             PolledYes.Add(_cInfo.entityId);
-            PersistentContainer.Instance.PollYes += 1;
+            int _oldYes = PersistentContainer.Instance.PollYes;
+            PersistentContainer.Instance.PollYes = _oldYes + 1;
             PersistentContainer.Instance.PolledYes = PolledYes;
             PersistentContainer.Instance.Save();
             string _phrase928;
@@ -402,7 +403,8 @@ namespace ServerTools
         public static void VoteNo(ClientInfo _cInfo)
         {
             PolledNo.Add(_cInfo.entityId);
-            PersistentContainer.Instance.PollNo += 1;
+            int _oldNo = PersistentContainer.Instance.PollNo;
+            PersistentContainer.Instance.PollNo = _oldNo + 1;
             PersistentContainer.Instance.PolledNo = PolledNo;
             PersistentContainer.Instance.Save();
             string _phrase929;

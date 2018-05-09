@@ -210,7 +210,7 @@ namespace ServerTools
                             else
                             {
                                 SdtdConsole.Instance.Output(string.Format("The spawn position for team {0} has been set to {1} {2} {3}.", Event.Spawning.Count, x, y, z));
-                                SdtdConsole.Instance.Output("Stand where you would like the next team to spawn when the event starts and type event spawn.");
+                                SdtdConsole.Instance.Output(string.Format("Stand where you would like the spawn for team {0} when the event starts and type event spawn.", Event.Respawning.Count + 1));
                                 return;
                             }
                         }
@@ -252,7 +252,7 @@ namespace ServerTools
                             else
                             {
                                 SdtdConsole.Instance.Output(string.Format("The respawn position for team {0} has been set to {1} {2} {3}.", Event.Respawning.Count, x, y, z));
-                                SdtdConsole.Instance.Output(string.Format("Stand where you would like the respawn for team {0} if they die during the event and type event respawn.", Event.Respawning.Count));
+                                SdtdConsole.Instance.Output(string.Format("Stand where you would like the respawn for team {0} if they die during the event and type event respawn.", Event.Respawning.Count + 1));
                                 return;
                             }
                         }
