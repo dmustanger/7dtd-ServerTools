@@ -1044,7 +1044,7 @@ namespace ServerTools
                             VoteReward.Check(_cInfo);
                             return false;
                         }
-                        if (AutoShutdown.IsEnabled && _message == "shutdown")
+                        if (AutoShutdown.IsEnabled && (_message == "Scheck" || _message == "scheck"))
                         {
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking for the next shutdown time.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                             AutoShutdown.CheckNextShutdown(_cInfo, _announce);
@@ -1078,85 +1078,6 @@ namespace ServerTools
                                 Jail.Forgive(_cInfo);
                                 return false;
                             }
-                        }
-                        if (WeatherVote.IsEnabled && _message == "weather")
-                        {
-                            if (WeatherVote.VoteNew)
-                            {
-                                if (!WeatherVote.VoteOpen)
-                                {
-                                    WeatherVote.CallForVote1();
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote has already begun.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote can only begin every {1} minutes.[-]", Config.Chat_Response_Color, Timers.Weather_Vote_Delay), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            return false;
-                        }
-                        if (WeatherVote.IsEnabled && _message == "clear")
-                        {
-                            if (WeatherVote.VoteOpen)
-                            {
-                                if (!WeatherVote.snow.Contains(_cInfo.entityId) && !WeatherVote.clear.Contains(_cInfo.entityId) && !WeatherVote.rain.Contains(_cInfo.entityId))
-                                {
-                                    WeatherVote.clear.Add(_cInfo.entityId);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}There is no active weather vote. Type /weather in chat to open a new vote.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            return false;
-                        }
-                        if (WeatherVote.IsEnabled && _message == "rain")
-                        {
-                            if (WeatherVote.VoteOpen)
-                            {
-                                if (!WeatherVote.snow.Contains(_cInfo.entityId) && !WeatherVote.clear.Contains(_cInfo.entityId) && !WeatherVote.rain.Contains(_cInfo.entityId))
-                                {
-                                    WeatherVote.rain.Add(_cInfo.entityId);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}There is no active weather vote. Type /weather in chat to open a new vote.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            return false;
-                        }
-                        if (WeatherVote.IsEnabled && _message == "snow")
-                        {
-                            if (WeatherVote.VoteOpen)
-                            {
-                                if (!WeatherVote.snow.Contains(_cInfo.entityId) && !WeatherVote.clear.Contains(_cInfo.entityId) && !WeatherVote.rain.Contains(_cInfo.entityId))
-                                {
-                                    WeatherVote.snow.Add(_cInfo.entityId);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}There is no active weather vote. Type /weather in chat to open a new vote.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            return false;
                         }
                         if (Wallet.IsEnabled && _message == "wallet")
                         {
@@ -1243,9 +1164,88 @@ namespace ServerTools
                             DeathSpot.DeathDelay(_cInfo, _announce, _playerName);
                             return false;
                         }
-                        if (RestartVote.IsEnabled && _message == "restart")
+                        if (WeatherVote.IsEnabled && _message == "weathervote")
                         {
-                            if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen)
+                            if (WeatherVote.VoteNew)
+                            {
+                                if (!WeatherVote.VoteOpen)
+                                {
+                                    WeatherVote.CallForVote1();
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote has already begun.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote can only begin every {1} minutes.[-]", Config.Chat_Response_Color, Timers.Weather_Vote_Delay), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                            return false;
+                        }
+                        if (WeatherVote.IsEnabled && _message == "clear")
+                        {
+                            if (WeatherVote.VoteOpen)
+                            {
+                                if (!WeatherVote.snow.Contains(_cInfo.entityId) && !WeatherVote.clear.Contains(_cInfo.entityId) && !WeatherVote.rain.Contains(_cInfo.entityId))
+                                {
+                                    WeatherVote.clear.Add(_cInfo.entityId);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}There is no active weather vote. Type /weather in chat to open a new vote.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                            return false;
+                        }
+                        if (WeatherVote.IsEnabled && _message == "rain")
+                        {
+                            if (WeatherVote.VoteOpen)
+                            {
+                                if (!WeatherVote.snow.Contains(_cInfo.entityId) && !WeatherVote.clear.Contains(_cInfo.entityId) && !WeatherVote.rain.Contains(_cInfo.entityId))
+                                {
+                                    WeatherVote.rain.Add(_cInfo.entityId);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}There is no active weather vote. Type /weather in chat to open a new vote.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                            return false;
+                        }
+                        if (WeatherVote.IsEnabled && _message == "snow")
+                        {
+                            if (WeatherVote.VoteOpen)
+                            {
+                                if (!WeatherVote.snow.Contains(_cInfo.entityId) && !WeatherVote.clear.Contains(_cInfo.entityId) && !WeatherVote.rain.Contains(_cInfo.entityId))
+                                {
+                                    WeatherVote.snow.Add(_cInfo.entityId);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}There is no active weather vote. Type /weather in chat to open a new vote.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                            return false;
+                        }
+                        if (RestartVote.IsEnabled && _message == "restartvote")
+                        {
+                            if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
                             {
                                 if (RestartVote.VoteNew)
                                 {
@@ -1258,23 +1258,11 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (MuteVote.IsEnabled && _message == "mute")
+                        if (MuteVote.IsEnabled && _message.StartsWith("mutevote"))
                         {
                             if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
                             {
-                                MuteVote.List(_cInfo);
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A vote is open. Wait for it to finish and try again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            return false;
-                        }
-                        if (MuteVote.IsEnabled && _message.StartsWith("mute"))
-                        {
-                            if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
-                            {
-                                _message = _message.Replace("mute ", "");
+                                _message = _message.Replace("mutevote ", "");
                                 {
                                     MuteVote.Vote(_cInfo, _message);
                                 }
@@ -1285,23 +1273,11 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (KickVote.IsEnabled && _message == "kick")
+                        if (KickVote.IsEnabled && _message.StartsWith("kickvote"))
                         {
                             if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
                             {
-                                KickVote.List(_cInfo);
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A vote is open. Wait for it to finish and try again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            return false;
-                        }
-                        if (_message.StartsWith("kick"))
-                        {
-                            if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
-                            {
-                                _message = _message.Replace("kick ", "");
+                                _message = _message.Replace("kickvote ", "");
                                 {
                                     KickVote.Vote(_cInfo, _message);
                                 }
@@ -1312,7 +1288,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (NightVote.IsEnabled && _message == "night")
+                        if (NightVote.IsEnabled && _message == "nightvote")
                         {
                             if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
                             {
@@ -1635,25 +1611,25 @@ namespace ServerTools
                         if (Bank.IsEnabled && _message.StartsWith("deposit"))
                         {
                             _message = _message.Replace("deposit ", "");
-                            Bank.Deposit(_cInfo, _message);
+                            Bank.CheckLocation(_cInfo, _message, 1);
                             return false;
                         }
                         if (Bank.IsEnabled && _message.StartsWith("withdraw"))
                         {
                             _message = _message.Replace("withdraw ", "");
-                            Bank.Withdraw(_cInfo, _message);
+                            Bank.CheckLocation(_cInfo, _message, 2);
                             return false;
                         }
                         if (Bank.IsEnabled && _message.StartsWith("wallet deposit"))
                         {
                             _message = _message.Replace("wallet deposit ", "");
-                            Bank.WalletDeposit(_cInfo, _message);
+                            Bank.CheckLocation(_cInfo, _message, 3);
                             return false;
                         }
                         if (Bank.IsEnabled && _message.StartsWith("wallet withdraw"))
                         {
                             _message = _message.Replace("wallet withdraw ", "");
-                            Bank.WalletWithdraw(_cInfo, _message);
+                            Bank.CheckLocation(_cInfo, _message, 4);
                             return false;
                         }
                         if (Bank.IsEnabled && _message.StartsWith("transfer "))
@@ -1665,6 +1641,16 @@ namespace ServerTools
                         if (Event.Invited && _message == "event")
                         {
                             Event.AddPlayer(_cInfo);
+                            return false;
+                        }
+                        if (Wallet.IsEnabled && _message == "mogul")
+                        {
+                            Mogul.TopFive(_cInfo, _announce);
+                            return false;
+                        }
+                        if (_message == "test")
+                        {
+                            Lottery.StartLotto();
                             return false;
                         }
                         if (CustomCommands.IsEnabled && CustomCommands.Dict.ContainsKey(_message))
