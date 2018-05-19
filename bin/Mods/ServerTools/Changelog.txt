@@ -1,5 +1,26 @@
 ﻿CHANGELOG
 
+10.7
+
+Added chat command /mogul. Shows the top 3 players based on their wallet and bank wealth combined
+Added and updated phrases in ServerToolsPhrases.xml. Make sure to update it by stopping the server and deleting the file. It will now rebuild when you start your server
+ -Update phrase # 555, 619, 620, 631, 736, 921, 922, 946, 947. -New phrase # 817, 965, 966
+Added to shop command /buy. Players can now type /buy # #. The second # is how many they wish to buy at once
+Added delay to teleportation triggered by a player's chat command. It will add them to a que and teleport them after 5 - 8 seconds have passed
+Added response if adding or removing a player to the mute list and it is not enabled
+Added reduced delay to /reward. It is reduced 25% for donators/reserved players when reduced delay is on
+Changed bank deposit and withdraw. Players must be inside their own claimed space
+Changed chat command /mute to /mutevote to avoid the conflict with admin chat command mute
+Changed chat command /kick to /kickvote to be consistent with votes
+Changed chat command /night to /nightvote to be consistent with votes
+Changed chat command /weather to /weathervote to be consistent with votes
+Changed chat command /restart to /restartvote to be consistent with votes
+Changed Set_Home to not allow setting home locations outside of their own claimed space
+Fixed Zones not changing over pve status when travelling from a pve zone to a pvp
+Fixed /stuck working outside of the player's claimed space. They must be inside their own claimed area or a friend's claimed area that is online
+Fixed console command resetplayerprofile not working properly if the player is online when it is used
+Removed option negative wallet. It was always possible to go negative but it was not showing players so it makes sense to show them the negative value
+
 10.6
 Added option to tool Wallet. You can now enable or disable this to prevent players from using /wallet. The internal wallet still calculates and can be used
 Added two phrases in ServerToolsPhrases.xml. Make sure to update it by stopping the server and deleting the file. It will now rebuild when you start your server
