@@ -9,7 +9,7 @@ namespace ServerTools
             Delay_Between_World_Saves = 15, Stop_Server_Time = 1, _newCount = 0, Weather_Vote_Delay = 30,
             Shutdown_Delay = 60, Infoticker_Delay = 60, Restart_Vote_Delay = 30, _sSC = 0, _sSCD = 0,
             Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0, _eventTime = 0;
-        private static int timer1SecondInstanceCount, _wV, _wNV, _pSC, _b, _pL, _mC, _wSD, _iT, _rVS,
+        private static int timer1SecondInstanceCount, _wV, _wNV, _pSC, _b, _pL, _mC, _wSD, _iT, _rVS, _tD,
             _rS, _rV, _rNV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _nV, _vR, _eS, _eI, _eO; 
         private static System.Timers.Timer t1 = new System.Timers.Timer();
 
@@ -778,6 +778,19 @@ namespace ServerTools
                 {
                     RestartVote.Startup = false;
                 }
+            }
+            if (TeleportDelay.TeleQue)
+            {
+                _tD++;
+                if (_tD >= 3)
+                {
+                    _tD = 0;
+                    TeleportDelay.Que();
+                }
+            }
+            else
+            {
+                _tD = 0;
             }
         }
     }
