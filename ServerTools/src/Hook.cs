@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ServerTools
 {
@@ -320,7 +319,7 @@ namespace ServerTools
                     {
                         _message.Substring(2);
                     }
-                    if ((_message.StartsWith("[") && _message.Contains("]")) && (_message.Contains(Command_Private) || _message.Contains(Command_Public)) || _message.StartsWith(Command_Private) || _message.StartsWith(Command_Public))
+                    if (_message.StartsWith("[") && _message.Contains("]") || _message.Contains(Command_Private) || _message.Contains(Command_Public) || _message.StartsWith(Command_Private) || _message.StartsWith(Command_Public))
                     {
                         if (_message.StartsWith("[") && _message.Contains("]"))
                         {
@@ -361,7 +360,7 @@ namespace ServerTools
                         {
                             if (!Zones.Set_Home)
                             {
-                                if (!Players.ZoneFlag.ContainsKey(_cInfo.entityId))
+                                if (!Players.ZoneExit.ContainsKey(_cInfo.entityId))
                                 {
                                     TeleportHome.SetHome(_cInfo, _playerName, _announce);
                                 }
@@ -408,7 +407,7 @@ namespace ServerTools
                             {
                                 if (!Zones.Set_Home)
                                 {
-                                    if (!Players.ZoneFlag.ContainsKey(_cInfo.entityId))
+                                    if (!Players.ZoneExit.ContainsKey(_cInfo.entityId))
                                     {
                                         if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                         {
@@ -494,7 +493,7 @@ namespace ServerTools
                             {
                                 if (!Zones.Set_Home)
                                 {
-                                    if (!Players.ZoneFlag.ContainsKey(_cInfo.entityId))
+                                    if (!Players.ZoneExit.ContainsKey(_cInfo.entityId))
                                     {
                                         TeleportHome.SetHome2(_cInfo, _playerName, _announce);
                                     }
@@ -946,55 +945,55 @@ namespace ServerTools
                                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Moderators and Admins can not change their chat color.[-]", Config.Chat_Response_Color, _playerName, _dt), Config.Server_Response_Name, false, "ServerTools", false));
                                     }
                                 }
-                                if (Admin.PermissionLevel == Don_Level1)
-                                {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        int dl2 = Don_Level2;
-                                        SdtdConsole.Instance.ExecuteSync(string.Format("admin add {0} {1}", _cInfo.entityId, dl2), _cInfo);
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been switched.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
-                                    else
-                                    {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Command is unavailable.[-]", Config.Chat_Response_Color, _playerName, _dt), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
-                                }
-                                if (Admin.PermissionLevel == Don_Level2)
-                                {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        int dl3 = Don_Level3;
-                                        SdtdConsole.Instance.ExecuteSync(string.Format("admin add {0} {1}", _cInfo.entityId, dl3), _cInfo);
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been switched.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
-                                    else
-                                    {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Command is unavailable.[-]", Config.Chat_Response_Color, _playerName, _dt), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
-                                }
-                                if (Admin.PermissionLevel == Don_Level3)
-                                {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        SdtdConsole.Instance.ExecuteSync(string.Format("admin remove {0}", _cInfo.entityId), _cInfo);
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned off.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
-                                    else
-                                    {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Command is unavailable.[-]", Config.Chat_Response_Color, _playerName, _dt), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
-                                }
                                 else
                                 {
-                                    int dl1 = Don_Level1;
-                                    SdtdConsole.Instance.ExecuteSync(string.Format("admin add {0} {1}", _cInfo.entityId, Don_Level1), _cInfo);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned on.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                    if (Admin.PermissionLevel == Don_Level1)
+                                    {
+                                        DateTime _dt;
+                                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                        if (DateTime.Now < _dt)
+                                        {
+                                            SdtdConsole.Instance.ExecuteSync(string.Format("admin add {0} {1}", _cInfo.entityId, Don_Level2), null);
+                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been switched.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                        }
+                                        else
+                                        {
+                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Command is unavailable.[-]", Config.Chat_Response_Color, _playerName, _dt), Config.Server_Response_Name, false, "ServerTools", false));
+                                        }
+                                    }
+                                    else if (Admin.PermissionLevel == Don_Level2)
+                                    {
+                                        DateTime _dt;
+                                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                        if (DateTime.Now < _dt)
+                                        {
+                                            SdtdConsole.Instance.ExecuteSync(string.Format("admin add {0} {1}", _cInfo.entityId, Don_Level3), null);
+                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been switched.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                        }
+                                        else
+                                        {
+                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Command is unavailable.[-]", Config.Chat_Response_Color, _playerName, _dt), Config.Server_Response_Name, false, "ServerTools", false));
+                                        }
+                                    }
+                                    else if (Admin.PermissionLevel == Don_Level3)
+                                    {
+                                        DateTime _dt;
+                                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                        if (DateTime.Now < _dt)
+                                        {
+                                            SdtdConsole.Instance.ExecuteSync(string.Format("admin remove {0}", _cInfo.entityId), _cInfo);
+                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned off.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                        }
+                                        else
+                                        {
+                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Command is unavailable.[-]", Config.Chat_Response_Color, _playerName, _dt), Config.Server_Response_Name, false, "ServerTools", false));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        SdtdConsole.Instance.ExecuteSync(string.Format("admin add {0} {1}", _cInfo.entityId, Don_Level1), null);
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned on.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                    }
                                 }
                             }
                             return false;
@@ -1045,7 +1044,7 @@ namespace ServerTools
                             VoteReward.Check(_cInfo);
                             return false;
                         }
-                        if (AutoShutdown.IsEnabled && _message == "shutdown")
+                        if (AutoShutdown.IsEnabled && (_message == "Scheck" || _message == "scheck"))
                         {
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking for the next shutdown time.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                             AutoShutdown.CheckNextShutdown(_cInfo, _announce);
@@ -1080,86 +1079,7 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (WeatherVote.IsEnabled && _message == "weather")
-                        {
-                            if (WeatherVote.VoteNew)
-                            {
-                                if (!WeatherVote.VoteOpen)
-                                {
-                                    WeatherVote.CallForVote1();
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote has already begun.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote can only begin every {1} minutes.[-]", Config.Chat_Response_Color, Timers.Weather_Vote_Delay), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            return false;
-                        }
-                        if (WeatherVote.IsEnabled && _message == "clear")
-                        {
-                            if (WeatherVote.VoteOpen)
-                            {
-                                if (!WeatherVote.snow.Contains(_cInfo.entityId) && !WeatherVote.clear.Contains(_cInfo.entityId) && !WeatherVote.rain.Contains(_cInfo.entityId))
-                                {
-                                    WeatherVote.clear.Add(_cInfo.entityId);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}There is no active weather vote. Type /weather in chat to open a new vote.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            return false;
-                        }
-                        if (WeatherVote.IsEnabled && _message == "rain")
-                        {
-                            if (WeatherVote.VoteOpen)
-                            {
-                                if (!WeatherVote.snow.Contains(_cInfo.entityId) && !WeatherVote.clear.Contains(_cInfo.entityId) && !WeatherVote.rain.Contains(_cInfo.entityId))
-                                {
-                                    WeatherVote.rain.Add(_cInfo.entityId);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}There is no active weather vote. Type /weather in chat to open a new vote.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            return false;
-                        }
-                        if (WeatherVote.IsEnabled && _message == "snow")
-                        {
-                            if (WeatherVote.VoteOpen)
-                            {
-                                if (!WeatherVote.snow.Contains(_cInfo.entityId) && !WeatherVote.clear.Contains(_cInfo.entityId) && !WeatherVote.rain.Contains(_cInfo.entityId))
-                                {
-                                    WeatherVote.snow.Add(_cInfo.entityId);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}There is no active weather vote. Type /weather in chat to open a new vote.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            return false;
-                        }
-                        if (_message == "wallet")
+                        if (Wallet.IsEnabled && _message == "wallet")
                         {
                             Wallet.WalletValue(_cInfo, _playerName);
                             return false;
@@ -1244,9 +1164,88 @@ namespace ServerTools
                             DeathSpot.DeathDelay(_cInfo, _announce, _playerName);
                             return false;
                         }
-                        if (RestartVote.IsEnabled && _message == "restart")
+                        if (WeatherVote.IsEnabled && _message == "weathervote")
                         {
-                            if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen)
+                            if (WeatherVote.VoteNew)
+                            {
+                                if (!WeatherVote.VoteOpen)
+                                {
+                                    WeatherVote.CallForVote1();
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote has already begun.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote can only begin every {1} minutes.[-]", Config.Chat_Response_Color, Timers.Weather_Vote_Delay), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                            return false;
+                        }
+                        if (WeatherVote.IsEnabled && _message == "clear")
+                        {
+                            if (WeatherVote.VoteOpen)
+                            {
+                                if (!WeatherVote.snow.Contains(_cInfo.entityId) && !WeatherVote.clear.Contains(_cInfo.entityId) && !WeatherVote.rain.Contains(_cInfo.entityId))
+                                {
+                                    WeatherVote.clear.Add(_cInfo.entityId);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}There is no active weather vote. Type /weather in chat to open a new vote.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                            return false;
+                        }
+                        if (WeatherVote.IsEnabled && _message == "rain")
+                        {
+                            if (WeatherVote.VoteOpen)
+                            {
+                                if (!WeatherVote.snow.Contains(_cInfo.entityId) && !WeatherVote.clear.Contains(_cInfo.entityId) && !WeatherVote.rain.Contains(_cInfo.entityId))
+                                {
+                                    WeatherVote.rain.Add(_cInfo.entityId);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}There is no active weather vote. Type /weather in chat to open a new vote.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                            return false;
+                        }
+                        if (WeatherVote.IsEnabled && _message == "snow")
+                        {
+                            if (WeatherVote.VoteOpen)
+                            {
+                                if (!WeatherVote.snow.Contains(_cInfo.entityId) && !WeatherVote.clear.Contains(_cInfo.entityId) && !WeatherVote.rain.Contains(_cInfo.entityId))
+                                {
+                                    WeatherVote.snow.Add(_cInfo.entityId);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Vote cast for {1}.[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}There is no active weather vote. Type /weather in chat to open a new vote.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                            return false;
+                        }
+                        if (RestartVote.IsEnabled && _message == "restartvote")
+                        {
+                            if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
                             {
                                 if (RestartVote.VoteNew)
                                 {
@@ -1259,23 +1258,11 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (MuteVote.IsEnabled && _message == "mute")
+                        if (MuteVote.IsEnabled && _message.StartsWith("mutevote"))
                         {
                             if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
                             {
-                                MuteVote.List(_cInfo);
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A vote is open. Wait for it to finish and try again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            return false;
-                        }
-                        if (MuteVote.IsEnabled && _message.StartsWith("mute"))
-                        {
-                            if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
-                            {
-                                _message = _message.Replace("mute ", "");
+                                _message = _message.Replace("mutevote ", "");
                                 {
                                     MuteVote.Vote(_cInfo, _message);
                                 }
@@ -1286,23 +1273,11 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (KickVote.IsEnabled && _message == "kick")
+                        if (KickVote.IsEnabled && _message.StartsWith("kickvote"))
                         {
                             if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
                             {
-                                KickVote.List(_cInfo);
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A vote is open. Wait for it to finish and try again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            return false;
-                        }
-                        if (_message.StartsWith("kick"))
-                        {
-                            if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
-                            {
-                                _message = _message.Replace("kick ", "");
+                                _message = _message.Replace("kickvote ", "");
                                 {
                                     KickVote.Vote(_cInfo, _message);
                                 }
@@ -1313,7 +1288,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (NightVote.IsEnabled && _message == "night")
+                        if (NightVote.IsEnabled && _message == "nightvote")
                         {
                             if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
                             {
@@ -1507,19 +1482,19 @@ namespace ServerTools
                             Bounties.NewBounty(_cInfo, _message, _playerName);
                             return false;
                         }
-                        if (Lottery.IsEnabled && _message == "lotto")
+                        if (Lottery.IsEnabled && _message == "lottery")
                         {
                             Lottery.Response(_cInfo);
                             return false;
                         }
-                        if (Lottery.IsEnabled && _message == "lotto enter")
+                        if (Lottery.IsEnabled && _message == "lottery enter")
                         {
                             Lottery.EnterLotto(_cInfo);
                             return false;
                         }
-                        if (Lottery.IsEnabled && _message.StartsWith("lotto"))
+                        if (Lottery.IsEnabled && _message.StartsWith("lottery"))
                         {
-                            _message = _message.Replace("lotto ", "");
+                            _message = _message.Replace("lottery ", "");
                             Lottery.NewLotto(_cInfo, _message, _playerName);
                             return false;
                         }
@@ -1560,7 +1535,20 @@ namespace ServerTools
                         {
                             if (PersistentContainer.Instance.PollOpen)
                             {
-                                Poll.VoteYes(_cInfo);
+                                if (!Poll.PolledYes.Contains(_cInfo.entityId) && !Poll.PolledNo.Contains(_cInfo.entityId))
+                                {
+                                    Poll.VoteYes(_cInfo);
+                                }
+                                else
+                                {
+                                    string _phrase812;
+                                    if (!Phrases.Dict.TryGetValue(812, out _phrase812))
+                                    {
+                                        _phrase812 = "{PlayerName} you have already voted on the poll";
+                                    }
+                                    _phrase812 = _phrase812.Replace("{PlayerName}", _playerName);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase812), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
                                 return false;
                             }
                         }
@@ -1568,7 +1556,20 @@ namespace ServerTools
                         {
                             if (PersistentContainer.Instance.PollOpen)
                             {
-                                Poll.VoteNo(_cInfo);
+                                if (!Poll.PolledYes.Contains(_cInfo.entityId) && !Poll.PolledNo.Contains(_cInfo.entityId))
+                                {
+                                    Poll.VoteNo(_cInfo);
+                                }
+                                else
+                                {
+                                    string _phrase812;
+                                    if (!Phrases.Dict.TryGetValue(812, out _phrase812))
+                                    {
+                                        _phrase812 = "{PlayerName} you have already voted on the poll.";
+                                    }
+                                    _phrase812 = _phrase812.Replace("{PlayerName}", _playerName);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase812), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
                                 return false;
                             }
                         }
@@ -1576,15 +1577,28 @@ namespace ServerTools
                         {
                             if (PersistentContainer.Instance.PollOpen)
                             {
+                                string _phrase926;
+                                if (!Phrases.Dict.TryGetValue(926, out _phrase926))
+                                {
+                                    _phrase926 = "Poll: {Message}";
+                                }
+                                _phrase926 = _phrase926.Replace("{Message}", PersistentContainer.Instance.PollMessage);
+                                string _phrase813;
+                                if (!Phrases.Dict.TryGetValue(813, out _phrase813))
+                                {
+                                    _phrase813 = "Currently, the pole is yes {YesCount} / no {NoCount}.";
+                                }
+                                _phrase813 = _phrase813.Replace("{YesCount}", PersistentContainer.Instance.PollYes.ToString());
+                                _phrase813 = _phrase813.Replace("{NoCount}", PersistentContainer.Instance.PollNo.ToString());
                                 if (_announce)
                                 {
-                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}Poll: {1}[-]", Config.Chat_Response_Color, PersistentContainer.Instance.PollMessage), Config.Server_Response_Name, false, "ServerTools", true);
-                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}Currently, the pole is yes {1} / no {2}.[-]", Config.Chat_Response_Color, PersistentContainer.Instance.PollYes, PersistentContainer.Instance.PollNo), Config.Server_Response_Name, false, "ServerTools", true);
+                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase926), Config.Server_Response_Name, false, "ServerTools", true);
+                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase813), Config.Server_Response_Name, false, "ServerTools", true);
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Poll: {1}[-]", Config.Chat_Response_Color, PersistentContainer.Instance.PollMessage), Config.Server_Response_Name, false, "ServerTools", false));
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Currently, the pole is yes {1} / no {2}.[-]", Config.Chat_Response_Color, PersistentContainer.Instance.PollYes, PersistentContainer.Instance.PollNo), Config.Server_Response_Name, false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase926), Config.Server_Response_Name, false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase813), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                                 return false;
                             }
@@ -1597,30 +1611,46 @@ namespace ServerTools
                         if (Bank.IsEnabled && _message.StartsWith("deposit"))
                         {
                             _message = _message.Replace("deposit ", "");
-                            Bank.Deposit(_cInfo, _message);
+                            Bank.CheckLocation(_cInfo, _message, 1);
                             return false;
                         }
                         if (Bank.IsEnabled && _message.StartsWith("withdraw"))
                         {
                             _message = _message.Replace("withdraw ", "");
-                            Bank.Withdraw(_cInfo, _message);
+                            Bank.CheckLocation(_cInfo, _message, 2);
                             return false;
                         }
                         if (Bank.IsEnabled && _message.StartsWith("wallet deposit"))
                         {
                             _message = _message.Replace("wallet deposit ", "");
-                            Bank.WalletDeposit(_cInfo, _message);
+                            Bank.CheckLocation(_cInfo, _message, 3);
                             return false;
                         }
                         if (Bank.IsEnabled && _message.StartsWith("wallet withdraw"))
                         {
                             _message = _message.Replace("wallet withdraw ", "");
-                            Bank.WalletWithdraw(_cInfo, _message);
+                            Bank.CheckLocation(_cInfo, _message, 4);
+                            return false;
+                        }
+                        if (Bank.IsEnabled && _message.StartsWith("transfer "))
+                        {
+                            _message = _message.Replace("transfer ", "");
+                            Bank.Transfer(_cInfo, _message);
                             return false;
                         }
                         if (Event.Invited && _message == "event")
                         {
                             Event.AddPlayer(_cInfo);
+                            return false;
+                        }
+                        if (Wallet.IsEnabled && _message == "mogul")
+                        {
+                            Mogul.TopFive(_cInfo, _announce);
+                            return false;
+                        }
+                        if (_message == "test")
+                        {
+                            Lottery.StartLotto();
                             return false;
                         }
                         if (CustomCommands.IsEnabled && CustomCommands.Dict.ContainsKey(_message))
