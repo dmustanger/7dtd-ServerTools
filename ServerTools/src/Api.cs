@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace ServerTools
@@ -139,6 +138,7 @@ namespace ServerTools
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = 0;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = 0;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = 0;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerName = _cInfo.playerName;
                 PersistentContainer.Instance.Save();
             }
             if (_respawnReason == RespawnType.JoinMultiplayer)
@@ -163,6 +163,7 @@ namespace ServerTools
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = _zCount;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = _deathCount;
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = _killCount;
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerName = _cInfo.playerName;
                 PersistentContainer.Instance.Save();
             }
             if (_respawnReason == RespawnType.Died)

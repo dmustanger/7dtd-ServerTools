@@ -115,6 +115,7 @@ namespace ServerTools
             PersistentContainer.Instance.Players[_cInfo.playerId, true].ClanName = null;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].InvitedToClan = null;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastWhisper = null;
+            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerName = null;
             PersistentContainer.Instance.Save();
             if (ClanManager.ClanMember.Contains(_cInfo.playerId))
             {
@@ -228,7 +229,7 @@ namespace ServerTools
             string _phrase946;
             if (!Phrases.Dict.TryGetValue(946, out _phrase946))
             {
-                _phrase946 = "Playtime #1 {Name1}, {Session1} Playtime #2 {Name2}, {Session2} Playtime #3 {Name3}, {Session3}";
+                _phrase946 = "Playtime 1 {Name1}, {Session1}. Playtime 2 {Name2}, {Session3}. Playtime 3 {Name3}, {Session3}";
             }
             _phrase946 = _phrase946.Replace("{Name1}", _sessionName1);
             _phrase946 = _phrase946.Replace("{Session1}", _topSession1.ToString());
@@ -239,7 +240,7 @@ namespace ServerTools
             string _phrase947;
             if (!Phrases.Dict.TryGetValue(947, out _phrase947))
             {
-                _phrase947 = "Score #1 {Name1}, {Score1} Score #2 {Name2}, {Score2} Score #3 {Name3}, {Score3}";
+                _phrase947 = "Score 1 {Name1}, {Score1}. Score 2 {Name2}, {Score2}. Score 3 {Name3}, {Score3}";
             }
             _phrase947 = _phrase947.Replace("{Name1}", _ScoreName1);
             _phrase947 = _phrase947.Replace("{Score1}", _topScore1.ToString());

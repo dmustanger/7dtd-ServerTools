@@ -415,7 +415,6 @@ namespace ServerTools
                                             {
                                                 Zones.Response(_cInfo, _box2[4]);
                                             }
-                                            Log.Out(string.Format("Added player to zone exit list with exit message {0}", _box2[3]));
                                             return;
                                         }
                                     }
@@ -444,6 +443,10 @@ namespace ServerTools
                                                             ZonePvE.Add(_player.entityId);
                                                         }
                                                     }
+                                                    else if (ZonePvE.Contains(_player.entityId))
+                                                    {
+                                                        ZonePvE.Remove(_player.entityId);
+                                                    }
                                                 }
                                                 if (Zones.Zone_Message)
                                                 {
@@ -453,7 +456,6 @@ namespace ServerTools
                                                 {
                                                     Zones.Response(_cInfo, _box2[4]);
                                                 }
-                                                Log.Out(string.Format("Added player to zone exit list with exit message {0}", _box2[3]));
                                                 return;
                                             }
                                         }

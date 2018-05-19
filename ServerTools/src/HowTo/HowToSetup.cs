@@ -13,7 +13,7 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine("This was drafted for version 10.6");
+                sw.WriteLine("This was drafted for version 10.7");
                 sw.WriteLine();
                 sw.WriteLine("ServerTools was coded and tested under a Windows operating system. It should operate on other major O.S. but if you find bugs, report them to");
                 sw.WriteLine("https://github.com/dmustanger/7dtd-ServerTools/issues");
@@ -191,7 +191,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("<Tool Name=\"Chat_Command_Response\" Color=\"[00FF00]\" Chat_Command_Private=\"/\" Chat_Command_Public=\"!\"  Mute=\"false\" />");
+                sw.WriteLine("<Tool Name=\"Chat_Command_Response\" Color=\"[00FF00]\" Chat_Command_Private=\"/\" Chat_Command_Public=\"!\"  Mute_Commands=\"false\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set a color using a html value in brackets for Color");
                 sw.WriteLine("Set a symbol ServerTools will use for private chat based commands");
@@ -201,7 +201,7 @@ namespace ServerTools
                 sw.WriteLine("The color that all chat command responses will respond with and general ServerTools based messages. Always enabled.");
                 sw.WriteLine("The Chat_Command_Private is the symbol that players will use to initiate a private chat command such as /gimme");
                 sw.WriteLine("The Chat_Command_Public is the symbol that players will use to initiate a public chat command such as !gimme");
-                sw.WriteLine("Turn on mute so you can mute players from chat.");
+                sw.WriteLine("Turn on Mute_Commands so you can mute players from chat or console. Muted players can still chat if this is false.");
                 sw.WriteLine("If you mute a player via chat commands, they are muted for 60 minutes. Players sent via console can be adjusted to suit your needs.");
                 sw.WriteLine();
                 sw.WriteLine();
@@ -443,6 +443,7 @@ namespace ServerTools
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine();
                 sw.WriteLine("Automatically starts a horde every 20 minutes if player count is over 5 and zombie count is less than 30.");
+                sw.WriteLine("This will not trigger during a bloodmoon.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -548,10 +549,10 @@ namespace ServerTools
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set a numeric value for Bonus");
                 sw.WriteLine();
-                sw.WriteLine("Players can start a new lottery by typing /lotto #. They can check the current lotto with /lotto.");
-                sw.WriteLine("To enter a lotto, players must match what the first player opened the lotto value as.");
-                sw.WriteLine("When an hour has passed or ten players have entered the lotto, it will draw the winner.");
-                sw.WriteLine("If the lotto is full, the winner also gets the Bonus.");
+                sw.WriteLine("Players can start a new lottery by typing /lottery #. They can check the current lotto with /lottery.");
+                sw.WriteLine("To enter a lottery, players must match what the first player opened the lottery value as.");
+                sw.WriteLine("When an hour has passed or ten players have entered the lottery, it will draw the winner.");
+                sw.WriteLine("If the lottery is full, the winner also gets the Bonus.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -597,6 +598,15 @@ namespace ServerTools
                 sw.WriteLine("Enabling will automatically show the hours left until night time.");
                 sw.WriteLine("Use Delay to control how often it shows.");
                 sw.WriteLine("Does not display during night time.");
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine("<Tool Name=\"Night_Vote\" Enable=\"False\" />");
+                sw.WriteLine();
+                sw.WriteLine("Set True or False for Enable");
+                sw.WriteLine();
+                sw.WriteLine("Allows players to start a vote to skip the current night.");
+                sw.WriteLine("Can only start a vote if 10 or more players and 8 must vote yes.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -857,15 +867,13 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("< Tool Name =\"Wallet\" Negative_Wallet=\"False\" Coin_Name=\"Coins\" Zombie_Kill_Value=\"10\" Player_Kill_Value=\"50\" Death_Penalty_Value=\"-25\" />");
+                sw.WriteLine("< Tool Name =\"Wallet\" Coin_Name=\"Coins\" Zombie_Kill_Value=\"10\" Player_Kill_Value=\"50\" Death_Penalty_Value=\"-25\" />");
                 sw.WriteLine();
-                sw.WriteLine("Set True or False for Negative_Wallet");
                 sw.WriteLine("Set a value of your choice for Coin_Name");
                 sw.WriteLine("Set a numeric value for Zombie_Kill_Value");
                 sw.WriteLine("Set a numeric value for Player_Kill_Value");
                 sw.WriteLine("Set a numeric value for Death_Penalty_Value");
                 sw.WriteLine();
-                sw.WriteLine("Negative_Wallet controls whether the player can go into a negative in their wallet.");
                 sw.WriteLine("Coin_Name is what you would like the server currency in your wallet to be called.");
                 sw.WriteLine("The wallet is calculated as follows: PvE = zombie kills + deaths + spent coins.");
                 sw.WriteLine("The wallet is calculated as follows: PvP = zombie kills + player kills + deaths + spent coins.");
@@ -896,7 +904,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("<Tool Name=\"Zones\" Enable=\"False\" Kill_Enabled=\"False\" Jail_Enabled=\"False\" Kick_Enabled=\"False\" Ban_Enabled=\"False\" Zone_Message=\"False\" Set_Home=\"False\" No_Zombie=\"False\" Days_Before_Log_Deleted=\"5\"  />");
+                sw.WriteLine("<Tool Name=\"Zones\" Enable=\"False\" Kill_Enabled=\"False\" Jail_Enabled=\"False\" Kick_Enabled=\"False\" Ban_Enabled=\"False\" Zone_Message=\"False\" Set_Home=\"False\" Days_Before_Log_Deleted=\"5\"  />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set True or False for Kill_Murderer");
@@ -905,7 +913,6 @@ namespace ServerTools
                 sw.WriteLine("Set True or False for Ban_Enabled");
                 sw.WriteLine("Set True or False for Zone_Message");
                 sw.WriteLine("Set True or False for Set_Home");
-                sw.WriteLine("Set True or False for No_Zombie");
                 sw.WriteLine("Set a numeric value for Days_Before_Log_Deleted");
                 sw.WriteLine();
                 sw.WriteLine("Enabling will create a Zones.xml in your \"world save folder/ServerTools\"");
@@ -922,11 +929,13 @@ namespace ServerTools
                 sw.WriteLine("Corner1, and corner2 are represented by x, y, z coordinates.");
                 sw.WriteLine("Log files will auto delete themselves after a set amount of days. Days_Before_Log_Delete controls the amount of days.");
                 sw.WriteLine("Set the zone as PvE or PvP inside the xml.");
-                sw.WriteLine("Remove zombies from zones by setting No_Zombie to true.");
+                sw.WriteLine("Remove zombies from zones by setting No_Zombie to true in the xml file.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine("Console commands");
+                sw.WriteLine();
+                sw.WriteLine("Type help <command> to get more detailed information about a specific command while in game.");
                 sw.WriteLine();
                 sw.WriteLine("@Admin");
                 sw.WriteLine("Example: @Admin Hey guys, keep an eye open for OC, he is evil");
@@ -981,7 +990,7 @@ namespace ServerTools
                 sw.WriteLine("Gives a item directly to the player inventory.");
                 sw.WriteLine("Gives a item to everyone online directly to the player inventory.");
                 sw.WriteLine();
-                sw.WriteLine("GiveStartingItmes or gsi");
+                sw.WriteLine("GiveStartingItems or gsi");
                 sw.WriteLine("Example: gsi 76561191234567891");
                 sw.WriteLine("Gives all starting items from the StartingItems.xml to the player and sets a new save point.");
                 sw.WriteLine();

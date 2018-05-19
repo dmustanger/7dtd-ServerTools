@@ -7,6 +7,11 @@ namespace ServerTools
 
         public static void StartShutdown()
         {
+            if (Lottery.OpenLotto)
+            {
+                Lottery.StartLotto();
+            }
+            Lottery.ShuttingDown = true;
             if (AutoShutdown.Kick_Login)
             {
                 NoEntry = true;

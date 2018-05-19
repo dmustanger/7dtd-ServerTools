@@ -26,6 +26,7 @@ namespace ServerTools
         private int auctionData;
         private int playerSpentCoins;
         private string[] auctionItem;
+        private string playerName;
         private string eventReturn;
         private string hardcoreName;
         private string lobbyReturn;
@@ -636,6 +637,18 @@ namespace ServerTools
             set
             {
                 playerSpentCoins = value;
+            }
+        }
+
+        public string PlayerName
+        {
+            get
+            {
+                return playerName;
+            }
+            set
+            {
+                playerName = value;
             }
         }
 
