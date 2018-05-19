@@ -238,7 +238,7 @@ namespace ServerTools
                     string _phrase619;
                     if (!Phrases.Dict.TryGetValue(619, out _phrase619))
                     {
-                        _phrase619 = "{PlayerName} you are not inside a trader area. Find a trader and use /shop again.";
+                        _phrase619 = "{PlayerName} you are not inside a trader area. Find a trader and use this command again.";
                     }
                     _phrase619 = _phrase619.Replace("{PlayerName}", _playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase619), Config.Server_Response_Name, false, "ServerTools", false));
@@ -267,10 +267,6 @@ namespace ServerTools
                 {
                     currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
                 }
-                if (!Wallet.Negative_Wallet && currentCoins < 0)
-                {
-                    currentCoins = 0;
-                }
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, currentCoins, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                 string _phrase617;
                 if (!Phrases.Dict.TryGetValue(617, out _phrase617))
@@ -296,7 +292,7 @@ namespace ServerTools
                 string _phrase618;
                 if (!Phrases.Dict.TryGetValue(618, out _phrase618))
                 {
-                    _phrase618 = "Type /buy # to purchase the corresponding value from the shop list.";
+                    _phrase618 = "Type /buy # to purchase the corresponding value from the shop list. Add how many to buy multiple";
                 }
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase618), Config.Server_Response_Name, false, "ServerTools", false));
             }
@@ -327,7 +323,7 @@ namespace ServerTools
                     string _phrase619;
                     if (!Phrases.Dict.TryGetValue(619, out _phrase619))
                     {
-                        _phrase619 = "{PlayerName} you are not inside a trader area. Find a trader and use /shop again.";
+                        _phrase619 = "{PlayerName} you are not inside a trader area. Find a trader and use this command again.";
                     }
                     _phrase619 = _phrase619.Replace("{PlayerName}", _playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase619), Config.Server_Response_Name, false, "ServerTools", false));
@@ -342,61 +338,120 @@ namespace ServerTools
         public static void Walletcheck(ClientInfo _cInfo, string _item, string _playerName)
         {
             int _id;
-            if (!int.TryParse(_item, out _id))
+            if (_item.Contains(" "))
             {
-                string _phrase620;
-                if (!Phrases.Dict.TryGetValue(620, out _phrase620))
+                string[] _idAmount = _item.Split(' ');
+                if (!int.TryParse(_idAmount[0], out _id))
                 {
-                    _phrase620 = "{PlayerName} the item # you are trying to buy is not an integer. Please input /buy 1 for example.";
+                    string _phrase620;
+                    if (!Phrases.Dict.TryGetValue(620, out _phrase620))
+                    {
+                        _phrase620 = "{PlayerName} the item or amount # you are trying to buy is not an integer. Please input /buy 1 2 for example.";
+                    }
+                    _phrase620 = _phrase620.Replace("{PlayerName}", _playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase620), Config.Server_Response_Name, false, "ServerTools", false));
                 }
-                _phrase620 = _phrase620.Replace("{PlayerName}", _playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase620), Config.Server_Response_Name, false, "ServerTools", false));
+                else
+                {
+                    int _amount;
+                    if (!int.TryParse(_idAmount[1], out _amount))
+                    {
+                        string _phrase620;
+                        if (!Phrases.Dict.TryGetValue(620, out _phrase620))
+                        {
+                            _phrase620 = "{PlayerName} the item or amount # you are trying to buy is not an integer. Please input /buy 1 2 for example.";
+                        }
+                        _phrase620 = _phrase620.Replace("{PlayerName}", _playerName);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase620), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
+                    else
+                    {
+                        if (dict.ContainsKey(_id))
+                        {
+                            string[] _stringValues;
+                            if (dict.TryGetValue(_id, out _stringValues))
+                            {
+                                int[] _integerValues;
+                                if (dict1.TryGetValue(_id, out _integerValues))
+                                {
+                                    World world = GameManager.Instance.World;
+                                    int currentCoins;
+                                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                                    int gameMode = world.GetGameMode();
+                                    if (gameMode == 7)
+                                    {
+                                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                                    }
+                                    else
+                                    {
+                                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                                    }
+                                    int _newAmount = _integerValues[2] * _amount;
+                                    if (currentCoins >= _newAmount)
+                                    {
+                                        int _newCount = _integerValues[0] * _amount;
+                                        ShopPurchase(_cInfo, _stringValues[0], _newCount, _integerValues[1], _newAmount, _playerName, currentCoins, p);
+                                    }
+                                    else
+                                    {
+                                        string _phrase621;
+                                        if (!Phrases.Dict.TryGetValue(621, out _phrase621))
+                                        {
+                                            _phrase621 = "{PlayerName} you do not have enough {CoinName}. Your wallet balance is {WalletBalance}.";
+                                        }
+                                        _phrase621 = _phrase621.Replace("{PlayerName}", _playerName);
+                                        _phrase621 = _phrase621.Replace("{CoinName}", Wallet.Coin_Name);
+                                        _phrase621 = _phrase621.Replace("{WalletBalance}", currentCoins.ToString());
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase621), Config.Server_Response_Name, false, "ServerTools", false));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
             else
             {
-                if (dict.ContainsKey(_id))
+                if (int.TryParse(_item, out _id))
                 {
-                    string[] _stringValues;
-                    if (dict.TryGetValue(_id, out _stringValues))
+                    if (dict.ContainsKey(_id))
                     {
-                        int[] _integerValues;
-                        if (dict1.TryGetValue(_id, out _integerValues))
+                        string[] _stringValues;
+                        if (dict.TryGetValue(_id, out _stringValues))
                         {
-                            World world = GameManager.Instance.World;
-                            int currentCoins = 0;
-                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                            int gameMode = world.GetGameMode();
-                            if (gameMode == 7)
+                            int[] _integerValues;
+                            if (dict1.TryGetValue(_id, out _integerValues))
                             {
-                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                            }
-                            else
-                            {
-                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                            }
-                            if (!Wallet.Negative_Wallet)
-                            {
-                                if (currentCoins < 0)
+                                World world = GameManager.Instance.World;
+                                int currentCoins;
+                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                                int gameMode = world.GetGameMode();
+                                if (gameMode == 7)
                                 {
-                                    currentCoins = 0;
+                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
                                 }
-                            }
-                            if (currentCoins >= _integerValues[2])
-                            {
-                                ShopPurchase(_cInfo, _stringValues[0], _integerValues[0], _integerValues[1], _integerValues[2], _playerName, currentCoins, p);
-                            }
-                            else
-                            {
-                                string _phrase621;
-                                if (!Phrases.Dict.TryGetValue(621, out _phrase621))
+                                else
                                 {
-                                    _phrase621 = "{PlayerName} you do not have enough {CoinName}. Your wallet balance is {WalletBalance}.";
+                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
                                 }
-                                _phrase621 = _phrase621.Replace("{PlayerName}", _playerName);
-                                _phrase621 = _phrase621.Replace("{CoinName}", Wallet.Coin_Name);
-                                _phrase621 = _phrase621.Replace("{WalletBalance}", currentCoins.ToString());
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase621), Config.Server_Response_Name, false, "ServerTools", false));
+                                if (currentCoins >= _integerValues[2])
+                                {
+                                    ShopPurchase(_cInfo, _stringValues[0], _integerValues[0], _integerValues[1], _integerValues[2], _playerName, currentCoins, p);
+                                }
+                                else
+                                {
+                                    string _phrase621;
+                                    if (!Phrases.Dict.TryGetValue(621, out _phrase621))
+                                    {
+                                        _phrase621 = "{PlayerName} you do not have enough {CoinName}. Your wallet balance is {WalletBalance}.";
+                                    }
+                                    _phrase621 = _phrase621.Replace("{PlayerName}", _playerName);
+                                    _phrase621 = _phrase621.Replace("{CoinName}", Wallet.Coin_Name);
+                                    _phrase621 = _phrase621.Replace("{WalletBalance}", currentCoins.ToString());
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase621), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
                             }
                         }
                     }

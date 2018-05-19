@@ -3,7 +3,7 @@ namespace ServerTools
 {
     class Wallet
     {
-        public static bool IsEnabled = false, Negative_Wallet = false;
+        public static bool IsEnabled = false;
         public static string Coin_Name = "coin";
         public static int Zombie_Kills = 10;
         public static int Player_Kills = 50;
@@ -26,10 +26,6 @@ namespace ServerTools
                 else
                 {
                     currentCoins = (_player.KilledZombies * Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Deaths) + p.PlayerSpentCoins;
-                }
-                if (!Negative_Wallet && currentCoins < 0)
-                {
-                    currentCoins = 0;
                 }
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, currentCoins, Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
             }

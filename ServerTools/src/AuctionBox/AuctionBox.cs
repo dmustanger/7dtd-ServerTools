@@ -262,24 +262,10 @@ namespace ServerTools
                     if (gameMode == 7)
                     {
                         currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                        if (!Wallet.Negative_Wallet)
-                        {
-                            if (currentCoins < 0)
-                            {
-                                currentCoins = 0;
-                            }
-                        }
                     }
                     else
                     {
                         currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                        if (!Wallet.Negative_Wallet)
-                        {
-                            if (currentCoins < 0)
-                            {
-                                currentCoins = 0;
-                            }
-                        }
                     }
                     List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
                     for (int i = 0; i < playerlist.Count; i++)

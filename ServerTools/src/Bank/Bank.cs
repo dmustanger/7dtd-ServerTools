@@ -59,6 +59,44 @@ namespace ServerTools
             }
         }
 
+        public static void CheckLocation(ClientInfo _cInfo, string _amount, int _exec)
+        {
+            bool Found = false;
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            int _claimSize = GameStats.GetInt(EnumGameStats.LandClaimSize) / 2;
+            PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
+            PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerData(_cInfo.playerId);
+            List<Vector3i> _blocks = _persistentPlayerData.LPBlocks;
+            for (int i = 0; i < _blocks.Count; i++)
+            {
+                Vector3i _vec3i = _blocks[i];
+                if ((_vec3i.x - _player.position.x) * (_vec3i.x - _player.position.x) + (_vec3i.z - _player.position.z) * (_vec3i.z - _player.position.z) <= _claimSize * _claimSize)
+                {
+                    Found = true;
+                    if (_exec == 1)
+                    {
+                        Deposit(_cInfo, _amount);
+                    }
+                    if (_exec == 2)
+                    {
+                        Withdraw(_cInfo, _amount);
+                    }
+                    if (_exec == 3)
+                    {
+                        WalletDeposit(_cInfo, _amount);
+                    }
+                    if (_exec == 4)
+                    {
+                        WalletWithdraw(_cInfo, _amount);
+                    }
+                }
+            }
+            if (!Found)
+            {
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You can not use this command here. Stand in your own claimed space.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+            }
+        }
+
         public static void Deposit(ClientInfo _cInfo, string _amount)
         {
             bool Found = false;
@@ -260,10 +298,6 @@ namespace ServerTools
                         else
                         {
                             currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                        }
-                        if (!Wallet.Negative_Wallet && currentCoins < 0)
-                        {
-                            currentCoins = 0;
                         }
                         if (currentCoins >= _coinAmount)
                         {
