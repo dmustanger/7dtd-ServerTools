@@ -107,10 +107,6 @@ namespace ServerTools
                                 {
                                     currentCoins = (p.ZKills * Wallet.Zombie_Kills) - (p.Deaths * Wallet.Deaths) + p.PlayerSpentCoins;
                                 }
-                                if (!Wallet.Negative_Wallet && currentCoins < 0)
-                                {
-                                    currentCoins = 0;
-                                }
                                 SdtdConsole.Instance.Output(string.Format("Wallet for id {0}: {1} {2}", _params[0], currentCoins, Wallet.Coin_Name));
                                 return;
                             }
