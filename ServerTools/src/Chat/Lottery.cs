@@ -6,24 +6,23 @@ namespace ServerTools
     class Lottery
     {
         public static bool IsEnabled = false, OpenLotto = false, ShuttingDown = false;
-        public static int Bonus = 0;
-        public static List<int> Lotto = new List<int>();
+        public static int Bonus = 0, LottoValue = 0;
         public static List<ClientInfo> LottoEntries = new List<ClientInfo>();
 
         public static void Response(ClientInfo _cInfo)
         {
             if (OpenLotto)
             {
-                int _winnings = Lotto[0];
                 string _phrase536;
                 if (!Phrases.Dict.TryGetValue(536, out _phrase536))
                 {
                     _phrase536 = "{PlayerName} a lottery is open for {Value} {CoinName}. Minimum buy in is {BuyIn}. Enter it by typing /lottery enter.";
                 }
+                int _value = LottoValue * LottoEntries.Count;
                 _phrase536 = _phrase536.Replace("{PlayerName}", _cInfo.playerName);
-                _phrase536 = _phrase536.Replace("{Value}", _winnings.ToString());
+                _phrase536 = _phrase536.Replace("{Value}", _value.ToString());
                 _phrase536 = _phrase536.Replace("{CoinName}", Wallet.Coin_Name);
-                _phrase536 = _phrase536.Replace("{BuyIn}", Lotto[0].ToString());
+                _phrase536 = _phrase536.Replace("{BuyIn}", LottoValue.ToString());
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase536), Config.Server_Response_Name, false, "ServerTools", false));
             }
             else
@@ -44,7 +43,7 @@ namespace ServerTools
             {
                 if (OpenLotto)
                 {
-                    int _winnings = Lotto[0] * LottoEntries.Count;
+                    int _winnings = LottoValue * LottoEntries.Count;
                     string _phrase536;
                     if (!Phrases.Dict.TryGetValue(536, out _phrase536))
                     {
@@ -53,7 +52,7 @@ namespace ServerTools
                     _phrase536 = _phrase536.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase536 = _phrase536.Replace("{Value}", _winnings.ToString());
                     _phrase536 = _phrase536.Replace("{CoinName}", Wallet.Coin_Name);
-                    _phrase536 = _phrase536.Replace("{BuyIn}", Lotto[0].ToString());
+                    _phrase536 = _phrase536.Replace("{BuyIn}", LottoValue.ToString());
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase536), Config.Server_Response_Name, false, "ServerTools", false));
                 }
                 else
@@ -71,32 +70,18 @@ namespace ServerTools
                                 if (GameManager.Instance.World.GetGameMode() == 7)
                                 {
                                     currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                                    if (!Wallet.Negative_Wallet)
-                                    {
-                                        if (currentCoins < 0)
-                                        {
-                                            currentCoins = 0;
-                                        }
-                                    }
                                 }
                                 else
                                 {
                                     currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                                    if (!Wallet.Negative_Wallet)
-                                    {
-                                        if (currentCoins < 0)
-                                        {
-                                            currentCoins = 0;
-                                        }
-                                    }
                                 }
                                 if (currentCoins >= _lottoValue)
                                 {
                                     OpenLotto = true;
-                                    Lotto.Add(_lottoValue);
+                                    LottoValue = _lottoValue;
                                     LottoEntries.Add(_cInfo);
                                     int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins;
-                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - _lottoValue;
+                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - LottoValue;
                                     PersistentContainer.Instance.Save();
                                     string _phrase538;
                                     if (!Phrases.Dict.TryGetValue(538, out _phrase538))
@@ -112,7 +97,7 @@ namespace ServerTools
                                     {
                                         _phrase539 = "A lottery has opened for {Value} {CoinName} and will draw soon. Type /lottery enter to join.";
                                     }
-                                    _phrase539 = _phrase539.Replace("{Value}", _lottoValue.ToString());
+                                    _phrase539 = _phrase539.Replace("{Value}", LottoValue.ToString());
                                     _phrase539 = _phrase539.Replace("{CoinName}", Wallet.Coin_Name);
                                     GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase539), Config.Server_Response_Name, false, "ServerTools", false);
                                 }
@@ -167,33 +152,17 @@ namespace ServerTools
                     if (GameManager.Instance.World.GetGameMode() == 7)
                     {
                         currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                        if (!Wallet.Negative_Wallet)
-                        {
-                            if (currentCoins < 0)
-                            {
-                                currentCoins = 0;
-                            }
-                        }
                     }
                     else
                     {
                         currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                        if (!Wallet.Negative_Wallet)
-                        {
-                            if (currentCoins < 0)
-                            {
-                                currentCoins = 0;
-                            }
-                        }
                     }
-                    int _winnings = Lotto[0];
-                    if (currentCoins >= _winnings)
+                    if (currentCoins >= LottoValue)
                     {
                         if (!LottoEntries.Contains(_cInfo))
                         {
                             LottoEntries.Add(_cInfo);
-                            int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins;
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - _winnings;
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = p.PlayerSpentCoins - LottoValue;
                             PersistentContainer.Instance.Save();
                             string _phrase541;
                             if (!Phrases.Dict.TryGetValue(541, out _phrase541))
@@ -251,26 +220,24 @@ namespace ServerTools
 
         public static void StartLotto()
         {
-            OpenLotto = false;
             Random rnd = new Random();
             int _random = rnd.Next(LottoEntries.Count + 1);
             ClientInfo _winner = LottoEntries[_random];
-            int _coins = Lotto[0];
             int _winnings;
             if (LottoEntries.Count == 10)
             {
-                _winnings = _coins * LottoEntries.Count + Bonus;
+                _winnings = LottoValue * LottoEntries.Count + Bonus;
             }
             else
             {
-                _winnings = _coins * LottoEntries.Count;
+                _winnings = LottoValue * LottoEntries.Count;
             }
-
+            OpenLotto = false;
+            LottoValue = 0;
+            LottoEntries.Clear();
             int _oldCoins = PersistentContainer.Instance.Players[_winner.playerId, true].PlayerSpentCoins;
             PersistentContainer.Instance.Players[_winner.playerId, true].PlayerSpentCoins = _oldCoins + _winnings;
             PersistentContainer.Instance.Save();
-            Lotto.Clear();
-            LottoEntries.Clear();
             string _phrase544;
             if (!Phrases.Dict.TryGetValue(544, out _phrase544))
             {
