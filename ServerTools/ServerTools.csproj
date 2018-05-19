@@ -39,6 +39,7 @@
     </Compile>
     <Compile Include="src\AntiCheat\DupeLog.cs" />
     <Compile Include="src\Bank\Bank.cs" />
+    <Compile Include="src\Chat\ChatCommands\Mogul.cs" />
     <Compile Include="src\ConsoleCommands\BikeList.cs" />
     <Compile Include="src\ConsoleCommands\EventCommands.cs" />
     <Compile Include="src\ConsoleCommands\TraderList.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="src\ReservedSlots\ReservedSlots.cs" />
     <Compile Include="src\StartingItems\StartingItems.cs" />
     <Compile Include="src\StopServer\StopServer.cs" />
+    <Compile Include="src\Teleportation\TeleportDelay.cs" />
     <Compile Include="src\VoteReward\VoteReward.cs" />
     <Compile Include="src\Watchlist\Watchlist.cs" />
   </ItemGroup>
