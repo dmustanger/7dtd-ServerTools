@@ -9,7 +9,7 @@ namespace ServerTools
     [Serializable]
     public class Players
     {
-        public static bool Kill_Notice = false;
+        public static int Bonus = 0;
         public Dictionary<string, Player> players = new Dictionary<string, Player>();
         public Dictionary<string, string> clans = new Dictionary<string, string>();
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
@@ -27,7 +27,6 @@ namespace ServerTools
         private static string file = string.Format("Bounty_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string filepath = string.Format("{0}/Bounties/{1}", API.GamePath, file);
         private static int _counter = 0;
-        private static int _xMinCheck = 0, _yMinCheck = 0, _zMinCheck = 0, _xMaxCheck = 0, _yMaxCheck = 0, _zMaxCheck = 0;
         private static bool DP = false;
 
         public static void CreateFolder()
@@ -174,27 +173,15 @@ namespace ServerTools
                                     ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForEntityId(_player2.entityId);
                                     if (_cInfo != null && _cInfo2 != null)
                                     {
-                                        if (Kill_Notice)
+                                        if (KillNotice.IsEnabled)
                                         {
                                             string _holdingItem = _player2.inventory.holdingItem.Name;
-                                            if (_holdingItem == "handPlayer")
-                                            {
-                                                _holdingItem = "Fists of Fury";
-                                            }
                                             ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
                                             if (_itemValue.type != ItemValue.None.type)
                                             {
                                                 _holdingItem = _itemValue.ItemClass.localizedName ?? _itemValue.ItemClass.Name;
                                             }
-                                            string _phrase915;
-                                            if (!Phrases.Dict.TryGetValue(915, out _phrase915))
-                                            {
-                                                _phrase915 = "{PlayerName} has killed {Victim} with {Item}.";
-                                            }
-                                            _phrase915 = _phrase915.Replace("{PlayerName}", _cInfo2.playerName);
-                                            _phrase915 = _phrase915.Replace("{Victim}", _cInfo.playerName);
-                                            _phrase915 = _phrase915.Replace("{Item}", _holdingItem);
-                                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase915), Config.Server_Response_Name, false, "ServerTools", false);
+                                            KillNotice.Notice(_cInfo, _cInfo2, _holdingItem);
                                         }
                                         if (Bounties.IsEnabled)
                                         {
@@ -254,7 +241,18 @@ namespace ServerTools
                                                 if (_bounty > 0)
                                                 {
                                                     int _oldCoins = PersistentContainer.Instance.Players[_cInfo2.playerId, true].PlayerSpentCoins;
-                                                    PersistentContainer.Instance.Players[_cInfo2.playerId, true].PlayerSpentCoins = _oldCoins + _bounty;
+                                                    int _hunterCountVictim = PersistentContainer.Instance.Players[_cInfo.playerId, true].BountyHunter;
+                                                    int _hunterCountKiller = PersistentContainer.Instance.Players[_cInfo2.playerId, true].BountyHunter;
+                                                    PersistentContainer.Instance.Players[_cInfo2.playerId, true].BountyHunter = _hunterCountKiller + 1;
+                                                    if (Bonus > 0 && _hunterCountVictim >= Bonus)
+                                                    {
+                                                        PersistentContainer.Instance.Players[_cInfo2.playerId, true].PlayerSpentCoins = _oldCoins + _bounty + Bonus;
+                                                    }
+                                                    else
+                                                    {
+                                                        PersistentContainer.Instance.Players[_cInfo2.playerId, true].PlayerSpentCoins = _oldCoins + _bounty;
+                                                    }
+                                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].BountyHunter = 0;
                                                     PersistentContainer.Instance.Players[_cInfo.playerId, true].Bounty = 0;
                                                     PersistentContainer.Instance.Save();
                                                     string _phrase912;
@@ -332,6 +330,34 @@ namespace ServerTools
                                     }
                                 }
                             }
+                            if (Wallet.IsEnabled && Wallet.Lose_On_Death)
+                            {
+                                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
+                                if (_cInfo != null)
+                                {
+                                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                                    if (p != null)
+                                    {
+                                        World world = GameManager.Instance.World;
+                                        int spentCoins = p.PlayerSpentCoins;
+                                        int currentCoins = 0;
+                                        int gameMode = world.GetGameMode();
+                                        if (gameMode == 7)
+                                        {
+                                            currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
+                                        }
+                                        else
+                                        {
+                                            currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
+                                        }
+                                        if (currentCoins >= 1)
+                                        {
+                                            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = spentCoins - currentCoins;
+                                            PersistentContainer.Instance.Save();
+                                        }
+                                    }
+                                }
+                            }
                             if (Event.Open && Event.Players.Contains(_player.entityId) && !Event.SpawnList.Contains(_player.entityId))
                             {
                                 Event.SpawnList.Add(_player.entityId);
@@ -375,36 +401,73 @@ namespace ServerTools
 
         public static void ZoneCheck(ClientInfo _cInfo, EntityPlayer _player)
         {
-            if (_cInfo != null)
+            if (_cInfo != null && Box.Count > 0)
             {
-                if (Box.Count > 0)
+                int _flagCount = 0;
+                int _X = (int)_player.position.x;
+                int _Y = (int)_player.position.y;
+                int _Z = (int)_player.position.z;
+                for (int i = 0; i < Box.Count; i++)
                 {
-                    bool Found = false;
-                    int _flagCount = 0;
-                    int _X = (int)_player.position.x;
-                    int _Y = (int)_player.position.y;
-                    int _Z = (int)_player.position.z;
-                    for (int i = 0; i < Box.Count; i++)
+                    string[] _box = Box[i];
+                    if (Zones.A(_box, _X, _Y, _Z))
                     {
-                        string[] _box = Box[i];
-                        if (A(_box, _X, _Y, _Z))
+                        if (!ZoneExit.ContainsKey(_player.entityId))
                         {
-                            if (!ZoneExit.ContainsKey(_player.entityId))
+                            bool _result;
+                            for (int j = 0; j < Box.Count; j++)
                             {
-                                bool _result;
-                                for (int j = 0; j < Box.Count; j++)
+                                string[] _box2 = Box[j];
+                                if (Zones.A(_box2, _X, _Y, _Z))
                                 {
-                                    string[] _box2 = Box[j];
-                                    if (A(_box2, _X, _Y, _Z))
+                                    ZoneExit.Add(_player.entityId, _box2[3]);
+                                    if (bool.TryParse(_box2[5], out _result))
                                     {
-                                        if (!Found)
+                                        if (_result)
                                         {
-                                            ZoneExit.Add(_player.entityId, _box2[3]);
+                                            ZonePvE.Add(_player.entityId);
+                                        }
+                                    }
+                                    if (Zones.Zone_Message)
+                                    {
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _box2[2]), Config.Server_Response_Name, false, "ServerTools", false));
+                                    }
+                                    if (_box2[4] != "")
+                                    {
+                                        Zones.Response(_cInfo, _box2[4]);
+                                    }
+                                    Zones.reminder.Add(_player.entityId, DateTime.Now);
+                                    Zones.reminderMsg.Add(_player.entityId, _box2[7]);
+                                    return;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            string _exitMsg;
+                            if (ZoneExit.TryGetValue(_player.entityId, out _exitMsg))
+                            {
+                                if (_exitMsg != _box[3])
+                                {
+                                    bool _result;
+                                    for (int j = 0; j < Box.Count; j++)
+                                    {
+                                        string[] _box2 = Box[j];
+                                        if (Zones.A(_box2, _X, _Y, _Z))
+                                        {
+                                            ZoneExit[_player.entityId] = _box2[3];
                                             if (bool.TryParse(_box2[5], out _result))
                                             {
                                                 if (_result)
                                                 {
-                                                    ZonePvE.Add(_player.entityId);
+                                                    if (!ZonePvE.Contains(_player.entityId))
+                                                    {
+                                                        ZonePvE.Add(_player.entityId);
+                                                    }
+                                                }
+                                                else if (ZonePvE.Contains(_player.entityId))
+                                                {
+                                                    ZonePvE.Remove(_player.entityId);
                                                 }
                                             }
                                             if (Zones.Zone_Message)
@@ -415,458 +478,43 @@ namespace ServerTools
                                             {
                                                 Zones.Response(_cInfo, _box2[4]);
                                             }
+                                            Zones.reminder[_player.entityId] = DateTime.Now;
+                                            Zones.reminderMsg[_player.entityId] = _box2[7];
                                             return;
                                         }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                string _exitMsg;
-                                if (ZoneExit.TryGetValue(_player.entityId, out _exitMsg))
+                                else
                                 {
-                                    if (_exitMsg != _box[3])
-                                    {
-                                        bool _result;
-                                        for (int j = 0; j < Box.Count; j++)
-                                        {
-                                            string[] _box2 = Box[j];
-                                            if (A(_box2, _X, _Y, _Z))
-                                            {
-                                                ZoneExit[_player.entityId] = _box2[3];
-                                                if (bool.TryParse(_box2[5], out _result))
-                                                {
-                                                    if (_result)
-                                                    {
-                                                        if (!ZonePvE.Contains(_player.entityId))
-                                                        {
-                                                            ZonePvE.Add(_player.entityId);
-                                                        }
-                                                    }
-                                                    else if (ZonePvE.Contains(_player.entityId))
-                                                    {
-                                                        ZonePvE.Remove(_player.entityId);
-                                                    }
-                                                }
-                                                if (Zones.Zone_Message)
-                                                {
-                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _box2[2]), Config.Server_Response_Name, false, "ServerTools", false));
-                                                }
-                                                if (_box2[4] != "")
-                                                {
-                                                    Zones.Response(_cInfo, _box2[4]);
-                                                }
-                                                return;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        return;
-                                    }
+                                    return;
                                 }
                             }
                         }
-                        else if (ZoneExit.ContainsKey(_player.entityId))
+                    }
+                    else
+                    {
+                        _flagCount++;
+                        if (_flagCount == Box.Count && ZoneExit.ContainsKey(_player.entityId))
                         {
-                            _flagCount++;
-                            if (_flagCount == Box.Count)
+                            if (Zones.Zone_Message)
                             {
-                                if (Zones.Zone_Message)
+                                string _msg;
+                                if (ZoneExit.TryGetValue(_player.entityId, out _msg))
                                 {
-                                    string _msg;
-                                    if (ZoneExit.TryGetValue(_player.entityId, out _msg))
-                                    {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _msg), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _msg), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
-                                ZoneExit.Remove(_player.entityId);
+                            }
+                            ZoneExit.Remove(_player.entityId);
+                            if (ZonePvE.Contains(_player.entityId))
+                            {
                                 ZonePvE.Remove(_player.entityId);
                             }
+                            Zones.reminder.Remove(_player.entityId);
+                            Zones.reminderMsg.Remove(_player.entityId);
                         }
                     }
                 }
             }
-        }
-
-        public static bool A(string[] _box, int _X, int _Y, int _Z)
-        {
-            int xMin, yMin, zMin, xMax, yMax, zMax;
-            string[] _corner1 = _box[0].Split(',');
-            int.TryParse(_corner1[0], out xMin);
-            int.TryParse(_corner1[1], out yMin);
-            int.TryParse(_corner1[2], out zMin);
-            string[] _corner2 = _box[1].Split(',');
-            int.TryParse(_corner2[0], out xMax);
-            int.TryParse(_corner2[1], out yMax);
-            int.TryParse(_corner2[2], out zMax);
-            if (xMin >= 0 && xMax >= 0)
-            {
-                if (xMin < xMax)
-                {
-                    if (_X >= xMin)
-                    {
-                        _xMinCheck = 1;
-                    }
-                    else
-                    {
-                        _xMinCheck = 0;
-                    }
-                    if (_X <= xMax)
-                    {
-                        _xMaxCheck = 1;
-                    }
-                    else
-                    {
-                        _xMaxCheck = 0;
-                    }
-                }
-                else
-                {
-                    if (_X <= xMin)
-                    {
-                        _xMinCheck = 1;
-                    }
-                    else
-                    {
-                        _xMinCheck = 0;
-                    }
-                    if (_X >= xMax)
-                    {
-                        _xMaxCheck = 1;
-                    }
-                    else
-                    {
-                        _xMaxCheck = 0;
-                    }
-                }
-            }
-            else if (xMin <= 0 && xMax <= 0)
-            {
-                if (xMin < xMax)
-                {
-                    if (_X >= xMin)
-                    {
-                        _xMinCheck = 1;
-                    }
-                    else
-                    {
-                        _xMinCheck = 0;
-                    }
-                    if (_X <= xMax)
-                    {
-                        _xMaxCheck = 1;
-                    }
-                    else
-                    {
-                        _xMaxCheck = 0;
-                    }
-                }
-                else
-                {
-                    if (_X <= xMin)
-                    {
-                        _xMinCheck = 1;
-                    }
-                    else
-                    {
-                        _xMinCheck = 0;
-                    }
-                    if (_X >= xMax)
-                    {
-                        _xMaxCheck = 1;
-                    }
-                    else
-                    {
-                        _xMaxCheck = 0;
-                    }
-                }
-            }
-            else if (xMin <= 0 && xMax >= 0)
-            {
-                if (_X >= xMin)
-                {
-                    _xMinCheck = 1;
-                }
-                else
-                {
-                    _xMinCheck = 0;
-                }
-                if (_X <= xMax)
-                {
-                    _xMaxCheck = 1;
-                }
-                else
-                {
-                    _xMaxCheck = 0;
-                }
-            }
-            else if (xMin >= 0 && xMax <= 0)
-            {
-                if (_X <= xMin)
-                {
-                    _xMinCheck = 1;
-                }
-                else
-                {
-                    _xMinCheck = 0;
-                }
-                if (_X >= xMax)
-                {
-                    _xMaxCheck = 1;
-                }
-                else
-                {
-                    _xMaxCheck = 0;
-                }
-            }
-
-            if (yMin >= 0 && yMax >= 0)
-            {
-                if (yMin < yMax)
-                {
-                    if (_Y >= yMin)
-                    {
-                        _yMinCheck = 1;
-                    }
-                    else
-                    {
-                        _yMinCheck = 0;
-                    }
-                    if (_Y <= yMax)
-                    {
-                        _yMaxCheck = 1;
-                    }
-                    else
-                    {
-                        _yMaxCheck = 0;
-                    }
-                }
-                else
-                {
-                    if (_Y <= yMin)
-                    {
-                        _yMinCheck = 1;
-                    }
-                    else
-                    {
-                        _yMinCheck = 0;
-                    }
-                    if (_Y >= yMax)
-                    {
-                        _yMaxCheck = 1;
-                    }
-                    else
-                    {
-                        _yMaxCheck = 0;
-                    }
-                }
-            }
-            else if (yMin <= 0 && yMax <= 0)
-            {
-                if (yMin < yMax)
-                {
-                    if (_Y >= yMin)
-                    {
-                        _yMinCheck = 1;
-                    }
-                    else
-                    {
-                        _yMinCheck = 0;
-                    }
-                    if (_Y <= yMax)
-                    {
-                        _yMaxCheck = 1;
-                    }
-                    else
-                    {
-                        _yMaxCheck = 0;
-                    }
-                }
-                else
-                {
-                    if (_Y <= yMin)
-                    {
-                        _yMinCheck = 1;
-                    }
-                    else
-                    {
-                        _yMinCheck = 0;
-                    }
-                    if (_Y >= yMax)
-                    {
-                        _yMaxCheck = 1;
-                    }
-                    else
-                    {
-                        _yMaxCheck = 0;
-                    }
-                }
-            }
-            else if (yMin <= 0 && yMax >= 0)
-            {
-                if (_Y >= yMin)
-                {
-                    _yMinCheck = 1;
-                }
-                else
-                {
-                    _yMinCheck = 0;
-                }
-                if (_Y <= yMax)
-                {
-                    _yMaxCheck = 1;
-                }
-                else
-                {
-                    _yMaxCheck = 0;
-                }
-            }
-            else if (yMin >= 0 && yMax <= 0)
-            {
-                if (_Y <= yMin)
-                {
-                    _yMinCheck = 1;
-                }
-                else
-                {
-                    _yMinCheck = 0;
-                }
-                if (_Y >= yMax)
-                {
-                    _yMaxCheck = 1;
-                }
-                else
-                {
-                    _yMaxCheck = 0;
-                }
-            }
-
-            if (zMin >= 0 && zMax >= 0)
-            {
-                if (zMin < zMax)
-                {
-                    if (_Z >= zMin)
-                    {
-                        _zMinCheck = 1;
-                    }
-                    else
-                    {
-                        _zMinCheck = 0;
-                    }
-                    if (_Z <= zMax)
-                    {
-                        _zMaxCheck = 1;
-                    }
-                    else
-                    {
-                        _zMaxCheck = 0;
-                    }
-                }
-                else
-                {
-                    if (_Z <= zMin)
-                    {
-                        _zMinCheck = 1;
-                    }
-                    else
-                    {
-                        _zMinCheck = 0;
-                    }
-                    if (_Z >= zMax)
-                    {
-                        _zMaxCheck = 1;
-                    }
-                    else
-                    {
-                        _zMaxCheck = 0;
-                    }
-                }
-            }
-            else if (zMin <= 0 && zMax <= 0)
-            {
-                if (zMin < zMax)
-                {
-                    if (_Z >= zMin)
-                    {
-                        _zMinCheck = 1;
-                    }
-                    else
-                    {
-                        _zMinCheck = 0;
-                    }
-                    if (_Z <= zMax)
-                    {
-                        _zMaxCheck = 1;
-                    }
-                    else
-                    {
-                        _zMaxCheck = 0;
-                    }
-                }
-                else
-                {
-                    if (_Z <= zMin)
-                    {
-                        _zMinCheck = 1;
-                    }
-                    else
-                    {
-                        _zMinCheck = 0;
-                    }
-                    if (_Z >= zMax)
-                    {
-                        _zMaxCheck = 1;
-                    }
-                    else
-                    {
-                        _zMaxCheck = 0;
-                    }
-                }
-            }
-            else if (zMin <= 0 && zMax >= 0)
-            {
-                if (_Z >= zMin)
-                {
-                    _zMinCheck = 1;
-                }
-                else
-                {
-                    _zMinCheck = 0;
-                }
-                if (_Z <= zMax)
-                {
-                    _zMaxCheck = 1;
-                }
-                else
-                {
-                    _zMaxCheck = 0;
-                }
-            }
-            else if (zMin >= 0 && zMax <= 0)
-            {
-                if (_Z <= zMin)
-                {
-                    _zMinCheck = 1;
-                }
-                else
-                {
-                    _zMinCheck = 0;
-                }
-                if (_Z >= zMax)
-                {
-                    _zMaxCheck = 1;
-                }
-                else
-                {
-                    _zMaxCheck = 0;
-                }
-            }
-            if (_xMinCheck == 1 && _yMinCheck == 1 && _zMinCheck == 1 && _xMaxCheck == 1 && _yMaxCheck == 1 && _zMaxCheck == 1)
-            {
-                return true;
-            }
-            return false;
         }
     }
 }

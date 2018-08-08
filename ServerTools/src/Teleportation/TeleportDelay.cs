@@ -6,7 +6,7 @@ namespace ServerTools
 {
     class TeleportDelay
     {
-        public static bool TeleQue = false;
+        public static bool TeleQue = false, PvP_Check = false, Zombie_Check = false;
         private static Dictionary<ClientInfo, int[]> que = new Dictionary<ClientInfo, int[]>();
         private static Dictionary<ClientInfo, DateTime> queTime = new Dictionary<ClientInfo, DateTime>();
 

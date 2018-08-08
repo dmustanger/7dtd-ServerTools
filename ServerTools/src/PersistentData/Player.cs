@@ -8,6 +8,8 @@ namespace ServerTools
     {
         private readonly string steamId;
         [OptionalField]
+        private int homeRequest;
+        private int wallet;
         private int bank;
         private int hardcoreSessionTime;
         private int hardcoreKills;
@@ -15,6 +17,7 @@ namespace ServerTools
         private int hardcoreScore;
         private int hardcoreDeaths;
         private int bounty;
+        private int bountyHunter;
         private int sessionTime;
         private int bikeId;
         private int jailTime;
@@ -25,10 +28,13 @@ namespace ServerTools
         private int deaths;
         private int auctionData;
         private int playerSpentCoins;
+        private string[] waypointName;
+        private string[] waypoints;
         private string[] auctionItem;
         private string playerName;
         private string eventReturn;
         private string hardcoreName;
+        private string marketReturn;
         private string lobbyReturn;
         private string newTeleSpawn;
         private string jailName;
@@ -39,6 +45,8 @@ namespace ServerTools
         private string invitedtoclan;
         private string lastwhisper;
         private string ipAddress;
+        private DateTime lastWaypoint;
+        private DateTime lastMarket;
         private DateTime lastStuck;
         private DateTime lastLobby;
         private DateTime cancelTime;
@@ -76,6 +84,30 @@ namespace ServerTools
         private bool startingItems;
         private bool poll;
 
+        public string[] Waypoints
+        {
+            get
+            {
+                return waypoints;
+            }
+            set
+            {
+                waypoints = value;
+            }
+        }
+
+        public string[] WaypointName
+        {
+            get
+            {
+                return waypointName;
+            }
+            set
+            {
+                waypointName = value;
+            }
+        }
+
         public string[] AuctionItem
         {
             get
@@ -85,6 +117,30 @@ namespace ServerTools
             set
             {
                 auctionItem = value;
+            }
+        }
+
+        public int HomeRequest
+        {
+            get
+            {
+                return homeRequest;
+            }
+            set
+            {
+                homeRequest = value;
+            }
+        }
+
+        public int Wallet
+        {
+            get
+            {
+                return wallet;
+            }
+            set
+            {
+                wallet = value;
             }
         }
 
@@ -169,6 +225,18 @@ namespace ServerTools
             set
             {
                 bounty = value;
+            }
+        }
+
+        public int BountyHunter
+        {
+            get
+            {
+                return bountyHunter;
+            }
+            set
+            {
+                bountyHunter = value;
             }
         }
 
@@ -277,6 +345,30 @@ namespace ServerTools
             set
             {
                 worldSeedCoins = value;
+            }
+        }
+
+        public DateTime LastWaypoint
+        {
+            get
+            {
+                return lastWaypoint;
+            }
+            set
+            {
+                lastWaypoint = value;
+            }
+        }
+
+        public DateTime LastMarket
+        {
+            get
+            {
+                return lastMarket;
+            }
+            set
+            {
+                lastMarket = value;
             }
         }
 
@@ -673,6 +765,18 @@ namespace ServerTools
             set
             {
                 hardcoreName = value;
+            }
+        }
+
+        public string MarketReturn
+        {
+            get
+            {
+                return marketReturn;
+            }
+            set
+            {
+                marketReturn = value;
             }
         }
 

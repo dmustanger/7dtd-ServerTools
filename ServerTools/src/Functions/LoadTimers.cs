@@ -10,7 +10,7 @@ namespace ServerTools
             Shutdown_Delay = 60, Infoticker_Delay = 60, Restart_Vote_Delay = 30, _sSC = 0, _sSCD = 0,
             Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0, _eventTime = 0;
         private static int timer1SecondInstanceCount, _wV, _wNV, _pSC, _b, _pL, _mC, _wSD, _iT, _rVS, _tD,
-            _rS, _rV, _rNV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _nV, _vR, _eS, _eI, _eO; 
+            _rS, _rV, _rNV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _nV, _vR, _eS, _eI, _eO, _zR; 
         private static System.Timers.Timer t1 = new System.Timers.Timer();
 
         public static void TimerStart()
@@ -212,7 +212,7 @@ namespace ServerTools
             {
                 Log.Out("Kick vote enabled");
             }
-            if (Players.Kill_Notice)
+            if (KillNotice.IsEnabled)
             {
                 Log.Out("Kill notice enabled");
             }
@@ -288,6 +288,10 @@ namespace ServerTools
             {
                 Log.Out("Vote reward enabled");
             }
+            if (Waypoint.IsEnabled)
+            {
+                Log.Out("Waypoints enabled");
+            }
             if (Zones.IsEnabled)
             {
                 Log.Out("Zone protection enabled");
@@ -325,7 +329,7 @@ namespace ServerTools
             {
                 Jail.StatusCheck();
             }
-            if (Bounties.IsEnabled || Players.Kill_Notice || DeathSpot.IsEnabled || Zones.IsEnabled || Event.Open)
+            if (Bounties.IsEnabled || KillNotice.IsEnabled || DeathSpot.IsEnabled || Zones.IsEnabled || Event.Open)
             {
                 Players.Exec();
             }
@@ -541,7 +545,7 @@ namespace ServerTools
                 {
                     _rS = 0;
                     int _playerCount = ConnectionManager.Instance.ClientCount();
-                    if (_playerCount == API.MaxPlayers)
+                    if (_playerCount >= API.MaxPlayers - ReservedSlots.Admin_Slots)
                     {
                         ReservedSlots.OpenSlot();
                     }
@@ -791,6 +795,19 @@ namespace ServerTools
             else
             {
                 _tD = 0;
+            }
+            if (Zones.IsEnabled & Players.Box.Count > 0)
+            {
+                _zR++;
+                if (_zR >= 300)
+                {
+                    _zR = 0;
+                    PlayerLogs.Exec();
+                }
+            }
+            else
+            {
+                _zR = 0;
             }
         }
     }
