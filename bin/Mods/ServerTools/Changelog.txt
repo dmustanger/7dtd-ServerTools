@@ -1,5 +1,57 @@
 ﻿CHANGELOG
 
+11.0
+
+Added option to Bank tool called Limit. This is the total value allowed to be deposited in to a bank account. Default is 50,000
+Added option for clan owners to change their clan name
+Added 5 minute wait period for players kicked after reaching their full session time in the Reserved Slots system
+Added option to Reserved Slots tool named Admin_Slots. Set how many slots you would like for Admins. These slots can not be filled by normal players
+Added Waypoint tool. Players can save points to travel to. They can name the points and delete them. Set the maximum amount of waypoints for regular and
+donating players. Must be set outside of a claimed space. Delay and command cost available
+Added Waypoint check to guarantee the waypoint still exists inside a non claimed space before sending the player
+Added chat notice to a player that is awaiting teleport in the que
+Added tool New_Player. This will announce a new player joining with a custom chat response
+Added option to Bounties called Bonus. If a player is killed that is on a kill streak, their killer will receive this bonus for killing them
+Added chat command /session. Shows the current session time in minutes and the total session time on the map for that player
+Added persistant data to reference wallet values for chat command /mogul
+Added command cost for custom commands to the xml
+Added null ref checks to API based triggers to avoid ST sending out an error log
+Added Market tool. Works exactly as Lobby tool and has optional return function
+Added option to Shop tool called Inside_Market. If true, players must be inside the market space to use the shop
+Added option named Hidden to custom commands xml file. Each custom command can be hidden when using /commands by setting true or false
+Added check to Event system so players can not save or use waypoints while signed up for or inside an event
+Added chat command /infoticker to turn on and off infoticker messages for each individual player. Resets on server restart
+Added console commands to setup zones while in game or see a list of existing zones
+Added option to Wallet called Lose_On_Death. If a player has not put their wallet coins into the bank, they will lose them when they die
+Added permission system when setting a home point. If inside another player's claim space, they must give permission by typing /accept or /decline
+Added Teleport tool. Two options available, Player_Check and Zombie_Check. Commands that teleport the player will not work if too close to a player or zombie while true.
+Players must be 50 blocks away and zombies must be 20. Does not apply to the market or lobby return
+Added two options from Teleport to Suicide, Player_Check and Zombie_Check. A player can not suicide if players or zombies are too close. Players must be 25 blocks away
+and zombies must be 10
+Added option to Real_World_Time called Adjustment. This is the number of hours to adjust the time plus or minus to match the time zone of your choice
+Added option to Zones.xml called 15MinuteNotice. If a player remains in the same zone for over 15 minutes the 15MinuteNotice will execute. It sends a message only
+Added Kill_Notice weapon list. Set what the weapon is announced as. Set custom weapon names or fun notices. Add item names from mods. Creates a KillNotice.xml
+Added internal code to allow all commands be made of lower, upper case, or a mix and still trigger a chat command
+Changed phrase system to build the dictionary from the id & phrase instead of just the number which will allow phrases to be changed in a live server
+Changed prefix system so clan tags do not take over other prefixes
+Changed Custom commands so that responses using the say command do not require &quot; anymore
+Changed Event system so players can no longer use Home commands while signed up for or inside an event
+Changed chat command /commands so that it does not require Custom_Commands to be set to true
+Fixed /sethome and /sethome2 repeating the response based on how many claims you have placed
+Fixed /commands creating large spaces and skipping some lines when not necessary
+Fixed /mogul to work off the wallet, bank or both
+Fixed clan names to allow capital letters. Existing clan names will need to be changed
+Fixed prefixes for chat. Clan tags always have brackets around it. Clan tags do not overtake other prefix. All prefix will now show if applicable
+Fixed command costs applying if the wallet is disabled
+Fixed command costs internally running if set to 0 or negative
+Fixed the response for a bank deposit from a chest if too close to another player
+Fixed friend teleport response when accepted
+Fixed duplicate phrases and cleared out ones not in use
+Fixed bank withdraw into coins when over the stack limit. Players may only withdraw the max stack at one time
+Fixed bank transfer not deducting the proper amount from the sender
+Fixed chat command /clancommands not responding
+Updated HowTo.xml
+
 10.7
 
 Added chat command /mogul. Shows the top 3 players based on their wallet and bank wealth combined
