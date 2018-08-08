@@ -100,99 +100,94 @@ namespace ServerTools
 
         public static void CheckLP(ClientInfo _cInfo)
         {
+            bool Found = false;
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            int _claimSize = GameStats.GetInt(EnumGameStats.LandClaimSize) / 2;
             PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
-            PersistentPlayerData _landOwner = _persistentPlayerList.GetLandProtectionBlockOwner(new Vector3i((int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
             PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerData(_cInfo.playerId);
-            if (_landOwner != null)
+            List<Vector3i> _blocks = _persistentPlayerData.LPBlocks;
+            for (int i = 0; i < _blocks.Count; i++)
             {
-                if (_landOwner != _persistentPlayerData)
+                if (!Found)
                 {
-                    EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_landOwner.EntityId];
-                    if (_player2 != null)
+                    Vector3i _vec3i = _blocks[i];
+                    if ((_vec3i.x - _player.position.x) * (_vec3i.x - _player.position.x) + (_vec3i.z - _player.position.z) * (_vec3i.z - _player.position.z) <= _claimSize * _claimSize)
                     {
-                        if (_player.IsFriendsWith(_player2))
+                        Found = true;
+                        if (CheckStuck(_player))
                         {
-                            if (CheckStuck(_player))
-                            {
-                                Exec(_cInfo, _player);
-                            }
-                            else
-                            {
-                                string _phrase923;
-                                if (!Phrases.Dict.TryGetValue(923, out _phrase923))
-                                {
-                                    _phrase923 = "{PlayerName} you do not seem to be stuck.";
-                                }
-                                _phrase923 = _phrase923.Replace("{PlayerName}", _cInfo.playerName);
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase923), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
+                            Exec(_cInfo, _player);
                         }
                         else
                         {
-                            string _phrase921;
-                            if (!Phrases.Dict.TryGetValue(921, out _phrase921))
+                            string _phrase923;
+                            if (!Phrases.Dict.TryGetValue(923, out _phrase923))
                             {
-                                _phrase921 = "{PlayerName} you can not use this command here.";
+                                _phrase923 = "{PlayerName} you do not seem to be stuck.";
                             }
-                            _phrase921 = _phrase921.Replace("{PlayerName}", _cInfo.playerName);
+                            _phrase923 = _phrase923.Replace("{PlayerName}", _cInfo.playerName);
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase921), Config.Server_Response_Name, false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase923), Config.Server_Response_Name, false, "ServerTools", false));
                             }
-                        }
-                    }
-                    else
-                    {
-                        string _phrase921;
-                        if (!Phrases.Dict.TryGetValue(921, out _phrase921))
-                        {
-                            _phrase921 = "{PlayerName} you can not use this command here.";
-                        }
-                        _phrase921 = _phrase921.Replace("{PlayerName}", _cInfo.playerName);
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase921), Config.Server_Response_Name, false, "ServerTools", false));
-                        }
-                    }
-                }
-                else
-                {
-                    if (CheckStuck(_player))
-                    {
-                        Exec(_cInfo, _player);
-                    }
-                    else
-                    {
-                        string _phrase923;
-                        if (!Phrases.Dict.TryGetValue(923, out _phrase923))
-                        {
-                            _phrase923 = "{PlayerName} you do not seem to be stuck.";
-                        }
-                        _phrase923 = _phrase923.Replace("{PlayerName}", _cInfo.playerName);
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase923), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                 }
             }
-            else
+            if (!Found)
             {
-                if (CheckStuck(_player))
+                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                for (int i = 0; i < _cInfoList.Count; i++)
                 {
-                    Exec(_cInfo, _player);
+                    ClientInfo _cInfo2 = _cInfoList[i];
+                    if (_cInfo2 != null && _cInfo != _cInfo2)
+                    {
+                        EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
+                        if (_player2 != null && _player.IsFriendsWith(_player2))
+                        {
+                            int _claimSize2 = GameStats.GetInt(EnumGameStats.LandClaimSize) / 2;
+                            PersistentPlayerData _persistentPlayerData2 = GameManager.Instance.GetPersistentPlayerList().GetPlayerData(_cInfo2.playerId);
+                            List<Vector3i> _blocks2 = _persistentPlayerData.LPBlocks;
+                            for (int j = 0; j < _blocks2.Count; j++)
+                            {
+                                if (!Found)
+                                {
+                                    Vector3i _vec3i = _blocks2[j];
+                                    if ((_vec3i.x - _player.position.x) * (_vec3i.x - _player.position.x) + (_vec3i.z - _player.position.z) * (_vec3i.z - _player.position.z) <= _claimSize2 * _claimSize2)
+                                    {
+                                        Found = true;
+                                        if (CheckStuck(_player))
+                                        {
+                                            Exec(_cInfo, _player);
+                                        }
+                                        else
+                                        {
+                                            string _phrase923;
+                                            if (!Phrases.Dict.TryGetValue(923, out _phrase923))
+                                            {
+                                                _phrase923 = "{PlayerName} you do not seem to be stuck.";
+                                            }
+                                            _phrase923 = _phrase923.Replace("{PlayerName}", _cInfo.playerName);
+                                            {
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase923), Config.Server_Response_Name, false, "ServerTools", false));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-                else
+            }
+            if (!Found)
+            {
+                string _phrase921;
+                if (!Phrases.Dict.TryGetValue(921, out _phrase921))
                 {
-                    string _phrase923;
-                    if (!Phrases.Dict.TryGetValue(923, out _phrase923))
-                    {
-                        _phrase923 = "{PlayerName} you do not seem to be stuck.";
-                    }
-                    _phrase923 = _phrase923.Replace("{PlayerName}", _cInfo.playerName);
-                    {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase923), Config.Server_Response_Name, false, "ServerTools", false));
-                    }
+                    _phrase921 = "{PlayerName} you are outside of your claimed space or a friends. Command is unavailable.";
+                }
+                _phrase921 = _phrase921.Replace("{PlayerName}", _cInfo.playerName);
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase921), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
         }
@@ -223,11 +218,11 @@ namespace ServerTools
         public static void Exec(ClientInfo _cInfo, EntityPlayer _player)
         {
             Players.NoFlight.Add(_cInfo.entityId);
-            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3((int)_player.position.x, -1, (int)_player.position.z), false));
+            TeleportDelay.TeleportQue(_cInfo, (int)_player.position.x, -1, (int)_player.position.z);
             string _phrase922;
             if (!Phrases.Dict.TryGetValue(922, out _phrase922))
             {
-                _phrase922 = "{PlayerName} you have been sent to the world surface. If you are still stuck, contact an administrator.";
+                _phrase922 = "{PlayerName} sending you to the world surface. If you are still stuck, contact an administrator.";
             }
             _phrase922 = _phrase922.Replace("{PlayerName}", _cInfo.playerName);
             {

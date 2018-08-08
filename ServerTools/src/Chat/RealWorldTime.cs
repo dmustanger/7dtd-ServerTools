@@ -6,10 +6,15 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static string Time_Zone = "UTC";
+        public static int Adjustment = 0;
 
         public static void Time()
         {
             DateTime _time = DateTime.Now;
+            if (Adjustment != 0)
+            {
+                _time = DateTime.Now.AddHours(Adjustment);
+            }
             string _phrase765;
             if (!Phrases.Dict.TryGetValue(765, out _phrase765))
             {

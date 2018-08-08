@@ -2,10 +2,10 @@
 
 namespace ServerTools
 {
-    class SetLobby
+    class SetMarket
     {
-        public static string Lobby_Position = "0,0,0";
-        private static string[] _cmd = { "lobby" };
+        public static string Market_Position = "0,0,0";
+        private static string[] _cmd = { "market" };
 
         public static void Set(ClientInfo _cInfo)
         {
@@ -26,16 +26,16 @@ namespace ServerTools
                 int x = (int)_position.x;
                 int y = (int)_position.y;
                 int z = (int)_position.z;
-                string _lposition = x + "," + y + "," + z;
-                Lobby_Position = _lposition;
-                string _phrase551;
-                if (!Phrases.Dict.TryGetValue(551, out _phrase551))
+                string _mposition = x + "," + y + "," + z;
+                Market_Position = _mposition;
+                string _phrase565;
+                if (!Phrases.Dict.TryGetValue(565, out _phrase565))
                 {
-                    _phrase551 = "{PlayerName} you have set the lobby position as {LobbyPosition}.";
+                    _phrase565 = "{PlayerName} you have set the market position as {MarketPosition}.";
                 }
-                _phrase551 = _phrase551.Replace("{PlayerName}", _cInfo.playerName);
-                _phrase551 = _phrase551.Replace("{LobbyPosition}", Lobby_Position);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase551), Config.Server_Response_Name, false, "ServerTools", false));
+                _phrase565 = _phrase565.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase565 = _phrase565.Replace("{MarketPosition}", Market_Position);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase565), Config.Server_Response_Name, false, "ServerTools", false));
                 Config.UpdateXml();
             }
         }

@@ -11,57 +11,64 @@ namespace ServerTools
 
         public static void Add(ClientInfo _cInfo, string _playerName)
         {
-            if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo.playerId))
+            if (IsEnabled)
             {
-                string _phrase200;
-                if (!Phrases.Dict.TryGetValue(200, out _phrase200))
+                if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo.playerId))
                 {
-                    _phrase200 = "{PlayerName} you do not have permissions to use this command.";
-                }
-                _phrase200 = _phrase200.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase200), Config.Server_Response_Name, false, "ServerTools", false));
-            }
-            else
-            {
-                _playerName = _playerName.Replace("mute ", "");
-                ClientInfo _PlayertoMute = ConsoleHelper.ParseParamIdOrName(_playerName);
-                if (_PlayertoMute == null)
-                {
-                    string _phrase201;
-                    if (!Phrases.Dict.TryGetValue(201, out _phrase201))
+                    string _phrase107;
+                    if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                     {
-                        _phrase201 = "{AdminPlayerName} player {PlayerName} was not found.";
+                        _phrase107 = "{PlayerName} you do not have permissions to use this command.";
                     }
-                    _phrase201 = _phrase201.Replace("{AdminPlayerName}", _cInfo.playerName);
-                    _phrase201 = _phrase201.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase201, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                    _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase107), Config.Server_Response_Name, false, "ServerTools", false));
                 }
                 else
                 {
-                    Player p = PersistentContainer.Instance.Players[_PlayertoMute.playerId, false];
-                    if (p == null)
+                    _playerName = _playerName.Replace("mute ", "");
+                    ClientInfo _PlayertoMute = ConsoleHelper.ParseParamIdOrName(_playerName);
+                    if (_PlayertoMute == null)
                     {
-                        Mute(_cInfo, _PlayertoMute);
+                        string _phrase201;
+                        if (!Phrases.Dict.TryGetValue(201, out _phrase201))
+                        {
+                            _phrase201 = "{AdminPlayerName} player {PlayerName} was not found.";
+                        }
+                        _phrase201 = _phrase201.Replace("{AdminPlayerName}", _cInfo.playerName);
+                        _phrase201 = _phrase201.Replace("{PlayerName}", _playerName);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase201, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                     else
                     {
-                        if (p.MuteTime > 0 || p.MuteTime == -1)
-                        {
-                            string _phrase202;
-                            if (!Phrases.Dict.TryGetValue(202, out _phrase202))
-                            {
-                                _phrase202 = "{AdminPlayerName} player {MutedPlayerName} is already muted.";
-                            }
-                            _phrase202 = _phrase202.Replace("{AdminPlayerName}", _cInfo.playerName);
-                            _phrase202 = _phrase202.Replace("{MutedPlayerName}", _PlayertoMute.playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase202, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                        }
-                        else
+                        Player p = PersistentContainer.Instance.Players[_PlayertoMute.playerId, false];
+                        if (p == null)
                         {
                             Mute(_cInfo, _PlayertoMute);
                         }
+                        else
+                        {
+                            if (p.MuteTime > 0 || p.MuteTime == -1)
+                            {
+                                string _phrase202;
+                                if (!Phrases.Dict.TryGetValue(202, out _phrase202))
+                                {
+                                    _phrase202 = "{AdminPlayerName} player {MutedPlayerName} is already muted.";
+                                }
+                                _phrase202 = _phrase202.Replace("{AdminPlayerName}", _cInfo.playerName);
+                                _phrase202 = _phrase202.Replace("{MutedPlayerName}", _PlayertoMute.playerName);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase202, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                            else
+                            {
+                                Mute(_cInfo, _PlayertoMute);
+                            }
+                        }
                     }
                 }
+            }
+            else
+            {
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}This command is not enabled.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -84,48 +91,37 @@ namespace ServerTools
 
         public static void Remove(ClientInfo _cInfo, string _playerName)
         {
-            if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo.playerId))
+            if (IsEnabled)
             {
-                string _phrase200;
-                if (!Phrases.Dict.TryGetValue(200, out _phrase200))
+                if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo.playerId))
                 {
-                    _phrase200 = "{PlayerName} you do not have permissions to use this command.";
-                }
-                _phrase200 = _phrase200.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase200), Config.Server_Response_Name, false, "ServerTools", false));
-            }
-            else
-            {
-                _playerName = _playerName.Replace("unmute ", "");
-                ClientInfo _PlayertoUnMute = ConsoleHelper.ParseParamIdOrName(_playerName);
-                if (_PlayertoUnMute == null)
-                {
-                    string _phrase201;
-                    if (!Phrases.Dict.TryGetValue(201, out _phrase201))
+                    string _phrase107;
+                    if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                     {
-                        _phrase201 = "{AdminPlayerName} player {PlayerName} was not found online.";
+                        _phrase107 = "{PlayerName} you do not have permissions to use this command.";
                     }
-                    _phrase201 = _phrase201.Replace("{AdminPlayerName}", _cInfo.playerName);
-                    _phrase201 = _phrase201.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase201, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                    _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase107), Config.Server_Response_Name, false, "ServerTools", false));
                 }
                 else
                 {
-                    Player p = PersistentContainer.Instance.Players[_PlayertoUnMute.playerId, false];
-                    if (p == null)
+                    _playerName = _playerName.Replace("unmute ", "");
+                    ClientInfo _PlayertoUnMute = ConsoleHelper.ParseParamIdOrName(_playerName);
+                    if (_PlayertoUnMute == null)
                     {
-                        string _phrase204;
-                        if (!Phrases.Dict.TryGetValue(204, out _phrase204))
+                        string _phrase201;
+                        if (!Phrases.Dict.TryGetValue(201, out _phrase201))
                         {
-                            _phrase204 = "{AdminPlayerName} player {PlayerName} is not muted.";
+                            _phrase201 = "{AdminPlayerName} player {PlayerName} was not found online.";
                         }
-                        _phrase204 = _phrase204.Replace("{AdminPlayerName}", _cInfo.playerName);
-                        _phrase204 = _phrase204.Replace("{PlayerName}", _PlayertoUnMute.playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase204, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                        _phrase201 = _phrase201.Replace("{AdminPlayerName}", _cInfo.playerName);
+                        _phrase201 = _phrase201.Replace("{PlayerName}", _playerName);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase201, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                     else
                     {
-                        if (!Mutes.Contains(_PlayertoUnMute.playerId))
+                        Player p = PersistentContainer.Instance.Players[_PlayertoUnMute.playerId, false];
+                        if (p == null)
                         {
                             string _phrase204;
                             if (!Phrases.Dict.TryGetValue(204, out _phrase204))
@@ -138,20 +134,38 @@ namespace ServerTools
                         }
                         else
                         {
-                            Mutes.Remove(_PlayertoUnMute.playerId);
-                            PersistentContainer.Instance.Players[_PlayertoUnMute.playerId, true].MuteTime = 0;
-                            PersistentContainer.Instance.Save();
-                            string _phrase205;
-                            if (!Phrases.Dict.TryGetValue(205, out _phrase205))
+                            if (!Mutes.Contains(_PlayertoUnMute.playerId))
                             {
-                                _phrase205 = "{AdminPlayerName} you have unmuted {UnMutedPlayerName}.";
+                                string _phrase204;
+                                if (!Phrases.Dict.TryGetValue(204, out _phrase204))
+                                {
+                                    _phrase204 = "{AdminPlayerName} player {PlayerName} is not muted.";
+                                }
+                                _phrase204 = _phrase204.Replace("{AdminPlayerName}", _cInfo.playerName);
+                                _phrase204 = _phrase204.Replace("{PlayerName}", _PlayertoUnMute.playerName);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase204, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                             }
-                            _phrase205 = _phrase205.Replace("{AdminPlayerName}", _cInfo.playerName);
-                            _phrase205 = _phrase205.Replace("{UnMutedPlayerName}", _PlayertoUnMute.playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase205, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                            else
+                            {
+                                Mutes.Remove(_PlayertoUnMute.playerId);
+                                PersistentContainer.Instance.Players[_PlayertoUnMute.playerId, true].MuteTime = 0;
+                                PersistentContainer.Instance.Save();
+                                string _phrase205;
+                                if (!Phrases.Dict.TryGetValue(205, out _phrase205))
+                                {
+                                    _phrase205 = "{AdminPlayerName} you have unmuted {UnMutedPlayerName}.";
+                                }
+                                _phrase205 = _phrase205.Replace("{AdminPlayerName}", _cInfo.playerName);
+                                _phrase205 = _phrase205.Replace("{UnMutedPlayerName}", _PlayertoUnMute.playerName);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase205, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
                         }
                     }
                 }
+            }
+            else
+            {
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}This command is not enabled.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 

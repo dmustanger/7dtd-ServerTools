@@ -227,14 +227,28 @@ namespace ServerTools
             bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
-                CommandCost(_cInfo, _announce);
+                if (Wallet.IsEnabled && Command_Cost >= 1)
+                {
+                    CommandCost(_cInfo, _announce);
+                }
+                else
+                {
+                    GiveItem(_cInfo, _announce);
+                }
             }
             else
             {
                 Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                 if (p == null || p.LastGimme == null)
                 {
-                    CommandCost(_cInfo, _announce);
+                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    {
+                        CommandCost(_cInfo, _announce);
+                    }
+                    else
+                    {
+                        GiveItem(_cInfo, _announce);
+                    }
                 }
                 else
                 {
@@ -253,7 +267,14 @@ namespace ServerTools
                                 int _newDelay = Delay_Between_Uses / 2;
                                 if (_timepassed >= _newDelay)
                                 {
-                                    CommandCost(_cInfo, _announce);
+                                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                                    {
+                                        CommandCost(_cInfo, _announce);
+                                    }
+                                    else
+                                    {
+                                        GiveItem(_cInfo, _announce);
+                                    }
                                 }
                                 else
                                 {
@@ -282,7 +303,14 @@ namespace ServerTools
                     {
                         if (_timepassed >= Delay_Between_Uses)
                         {
-                            CommandCost(_cInfo, _announce);
+                            if (Wallet.IsEnabled && Command_Cost >= 1)
+                            {
+                                CommandCost(_cInfo, _announce);
+                            }
+                            else
+                            {
+                                GiveItem(_cInfo, _announce);
+                            }
                         }
                         else
                         {
@@ -321,11 +349,11 @@ namespace ServerTools
                 int gameMode = world.GetGameMode();
                 if (gameMode == 7)
                 {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
                 }
                 else
                 {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
                 }
                 if (currentCoins >= Command_Cost)
                 {
@@ -424,8 +452,11 @@ namespace ServerTools
                 {
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase7), Config.Server_Response_Name, false, "ServerTools", false));
                 }
-                int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
+                if (Wallet.IsEnabled && Command_Cost >= 1)
+                {
+                    int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
+                }
                 PersistentContainer.Instance.Players[_cInfo.playerId, true].LastGimme = DateTime.Now;
                 PersistentContainer.Instance.Save();
             }

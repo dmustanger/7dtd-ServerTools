@@ -17,13 +17,13 @@ namespace ServerTools
         {
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo.playerId))
             {
-                string _phrase200;
-                if (!Phrases.Dict.TryGetValue(200, out _phrase200))
+                string _phrase107;
+                if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    _phrase200 = "{PlayerName} you do not have permissions to use this command.";
+                    _phrase107 = "{PlayerName} you do not have permissions to use this command.";
                 }
-                _phrase200 = _phrase200.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase200), Config.Server_Response_Name, false, "ServerTools", false));
+                _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase107), Config.Server_Response_Name, false, "ServerTools", false));
             }
             else
             {
@@ -50,13 +50,13 @@ namespace ServerTools
         {
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo.playerId))
             {
-                string _phrase200;
-                if (!Phrases.Dict.TryGetValue(200, out _phrase200))
+                string _phrase107;
+                if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    _phrase200 = "{PlayerName} you do not have permissions to use this command.";
+                    _phrase107 = "{PlayerName} you do not have permissions to use this command.";
                 }
-                _phrase200 = _phrase200.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase200), Config.Server_Response_Name, false, "ServerTools", false));
+                _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase107), Config.Server_Response_Name, false, "ServerTools", false));
             }
             else
             {
@@ -114,9 +114,9 @@ namespace ServerTools
             int.TryParse(_cords[0], out x);
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
+            Players.NoFlight.Add(_PlayertoJail.entityId);
             _PlayertoJail.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
             Jailed.Add(_PlayertoJail.playerId);
-            Players.NoFlight.Add(_PlayertoJail.entityId);
             PersistentContainer.Instance.Players[_PlayertoJail.playerId, true].JailDate = DateTime.Now;
             PersistentContainer.Instance.Players[_PlayertoJail.playerId, true].JailTime = 60;
             PersistentContainer.Instance.Players[_PlayertoJail.playerId, true].JailName = _PlayertoJail.playerName;
@@ -151,13 +151,13 @@ namespace ServerTools
         {
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo.playerId))
             {
-                string _phrase200;
-                if (!Phrases.Dict.TryGetValue(200, out _phrase200))
+                string _phrase107;
+                if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    _phrase200 = "{AdminPlayerName} you do not have permissions to use this command.";
+                    _phrase107 = "{PlayerName} you do not have permissions to use this command.";
                 }
-                _phrase200 = _phrase200.Replace("{AdminPlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase200), Config.Server_Response_Name, false, "ServerTools", false));
+                _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase107), Config.Server_Response_Name, false, "ServerTools", false));
             }
             else
             {

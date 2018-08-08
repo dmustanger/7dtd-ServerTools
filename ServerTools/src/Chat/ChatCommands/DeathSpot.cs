@@ -13,14 +13,28 @@ namespace ServerTools
             bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
-                CommandCost(_cInfo, _announce);
+                if (Wallet.IsEnabled && Command_Cost >= 1)
+                {
+                    CommandCost(_cInfo, _announce);
+                }
+                else
+                {
+                    TeleportPlayer(_cInfo, _announce);
+                }
             }
             else
             {
                 Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                 if (p == null || p.LastDied == null)
                 {
-                    CommandCost(_cInfo, _announce);
+                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    {
+                        CommandCost(_cInfo, _announce);
+                    }
+                    else
+                    {
+                        TeleportPlayer(_cInfo, _announce);
+                    }
                 }
                 else
                 {
@@ -39,7 +53,14 @@ namespace ServerTools
                                 int _newDelay = Delay_Between_Uses / 2;
                                 if (_timepassed >= _newDelay)
                                 {
-                                    CommandCost(_cInfo, _announce);
+                                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                                    {
+                                        CommandCost(_cInfo, _announce);
+                                    }
+                                    else
+                                    {
+                                        TeleportPlayer(_cInfo, _announce);
+                                    }
                                 }
                                 else
                                 {
@@ -68,7 +89,14 @@ namespace ServerTools
                     {
                         if (_timepassed >= Delay_Between_Uses)
                         {
-                            CommandCost(_cInfo, _announce);
+                            if (Wallet.IsEnabled && Command_Cost >= 1)
+                            {
+                                CommandCost(_cInfo, _announce);
+                            }
+                            else
+                            {
+                                TeleportPlayer(_cInfo, _announce);
+                            }
                         }
                         else
                         {
@@ -165,16 +193,19 @@ namespace ServerTools
                             int.TryParse(_cords[0], out x);
                             int.TryParse(_cords[1], out y);
                             int.TryParse(_cords[2], out z);
-                            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                            TeleportDelay.TeleportQue(_cInfo, x, y, z);
                             Players.LastDeathPos.Remove(_cInfo.entityId);
-                            int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
+                            if (Wallet.IsEnabled && Command_Cost >= 1)
+                            {
+                                int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
+                                PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
+                            }
                             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastDied = DateTime.Now;
                             PersistentContainer.Instance.Save();
                             string _phrase736;
                             if (!Phrases.Dict.TryGetValue(736, out _phrase736))
                             {
-                                _phrase736 = "{PlayerName} teleported you to your last death position. You can use this again in {DelayBetweenUses} minutes.";
+                                _phrase736 = "{PlayerName} teleporting you to your last death position. You can use this again in {DelayBetweenUses} minutes.";
                             }
                             _phrase736 = _phrase736.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase736 = _phrase736.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());

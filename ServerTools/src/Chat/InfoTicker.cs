@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Xml;
 
 namespace ServerTools
@@ -12,6 +11,7 @@ namespace ServerTools
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static Dictionary<string, string> dict = new Dictionary<string, string>();
         private static List<string> msgList = new List<string>();
+        public static List<string> exemptionList = new List<string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
@@ -167,8 +167,19 @@ namespace ServerTools
                 if (Random)
                 {
                     msgList.RandomizeList();
-                    var _message = msgList[0];
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "", false);
+                    string _message = msgList[0];
+                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                    for (int i = 0; i < _cInfoList.Count; i++)
+                    {
+                        ClientInfo _cInfo = _cInfoList[i];
+                        if (_cInfo != null)
+                        {
+                            if (!exemptionList.Contains(_cInfo.playerId))
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                        }
+                    }
                     msgList.RemoveAt(0);
                     if (msgList.Count == 0)
                     {
@@ -177,8 +188,19 @@ namespace ServerTools
                 }
                 else
                 {
-                    var _message = msgList[0];
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "", false);
+                    string _message = msgList[0];
+                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                    for (int i = 0; i < _cInfoList.Count; i++)
+                    {
+                        ClientInfo _cInfo = _cInfoList[i];
+                        if (_cInfo != null)
+                        {
+                            if (!exemptionList.Contains(_cInfo.playerId))
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                        }
+                    }
                     msgList.RemoveAt(0);
                     if (msgList.Count == 0)
                     {

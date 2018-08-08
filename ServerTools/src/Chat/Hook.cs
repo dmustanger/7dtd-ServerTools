@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -63,6 +64,11 @@ namespace ServerTools
                         return false;
                     }
                 }
+                if (Waypoint.SavingPoint.ContainsKey(_cInfo.entityId))
+                {
+                    Waypoint.SetPointName(_cInfo, _message);
+                    return false;
+                }
                 if (!Jail.Jailed.Contains(_cInfo.playerId))
                 {
                     if (Admin_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && _secondaryName != "Coppis" && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && !AdminChatColor.AdminColorOff.Contains(_cInfo.playerId))
@@ -87,9 +93,18 @@ namespace ServerTools
                             }
                             else
                             {
-                                _playerName = string.Format("{0}({1}) {2}[-]", Admin_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
-                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                return false;
+                                if (Admin_Prefix != "")
+                                {
+                                    _playerName = string.Format("{0}({1}){2} {3}[-]", Admin_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, Admin_Prefix, _playerName);
+                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                    return false;
+                                }
+                                else
+                                {
+                                    _playerName = string.Format("{0}({1}) {2}[-]", Admin_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                    return false;
+                                }
                             }
                         }
                         if (Admin.PermissionLevel > Admin_Level & Admin.PermissionLevel <= Mod_Level)
@@ -111,9 +126,18 @@ namespace ServerTools
                             }
                             else
                             {
-                                _playerName = string.Format("{0}({1}) {2}[-]", Mod_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
-                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                return false;
+                                if (Mod_Prefix != "")
+                                {
+                                    _playerName = string.Format("{0}({1}){2} {3}[-]", Mod_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, Mod_Prefix, _playerName);
+                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                    return false;
+                                }
+                                else
+                                {
+                                    _playerName = string.Format("{0}({1}) {2}[-]", Mod_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                    return false;
+                                }
                             }
                         }
                     }
@@ -145,9 +169,18 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        _playerName = string.Format("{0}({1}) {2}[-]", Don_Color1, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
-                                        GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                        return false;
+                                        if (Don_Prefix1 != "")
+                                        {
+                                            _playerName = string.Format("{0}({1}){2} {3}[-]", Don_Color1, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, Don_Prefix1, _playerName);
+                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                            return false;
+                                        }
+                                        else
+                                        {
+                                            _playerName = string.Format("{0}({1}) {2}[-]", Don_Color1, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                            return false;
+                                        }
                                     }
                                 }
                             }
@@ -177,9 +210,18 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        _playerName = string.Format("{0}({1}) {2}[-]", Don_Color2, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
-                                        GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                        return false;
+                                        if (Don_Prefix2 != "")
+                                        {
+                                            _playerName = string.Format("{0}({1}){2} {3}[-]", Don_Color2, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, Don_Prefix2, _playerName);
+                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                            return false;
+                                        }
+                                        else
+                                        {
+                                            _playerName = string.Format("{0}({1}) {2}[-]", Don_Color2, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                            return false;
+                                        }
                                     }
                                 }
                             }
@@ -209,9 +251,18 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        _playerName = string.Format("{0}({1}) {2}[-]", Don_Color2, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
-                                        GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                        return false;
+                                        if (Don_Prefix3 != "")
+                                        {
+                                            _playerName = string.Format("{0}({1}){2} {3}[-]", Don_Color3, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, Don_Prefix3, _playerName);
+                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                            return false;
+                                        }
+                                        else
+                                        {
+                                            _playerName = string.Format("{0}({1}) {2}[-]", Don_Color3, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                            return false;
+                                        }
                                     }
                                 }
                             }
@@ -236,9 +287,18 @@ namespace ServerTools
                         }
                         else
                         {
-                            _playerName = string.Format("{0}({1}) {2}[-]", Special_Player_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
-                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                            return false;
+                            if (Special_Player_Prefix != "")
+                            {
+                                _playerName = string.Format("{0}({1}){2} {3}[-]", Special_Player_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, Special_Player_Prefix, _playerName);
+                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                return false;
+                            }
+                            else
+                            {
+                                _playerName = string.Format("{0}({1}) {2}[-]", Special_Player_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                return false;
+                            }
                         }
                     }
                     if (Normal_Player_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && _secondaryName != "Coppis" && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public))
@@ -260,14 +320,23 @@ namespace ServerTools
                         }
                         else
                         {
-                            _playerName = string.Format("{0}({1}) {2}[-]", Normal_Player_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
-                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                            return false;
+                            if (Normal_Player_Prefix != "")
+                            {
+                                _playerName = string.Format("{0}({1}){2} {3}[-]", Normal_Player_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, Normal_Player_Prefix, _playerName);
+                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                return false;
+                            }
+                            else
+                            {
+                                _playerName = string.Format("{0}({1}) {2}[-]", Normal_Player_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
+                                return false;
+                            }
                         }
                     }
                     if (ClanManager.IsEnabled && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && _secondaryName != "Coppis" && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && ClanManager.ClanMember.Contains(_cInfo.playerId))
                     {
-                        _playerName = string.Format("({0}) {1}[-]", PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                        _playerName = string.Format("({0}) {1}", PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
                         GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                         return false;
                     }
@@ -355,8 +424,7 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        _message = _message.ToLower();
-                        if (TeleportHome.IsEnabled && _message == "sethome")
+                        if (TeleportHome.IsEnabled && _message.ToLower() == "sethome")
                         {
                             if (!Zones.Set_Home)
                             {
@@ -383,25 +451,25 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (TeleportHome.IsEnabled && _message == "home")
+                        if (TeleportHome.IsEnabled && _message.ToLower() == "home")
                         {
 
-                            TeleportHome.TeleHome(_cInfo, _playerName, _announce);
+                            TeleportHome.Check(_cInfo, _playerName, _announce);
                             return false;
                         }
-                        if (TeleportHome.IsEnabled && _message == "fhome")
+                        if (TeleportHome.IsEnabled && _message.ToLower() == "fhome")
                         {
 
-                            TeleportHome.FTeleHome(_cInfo, _playerName, _announce);
+                            TeleportHome.FCheck(_cInfo, _playerName, _announce);
                             return false;
                         }
-                        if (TeleportHome.IsEnabled && _message == "delhome")
+                        if (TeleportHome.IsEnabled && _message.ToLower() == "delhome")
                         {
 
                             TeleportHome.DelHome(_cInfo, _playerName, _announce);
                             return false;
                         }
-                        if (TeleportHome.Set_Home2_Enabled && _message == "sethome2")
+                        if (TeleportHome.Set_Home2_Enabled && _message.ToLower() == "sethome2")
                         {
                             if (TeleportHome.Set_Home2_Donor_Only && ReservedSlots.IsEnabled)
                             {
@@ -516,7 +584,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (TeleportHome.IsEnabled && _message == "home2")
+                        if (TeleportHome.IsEnabled && _message.ToLower() == "home2")
                         {
                             if (TeleportHome.Set_Home2_Enabled && TeleportHome.Set_Home2_Donor_Only && ReservedSlots.IsEnabled)
                             {
@@ -526,7 +594,7 @@ namespace ServerTools
                                     ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                                     if (DateTime.Now < _dt)
                                     {
-                                        TeleportHome.TeleHome2(_cInfo, _playerName, _announce);
+                                        TeleportHome.Check2(_cInfo, _playerName, _announce);
                                     }
                                     else
                                     {
@@ -554,7 +622,7 @@ namespace ServerTools
                             }
                             else if (TeleportHome.Set_Home2_Enabled && !TeleportHome.Set_Home2_Donor_Only)
                             {
-                                TeleportHome.TeleHome2(_cInfo, _playerName, _announce);
+                                TeleportHome.Check2(_cInfo, _playerName, _announce);
                             }
                             else
                             {
@@ -569,7 +637,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (TeleportHome.IsEnabled && _message == "fhome2")
+                        if (TeleportHome.IsEnabled && _message.ToLower() == "fhome2")
                         {
                             if (TeleportHome.Set_Home2_Enabled && TeleportHome.Set_Home2_Donor_Only && ReservedSlots.IsEnabled)
                             {
@@ -579,7 +647,7 @@ namespace ServerTools
                                     ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                                     if (DateTime.Now < _dt)
                                     {
-                                        TeleportHome.FTeleHome2(_cInfo, _playerName, _announce);
+                                        TeleportHome.FCheck2(_cInfo, _playerName, _announce);
                                     }
                                     else
                                     {
@@ -607,7 +675,7 @@ namespace ServerTools
                             }
                             else if (TeleportHome.Set_Home2_Enabled && !TeleportHome.Set_Home2_Donor_Only)
                             {
-                                TeleportHome.FTeleHome2(_cInfo, _playerName, _announce);
+                                TeleportHome.FCheck2(_cInfo, _playerName, _announce);
                             }
                             else
                             {
@@ -622,7 +690,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (TeleportHome.IsEnabled && _message == "delhome2")
+                        if (TeleportHome.IsEnabled && _message.ToLower() == "delhome2")
                         {
                             if (TeleportHome.Set_Home2_Enabled && TeleportHome.Set_Home2_Donor_Only && ReservedSlots.IsEnabled)
                             {
@@ -664,7 +732,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (TeleportHome.IsEnabled && _message == "go")
+                        if (TeleportHome.IsEnabled && _message.ToLower() == "go")
                         {
                             if (TeleportHome.Invite.ContainsKey(_cInfo.entityId))
                             {
@@ -672,37 +740,38 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (Hardcore.IsEnabled && _message == "top3")
+                        if (Hardcore.IsEnabled && _message.ToLower() == "top3")
                         {
                             Hardcore.TopThree(_cInfo, _announce);
                             return false;
                         }
-                        if (Hardcore.IsEnabled && _message == "score")
+                        if (Hardcore.IsEnabled && _message.ToLower() == "score")
                         {
                             Hardcore.Score(_cInfo, _announce);
                             return false;
                         }
                         if (AdminChat.IsEnabled)
                         {
-                            if (_message.StartsWith("mute ") || _message.StartsWith("unmute "))
+                            if (_message.ToLower().StartsWith("mute ") || _message.ToLower().StartsWith("unmute "))
                             {
-                                if (_message.StartsWith("mute "))
+                                if (_message.ToLower().StartsWith("mute "))
                                 {
                                     MutePlayer.Add(_cInfo, _message);
                                 }
-                                if (_message.StartsWith("unmute "))
+                                if (_message.ToLower().StartsWith("unmute "))
                                 {
                                     MutePlayer.Remove(_cInfo, _message);
                                 }
                                 return false;
                             }
                         }
-                        if (CustomCommands.IsEnabled && _message == "commands")
+                        if (_message.ToLower() == "commands")
                         {
                             string _commands1 = CustomCommands.GetChatCommands1(_cInfo);
                             string _commands2 = CustomCommands.GetChatCommands2(_cInfo);
                             string _commands3 = CustomCommands.GetChatCommands3(_cInfo);
                             string _commands4 = CustomCommands.GetChatCommands4(_cInfo);
+                            string _commands5 = CustomCommands.GetChatCommands5(_cInfo);
                             string _commandsCustom = CustomCommands.GetChatCommandsCustom(_cInfo);
                             string _commandsAdmin = CustomCommands.GetChatCommandsAdmin(_cInfo);
                             if (_announce)
@@ -739,7 +808,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (Day7.IsEnabled && (_message == "day7" || _message == "day"))
+                        if (Day7.IsEnabled && (_message.ToLower() == "day7" || _message.ToLower() == "day"))
                         {
                             if (_announce)
                             {
@@ -748,12 +817,12 @@ namespace ServerTools
                             Day7.GetInfo(_cInfo, _announce);
                             return false;
                         }
-                        if (Bloodmoon.IsEnabled && (_message == "bloodmoon" || _message == "bm"))
+                        if (Bloodmoon.IsEnabled && (_message.ToLower() == "bloodmoon" || _message.ToLower() == "bm"))
                         {
                             Bloodmoon.GetBloodmoon(_cInfo, _announce);
                             return false;
                         }
-                        if (Suicide.IsEnabled && (_message == "killme" || _message == "wrist" || _message == "hang" || _message == "suicide"))
+                        if (Suicide.IsEnabled && (_message.ToLower() == "killme" || _message.ToLower() == "wrist" || _message.ToLower() == "hang" || _message.ToLower() == "suicide"))
                         {
                             if (_announce)
                             {
@@ -765,7 +834,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (Gimme.IsEnabled && (_message == "gimme" || _message == "gimmie"))
+                        if (Gimme.IsEnabled && (_message.ToLower() == "gimme" || _message.ToLower() == "gimmie"))
                         {
                             if (Gimme.Always_Show_Response)
                             {
@@ -778,9 +847,9 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (Jail.IsEnabled && (_message == "setjail" || _message.StartsWith("jail ") || _message.StartsWith("unjail ")))
+                        if (Jail.IsEnabled && (_message.ToLower() == "setjail" || _message.ToLower().StartsWith("jail ") || _message.ToLower().StartsWith("unjail ")))
                         {
-                            if (_message == "setjail")
+                            if (_message.ToLower() == "setjail")
                             {
                                 if (_announce)
                                 {
@@ -788,7 +857,7 @@ namespace ServerTools
                                 }
                                 Jail.SetJail(_cInfo);
                             }
-                            if (_message.StartsWith("jail "))
+                            if (_message.ToLower().StartsWith("jail "))
                             {
                                 if (_announce)
                                 {
@@ -806,7 +875,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (NewSpawnTele.IsEnabled && _message == "setspawn")
+                        if (NewSpawnTele.IsEnabled && _message.ToLower() == "setspawn")
                         {
                             if (_announce)
                             {
@@ -818,26 +887,27 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (Animals.IsEnabled && (_message == "trackanimal" || _message == "track"))
+                        if (Animals.IsEnabled && (_message.ToLower() == "trackanimal" || _message.ToLower() == "track"))
                         {
                             Animals.Checkplayer(_cInfo, _announce, _playerName);
                             return false;
                         }
-                        if (FirstClaimBlock.IsEnabled && _message == "claim")
+                        if (FirstClaimBlock.IsEnabled && _message.ToLower() == "claim")
                         {
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking your claim block status.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                             FirstClaimBlock.firstClaim(_cInfo);
                             return false;
                         }
-                        if (ClanManager.IsEnabled && (_message.StartsWith("clanadd") || _message == "clandel" || _message.StartsWith("claninvite") || _message == "clanaccept" || _message == "clandecline" || _message.StartsWith("clanremove") || _message.StartsWith("clanpromote") || _message.StartsWith("clandemote") || _message.StartsWith("clan") || _message == "clancommands"))
+                        if (ClanManager.IsEnabled && (_message.ToLower().StartsWith("clanadd") || _message.ToLower() == "clandel" || _message.ToLower().StartsWith("claninvite") || _message.ToLower() == "clanaccept" || _message.ToLower() == "clandecline" || _message.ToLower().StartsWith("clanremove") || _message.ToLower().StartsWith("clanpromote") || _message.ToLower().StartsWith("clandemote") || _message.ToLower().StartsWith("clan") || _message.ToLower() == "clancommands" || _message.ToLower().StartsWith("clanrename")))
                         {
-                            if (_message == "clancommands")
+                            if (_message.ToLower() == "clancommands")
                             {
-                                ClanManager.GetChatCommands(_cInfo);
+                                string _clanCommands = ClanManager.GetChatCommands(_cInfo);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _clanCommands, Config.Server_Response_Name, false, "ServerTools", false));
                             }
-                            if (_message.StartsWith("clanadd"))
+                            if (_message.ToLower().StartsWith("clanadd"))
                             {
-                                if (_message == "clanadd")
+                                if (_message.ToLower() == "clanadd")
                                 {
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clanadd clanName[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
@@ -847,13 +917,13 @@ namespace ServerTools
                                     ClanManager.AddClan(_cInfo, _message);
                                 }
                             }
-                            if (_message == "clandel")
+                            if (_message.ToLower() == "clandel")
                             {
                                 ClanManager.RemoveClan(_cInfo);
                             }
-                            if (_message.StartsWith("claninvite"))
+                            if (_message.ToLower().StartsWith("claninvite"))
                             {
-                                if (_message == "claninvite")
+                                if (_message.ToLower() == "claninvite")
                                 {
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /claninvite playerName[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
@@ -863,18 +933,18 @@ namespace ServerTools
                                     ClanManager.InviteMember(_cInfo, _message);
                                 }
                             }
-                            if (_message == "clanaccept")
+                            if (_message.ToLower() == "clanaccept")
                             {
                                 ClanManager.InviteAccept(_cInfo);
                                 return false;
                             }
-                            if (_message == "clandecline")
+                            if (_message.ToLower() == "clandecline")
                             {
                                 ClanManager.InviteDecline(_cInfo);
                             }
-                            if (_message.StartsWith("clanremove"))
+                            if (_message.ToLower().StartsWith("clanremove"))
                             {
-                                if (_message == "clanremove")
+                                if (_message.ToLower() == "clanremove")
                                 {
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clanremove playerName[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
@@ -884,9 +954,9 @@ namespace ServerTools
                                     ClanManager.RemoveMember(_cInfo, _message);
                                 }
                             }
-                            if (_message.StartsWith("clanpromote"))
+                            if (_message.ToLower().StartsWith("clanpromote"))
                             {
-                                if (_message == "clanpromote")
+                                if (_message.ToLower() == "clanpromote")
                                 {
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clanpromote playerName[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
@@ -896,9 +966,9 @@ namespace ServerTools
                                     ClanManager.PromoteMember(_cInfo, _message);
                                 }
                             }
-                            if (_message.StartsWith("clandemote"))
+                            if (_message.ToLower().StartsWith("clandemote"))
                             {
-                                if (_message == "clandemote")
+                                if (_message.ToLower() == "clandemote")
                                 {
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clandemote playerName[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
@@ -908,25 +978,37 @@ namespace ServerTools
                                     ClanManager.DemoteMember(_cInfo, _message);
                                 }
                             }
-                            if (_message == "clanleave")
+                            if (_message.ToLower() == "clanleave")
                             {
                                 ClanManager.LeaveClan(_cInfo);
                             }
-                            if (_message.StartsWith("clan"))
+                            if (_message.ToLower().StartsWith("clan "))
                             {
-                                if (_message == "clan")
+                                if (_message.ToLower() == "clan")
                                 {
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clan message[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                                 else
                                 {
-                                    _message = _message.Replace("clan ", "");
+                                    _message = _message.ToLower().Replace("clan ", "");
                                     ClanManager.Clan(_cInfo, _message);
+                                }
+                            }
+                            if (_message.ToLower().StartsWith("clanrename"))
+                            {
+                                if (_message.ToLower() == "clanrename")
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /clanrename newName[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    _message = _message.Replace("clanrename ", "");
+                                    ClanManager.ClanRename(_cInfo, _message);
                                 }
                             }
                             return false;
                         }
-                        if (Donator_Name_Coloring && _message == "doncolor")
+                        if (Donator_Name_Coloring && _message.ToLower() == "doncolor")
                         {
                             if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
@@ -998,7 +1080,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (Reserved_Check && _message == "reserved")
+                        if (Reserved_Check && _message.ToLower() == "reserved")
                         {
                             if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
@@ -1021,7 +1103,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (Special_Player_Name_Coloring && _message == "spcolor")
+                        if (Special_Player_Name_Coloring && _message.ToLower() == "spcolor")
                         {
                             if (SpecialPlayers.Contains(_cInfo.playerId))
                             {
@@ -1038,30 +1120,30 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (VoteReward.IsEnabled && _message == "reward")
+                        if (VoteReward.IsEnabled && _message.ToLower() == "reward")
                         {
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking for your vote.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                             VoteReward.Check(_cInfo);
                             return false;
                         }
-                        if (AutoShutdown.IsEnabled && (_message == "Scheck" || _message == "scheck"))
+                        if (AutoShutdown.IsEnabled && _message.ToLower() == "scheck")
                         {
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking for the next shutdown time.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                             AutoShutdown.CheckNextShutdown(_cInfo, _announce);
                             return false;
                         }
-                        if (AdminList.IsEnabled && _message == "admin")
+                        if (AdminList.IsEnabled && _message.ToLower() == "admin")
                         {
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Listing online administrators and moderators.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                             AdminList.List(_cInfo, _announce, _playerName);
                             return false;
                         }
-                        if (Travel.IsEnabled && _message == "travel")
+                        if (Travel.IsEnabled && _message.ToLower() == "travel")
                         {
                             Travel.Check(_cInfo, _announce, _playerName);
                             return false;
                         }
-                        if (Zones.IsEnabled && _message == "return")
+                        if (Zones.IsEnabled && _message.ToLower() == "return")
                         {
                             if (Players.Victim.ContainsKey(_cInfo.entityId))
                             {
@@ -1070,7 +1152,7 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (Zones.IsEnabled && Jail.IsEnabled && _message == "forgive")
+                        if (Zones.IsEnabled && Jail.IsEnabled && _message.ToLower() == "forgive")
                         {
                             if (Players.Forgive.ContainsKey(_cInfo.entityId))
                             {
@@ -1079,17 +1161,17 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (Wallet.IsEnabled && _message == "wallet")
+                        if (Wallet.IsEnabled && _message.ToLower() == "wallet")
                         {
                             Wallet.WalletValue(_cInfo, _playerName);
                             return false;
                         }
-                        if (Shop.IsEnabled && _message == "shop")
+                        if (Shop.IsEnabled && _message.ToLower() == "shop")
                         {
                             Shop.Check(_cInfo, _playerName);
                             return false;
                         }
-                        if (Shop.IsEnabled && _message.StartsWith("buy"))
+                        if (Shop.IsEnabled && _message.ToLower().StartsWith("buy"))
                         {
                             if (_message == "buy")
                             {
@@ -1097,74 +1179,93 @@ namespace ServerTools
                             }
                             else
                             {
-                                _message = _message.Replace("buy ", "");
+                                _message = _message.ToLower().Replace("buy ", "");
                                 Shop.BuyCheck(_cInfo, _message, _playerName);
                             }
                             return false;
                         }
-                        if (FriendTeleport.IsEnabled && _message.StartsWith("friend"))
+                        if (FriendTeleport.IsEnabled && _message.ToLower().StartsWith("friend"))
                         {
-                            if (_message == "friend")
+                            if (_message.ToLower() == "friend")
                             {
                                 FriendTeleport.ListFriends(_cInfo, _message);
                             }
                             else
                             {
-                                _message = _message.Replace("friend ", "");
+                                _message = _message.ToLower().Replace("friend ", "");
                                 FriendTeleport.CheckDelay(_cInfo, _message, _announce);
                             }
                             return false;
                         }
-                        if (FriendTeleport.IsEnabled && _message == ("accept"))
+                        if (FriendTeleport.IsEnabled && _message.ToLower() == ("accept") || TeleportHome.IsEnabled && _message.ToLower() == ("accept"))
                         {
                             if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
                             {
                                 int _dictValue;
-                                if (FriendTeleport.Dict.TryGetValue(_cInfo.entityId, out _dictValue))
+                                FriendTeleport.Dict.TryGetValue(_cInfo.entityId, out _dictValue);
+                                DateTime _dict1Value;
+                                FriendTeleport.Dict1.TryGetValue(_cInfo.entityId, out _dict1Value);
+                                TimeSpan varTime = DateTime.Now - _dict1Value;
+                                double fractionalSeconds = varTime.TotalSeconds;
+                                int _timepassed = (int)fractionalSeconds;
+                                if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    DateTime _dict1Value;
-                                    if (FriendTeleport.Dict1.TryGetValue(_cInfo.entityId, out _dict1Value))
+                                    DateTime _dt;
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    if (DateTime.Now < _dt)
                                     {
-                                        TimeSpan varTime = DateTime.Now - _dict1Value;
-                                        double fractionalSeconds = varTime.TotalSeconds;
-                                        int _timepassed = (int)fractionalSeconds;
-                                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                                        {
-                                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                                            {
-                                                DateTime _dt;
-                                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                                if (DateTime.Now < _dt)
-                                                {
-                                                    int _newTime = _timepassed / 2;
-                                                    _timepassed = _newTime;
-                                                }
-                                            }
-                                        }
-                                        if (_timepassed <= 30)
-                                        {
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your friends teleport request was accepted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                            FriendTeleport.TeleFriend(_cInfo, _dictValue);
-                                            FriendTeleport.Dict.Remove(_cInfo.entityId);
-                                            FriendTeleport.Dict1.Remove(_cInfo.entityId);
-                                        }
-                                        else
-                                        {
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your friends teleport request has expired.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                            FriendTeleport.Dict.Remove(_cInfo.entityId);
-                                            FriendTeleport.Dict1.Remove(_cInfo.entityId);
-                                        }
+                                        int _newTime = _timepassed / 2;
+                                        _timepassed = _newTime;
                                     }
+                                }
+                                if (_timepassed <= 30)
+                                {
+                                    FriendTeleport.TeleFriend(_cInfo, _dictValue);
+                                    FriendTeleport.Dict.Remove(_cInfo.entityId);
+                                    FriendTeleport.Dict1.Remove(_cInfo.entityId);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your friend's teleport request was accepted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    FriendTeleport.Dict.Remove(_cInfo.entityId);
+                                    FriendTeleport.Dict1.Remove(_cInfo.entityId);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your friend's teleport request has expired.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                                return false;
+                            }
+                            if (TeleportHome.HomeRequest.ContainsKey(_cInfo.entityId))
+                            {
+                                int[] _idAndHome;
+                                TeleportHome.HomeRequest.TryGetValue(_cInfo.entityId, out _idAndHome);
+                                Vector3 _position;
+                                TeleportHome.HomeRequestPos.TryGetValue(_cInfo.entityId, out _position);
+                                DateTime _time;
+                                TeleportHome.HomeRequestTime.TryGetValue(_cInfo.entityId, out _time);
+                                TimeSpan varTime = DateTime.Now - _time;
+                                double fractionalSeconds = varTime.TotalSeconds;
+                                int _timepassed = (int)fractionalSeconds;
+                                if (_timepassed <= 2)
+                                {
+                                    TeleportHome.HomeRequest.Remove(_cInfo.entityId);
+                                    TeleportHome.HomeRequestTime.Remove(_cInfo.entityId);
+                                    TeleportHome.HomeRequestPos.Remove(_cInfo.entityId);
+                                    TeleportHome.AcceptRequest(_cInfo, _idAndHome, _position);
+                                }
+                                else
+                                {
+                                    TeleportHome.HomeRequest.Remove(_cInfo.entityId);
+                                    TeleportHome.HomeRequestTime.Remove(_cInfo.entityId);
+                                    TeleportHome.HomeRequestPos.Remove(_cInfo.entityId);
                                 }
                                 return false;
                             }
                         }
-                        if (DeathSpot.IsEnabled && _message == ("died"))
+                        if (DeathSpot.IsEnabled && _message.ToLower() == ("died"))
                         {
                             DeathSpot.DeathDelay(_cInfo, _announce, _playerName);
                             return false;
                         }
-                        if (WeatherVote.IsEnabled && _message == "weathervote")
+                        if (WeatherVote.IsEnabled && _message.ToLower() == "weathervote")
                         {
                             if (WeatherVote.VoteNew)
                             {
@@ -1183,7 +1284,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (WeatherVote.IsEnabled && _message == "clear")
+                        if (WeatherVote.IsEnabled && _message.ToLower() == "clear")
                         {
                             if (WeatherVote.VoteOpen)
                             {
@@ -1203,7 +1304,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (WeatherVote.IsEnabled && _message == "rain")
+                        if (WeatherVote.IsEnabled && _message.ToLower() == "rain")
                         {
                             if (WeatherVote.VoteOpen)
                             {
@@ -1223,7 +1324,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (WeatherVote.IsEnabled && _message == "snow")
+                        if (WeatherVote.IsEnabled && _message.ToLower() == "snow")
                         {
                             if (WeatherVote.VoteOpen)
                             {
@@ -1243,7 +1344,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (RestartVote.IsEnabled && _message == "restartvote")
+                        if (RestartVote.IsEnabled && _message.ToLower() == "restartvote")
                         {
                             if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
                             {
@@ -1258,11 +1359,11 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (MuteVote.IsEnabled && _message.StartsWith("mutevote"))
+                        if (MuteVote.IsEnabled && _message.ToLower().StartsWith("mutevote"))
                         {
                             if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
                             {
-                                _message = _message.Replace("mutevote ", "");
+                                _message = _message.ToLower().Replace("mutevote ", "");
                                 {
                                     MuteVote.Vote(_cInfo, _message);
                                 }
@@ -1273,11 +1374,11 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (KickVote.IsEnabled && _message.StartsWith("kickvote"))
+                        if (KickVote.IsEnabled && _message.ToLower().StartsWith("kickvote"))
                         {
                             if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
                             {
-                                _message = _message.Replace("kickvote ", "");
+                                _message = _message.ToLower().Replace("kickvote ", "");
                                 {
                                     KickVote.Vote(_cInfo, _message);
                                 }
@@ -1288,7 +1389,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (NightVote.IsEnabled && _message == "nightvote")
+                        if (NightVote.IsEnabled && _message.ToLower() == "nightvote")
                         {
                             if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
                             {
@@ -1300,7 +1401,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (_message == "yes")
+                        if (_message.ToLower() == "yes")
                         {
                             if (KickVote.VoteOpen || RestartVote.VoteOpen || MuteVote.VoteOpen || NightVote.VoteOpen)
                             {
@@ -1355,24 +1456,24 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (AuctionBox.IsEnabled && _message == "auction")
+                        if (AuctionBox.IsEnabled && _message.ToLower() == "auction")
                         {
                             AuctionBox.AuctionList(_cInfo);
                             return false;
                         }
-                        if (AuctionBox.IsEnabled && _message == "auction cancel")
+                        if (AuctionBox.IsEnabled && _message.ToLower() == "auction cancel")
                         {
                             AuctionBox.CancelAuction(_cInfo);
                             return false;
                         }
-                        if (AuctionBox.IsEnabled && _message.StartsWith("auction buy"))
+                        if (AuctionBox.IsEnabled && _message.ToLower().StartsWith("auction buy"))
                         {
                             if (AuctionBox.No_Admins)
                             {
                                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                                 if (Admin.PermissionLevel > Admin_Level)
                                 {
-                                    _message = _message.Replace("auction buy ", "");
+                                    _message = _message.ToLower().Replace("auction buy ", "");
                                     {
                                         int _purchase;
                                         if (int.TryParse(_message, out _purchase))
@@ -1396,7 +1497,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                _message = _message.Replace("auction buy ", "");
+                                _message = _message.ToLower().Replace("auction buy ", "");
                                 {
                                     int _purchase;
                                     if (int.TryParse(_message, out _purchase))
@@ -1414,14 +1515,14 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (AuctionBox.IsEnabled && _message.StartsWith("auction sell"))
+                        if (AuctionBox.IsEnabled && _message.ToLower().StartsWith("auction sell"))
                         {
                             if (AuctionBox.No_Admins)
                             {
                                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                                 if (Admin.PermissionLevel > Admin_Level)
                                 {
-                                    _message = _message.Replace("auction sell ", "");
+                                    _message = _message.ToLower().Replace("auction sell ", "");
                                     AuctionBox.Delay(_cInfo, _message);
                                 }
                                 else
@@ -1431,12 +1532,12 @@ namespace ServerTools
                             }
                             else
                             {
-                                _message = _message.Replace("auction sell ", "");
+                                _message = _message.ToLower().Replace("auction sell ", "");
                                 AuctionBox.Delay(_cInfo, _message);
                             }
                             return false;
                         }
-                        if (Fps.IsEnabled && _message == "fps")
+                        if (Fps.IsEnabled && _message.ToLower() == "fps")
                         {
                             if (_announce)
                             {
@@ -1448,7 +1549,7 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (Loc.IsEnabled && _message == "loc")
+                        if (Loc.IsEnabled && _message.ToLower() == "loc")
                         {
                             if (_announce)
                             {
@@ -1460,60 +1561,60 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (BikeReturn.IsEnabled && _message == "bike")
+                        if (BikeReturn.IsEnabled && _message.ToLower() == "bike")
                         {
                             BikeReturn.BikeDelay(_cInfo, _playerName);
                             return false;
                         }
-                        if (Report.IsEnabled && _message.StartsWith("report"))
+                        if (Report.IsEnabled && _message.ToLower().StartsWith("report"))
                         {
-                            _message = _message.Replace("report ", "");
+                            _message = _message.ToLower().Replace("report ", "");
                             Report.Check(_cInfo, _message);
                             return false;
                         }
-                        if (Bounties.IsEnabled && _message == "bounty")
+                        if (Bounties.IsEnabled && _message.ToLower() == "bounty")
                         {
                             Bounties.BountyList(_cInfo, _playerName);
                             return false;
                         }
-                        if (Bounties.IsEnabled && _message.StartsWith("bounty"))
+                        if (Bounties.IsEnabled && _message.ToLower().StartsWith("bounty"))
                         {
-                            _message = _message.Replace("bounty ", "");
+                            _message = _message.ToLower().Replace("bounty ", "");
                             Bounties.NewBounty(_cInfo, _message, _playerName);
                             return false;
                         }
-                        if (Lottery.IsEnabled && _message == "lottery")
+                        if (Lottery.IsEnabled && _message.ToLower() == "lottery")
                         {
                             Lottery.Response(_cInfo);
                             return false;
                         }
-                        if (Lottery.IsEnabled && _message == "lottery enter")
+                        if (Lottery.IsEnabled && _message.ToLower() == "lottery enter")
                         {
                             Lottery.EnterLotto(_cInfo);
                             return false;
                         }
-                        if (Lottery.IsEnabled && _message.StartsWith("lottery"))
+                        if (Lottery.IsEnabled && _message.ToLower().StartsWith("lottery"))
                         {
                             _message = _message.Replace("lottery ", "");
                             Lottery.NewLotto(_cInfo, _message, _playerName);
                             return false;
                         }
-                        if (NewSpawnTele.IsEnabled && NewSpawnTele.Return && _message == "ready")
+                        if (NewSpawnTele.IsEnabled && NewSpawnTele.Return && _message.ToLower() == "ready")
                         {
                             NewSpawnTele.ReturnPlayer(_cInfo);
                             return false;
                         }
-                        if (LobbyChat.IsEnabled && _message == "setlobby")
+                        if (LobbyChat.IsEnabled && _message.ToLower() == "setlobby")
                         {
                             SetLobby.Set(_cInfo);
                             return false;
                         }
-                        if (LobbyChat.IsEnabled && _message == "lobby")
+                        if (LobbyChat.IsEnabled && _message.ToLower() == "lobby")
                         {
                             LobbyChat.Delay(_cInfo, _playerName, _announce);
                             return false;
                         }
-                        if (LobbyChat.IsEnabled && LobbyChat.Return && _message == "return")
+                        if (LobbyChat.IsEnabled && LobbyChat.Return && _message.ToLower() == "return")
                         {
                             if (LobbyChat.LobbyPlayers.Contains(_cInfo.entityId))
                             {
@@ -1521,17 +1622,17 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (PlayerList.IsEnabled && _message == "list")
+                        if (PlayerList.IsEnabled && _message.ToLower() == "list")
                         {
                             PlayerList.Exec(_cInfo, _playerName);
                             return false;
                         }
-                        if (Stuck.IsEnabled && _message == "stuck")
+                        if (Stuck.IsEnabled && _message.ToLower() == "stuck")
                         {
                             Stuck.Delay(_cInfo, _playerName, _announce);
                             return false;
                         }
-                        if (_message == "pollyes")
+                        if (_message.ToLower() == "pollyes")
                         {
                             if (PersistentContainer.Instance.PollOpen)
                             {
@@ -1552,7 +1653,7 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (_message == "pollno")
+                        if (_message.ToLower() == "pollno")
                         {
                             if (PersistentContainer.Instance.PollOpen)
                             {
@@ -1573,7 +1674,7 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (_message == "poll")
+                        if (_message.ToLower() == "poll")
                         {
                             if (PersistentContainer.Instance.PollOpen)
                             {
@@ -1603,56 +1704,141 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (Bank.IsEnabled && _message == "bank")
+                        if (Bank.IsEnabled && _message.ToLower() == "bank")
                         {
                             Bank.Check(_cInfo);
                             return false;
                         }
-                        if (Bank.IsEnabled && _message.StartsWith("deposit"))
+                        if (Bank.IsEnabled && _message.ToLower().StartsWith("deposit"))
                         {
-                            _message = _message.Replace("deposit ", "");
+                            _message = _message.ToLower().Replace("deposit ", "");
                             Bank.CheckLocation(_cInfo, _message, 1);
                             return false;
                         }
-                        if (Bank.IsEnabled && _message.StartsWith("withdraw"))
+                        if (Bank.IsEnabled && _message.ToLower().StartsWith("withdraw"))
                         {
-                            _message = _message.Replace("withdraw ", "");
+                            _message = _message.ToLower().Replace("withdraw ", "");
                             Bank.CheckLocation(_cInfo, _message, 2);
                             return false;
                         }
-                        if (Bank.IsEnabled && _message.StartsWith("wallet deposit"))
+                        if (Bank.IsEnabled && _message.ToLower().StartsWith("wallet deposit"))
                         {
-                            _message = _message.Replace("wallet deposit ", "");
+                            _message = _message.ToLower().Replace("wallet deposit ", "");
                             Bank.CheckLocation(_cInfo, _message, 3);
                             return false;
                         }
-                        if (Bank.IsEnabled && _message.StartsWith("wallet withdraw"))
+                        if (Bank.IsEnabled && _message.ToLower().StartsWith("wallet withdraw"))
                         {
-                            _message = _message.Replace("wallet withdraw ", "");
+                            _message = _message.ToLower().Replace("wallet withdraw ", "");
                             Bank.CheckLocation(_cInfo, _message, 4);
                             return false;
                         }
-                        if (Bank.IsEnabled && _message.StartsWith("transfer "))
+                        if (Bank.IsEnabled && _message.ToLower().StartsWith("transfer "))
                         {
-                            _message = _message.Replace("transfer ", "");
+                            _message = _message.ToLower().Replace("transfer ", "");
                             Bank.Transfer(_cInfo, _message);
                             return false;
                         }
-                        if (Event.Invited && _message == "event")
+                        if (Event.Invited && _message.ToLower() == "event")
                         {
                             Event.AddPlayer(_cInfo);
                             return false;
                         }
-                        if (Wallet.IsEnabled && _message == "mogul")
+                        if (Mogul.IsEnabled && _message.ToLower() == "mogul")
                         {
-                            Mogul.TopFive(_cInfo, _announce);
+                            if (Wallet.IsEnabled || Bank.IsEnabled)
+                            {
+                                Mogul.TopThree(_cInfo, _announce);
+                                return false;
+                            }
+                        }
+                        if (MarketChat.IsEnabled && _message.ToLower() == "setmarket")
+                        {
+                            SetLobby.Set(_cInfo);
                             return false;
                         }
-                        if (_message == "test")
+                        if (MarketChat.IsEnabled && _message.ToLower() == "market")
                         {
-                            Lottery.StartLotto();
+                            MarketChat.Delay(_cInfo, _playerName, _announce);
                             return false;
                         }
+                        if (MarketChat.IsEnabled && MarketChat.Return && _message.ToLower() == "return")
+                        {
+                            if (MarketChat.MarketPlayers.Contains(_cInfo.entityId))
+                            {
+                                MarketChat.SendBack(_cInfo, _playerName);
+                                return false;
+                            }
+                        }
+                        if (InfoTicker.IsEnabled && _message.ToLower() == "infoticker")
+                        {
+                            if (!InfoTicker.exemptionList.Contains(_cInfo.playerId))
+                            {
+                                InfoTicker.exemptionList.Add(_cInfo.playerId);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have turned off infoticker messages until the server restarts.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                            else
+                            {
+                                InfoTicker.exemptionList.Remove(_cInfo.playerId);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have turned on infoticker messages.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                            return false;
+                        }
+                        if (Session.IsEnabled && _message.ToLower() == "session")
+                        {
+                            Session.Exec(_cInfo);
+                            return false;
+                        }
+                        if (Waypoint.IsEnabled && (_message.ToLower() == "waypoint" || _message.ToLower() == "wp"))
+                        {
+                            Waypoint.List(_cInfo);
+                            return false;
+                        }
+                        else if (Waypoint.IsEnabled && (_message.StartsWith("waypoint") || _message.StartsWith("wp")))
+                        {
+                            if (_message.ToLower().StartsWith("waypoint"))
+                            {
+                                _message = _message.ToLower().Replace("waypoint ", "");
+                            }
+                            else
+                            {
+                                _message = _message.ToLower().Replace("wp ", "");
+                            }
+                            Waypoint.Delay(_cInfo, _message);
+                            return false;
+                        }
+                        if (Waypoint.IsEnabled && (_message.ToLower().StartsWith("savepoint") || _message.ToLower().StartsWith("sp")))
+                        {
+                            if (_message.ToLower().StartsWith("savepoint"))
+                            {
+                                _message = _message.ToLower().Replace("savepoint ", "");
+                            }
+                            else
+                            {
+                                _message = _message.ToLower().Replace("sp ", "");
+                            }
+                            Waypoint.SaveClaimCheck(_cInfo, _message);
+                            return false;
+                        }
+                        if (Waypoint.IsEnabled && (_message.ToLower().StartsWith("delpoint") || _message.ToLower().StartsWith("dp")))
+                        {
+                            if (_message.ToLower().StartsWith("delpoint"))
+                            {
+                                _message = _message.ToLower().Replace("delpoint ", "");
+                            }
+                            else
+                            {
+                                _message = _message.ToLower().Replace("dp ", "");
+                            }
+                            Waypoint.DelPoint(_cInfo, _message);
+                            return false;
+                        }
+                        if (MarketChat.IsEnabled && _message.ToLower() == "market")
+                        {
+                            MarketChat.Delay(_cInfo, _playerName, _announce);
+                            return false;
+                        }
+                        _message = _message.ToLower();
                         if (CustomCommands.IsEnabled && CustomCommands.Dict.ContainsKey(_message))
                         {
                             CustomCommands.CheckCustomDelay(_cInfo, _message, _playerName, _announce);

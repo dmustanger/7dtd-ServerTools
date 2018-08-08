@@ -81,15 +81,15 @@ namespace ServerTools
                         else
                         {
                             int _timeleft = Delay_Between_Uses - _timepassed;
-                            string _phrase810;
-                            if (!Phrases.Dict.TryGetValue(810, out _phrase810))
-                            {
-                                _phrase810 = "{PlayerName} you can only use /auction sell {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
-                            }
-                            _phrase810 = _phrase810.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase810 = _phrase810.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                            _phrase810 = _phrase810.Replace("{TimeRemaining}", _timeleft.ToString());
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase810), Config.Server_Response_Name, false, "ServerTools", false));
+                            string _phrase900;
+                                    if (!Phrases.Dict.TryGetValue(900, out _phrase900))
+                                    {
+                                        _phrase900 = "{PlayerName} you can only use /auction sell {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
+                                    }
+                                    _phrase900 = _phrase900.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase900 = _phrase900.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                                    _phrase900 = _phrase900.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase900), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                 }

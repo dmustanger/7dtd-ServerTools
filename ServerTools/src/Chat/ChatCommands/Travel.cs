@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -156,14 +157,28 @@ namespace ServerTools
             bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
-                CommandCost(_cInfo, _announce);
+                if (Wallet.IsEnabled && Command_Cost >= 1)
+                {
+                    CommandCost(_cInfo, _announce);
+                }
+                else
+                {
+                    Tele(_cInfo, _announce);
+                }
             }
             else
             {
                 Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                 if (p == null || p.LastTravel == null)
                 {
-                    CommandCost(_cInfo, _announce);
+                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    {
+                        CommandCost(_cInfo, _announce);
+                    }
+                    else
+                    {
+                        Tele(_cInfo, _announce);
+                    }
                 }
                 else
                 {
@@ -182,7 +197,14 @@ namespace ServerTools
                                 int _newDelay = Delay_Between_Uses / 2;
                                 if (_timepassed >= _newDelay)
                                 {
-                                    CommandCost(_cInfo, _announce);
+                                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                                    {
+                                        CommandCost(_cInfo, _announce);
+                                    }
+                                    else
+                                    {
+                                        Tele(_cInfo, _announce);
+                                    }
                                 }
                                 else
                                 {
@@ -211,7 +233,14 @@ namespace ServerTools
                     {
                         if (_timepassed >= Delay_Between_Uses)
                         {
-                            CommandCost(_cInfo, _announce);
+                            if (Wallet.IsEnabled && Command_Cost >= 1)
+                            {
+                                CommandCost(_cInfo, _announce);
+                            }
+                            else
+                            {
+                                Tele(_cInfo, _announce);
+                            }
                         }
                         else
                         {
@@ -665,10 +694,71 @@ namespace ServerTools
                     }
                     if (_xMinCheck == 1 & _yMinCheck == 1 & _zMinCheck == 1 & _xMaxCheck == 1 & _yMaxCheck == 1 & _zMaxCheck == 1)
                     {
+                        if (TeleportDelay.PvP_Check)
+                        {
+                            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                            for (int i = 0; i < _cInfoList.Count; i++)
+                            {
+                                ClientInfo _cInfo2 = _cInfoList[i];
+                                if (_cInfo2 != null)
+                                {
+                                    EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
+                                    if (_player2 != null)
+                                    {
+                                        Vector3 _pos2 = _player2.GetPosition();
+                                        if (((int)_player.position.x - (int)_pos2.x) * ((int)_player.position.x - (int)_pos2.x) + ((int)_player.position.z - (int)_pos2.z) * ((int)_player.position.z - (int)_pos2.z) <= 50 * 50)
+                                        {
+                                            if (!_player.IsFriendsWith(_player2))
+                                            {
+                                                string _phrase819;
+                                                if (!Phrases.Dict.TryGetValue(819, out _phrase819))
+                                                {
+                                                    _phrase819 = "{PlayerName} you are too close to a player that is not a friend. Command unavailable.";
+                                                }
+                                                _phrase819 = _phrase819.Replace("{PlayerName}", _cInfo.playerName);
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase819), Config.Server_Response_Name, false, "ServerTools", false));
+                                                return;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (TeleportDelay.Zombie_Check)
+                        {
+                            World world = GameManager.Instance.World;
+                            List<Entity> Entities = world.Entities.list;
+                            for (int i = 0; i < Entities.Count; i++)
+                            {
+                                Entity _entity = Entities[i];
+                                if (_entity != null)
+                                {
+                                    EntityType _type = _entity.entityType;
+                                    if (_type == EntityType.Zombie)
+                                    {
+                                        Vector3 _pos2 = _entity.GetPosition();
+                                        if (((int)_player.position.x - (int)_pos2.x) * ((int)_player.position.x - (int)_pos2.x) + ((int)_player.position.z - (int)_pos2.z) * ((int)_player.position.z - (int)_pos2.z) <= 20 * 20)
+                                        {
+                                            string _phrase820;
+                                            if (!Phrases.Dict.TryGetValue(820, out _phrase820))
+                                            {
+                                                _phrase820 = "{PlayerName} you are too close to a zombie. Command unavailable.";
+                                            }
+                                            _phrase820 = _phrase820.Replace("{PlayerName}", _cInfo.playerName);
+                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase820), Config.Server_Response_Name, false, "ServerTools", false));
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         Players.NoFlight.Add(_cInfo.entityId);
-                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new UnityEngine.Vector3(xDest, yDest, zDest), false));
-                        int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
+                        TeleportDelay.TeleportQue(_cInfo, xDest, yDest, zDest);
+                        if(Wallet.IsEnabled && Command_Cost >= 1)
+                        {
+                            int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
+                            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
+                        }
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastTravel = DateTime.Now;
                         PersistentContainer.Instance.Save();
                         string _phrase603;

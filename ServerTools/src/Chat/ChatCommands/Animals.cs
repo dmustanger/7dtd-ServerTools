@@ -17,14 +17,28 @@ namespace ServerTools
             bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
-                CommandCost(_cInfo, _announce);
+                if (Wallet.IsEnabled && Command_Cost >= 1)
+                {
+                    CommandCost(_cInfo, _announce);
+                }
+                else
+                {
+                    GiveAnimals(_cInfo, _announce);
+                }
             }
             else
             {
                 Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                 if (p == null || p.LastAnimals == null)
                 {
-                    CommandCost(_cInfo, _announce);
+                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    {
+                        CommandCost(_cInfo, _announce);
+                    }
+                    else
+                    {
+                        GiveAnimals(_cInfo, _announce);
+                    }
                 }
                 else
                 {
@@ -43,7 +57,14 @@ namespace ServerTools
                                 int _newDelay = Delay_Between_Uses / 2;
                                 if (_timepassed >= _newDelay)
                                 {
-                                    CommandCost(_cInfo, _announce);
+                                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                                    {
+                                        CommandCost(_cInfo, _announce);
+                                    }
+                                    else
+                                    {
+                                        GiveAnimals(_cInfo, _announce);
+                                    }
                                 }
                                 else
                                 {
@@ -70,7 +91,14 @@ namespace ServerTools
                     {
                         if (_timepassed >= Delay_Between_Uses)
                         {
-                            CommandCost(_cInfo, _announce);
+                            if (Wallet.IsEnabled && Command_Cost >= 1)
+                            {
+                                CommandCost(_cInfo, _announce);
+                            }
+                            else
+                            {
+                                GiveAnimals(_cInfo, _announce);
+                            }
                         }
                         else
                         {
@@ -194,8 +222,11 @@ namespace ServerTools
                     _phrase715 = _phrase715.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase715 = _phrase715.Replace("{Radius}", _nextRadius.ToString());
                     GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase715), Config.Server_Response_Name, false, "ServerTools", false);
-                    int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
+                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    {
+                        int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
+                    }
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
                     PersistentContainer.Instance.Save();
                 }
@@ -209,8 +240,11 @@ namespace ServerTools
                     _phrase715 = _phrase715.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase715 = _phrase715.Replace("{Radius}", _nextRadius.ToString());
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase715), Config.Server_Response_Name, false, "ServerTools", false));
-                    int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
+                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    {
+                        int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
+                        PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
+                    }
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
                     PersistentContainer.Instance.Save();
                 }
