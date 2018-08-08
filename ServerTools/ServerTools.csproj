@@ -39,10 +39,14 @@
     </Compile>
     <Compile Include="src\AntiCheat\DupeLog.cs" />
     <Compile Include="src\Bank\Bank.cs" />
+    <Compile Include="src\Chat\AdminChatCommands\SetMarket.cs" />
+    <Compile Include="src\Chat\ChatCommands\MarketChat.cs" />
     <Compile Include="src\Chat\ChatCommands\Mogul.cs" />
+    <Compile Include="src\Chat\ChatCommands\Session.cs" />
     <Compile Include="src\ConsoleCommands\BikeList.cs" />
     <Compile Include="src\ConsoleCommands\EventCommands.cs" />
     <Compile Include="src\ConsoleCommands\TraderList.cs" />
+    <Compile Include="src\ConsoleCommands\ZoneSetup.cs" />
     <Compile Include="src\Event\Event.cs" />
     <Compile Include="src\Hardcore\Hardcore.cs" />
     <Compile Include="src\AntiCheat\CredentialCheck.cs" />
@@ -136,6 +140,8 @@
     <Compile Include="src\Hordes\Hordes.cs" />
     <Compile Include="src\HowTo\HowToSetup.cs" />
     <Compile Include="src\Chat\ChatCommands\LobbyChat.cs" />
+    <Compile Include="src\KillNotice\KillNotice.cs" />
+    <Compile Include="src\NewPlayer\NewPlayer.cs" />
     <Compile Include="src\NewSpawnTele\NewSpawnTele.cs" />
     <Compile Include="src\OutputLog\SdtdLog.cs" />
     <Compile Include="src\PersistentData\PersistentContainer.cs" />
@@ -150,6 +156,7 @@
     <Compile Include="src\Teleportation\TeleportDelay.cs" />
     <Compile Include="src\VoteReward\VoteReward.cs" />
     <Compile Include="src\Watchlist\Watchlist.cs" />
+    <Compile Include="src\Waypoints\Waypoints.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ChatCommandExamples.txt">
