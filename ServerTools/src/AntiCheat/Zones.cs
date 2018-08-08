@@ -11,6 +11,16 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false, Kill_Enabled = false, Jail_Enabled = false, Kick_Enabled = false,
             Ban_Enabled = false, Zone_Message = false, Set_Home = false, No_Zombie = false;
         public static int Days_Before_Log_Delete = 5;
+        public static Dictionary<int, string> corner1 = new Dictionary<int, string>();
+        public static Dictionary<int, string> corner2 = new Dictionary<int, string>();
+        public static Dictionary<int, string> entry = new Dictionary<int, string>();
+        public static Dictionary<int, string> exit = new Dictionary<int, string>();
+        public static Dictionary<int, string> response = new Dictionary<int, string>();
+        public static Dictionary<int, bool> pve = new Dictionary<int, bool>();
+        public static Dictionary<int, bool> nozombie = new Dictionary<int, bool>();
+        public static Dictionary<int, DateTime> reminder = new Dictionary<int, DateTime>();
+        public static Dictionary<int, string> reminderMsg = new Dictionary<int, string>();
+        private static int _xMinCheck = 0, _yMinCheck = 0, _zMinCheck = 0, _xMaxCheck = 0, _yMaxCheck = 0, _zMaxCheck = 0;
         private const string file = "Zones.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
@@ -101,6 +111,11 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing noZombie attribute: {0}", subChild.OuterXml));
                             continue;
                         }
+                        if (!_line.HasAttribute("reminderNotice"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing reminderNotice attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
                         else
                         {
                             string _pve = _line.GetAttribute("PvE");
@@ -117,7 +132,7 @@ namespace ServerTools
                                 continue;
                             }
                             string[] box = { _line.GetAttribute("corner1"), _line.GetAttribute("corner2"), _line.GetAttribute("entryMessage"), _line.GetAttribute("exitMessage"),
-                            _line.GetAttribute("response"), _line.GetAttribute("PvE"), _line.GetAttribute("noZombie") };
+                            _line.GetAttribute("response"), _line.GetAttribute("PvE"), _line.GetAttribute("noZombie"), _line.GetAttribute("reminderNotice") };
                             if (!Players.Box.Contains(box))
                             {
                                 Players.Box.Add(box);
@@ -133,7 +148,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpdateXml()
+        public static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath))
@@ -146,15 +161,15 @@ namespace ServerTools
                     for (int i = 0; i < Players.Box.Count; i++)
                     {
                         string[] _box = Players.Box[i];
-                        sw.WriteLine(string.Format("        <zone corner1=\"{0}\" corner2=\"{1}\" entryMessage=\"{2}\" exitMessage=\"{3}\" response=\"{4}\" PvE=\"{5}\" noZombie=\"{6}\" />", _box[0], _box[1], _box[2], _box[3], _box[4], _box[5], _box[6]));
+                        sw.WriteLine(string.Format("        <zone corner1=\"{0}\" corner2=\"{1}\" entryMessage=\"{2}\" exitMessage=\"{3}\" response=\"{4}\" PvE=\"{5}\" noZombie=\"{6}\" reminderNotice=\"{7}\" />", _box[0], _box[1], _box[2], _box[3], _box[4], _box[5], _box[6], _box[7]));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <zone corner1=\"-8000,-56,8000\" corner2=\"8000,200,0\" entryMessage=\"You are entering the Northern side\" exitMessage=\"You have exited the Northern Side\" response=\"\" PvE=\"false\" noZombie=\"false\" />");
-                    sw.WriteLine("        <zone corner1=\"-8000,-56,-1\" corner2=\"8000,200,-8000\" entryMessage=\"You are entering the Southern side\" exitMessage=\"You have exited the Southern Side\" response=\"\" PvE=\"false\" noZombie=\"false\" />");
-                    sw.WriteLine("        <zone corner1=\"-100,60,-90\" corner2=\"-140,70,-110\" entryMessage=\"You have entered the Market\" exitMessage=\"You have exited the Market\" response=\"say {PlayerName} has entered the market\" PvE=\"true\" noZombie=\"true\" />");
-                    sw.WriteLine("        <zone corner1=\"0,100,0\" corner2=\"25,105,25\" entryMessage=\"You have entered the Lobby\" exitMessage=\"You have exited the Lobby\" response=\"say {PlayerName} has entered the lobby\" PvE=\"true\" noZombie=\"true\" />");
+                    sw.WriteLine("        <zone corner1=\"-8000,-56,8000\" corner2=\"8000,200,0\" entryMessage=\"You are entering the Northern side\" exitMessage=\"You have exited the Northern Side\" response=\"\" PvE=\"false\" noZombie=\"false\" reminderNotice=\"You are still in the North\" />");
+                    sw.WriteLine("        <zone corner1=\"-8000,-56,-1\" corner2=\"8000,200,-8000\" entryMessage=\"You are entering the Southern side\" exitMessage=\"You have exited the Southern Side\" response=\"\" PvE=\"false\" noZombie=\"false\" reminderNotice=\"You are still in the South\" />");
+                    sw.WriteLine("        <zone corner1=\"-100,60,-90\" corner2=\"-140,70,-110\" entryMessage=\"You have entered the Market\" exitMessage=\"You have exited the Market\" response=\"say {PlayerName} has entered the market\" PvE=\"true\" noZombie=\"true\" reminderNotice=\"\" />");
+                    sw.WriteLine("        <zone corner1=\"0,100,0\" corner2=\"25,105,25\" entryMessage=\"You have entered the Lobby\" exitMessage=\"You have exited the Lobby\" response=\"say {PlayerName} has entered the lobby\" PvE=\"true\" noZombie=\"true\" reminderNotice=\"You have been in the lobby for a long time...\" />");
                 }
                 sw.WriteLine("    </Zone>");
                 sw.WriteLine("</Zones>");
@@ -426,6 +441,416 @@ namespace ServerTools
             else
             {
                 SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+            }
+        }
+
+        public static bool A(string[] _box, int _X, int _Y, int _Z)
+        {
+            int xMin, yMin, zMin, xMax, yMax, zMax;
+            string[] _corner1 = _box[0].Split(',');
+            int.TryParse(_corner1[0], out xMin);
+            int.TryParse(_corner1[1], out yMin);
+            int.TryParse(_corner1[2], out zMin);
+            string[] _corner2 = _box[1].Split(',');
+            int.TryParse(_corner2[0], out xMax);
+            int.TryParse(_corner2[1], out yMax);
+            int.TryParse(_corner2[2], out zMax);
+            if (xMin >= 0 && xMax >= 0)
+            {
+                if (xMin < xMax)
+                {
+                    if (_X >= xMin)
+                    {
+                        _xMinCheck = 1;
+                    }
+                    else
+                    {
+                        _xMinCheck = 0;
+                    }
+                    if (_X <= xMax)
+                    {
+                        _xMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _xMaxCheck = 0;
+                    }
+                }
+                else
+                {
+                    if (_X <= xMin)
+                    {
+                        _xMinCheck = 1;
+                    }
+                    else
+                    {
+                        _xMinCheck = 0;
+                    }
+                    if (_X >= xMax)
+                    {
+                        _xMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _xMaxCheck = 0;
+                    }
+                }
+            }
+            else if (xMin <= 0 && xMax <= 0)
+            {
+                if (xMin < xMax)
+                {
+                    if (_X >= xMin)
+                    {
+                        _xMinCheck = 1;
+                    }
+                    else
+                    {
+                        _xMinCheck = 0;
+                    }
+                    if (_X <= xMax)
+                    {
+                        _xMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _xMaxCheck = 0;
+                    }
+                }
+                else
+                {
+                    if (_X <= xMin)
+                    {
+                        _xMinCheck = 1;
+                    }
+                    else
+                    {
+                        _xMinCheck = 0;
+                    }
+                    if (_X >= xMax)
+                    {
+                        _xMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _xMaxCheck = 0;
+                    }
+                }
+            }
+            else if (xMin <= 0 && xMax >= 0)
+            {
+                if (_X >= xMin)
+                {
+                    _xMinCheck = 1;
+                }
+                else
+                {
+                    _xMinCheck = 0;
+                }
+                if (_X <= xMax)
+                {
+                    _xMaxCheck = 1;
+                }
+                else
+                {
+                    _xMaxCheck = 0;
+                }
+            }
+            else if (xMin >= 0 && xMax <= 0)
+            {
+                if (_X <= xMin)
+                {
+                    _xMinCheck = 1;
+                }
+                else
+                {
+                    _xMinCheck = 0;
+                }
+                if (_X >= xMax)
+                {
+                    _xMaxCheck = 1;
+                }
+                else
+                {
+                    _xMaxCheck = 0;
+                }
+            }
+
+            if (yMin >= 0 && yMax >= 0)
+            {
+                if (yMin < yMax)
+                {
+                    if (_Y >= yMin)
+                    {
+                        _yMinCheck = 1;
+                    }
+                    else
+                    {
+                        _yMinCheck = 0;
+                    }
+                    if (_Y <= yMax)
+                    {
+                        _yMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _yMaxCheck = 0;
+                    }
+                }
+                else
+                {
+                    if (_Y <= yMin)
+                    {
+                        _yMinCheck = 1;
+                    }
+                    else
+                    {
+                        _yMinCheck = 0;
+                    }
+                    if (_Y >= yMax)
+                    {
+                        _yMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _yMaxCheck = 0;
+                    }
+                }
+            }
+            else if (yMin <= 0 && yMax <= 0)
+            {
+                if (yMin < yMax)
+                {
+                    if (_Y >= yMin)
+                    {
+                        _yMinCheck = 1;
+                    }
+                    else
+                    {
+                        _yMinCheck = 0;
+                    }
+                    if (_Y <= yMax)
+                    {
+                        _yMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _yMaxCheck = 0;
+                    }
+                }
+                else
+                {
+                    if (_Y <= yMin)
+                    {
+                        _yMinCheck = 1;
+                    }
+                    else
+                    {
+                        _yMinCheck = 0;
+                    }
+                    if (_Y >= yMax)
+                    {
+                        _yMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _yMaxCheck = 0;
+                    }
+                }
+            }
+            else if (yMin <= 0 && yMax >= 0)
+            {
+                if (_Y >= yMin)
+                {
+                    _yMinCheck = 1;
+                }
+                else
+                {
+                    _yMinCheck = 0;
+                }
+                if (_Y <= yMax)
+                {
+                    _yMaxCheck = 1;
+                }
+                else
+                {
+                    _yMaxCheck = 0;
+                }
+            }
+            else if (yMin >= 0 && yMax <= 0)
+            {
+                if (_Y <= yMin)
+                {
+                    _yMinCheck = 1;
+                }
+                else
+                {
+                    _yMinCheck = 0;
+                }
+                if (_Y >= yMax)
+                {
+                    _yMaxCheck = 1;
+                }
+                else
+                {
+                    _yMaxCheck = 0;
+                }
+            }
+
+            if (zMin >= 0 && zMax >= 0)
+            {
+                if (zMin < zMax)
+                {
+                    if (_Z >= zMin)
+                    {
+                        _zMinCheck = 1;
+                    }
+                    else
+                    {
+                        _zMinCheck = 0;
+                    }
+                    if (_Z <= zMax)
+                    {
+                        _zMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _zMaxCheck = 0;
+                    }
+                }
+                else
+                {
+                    if (_Z <= zMin)
+                    {
+                        _zMinCheck = 1;
+                    }
+                    else
+                    {
+                        _zMinCheck = 0;
+                    }
+                    if (_Z >= zMax)
+                    {
+                        _zMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _zMaxCheck = 0;
+                    }
+                }
+            }
+            else if (zMin <= 0 && zMax <= 0)
+            {
+                if (zMin < zMax)
+                {
+                    if (_Z >= zMin)
+                    {
+                        _zMinCheck = 1;
+                    }
+                    else
+                    {
+                        _zMinCheck = 0;
+                    }
+                    if (_Z <= zMax)
+                    {
+                        _zMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _zMaxCheck = 0;
+                    }
+                }
+                else
+                {
+                    if (_Z <= zMin)
+                    {
+                        _zMinCheck = 1;
+                    }
+                    else
+                    {
+                        _zMinCheck = 0;
+                    }
+                    if (_Z >= zMax)
+                    {
+                        _zMaxCheck = 1;
+                    }
+                    else
+                    {
+                        _zMaxCheck = 0;
+                    }
+                }
+            }
+            else if (zMin <= 0 && zMax >= 0)
+            {
+                if (_Z >= zMin)
+                {
+                    _zMinCheck = 1;
+                }
+                else
+                {
+                    _zMinCheck = 0;
+                }
+                if (_Z <= zMax)
+                {
+                    _zMaxCheck = 1;
+                }
+                else
+                {
+                    _zMaxCheck = 0;
+                }
+            }
+            else if (zMin >= 0 && zMax <= 0)
+            {
+                if (_Z <= zMin)
+                {
+                    _zMinCheck = 1;
+                }
+                else
+                {
+                    _zMinCheck = 0;
+                }
+                if (_Z >= zMax)
+                {
+                    _zMaxCheck = 1;
+                }
+                else
+                {
+                    _zMaxCheck = 0;
+                }
+            }
+            if (_xMinCheck == 1 && _yMinCheck == 1 && _zMinCheck == 1 && _xMaxCheck == 1 && _yMaxCheck == 1 && _zMaxCheck == 1)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static void Reminder()
+        {
+            foreach (KeyValuePair<int,DateTime> time in reminder)
+            {
+                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(time.Key);
+                if (_cInfo != null)
+                {
+                    DateTime _dt = time.Value;
+                    TimeSpan varTime = DateTime.Now - _dt;
+                    double fractionalMinutes = varTime.TotalMinutes;
+                    int _timepassed = (int)fractionalMinutes;
+                    if (_timepassed >= 15)
+                    {
+                        string _msg;
+                        reminderMsg.TryGetValue(_cInfo.entityId, out _msg);
+                        if (_msg != "")
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _msg), Config.Server_Response_Name, false, "ServerTools", false));
+                            reminder[_cInfo.entityId] = DateTime.Now;
+                        }
+                    }
+                }
+                else
+                {
+                    reminder.Remove(time.Key);
+                    reminderMsg.Remove(time.Key);
+                }
             }
         }
     }
