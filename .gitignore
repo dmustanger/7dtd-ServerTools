@@ -1,11 +1,4 @@
-Assembly-CSharp.dll
-Assembly-CSharp-firstpass.dll
-LogLibrary.dll
-mscorlib.dll
-System.dll
-System.Xml.dll
-UnityEngine.dll
-bin/**
+bin/Mods
 /ServerTools/obj/Debug
 /ServerTools/obj/Release
 .vscode

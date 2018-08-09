@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>false</DebugSymbols>
@@ -144,9 +146,12 @@
     <Compile Include="src\NewPlayer\NewPlayer.cs" />
     <Compile Include="src\NewSpawnTele\NewSpawnTele.cs" />
     <Compile Include="src\OutputLog\SdtdLog.cs" />
+    <Compile Include="src\PersistentData\MySqlDatabase.cs" />
     <Compile Include="src\PersistentData\PersistentContainer.cs" />
     <Compile Include="src\PersistentData\Player.cs" />
     <Compile Include="src\PersistentData\Players.cs" />
+    <Compile Include="src\PersistentData\SQL.cs" />
+    <Compile Include="src\PersistentData\SQLiteDatabase.cs" />
     <Compile Include="src\PersistentData\StateManager.cs" />
     <Compile Include="src\ConsoleCommands\ResetPlayer.cs" />
     <Compile Include="src\ConsoleCommands\Watchlist.cs" />
@@ -191,7 +196,16 @@
       <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\LogLibrary.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="MySql.Data">
+      <HintPath>..\7dtd-binaries\MySql.Data.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.108.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.108.0\lib\net20\System.Data.SQLite.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
       <HintPath>D:\SteamGames\steamapps\common\7 Days to Die Dedicated Server\7DaysToDieServer_Data\Managed\UnityEngine.dll</HintPath>
@@ -208,8 +222,17 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.108.0\build\net20\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.108.0\build\net20\System.Data.SQLite.Core.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.108.0\build\net20\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.108.0\build\net20\System.Data.SQLite.Core.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
