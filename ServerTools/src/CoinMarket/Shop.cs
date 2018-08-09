@@ -7,7 +7,7 @@ namespace ServerTools
 {
     class Shop
     {
-        public static bool IsEnabled = false, IsRunning = false, Anywhere = false;
+        public static bool IsEnabled = false, IsRunning = false, Anywhere = false, Inside_Market = false;
         public static int Delay_Between_Uses = 60;
         private const string file = "Market.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);

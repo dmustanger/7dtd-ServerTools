@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Reset a player's vote reward status so they can receive another reward.";
+            return "[ServerTools]-Reset a player's home teleport delay so they can use it again.";
         }
 
         public override string GetHelp()
