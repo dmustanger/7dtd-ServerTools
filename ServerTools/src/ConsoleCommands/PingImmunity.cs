@@ -43,7 +43,7 @@ namespace ServerTools
                     if (_cInfo != null)
                     {
                         string _sql = string.Format("SELECT pingimmunity FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQLiteDatabase.TQuery(_sql);
+                        DataTable _result = SQL.TQuery(_sql);
                         bool _isHighPingImmune = false;
                         if (_result.Rows.Count > 0)
                         {
@@ -78,7 +78,7 @@ namespace ServerTools
                         {
                             string _id = SQL.EscapeString(_params[1]);
                             string _sql = string.Format("SELECT pingimmunity FROM Players WHERE steamid = '{0}'", _id);
-                            DataTable _result = SQLiteDatabase.TQuery(_sql);
+                            DataTable _result = SQL.TQuery(_sql);
                             bool _isHighPingImmune = false;
                             if (_result.Rows.Count > 0)
                             {
@@ -115,7 +115,7 @@ namespace ServerTools
                     if (_cInfo != null)
                     {
                         string _sql = string.Format("SELECT pingimmunity FROM Players WHERE steamid = '{0}' AND pingimmunity = 'true'", _cInfo.playerId);
-                        DataTable _result = SQLiteDatabase.TQuery(_sql);
+                        DataTable _result = SQL.TQuery(_sql);
                         if (_result.Rows.Count > 0)
                         {
                             _sql = string.Format("UPDATE Players SET pingimmunity = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
@@ -137,7 +137,7 @@ namespace ServerTools
                         {
                             string _id = SQL.EscapeString(_params[1]);
                             string _sql = string.Format("SELECT pingimmunity FROM Players WHERE steamid = '{0}' AND pingimmunity = 'true'", _id);
-                            DataTable _result = SQLiteDatabase.TQuery(_sql);
+                            DataTable _result = SQL.TQuery(_sql);
                             if (_result.Rows.Count > 0)
                             {
                                 _sql = string.Format("UPDATE Players SET pingimmunity = 'false' WHERE steamid = '{0}'", _id);
@@ -159,7 +159,7 @@ namespace ServerTools
                         return;
                     }
                     string _sql = "SELECT steamid FROM Players WHERE pingimmunity = 'true'";
-                    DataTable _result = SQLiteDatabase.TQuery(_sql);
+                    DataTable _result = SQL.TQuery(_sql);
                     if (_result.Rows.Count < 1)
                     {
                         SdtdConsole.Instance.Output("There are no Ids on the Ping Immunity list.");
