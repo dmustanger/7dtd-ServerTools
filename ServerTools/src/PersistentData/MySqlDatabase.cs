@@ -11,7 +11,6 @@ namespace ServerTools
         private static string Database;
         private static string UserName;
         private static string Password;
-        private static bool isconnected = false;
 
         public static void SetConnection()
         {
@@ -44,14 +43,13 @@ namespace ServerTools
                 }
                 return;
             }
-            isconnected = true;
             connection.Close();
             CreateTables();
         }
 
         private static void CreateTables()
         {
-            FastQuery("CREATE TABLE IF NOT EXISTS Players (steamid VARCHAR(50) NOT NULL, pingimmunity INTEGER, last_gimme DATE,PRIMARY KEY (steamid)) ENGINE = InnoDB;");
+            FastQuery("CREATE TABLE IF NOT EXISTS Players (steamid VARCHAR(50) NOT NULL, pingimmunity VARCHAR(10) DEFAULT 'false', last_gimme DATE,PRIMARY KEY (steamid)) ENGINE = InnoDB;");
         }
 
         public static void FastQuery(string _sql)
@@ -86,6 +84,12 @@ namespace ServerTools
                 Log.Out(string.Format("[ServerTools] MySqlException in MySqlException.TQuery: {0}", e));
             }
             return dt;
+        }
+
+        public static string EscapeString(string _string)
+        {
+            string _str = MySqlHelper.EscapeString(_string);
+            return _str;
         }
     }
 }

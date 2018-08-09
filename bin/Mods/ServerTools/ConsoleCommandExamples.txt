@@ -8,8 +8,8 @@ Examples for console command maxping:
 		maxping 300
 
 Examples for console command PingImmunity:
-	Usage: pingimmunity add <steamID> <player name>
-		pingimmunity add 12345678912345678 "foo bar"
+	Usage: pingimmunity add <steamID/playername> 
+		pingimmunity add 12345678912345678  "foo bar"
 		pi add 12345678912345678 "foo bar"
 
 	Usage: pingimmunity remove <steamID>

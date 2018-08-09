@@ -15,6 +15,7 @@ namespace ServerTools
             {
                 Directory.CreateDirectory(ConfigPath);
             }
+            SQL.Connect();
             StateManager.Awake();
             Config.Load();
             HowToSetup.Load();

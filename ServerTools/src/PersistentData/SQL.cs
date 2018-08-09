@@ -43,5 +43,11 @@ namespace ServerTools
             }
             return dt;
         }
+
+        public static string EscapeString(string _string)
+        {
+            string _str = MySqlDatabase.EscapeString(_string);
+            return _str;
+        }
     }
 }

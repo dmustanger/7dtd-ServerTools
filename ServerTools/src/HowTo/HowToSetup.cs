@@ -431,7 +431,6 @@ namespace ServerTools
                 sw.WriteLine("Set a numeric value for Max_Ping");
                 sw.WriteLine("Set a numeric value for Samples_Needed");
                 sw.WriteLine();
-                sw.WriteLine("Enabling will create a HighPingImmunity.xml in your \"world save folder/ServerTools\"");
                 sw.WriteLine("Players who have too high of a ping will be kicked from the server automatically.");
                 sw.WriteLine("Max_Ping is the limit a player can ping at before being flagged for kick.");
                 sw.WriteLine("Samples_Needed control the amount of times in a row a player must fail the ping check before the auto kick initiates.");

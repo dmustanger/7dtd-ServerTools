@@ -28,7 +28,7 @@ namespace ServerTools
 
         private static void CreateTables()
         {
-            FastQuery("CREATE TABLE IF NOT EXISTS Players (steamid TEXT PRIMARY KEY ON CONFLICT REPLACE, pingimmunity INTEGER, last_gimme TEXT);");
+            FastQuery("CREATE TABLE IF NOT EXISTS Players (steamid TEXT PRIMARY KEY ON CONFLICT REPLACE, pingimmunity TEXT DEFAULT 'false', last_gimme TEXT);");
         }
 
         public static DataTable TQuery(string _sql)

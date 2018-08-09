@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Collections.Generic;
 
 namespace ServerTools
@@ -13,10 +14,10 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. pingimmunity add <steamId/entityId> <playerName>\n" +
-                   "  2. pingimmunity remove <steamId/entityId> <playerName>\n" +
+                   "  1. pingimmunity add <steamId/entityId/playerName>\n" +
+                   "  2. pingimmunity remove <steamId/entityId/playerName>\n" +
                    "  3. pingimmunity list\n" +
-                   "1. Adds a steam ID and name to the Ping Immunity list\n" +
+                   "1. Adds a steam ID to the Ping Immunity list\n" +
                    "2. Removes a steam ID from the Ping Immunity list\n" +
                    "3. Lists all steam IDs that have Ping Immunity" +
                    "4. *Note* You can use the player id or name if they are online otherwise use their steam Id";
@@ -33,58 +34,72 @@ namespace ServerTools
             {
                 if (_params[0].ToLower().Equals("add"))
                 {
-                    if (_params.Count != 3)
+                    if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 3, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
                         return;
                     }
-                    if (_params[1].Length < 1 || _params[1].Length > 17)
+                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    if (_cInfo != null)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not add Id: Invalid Id {0}", _params[1]));
-                        return;
-                    }
-                    if (_params[2].Length < 1)
-                    {
-                        SdtdConsole.Instance.Output(string.Format("Can not add Id: Invalid Id {0}", _params[2]));
-                        return;
-                    }
-                    else
-                    {
-                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                        if (_cInfo != null)
+                        string _sql = string.Format("SELECT pingimmunity FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQLiteDatabase.TQuery(_sql);
+                        bool _isHighPingImmune = false;
+                        if (_result.Rows.Count > 0)
                         {
-                            if (HighPingKicker.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} is already in the Ping Immunity list.", _params[1]));
-                                return;
-                            }
-                            else
-                            {
-                                HighPingKicker.Dict.Add(_cInfo.playerId, _params[2]);
-                                SdtdConsole.Instance.Output(string.Format("Added Id {0} with the name of {1} to the Ping Immunity list.", _params[1], _params[2]));
-                                HighPingKicker.UpdateXml();
-                            }
+                            bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _isHighPingImmune);
+                        }
+                        if (_isHighPingImmune)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} is already in the Ping Immunity list.", _params[1]));
                         }
                         else
                         {
-                            if (_params[1].Length != 17)
+                            if (_result.Rows.Count > 0)
                             {
-                                SdtdConsole.Instance.Output(string.Format("You can only use a player id or their name if online. Can not add Id: Invalid Id {0}", _params[1]));
-                                return;
+                                _sql = string.Format("UPDATE Players SET pingimmunity = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
                             }
                             else
                             {
-                                if (HighPingKicker.Dict.ContainsKey(_params[1]))
+                                _sql = string.Format("INSERT INTO Players (steamid, pingimmunity) VALUES ('{0}', 'true')", _cInfo.playerId);
+                            }
+                            SQL.FastQuery(_sql);
+                            SdtdConsole.Instance.Output(string.Format("Added Id {0} to the Ping Immunity list.", _params[1]));
+                        }
+                    }
+                    else
+                    {
+                        if (_params[1].Length != 17)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("You can only use a player id or their name if online. Can not add Id: Invalid Id {0}", _params[1]));
+                            return;
+                        }
+                        else
+                        {
+                            string _id = SQL.EscapeString(_params[1]);
+                            string _sql = string.Format("SELECT pingimmunity FROM Players WHERE steamid = '{0}'", _id);
+                            DataTable _result = SQLiteDatabase.TQuery(_sql);
+                            bool _isHighPingImmune = false;
+                            if (_result.Rows.Count > 0)
+                            {
+                                bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _isHighPingImmune);
+                            }
+                            if (_isHighPingImmune)
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} is already in the Ping Immunity list.", _params[1]));
+                            }
+                            else
+                            {
+                                if (_result.Rows.Count > 0)
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} is already in the Ping Immunity list.", _params[1]));
-                                    return;
+                                    _sql = string.Format("UPDATE Players SET pingimmunity = 'true' WHERE steamid = '{0}'", _id);
                                 }
                                 else
                                 {
-                                    HighPingKicker.Dict.Add(_params[1], _params[2]);
-                                    SdtdConsole.Instance.Output(string.Format("Added Id {0} with the name of {1} to the Ping Immunity list.", _params[1], _params[2]));
-                                    HighPingKicker.UpdateXml();
+                                    _sql = string.Format("INSERT INTO Players (steamid, pingimmunity) VALUES ('{0}', 'true')", _id);
                                 }
+                                SQL.FastQuery(_sql);
+                                SdtdConsole.Instance.Output(string.Format("Added Id {0} to the Ping Immunity list.", _params[1]));
                             }
                         }
                     }
@@ -99,34 +114,39 @@ namespace ServerTools
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                     if (_cInfo != null)
                     {
-                        if (!HighPingKicker.Dict.ContainsKey(_cInfo.playerId))
+                        string _sql = string.Format("SELECT pingimmunity FROM Players WHERE steamid = '{0}' AND pingimmunity = 'true'", _cInfo.playerId);
+                        DataTable _result = SQLiteDatabase.TQuery(_sql);
+                        if (_result.Rows.Count > 0)
+                        {
+                            _sql = string.Format("UPDATE Players SET pingimmunity = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                            SQL.FastQuery(_sql);
+                            SdtdConsole.Instance.Output(string.Format("Removed Id {0} from Ping Immunity list.", _params[1]));
+                        }
+                        else
                         {
                             SdtdConsole.Instance.Output(string.Format("Id {0} was not found.", _params[1]));
-                            return;
                         }
-                        HighPingKicker.Dict.Remove(_cInfo.playerId);
-                        SdtdConsole.Instance.Output(string.Format("Removed Id {0} from Ping Immunity list.", _params[1]));
-                        HighPingKicker.UpdateXml();
                     }
                     else
                     {
                         if (_params[1].Length != 17)
                         {
                             SdtdConsole.Instance.Output(string.Format("You can only use a player id or their name if online. Can not remove Id: Invalid Id {0}", _params[1]));
-                            return;
                         }
                         else
                         {
-                            if (HighPingKicker.Dict.ContainsKey(_params[1]))
+                            string _id = SQL.EscapeString(_params[1]);
+                            string _sql = string.Format("SELECT pingimmunity FROM Players WHERE steamid = '{0}' AND pingimmunity = 'true'", _id);
+                            DataTable _result = SQLiteDatabase.TQuery(_sql);
+                            if (_result.Rows.Count > 0)
                             {
-                                SdtdConsole.Instance.Output(string.Format("Id {0} was not found.", _params[1]));
-                                return;
+                                _sql = string.Format("UPDATE Players SET pingimmunity = 'false' WHERE steamid = '{0}'", _id);
+                                SQL.FastQuery(_sql);
+                                SdtdConsole.Instance.Output(string.Format("Removed Id {0} from the Ping Immunity list.", _params[1]));
                             }
                             else
                             {
-                                HighPingKicker.Dict.Remove(_params[1]);
-                                SdtdConsole.Instance.Output(string.Format("Removed Id {0} from the Ping Immunity list.", _params[1]));
-                                HighPingKicker.UpdateXml();
+                                SdtdConsole.Instance.Output(string.Format("Id {0} was not found.", _params[1]));
                             }
                         }
                     }
@@ -138,14 +158,19 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
                         return;
                     }
-                    if (HighPingKicker.Dict.Count < 1)
+                    string _sql = "SELECT steamid FROM Players WHERE pingimmunity = 'true'";
+                    DataTable _result = SQLiteDatabase.TQuery(_sql);
+                    if (_result.Rows.Count < 1)
                     {
                         SdtdConsole.Instance.Output("There are no Ids on the Ping Immunity list.");
-                        return;
                     }
-                    foreach (KeyValuePair<string, string> _key in HighPingKicker.Dict)
+                    else
                     {
-                        SdtdConsole.Instance.Output(string.Format("{0} {1}", _key.Key, _key.Value));
+                        foreach (DataRow row in _result.Rows)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("{0}", row[0]));
+                        }
+                        SdtdConsole.Instance.Output(string.Format("Total: {0}", _result.Rows.Count.ToString()));
                     }
                 }
                 else

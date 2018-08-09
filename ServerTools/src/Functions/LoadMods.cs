@@ -184,11 +184,7 @@
             {
                 InventoryCheck.Load();
             }
-            if (HighPingKicker.IsRunning && !HighPingKicker.IsEnabled)
-            {
-                HighPingKicker.Unload();
-            }
-            if (!HighPingKicker.IsRunning && HighPingKicker.IsEnabled)
+            if (HighPingKicker.IsEnabled)
             {
                 HighPingKicker.Load();
             }

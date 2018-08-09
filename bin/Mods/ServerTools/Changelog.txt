@@ -51,7 +51,8 @@ Fixed bank withdraw into coins when over the stack limit. Players may only withd
 Fixed bank transfer not deducting the proper amount from the sender
 Fixed chat command /clancommands not responding
 Updated HowTo.xml
-
+Changed how player data is saved. We are now using sqlite/mysql database
+Changed high ping kicker player data over to the new database system
 10.7
 
 Added chat command /mogul. Shows the top 3 players based on their wallet and bank wealth combined
