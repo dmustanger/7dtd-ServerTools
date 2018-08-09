@@ -6,7 +6,7 @@ namespace ServerTools
     class Bounties
     {
         public static bool IsEnabled = false;
-        public static int Bounty = 5;
+        public static int Bounty = 5, Kill_Streak = 0;
 
         public static void BountyList(ClientInfo _cInfo, string _playerName)
         {
@@ -18,7 +18,7 @@ namespace ServerTools
                 {
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
                     int _cost = _player.Level * Bounty;
-                    int _currentbounty = PersistentContainer.Instance.Players[_cInfo.playerId, false].Bounty;
+                    int _currentbounty = PersistentContainer.Instance.Players[_cInfo1.playerId, false].Bounty;
                     string _phrase911;
                     if (!Phrases.Dict.TryGetValue(911, out _phrase911))
                     {
@@ -60,7 +60,7 @@ namespace ServerTools
                             {
                                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
                                 int _minimum = _player.Level * Bounty;
-                                if (_cost < (_player.Level * Bounty))
+                                if (_cost < _minimum)
                                 {
                                     _cost = _minimum;
                                 }
@@ -70,24 +70,10 @@ namespace ServerTools
                                 if (gameMode == 7)
                                 {
                                     currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                                    if (!Wallet.Negative_Wallet)
-                                    {
-                                        if (currentCoins < 0)
-                                        {
-                                            currentCoins = 0;
-                                        }
-                                    }
                                 }
                                 else
                                 {
                                     currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                                    if (!Wallet.Negative_Wallet)
-                                    {
-                                        if (currentCoins < 0)
-                                        {
-                                            currentCoins = 0;
-                                        }
-                                    }
                                 }
                                 if (currentCoins >= _cost)
                                 {
@@ -129,24 +115,10 @@ namespace ServerTools
                             if (gameMode == 7)
                             {
                                 currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                                if (!Wallet.Negative_Wallet)
-                                {
-                                    if (currentCoins < 0)
-                                    {
-                                        currentCoins = 0;
-                                    }
-                                }
                             }
                             else
                             {
                                 currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                                if (!Wallet.Negative_Wallet)
-                                {
-                                    if (currentCoins < 0)
-                                    {
-                                        currentCoins = 0;
-                                    }
-                                }
                             }
                             if (currentCoins >= _cost)
                             {
