@@ -1,4 +1,5 @@
-﻿
+﻿using System.Data;
+
 namespace ServerTools
 {
     class Mogul
@@ -18,14 +19,18 @@ namespace ServerTools
                     {
                         if (p.PlayerName != null)
                         {
+                            string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _id);
+                            DataTable _result = SQL.TQuery(_sql);
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank);
+                            _result.Dispose();
                             int _total = 0;
                             if (Wallet.IsEnabled && Bank.IsEnabled)
                             {
-                                _total = p.Wallet + p.Bank;
+                                _total = p.Wallet + _bank;
                             }
                             else if (Wallet.IsEnabled && !Bank.IsEnabled)
                             {
-                                _total = p.Bank;
+                                _total = _bank;
                             }
                             else if (!Wallet.IsEnabled && Bank.IsEnabled)
                             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -20,29 +21,30 @@ namespace ServerTools
 
         public static void Check(ClientInfo _cInfo)
         {
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank);
+            _result.Dispose();
+            if (TransferId.ContainsKey(_cInfo.playerId))
             {
-                if (p != null)
-                {
-                    if (TransferId.ContainsKey(_cInfo.playerId))
-                    {
-                        int _id;
-                        TransferId.TryGetValue(_cInfo.playerId, out _id);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank account is worth {2}. Transfer Id is {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, p.Bank, _id), Config.Server_Response_Name, false, "ServerTools", false));
-                    }
-                    else
-                    {
-                        AddId(_cInfo, p);
-                    }
-                }
+                TransferId.TryGetValue(_cInfo.playerId, out int _id);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank account is worth {2}. Transfer Id is {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _bank, _id), Config.Server_Response_Name, false, "ServerTools", false));
+            }
+            else
+            {
+                AddId(_cInfo);
             }
         }
 
-        public static void AddId(ClientInfo _cInfo, Player p)
+        public static void AddId(ClientInfo _cInfo)
         {
             int _rndId = random.Next(1000, 5001);
             TransferId.Add(_cInfo.playerId, _rndId);
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank account is worth {2}. Transfer Id is {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, p.Bank, _rndId), Config.Server_Response_Name, false, "ServerTools", false));
+            string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank);
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank account is worth {2}. Transfer Id is {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _bank, _rndId), Config.Server_Response_Name, false, "ServerTools", false));
+            _result.Dispose();
         }
 
         public static void CreateFolder()
@@ -155,7 +157,10 @@ namespace ServerTools
                                             {
                                                 if (item.count >= _coinAmount)
                                                 {
-                                                    int _banktotal = PersistentContainer.Instance.Players[_cInfo.playerId, false].Bank;
+                                                    string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                                    DataTable _result = SQL.TQuery(_sql);
+                                                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _banktotal);
+                                                    _result.Dispose();
                                                     double _percent = _coinAmount * 0.05;
                                                     int _newCoin = _coinAmount - (int)_percent;
                                                     double _newLimit = Limit + (Limit * 0.05);
@@ -176,9 +181,8 @@ namespace ServerTools
                                                         }
                                                         ItemStack itemStack = new ItemStack(_itemValue, _newCount);
                                                         SecureLoot.UpdateSlot(slotNumber, itemStack);
-                                                        int _oldBank = PersistentContainer.Instance.Players[_cInfo.playerId, true].Bank;
-                                                        PersistentContainer.Instance.Players[_cInfo.playerId, true].Bank = _oldBank + _newCoin;
-                                                        PersistentContainer.Instance.Save();
+                                                        _sql = string.Format("UPDATE Players SET bank = '{0}' WHERE steamid = '{1}'", _banktotal + _newCoin, _cInfo.playerId);
+                                                        SQL.FastQuery(_sql);
                                                         using (StreamWriter sw = new StreamWriter(filepath, true))
                                                         {
                                                             sw.WriteLine(string.Format("{0}: {1} has added {2} to their bank account.", DateTime.Now, _cInfo.playerName, _newCoin));
@@ -223,72 +227,69 @@ namespace ServerTools
 
         public static void Withdraw(ClientInfo _cInfo, string _amount)
         {
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            if (int.TryParse(_amount, out int _coinAmount))
             {
-                if (p != null)
+                string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank);
+                _result.Dispose();
+                if (_bank >= _coinAmount)
                 {
-                    int _coinAmount;
-                    if (int.TryParse(_amount, out _coinAmount))
+                    ItemValue _itemValue = ItemClass.GetItem(Ingame_Coin, true);
+                    if (_itemValue.type == ItemValue.None.type)
                     {
-                        if (p.Bank >= _coinAmount)
+                        Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0}", Ingame_Coin));
+                        return;
+                    }
+                    else
+                    {
+                        _itemValue = new ItemValue(ItemClass.GetItem(Ingame_Coin).type, 1, 1, true);
+                    }
+                    int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
+                    if (_coinAmount <= _maxAllowed)
+                    {
+                        World world = GameManager.Instance.World;
+                        if (world.Players.dict[_cInfo.entityId].IsSpawned())
                         {
-                            ItemValue _itemValue = ItemClass.GetItem(Ingame_Coin, true);
-                            if (_itemValue.type == ItemValue.None.type)
+                            var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0}", Ingame_Coin));
-                                return;
-                            }
-                            else
-                            {
-                                _itemValue = new ItemValue(ItemClass.GetItem(Ingame_Coin).type, 1, 1, true);
-                            }
-                            int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
-                            if (_coinAmount <= _maxAllowed)
-                            {
-                                World world = GameManager.Instance.World;
-                                if (world.Players.dict[_cInfo.entityId].IsSpawned())
-                                {
-                                    var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                                    {
-                                        entityClass = EntityClass.FromString("item"),
-                                        id = EntityFactory.nextEntityID++,
-                                        itemStack = new ItemStack(_itemValue, _coinAmount),
-                                        pos = world.Players.dict[_cInfo.entityId].position,
-                                        rot = new Vector3(20f, 0f, 20f),
-                                        lifetime = 60f,
-                                        belongsPlayerId = _cInfo.entityId
-                                    });
-                                    world.SpawnEntityInWorld(entityItem);
+                                entityClass = EntityClass.FromString("item"),
+                                id = EntityFactory.nextEntityID++,
+                                itemStack = new ItemStack(_itemValue, _coinAmount),
+                                pos = world.Players.dict[_cInfo.entityId].position,
+                                rot = new Vector3(20f, 0f, 20f),
+                                lifetime = 60f,
+                                belongsPlayerId = _cInfo.entityId
+                            });
+                            world.SpawnEntityInWorld(entityItem);
 
-                                    _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
-                                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].Bank = p.Bank - _coinAmount;
-                                    PersistentContainer.Instance.Save();
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have received your {2}. If your inventory is full, check the ground.[-]", Config.Chat_Response_Color, _cInfo.playerName, Ingame_Coin), Config.Server_Response_Name, false, "ServerTools", false));
-                                    using (StreamWriter sw = new StreamWriter(filepath, true))
-                                    {
-                                        sw.WriteLine(string.Format("{0}: {1} has removed {2} from their bank account as {3}.", DateTime.Now, _cInfo.playerName, _coinAmount, Ingame_Coin));
-                                        sw.WriteLine();
-                                        sw.Flush();
-                                        sw.Close();
-                                    }
-                                }
-                            }
-                            else
+                            _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
+                            world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+                            _sql = string.Format("UPDATE Players SET bank = '{0}' WHERE steamid = '{1}'", _bank - _coinAmount, _cInfo.playerId);
+                            SQL.FastQuery(_sql);
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have received your {2}. If your inventory is full, check the ground.[-]", Config.Chat_Response_Color, _cInfo.playerName, Ingame_Coin), Config.Server_Response_Name, false, "ServerTools", false));
+                            using (StreamWriter sw = new StreamWriter(filepath, true))
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you can only withdraw a full stack at a time. The maximum stack size is {2}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _maxAllowed), Config.Server_Response_Name, false, "ServerTools", false));
+                                sw.WriteLine(string.Format("{0}: {1} has removed {2} from their bank account as {3}.", DateTime.Now, _cInfo.playerName, _coinAmount, Ingame_Coin));
+                                sw.WriteLine();
+                                sw.Flush();
+                                sw.Close();
                             }
-                        }
-                        else
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank account does not have enough to withdraw that value.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                     else
                     {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you input an invalid integer. Type /withdraw #.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you can only withdraw a full stack at a time. The maximum stack size is {2}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _maxAllowed), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
+                else
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank account does not have enough to withdraw that value.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                }
+            }
+            else
+            {
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you input an invalid integer. Type /withdraw #.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -320,10 +321,14 @@ namespace ServerTools
                             double _percent = _coinAmount * 0.05;
                             int _newCoin = _coinAmount - (int)_percent;
                             double _newLimit = Limit + (Limit * 0.05);
-                            if (p.Bank + _coinAmount <= (int)_newLimit)
+                            string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result = SQL.TQuery(_sql);
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank);
+                            _result.Dispose();
+                            if (_bank + _coinAmount <= (int)_newLimit)
                             {
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].Bank = p.Bank + _newCoin;
-                                PersistentContainer.Instance.Save();
+                                _sql = string.Format("UPDATE Players SET bank = '{0}' WHERE steamid = '{1}'", _bank + _newCoin, _cInfo.playerId);
+                                SQL.FastQuery(_sql);
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} deposited {2} {3} from your wallet to your bank account. 5% fee was applied.[-]", Config.Chat_Response_Color, _cInfo.playerName, _coinAmount, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                                 using (StreamWriter sw = new StreamWriter(filepath, true))
                                 {
@@ -335,7 +340,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank can not hold this much. The bank can hold {2} total. You currently have {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, Limit, p.Bank), Config.Server_Response_Name, false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank can not hold this much. The bank can hold {2} total. You currently have {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, Limit, _bank), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                         }
                         else
@@ -353,38 +358,36 @@ namespace ServerTools
 
         public static void WalletWithdraw(ClientInfo _cInfo, string _amount)
         {
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            if (int.TryParse(_amount, out int _coinAmount))
             {
-                if (p != null)
+                string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank);
+                _result.Dispose();
+                if (_bank >= _coinAmount)
                 {
-                    int _coinAmount;
-                    if (int.TryParse(_amount, out _coinAmount))
+                    int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins + _coinAmount;
+                    PersistentContainer.Instance.Save();
+                    _sql = string.Format("UPDATE Players SET bank = '{0}' WHERE steamid = '{1}'", _bank - _coinAmount, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have received your {2}. It has gone to your wallet.[-]", Config.Chat_Response_Color, _cInfo.playerName, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                    using (StreamWriter sw = new StreamWriter(filepath, true))
                     {
-                        if (p.Bank >= _coinAmount)
-                        {
-                            int _oldCoins = p.PlayerSpentCoins;
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins + _coinAmount;
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].Bank = p.Bank - _coinAmount;
-                            PersistentContainer.Instance.Save();
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have received your {2}. It has gone to your wallet.[-]", Config.Chat_Response_Color, _cInfo.playerName, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
-                            using (StreamWriter sw = new StreamWriter(filepath, true))
-                            {
-                                sw.WriteLine(string.Format("{0}: {1} has removed {2} from their bank account into their wallet.", DateTime.Now, _cInfo.playerName, _coinAmount));
-                                sw.WriteLine();
-                                sw.Flush();
-                                sw.Close();
-                            }
-                        }
-                        else
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank account does not have enough to withdraw that value.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                        }
-                    }
-                    else
-                    {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you input an invalid integer. Type /withdraw #.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                        sw.WriteLine(string.Format("{0}: {1} has removed {2} from their bank account into their wallet.", DateTime.Now, _cInfo.playerName, _coinAmount));
+                        sw.WriteLine();
+                        sw.Flush();
+                        sw.Close();
                     }
                 }
+                else
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank account does not have enough to withdraw that value.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                }
+            }
+            else
+            {
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you input an invalid integer. Type /withdraw #.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -402,41 +405,38 @@ namespace ServerTools
                     {
                         if (TransferId.ContainsValue(_id))
                         {
-                            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                            string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result = SQL.TQuery(_sql);
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank);
+                            _result.Dispose();
+                            if (_bank >= _amount)
                             {
-                                if (p != null)
+                                foreach (KeyValuePair<string, int> _accountInfo in TransferId)
                                 {
-                                    if (p.Bank >= _amount)
+                                    if (_accountInfo.Value == _id)
                                     {
-                                        foreach (KeyValuePair<string, int> _accountInfo in TransferId)
+                                        ClientInfo _cInfo1 = ConnectionManager.Instance.GetClientInfoForPlayerId(_accountInfo.Key);
+                                        if (_cInfo1 != null)
                                         {
-                                            if (_accountInfo.Value == _id)
-                                            {
-                                                ClientInfo _cInfo1 = ConnectionManager.Instance.GetClientInfoForPlayerId(_accountInfo.Key);
-                                                if (_cInfo1 != null)
-                                                {
-                                                    Player p1 = PersistentContainer.Instance.Players[_cInfo1.playerId, false];
-                                                    {
-                                                        if (p1 != null)
-                                                        {
-                                                            TransferId.Remove(_cInfo1.playerId);
-                                                            PersistentContainer.Instance.Players[_cInfo.playerId, true].Bank = p.Bank - _amount;
-                                                            PersistentContainer.Instance.Players[_cInfo1.playerId, true].Bank = p1.Bank + _amount;
-                                                            PersistentContainer.Instance.Save();
-                                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have sent {2} from your bank to player {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _amount, _cInfo1.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                                            _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have received {2} in to your bank from player {3}.[-]", Config.Chat_Response_Color, _cInfo1.playerName, _amount, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                                            return;
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                            TransferId.Remove(_cInfo1.playerId);
+                                            _sql = string.Format("UPDATE Players SET bank = '{0}' WHERE steamid = '{1}'", _bank - _amount, _cInfo.playerId);
+                                            SQL.FastQuery(_sql);
+                                            _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo1.playerId);
+                                            DataTable _result1 = SQL.TQuery(_sql);
+                                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank1);
+                                            _result1.Dispose();
+                                            _sql = string.Format("UPDATE Players SET bank = '{0}' WHERE steamid = '{1}'", _bank1 + _amount, _cInfo1.playerId);
+                                            SQL.FastQuery(_sql);
+                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have sent {2} from your bank to player {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _amount, _cInfo1.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                            _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have received {2} in to your bank from player {3}.[-]", Config.Chat_Response_Color, _cInfo1.playerName, _amount, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                            return;
                                         }
                                     }
-                                    else
-                                    {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you do not have enough in your bank account to make this transfer.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
                                 }
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you do not have enough in your bank account to make this transfer.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                         }
                         else
