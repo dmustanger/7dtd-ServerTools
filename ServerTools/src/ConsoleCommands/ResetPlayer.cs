@@ -122,6 +122,7 @@ namespace ServerTools
                                 "WHERE steamid = '{0}'", _cInfo.playerId);
                             SQL.FastQuery(_sql);
                         }
+                        _result.Dispose();
                         string _phrase401;
                         if (!Phrases.Dict.TryGetValue(401, out _phrase401))
                         {
@@ -220,6 +221,7 @@ namespace ServerTools
                                     "WHERE steamid = '{0}'", _value.ToString());
                                 SQL.FastQuery(_sql);
                             }
+                            _result.Dispose();
                             string _phrase401;
                             if (!Phrases.Dict.TryGetValue(401, out _phrase401))
                             {

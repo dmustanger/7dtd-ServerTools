@@ -22,6 +22,7 @@ namespace ServerTools
                 string _sql = string.Format("SELECT lastkillme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
                 DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out DateTime _lastkillme);
+                _result.Dispose();
                 TimeSpan varTime = DateTime.Now - _lastkillme;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int _timepassed = (int)fractionalMinutes;

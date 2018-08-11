@@ -70,11 +70,9 @@ namespace ServerTools
                                 Log.Warning(string.Format("[SERVERTOOLS] Ignoring player entry because of missing 'name' attribute: {0}", subChild.OuterXml));
                                 continue;
                             }
-                            string _steamid = _line.GetAttribute("SteamId");
-                            DataTable _result = new DataTable();
-                            string _id = SQL.EscapeString(_steamid);
+                            string _id = SQL.EscapeString(_line.GetAttribute("SteamId"));
                             string _sql = string.Format("SELECT * FROM Players WHERE steamid = '{0}'", _id);
-                            _result = SQL.TQuery(_sql);
+                            DataTable _result = SQL.TQuery(_sql);
                             if (_result.Rows.Count > 0)
                             {
                                 _sql = string.Format("UPDATE Players SET pingimmunity = 1 WHERE steamid = '{0}'", _id);
@@ -83,6 +81,7 @@ namespace ServerTools
                             {
                                 _sql = string.Format("INSERT INTO Players (steamid, pingimmunity) VALUES ('{0}', 1)", _id);
                             }
+                            _result.Dispose();
                             SQL.FastQuery(_sql);
                         }
                     }
@@ -94,14 +93,14 @@ namespace ServerTools
 
         public static void CheckPing(ClientInfo _cInfo)
         {
-            DataTable _result = new DataTable();
             string _sql = string.Format("SELECT pingimmunity FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            _result = SQL.TQuery(_sql);
+            DataTable _result = SQL.TQuery(_sql);
             bool _isHighPingImmune = false;
             if (_result.Rows.Count > 0)
             {
                 bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _isHighPingImmune); 
             }
+            _result.Dispose();
             if (_cInfo.ping > Max_Ping && !_isHighPingImmune && !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
             {
                 if (Samples_Needed < 1)

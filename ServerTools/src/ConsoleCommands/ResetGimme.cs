@@ -70,6 +70,7 @@ namespace ServerTools
                     {
                         SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a Gimme delay to reset.", _params[1]));
                     }
+                    _result.Dispose();
                 }
                 else
                 {

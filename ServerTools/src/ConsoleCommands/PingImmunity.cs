@@ -66,6 +66,7 @@ namespace ServerTools
                             SQL.FastQuery(_sql);
                             SdtdConsole.Instance.Output(string.Format("Added Id {0} to the Ping Immunity list.", _params[1]));
                         }
+                        _result.Dispose();
                     }
                     else
                     {
@@ -101,6 +102,7 @@ namespace ServerTools
                                 SQL.FastQuery(_sql);
                                 SdtdConsole.Instance.Output(string.Format("Added Id {0} to the Ping Immunity list.", _params[1]));
                             }
+                            _result.Dispose();
                         }
                     }
                 }
@@ -126,6 +128,7 @@ namespace ServerTools
                         {
                             SdtdConsole.Instance.Output(string.Format("Id {0} was not found.", _params[1]));
                         }
+                        _result.Dispose();
                     }
                     else
                     {
@@ -148,6 +151,7 @@ namespace ServerTools
                             {
                                 SdtdConsole.Instance.Output(string.Format("Id {0} was not found.", _params[1]));
                             }
+                            _result.Dispose();
                         }
                     }
                 }
@@ -172,6 +176,7 @@ namespace ServerTools
                         }
                         SdtdConsole.Instance.Output(string.Format("Total: {0}", _result.Rows.Count.ToString()));
                     }
+                    _result.Dispose();
                 }
                 else
                 {

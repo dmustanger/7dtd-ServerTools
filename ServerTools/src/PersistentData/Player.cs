@@ -10,6 +10,7 @@ namespace ServerTools
         [OptionalField]
         private int homeRequest;
         private int wallet;
+        //private int bank;
         private int hardcoreSessionTime;
         private int hardcoreKills;
         private int hardcoreZKills;
@@ -71,6 +72,8 @@ namespace ServerTools
         private DateTime lastTravel;
         private DateTime lastAnimals;
         private DateTime lastVoteReward;
+        //private DateTime lastgimme;
+        //private DateTime lastkillme;
         private DateTime lastsethome;
         private bool firstClaim;
         private bool isclanowner;
@@ -680,6 +683,42 @@ namespace ServerTools
                 lastVoteReward = value;
             }
         }
+
+        //public int Bank
+        //{
+            //get
+            //{
+                //return bank;
+            //}
+            //set
+            //{
+                //bank = value;
+            //}
+        //}
+
+        //public DateTime LastKillme
+        //{
+        //get
+        //{
+        //return lastkillme;
+        //}
+        //set
+        //{
+        //lastkillme = value;
+        //}
+        //}
+
+        //public DateTime LastGimme
+        //{
+        //get
+        //{
+        //return lastgimme;
+        //}
+        //set
+        //{
+        //lastgimme = value;
+        //}
+        //}
 
         public int PlayerSpentCoins
         {
