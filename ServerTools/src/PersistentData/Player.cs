@@ -72,7 +72,6 @@ namespace ServerTools
         private DateTime lastTravel;
         private DateTime lastAnimals;
         private DateTime lastVoteReward;
-        private DateTime lastgimme;
         private DateTime lastkillme;
         private DateTime lastsethome;
         private bool firstClaim;
@@ -669,18 +668,6 @@ namespace ServerTools
             set
             {
                 lastAnimals = value;
-            }
-        }
-
-        public DateTime LastGimme
-        {
-            get
-            {
-                return lastgimme;
-            }
-            set
-            {
-                lastgimme = value;
             }
         }
 

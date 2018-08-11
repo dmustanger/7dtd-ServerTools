@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 
 namespace ServerTools
@@ -98,7 +99,6 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastTravel = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now.AddDays(-5);
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].LastGimme = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastKillme = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastSetHome = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].RespawnTime = DateTime.Now.AddDays(-5);
@@ -113,6 +113,13 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastWhisper = null;
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerName = null;
                         PersistentContainer.Instance.Save();
+                        string _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        if (_result.Rows.Count != 0)
+                        {
+                            _sql = string.Format("UPDATE Players SET last_gimme = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _cInfo.playerId);
+                            SQL.FastQuery(_sql);
+                        }
                         string _phrase401;
                         if (!Phrases.Dict.TryGetValue(401, out _phrase401))
                         {
@@ -188,7 +195,6 @@ namespace ServerTools
                             PersistentContainer.Instance.Players[_value.ToString(), true].LastTravel = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].LastAnimals = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].LastVoteReward = DateTime.Now.AddDays(-5);
-                            PersistentContainer.Instance.Players[_value.ToString(), true].LastGimme = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].LastKillme = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].LastSetHome = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].RespawnTime = DateTime.Now.AddDays(-5);
@@ -203,6 +209,13 @@ namespace ServerTools
                             PersistentContainer.Instance.Players[_value.ToString(), true].LastWhisper = null;
                             PersistentContainer.Instance.Players[_value.ToString(), true].PlayerName = null;
                             PersistentContainer.Instance.Save();
+                            string _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _value.ToString());
+                            DataTable _result = SQL.TQuery(_sql);
+                            if (_result.Rows.Count != 0)
+                            {
+                                _sql = string.Format("UPDATE Players SET last_gimme = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _value.ToString());
+                                SQL.FastQuery(_sql);
+                            }
                             string _phrase401;
                             if (!Phrases.Dict.TryGetValue(401, out _phrase401))
                             {
