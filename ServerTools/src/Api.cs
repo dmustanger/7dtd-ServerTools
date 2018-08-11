@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.IO;
 
 namespace ServerTools
@@ -51,6 +52,18 @@ namespace ServerTools
         {
             if (_cInfo != null)
             {
+                string _sql = string.Format("SELECT steamid FROM Players WHERE steamid = '{0}'", _cInfo.playerId); ;
+                DataTable _result = SQL.TQuery(_sql);
+                string _name = SQL.EscapeString(_cInfo.playerName);
+                if (_result.Rows.Count == 0)
+                {
+                    _sql = string.Format("INSERT INTO Players (steamid, playername, last_joined) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _name, DateTime.Now.ToString());
+                    SQL.FastQuery(_sql);
+                }
+                else
+                {
+                    _sql = string.Format("UPDATE Players SET playername = '{0}, last_joined = '{1}' WHERE steamid = '{2}'", _name, DateTime.Now.ToString(), _cInfo.playerId);
+                }
                 if (StopServer.NoEntry)
                 {
                     int _seconds = (60 - Timers._sSCD);

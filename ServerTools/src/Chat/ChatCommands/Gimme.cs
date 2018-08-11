@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Xml;
 using UnityEngine;
@@ -238,99 +239,87 @@ namespace ServerTools
             }
             else
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null || p.LastGimme == null)
+                string _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out DateTime _lastgimme);
+                TimeSpan varTime = DateTime.Now - _lastgimme;
+                double fractionalMinutes = varTime.TotalMinutes;
+                int _timepassed = (int)fractionalMinutes;
+                if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                 {
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                     {
-                        CommandCost(_cInfo, _announce);
-                    }
-                    else
-                    {
-                        GiveItem(_cInfo, _announce);
-                    }
-                }
-                else
-                {
-                    TimeSpan varTime = DateTime.Now - p.LastGimme;
-                    double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
-                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                    {
-                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        DateTime _dt;
+                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                        if (DateTime.Now < _dt)
                         {
-                            DateTime _dt;
-                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                            if (DateTime.Now < _dt)
+                            _donator = true;
+                            int _newDelay = Delay_Between_Uses / 2;
+                            if (_timepassed >= _newDelay)
                             {
-                                _donator = true;
-                                int _newDelay = Delay_Between_Uses / 2;
-                                if (_timepassed >= _newDelay)
+                                if (Wallet.IsEnabled && Command_Cost >= 1)
                                 {
-                                    if (Wallet.IsEnabled && Command_Cost >= 1)
-                                    {
-                                        CommandCost(_cInfo, _announce);
-                                    }
-                                    else
-                                    {
-                                        GiveItem(_cInfo, _announce);
-                                    }
+                                    CommandCost(_cInfo, _announce);
                                 }
                                 else
                                 {
-                                    int _timeleft = _newDelay - _timepassed;
-                                    string _phrase6;
-                                    if (!Phrases.Dict.TryGetValue(6, out _phrase6))
-                                    {
-                                        _phrase6 = "{PlayerName} you can only use /gimme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                    }
-                                    _phrase6 = _phrase6.Replace("{PlayerName}", _playerName);
-                                    _phrase6 = _phrase6.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                    _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
-                                    if (_announce)
-                                    {
-                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase6), Config.Server_Response_Name, false, "", false);
-                                    }
-                                    else
-                                    {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase6), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
+                                    GiveItem(_cInfo, _announce);
+                                }
+                            }
+                            else
+                            {
+                                int _timeleft = _newDelay - _timepassed;
+                                string _phrase6;
+                                if (!Phrases.Dict.TryGetValue(6, out _phrase6))
+                                {
+                                    _phrase6 = "{PlayerName} you can only use /gimme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                }
+                                _phrase6 = _phrase6.Replace("{PlayerName}", _playerName);
+                                _phrase6 = _phrase6.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                                _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
+                                if (_announce)
+                                {
+                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase6), Config.Server_Response_Name, false, "", false);
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase6), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                             }
                         }
                     }
-                    if (!_donator)
+                }
+                if (!_donator)
+                {
+                    if (_timepassed >= Delay_Between_Uses)
                     {
-                        if (_timepassed >= Delay_Between_Uses)
+                        if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
-                            if (Wallet.IsEnabled && Command_Cost >= 1)
-                            {
-                                CommandCost(_cInfo, _announce);
-                            }
-                            else
-                            {
-                                GiveItem(_cInfo, _announce);
-                            }
+                            CommandCost(_cInfo, _announce);
                         }
                         else
                         {
-                            int _timeleft = Delay_Between_Uses - _timepassed;
-                            string _phrase6;
-                            if (!Phrases.Dict.TryGetValue(6, out _phrase6))
-                            {
-                                _phrase6 = "{PlayerName} you can only use /gimme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                            }
-                            _phrase6 = _phrase6.Replace("{PlayerName}", _playerName);
-                            _phrase6 = _phrase6.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                            _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
-                            if (_announce)
-                            {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase6), Config.Server_Response_Name, false, "", false);
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase6), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
+                            GiveItem(_cInfo, _announce);
+                        }
+                    }
+                    else
+                    {
+                        int _timeleft = Delay_Between_Uses - _timepassed;
+                        string _phrase6;
+                        if (!Phrases.Dict.TryGetValue(6, out _phrase6))
+                        {
+                            _phrase6 = "{PlayerName} you can only use /gimme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                        }
+                        _phrase6 = _phrase6.Replace("{PlayerName}", _playerName);
+                        _phrase6 = _phrase6.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                        _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
+                        if (_announce)
+                        {
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase6), Config.Server_Response_Name, false, "", false);
+                        }
+                        else
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase6), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                 }
@@ -457,8 +446,8 @@ namespace ServerTools
                     int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
                 }
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].LastGimme = DateTime.Now;
-                PersistentContainer.Instance.Save();
+                string _sql = string.Format("UPDATE Players SET last_gimme = '{0}' WHERE steamid = '{1}'", DateTime.Now.ToString(), _cInfo.playerId);
+                SQL.FastQuery(_sql);
             }
         }
 
@@ -493,8 +482,9 @@ namespace ServerTools
             }
             int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastGimme = DateTime.Now;
             PersistentContainer.Instance.Save();
+            string _sql = string.Format("UPDATE Players SET last_gimme = '{0}' WHERE steamid = '{1}'", DateTime.Now.ToString(), _cInfo.playerId);
+            SQL.FastQuery(_sql);
         }
     }
 }
