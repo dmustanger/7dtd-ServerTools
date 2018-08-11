@@ -1,4 +1,5 @@
-bin/Mods
+/bin/Mods/ServerTools/x64
+/bin/Mods/ServerTools/x86
 /ServerTools/obj/Debug
 /ServerTools/obj/Release
 .vscode

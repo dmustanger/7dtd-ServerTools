@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 namespace ServerTools
@@ -18,78 +19,73 @@ namespace ServerTools
             }
             else
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null || p.LastKillme == null)
+                string _sql = string.Format("SELECT lastkillme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out DateTime _lastkillme);
+                TimeSpan varTime = DateTime.Now - _lastkillme;
+                double fractionalMinutes = varTime.TotalMinutes;
+                int _timepassed = (int)fractionalMinutes;
+                if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                 {
-                    Kill(_cInfo);
-                }
-                else
-                {
-                    TimeSpan varTime = DateTime.Now - p.LastKillme;
-                    double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
-                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                    if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                     {
-                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        DateTime _dt;
+                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                        if (DateTime.Now < _dt)
                         {
-                            DateTime _dt;
-                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                            if (DateTime.Now < _dt)
+                            _donator = true;
+                            int _newDelay = Delay_Between_Uses / 2;
+                            if (_timepassed >= _newDelay)
                             {
-                                _donator = true;
-                                int _newDelay = Delay_Between_Uses / 2;
-                                if (_timepassed >= _newDelay)
+                                Kill(_cInfo);
+                            }
+                            else
+                            {
+                                int _timeleft = _newDelay - _timepassed;
+                                string _phrase8;
+                                if (!Phrases.Dict.TryGetValue(8, out _phrase8))
                                 {
-                                    Kill(_cInfo);
+                                    _phrase8 = "{PlayerName} you can only use /killme, /wrist, /hang, or /suicide once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                }
+                                _phrase8 = _phrase8.Replace("{PlayerName}", _cInfo.playerName);
+                                _phrase8 = _phrase8.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                                _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeleft.ToString());
+                                if (_announce)
+                                {
+                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), Config.Server_Response_Name, false, "", false);
                                 }
                                 else
                                 {
-                                    int _timeleft = _newDelay - _timepassed;
-                                    string _phrase8;
-                                    if (!Phrases.Dict.TryGetValue(8, out _phrase8))
-                                    {
-                                        _phrase8 = "{PlayerName} you can only use /killme, /wrist, /hang, or /suicide once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                    }
-                                    _phrase8 = _phrase8.Replace("{PlayerName}", _cInfo.playerName);
-                                    _phrase8 = _phrase8.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                    _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeleft.ToString());
-                                    if (_announce)
-                                    {
-                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), Config.Server_Response_Name, false, "", false);
-                                    }
-                                    else
-                                    {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                             }
                         }
                     }
-                    if (!_donator)
+                }
+                if (!_donator)
+                {
+                    if (_timepassed >= Delay_Between_Uses)
                     {
-                        if (_timepassed >= Delay_Between_Uses)
+                        Kill(_cInfo);
+                    }
+                    else
+                    {
+                        int _timeleft = Delay_Between_Uses - _timepassed;
+                        string _phrase8;
+                        if (!Phrases.Dict.TryGetValue(8, out _phrase8))
                         {
-                            Kill(_cInfo);
+                            _phrase8 = "{PlayerName} you can only use /killme, /wrist, /hang, or /suicide once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                        }
+                        _phrase8 = _phrase8.Replace("{PlayerName}", _cInfo.playerName);
+                        _phrase8 = _phrase8.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                        _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeleft.ToString());
+                        if (_announce)
+                        {
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), Config.Server_Response_Name, false, "", false);
                         }
                         else
                         {
-                            int _timeleft = Delay_Between_Uses - _timepassed;
-                            string _phrase8;
-                            if (!Phrases.Dict.TryGetValue(8, out _phrase8))
-                            {
-                                _phrase8 = "{PlayerName} you can only use /killme, /wrist, /hang, or /suicide once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                            }
-                            _phrase8 = _phrase8.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase8 = _phrase8.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                            _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeleft.ToString());
-                            if (_announce)
-                            {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), Config.Server_Response_Name, false, "", false);
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                 }
@@ -158,8 +154,8 @@ namespace ServerTools
                 }
             }
             _player.DamageEntity(new DamageSource(EnumDamageSourceType.Bullet), 99999, false, 1f);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastKillme = DateTime.Now;
-            PersistentContainer.Instance.Save();
+            string _sql = string.Format("UPDATE Players SET lastkillme = '{0}' WHERE steamid = '{1}'", DateTime.Now.ToString(), _cInfo.playerId);
+            SQL.FastQuery(_sql);
         }
     }
 }

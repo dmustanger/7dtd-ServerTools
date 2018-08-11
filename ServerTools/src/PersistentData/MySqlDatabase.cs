@@ -49,7 +49,14 @@ namespace ServerTools
 
         private static void CreateTables()
         {
-            FastQuery("CREATE TABLE IF NOT EXISTS Players (steamid VARCHAR(50) NOT NULL, playername VARCHAR(50) DEFAULT 'Unknown', last_joined VARCHAR(50) DEFAULT 'Never', pingimmunity VARCHAR(10) DEFAULT 'false', last_gimme VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM',PRIMARY KEY (steamid)) ENGINE = InnoDB;");
+            FastQuery("CREATE TABLE IF NOT EXISTS Players (" +
+                "steamid VARCHAR(50) NOT NULL, " +
+                "playername VARCHAR(50) DEFAULT 'Unknown', " +
+                "last_joined VARCHAR(50) DEFAULT 'Never', " +
+                "pingimmunity VARCHAR(10) DEFAULT 'false', " +
+                "last_gimme VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
+                "lastkillme VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
+                "PRIMARY KEY (steamid)) ENGINE = InnoDB;");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER) ENGINE = InnoDB;");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");
             if (_result.Rows.Count == 0)
