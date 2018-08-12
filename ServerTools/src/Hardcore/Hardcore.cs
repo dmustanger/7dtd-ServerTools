@@ -103,7 +103,6 @@ namespace ServerTools
             PersistentContainer.Instance.Players[_cInfo.playerId, true].ClanName = null;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].InvitedToClan = null;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastWhisper = null;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerName = null;
             PersistentContainer.Instance.Save();
             _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result1 = SQL.TQuery(_sql);
@@ -111,6 +110,7 @@ namespace ServerTools
             {
                 string _name = SQL.EscapeString(_cInfo.playerName);
                 _sql = string.Format("UPDATE Players SET " +
+                    "playername = 'Unknown', " +
                     "last_gimme = '10/29/2000 7:30:00 AM', " +
                     "lastkillme = '10/29/2000 7:30:00 AM', " +
                     "playerSpentCoins = 0, " +

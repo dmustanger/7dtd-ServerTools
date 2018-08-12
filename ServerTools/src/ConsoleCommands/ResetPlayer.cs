@@ -102,13 +102,13 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].ClanName = null;
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].InvitedToClan = null;
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastWhisper = null;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerName = null;
                         PersistentContainer.Instance.Save();
                         string _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                         DataTable _result = SQL.TQuery(_sql);
                         if (_result.Rows.Count != 0)
                         {
                             _sql = string.Format("UPDATE Players SET " +
+                                "playername = 'Unknown', " +
                                 "last_gimme = '10/29/2000 7:30:00 AM', " +
                                 "lastkillme = '10/29/2000 7:30:00 AM', " +
                                 "playerSpentCoins = 0, " +
@@ -201,13 +201,13 @@ namespace ServerTools
                             PersistentContainer.Instance.Players[_value.ToString(), true].ClanName = null;
                             PersistentContainer.Instance.Players[_value.ToString(), true].InvitedToClan = null;
                             PersistentContainer.Instance.Players[_value.ToString(), true].LastWhisper = null;
-                            PersistentContainer.Instance.Players[_value.ToString(), true].PlayerName = null;
                             PersistentContainer.Instance.Save();
                             string _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _value.ToString());
                             DataTable _result = SQL.TQuery(_sql);
                             if (_result.Rows.Count != 0)
                             {
                                 _sql = string.Format("UPDATE Players SET " +
+                                    "playername = 'Unknown', " +
                                     "last_gimme = '10/29/2000 7:30:00 AM', " +
                                     "lastkillme = '10/29/2000 7:30:00 AM', " +
                                     "playerSpentCoins = 0, " +

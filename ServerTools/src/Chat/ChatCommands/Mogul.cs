@@ -10,64 +10,54 @@ namespace ServerTools
         {
             int _topScore1 = 0, _topScore2 = 0, _topScore3 = 0;
             string _name1 = "-", _name2 = "-", _name3 = "-";
-            for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+            string _sql = "SELECT playername, bank, wallet FROM Players";
+            DataTable _result = SQL.TQuery(_sql);
+            foreach (DataRow row in _result.Rows)
             {
-                string _id = PersistentContainer.Instance.Players.SteamIDs[i];
-                Player p = PersistentContainer.Instance.Players[_id, false];
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out int _bank);
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out int _wallet);
+                int _total = 0;
+                if (Wallet.IsEnabled && Bank.IsEnabled)
                 {
-                    if (p != null)
+                    _total = _wallet + _bank;
+                }
+                if (Wallet.IsEnabled && !Bank.IsEnabled)
+                {
+                    _total = _bank;
+                }
+                if (!Wallet.IsEnabled && Bank.IsEnabled)
+                {
+                    _total = _wallet;
+                }
+                if (_total > _topScore1)
+                {
+                    _topScore3 = _topScore2;
+                    _name3 = _name2;
+                    _topScore2 = _topScore1;
+                    _name2 = _name1;
+                    _topScore1 = _total;
+                    _name1 = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                }
+                else
+                {
+                    if (_total > _topScore2)
                     {
-                        if (p.PlayerName != null)
+                        _topScore3 = _topScore2;
+                        _name3 = _name2;
+                        _topScore2 = _total;
+                        _name2 = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                    }
+                    else
+                    {
+                        if (_total > _topScore3)
                         {
-                            string _sql = string.Format("SELECT bank, wallet FROM Players WHERE steamid = '{0}'", _id);
-                            DataTable _result = SQL.TQuery(_sql);
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank);
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _wallet);
-                            _result.Dispose();
-                            int _total = 0;
-                            if (Wallet.IsEnabled && Bank.IsEnabled)
-                            {
-                                _total = _wallet + _bank;
-                            }
-                            else if (Wallet.IsEnabled && !Bank.IsEnabled)
-                            {
-                                _total = _bank;
-                            }
-                            else if (!Wallet.IsEnabled && Bank.IsEnabled)
-                            {
-                                _total = _wallet;
-                            }
-                            if (_total > _topScore1)
-                            {
-                                _topScore3 = _topScore2;
-                                _name3 = _name2;
-                                _topScore2 = _topScore1;
-                                _name2 = _name1;
-                                _topScore1 = _total;
-                                _name1 = p.PlayerName;
-                            }
-                            else
-                            {
-                                if (_total > _topScore2)
-                                {
-                                    _topScore3 = _topScore2;
-                                    _name3 = _name2;
-                                    _topScore2 = _total;
-                                    _name2 = p.PlayerName;
-                                }
-                                else
-                                {
-                                    if (_total > _topScore3)
-                                    {
-                                        _topScore3 = _total;
-                                        _name3 = p.PlayerName;
-                                    }
-                                }
-                            }
+                            _topScore3 = _total;
+                            _name3 = _result.Rows[0].ItemArray.GetValue(0).ToString();
                         }
                     }
                 }
             }
+            _result.Dispose();
             string _phrase965;
             if (!Phrases.Dict.TryGetValue(965, out _phrase965))
             {
