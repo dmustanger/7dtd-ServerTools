@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 namespace ServerTools
@@ -316,35 +317,34 @@ namespace ServerTools
         {
             World world = GameManager.Instance.World;
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            _result.Dispose();
             int currentCoins = 0;
-            if (p != null)
+            int gameMode = world.GetGameMode();
+            if (gameMode == 7)
             {
-                int spentCoins = p.PlayerSpentCoins;
-                int gameMode = world.GetGameMode();
-                if (gameMode == 7)
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+            }
+            else
+            {
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+            }
+            if (currentCoins >= Command_Cost)
+            {
+                Home(_cInfo, _pos, _announce);
+            }
+            else
+            {
+                string _phrase814;
+                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                    _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
-                else
-                {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                }
-                if (currentCoins >= Command_Cost)
-                {
-                    Home(_cInfo, _pos, _announce);
-                }
-                else
-                {
-                    string _phrase814;
-                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                    {
-                        _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
-                    }
-                    _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
-                }
+                _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -418,8 +418,12 @@ namespace ServerTools
             TeleportDelay.TeleportQue(_cInfo, x, y, z);
             if (Wallet.IsEnabled && Command_Cost >= 1)
             {
-                int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
+                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                _result.Dispose();
+                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
+                SQL.FastQuery(_sql);
             }
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastSetHome = DateTime.Now;
             PersistentContainer.Instance.Save();
@@ -756,35 +760,34 @@ namespace ServerTools
         {
             World world = GameManager.Instance.World;
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            _result.Dispose();
             int currentCoins = 0;
-            if (p != null)
+            int gameMode = world.GetGameMode();
+            if (gameMode == 7)
             {
-                int spentCoins = p.PlayerSpentCoins;
-                int gameMode = world.GetGameMode();
-                if (gameMode == 7)
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+            }
+            else
+            {
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+            }
+            if (currentCoins >= Command_Cost)
+            {
+                Home2(_cInfo, _pos, _announce);
+            }
+            else
+            {
+                string _phrase814;
+                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                    _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
-                else
-                {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                }
-                if (currentCoins >= Command_Cost)
-                {
-                    Home2(_cInfo, _pos, _announce);
-                }
-                else
-                {
-                    string _phrase814;
-                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                    {
-                        _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
-                    }
-                    _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
-                }
+                _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -856,8 +859,12 @@ namespace ServerTools
             }
             Players.NoFlight.Add(_cInfo.entityId);
             TeleportDelay.TeleportQue(_cInfo, x, y, z);
-            int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            _result.Dispose();
+            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
+            SQL.FastQuery(_sql);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastSetHome = DateTime.Now;
             PersistentContainer.Instance.Save();
         }
@@ -1063,35 +1070,34 @@ namespace ServerTools
         {
             World world = GameManager.Instance.World;
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            _result.Dispose();
             int currentCoins = 0;
-            if (p != null)
+            int gameMode = world.GetGameMode();
+            if (gameMode == 7)
             {
-                int spentCoins = p.PlayerSpentCoins;
-                int gameMode = world.GetGameMode();
-                if (gameMode == 7)
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+            }
+            else
+            {
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+            }
+            if (currentCoins >= Command_Cost)
+            {
+                FHome(_cInfo, _pos, _announce, _player);
+            }
+            else
+            {
+                string _phrase814;
+                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                    _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
-                else
-                {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                }
-                if (currentCoins >= Command_Cost)
-                {
-                    FHome(_cInfo, _pos, _announce, _player);
-                }
-                else
-                {
-                    string _phrase814;
-                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                    {
-                        _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
-                    }
-                    _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
-                }
+                _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -1163,8 +1169,12 @@ namespace ServerTools
             }
             Players.NoFlight.Add(_cInfo.entityId);
             TeleportDelay.TeleportQue(_cInfo, x, y, z);
-            int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            _result.Dispose();
+            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
+            SQL.FastQuery(_sql);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastSetHome = DateTime.Now;
             PersistentContainer.Instance.Save();
             string _phrase818;
@@ -1325,35 +1335,34 @@ namespace ServerTools
         {
             World world = GameManager.Instance.World;
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            _result.Dispose();
             int currentCoins = 0;
-            if (p != null)
+            int gameMode = world.GetGameMode();
+            if (gameMode == 7)
             {
-                int spentCoins = p.PlayerSpentCoins;
-                int gameMode = world.GetGameMode();
-                if (gameMode == 7)
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+            }
+            else
+            {
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+            }
+            if (currentCoins >= Command_Cost)
+            {
+                FHome2(_cInfo, _pos, _announce, _player);
+            }
+            else
+            {
+                string _phrase814;
+                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                    _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
-                else
-                {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                }
-                if (currentCoins >= Command_Cost)
-                {
-                    FHome2(_cInfo, _pos, _announce, _player);
-                }
-                else
-                {
-                    string _phrase814;
-                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                    {
-                        _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
-                    }
-                    _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
-                }
+                _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -1425,8 +1434,12 @@ namespace ServerTools
             }
             Players.NoFlight.Add(_cInfo.entityId);
             TeleportDelay.TeleportQue(_cInfo, x, y, z);
-            int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            _result.Dispose();
+            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
+            SQL.FastQuery(_sql);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastSetHome = DateTime.Now;
             PersistentContainer.Instance.Save();
             string _phrase818;

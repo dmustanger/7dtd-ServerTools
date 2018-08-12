@@ -68,7 +68,6 @@ namespace ServerTools
             PersistentContainer.Instance.Players[_cInfo.playerId, true].HardcoreScore = _player.Score;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].HardcoreName = _cInfo.playerName;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].BikeId = 0;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = 0;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].SessionTime = 0;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = 0;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = false;
@@ -120,9 +119,10 @@ namespace ServerTools
             DataTable _result = SQL.TQuery(_sql);
             if (_result.Rows.Count != 0)
             {
-                _sql = string.Format("UPDATE Players SET " +
+                   _sql = string.Format("UPDATE Players SET " +
                     "last_gimme = '10/29/2000 7:30:00 AM', " +
-                    "lastkillme = '10/29/2000 7:30:00 AM' " +
+                    "lastkillme = '10/29/2000 7:30:00 AM', " +
+                    "playerSpentCoins = 0 " +
                     "WHERE steamid = '{0}'", _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }

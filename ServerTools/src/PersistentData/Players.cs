@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -240,17 +241,22 @@ namespace ServerTools
                                                 int _bounty = PersistentContainer.Instance.Players[_cInfo.playerId, true].Bounty;
                                                 if (_bounty > 0)
                                                 {
-                                                    int _oldCoins = PersistentContainer.Instance.Players[_cInfo2.playerId, true].PlayerSpentCoins;
+                                                    string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo2.playerId);
+                                                    DataTable _result2 = SQL.TQuery(_sql);
+                                                    int.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                                                    _result2.Dispose();
                                                     int _hunterCountVictim = PersistentContainer.Instance.Players[_cInfo.playerId, true].BountyHunter;
                                                     int _hunterCountKiller = PersistentContainer.Instance.Players[_cInfo2.playerId, true].BountyHunter;
                                                     PersistentContainer.Instance.Players[_cInfo2.playerId, true].BountyHunter = _hunterCountKiller + 1;
                                                     if (Bonus > 0 && _hunterCountVictim >= Bonus)
                                                     {
-                                                        PersistentContainer.Instance.Players[_cInfo2.playerId, true].PlayerSpentCoins = _oldCoins + _bounty + Bonus;
+                                                        _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins + _bounty + Bonus, _cInfo2.playerId);
+                                                        SQL.FastQuery(_sql);
                                                     }
                                                     else
                                                     {
-                                                        PersistentContainer.Instance.Players[_cInfo2.playerId, true].PlayerSpentCoins = _oldCoins + _bounty;
+                                                        _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins + _bounty, _cInfo2.playerId);
+                                                        SQL.FastQuery(_sql);
                                                     }
                                                     PersistentContainer.Instance.Players[_cInfo.playerId, true].BountyHunter = 0;
                                                     PersistentContainer.Instance.Players[_cInfo.playerId, true].Bounty = 0;
@@ -335,26 +341,25 @@ namespace ServerTools
                                 ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
                                 if (_cInfo != null)
                                 {
-                                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                                    if (p != null)
+                                    World world = GameManager.Instance.World;
+                                    string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                    DataTable _result = SQL.TQuery(_sql);
+                                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                                    _result.Dispose();
+                                    int currentCoins = 0;
+                                    int gameMode = world.GetGameMode();
+                                    if (gameMode == 7)
                                     {
-                                        World world = GameManager.Instance.World;
-                                        int spentCoins = p.PlayerSpentCoins;
-                                        int currentCoins = 0;
-                                        int gameMode = world.GetGameMode();
-                                        if (gameMode == 7)
-                                        {
-                                            currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
-                                        }
-                                        else
-                                        {
-                                            currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
-                                        }
-                                        if (currentCoins >= 1)
-                                        {
-                                            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = spentCoins - currentCoins;
-                                            PersistentContainer.Instance.Save();
-                                        }
+                                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+                                    }
+                                    else
+                                    {
+                                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+                                    }
+                                    if (currentCoins >= 1)
+                                    {
+                                        _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - currentCoins, _cInfo.playerId);
+                                        SQL.FastQuery(_sql);
                                     }
                                 }
                             }

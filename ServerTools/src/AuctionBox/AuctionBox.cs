@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using UnityEngine;
 
@@ -253,58 +254,51 @@ namespace ServerTools
             {
                 World world = GameManager.Instance.World;
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p != null)
+                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                _result.Dispose();
+                int currentCoins = 0;
+                int gameMode = world.GetGameMode();
+                if (gameMode == 7)
                 {
-                    int spentCoins = p.PlayerSpentCoins;
-                    int currentCoins = 0;
-                    int gameMode = world.GetGameMode();
-                    if (gameMode == 7)
-                    {
-                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                    }
-                    else
-                    {
-                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                    }
-                    List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
-                    for (int i = 0; i < playerlist.Count; i++)
-                    {
-                        string _steamId = playerlist[i];
-                        Player _seller = PersistentContainer.Instance.Players[_steamId, false];
-                        if (_seller.AuctionData == _purchase)
-                        {
-                            string[] _value;
-                            if (AuctionItems.TryGetValue(_purchase, out _value))
-                            {
-                                int _coinValue;
-                                int.TryParse(_value[3], out _coinValue);
-                                if (currentCoins >= _coinValue)
-                                {
-                                    BuyAuction(_cInfo, _purchase, _value, _steamId);
-                                }
-                                else
-                                {
-                                    int _missing;
-                                    if (currentCoins >= 0)
-                                    {
-                                        _missing = _coinValue - currentCoins;
-                                    }
-                                    else
-                                    {
-                                        _missing = _coinValue + currentCoins;
-                                    }
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you can not make this purchase. You need {2} more {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _missing, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
-                        }
-                    }
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
                 }
                 else
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = 0;
-                    PersistentContainer.Instance.Save();
-                    WalletCheck(_cInfo, _purchase);
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+                }
+                List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
+                for (int i = 0; i < playerlist.Count; i++)
+                {
+                    string _steamId = playerlist[i];
+                    Player _seller = PersistentContainer.Instance.Players[_steamId, false];
+                    if (_seller.AuctionData == _purchase)
+                    {
+                        string[] _value;
+                        if (AuctionItems.TryGetValue(_purchase, out _value))
+                        {
+                            int _coinValue;
+                            int.TryParse(_value[3], out _coinValue);
+                            if (currentCoins >= _coinValue)
+                            {
+                                BuyAuction(_cInfo, _purchase, _value, _steamId);
+                            }
+                            else
+                            {
+                                int _missing;
+                                if (currentCoins >= 0)
+                                {
+                                    _missing = _coinValue - currentCoins;
+                                }
+                                else
+                                {
+                                    _missing = _coinValue + currentCoins;
+                                }
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you can not make this purchase. You need {2} more {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _missing, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                        }
+                    }
                 }
             }
             else
@@ -346,18 +340,25 @@ namespace ServerTools
 
             int _price;
             int.TryParse(_value[3], out _price);
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            int _newCoin = p.PlayerSpentCoins - _price;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _newCoin;
-            PersistentContainer.Instance.Save();
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            _result.Dispose();
+            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _price, _cInfo.playerId);
+            SQL.FastQuery(_sql);
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have purchased {2} {3} from the auction for {4} {5}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _value[0], _value[1], _value[3], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
             double _percent = _price * 0.05;
             int _newCoin2 = _price - (int)_percent;
             PersistentContainer.Instance.Players[_steamId, true].SellDate = DateTime.Now;
-            PersistentContainer.Instance.Players[_steamId, true].PlayerSpentCoins = PersistentContainer.Instance.Players[_steamId, true].PlayerSpentCoins + _newCoin2;
             PersistentContainer.Instance.Players[_steamId, true].AuctionData = 0;
             PersistentContainer.Instance.Players[_steamId, true].AuctionItem = null;
             PersistentContainer.Instance.Save();
+            _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _steamId);
+            DataTable _result1 = SQL.TQuery(_sql);
+            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins1);
+            _result1.Dispose();
+            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins1 + _newCoin2, _steamId);
+            SQL.FastQuery(_sql);
             AuctionItems.Remove(_purchase);
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} seller has received the funds in their wallet.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
             ClientInfo _cInfo1 = ConnectionManager.Instance.GetClientInfoForPlayerId(_steamId);

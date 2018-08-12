@@ -27,7 +27,7 @@ namespace ServerTools
         private int kills;
         private int deaths;
         private int auctionData;
-        private int playerSpentCoins;
+        //private int playerSpentCoins;
         private string[] waypointName;
         private string[] waypoints;
         private string[] auctionItem;
@@ -720,17 +720,17 @@ namespace ServerTools
         //}
         //}
 
-        public int PlayerSpentCoins
-        {
-            get
-            {
-                return playerSpentCoins;
-            }
-            set
-            {
-                playerSpentCoins = value;
-            }
-        }
+        //public int PlayerSpentCoins
+        //{
+            //get
+            //{
+                //return playerSpentCoins;
+            //}
+            //set
+            //{
+                //playerSpentCoins = value;
+            //}
+        //}
 
         public string PlayerName
         {

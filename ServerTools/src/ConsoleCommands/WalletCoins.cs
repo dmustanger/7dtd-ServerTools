@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ServerTools
 {
@@ -31,13 +32,13 @@ namespace ServerTools
                     SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 or 2, found {0}.", _params.Count));
                     return;
                 }
+                if (_params[0].Length != 17)
+                {
+                    SdtdConsole.Instance.Output(string.Format("Can not adjust wallet: Invalid Id {0}", _params[0]));
+                    return;
+                }
                 if (_params.Count == 2)
                 {
-                    if (_params[0].Length != 17)
-                    {
-                        SdtdConsole.Instance.Output(string.Format("Can not adjust wallet: Invalid Id {0}", _params[0]));
-                        return;
-                    }
                     if (_params[1].Length < 1 || _params[1].Length > 5)
                     {
                         SdtdConsole.Instance.Output(string.Format("Can not adjust wallet. Value {0} is invalid", _params[1]));
@@ -51,81 +52,57 @@ namespace ServerTools
                     }
                     else
                     {
-                        List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
-                        for (int i = 0; i < playerlist.Count; i++)
+                        string _steamid = SQL.EscapeString(_params[0]);
+                        string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _steamid);
+                        DataTable _result = SQL.TQuery(_sql);
+                        if (_result.Rows.Count !=0)
                         {
-                            int _counter = 0;
-                            string _steamId = playerlist[i];
-                            if (_steamId == _params[0])
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                            int _newCoins = _playerSpentCoins + _adjustCoins;
+                            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins + _adjustCoins, _steamid);
+                            SQL.FastQuery(_sql);
+                            if (_adjustCoins >= 0)
                             {
-                                Player p = PersistentContainer.Instance.Players[_steamId, false];
-                                int _spentCoins = p.PlayerSpentCoins;
-                                int _newCoins = _spentCoins + _adjustCoins;
-                                PersistentContainer.Instance.Players[_steamId, true].PlayerSpentCoins = _newCoins;
-                                PersistentContainer.Instance.Save();
-                                if (_adjustCoins >= 0)
-                                {
-                                    SdtdConsole.Instance.Output(string.Format("Added {0} {1} to player id {2} wallet", _params[1], Wallet.Coin_Name, _params[0]));
-                                    return;
-                                }
-                                else
-                                {
-                                    SdtdConsole.Instance.Output(string.Format("Subtracted {0} {1} from player id {2} wallet", _params[1], Wallet.Coin_Name, _params[0]));
-                                    return;
-                                }
+                                SdtdConsole.Instance.Output(string.Format("Added {0} {1} to player id {2} wallet", _params[1], Wallet.Coin_Name, _steamid));
                             }
                             else
                             {
-                                _counter++;
-                                if (_counter == playerlist.Count)
-                                {
-                                    SdtdConsole.Instance.Output(string.Format("Player with Id {0} is not online.", _params[0]));
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (_params.Count == 1)
-                {
-                    if (_params[0].Length == 17)
-                    {
-                        int _id;
-                        if (!int.TryParse(_params[0], out _id))
-                        {
-                            int currentCoins;
-                            World world = GameManager.Instance.World;
-                            Player p = PersistentContainer.Instance.Players[_params[0], false];
-                            if (p != null)
-                            {
-                                int gameMode = world.GetGameMode();
-                                if (gameMode == 7)
-                                {
-                                    currentCoins = (p.ZKills * Wallet.Zombie_Kills) + (p.Kills * Wallet.Player_Kills) - (p.Deaths * Wallet.Deaths) + p.PlayerSpentCoins;
-                                }
-                                else
-                                {
-                                    currentCoins = (p.ZKills * Wallet.Zombie_Kills) - (p.Deaths * Wallet.Deaths) + p.PlayerSpentCoins;
-                                }
-                                SdtdConsole.Instance.Output(string.Format("Wallet for id {0}: {1} {2}", _params[0], currentCoins, Wallet.Coin_Name));
-                                return;
-                            }
-                            else
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Player id not found: {0}", _id));
-                                return;
+                                SdtdConsole.Instance.Output(string.Format("Subtracted {0} {1} from player id {2} wallet", _params[1], Wallet.Coin_Name, _steamid));
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not check wallet: Invalid Id {0}", _params[0]));
-                            return;
+                            SdtdConsole.Instance.Output(string.Format("Player id not found: {0}", _steamid));
                         }
+                        _result.Dispose();
+                    }
+                }
+                if (_params.Count == 1)
+                {
+                    string _steamid = SQL.EscapeString(_params[0]);
+                    string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _steamid);
+                    DataTable _result = SQL.TQuery(_sql);
+                    if (_result.Rows.Count != 0)
+                    {
+                        int currentCoins;
+                        World world = GameManager.Instance.World;
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                        Player p = PersistentContainer.Instance.Players[_params[0], false];
+                        int gameMode = world.GetGameMode();
+                        if (gameMode == 7)
+                        {
+                            currentCoins = (p.ZKills * Wallet.Zombie_Kills) + (p.Kills * Wallet.Player_Kills) - (p.Deaths * Wallet.Deaths) + _playerSpentCoins;
+                        }
+                        else
+                        {
+                            currentCoins = (p.ZKills * Wallet.Zombie_Kills) - (p.Deaths * Wallet.Deaths) + _playerSpentCoins;
+                        }
+                        SdtdConsole.Instance.Output(string.Format("Wallet for id {0}: {1} {2}", _params[0], currentCoins, Wallet.Coin_Name));
+                        return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not adjust wallet: Invalid Id {0}", _params[0]));
-                        return;
+                        SdtdConsole.Instance.Output(string.Format("Player id not found: {0}", _steamid));
                     }
                 }
             }

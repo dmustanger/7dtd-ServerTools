@@ -331,35 +331,34 @@ namespace ServerTools
         {
             World world = GameManager.Instance.World;
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            _result.Dispose();
             int currentCoins = 0;
-            if (p != null)
+            int gameMode = world.GetGameMode();
+            if (gameMode == 7)
             {
-                int spentCoins = p.PlayerSpentCoins;
-                int gameMode = world.GetGameMode();
-                if (gameMode == 7)
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+            }
+            else
+            {
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+            }
+            if (currentCoins >= Command_Cost)
+            {
+                GiveItem(_cInfo, _announce);
+            }
+            else
+            {
+                string _phrase814;
+                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
+                    _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
-                else
-                {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
-                }
-                if (currentCoins >= Command_Cost)
-                {
-                    GiveItem(_cInfo, _announce);
-                }
-                else
-                {
-                    string _phrase814;
-                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                    {
-                        _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
-                    }
-                    _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
-                }
+                _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -442,12 +441,17 @@ namespace ServerTools
                 {
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase7), Config.Server_Response_Name, false, "ServerTools", false));
                 }
+                string _sql;
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
+                    _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    DataTable _result = SQL.TQuery(_sql);
+                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                    _result.Dispose();
+                    _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                 }
-                string _sql = string.Format("UPDATE Players SET last_gimme = '{0}' WHERE steamid = '{1}'", DateTime.Now.ToString(), _cInfo.playerId);
+                _sql = string.Format("UPDATE Players SET last_gimme = '{0}' WHERE steamid = '{1}'", DateTime.Now.ToString(), _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }
         }
@@ -481,10 +485,17 @@ namespace ServerTools
             {
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase807), Config.Server_Response_Name, false, "ServerTools", false));
             }
-            int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
-            PersistentContainer.Instance.Save();
-            string _sql = string.Format("UPDATE Players SET last_gimme = '{0}' WHERE steamid = '{1}'", DateTime.Now.ToString(), _cInfo.playerId);
+            string _sql;
+            if (Wallet.IsEnabled && Command_Cost >= 1)
+            {
+                _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                _result.Dispose();
+                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
+                SQL.FastQuery(_sql);
+            }
+            _sql = string.Format("UPDATE Players SET last_gimme = '{0}' WHERE steamid = '{1}'", DateTime.Now.ToString(), _cInfo.playerId);
             SQL.FastQuery(_sql);
         }
     }

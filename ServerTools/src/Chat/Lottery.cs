@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ServerTools
 {
@@ -63,55 +64,54 @@ namespace ServerTools
                         if (_lottoValue > 0)
                         {
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                            if (p != null)
+                            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result = SQL.TQuery(_sql);
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                            _result.Dispose();
+                            int currentCoins;
+                            if (GameManager.Instance.World.GetGameMode() == 7)
                             {
-                                int currentCoins;
-                                if (GameManager.Instance.World.GetGameMode() == 7)
+                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+                            }
+                            else
+                            {
+                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+                            }
+                            if (currentCoins >= _lottoValue)
+                            {
+                                OpenLotto = true;
+                                LottoValue = _lottoValue;
+                                LottoEntries.Add(_cInfo);
+                                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - LottoValue, _cInfo.playerId);
+                                SQL.FastQuery(_sql);
+                                string _phrase538;
+                                if (!Phrases.Dict.TryGetValue(538, out _phrase538))
                                 {
-                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                                    _phrase538 = "{PlayerName} you have opened a new lottery for {Value} {CoinName}.";
                                 }
-                                else
+                                _phrase538 = _phrase538.Replace("{PlayerName}", _cInfo.playerName);
+                                _phrase538 = _phrase538.Replace("{Value}", _lottoValue.ToString());
+                                _phrase538 = _phrase538.Replace("{CoinName}", Wallet.Coin_Name);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase538), Config.Server_Response_Name, false, "ServerTools", false));
+                                string _phrase539;
+                                if (!Phrases.Dict.TryGetValue(539, out _phrase539))
                                 {
-                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                                    _phrase539 = "A lottery has opened for {Value} {CoinName} and will draw soon. Type /lottery enter to join.";
                                 }
-                                if (currentCoins >= _lottoValue)
+                                _phrase539 = _phrase539.Replace("{Value}", LottoValue.ToString());
+                                _phrase539 = _phrase539.Replace("{CoinName}", Wallet.Coin_Name);
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase539), Config.Server_Response_Name, false, "ServerTools", false);
+                            }
+                            else
+                            {
+                                string _phrase540;
+                                if (!Phrases.Dict.TryGetValue(540, out _phrase540))
                                 {
-                                    OpenLotto = true;
-                                    LottoValue = _lottoValue;
-                                    LottoEntries.Add(_cInfo);
-                                    int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins;
-                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - LottoValue;
-                                    PersistentContainer.Instance.Save();
-                                    string _phrase538;
-                                    if (!Phrases.Dict.TryGetValue(538, out _phrase538))
-                                    {
-                                        _phrase538 = "{PlayerName} you have opened a new lottery for {Value} {CoinName}.";
-                                    }
-                                    _phrase538 = _phrase538.Replace("{PlayerName}", _cInfo.playerName);
-                                    _phrase538 = _phrase538.Replace("{Value}", _lottoValue.ToString());
-                                    _phrase538 = _phrase538.Replace("{CoinName}", Wallet.Coin_Name);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase538), Config.Server_Response_Name, false, "ServerTools", false));
-                                    string _phrase539;
-                                    if (!Phrases.Dict.TryGetValue(539, out _phrase539))
-                                    {
-                                        _phrase539 = "A lottery has opened for {Value} {CoinName} and will draw soon. Type /lottery enter to join.";
-                                    }
-                                    _phrase539 = _phrase539.Replace("{Value}", LottoValue.ToString());
-                                    _phrase539 = _phrase539.Replace("{CoinName}", Wallet.Coin_Name);
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase539), Config.Server_Response_Name, false, "ServerTools", false);
+                                    _phrase540 = "{PlayerName} you do not have enough {CoinName}. Earn some more and enter the lottery before it ends.";
                                 }
-                                else
-                                {
-                                    string _phrase540;
-                                    if (!Phrases.Dict.TryGetValue(540, out _phrase540))
-                                    {
-                                        _phrase540 = "{PlayerName} you do not have enough {CoinName}. Earn some more and enter the lottery before it ends.";
-                                    }
-                                    _phrase540 = _phrase540.Replace("{PlayerName}", _cInfo.playerName);
-                                    _phrase540 = _phrase540.Replace("{CoinName}", Wallet.Coin_Name);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase540), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
+                                _phrase540 = _phrase540.Replace("{PlayerName}", _cInfo.playerName);
+                                _phrase540 = _phrase540.Replace("{CoinName}", Wallet.Coin_Name);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase540), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                         }
                         else
@@ -144,66 +144,59 @@ namespace ServerTools
             if (OpenLotto)
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p != null)
+                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                _result.Dispose();
+                int currentCoins = 0;
+                if (GameManager.Instance.World.GetGameMode() == 7)
                 {
-                    int spentCoins = p.PlayerSpentCoins;
-                    int currentCoins = 0;
-                    if (GameManager.Instance.World.GetGameMode() == 7)
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+                }
+                else
+                {
+                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+                }
+                if (currentCoins >= LottoValue)
+                {
+                    if (!LottoEntries.Contains(_cInfo))
                     {
-                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                    }
-                    else
-                    {
-                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                    }
-                    if (currentCoins >= LottoValue)
-                    {
-                        if (!LottoEntries.Contains(_cInfo))
+                        LottoEntries.Add(_cInfo);
+                        _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - LottoValue, _cInfo.playerId);
+                        SQL.FastQuery(_sql);
+                        string _phrase541;
+                        if (!Phrases.Dict.TryGetValue(541, out _phrase541))
                         {
-                            LottoEntries.Add(_cInfo);
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = p.PlayerSpentCoins - LottoValue;
-                            PersistentContainer.Instance.Save();
-                            string _phrase541;
-                            if (!Phrases.Dict.TryGetValue(541, out _phrase541))
-                            {
-                                _phrase541 = "{PlayerName} you have entered the lottery, good luck in the draw.";
-                            }
-                            _phrase541 = _phrase541.Replace("{PlayerName}", _cInfo.playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase541), Config.Server_Response_Name, false, "ServerTools", false));
-                            if (LottoEntries.Count == 10)
-                            {
-                                StartLotto();
-                            }
+                            _phrase541 = "{PlayerName} you have entered the lottery, good luck in the draw.";
                         }
-                        else
+                        _phrase541 = _phrase541.Replace("{PlayerName}", _cInfo.playerName);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase541), Config.Server_Response_Name, false, "ServerTools", false));
+                        if (LottoEntries.Count == 10)
                         {
-                            string _phrase542;
-                            if (!Phrases.Dict.TryGetValue(542, out _phrase542))
-                            {
-                                _phrase542 = "{PlayerName} you are already in the lottery, good luck in the draw.";
-                            }
-                            _phrase542 = _phrase542.Replace("{PlayerName}", _cInfo.playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase542), Config.Server_Response_Name, false, "ServerTools", false));
+                            StartLotto();
                         }
                     }
                     else
                     {
-                        string _phrase540;
-                        if (!Phrases.Dict.TryGetValue(540, out _phrase540))
+                        string _phrase542;
+                        if (!Phrases.Dict.TryGetValue(542, out _phrase542))
                         {
-                            _phrase540 = "{PlayerName} you do not have enough {CoinName}. Earn some more and enter the lottery before it ends.";
+                            _phrase542 = "{PlayerName} you are already in the lottery, good luck in the draw.";
                         }
-                        _phrase540 = _phrase540.Replace("{PlayerName}", _cInfo.playerName);
-                        _phrase540 = _phrase540.Replace("{CoinName}", Wallet.Coin_Name);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase540), Config.Server_Response_Name, false, "ServerTools", false));
+                        _phrase542 = _phrase542.Replace("{PlayerName}", _cInfo.playerName);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase542), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
                 else
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = 0;
-                    PersistentContainer.Instance.Save();
-                    EnterLotto(_cInfo);
+                    string _phrase540;
+                    if (!Phrases.Dict.TryGetValue(540, out _phrase540))
+                    {
+                        _phrase540 = "{PlayerName} you do not have enough {CoinName}. Earn some more and enter the lottery before it ends.";
+                    }
+                    _phrase540 = _phrase540.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase540 = _phrase540.Replace("{CoinName}", Wallet.Coin_Name);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase540), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             else
@@ -235,9 +228,12 @@ namespace ServerTools
             OpenLotto = false;
             LottoValue = 0;
             LottoEntries.Clear();
-            int _oldCoins = PersistentContainer.Instance.Players[_winner.playerId, true].PlayerSpentCoins;
-            PersistentContainer.Instance.Players[_winner.playerId, true].PlayerSpentCoins = _oldCoins + _winnings;
-            PersistentContainer.Instance.Save();
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _winner.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            _result.Dispose();
+            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins + _winnings, _winner.playerId);
+            SQL.FastQuery(_sql);
             string _phrase544;
             if (!Phrases.Dict.TryGetValue(544, out _phrase544))
             {

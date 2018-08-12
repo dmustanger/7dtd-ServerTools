@@ -1,4 +1,5 @@
-﻿
+﻿using System.Data;
+
 namespace ServerTools
 {
     class Wallet
@@ -13,28 +14,21 @@ namespace ServerTools
         {
             World world = GameManager.Instance.World;
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            _result.Dispose();
             int currentCoins = 0;
-            if (p != null)
+            int gameMode = world.GetGameMode();
+            if (gameMode == 7)
             {
-                int spentCoins = p.PlayerSpentCoins;
-                int gameMode = world.GetGameMode();
-                if (gameMode == 7)
-                {
-                    currentCoins = (_player.KilledZombies * Zombie_Kills) + (_player.KilledPlayers * Player_Kills) - (XUiM_Player.GetDeaths(_player) * Deaths) + p.PlayerSpentCoins;
-                }
-                else
-                {
-                    currentCoins = (_player.KilledZombies * Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Deaths) + p.PlayerSpentCoins;
-                }
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, currentCoins, Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                currentCoins = (_player.KilledZombies * Zombie_Kills) + (_player.KilledPlayers * Player_Kills) - (XUiM_Player.GetDeaths(_player) * Deaths) + _playerSpentCoins;
             }
             else
             {
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = 0;
-                PersistentContainer.Instance.Save();
-                WalletValue(_cInfo, _playerName);
+                currentCoins = (_player.KilledZombies * Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Deaths) + _playerSpentCoins;
             }
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, currentCoins, Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
         }
     }
 }

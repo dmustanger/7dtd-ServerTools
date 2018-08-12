@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace ServerTools
@@ -55,39 +56,38 @@ namespace ServerTools
                         ClientInfo _cInfo1 = ConnectionManager.Instance.GetClientInfoForEntityId(_id);
                         if (_cInfo1 != null)
                         {
-                            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                            if (p != null)
+                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
+                            int _minimum = _player.Level * Bounty;
+                            if (_cost < _minimum)
                             {
-                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
-                                int _minimum = _player.Level * Bounty;
-                                if (_cost < _minimum)
-                                {
-                                    _cost = _minimum;
-                                }
-                                int spentCoins = p.PlayerSpentCoins;
-                                int currentCoins = 0;
-                                int gameMode = GameManager.Instance.World.GetGameMode();
-                                if (gameMode == 7)
-                                {
-                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                                }
-                                else
-                                {
-                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                                }
-                                if (currentCoins >= _cost)
-                                {
-                                    int _newCoins = PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins - _cost;
-                                    int _newBounty = PersistentContainer.Instance.Players[_cInfo1.playerId, true].Bounty + _cost;
-                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _newCoins;
-                                    PersistentContainer.Instance.Players[_cInfo1.playerId, true].Bounty = _newBounty;
-                                    PersistentContainer.Instance.Save();
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have added {2} bounty to {3}.[-]", Config.Chat_Response_Color, _playerName, _cost, _cInfo1.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} .[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
+                                _cost = _minimum;
+                            }
+                            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result = SQL.TQuery(_sql);
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                            _result.Dispose();
+                            int currentCoins = 0;
+                            int gameMode = GameManager.Instance.World.GetGameMode();
+                            if (gameMode == 7)
+                            {
+                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+                            }
+                            else
+                            {
+                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+                            }
+                            if (currentCoins >= _cost)
+                            {
+                                int _newBounty = PersistentContainer.Instance.Players[_cInfo1.playerId, true].Bounty + _cost;
+                                PersistentContainer.Instance.Players[_cInfo1.playerId, true].Bounty = _newBounty;
+                                PersistentContainer.Instance.Save();
+                                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _cost, _cInfo.playerId);
+                                SQL.FastQuery(_sql);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have added {2} bounty to {3}.[-]", Config.Chat_Response_Color, _playerName, _cost, _cInfo1.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} .[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                         }
                     }
@@ -104,41 +104,35 @@ namespace ServerTools
                     ClientInfo _cInfo1 = ConnectionManager.Instance.GetClientInfoForEntityId(_id);
                     if (_cInfo1 != null)
                     {
-                        Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                        if (p != null)
+                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
+                        _cost = _player.Level * Bounty;
+                        string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                        _result.Dispose();
+                        //int spentCoins = p.PlayerSpentCoins;
+                        int currentCoins = 0;
+                        int gameMode = GameManager.Instance.World.GetGameMode();
+                        if (gameMode == 7)
                         {
-                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
-                            _cost = _player.Level * Bounty;
-                            int spentCoins = p.PlayerSpentCoins;
-                            int currentCoins = 0;
-                            int gameMode = GameManager.Instance.World.GetGameMode();
-                            if (gameMode == 7)
-                            {
-                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                            }
-                            else
-                            {
-                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                            }
-                            if (currentCoins >= _cost)
-                            {
-                                int _newCoins = PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins - _cost;
-                                int _newBounty = PersistentContainer.Instance.Players[_cInfo1.playerId, true].Bounty + _cost;
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _newCoins;
-                                PersistentContainer.Instance.Players[_cInfo1.playerId, true].Bounty = _newBounty;
-                                PersistentContainer.Instance.Save();
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have added {2} bounty to {3}.[-]", Config.Chat_Response_Color, _playerName, _cost, _cInfo1.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you do not have enough {2} to the bounty.[-]", Config.Chat_Response_Color, _playerName, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
+                            currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
                         }
                         else
                         {
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = 0;
+                            currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+                        }
+                        if (currentCoins >= _cost)
+                        {
+                            int _newBounty = PersistentContainer.Instance.Players[_cInfo1.playerId, true].Bounty + _cost;
+                            PersistentContainer.Instance.Players[_cInfo1.playerId, true].Bounty = _newBounty;
                             PersistentContainer.Instance.Save();
-                            NewBounty(_cInfo, _message, _playerName);
+                            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _cost, _cInfo.playerId);
+                            SQL.FastQuery(_sql);
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have added {2} bounty to {3}.[-]", Config.Chat_Response_Color, _playerName, _cost, _cInfo1.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                        }
+                        else
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you do not have enough {2} to the bounty.[-]", Config.Chat_Response_Color, _playerName, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                 }

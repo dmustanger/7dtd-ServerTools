@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Xml;
 
@@ -895,143 +896,144 @@ namespace ServerTools
         {
             World world = GameManager.Instance.World;
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+
             int currentCoins = 0;
-            if (p != null)
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            _result.Dispose();
+            int gameMode = world.GetGameMode();
+            if (gameMode == 7)
             {
-                int spentCoins = p.PlayerSpentCoins;
-                int gameMode = world.GetGameMode();
-                if (gameMode == 7)
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+            }
+            else
+            {
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+            }
+            if (currentCoins >= _c[2])
+            {
+                int _newCoins = _playerSpentCoins - _c[2];
+                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _newCoins, _cInfo.playerId);
+                SQL.FastQuery(_sql);
+                if (_c[0] == 1)
                 {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand1 = DateTime.Now;
                 }
-                else
+                if (_c[0] == 2)
                 {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand2 = DateTime.Now;
                 }
-                if (currentCoins >= _c[2])
+                if (_c[0] == 3)
                 {
-                    int _newCoins = p.PlayerSpentCoins - _c[2];
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _newCoins;
-                    if (_c[0] == 1)
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand3 = DateTime.Now;
+                }
+                if (_c[0] == 4)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand4 = DateTime.Now;
+                }
+                if (_c[0] == 5)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand5 = DateTime.Now;
+                }
+                if (_c[0] == 6)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand6 = DateTime.Now;
+                }
+                if (_c[0] == 7)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand7 = DateTime.Now;
+                }
+                if (_c[0] == 8)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand8 = DateTime.Now;
+                }
+                if (_c[0] == 9)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand9 = DateTime.Now;
+                }
+                if (_c[0] == 10)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand10 = DateTime.Now;
+                }
+                PersistentContainer.Instance.Save();
+                string[] _r;
+                if (Dict.TryGetValue(_message, out _r))
+                {
+                    string _response = _r[0];
+                    if (_response != null)
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand1 = DateTime.Now;
-                    }
-                    if (_c[0] == 2)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand2 = DateTime.Now;
-                    }
-                    if (_c[0] == 3)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand3 = DateTime.Now;
-                    }
-                    if (_c[0] == 4)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand4 = DateTime.Now;
-                    }
-                    if (_c[0] == 5)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand5 = DateTime.Now;
-                    }
-                    if (_c[0] == 6)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand6 = DateTime.Now;
-                    }
-                    if (_c[0] == 7)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand7 = DateTime.Now;
-                    }
-                    if (_c[0] == 8)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand8 = DateTime.Now;
-                    }
-                    if (_c[0] == 9)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand9 = DateTime.Now;
-                    }
-                    if (_c[0] == 10)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand10 = DateTime.Now;
-                    }
-                    PersistentContainer.Instance.Save();
-                    string[] _r;
-                    if (Dict.TryGetValue(_message, out _r))
-                    {
-                        string _response = _r[0];
-                        if (_response != null)
+                        _response = _response.Replace("{EntityId}", _cInfo.entityId.ToString());
+                        _response = _response.Replace("{SteamId}", _cInfo.playerId);
+                        _response = _response.Replace("{PlayerName}", _playerName);
+                        if (_response.StartsWith("say "))
                         {
-                            _response = _response.Replace("{EntityId}", _cInfo.entityId.ToString());
-                            _response = _response.Replace("{SteamId}", _cInfo.playerId);
-                            _response = _response.Replace("{PlayerName}", _playerName);
-                            if (_response.StartsWith("say "))
+                            _response = _response.Replace("say ", "&quot; ");
+                            _response += " &quot;";
+                            if (_announce)
                             {
-                                _response = _response.Replace("say ", "&quot; ");
-                                _response += " &quot;";
-                                if (_announce)
-                                {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false);
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
-                            if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
-                            {
-                                Players.NoFlight.Add(_cInfo.entityId);
-                                if (Players.ZoneExit.ContainsKey(_cInfo.entityId))
-                                {
-                                    Players.ZoneExit.Remove(_cInfo.entityId);
-                                }
-                                SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false);
                             }
                             else
                             {
-                                SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                         }
-                        string _response2 = _r[1];
-                        if (_response2 != null)
+                        if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
                         {
-                            _response2 = _response2.Replace("{EntityId}", _cInfo.entityId.ToString());
-                            _response2 = _response2.Replace("{SteamId}", _cInfo.playerId);
-                            _response2 = _response2.Replace("{PlayerName}", _playerName);
-                            if (_response2.StartsWith("say "))
+                            Players.NoFlight.Add(_cInfo.entityId);
+                            if (Players.ZoneExit.ContainsKey(_cInfo.entityId))
                             {
-                                _response2 = _response2.Replace("say ", "&quot; ");
-                                _response2 += " &quot;";
-                                if (_announce)
-                                {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false);
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
+                                Players.ZoneExit.Remove(_cInfo.entityId);
                             }
-                            if (_response2.StartsWith("tele ") || _response2.StartsWith("tp ") || _response2.StartsWith("teleportplayer "))
+                            SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                        }
+                    }
+                    string _response2 = _r[1];
+                    if (_response2 != null)
+                    {
+                        _response2 = _response2.Replace("{EntityId}", _cInfo.entityId.ToString());
+                        _response2 = _response2.Replace("{SteamId}", _cInfo.playerId);
+                        _response2 = _response2.Replace("{PlayerName}", _playerName);
+                        if (_response2.StartsWith("say "))
+                        {
+                            _response2 = _response2.Replace("say ", "&quot; ");
+                            _response2 += " &quot;";
+                            if (_announce)
                             {
-                                Players.NoFlight.Add(_cInfo.entityId);
-                                SdtdConsole.Instance.ExecuteSync(_response2, _cInfo);
+                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false);
                             }
                             else
                             {
-                                SdtdConsole.Instance.ExecuteSync(_response2, _cInfo);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false));
                             }
+                        }
+                        if (_response2.StartsWith("tele ") || _response2.StartsWith("tp ") || _response2.StartsWith("teleportplayer "))
+                        {
+                            Players.NoFlight.Add(_cInfo.entityId);
+                            SdtdConsole.Instance.ExecuteSync(_response2, _cInfo);
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.ExecuteSync(_response2, _cInfo);
                         }
                     }
                 }
-                else
+            }
+            else
+            {
+                string _phrase814;
+                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    string _phrase814;
-                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                    {
-                        _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
-                    }
-                    _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
+                    _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
+                _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
     }

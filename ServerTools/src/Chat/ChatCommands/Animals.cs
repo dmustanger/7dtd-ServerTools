@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace ServerTools
@@ -137,41 +138,40 @@ namespace ServerTools
         {
             World world = GameManager.Instance.World;
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
             int currentCoins = 0;
-            if (p != null)
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            _result.Dispose();
+            int gameMode = world.GetGameMode();
+            if (gameMode == 7)
             {
-                int spentCoins = p.PlayerSpentCoins;
-                int gameMode = world.GetGameMode();
-                if (gameMode == 7)
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+            }
+            else
+            {
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
+            }
+            if (currentCoins >= Command_Cost)
+            {
+                GiveAnimals(_cInfo, _announce);
+            }
+            else
+            {
+                string _phrase814;
+                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                    _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
+                }
+                _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                if (_announce)
+                {
+                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false);
                 }
                 else
                 {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                }
-                if (currentCoins >= Command_Cost)
-                {
-                    GiveAnimals(_cInfo, _announce);
-                }
-                else
-                {
-                    string _phrase814;
-                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                    {
-                        _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
-                    }
-                    _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                    if (_announce)
-                    {
-                        GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false);
-                    }
-                    else
-                    {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
-                    }
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
         }
@@ -197,7 +197,6 @@ namespace ServerTools
                 var _id = int.Parse(_newId);
                 int _nextRadius = rnd.Next(minRad, maxRad + 1);
                 Dictionary<int, EntityClass>.KeyCollection entityTypesCollection = EntityClass.list.Keys;
-
                 int counter = 1;
                 foreach (int i in entityTypesCollection)
                 {
@@ -212,42 +211,32 @@ namespace ServerTools
                     }
                     counter++;
                 }
+                string _phrase715;
+                if (!Phrases.Dict.TryGetValue(715, out _phrase715))
+                {
+                    _phrase715 = "{PlayerName} has tracked down an animal to within {Radius} metres.";
+                }
+                _phrase715 = _phrase715.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase715 = _phrase715.Replace("{Radius}", _nextRadius.ToString());
                 if (_announce)
                 {
-                    string _phrase715;
-                    if (!Phrases.Dict.TryGetValue(715, out _phrase715))
-                    {
-                        _phrase715 = "{PlayerName} has tracked down an animal to within {Radius} metres.";
-                    }
-                    _phrase715 = _phrase715.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase715 = _phrase715.Replace("{Radius}", _nextRadius.ToString());
                     GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase715), Config.Server_Response_Name, false, "ServerTools", false);
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
-                    {
-                        int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
-                    }
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
-                    PersistentContainer.Instance.Save();
                 }
                 else
                 {
-                    string _phrase715;
-                    if (!Phrases.Dict.TryGetValue(715, out _phrase715))
-                    {
-                        _phrase715 = "{PlayerName} has tracked down an animal to within {Radius} metres.";
-                    }
-                    _phrase715 = _phrase715.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase715 = _phrase715.Replace("{Radius}", _nextRadius.ToString());
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase715), Config.Server_Response_Name, false, "ServerTools", false));
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
-                    {
-                        int _oldCoins = PersistentContainer.Instance.Players[_cInfo.playerId, false].PlayerSpentCoins;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = _oldCoins - Command_Cost;
-                    }
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
-                    PersistentContainer.Instance.Save();
                 }
+                if (Wallet.IsEnabled && Command_Cost >= 1)
+                {
+                    string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    DataTable _result = SQL.TQuery(_sql);
+                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                    _result.Dispose();
+                    _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
+                }
+                PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
+                PersistentContainer.Instance.Save();
             }
             else
             {

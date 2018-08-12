@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Xml;
 using UnityEngine;
@@ -252,56 +253,52 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo, string _playerName, EntityPlayer _player)
         {
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p != null)
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            _result.Dispose();
+            World world = GameManager.Instance.World;
+            int currentCoins = 0;
+            int gameMode = world.GetGameMode();
+            if (gameMode == 7)
             {
-                World world = GameManager.Instance.World;
-                int spentCoins = p.PlayerSpentCoins;
-                int currentCoins = 0;
-                int gameMode = world.GetGameMode();
-                if (gameMode == 7)
-                {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                }
-                else
-                {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
-                }
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, currentCoins, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
-                string _phrase617;
-                if (!Phrases.Dict.TryGetValue(617, out _phrase617))
-                {
-                    _phrase617 = "The shop contains the following:";
-                }
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase617), Config.Server_Response_Name, false, "ServerTools", false));
-                foreach (var _sellable in dict)
-                {
-                    int[] _values;
-                    if (dict1.TryGetValue(_sellable.Key, out _values))
-                    {
-                        if (_values[1] > 1)
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
-                        }
-                        else
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
-                        }
-                    }
-                }
-                string _phrase618;
-                if (!Phrases.Dict.TryGetValue(618, out _phrase618))
-                {
-                    _phrase618 = "Type /buy # to purchase the corresponding value from the shop list. Add how many to buy multiple";
-                }
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase618), Config.Server_Response_Name, false, "ServerTools", false));
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
             }
             else
             {
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = 0;
-                PersistentContainer.Instance.Save();
-                Exec(_cInfo, _playerName, _player);
+                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
             }
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, currentCoins, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+            string _phrase617;
+            if (!Phrases.Dict.TryGetValue(617, out _phrase617))
+            {
+                _phrase617 = "The shop contains the following:";
+            }
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase617), Config.Server_Response_Name, false, "ServerTools", false));
+            foreach (var _sellable in dict)
+            {
+                int[] _values;
+                if (dict1.TryGetValue(_sellable.Key, out _values))
+                {
+                    if (_values[1] > 1)
+                    {
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
+                    else
+                    {
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
+                }
+            }
+            string _phrase618;
+            if (!Phrases.Dict.TryGetValue(618, out _phrase618))
+            {
+                _phrase618 = "Type /buy # to purchase the corresponding value from the shop list. Add how many to buy multiple";
+            }
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase618), Config.Server_Response_Name, false, "ServerTools", false));
+
+
+
         }
 
         public static void BuyCheck(ClientInfo _cInfo, string _item, string _playerName)
@@ -377,21 +374,24 @@ namespace ServerTools
                                     World world = GameManager.Instance.World;
                                     int currentCoins;
                                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                                    string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                    DataTable _result = SQL.TQuery(_sql);
+                                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                                    _result.Dispose();
                                     int gameMode = world.GetGameMode();
                                     if (gameMode == 7)
                                     {
-                                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
                                     }
                                     else
                                     {
-                                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
                                     }
                                     int _newAmount = _integerValues[2] * _amount;
                                     if (currentCoins >= _newAmount)
                                     {
                                         int _newCount = _integerValues[0] * _amount;
-                                        ShopPurchase(_cInfo, _stringValues[0], _newCount, _integerValues[1], _newAmount, _playerName, currentCoins, p);
+                                        ShopPurchase(_cInfo, _stringValues[0], _newCount, _integerValues[1], _newAmount, _playerName, currentCoins);
                                     }
                                     else
                                     {
@@ -426,19 +426,22 @@ namespace ServerTools
                                 World world = GameManager.Instance.World;
                                 int currentCoins;
                                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                DataTable _result = SQL.TQuery(_sql);
+                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                                _result.Dispose();
                                 int gameMode = world.GetGameMode();
                                 if (gameMode == 7)
                                 {
-                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
                                 }
                                 else
                                 {
-                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + p.PlayerSpentCoins;
+                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
                                 }
                                 if (currentCoins >= _integerValues[2])
                                 {
-                                    ShopPurchase(_cInfo, _stringValues[0], _integerValues[0], _integerValues[1], _integerValues[2], _playerName, currentCoins, p);
+                                    ShopPurchase(_cInfo, _stringValues[0], _integerValues[0], _integerValues[1], _integerValues[2], _playerName, currentCoins);
                                 }
                                 else
                                 {
@@ -469,7 +472,7 @@ namespace ServerTools
             }
         }
 
-        public static void ShopPurchase(ClientInfo _cInfo, string _itemName, int _count, int _quality, int _price, string _playerName, int currentCoins, Player p)
+        public static void ShopPurchase(ClientInfo _cInfo, string _itemName, int _count, int _quality, int _price, string _playerName, int currentCoins)
         {
             World world = GameManager.Instance.World;
             ItemValue _itemValue = ItemClass.GetItem(_itemName, true);
@@ -491,9 +494,12 @@ namespace ServerTools
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                 SdtdConsole.Instance.Output(string.Format("Sold {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was purchased through the shop. If your bag is full, check the ground.[-]", Config.Chat_Response_Color, _count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), Config.Server_Response_Name, false, "ServerTools", false));
-                int newCoins = p.PlayerSpentCoins - _price;
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = newCoins;
-                PersistentContainer.Instance.Save();
+                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                _result.Dispose();
+                _sql = string.Format("UPDATE Players SET playerSpentCoins = '{0}' WHERE steamid = '{1}'", _playerSpentCoins - _price, _cInfo.playerId);
+                SQL.FastQuery(_sql);
             }
             else
             {
