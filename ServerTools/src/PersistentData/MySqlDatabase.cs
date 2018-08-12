@@ -73,6 +73,8 @@ namespace ServerTools
                 "kills INT DEFAULT 0, " +
                 "deaths INT DEFAULT 0, " +
                 "eventReturn VARCHAR(50) DEFAULT 'Unknown', " +
+                "marketReturn VARCHAR(50) DEFAULT 'Unknown', " +
+                "lobbyReturn VARCHAR(50) DEFAULT 'Unknown', " +
                 "PRIMARY KEY (steamid)) ENGINE = InnoDB;");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER) ENGINE = InnoDB;");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");

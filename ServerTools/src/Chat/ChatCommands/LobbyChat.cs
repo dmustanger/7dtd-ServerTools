@@ -233,8 +233,8 @@ namespace ServerTools
                     }
                     string _pposition = x + "," + y + "," + z;
                     LobbyPlayers.Add(_cInfo.entityId);
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].LobbyReturn = _pposition;
-                    PersistentContainer.Instance.Save();
+                    string _sql = string.Format("UPDATE Players SET lobbyReturn = '{0}' WHERE steamid = '{1}'", _pposition, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                     string _phrase552;
                     if (!Phrases.Dict.TryGetValue(552, out _phrase552))
                     {
@@ -282,44 +282,44 @@ namespace ServerTools
 
         public static void SendBack(ClientInfo _cInfo, string _playerName)
         {
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p != null)
+            string _sql = string.Format("SELECT lobbyReturn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
+            _result.Dispose();
+            if (_pos != "Unknown")
             {
-                if (p.LobbyReturn != null)
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                int x, y, z;
+                string[] _cords = SetLobby.Lobby_Position.Split(',');
+                int.TryParse(_cords[0], out x);
+                int.TryParse(_cords[1], out y);
+                int.TryParse(_cords[2], out z);
+                if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= Lobby_Size * Lobby_Size)
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    int x, y, z;
-                    string[] _cords = SetLobby.Lobby_Position.Split(',');
-                    int.TryParse(_cords[0], out x);
-                    int.TryParse(_cords[1], out y);
-                    int.TryParse(_cords[2], out z);
-                    if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= Lobby_Size * Lobby_Size)
+                    string[] _returnCoords = _pos.Split(',');
+                    int.TryParse(_returnCoords[0], out x);
+                    int.TryParse(_returnCoords[1], out y);
+                    int.TryParse(_returnCoords[2], out z);
+                    Players.NoFlight.Add(_cInfo.entityId);
+                    TeleportDelay.TeleportQue(_cInfo, x, y, z);
+                    LobbyPlayers.Remove(_cInfo.entityId);
+                    string _phrase555;
+                    if (!Phrases.Dict.TryGetValue(555, out _phrase555))
                     {
-                        string[] _returnCoords = p.LobbyReturn.Split(',');
-                        int.TryParse(_returnCoords[0], out x);
-                        int.TryParse(_returnCoords[1], out y);
-                        int.TryParse(_returnCoords[2], out z);
-                        Players.NoFlight.Add(_cInfo.entityId);
-                        TeleportDelay.TeleportQue(_cInfo, x, y, z);
-                        LobbyPlayers.Remove(_cInfo.entityId);
-                        string _phrase555;
-                        if (!Phrases.Dict.TryGetValue(555, out _phrase555))
-                        {
-                            _phrase555 = "{PlayerName} sending you back to your saved location.";
-                        }
-                        _phrase555 = _phrase555.Replace("{PlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase555), Config.Server_Response_Name, false, "ServerTools", false));
+                        _phrase555 = "{PlayerName} sending you back to your saved location.";
                     }
-                    else
+                    _phrase555 = _phrase555.Replace("{PlayerName}", _playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase555), Config.Server_Response_Name, false, "ServerTools", false));
+                }
+                else
+                {
+                    string _phrase556;
+                    if (!Phrases.Dict.TryGetValue(556, out _phrase556))
                     {
-                        string _phrase556;
-                        if (!Phrases.Dict.TryGetValue(556, out _phrase556))
-                        {
-                            _phrase556 = "{PlayerName} you are outside the lobby. Get inside it and try again.";
-                        }
-                        _phrase556 = _phrase556.Replace("{PlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase556), Config.Server_Response_Name, false, "ServerTools", false));
+                        _phrase556 = "{PlayerName} you are outside the lobby. Get inside it and try again.";
                     }
+                    _phrase556 = _phrase556.Replace("{PlayerName}", _playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase556), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
         }

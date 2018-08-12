@@ -34,8 +34,8 @@ namespace ServerTools
         //private string playerName;
         //private string eventReturn;
         //private string hardcoreName;
-        private string marketReturn;
-        private string lobbyReturn;
+        //private string marketReturn;
+        //private string lobbyReturn;
         private string newTeleSpawn;
         //private string jailName;
         //private string muteName;
@@ -768,29 +768,29 @@ namespace ServerTools
             //}
         //}
 
-        public string MarketReturn
-        {
-            get
-            {
-                return marketReturn;
-            }
-            set
-            {
-                marketReturn = value;
-            }
-        }
+        //public string MarketReturn
+        //{
+            //get
+            //{
+                //return marketReturn;
+            //}
+            //set
+            //{
+                //marketReturn = value;
+            //}
+        //}
 
-        public string LobbyReturn
-        {
-            get
-            {
-                return lobbyReturn;
-            }
-            set
-            {
-                lobbyReturn = value;
-            }
-        }
+        //public string LobbyReturn
+        //{
+            //get
+            //{
+                //return lobbyReturn;
+            //}
+            //set
+            //{
+                //lobbyReturn = value;
+            //}
+        //}
 
         public string NewTeleSpawn
         {

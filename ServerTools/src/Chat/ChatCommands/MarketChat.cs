@@ -233,8 +233,8 @@ namespace ServerTools
                     }
                     string _mposition = x + "," + y + "," + z;
                     MarketPlayers.Add(_cInfo.entityId);
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].MarketReturn = _mposition;
-                    PersistentContainer.Instance.Save();
+                    string _sql = string.Format("UPDATE Players SET marketReturn = {0} WHERE steamid = '{1}'", _mposition, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                     string _phrase561;
                     if (!Phrases.Dict.TryGetValue(561, out _phrase561))
                     {
@@ -282,44 +282,44 @@ namespace ServerTools
 
         public static void SendBack(ClientInfo _cInfo, string _playerName)
         {
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p != null)
+            string _sql = string.Format("SELECT lobbyReturn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
+            _result.Dispose();
+            if (_pos != "Unknown")
             {
-                if (p.LobbyReturn != null)
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                int x, y, z;
+                string[] _cords = SetLobby.Lobby_Position.Split(',');
+                int.TryParse(_cords[0], out x);
+                int.TryParse(_cords[1], out y);
+                int.TryParse(_cords[2], out z);
+                if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= Market_Size * Market_Size)
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    int x, y, z;
-                    string[] _cords = SetLobby.Lobby_Position.Split(',');
-                    int.TryParse(_cords[0], out x);
-                    int.TryParse(_cords[1], out y);
-                    int.TryParse(_cords[2], out z);
-                    if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= Market_Size * Market_Size)
+                    string[] _returnCoords = _pos.Split(',');
+                    int.TryParse(_returnCoords[0], out x);
+                    int.TryParse(_returnCoords[1], out y);
+                    int.TryParse(_returnCoords[2], out z);
+                    Players.NoFlight.Add(_cInfo.entityId);
+                    TeleportDelay.TeleportQue(_cInfo, x, y, z);
+                    MarketPlayers.Remove(_cInfo.entityId);
+                    string _phrase555;
+                    if (!Phrases.Dict.TryGetValue(555, out _phrase555))
                     {
-                        string[] _returnCoords = p.LobbyReturn.Split(',');
-                        int.TryParse(_returnCoords[0], out x);
-                        int.TryParse(_returnCoords[1], out y);
-                        int.TryParse(_returnCoords[2], out z);
-                        Players.NoFlight.Add(_cInfo.entityId);
-                        TeleportDelay.TeleportQue(_cInfo, x, y, z);
-                        MarketPlayers.Remove(_cInfo.entityId);
-                        string _phrase555;
-                        if (!Phrases.Dict.TryGetValue(555, out _phrase555))
-                        {
-                            _phrase555 = "{PlayerName} sending you back to your saved location.";
-                        }
-                        _phrase555 = _phrase555.Replace("{PlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase555), Config.Server_Response_Name, false, "ServerTools", false));
+                        _phrase555 = "{PlayerName} sending you back to your saved location.";
                     }
-                    else
+                    _phrase555 = _phrase555.Replace("{PlayerName}", _playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase555), Config.Server_Response_Name, false, "ServerTools", false));
+                }
+                else
+                {
+                    string _phrase564;
+                    if (!Phrases.Dict.TryGetValue(564, out _phrase564))
                     {
-                        string _phrase564;
-                        if (!Phrases.Dict.TryGetValue(564, out _phrase564))
-                        {
-                            _phrase564 = "{PlayerName} you are outside the market. Get inside it and try again.";
-                        }
-                        _phrase564 = _phrase564.Replace("{PlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase564), Config.Server_Response_Name, false, "ServerTools", false));
+                        _phrase564 = "{PlayerName} you are outside the market. Get inside it and try again.";
                     }
+                    _phrase564 = _phrase564.Replace("{PlayerName}", _playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase564), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
         }
