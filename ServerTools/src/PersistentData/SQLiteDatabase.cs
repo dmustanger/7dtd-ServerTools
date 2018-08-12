@@ -35,7 +35,8 @@ namespace ServerTools
                 "pingimmunity TEXT DEFAULT 'false', " +
                 "last_gimme TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
                 "lastkillme TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
-                "bank INTEGER DEFAULT 0" +
+                "bank INTEGER DEFAULT 0, " +
+                "wallet INTEGER DEFAULT 0" +
                 ");");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER);");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");

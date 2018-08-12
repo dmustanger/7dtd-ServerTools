@@ -187,9 +187,10 @@ namespace ServerTools
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = 0;
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = 0;
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerSpentCoins = 0;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].Wallet = 0;
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerName = _cInfo.playerName;
                     PersistentContainer.Instance.Save();
+                    string _sql = string.Format("UPDATE Players wallet = 0 WHERE steamid = '{0}'", _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                 }
                 if (_respawnReason == RespawnType.JoinMultiplayer)
                 {
@@ -230,7 +231,8 @@ namespace ServerTools
                             {
                                 currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
                             }
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].Wallet = currentCoins;
+                            string _sql = string.Format("UPDATE Players wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
+                            SQL.FastQuery(_sql);
                         }
                     }
                     PersistentContainer.Instance.Save();
@@ -272,7 +274,8 @@ namespace ServerTools
                             {
                                 currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
                             }
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].Wallet = currentCoins;
+                            string _sql = string.Format("UPDATE Players wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
+                            SQL.FastQuery(_sql);
                         }
                     }
                     PersistentContainer.Instance.Save();
@@ -333,7 +336,8 @@ namespace ServerTools
                                 {
                                     currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
                                 }
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].Wallet = currentCoins;
+                                string _sql = string.Format("UPDATE Players wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
+                                SQL.FastQuery(_sql);
                             }
                         }
                         PersistentContainer.Instance.Save();

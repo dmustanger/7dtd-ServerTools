@@ -9,7 +9,7 @@ namespace ServerTools
         private readonly string steamId;
         [OptionalField]
         private int homeRequest;
-        private int wallet;
+        //private int wallet;
         //private int bank;
         private int hardcoreSessionTime;
         private int hardcoreKills;
@@ -132,17 +132,17 @@ namespace ServerTools
             }
         }
 
-        public int Wallet
-        {
-            get
-            {
-                return wallet;
-            }
-            set
-            {
-                wallet = value;
-            }
-        }
+        //public int Wallet
+        //{
+            //get
+            //{
+                //return wallet;
+            //}
+            //set
+            //{
+                //wallet = value;
+            //}
+        //}
 
         public int HardcoreKills
         {

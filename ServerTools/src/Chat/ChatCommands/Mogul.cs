@@ -19,14 +19,15 @@ namespace ServerTools
                     {
                         if (p.PlayerName != null)
                         {
-                            string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _id);
+                            string _sql = string.Format("SELECT bank, wallet FROM Players WHERE steamid = '{0}'", _id);
                             DataTable _result = SQL.TQuery(_sql);
                             int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank);
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _wallet);
                             _result.Dispose();
                             int _total = 0;
                             if (Wallet.IsEnabled && Bank.IsEnabled)
                             {
-                                _total = p.Wallet + _bank;
+                                _total = _wallet + _bank;
                             }
                             else if (Wallet.IsEnabled && !Bank.IsEnabled)
                             {
@@ -34,7 +35,7 @@ namespace ServerTools
                             }
                             else if (!Wallet.IsEnabled && Bank.IsEnabled)
                             {
-                                _total = p.Wallet;
+                                _total = _wallet;
                             }
                             if (_total > _topScore1)
                             {
