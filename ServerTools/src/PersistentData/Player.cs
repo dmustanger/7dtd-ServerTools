@@ -18,7 +18,7 @@ namespace ServerTools
         //private int hardcoreDeaths;
         //private int bounty;
         //private int bountyHunter;
-        private int sessionTime;
+        //private int sessionTime;
         private int bikeId;
         private int jailTime;
         private int muteTime;
@@ -228,17 +228,17 @@ namespace ServerTools
             //}
         //}
 
-        public int SessionTime
-        {
-            get
-            {
-                return sessionTime;
-            }
-            set
-            {
-                sessionTime = value;
-            }
-        }
+        //public int SessionTime
+        //{
+            //get
+            //{
+                //return sessionTime;
+            //}
+            //set
+            //{
+                //sessionTime = value;
+            //}
+        //}
 
         public int BikeId
         {

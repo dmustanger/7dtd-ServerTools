@@ -59,10 +59,12 @@ namespace ServerTools
             double fractionalMinutes = varTime.TotalMinutes;
             int _timepassed = (int)fractionalMinutes;
             int _deaths = XUiM_Player.GetDeaths(_player);
-            int _oldSession = PersistentContainer.Instance.Players[_cInfo.playerId, true].SessionTime;
+            string _sql = string.Format("SELECT sessionTime FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _oldSession);
+            _result.Dispose();
             int _newSession = _oldSession + _timepassed;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].BikeId = 0;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].SessionTime = 0;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = 0;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = false;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].FirstClaim = false;
@@ -109,9 +111,9 @@ namespace ServerTools
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastWhisper = null;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerName = null;
             PersistentContainer.Instance.Save();
-            string _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            if (_result.Rows.Count != 0)
+            _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result1 = SQL.TQuery(_sql);
+            if (_result1.Rows.Count != 0)
             {
                 string _name = SQL.EscapeString(_cInfo.playerName);
                 _sql = string.Format("UPDATE Players SET " +
@@ -123,11 +125,12 @@ namespace ServerTools
                     "hardcoreZKills = {2}, " +
                     "hardcoreScore = {3}, " +
                     "hardcoreDeaths = {4}, " +
-                    "hardcoreName = '{5}' " +
+                    "hardcoreName = '{5}', " +
+                    "sessionTime = 0 " +
                     "WHERE steamid = '{6}'", _newSession, _player.KilledPlayers, _player.KilledZombies, _player.Score, _deaths, _name, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }
-            _result.Dispose();
+            _result1.Dispose();
             if (ClanManager.ClanMember.Contains(_cInfo.playerId))
             {
                 ClanManager.ClanMember.Remove(_cInfo.playerId);

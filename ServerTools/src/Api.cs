@@ -182,13 +182,12 @@ namespace ServerTools
                     {
                         Hardcore.Announce(_cInfo);
                     }
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].SessionTime = 0;
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = 0;
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = 0;
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = 0;
                     PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerName = _cInfo.playerName;
                     PersistentContainer.Instance.Save();
-                    string _sql = string.Format("UPDATE Players wallet = 0, playerSpentCoins = 0 WHERE steamid = '{0}'", _cInfo.playerId);
+                    string _sql = string.Format("UPDATE Players wallet = 0, playerSpentCoins = 0, sessionTime = 0 WHERE steamid = '{0}'", _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 if (_respawnReason == RespawnType.JoinMultiplayer)
@@ -418,9 +417,12 @@ namespace ServerTools
                                 _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _oldCoin + _hours, _cInfo.playerId);
                                 SQL.FastQuery(_sql);
                             }
-                            int _oldSession = PersistentContainer.Instance.Players[_cInfo.playerId, false].SessionTime;
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].SessionTime = _oldSession + _timepassed;
-                            PersistentContainer.Instance.Save();
+                            string _sql1 = string.Format("SELECT sessionTime FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result1 = SQL.TQuery(_sql1);
+                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out int _sessionTime);
+                            _result1.Dispose();
+                            _sql1 = string.Format("UPDATE Players SET sessionTime = {0} WHERE steamid = '{1}'", _sessionTime + _timepassed, _cInfo.playerId);
+                            SQL.FastQuery(_sql1);
                         }
                     }
                 }

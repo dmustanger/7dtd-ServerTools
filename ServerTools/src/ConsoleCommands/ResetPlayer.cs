@@ -64,7 +64,6 @@ namespace ServerTools
                             File.Delete(_filepath1);
                         }
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].BikeId = 0;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].SessionTime = 0;
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = 0;
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = false;
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].FirstClaim = false;
@@ -118,7 +117,8 @@ namespace ServerTools
                             _sql = string.Format("UPDATE Players SET " +
                                 "last_gimme = '10/29/2000 7:30:00 AM', " +
                                 "lastkillme = '10/29/2000 7:30:00 AM', " +
-                                "playerSpentCoins = 0 " +
+                                "playerSpentCoins = 0, " +
+                                "sessionTime = 0 " +
                                 "WHERE steamid = '{0}'", _cInfo.playerId);
                             SQL.FastQuery(_sql);
                         }
@@ -163,7 +163,6 @@ namespace ServerTools
                                 File.Delete(_filepath1);
                             }
                             PersistentContainer.Instance.Players[_value.ToString(), true].BikeId = 0;
-                            PersistentContainer.Instance.Players[_value.ToString(), true].SessionTime = 0;
                             PersistentContainer.Instance.Players[_value.ToString(), true].AuctionData = 0;
                             PersistentContainer.Instance.Players[_value.ToString(), true].StartingItems = false;
                             PersistentContainer.Instance.Players[_value.ToString(), true].FirstClaim = false;
@@ -217,7 +216,8 @@ namespace ServerTools
                                 _sql = string.Format("UPDATE Players SET " +
                                     "last_gimme = '10/29/2000 7:30:00 AM', " +
                                     "lastkillme = '10/29/2000 7:30:00 AM', " +
-                                    "playerSpentCoins = 0 " +
+                                    "playerSpentCoins = 0, " +
+                                    "sessionTime = 0 " +
                                     "WHERE steamid = '{0}'", _value.ToString());
                                 SQL.FastQuery(_sql);
                             }
