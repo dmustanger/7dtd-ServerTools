@@ -22,10 +22,10 @@ namespace ServerTools
         //private int bikeId;
         //private int jailTime;
         //private int muteTime;
-        private int worldSeedCoins;
-        private int zkills;
-        private int kills;
-        private int deaths;
+        //private int worldSeedCoins;
+        //private int zkills;
+        //private int kills;
+        //private int deaths;
         private int auctionData;
         //private int playerSpentCoins;
         private string[] waypointName;
@@ -276,41 +276,41 @@ namespace ServerTools
             //}
         //}
 
-        public int ZKills
-        {
-            get
-            {
-                return zkills;
-            }
-            set
-            {
-                zkills = value;
-            }
-        }
+        //public int ZKills
+        //{
+            //get
+            //{
+                //return zkills;
+            //}
+            //set
+            //{
+                //zkills = value;
+            //}
+        //}
 
-        public int Kills
-        {
-            get
-            {
-                return kills;
-            }
-            set
-            {
-                kills = value;
-            }
-        }
+        //public int Kills
+        //{
+            //get
+            //{
+                //return kills;
+            //}
+            //set
+            //{
+                //kills = value;
+            //}
+        //}
 
-        public int Deaths
-        {
-            get
-            {
-                return deaths;
-            }
-            set
-            {
-                deaths = value;
-            }
-        }
+        //public int Deaths
+        //{
+            //get
+            //{
+                //return deaths;
+            //}
+            //set
+            //{
+                //deaths = value;
+            //}
+        //}
 
         public bool StartingItems
         {
@@ -324,17 +324,17 @@ namespace ServerTools
             }
         }
 
-        public int WorldSeedCoins
-        {
-            get
-            {
-                return worldSeedCoins;
-            }
-            set
-            {
-                worldSeedCoins = value;
-            }
-        }
+        //public int WorldSeedCoins
+        //{
+            //get
+            //{
+                //return worldSeedCoins;
+            //}
+            //set
+            //{
+                //worldSeedCoins = value;
+            //}
+        //}
 
         public DateTime LastWaypoint
         {

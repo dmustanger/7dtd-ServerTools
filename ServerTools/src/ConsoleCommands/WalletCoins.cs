@@ -80,22 +80,24 @@ namespace ServerTools
                 if (_params.Count == 1)
                 {
                     string _steamid = SQL.EscapeString(_params[0]);
-                    string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _steamid);
+                    string _sql = string.Format("SELECT playerSpentCoins, zkills, kills, deaths FROM Players WHERE steamid = '{0}'", _steamid);
                     DataTable _result = SQL.TQuery(_sql);
                     if (_result.Rows.Count != 0)
                     {
                         int currentCoins;
                         World world = GameManager.Instance.World;
                         int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
-                        Player p = PersistentContainer.Instance.Players[_params[0], false];
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out int _zkills);
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out int _kills);
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out int _deaths);
                         int gameMode = world.GetGameMode();
                         if (gameMode == 7)
                         {
-                            currentCoins = (p.ZKills * Wallet.Zombie_Kills) + (p.Kills * Wallet.Player_Kills) - (p.Deaths * Wallet.Deaths) + _playerSpentCoins;
+                            currentCoins = (_zkills * Wallet.Zombie_Kills) + (_kills * Wallet.Player_Kills) - (_deaths * Wallet.Deaths) + _playerSpentCoins;
                         }
                         else
                         {
-                            currentCoins = (p.ZKills * Wallet.Zombie_Kills) - (p.Deaths * Wallet.Deaths) + _playerSpentCoins;
+                            currentCoins = (_zkills * Wallet.Zombie_Kills) - (_deaths * Wallet.Deaths) + _playerSpentCoins;
                         }
                         SdtdConsole.Instance.Output(string.Format("Wallet for id {0}: {1} {2}", _params[0], currentCoins, Wallet.Coin_Name));
                         return;
@@ -104,6 +106,7 @@ namespace ServerTools
                     {
                         SdtdConsole.Instance.Output(string.Format("Player id not found: {0}", _steamid));
                     }
+                    _result.Dispose();
                 }
             }
             catch (Exception e)

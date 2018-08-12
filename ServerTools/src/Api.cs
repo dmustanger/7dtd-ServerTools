@@ -56,12 +56,12 @@ namespace ServerTools
                 string _name = SQL.EscapeString(_cInfo.playerName);
                 if (_result.Rows.Count == 0)
                 {
-                    _sql = string.Format("INSERT INTO Players (steamid, playername, last_joined) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _name, DateTime.Now.ToString());
+                    _sql = string.Format("INSERT INTO Players (steamid, playername, last_joined) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _name, DateTime.Now);
                     SQL.FastQuery(_sql);
                 }
                 else
                 {
-                    _sql = string.Format("UPDATE Players SET playername = '{0}, last_joined = '{1}' WHERE steamid = '{2}'", _name, DateTime.Now.ToString(), _cInfo.playerId);
+                    _sql = string.Format("UPDATE Players SET playername = '{0}, last_joined = '{1}' WHERE steamid = '{2}'", _name, DateTime.Now, _cInfo.playerId);
                 }
                 if (StopServer.NoEntry)
                 {
@@ -181,12 +181,7 @@ namespace ServerTools
                     {
                         Hardcore.Announce(_cInfo);
                     }
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = 0;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = 0;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = 0;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerName = _cInfo.playerName;
-                    PersistentContainer.Instance.Save();
-                    string _sql = string.Format("UPDATE Players wallet = 0, playerSpentCoins = 0, sessionTime = 0 WHERE steamid = '{0}'", _cInfo.playerId);
+                    string _sql = string.Format("UPDATE Players playername = '{0}' wallet = 0, playerSpentCoins = 0, sessionTime = 0, zkills = 0, kills = 0, deaths = 0 WHERE steamid = '{1}'", _cInfo.playerName, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 if (_respawnReason == RespawnType.JoinMultiplayer)
@@ -208,16 +203,14 @@ namespace ServerTools
                     {
                         Event.OfflineReturn(_cInfo);
                     }
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = _zCount;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = _deathCount;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = _killCount;
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].PlayerName = _cInfo.playerName;
+                    string _sql = string.Format("UPDATE Players SET playername = '{0}', zkills = {1}, kills = {2}, deaths = {3} WHERE steamid = '{4}'", _cInfo.playerName, _zCount, _killCount, _deathCount, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                     if (Mogul.IsEnabled)
                     {
                         if (Wallet.IsEnabled)
                         {
                             World world = GameManager.Instance.World;
-                            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                             DataTable _result = SQL.TQuery(_sql);
                             int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int spentCoins);
                             _result.Dispose();
@@ -231,11 +224,10 @@ namespace ServerTools
                             {
                                 currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
                             }
-                            _sql = string.Format("UPDATE Players wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
+                            _sql = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
                             SQL.FastQuery(_sql);
                         }
                     }
-                    PersistentContainer.Instance.Save();
                 }
                 if (_respawnReason == RespawnType.Died)
                 {
@@ -244,7 +236,8 @@ namespace ServerTools
                         Hardcore.Check(_cInfo);
                     }
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = XUiM_Player.GetDeaths(_player);
+                    string _sql = string.Format("UPDATE Players SET deaths = {0} WHERE steamid = '{1}'", XUiM_Player.GetDeaths(_player), _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                     if (Event.Open && Event.SpawnList.Contains(_cInfo.entityId))
                     {
                         Event.Died(_cInfo);
@@ -263,7 +256,7 @@ namespace ServerTools
                         if (Wallet.IsEnabled)
                         {
                             World world = GameManager.Instance.World;
-                            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                             DataTable _result = SQL.TQuery(_sql);
                             int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int spentCoins);
                             _result.Dispose();
@@ -277,7 +270,7 @@ namespace ServerTools
                             {
                                 currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
                             }
-                            _sql = string.Format("UPDATE Players wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
+                            _sql = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
                             SQL.FastQuery(_sql);
                         }
                     }
@@ -320,15 +313,14 @@ namespace ServerTools
                 {
                     if (_player.IsAlive())
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].ZKills = XUiM_Player.GetZombieKills(_player);
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].Deaths = XUiM_Player.GetDeaths(_player);
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].Kills = XUiM_Player.GetPlayerKills(_player);
+                        string _sql = string.Format("UPDATE Players SET zkills = {0}, kills = {1}, deaths = {2} WHERE steamid = '{3}'", XUiM_Player.GetZombieKills(_player), XUiM_Player.GetPlayerKills(_player), XUiM_Player.GetDeaths(_player), _cInfo.playerId);
+                        SQL.FastQuery(_sql);
                         if (Mogul.IsEnabled)
                         {
                             if (Wallet.IsEnabled)
                             {
                                 World world = GameManager.Instance.World;
-                                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                                 DataTable _result = SQL.TQuery(_sql);
                                 int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int spentCoins);
                                 _result.Dispose();
@@ -342,7 +334,7 @@ namespace ServerTools
                                 {
                                     currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
                                 }
-                                _sql = string.Format("UPDATE Players wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
+                                _sql = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
                                 SQL.FastQuery(_sql);
                             }
                         }
