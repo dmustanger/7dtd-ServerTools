@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ServerTools
 {
@@ -68,20 +69,18 @@ namespace ServerTools
                             }
                             else
                             {
+                                string _sql;
                                 if (_muteTime == -1)
                                 {
                                     MutePlayer.Mutes.Add(_cInfo.playerId);
-                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].MuteTime = -1;
-                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].MuteName = _cInfo.playerName;
-                                    PersistentContainer.Instance.Save();
+                                    _sql = string.Format("UPDATE Players SET muteTime = -1, muteName = '{0}' WHERE steamid = '{1}'", _cInfo.playerName, _cInfo.playerId);
+                                    SQL.FastQuery(_sql);
                                     SdtdConsole.Instance.Output(string.Format("Steam Id {0}, player name {1} has been muted indefinitely.", _cInfo.playerId, _cInfo.playerName));
                                     return;
                                 }
                                 MutePlayer.Mutes.Add(_cInfo.playerId);
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].MuteTime = _muteTime;
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].MuteName = _cInfo.playerName;
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].MuteDate = DateTime.Now;
-                                PersistentContainer.Instance.Save();
+                                _sql = string.Format("UPDATE Players SET muteTime = {0}, muteName = '{1}', muteDate = '{2}' WHERE steamid = '{3}'", _muteTime, _cInfo.playerName, DateTime.Now, _cInfo.playerId);
+                                SQL.FastQuery(_sql);
                                 SdtdConsole.Instance.Output(string.Format("Steam Id {0}, player name {1} has been muted for {2} minutes.", _cInfo.playerId, _cInfo.playerName, _muteTime));
                                 return;
                             }
@@ -113,9 +112,9 @@ namespace ServerTools
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have been unmuted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                             MutePlayer.Mutes.Remove(_id);
-                            PersistentContainer.Instance.Players[_id, true].MuteTime = 0;
-                            PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output(string.Format("Steam Id {0}, player name {1} has been unmuted.", _id, PersistentContainer.Instance.Players[_id, false].MuteName));
+                            string _sql = string.Format("UPDATE Players SET muteTime = 0 WHERE steamid = '{0}'", _id);
+                            SQL.FastQuery(_sql);
+                            SdtdConsole.Instance.Output(string.Format("Steam Id {0} has been unmuted.", _id));
                             return;
                         }
                         else
@@ -137,23 +136,25 @@ namespace ServerTools
                             for (int i = 0; i < MutePlayer.Mutes.Count; i++)
                             {
                                 string _muteId = MutePlayer.Mutes[i];
-                                Player p = PersistentContainer.Instance.Players[_id, false];
+                                string _sql = string.Format("SELECT muteTime, muteName, muteDate FROM Players WHERE steamid = '{0}'", _muteId);
+                                DataTable _result = SQL.TQuery(_sql);
+                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _muteTime);
+                                if (_muteTime == -1)
                                 {
-                                    if (p.MuteTime == -1)
-                                    {
-                                        SdtdConsole.Instance.Output(string.Format("Steam id {0}, player name {1} is muted indefinitely", _id, p.MuteName));
-                                        return;
-                                    }
-                                    if (p.MuteTime > 0)
-                                    {
-                                        TimeSpan varTime = DateTime.Now - p.MuteDate;
-                                        double fractionalMinutes = varTime.TotalMinutes;
-                                        int _timepassed = (int)fractionalMinutes;
-                                        int _timeleft = p.MuteTime - _timepassed;
-                                        SdtdConsole.Instance.Output(string.Format("Steam id {0}, player name {1} for {2} minutes", _id, p.MuteName, _timeleft));
-                                        return;
-                                    }
+                                    SdtdConsole.Instance.Output(string.Format("Steam id {0}, player name {1} is muted indefinitely", _id, _result.Rows[0].ItemArray.GetValue(1).ToString()));
+                                    return;
                                 }
+                                if (_muteTime > 0)
+                                {
+                                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out DateTime _muteDate);
+                                    TimeSpan varTime = DateTime.Now - _muteDate;
+                                    double fractionalMinutes = varTime.TotalMinutes;
+                                    int _timepassed = (int)fractionalMinutes;
+                                    int _timeleft = _muteTime - _timepassed;
+                                    SdtdConsole.Instance.Output(string.Format("Steam id {0}, player name {1} for {2} minutes", _id, _result.Rows[0].ItemArray.GetValue(1).ToString(), _timeleft));
+                                    return;
+                                }
+                                _result.Dispose();
                             }
                         }
                         else

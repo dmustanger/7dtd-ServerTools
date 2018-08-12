@@ -21,7 +21,7 @@ namespace ServerTools
         //private int sessionTime;
         //private int bikeId;
         //private int jailTime;
-        private int muteTime;
+        //private int muteTime;
         private int worldSeedCoins;
         private int zkills;
         private int kills;
@@ -38,7 +38,7 @@ namespace ServerTools
         private string lobbyReturn;
         private string newTeleSpawn;
         //private string jailName;
-        private string muteName;
+        //private string muteName;
         private string homeposition;
         private string homeposition2;
         private string clanname;
@@ -53,7 +53,7 @@ namespace ServerTools
         private DateTime sellDate;
         private DateTime log;
         //private DateTime jailDate;
-        private DateTime muteDate;
+        //private DateTime muteDate;
         //private DateTime lastBike;
         private DateTime lastBackpack;
         private DateTime lastDied;
@@ -264,17 +264,17 @@ namespace ServerTools
             //}
         //}
 
-        public int MuteTime
-        {
-            get
-            {
-                return muteTime;
-            }
-            set
-            {
-                muteTime = value;
-            }
-        }
+        //public int MuteTime
+        //{
+            //get
+            //{
+                //return muteTime;
+            //}
+            //set
+            //{
+                //muteTime = value;
+            //}
+        //}
 
         public int ZKills
         {
@@ -444,17 +444,17 @@ namespace ServerTools
             //}
         //}
 
-        public DateTime MuteDate
-        {
-            get
-            {
-                return muteDate;
-            }
-            set
-            {
-                muteDate = value;
-            }
-        }
+        //public DateTime MuteDate
+        //{
+            //get
+            //{
+                //return muteDate;
+            //}
+            //set
+            //{
+                //muteDate = value;
+            //}
+        //}
 
         //public DateTime LastBike
         //{
@@ -816,17 +816,17 @@ namespace ServerTools
             //}
         //}
 
-        public string MuteName
-        {
-            get
-            {
-                return muteName;
-            }
-            set
-            {
-                muteName = value;
-            }
-        }
+        //public string MuteName
+        //{
+            //get
+            //{
+                //return muteName;
+            //}
+            //set
+            //{
+                //muteName = value;
+            //}
+        //}
 
         public string HomePosition
         {

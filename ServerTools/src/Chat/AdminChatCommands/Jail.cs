@@ -387,7 +387,7 @@ namespace ServerTools
 
         public static void JailList()
         {
-            string _sql = "SELECT steamid, jailTime, jailDate FROM Players WHERE jailTime = 0 OR jailTime = -1";
+            string _sql = "SELECT steamid, jailTime, jailDate FROM Players WHERE jailTime > 0 OR jailTime = -1";
             DataTable _result = SQL.TQuery(_sql);
             if (_result.Rows.Count > 0)
             {

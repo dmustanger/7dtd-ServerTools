@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ServerTools
 {
@@ -40,28 +41,24 @@ namespace ServerTools
                     }
                     else
                     {
-                        Player p = PersistentContainer.Instance.Players[_PlayertoMute.playerId, false];
-                        if (p == null)
+                        string _sql = string.Format("SELECT muteTime FROM Players WHERE steamid = '{0}'", _PlayertoMute.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _muteTime);
+                        _result.Dispose();
+                        if (_muteTime > 0 || _muteTime == -1)
                         {
-                            Mute(_cInfo, _PlayertoMute);
+                            string _phrase202;
+                            if (!Phrases.Dict.TryGetValue(202, out _phrase202))
+                            {
+                                _phrase202 = "{AdminPlayerName} player {MutedPlayerName} is already muted.";
+                            }
+                            _phrase202 = _phrase202.Replace("{AdminPlayerName}", _cInfo.playerName);
+                            _phrase202 = _phrase202.Replace("{MutedPlayerName}", _PlayertoMute.playerName);
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase202, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                         else
                         {
-                            if (p.MuteTime > 0 || p.MuteTime == -1)
-                            {
-                                string _phrase202;
-                                if (!Phrases.Dict.TryGetValue(202, out _phrase202))
-                                {
-                                    _phrase202 = "{AdminPlayerName} player {MutedPlayerName} is already muted.";
-                                }
-                                _phrase202 = _phrase202.Replace("{AdminPlayerName}", _cInfo.playerName);
-                                _phrase202 = _phrase202.Replace("{MutedPlayerName}", _PlayertoMute.playerName);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase202, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            else
-                            {
-                                Mute(_cInfo, _PlayertoMute);
-                            }
+                            Mute(_cInfo, _PlayertoMute);
                         }
                     }
                 }
@@ -75,10 +72,8 @@ namespace ServerTools
         public static void Mute (ClientInfo _admin, ClientInfo _player)
         {
             Mutes.Add(_player.playerId);
-            PersistentContainer.Instance.Players[_player.playerId, true].MuteTime = 60;
-            PersistentContainer.Instance.Players[_player.playerId, true].MuteName = _player.playerName;
-            PersistentContainer.Instance.Players[_player.playerId, true].MuteDate = DateTime.Now;
-            PersistentContainer.Instance.Save();
+            string _sql = string.Format("UPDATE Players SET muteTime = 60, muteName = '{0}', muteDate = '{1}' WHERE steamid = '{2}'", _player.playerName, DateTime.Now, _player.playerId);
+            SQL.FastQuery(_sql);
             string _phrase203;
             if (!Phrases.Dict.TryGetValue(203, out _phrase203))
             {
@@ -148,8 +143,8 @@ namespace ServerTools
                             else
                             {
                                 Mutes.Remove(_PlayertoUnMute.playerId);
-                                PersistentContainer.Instance.Players[_PlayertoUnMute.playerId, true].MuteTime = 0;
-                                PersistentContainer.Instance.Save();
+                                string _sql = string.Format("UPDATE Players SET muteTime = 0 WHERE steamid = '{0}'", _PlayertoUnMute.playerId);
+                                SQL.FastQuery(_sql);
                                 string _phrase205;
                                 if (!Phrases.Dict.TryGetValue(205, out _phrase205))
                                 {
@@ -171,36 +166,40 @@ namespace ServerTools
 
         public static void MuteList()
         {
-            for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+            string _sql = "SELECT steamid, muteTime, muteDate FROM Players WHERE muteTime > 0 OR muteTime = -1";
+            DataTable _result = SQL.TQuery(_sql);
+            if (_result.Rows.Count > 0)
             {
-                string _id = PersistentContainer.Instance.Players.SteamIDs[i];
-                Player p = PersistentContainer.Instance.Players[_id, false];
+                foreach (DataRow row in _result.Rows)
                 {
-                    if (p.MuteTime > 0 || p.MuteTime == -1)
+                    int.TryParse(row[1].ToString(), out int _muteTime);
+                    if (_muteTime > 0 || _muteTime == -1)
                     {
-                        if (p.MuteTime == -1)
+                        if (_muteTime == -1)
                         {
-                            Mutes.Add(_id);
+                            Mutes.Add(row[0].ToString());
                             break;
                         }
                         else
                         {
-                            TimeSpan varTime = DateTime.Now - p.MuteDate;
+                            DateTime.TryParse(row[2].ToString(), out DateTime _muteDate);
+                            TimeSpan varTime = DateTime.Now - _muteDate;
                             double fractionalMinutes = varTime.TotalMinutes;
                             int _timepassed = (int)fractionalMinutes;
-                            if (_timepassed < p.MuteTime)
+                            if (_timepassed < _muteTime)
                             {
-                                Mutes.Add(_id);
+                                Mutes.Add(row[0].ToString());
                             }
                             else
                             {
-                                PersistentContainer.Instance.Players[_id, true].MuteTime = 0;
-                                PersistentContainer.Instance.Save();
+                                _sql = string.Format("UPDATE Players SET muteTime = 0 WHERE steamid = '{0}'", row[0].ToString());
+                                SQL.FastQuery(_sql);
                             }
                         }
                     }
                 }
             }
+            _result.Dispose();
         }
 
         public static void Clear()
@@ -208,19 +207,21 @@ namespace ServerTools
             for (int i = 0; i < Mutes.Count; i++)
             {
                 string _id = Mutes[i];
-                Player p = PersistentContainer.Instance.Players[_id, false];
+                string _sql = string.Format("SELECT muteTime, muteDate FROM Players WHERE steamid = '{0}'", _id);
+                DataTable _result = SQL.TQuery(_sql);
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _muteTime);
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out DateTime _muteDate);
+                _result.Dispose();
+                if (_muteTime != -1)
                 {
-                    if (p.MuteTime != -1)
+                    TimeSpan varTime = DateTime.Now - _muteDate;
+                    double fractionalMinutes = varTime.TotalMinutes;
+                    int _timepassed = (int)fractionalMinutes;
+                    if (_timepassed >= _muteTime)
                     {
-                        TimeSpan varTime = DateTime.Now - p.MuteDate;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        int _timepassed = (int)fractionalMinutes;
-                        if (_timepassed >= p.MuteTime)
-                        {
-                            Mutes.Remove(_id);
-                            PersistentContainer.Instance.Players[_id, true].MuteTime = 0;
-                            PersistentContainer.Instance.Save();
-                        }
+                        Mutes.Remove(_id);
+                        _sql = string.Format("UPDATE Players SET muteTime = 0 WHERE steamid = '{0}'", _id);
+                        SQL.FastQuery(_sql);
                     }
                 }
             }

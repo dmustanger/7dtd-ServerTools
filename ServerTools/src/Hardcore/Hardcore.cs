@@ -77,7 +77,6 @@ namespace ServerTools
             PersistentContainer.Instance.Players[_cInfo.playerId, true].CancelTime = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].SellDate = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].Log = DateTime.Now.AddDays(-5);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].MuteDate = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastBackpack = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastStuck = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastFriendTele = DateTime.Now.AddDays(-5);
@@ -99,7 +98,6 @@ namespace ServerTools
             PersistentContainer.Instance.Players[_cInfo.playerId, true].RespawnTime = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LobbyReturn = null;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].NewTeleSpawn = null;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].MuteName = null;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition = null;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition2 = null;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].ClanName = null;
@@ -126,7 +124,9 @@ namespace ServerTools
                     "bikeId = 0, " +
                     "lastBike = '10/29/2000 7:30:00 AM', " +
                     "jailName = 'Unknown', " +
-                    "jailDate = '10/29/2000 7:30:00 AM' " +
+                    "jailDate = '10/29/2000 7:30:00 AM', " +
+                    "muteName = 'Unknown', " +
+                    "muteDate = '10/29/2000 7:30:00 AM' " +
                     "WHERE steamid = '{6}'", _newSession, _player.KilledPlayers, _player.KilledZombies, _player.Score, _deaths, _name, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }

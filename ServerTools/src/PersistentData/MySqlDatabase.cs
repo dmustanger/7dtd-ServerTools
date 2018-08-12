@@ -66,6 +66,9 @@ namespace ServerTools
                 "jailTime INT DEFAULT 0, " +
                 "jailName VARCHAR(50) DEFAULT 'Unknown', " +
                 "jailDate VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
+                "muteTime INT DEFAULT 0, " +
+                "muteName VARCHAR(50) DEFAULT 'Unknown', " +
+                "muteDate VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
                 "PRIMARY KEY (steamid)) ENGINE = InnoDB;");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER) ENGINE = InnoDB;");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");
