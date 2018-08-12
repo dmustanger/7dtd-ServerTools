@@ -8,7 +8,7 @@ namespace ServerTools
     {
         private readonly string steamId;
         [OptionalField]
-        private int homeRequest;
+        //private int homeRequest;
         //private int wallet;
         //private int bank;
         //private int hardcoreSessionTime;
@@ -19,7 +19,7 @@ namespace ServerTools
         //private int bounty;
         //private int bountyHunter;
         //private int sessionTime;
-        private int bikeId;
+        //private int bikeId;
         private int jailTime;
         private int muteTime;
         private int worldSeedCoins;
@@ -120,17 +120,17 @@ namespace ServerTools
             }
         }
 
-        public int HomeRequest
-        {
-            get
-            {
-                return homeRequest;
-            }
-            set
-            {
-                homeRequest = value;
-            }
-        }
+        //public int HomeRequest
+        //{
+            //get
+            //{
+                //return homeRequest;
+            //}
+            //set
+            //{
+                //homeRequest = value;
+            //}
+        //}
 
         //public int Wallet
         //{
@@ -240,17 +240,17 @@ namespace ServerTools
             //}
         //}
 
-        public int BikeId
-        {
-            get
-            {
-                return bikeId;
-            }
-            set
-            {
-                bikeId = value;
-            }
-        }
+        //public int BikeId
+        //{
+            //get
+            //{
+                //return bikeId;
+            //}
+            //set
+            //{
+                //bikeId = value;
+            //}
+        //}
 
         public int JailTime
         {

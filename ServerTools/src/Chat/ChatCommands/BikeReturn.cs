@@ -167,8 +167,8 @@ namespace ServerTools
                         }
                         _phrase781 = _phrase781.Replace("{PlayerName}", _cInfo.playerName);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase781), Config.Server_Response_Name, false, "ServerTools", false));
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].BikeId = _player.AttachedToEntity.entityId;
-                        PersistentContainer.Instance.Save();
+                        string _sql = string.Format("UPDATE Players SET bikeId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
+                        SQL.FastQuery(_sql);
                     }
                     else
                     {
@@ -188,84 +188,84 @@ namespace ServerTools
             }
             else
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p != null)
+                string _sql = string.Format("SELECT bikeId FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bikeId);
+                _result.Dispose();
+                if (_bikeId != 0)
                 {
-                    if (p.BikeId != 0)
+                    List<Entity> Entities = GameManager.Instance.World.Entities.list;
+                    int _counter = 0;
+                    bool Other = false, Found = false;
+                    for (int i = 0; i < Entities.Count; i++)
                     {
-                        List<Entity> Entities = GameManager.Instance.World.Entities.list;
-                        int _counter = 0;
-                        bool Other = false, Found = false;
-                        for (int i = 0; i < Entities.Count; i++)
+                        _counter++;
+                        Entity _entity = Entities[i];
+                        string _name = EntityClass.list[_entity.entityClass].entityClassName;
+                        if (_name == "minibike")
                         {
-                            _counter++;
-                            Entity _entity = Entities[i];
-                            string _name = EntityClass.list[_entity.entityClass].entityClassName;
-                            if (_name == "minibike")
+                            if ((_player.position.x - _entity.position.x) * (_player.position.x - _entity.position.x) + (_player.position.z - _entity.position.z) * (_player.position.z - _entity.position.z) <= 50 * 50)
                             {
-                                if ((_player.position.x - _entity.position.x) * (_player.position.x - _entity.position.x) + (_player.position.z - _entity.position.z) * (_player.position.z - _entity.position.z) <= 50 * 50)
+                                if (_entity.entityId == _bikeId)
                                 {
-                                    if (_entity.entityId == p.BikeId)
+                                    if (_entity.AttachedToEntity == false)
                                     {
-                                        if (_entity.AttachedToEntity == false)
+                                        _entity.SetPosition(_player.position);
+                                        string _phrase782;
+                                        if (!Phrases.Dict.TryGetValue(782, out _phrase782))
                                         {
-                                            _entity.SetPosition(_player.position);
-                                            string _phrase782;
-                                            if (!Phrases.Dict.TryGetValue(782, out _phrase782))
-                                            {
-                                                _phrase782 = "{PlayerName} found your bike and sent it to you.";
-                                            }
-                                            _phrase782 = _phrase782.Replace("{PlayerName}", _cInfo.playerName);
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase782), Config.Server_Response_Name, false, "ServerTools", false));
-                                            if (Wallet.IsEnabled && Command_Cost >= 1)
-                                            {
-                                                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                                DataTable _result = SQL.TQuery(_sql);
-                                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
-                                                _result.Dispose();
-                                                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
-                                                SQL.FastQuery(_sql);
-                                            }
-                                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastBike = DateTime.Now;
-                                            PersistentContainer.Instance.Save();
-                                            Found = true;
+                                            _phrase782 = "{PlayerName} found your bike and sent it to you.";
                                         }
-                                        else
+                                        _phrase782 = _phrase782.Replace("{PlayerName}", _cInfo.playerName);
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase782), Config.Server_Response_Name, false, "ServerTools", false));
+                                        if (Wallet.IsEnabled && Command_Cost >= 1)
                                         {
-                                            string _phrase785;
-                                            if (!Phrases.Dict.TryGetValue(785, out _phrase785))
-                                            {
-                                                _phrase785 = "{PlayerName} found your bike but someone else is on it.";
-                                            }
-                                            _phrase785 = _phrase785.Replace("{PlayerName}", _cInfo.playerName);
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase785), Config.Server_Response_Name, false, "ServerTools", false));
-                                            Other = true;
+                                            _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                            DataTable _result1 = SQL.TQuery(_sql);
+                                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                                            _result1.Dispose();
+                                            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
+                                            SQL.FastQuery(_sql);
                                         }
+                                        PersistentContainer.Instance.Players[_cInfo.playerId, true].LastBike = DateTime.Now;
+                                        PersistentContainer.Instance.Save();
+                                        Found = true;
+                                    }
+                                    else
+                                    {
+                                        string _phrase785;
+                                        if (!Phrases.Dict.TryGetValue(785, out _phrase785))
+                                        {
+                                            _phrase785 = "{PlayerName} found your bike but someone else is on it.";
+                                        }
+                                        _phrase785 = _phrase785.Replace("{PlayerName}", _cInfo.playerName);
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase785), Config.Server_Response_Name, false, "ServerTools", false));
+                                        Other = true;
                                     }
                                 }
                             }
                         }
-                        if (_counter == Entities.Count && !Other && !Found)
-                        {
-                            string _phrase784;
-                            if (!Phrases.Dict.TryGetValue(784, out _phrase784))
-                            {
-                                _phrase784 = "{PlayerName} could not find your bike near by.";
-                            }
-                            _phrase784 = _phrase784.Replace("{PlayerName}", _cInfo.playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase784), Config.Server_Response_Name, false, "ServerTools", false));
-                        }
                     }
-                    else
+                    if (_counter == Entities.Count && !Other && !Found)
                     {
-                        string _phrase783;
-                        if (!Phrases.Dict.TryGetValue(783, out _phrase783))
+                        string _phrase784;
+                        if (!Phrases.Dict.TryGetValue(784, out _phrase784))
                         {
-                            _phrase783 = "{PlayerName} you do not have a bike saved.";
+                            _phrase784 = "{PlayerName} could not find your bike near by.";
                         }
-                        _phrase783 = _phrase783.Replace("{PlayerName}", _cInfo.playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase783), Config.Server_Response_Name, false, "ServerTools", false));
+                        _phrase784 = _phrase784.Replace("{PlayerName}", _cInfo.playerName);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase784), Config.Server_Response_Name, false, "ServerTools", false));
                     }
+                }
+                else
+                {
+                    string _phrase783;
+                    if (!Phrases.Dict.TryGetValue(783, out _phrase783))
+                    {
+                        _phrase783 = "{PlayerName} you do not have a bike saved.";
+                    }
+                    _phrase783 = _phrase783.Replace("{PlayerName}", _cInfo.playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase783), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
 

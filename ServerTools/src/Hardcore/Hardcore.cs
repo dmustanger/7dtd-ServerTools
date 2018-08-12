@@ -64,7 +64,6 @@ namespace ServerTools
             int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _oldSession);
             _result.Dispose();
             int _newSession = _oldSession + _timepassed;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].BikeId = 0;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = 0;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = false;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].FirstClaim = false;
@@ -126,7 +125,8 @@ namespace ServerTools
                     "hardcoreScore = {3}, " +
                     "hardcoreDeaths = {4}, " +
                     "hardcoreName = '{5}', " +
-                    "sessionTime = 0 " +
+                    "sessionTime = 0, " +
+                    "bikeId = 0 " +
                     "WHERE steamid = '{6}'", _newSession, _player.KilledPlayers, _player.KilledZombies, _player.Score, _deaths, _name, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }

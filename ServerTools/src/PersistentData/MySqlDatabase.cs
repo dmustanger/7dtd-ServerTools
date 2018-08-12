@@ -61,6 +61,7 @@ namespace ServerTools
                 "bounty INT DEFAULT 0, " +
                 "bountyHunter INT DEFAULT 0, " +
                 "sessionTime INT DEFAULT 0, " +
+                "bikeId INT DEFAULT 0, " +
                 "PRIMARY KEY (steamid)) ENGINE = InnoDB;");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER) ENGINE = InnoDB;");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");
