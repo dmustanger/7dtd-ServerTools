@@ -25,6 +25,16 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
+                sw.WriteLine("<Tool Name=\"DataBase\" EnableMySql=\"False\" ServerHost=\"localhost\" DatabaseName=\"ServerTools\" UserName=\"UserName\" Password=\"ChangeMe\" />");
+                sw.WriteLine();
+                sw.WriteLine("Set True or False for Enable");
+                sw.WriteLine();
+                sw.WriteLine("Adminstrators can choose to enable MySql for a remote database. ONLY ENABLE THIS IF YOU HAVE A MySql DATABASE HOSTED!!!");
+                sw.WriteLine("If EnableMySql is set to false ServerTools will use sqlite by default and you do not need to change anything else on this line.");
+                sw.WriteLine("If EnableMySql is set to true you will need to set the ServerHost ip, UserName, Password and DatabaseName to match your MySql setup.");
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine();
                 sw.WriteLine("<Tool Name=\"Admin_Chat_Commands\" Enable=\"False\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
