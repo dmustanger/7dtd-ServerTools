@@ -27,6 +27,7 @@ namespace ServerTools
             if (!Utils.FileExists(configFilePath))
             {
                 UpdateXml();
+                SQL.Connect();
                 Phrases.Load();
                 return;
             }
@@ -95,6 +96,42 @@ namespace ServerTools
                         }
                         switch (_line.GetAttribute("Name"))
                         {
+                            case "DataBase":
+                                if (!_line.HasAttribute("EnableMySql"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring DataBase entry because of missing 'EnableMySql' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("ServerHost"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring DataBase entry because of missing 'ServerHost' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("DatabaseName"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring DataBase entry because of missing 'DatabaseName' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("UserName"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring DataBase entry because of missing 'UserName' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Password"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring DataBase entry because of missing 'Password' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                MySqlDatabase.Server = _line.GetAttribute("ServerHost");
+                                MySqlDatabase.Database = _line.GetAttribute("DatabaseName");
+                                MySqlDatabase.UserName = _line.GetAttribute("UserName");
+                                MySqlDatabase.Password = _line.GetAttribute("Password");
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out SQL.IsMySql))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring DataBase entry because of invalid (true/false) value for 'EnableMySql' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                             case "Admin_Chat_Commands":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -2579,6 +2616,7 @@ namespace ServerTools
             {
                 UpdateXml();
             }
+            SQL.Connect();
             Phrases.Load();
             Mods.Load();
             UpdateConfigs = false;
@@ -2595,6 +2633,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Version Version=\"{0}\" />", version.ToString()));
                 sw.WriteLine("    </Version>");
                 sw.WriteLine("    <Tools>");
+                sw.WriteLine(string.Format("        <Tool Name=\"DataBase\" EnableMySql=\"{0}\" ServerHost=\"{1}\" DatabaseName=\"{2}\" UserName=\"{3}\" Password=\"{4}\" />", SQL.IsMySql, MySqlDatabase.Server, MySqlDatabase.Database, MySqlDatabase.UserName, MySqlDatabase.Password));
                 sw.WriteLine(string.Format("        <Tool Name=\"Admin_Chat_Commands\" Enable=\"{0}\" />", AdminChat.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Admin_List\" Enable=\"{0}\" Admin_Level=\"{1}\" Moderator_Level=\"{2}\" />", AdminList.IsEnabled, AdminList.Admin_Level, AdminList.Mod_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Admin_Name_Coloring\" Enable=\"{0}\" Admin_Level=\"{1}\" Admin_Prefix=\"{2}\" Admin_Color=\"{3}\" Moderator_Level=\"{4}\" Moderator_Prefix=\"{5}\" Moderator_Color=\"{6}\" />", ChatHook.Admin_Name_Coloring, ChatHook.Admin_Level, ChatHook.Admin_Prefix, ChatHook.Admin_Color, ChatHook.Mod_Level, ChatHook.Mod_Prefix, ChatHook.Mod_Color));

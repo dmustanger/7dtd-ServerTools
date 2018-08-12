@@ -7,20 +7,13 @@ namespace ServerTools
     {
         private static MySqlConnection connection;
         private static MySqlCommand cmd;
-        private static string Server;
-        private static string Database;
-        private static string UserName;
-        private static string Password;
+        public static string Server = "localhost";
+        public static string Database = "ServerTools";
+        public static string UserName = "UserName";
+        public static string Password = "ChangeMe";
 
         public static void SetConnection()
         {
-            //remove after set in config
-            Server = "localhost";
-            Database = "connectcsharptomysql";
-            UserName = "username";
-            Password = "password";
-            //---------------------------
-
             string _connectionString;
             _connectionString = string.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};", Server, Database, UserName, Password);
             connection = new MySqlConnection(_connectionString);
