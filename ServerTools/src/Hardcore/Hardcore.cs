@@ -285,6 +285,7 @@ namespace ServerTools
             _phrase948 = _phrase948.Replace("{Deaths}", _result.Rows[0].ItemArray.GetValue(4).ToString());
             _phrase948 = _phrase948.Replace("{Score}", _result.Rows[0].ItemArray.GetValue(3).ToString());
             _phrase948 = _phrase948.Replace("{Playtime}", _result.Rows[0].ItemArray.GetValue(0).ToString());
+            _result.Dispose();
             if (_announce)
             {
                 GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase948), Config.Server_Response_Name, false, "ServerTools", false);

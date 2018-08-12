@@ -238,29 +238,30 @@ namespace ServerTools
                                                         }
                                                     }
                                                 }
-                                                int _bounty = PersistentContainer.Instance.Players[_cInfo.playerId, true].Bounty;
+                                                string _sql = string.Format("SELECT bounty, bountyHunter FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                                DataTable _result = SQL.TQuery(_sql);
+                                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bounty);
+                                                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out int _hunterCountVictim);
+                                                _result.Dispose();
                                                 if (_bounty > 0)
                                                 {
-                                                    string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo2.playerId);
+                                                    _sql = string.Format("SELECT playerSpentCoins, bountyHunter FROM Players WHERE steamid = '{0}'", _cInfo2.playerId);
                                                     DataTable _result2 = SQL.TQuery(_sql);
                                                     int.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                                                    int.TryParse(_result2.Rows[0].ItemArray.GetValue(1).ToString(), out int _hunterCountKiller);
                                                     _result2.Dispose();
-                                                    int _hunterCountVictim = PersistentContainer.Instance.Players[_cInfo.playerId, true].BountyHunter;
-                                                    int _hunterCountKiller = PersistentContainer.Instance.Players[_cInfo2.playerId, true].BountyHunter;
-                                                    PersistentContainer.Instance.Players[_cInfo2.playerId, true].BountyHunter = _hunterCountKiller + 1;
                                                     if (Bonus > 0 && _hunterCountVictim >= Bonus)
                                                     {
-                                                        _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins + _bounty + Bonus, _cInfo2.playerId);
+                                                        _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, bountyHunter = {1} WHERE steamid = '{2}'", _playerSpentCoins + _bounty + Bonus, _hunterCountKiller + 1, _cInfo2.playerId);
                                                         SQL.FastQuery(_sql);
                                                     }
                                                     else
                                                     {
-                                                        _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins + _bounty, _cInfo2.playerId);
+                                                        _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, bountyHunter = {1} WHERE steamid = '{2}'", _playerSpentCoins + _bounty, _hunterCountKiller + 1, _cInfo2.playerId);
                                                         SQL.FastQuery(_sql);
                                                     }
-                                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].BountyHunter = 0;
-                                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].Bounty = 0;
-                                                    PersistentContainer.Instance.Save();
+                                                    _sql = string.Format("UPDATE Players SET bounty = 0, bountyHunter = 0 WHERE steamid = '{0}'", _cInfo.playerId);
+                                                    SQL.FastQuery(_sql);
                                                     string _phrase912;
                                                     if (!Phrases.Dict.TryGetValue(912, out _phrase912))
                                                     {
@@ -309,9 +310,12 @@ namespace ServerTools
                                                             }
                                                             if (_newValue >= Bounties.Kill_Streak)
                                                             {
-                                                                int _oldBounty = PersistentContainer.Instance.Players[_cInfo2.playerId, true].Bounty;
-                                                                PersistentContainer.Instance.Players[_cInfo.playerId, true].Bounty = _oldBounty + (_player2.Level * Bounties.Bounty);
-                                                                PersistentContainer.Instance.Save();
+                                                                _sql = string.Format("SELECT bounty FROM Players WHERE steamid = '{0}'", _cInfo2.playerId);
+                                                                DataTable _result3 = SQL.TQuery(_sql);
+                                                                int.TryParse(_result3.Rows[0].ItemArray.GetValue(0).ToString(), out int _oldBounty);
+                                                                _result3.Dispose();
+                                                                _sql = string.Format("UPDATE Players SET bounty = {0} WHERE steamid = '{1}'", _oldBounty + (_player2.Level * Bounties.Bounty), _cInfo.playerId);
+                                                                SQL.FastQuery(_sql);
                                                                 using (StreamWriter sw = new StreamWriter(filepath, true))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} is on a kill streak of {2}. Their bounty has increased.", DateTime.Now, _cInfo2.playerName, _newValue));

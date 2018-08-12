@@ -16,8 +16,8 @@ namespace ServerTools
         //private int hardcoreZKills;
         //private int hardcoreScore;
         //private int hardcoreDeaths;
-        private int bounty;
-        private int bountyHunter;
+        //private int bounty;
+        //private int bountyHunter;
         private int sessionTime;
         private int bikeId;
         private int jailTime;
@@ -204,29 +204,29 @@ namespace ServerTools
             //}
         //}
 
-        public int Bounty
-        {
-            get
-            {
-                return bounty;
-            }
-            set
-            {
-                bounty = value;
-            }
-        }
+        //public int Bounty
+        //{
+            //get
+            //{
+                //return bounty;
+            //}
+            //set
+            //{
+                //bounty = value;
+            //}
+        //}
 
-        public int BountyHunter
-        {
-            get
-            {
-                return bountyHunter;
-            }
-            set
-            {
-                bountyHunter = value;
-            }
-        }
+        //public int BountyHunter
+        //{
+            //get
+            //{
+                //return bountyHunter;
+            //}
+            //set
+            //{
+                //bountyHunter = value;
+            //}
+        //}
 
         public int SessionTime
         {
