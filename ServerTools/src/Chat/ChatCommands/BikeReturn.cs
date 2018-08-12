@@ -25,86 +25,75 @@ namespace ServerTools
             }
             else
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null || p.LastBike == null)
+                string _sql = string.Format("SELECT lastBike FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out DateTime _lastBike);
+                _result.Dispose();
+                TimeSpan varTime = DateTime.Now - _lastBike;
+                double fractionalMinutes = varTime.TotalMinutes;
+                int _timepassed = (int)fractionalMinutes;
+                if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                 {
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                     {
-                        CommandCost(_cInfo);
-                    }
-                    else
-                    {
-                        Exec(_cInfo);
-                    }
-                }
-                else
-                {
-                    TimeSpan varTime = DateTime.Now - p.LastBike;
-                    double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
-                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                    {
-                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        DateTime _dt;
+                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                        if (DateTime.Now < _dt)
                         {
-                            DateTime _dt;
-                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                            if (DateTime.Now < _dt)
+                            _donator = true;
+                            int _newDelay = Delay_Between_Uses / 2;
+                            if (_timepassed >= _newDelay)
                             {
-                                _donator = true;
-                                int _newDelay = Delay_Between_Uses / 2;
-                                if (_timepassed >= _newDelay)
+                                if (Wallet.IsEnabled && Command_Cost >= 1)
                                 {
-                                    if (Wallet.IsEnabled && Command_Cost >= 1)
-                                    {
-                                        CommandCost(_cInfo);
-                                    }
-                                    else
-                                    {
-                                        Exec(_cInfo);
-                                    }
+                                    CommandCost(_cInfo);
                                 }
                                 else
                                 {
-                                    int _timeleft = _newDelay - _timepassed;
-                                    string _phrase786;
-                                    if (!Phrases.Dict.TryGetValue(786, out _phrase786))
-                                    {
-                                        _phrase786 = "{PlayerName} you can only use /bike once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                    }
-                                    _phrase786 = _phrase786.Replace("{PlayerName}", _playerName);
-                                    _phrase786 = _phrase786.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                    _phrase786 = _phrase786.Replace("{TimeRemaining}", _timeleft.ToString());
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase786), Config.Server_Response_Name, false, "ServerTools", false));
+                                    Exec(_cInfo);
                                 }
-                            }
-                        }
-                    }
-                    if (!_donator)
-                    {
-                        if (_timepassed >= Delay_Between_Uses)
-                        {
-                            if (Wallet.IsEnabled && Command_Cost >= 1)
-                            {
-                                CommandCost(_cInfo);
                             }
                             else
                             {
-                                Exec(_cInfo);
+                                int _timeleft = _newDelay - _timepassed;
+                                string _phrase786;
+                                if (!Phrases.Dict.TryGetValue(786, out _phrase786))
+                                {
+                                    _phrase786 = "{PlayerName} you can only use /bike once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                }
+                                _phrase786 = _phrase786.Replace("{PlayerName}", _playerName);
+                                _phrase786 = _phrase786.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                                _phrase786 = _phrase786.Replace("{TimeRemaining}", _timeleft.ToString());
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase786), Config.Server_Response_Name, false, "ServerTools", false));
                             }
+                        }
+                    }
+                }
+                if (!_donator)
+                {
+                    if (_timepassed >= Delay_Between_Uses)
+                    {
+                        if (Wallet.IsEnabled && Command_Cost >= 1)
+                        {
+                            CommandCost(_cInfo);
                         }
                         else
                         {
-                            int _timeleft = Delay_Between_Uses - _timepassed;
-                            string _phrase786;
-                            if (!Phrases.Dict.TryGetValue(786, out _phrase786))
-                            {
-                                _phrase786 = "{PlayerName} you can only use /bike once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                            }
-                            _phrase786 = _phrase786.Replace("{PlayerName}", _playerName);
-                            _phrase786 = _phrase786.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                            _phrase786 = _phrase786.Replace("{TimeRemaining}", _timeleft.ToString());
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase786), Config.Server_Response_Name, false, "ServerTools", false));
+                            Exec(_cInfo);
                         }
+                    }
+                    else
+                    {
+                        int _timeleft = Delay_Between_Uses - _timepassed;
+                        string _phrase786;
+                        if (!Phrases.Dict.TryGetValue(786, out _phrase786))
+                        {
+                            _phrase786 = "{PlayerName} you can only use /bike once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                        }
+                        _phrase786 = _phrase786.Replace("{PlayerName}", _playerName);
+                        _phrase786 = _phrase786.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                        _phrase786 = _phrase786.Replace("{TimeRemaining}", _timeleft.ToString());
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase786), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
             }
@@ -227,8 +216,8 @@ namespace ServerTools
                                             _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
                                             SQL.FastQuery(_sql);
                                         }
-                                        PersistentContainer.Instance.Players[_cInfo.playerId, true].LastBike = DateTime.Now;
-                                        PersistentContainer.Instance.Save();
+                                        _sql = string.Format("UPDATE Players SET lastBike = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                                        SQL.FastQuery(_sql);
                                         Found = true;
                                     }
                                     else

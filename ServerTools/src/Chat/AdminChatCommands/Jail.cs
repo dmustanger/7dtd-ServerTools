@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 namespace ServerTools
@@ -117,10 +118,8 @@ namespace ServerTools
             Players.NoFlight.Add(_PlayertoJail.entityId);
             _PlayertoJail.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
             Jailed.Add(_PlayertoJail.playerId);
-            PersistentContainer.Instance.Players[_PlayertoJail.playerId, true].JailDate = DateTime.Now;
-            PersistentContainer.Instance.Players[_PlayertoJail.playerId, true].JailTime = 60;
-            PersistentContainer.Instance.Players[_PlayertoJail.playerId, true].JailName = _PlayertoJail.playerName;
-            PersistentContainer.Instance.Save();
+            string _sql = string.Format("UPDATE Players SET jailTime = 60, jailName = '{0}', jailDate = '{1}' WHERE steamid = '{2}'", _PlayertoJail.playerName, DateTime.Now, _PlayertoJail.playerId);
+            SQL.FastQuery(_sql);
             string _phrase500;
             if (!Phrases.Dict.TryGetValue(500, out _phrase500))
             {
@@ -205,8 +204,8 @@ namespace ServerTools
                         {
                             Jailed.Remove(_PlayertoUnJail.playerId);
                             Players.NoFlight.Add(_PlayertoUnJail.entityId);
-                            PersistentContainer.Instance.Players[_PlayertoUnJail.playerId, true].JailTime = 0;
-                            PersistentContainer.Instance.Save();
+                            string _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _PlayertoUnJail.playerId);
+                            SQL.FastQuery(_sql);
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_PlayertoUnJail.entityId];
                             EntityBedrollPositionList _position = _player.SpawnPoints;
                             if (_position.Count > 0)
@@ -313,8 +312,8 @@ namespace ServerTools
                             else
                             {
                                 _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have been forgiven and released from jail by {2}.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                PersistentContainer.Instance.Players[_cInfoKiller.playerId, true].JailTime = 0;
-                                PersistentContainer.Instance.Save();
+                                string _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _cInfoKiller.playerId);
+                                SQL.FastQuery(_sql);
                             }
                         }
                     }
@@ -333,51 +332,53 @@ namespace ServerTools
                 string _id = Jailed[i];
                 if (Jailed.Contains(_id))
                 {
-                    Player p = PersistentContainer.Instance.Players[_id, false];
+                    string _sql = string.Format("SELECT jailTime, jailDate FROM Players WHERE steamid = '{0}'", _id);
+                    DataTable _result = SQL.TQuery(_sql);
+                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _jailTime);
+                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out DateTime _jailDate);
+                    _result.Dispose();
+                    if (_jailTime == -1)
                     {
-                        if (p.JailTime == -1)
+                        break;
+                    }
+                    TimeSpan varTime = DateTime.Now - _jailDate;
+                    double fractionalMinutes = varTime.TotalMinutes;
+                    int _timepassed = (int)fractionalMinutes;
+                    if (_timepassed >= _jailTime)
+                    {
+                        ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_id);
+                        if (_cInfo != null)
                         {
-                            break;
-                        }
-                        TimeSpan varTime = DateTime.Now - p.JailDate;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        int _timepassed = (int)fractionalMinutes;
-                        if (_timepassed >= p.JailTime)
-                        {
-                            ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_id);
-                            if (_cInfo != null)
-                            {
-                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                if (_player.IsSpawned())
-                                {
-                                    Jailed.Remove(_id);
-                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].JailTime = 0;
-                                    PersistentContainer.Instance.Save();
-                                    EntityBedrollPositionList _position = _player.SpawnPoints;
-                                    if (_position.Count > 0)
-                                    {
-                                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_position[0].x, _position[0].y + 1, _position[0].z), false));
-                                    }
-                                    else
-                                    {
-                                        Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), false));
-                                    }
-                                    string _phrase501;
-                                    if (!Phrases.Dict.TryGetValue(501, out _phrase501))
-                                    {
-                                        _phrase501 = "{PlayerName} you have been released from jail.";
-                                    }
-                                    _phrase501 = _phrase501.Replace("{PlayerName}", _cInfo.playerName);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase501, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
-                            else
+                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                            if (_player.IsSpawned())
                             {
                                 Jailed.Remove(_id);
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].JailTime = 0;
-                                PersistentContainer.Instance.Save();
+                                _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _cInfo.playerId);
+                                SQL.FastQuery(_sql);
+                                EntityBedrollPositionList _position = _player.SpawnPoints;
+                                if (_position.Count > 0)
+                                {
+                                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_position[0].x, _position[0].y + 1, _position[0].z), false));
+                                }
+                                else
+                                {
+                                    Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
+                                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), false));
+                                }
+                                string _phrase501;
+                                if (!Phrases.Dict.TryGetValue(501, out _phrase501))
+                                {
+                                    _phrase501 = "{PlayerName} you have been released from jail.";
+                                }
+                                _phrase501 = _phrase501.Replace("{PlayerName}", _cInfo.playerName);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase501, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                             }
+                        }
+                        else
+                        {
+                            Jailed.Remove(_id);
+                            _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _cInfo.playerId);
+                            SQL.FastQuery(_sql);
                         }
                     }
                 }
@@ -386,36 +387,40 @@ namespace ServerTools
 
         public static void JailList()
         {
-            for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+            string _sql = "SELECT steamid, jailTime, jailDate FROM Players WHERE jailTime = 0 OR jailTime = -1";
+            DataTable _result = SQL.TQuery(_sql);
+            if (_result.Rows.Count > 0)
             {
-                string _id = PersistentContainer.Instance.Players.SteamIDs[i];
-                Player p = PersistentContainer.Instance.Players[_id, false];
+                foreach (DataRow row in _result.Rows)
                 {
-                    if (p.JailTime > 0 || p.JailTime == -1)
+                    int.TryParse(row[1].ToString(), out int _jailTime);
+                    if (_jailTime > 0 || _jailTime == -1)
                     {
-                        if (p.JailTime == -1)
+                        if (_jailTime == -1)
                         {
-                            Jailed.Add(_id);
+                            Jailed.Add(row[0].ToString());
                             break;
                         }
                         else
                         {
-                            TimeSpan varTime = DateTime.Now - p.JailDate;
+                            DateTime.TryParse(row[2].ToString(), out DateTime _jailDate);
+                            TimeSpan varTime = DateTime.Now - _jailDate;
                             double fractionalMinutes = varTime.TotalMinutes;
                             int _timepassed = (int)fractionalMinutes;
-                            if (_timepassed < p.JailTime)
+                            if (_timepassed < _jailTime)
                             {
-                                Jailed.Add(_id);
+                                Jailed.Add(row[0].ToString());
                             }
                             else
                             {
-                                PersistentContainer.Instance.Players[_id, true].JailTime = 0;
-                                PersistentContainer.Instance.Save();
+                                _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", row[0].ToString());
+                                SQL.FastQuery(_sql);
                             }
                         }
                     }
                 }
             }
+            _result.Dispose();
         }
     }
 }

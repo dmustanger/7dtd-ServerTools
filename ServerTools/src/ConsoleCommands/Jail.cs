@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 namespace ServerTools
@@ -109,19 +110,16 @@ namespace ServerTools
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase500), Config.Server_Response_Name, false, "ServerTools", false));
                                     SdtdConsole.Instance.Output(string.Format("You have put {0} in jail for life.", _cInfo.playerName));
                                 }
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].JailDate = DateTime.Now;
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].JailTime = _jailTime;
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].JailName = _cInfo.playerName;
-                                PersistentContainer.Instance.Save();
+                                string _sql = string.Format("UPDATE Players SET jailTime = {0}, jailName = '{1}', jailDate = '{2}' WHERE steamid = '{3}'", _jailTime, _cInfo.playerName, DateTime.Now, _cInfo.playerId);
+                                SQL.FastQuery(_sql);
                             }
                         }
                         else
                         {
-                            PersistentContainer.Instance.Players[_params[1], true].JailDate = DateTime.Now;
-                            PersistentContainer.Instance.Players[_params[1], true].JailTime = _jailTime;
-                            PersistentContainer.Instance.Players[_params[1], true].JailName = "Offline, name unknown";
-                            PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output(string.Format("Player with Id {0} can not be found online but has been set for jail.", _params[1]));
+                            string _id = SQL.EscapeString(_params[1]);
+                            string _sql = string.Format("UPDATE Players SET jailTime = {0}, jailName = 'Unknown', jailDate = '{1}' WHERE steamid = '{2}'", _jailTime, DateTime.Now, _id);
+                            SQL.FastQuery(_sql);
+                            SdtdConsole.Instance.Output(string.Format("Player with Id {0} can not be found online but has been set for jail.", _id));
                             return;
                         }
                     }
@@ -169,15 +167,16 @@ namespace ServerTools
                                 }
                                 _phrase501 = _phrase501.Replace("{PlayerName}", _cInfo.playerName);
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase501), Config.Server_Response_Name, false, "ServerTools", false));
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].JailTime = 0;
-                                PersistentContainer.Instance.Save();
+                                string _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _cInfo.playerId);
+                                SQL.FastQuery(_sql);
                                 SdtdConsole.Instance.Output(string.Format("You have released a player with steam id {0} from jail. ", _params[1]));
                                 return;
                             }
                             else
                             {
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].JailTime = 0;
-                                PersistentContainer.Instance.Save();
+                                string _id = SQL.EscapeString(_params[1]);
+                                string _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _id);
+                                SQL.FastQuery(_sql);
                                 Jail.Jailed.Remove(_cInfo.playerId);
                                 SdtdConsole.Instance.Output(string.Format("Player with steam Id {0} has been removed from the jail list.", _params[1]));
                                 return;
@@ -202,21 +201,23 @@ namespace ServerTools
                         for (int i = 0; i < Jail.Jailed.Count; i++)
                         {
                             string _id = Jail.Jailed[i];
-                            Player p = PersistentContainer.Instance.Players[_id, false];
+                            string _sql = string.Format("SELECT jailTime, jailName, jailDate FROM Players WHERE steamid = '{0}'", _id);
+                            DataTable _result = SQL.TQuery(_sql);
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _jailTime);
+                            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out DateTime _jailDate);
+                            if (_jailTime > 0)
                             {
-                                if (p.JailTime > 0)
-                                {
-                                    TimeSpan varTime = DateTime.Now - p.JailDate;
-                                    double fractionalMinutes = varTime.TotalMinutes;
-                                    int _timepassed = (int)fractionalMinutes;
-                                    int _timeleft = p.JailTime - _timepassed;
-                                    SdtdConsole.Instance.Output(string.Format("Jailed player: steam Id {0} named {1} for {2} more minutes.", _id, p.JailName, _timeleft));
-                                }
-                                else
-                                {
-                                    SdtdConsole.Instance.Output(string.Format("Jailed player: steam Id {0} named {1} forever.", _id, p.JailName));
-                                }
+                                TimeSpan varTime = DateTime.Now - _jailDate;
+                                double fractionalMinutes = varTime.TotalMinutes;
+                                int _timepassed = (int)fractionalMinutes;
+                                int _timeleft = _jailTime - _timepassed;
+                                SdtdConsole.Instance.Output(string.Format("Jailed player: steam Id {0} named {1} for {2} more minutes.", _id, _result.Rows[0].ItemArray.GetValue(1).ToString(), _timeleft));
                             }
+                            else
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Jailed player: steam Id {0} named {1} forever.", _id, _result.Rows[0].ItemArray.GetValue(1).ToString()));
+                            }
+                            _result.Dispose();
                         }
                     }
                 }

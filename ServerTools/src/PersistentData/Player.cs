@@ -20,7 +20,7 @@ namespace ServerTools
         //private int bountyHunter;
         //private int sessionTime;
         //private int bikeId;
-        private int jailTime;
+        //private int jailTime;
         private int muteTime;
         private int worldSeedCoins;
         private int zkills;
@@ -37,7 +37,7 @@ namespace ServerTools
         private string marketReturn;
         private string lobbyReturn;
         private string newTeleSpawn;
-        private string jailName;
+        //private string jailName;
         private string muteName;
         private string homeposition;
         private string homeposition2;
@@ -52,9 +52,9 @@ namespace ServerTools
         private DateTime cancelTime;
         private DateTime sellDate;
         private DateTime log;
-        private DateTime jailDate;
+        //private DateTime jailDate;
         private DateTime muteDate;
-        private DateTime lastBike;
+        //private DateTime lastBike;
         private DateTime lastBackpack;
         private DateTime lastDied;
         private DateTime lastFriendTele;
@@ -252,17 +252,17 @@ namespace ServerTools
             //}
         //}
 
-        public int JailTime
-        {
-            get
-            {
-                return jailTime;
-            }
-            set
-            {
-                jailTime = value;
-            }
-        }
+        //public int JailTime
+        //{
+            //get
+            //{
+                //return jailTime;
+            //}
+            //set
+            //{
+                //jailTime = value;
+            //}
+        //}
 
         public int MuteTime
         {
@@ -432,17 +432,17 @@ namespace ServerTools
             }
         }
 
-        public DateTime JailDate
-        {
-            get
-            {
-                return jailDate;
-            }
-            set
-            {
-                jailDate = value;
-            }
-        }
+        //public DateTime JailDate
+        //{
+            //get
+            //{
+                //return jailDate;
+            //}
+            //set
+            //{
+                //jailDate = value;
+            //}
+        //}
 
         public DateTime MuteDate
         {
@@ -456,17 +456,17 @@ namespace ServerTools
             }
         }
 
-        public DateTime LastBike
-        {
-            get
-            {
-                return lastBike;
-            }
-            set
-            {
-                lastBike = value;
-            }
-        }
+        //public DateTime LastBike
+        //{
+            //get
+            //{
+                //return lastBike;
+            //}
+            //set
+            //{
+                //lastBike = value;
+            //}
+        //}
 
         public DateTime LastBackpack
         {
@@ -804,17 +804,17 @@ namespace ServerTools
             }
         }
 
-        public string JailName
-        {
-            get
-            {
-                return jailName;
-            }
-            set
-            {
-                jailName = value;
-            }
-        }
+        //public string JailName
+        //{
+            //get
+            //{
+                //return jailName;
+            //}
+            //set
+            //{
+                //jailName = value;
+            //}
+        //}
 
         public string MuteName
         {
