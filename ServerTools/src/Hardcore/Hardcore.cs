@@ -61,12 +61,6 @@ namespace ServerTools
             int _deaths = XUiM_Player.GetDeaths(_player);
             int _oldSession = PersistentContainer.Instance.Players[_cInfo.playerId, true].SessionTime;
             int _newSession = _oldSession + _timepassed;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].HardcoreSessionTime = _newSession;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].HardcoreZKills = _player.KilledZombies;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].HardcoreDeaths = _deaths;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].HardcoreKills = _player.KilledPlayers;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].HardcoreScore = _player.Score;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].HardcoreName = _cInfo.playerName;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].BikeId = 0;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].SessionTime = 0;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = 0;
@@ -119,13 +113,21 @@ namespace ServerTools
             DataTable _result = SQL.TQuery(_sql);
             if (_result.Rows.Count != 0)
             {
-                   _sql = string.Format("UPDATE Players SET " +
+                string _name = SQL.EscapeString(_cInfo.playerName);
+                _sql = string.Format("UPDATE Players SET " +
                     "last_gimme = '10/29/2000 7:30:00 AM', " +
                     "lastkillme = '10/29/2000 7:30:00 AM', " +
-                    "playerSpentCoins = 0 " +
-                    "WHERE steamid = '{0}'", _cInfo.playerId);
+                    "playerSpentCoins = 0, " +
+                    "hardcoreSessionTime = {0}, " +
+                    "hardcoreKills = {1}, " +
+                    "hardcoreZKills = {2}, " +
+                    "hardcoreScore = {3}, " +
+                    "hardcoreDeaths = {4}, " +
+                    "hardcoreName = '{5}' " +
+                    "WHERE steamid = '{6}'", _newSession, _player.KilledPlayers, _player.KilledZombies, _player.Score, _deaths, _name, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }
+            _result.Dispose();
             if (ClanManager.ClanMember.Contains(_cInfo.playerId))
             {
                 ClanManager.ClanMember.Remove(_cInfo.playerId);
@@ -164,72 +166,68 @@ namespace ServerTools
         {
             int _sessionTime, _score, _topSession1 = 0, _topSession2 = 0, _topSession3 = 0, _topScore1 = 0, _topScore2 = 0, _topScore3 = 0;
             string _sessionName1 = "", _sessionName2 = "", _sessionName3 = "", _ScoreName1 = "", _ScoreName2 = "", _ScoreName3 = "";
-            for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+            string _sql = "SELECT hardcoreSessionTime, hardcoreScore, hardcoreName From Players";
+            DataTable _result = SQL.TQuery(_sql);
+            foreach (DataRow row in _result.Rows)
             {
-                string _id = PersistentContainer.Instance.Players.SteamIDs[i];
-                Player p = PersistentContainer.Instance.Players[_id, false];
+                int.TryParse(row[0].ToString(), out _sessionTime);
+                if (_sessionTime > _topSession1)
                 {
-                    if (p != null)
+                    _topSession3 = _topSession2;
+                    _sessionName3 = _sessionName2;
+                    _topSession2 = _topSession1;
+                    _sessionName2 = _sessionName1;
+                    _topSession1 = _sessionTime;
+                    _sessionName1 = row[2].ToString();
+                }
+                else
+                {
+                    if (_sessionTime > _topSession2)
                     {
-                        _sessionTime = p.HardcoreSessionTime;
-                        if (_sessionTime > _topSession1)
+                        _topSession3 = _topSession2;
+                        _sessionName3 = _sessionName2;
+                        _topSession2 = _sessionTime;
+                        _sessionName2 = row[2].ToString();
+                    }
+                    else
+                    {
+                        if (_sessionTime > _topSession3)
                         {
-                            _topSession3 = _topSession2;
-                            _sessionName3 = _sessionName2;
-                            _topSession2 = _topSession1;
-                            _sessionName2 = _sessionName1;
-                            _topSession1 = _sessionTime;
-                            _sessionName1 = p.HardcoreName;
+                            _topSession3 = _sessionTime;
+                            _sessionName3 = row[2].ToString();
                         }
-                        else
+                    }
+                }
+                int.TryParse(row[1].ToString(), out _score);
+                if (_score > _topScore1)
+                {
+                    _topScore3 = _topScore2;
+                    _ScoreName3 = _ScoreName2;
+                    _topScore2 = _topScore1;
+                    _ScoreName2 = _ScoreName1;
+                    _topScore1 = _score;
+                    _ScoreName1 = row[2].ToString();
+                }
+                else
+                {
+                    if (_score > _topScore2)
+                    {
+                        _topScore3 = _topScore2;
+                        _ScoreName3 = _ScoreName2;
+                        _topScore2 = _score;
+                        _ScoreName2 = row[2].ToString();
+                    }
+                    else
+                    {
+                        if (_score > _topScore3)
                         {
-                            if (_sessionTime > _topSession2)
-                            {
-                                _topSession3 = _topSession2;
-                                _sessionName3 = _sessionName2;
-                                _topSession2 = _sessionTime;
-                                _sessionName2 = p.HardcoreName;
-                            }
-                            else
-                            {
-                                if (_sessionTime > _topSession3)
-                                {
-                                    _topSession3 = _sessionTime;
-                                    _sessionName3 = p.HardcoreName;
-                                }
-                            }
-                        }
-                        _score = p.HardcoreScore;
-                        if (_score > _topScore1)
-                        {
-                            _topScore3 = _topScore2;
-                            _ScoreName3 = _ScoreName2;
-                            _topScore2 = _topScore1;
-                            _ScoreName2 = _ScoreName1;
-                            _topScore1 = _score;
-                            _ScoreName1 = p.HardcoreName;
-                        }
-                        else
-                        {
-                            if (_score > _topScore2)
-                            {
-                                _topScore3 = _topScore2;
-                                _ScoreName3 = _ScoreName2;
-                                _topScore2 = _score;
-                                _ScoreName2 = p.HardcoreName;
-                            }
-                            else
-                            {
-                                if (_score > _topScore3)
-                                {
-                                    _topScore3 = _score;
-                                    _ScoreName3 = p.HardcoreName;
-                                }
-                            }
+                            _topScore3 = _score;
+                            _ScoreName3 = row[2].ToString();
                         }
                     }
                 }
             }
+            _result.Dispose();
             string _phrase945;
             if (!Phrases.Dict.TryGetValue(945, out _phrase945))
             {
@@ -273,31 +271,27 @@ namespace ServerTools
 
         public static void Score(ClientInfo _cInfo, bool _announce)
         {
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+            string _sql = string.Format("SELECT hardcoreSessionTime, hardcoreKills, hardcoreZKills, hardcoreScore, hardcoreDeaths, hardcoreName From Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            string _phrase948;
+            if (!Phrases.Dict.TryGetValue(948, out _phrase948))
             {
-                if (p != null)
-                {
-                    string _phrase948;
-                    if (!Phrases.Dict.TryGetValue(948, out _phrase948))
-                    {
-                        _phrase948 = "{PlayerName} your last hardcore stats: Name {LastName} Zombie Kills {ZombieKills}, Player Kills {PlayerKills}, Deaths {Deaths}, Score {Score}, Playtime {Playtime} Minutes";
-                    }
-                    _phrase948 = _phrase948.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase948 = _phrase948.Replace("{LastName}", p.HardcoreName);
-                    _phrase948 = _phrase948.Replace("{ZombieKills}", p.HardcoreZKills.ToString());
-                    _phrase948 = _phrase948.Replace("{PlayerKills}", p.HardcoreKills.ToString());
-                    _phrase948 = _phrase948.Replace("{Deaths}", p.HardcoreDeaths.ToString());
-                    _phrase948 = _phrase948.Replace("{Score}", p.HardcoreScore.ToString());
-                    _phrase948 = _phrase948.Replace("{Playtime}", p.HardcoreSessionTime.ToString());
-                    if (_announce)
-                    {
-                        GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase948), Config.Server_Response_Name, false, "ServerTools", false);
-                    }
-                    else
-                    {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase948), Config.Server_Response_Name, false, "ServerTools", false));
-                    }
-                }
+                _phrase948 = "{PlayerName} your last hardcore stats: Name {LastName} Zombie Kills {ZombieKills}, Player Kills {PlayerKills}, Deaths {Deaths}, Score {Score}, Playtime {Playtime} Minutes";
+            }
+            _phrase948 = _phrase948.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase948 = _phrase948.Replace("{LastName}", _result.Rows[0].ItemArray.GetValue(5).ToString());
+            _phrase948 = _phrase948.Replace("{ZombieKills}", _result.Rows[0].ItemArray.GetValue(2).ToString());
+            _phrase948 = _phrase948.Replace("{PlayerKills}", _result.Rows[0].ItemArray.GetValue(1).ToString());
+            _phrase948 = _phrase948.Replace("{Deaths}", _result.Rows[0].ItemArray.GetValue(4).ToString());
+            _phrase948 = _phrase948.Replace("{Score}", _result.Rows[0].ItemArray.GetValue(3).ToString());
+            _phrase948 = _phrase948.Replace("{Playtime}", _result.Rows[0].ItemArray.GetValue(0).ToString());
+            if (_announce)
+            {
+                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase948), Config.Server_Response_Name, false, "ServerTools", false);
+            }
+            else
+            {
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase948), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
     }

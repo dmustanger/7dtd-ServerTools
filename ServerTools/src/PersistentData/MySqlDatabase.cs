@@ -59,6 +59,12 @@ namespace ServerTools
                 "bank INT DEFAULT 0, " +
                 "wallet INT DEFAULT 0, " +
                 "playerSpentCoins INT DEFAULT 0, " +
+                "hardcoreSessionTime INT DEFAULT 0, " +
+                "hardcoreKills INT DEFAULT 0, " +
+                "hardcoreZKills INT DEFAULT 0, " +
+                "hardcoreScore INT DEFAULT 0, " +
+                "hardcoreDeaths INT DEFAULT 0, " +
+                "hardcoreName VARCHAR(50) DEFAULT 'Unknown', " +
                 "PRIMARY KEY (steamid)) ENGINE = InnoDB;");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER) ENGINE = InnoDB;");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");

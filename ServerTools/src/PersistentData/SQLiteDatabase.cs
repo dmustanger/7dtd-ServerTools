@@ -37,7 +37,13 @@ namespace ServerTools
                 "lastkillme TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
                 "bank INTEGER DEFAULT 0, " +
                 "wallet INTEGER DEFAULT 0, " +
-                "playerSpentCoins INTEGER DEFAULT 0" +
+                "playerSpentCoins INTEGER DEFAULT 0, " +
+                "hardcoreSessionTime INTEGER DEFAULT 0, " +
+                "hardcoreKills INTEGER DEFAULT 0, " +
+                "hardcoreZKills INTEGER DEFAULT 0, " +
+                "hardcoreScore INTEGER DEFAULT 0, " +
+                "hardcoreDeaths INTEGER DEFAULT 0, " +
+                "hardcoreName TEXT DEFAULT 'Unknown'" +
                 ");");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER);");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");

@@ -11,11 +11,11 @@ namespace ServerTools
         private int homeRequest;
         //private int wallet;
         //private int bank;
-        private int hardcoreSessionTime;
-        private int hardcoreKills;
-        private int hardcoreZKills;
-        private int hardcoreScore;
-        private int hardcoreDeaths;
+        //private int hardcoreSessionTime;
+        //private int hardcoreKills;
+        //private int hardcoreZKills;
+        //private int hardcoreScore;
+        //private int hardcoreDeaths;
         private int bounty;
         private int bountyHunter;
         private int sessionTime;
@@ -33,7 +33,7 @@ namespace ServerTools
         private string[] auctionItem;
         private string playerName;
         private string eventReturn;
-        private string hardcoreName;
+        //private string hardcoreName;
         private string marketReturn;
         private string lobbyReturn;
         private string newTeleSpawn;
@@ -144,65 +144,65 @@ namespace ServerTools
             //}
         //}
 
-        public int HardcoreKills
-        {
-            get
-            {
-                return hardcoreKills;
-            }
-            set
-            {
-                hardcoreKills = value;
-            }
-        }
+        //public int HardcoreKills
+        //{
+            //get
+            //{
+                //return hardcoreKills;
+            //}
+            //set
+            //{
+                //hardcoreKills = value;
+            //}
+        //}
 
-        public int HardcoreSessionTime
-        {
-            get
-            {
-                return hardcoreSessionTime;
-            }
-            set
-            {
-                hardcoreSessionTime = value;
-            }
-        }
+        //public int HardcoreSessionTime
+        //{
+            //get
+            //{
+                //return hardcoreSessionTime;
+            //}
+            //set
+            //{
+                //hardcoreSessionTime = value;
+            //}
+        //}
 
-        public int HardcoreZKills
-        {
-            get
-            {
-                return hardcoreZKills;
-            }
-            set
-            {
-                hardcoreZKills = value;
-            }
-        }
+        //public int HardcoreZKills
+        //{
+            //get
+            //{
+                //return hardcoreZKills;
+            //}
+            //set
+            //{
+                //hardcoreZKills = value;
+            //}
+        //}
 
-        public int HardcoreScore
-        {
-            get
-            {
-                return hardcoreScore;
-            }
-            set
-            {
-                hardcoreScore = value;
-            }
-        }
+        //public int HardcoreScore
+        //{
+            //get
+            //{
+                //return hardcoreScore;
+            //}
+            //set
+            //{
+                //hardcoreScore = value;
+            //}
+        //}
 
-        public int HardcoreDeaths
-        {
-            get
-            {
-                return hardcoreDeaths;
-            }
-            set
-            {
-                hardcoreDeaths = value;
-            }
-        }
+        //public int HardcoreDeaths
+        //{
+            //get
+            //{
+                //return hardcoreDeaths;
+            //}
+            //set
+            //{
+                //hardcoreDeaths = value;
+            //}
+        //}
 
         public int Bounty
         {
@@ -756,17 +756,17 @@ namespace ServerTools
             }
         }
 
-        public string HardcoreName
-        {
-            get
-            {
-                return hardcoreName;
-            }
-            set
-            {
-                hardcoreName = value;
-            }
-        }
+        //public string HardcoreName
+        //{
+            //get
+            //{
+                //return hardcoreName;
+            //}
+            //set
+            //{
+                //hardcoreName = value;
+            //}
+        //}
 
         public string MarketReturn
         {
