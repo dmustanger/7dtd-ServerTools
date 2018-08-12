@@ -199,11 +199,14 @@ namespace ServerTools
                     {
                         Hardcore.Check(_cInfo);
                     }
-                    if (PersistentContainer.Instance.Players[_cInfo.playerId, true].EventReturn != null)
+                    string _sql = string.Format("SELECT eventReturn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    DataTable _result1 = SQL.TQuery(_sql);
+                    _result1.Dispose();
+                    if (_result1.Rows[0].ItemArray.GetValue(0).ToString() != "Unknown")
                     {
                         Event.OfflineReturn(_cInfo);
                     }
-                    string _sql = string.Format("UPDATE Players SET playername = '{0}', zkills = {1}, kills = {2}, deaths = {3} WHERE steamid = '{4}'", _cInfo.playerName, _zCount, _killCount, _deathCount, _cInfo.playerId);
+                    _sql = string.Format("UPDATE Players SET playername = '{0}', zkills = {1}, kills = {2}, deaths = {3} WHERE steamid = '{4}'", _cInfo.playerName, _zCount, _killCount, _deathCount, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                     if (Mogul.IsEnabled)
                     {

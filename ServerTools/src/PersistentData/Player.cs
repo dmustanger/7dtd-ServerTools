@@ -32,7 +32,7 @@ namespace ServerTools
         private string[] waypoints;
         private string[] auctionItem;
         //private string playerName;
-        private string eventReturn;
+        //private string eventReturn;
         //private string hardcoreName;
         private string marketReturn;
         private string lobbyReturn;
@@ -744,17 +744,17 @@ namespace ServerTools
             //}
         //}
 
-        public string EventReturn
-        {
-            get
-            {
-                return eventReturn;
-            }
-            set
-            {
-                eventReturn = value;
-            }
-        }
+        //public string EventReturn
+        //{
+            //get
+            //{
+                //return eventReturn;
+            //}
+            //set
+            //{
+                //eventReturn = value;
+            //}
+        //}
 
         //public string HardcoreName
         //{

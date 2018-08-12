@@ -402,8 +402,8 @@ namespace ServerTools
                                         string _steamId = _persistentPlayerData.PlayerId;
                                         string _pos;
                                         Event.PlayersReturn.TryGetValue(_playerEntId, out _pos);
-                                        PersistentContainer.Instance.Players[_steamId, true].EventReturn = _pos;
-                                        PersistentContainer.Instance.Save();
+                                        string _sql = string.Format("UPDATE Players SET eventReturn = '{0}' WHERE steamid = '{1}'", _pos, _steamId);
+                                        SQL.FastQuery(_sql);
                                         Event.Players.Remove(_playerEntId);
                                         Event.PlayersTeam.Remove(_playerEntId);
                                         Event.PlayersReturn.Remove(_playerEntId);
@@ -512,8 +512,8 @@ namespace ServerTools
                                     string _steamId = _persistentPlayerData.PlayerId;
                                     string _pos;
                                     Event.PlayersReturn.TryGetValue(_playerEntId, out _pos);
-                                    PersistentContainer.Instance.Players[_steamId, true].EventReturn = _pos;
-                                    PersistentContainer.Instance.Save();
+                                    string _sql = string.Format("UPDATE Players SET eventReturn = '{0}' WHERE steamid = '{1}'", _pos, _steamId);
+                                    SQL.FastQuery(_sql);
                                     Event.Players.Remove(_playerEntId);
                                     Event.PlayersTeam.Remove(_playerEntId);
                                     Event.PlayersReturn.Remove(_playerEntId);
@@ -681,8 +681,8 @@ namespace ServerTools
                                         string _steamId = _persistentPlayerData.PlayerId;
                                         string _pos;
                                         Event.PlayersReturn.TryGetValue(_id, out _pos);
-                                        PersistentContainer.Instance.Players[_steamId, true].EventReturn = _pos;
-                                        PersistentContainer.Instance.Save();
+                                        string _sql = string.Format("UPDATE Players SET eventReturn = '{0}' WHERE steamid = '{1}'", _pos, _steamId);
+                                        SQL.FastQuery(_sql);
                                         Event.Players.Remove(_id);
                                         Event.PlayersTeam.Remove(_id);
                                         Event.PlayersReturn.Remove(_id);
