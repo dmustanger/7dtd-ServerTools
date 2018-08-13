@@ -96,7 +96,6 @@ namespace ServerTools
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].LastSetHome = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].RespawnTime = DateTime.Now.AddDays(-5);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].NewTeleSpawn = null;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition = null;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition2 = null;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].ClanName = null;
@@ -126,7 +125,8 @@ namespace ServerTools
                     "jailDate = '10/29/2000 7:30:00 AM', " +
                     "muteName = 'Unknown', " +
                     "muteDate = '10/29/2000 7:30:00 AM', " +
-                    "lobbyReturn = 'Unknown' " +
+                    "lobbyReturn = 'Unknown', " +
+                    "newTeleSpawn = 'Unknown' " +
                     "WHERE steamid = '{6}'", _newSession, _player.KilledPlayers, _player.KilledZombies, _player.Score, _deaths, _name, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }

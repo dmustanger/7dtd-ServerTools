@@ -36,7 +36,7 @@ namespace ServerTools
         //private string hardcoreName;
         //private string marketReturn;
         //private string lobbyReturn;
-        private string newTeleSpawn;
+        //private string newTeleSpawn;
         //private string jailName;
         //private string muteName;
         private string homeposition;
@@ -792,17 +792,17 @@ namespace ServerTools
             //}
         //}
 
-        public string NewTeleSpawn
-        {
-            get
-            {
-                return newTeleSpawn;
-            }
-            set
-            {
-                newTeleSpawn = value;
-            }
-        }
+        //public string NewTeleSpawn
+        //{
+            //get
+            //{
+                //return newTeleSpawn;
+            //}
+            //set
+            //{
+                //newTeleSpawn = value;
+            //}
+        //}
 
         //public string JailName
         //{

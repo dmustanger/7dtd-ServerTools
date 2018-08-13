@@ -60,7 +60,8 @@ namespace ServerTools
                 "deaths INTEGER DEFAULT 0, " +
                 "eventReturn TEXT DEFAULT 'Unknown', " +
                 "marketReturn TEXT DEFAULT 'Unknown', " +
-                "lobbyReturn TEXT DEFAULT 'Unknown' " +
+                "lobbyReturn TEXT DEFAULT 'Unknown', " +
+                "newTeleSpawn TEXT DEFAULT 'Unknown' " +
                 ");");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER);");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");

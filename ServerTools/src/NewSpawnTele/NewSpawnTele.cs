@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Data;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -56,8 +57,8 @@ namespace ServerTools
             {
                 Vector3 Vec3 = _player.position;
                 string _position = _player.position.x + "," + _player.position.y + "," + _player.position.z;
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].NewTeleSpawn = _position;
-                PersistentContainer.Instance.Save();
+                string _sql = string.Format("UPDATE Players SET newTeleSpawn = '{0}' WHERE steamid = '{1}'", _position, _cInfo.playerId);
+                SQL.FastQuery(_sql);
             }
             int x, y, z;
             string[] _cords = New_Spawn_Tele_Position.Split(',');
@@ -90,54 +91,44 @@ namespace ServerTools
 
         public static void ReturnPlayer(ClientInfo _cInfo)
         {
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p != null)
+            string _sql = string.Format("SELECT newTeleSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
+            _result.Dispose();
+            if (_pos != ("Unknown"))
             {
-                if (p.NewTeleSpawn != ("0, 0, 0"))
+                int x, y, z;
+                string[] _cords = New_Spawn_Tele_Position.Split(',');
+                int.TryParse(_cords[0], out x);
+                int.TryParse(_cords[2], out z);
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= 50 * 50)
                 {
-                    int x, y, z;
-                    string[] _cords = New_Spawn_Tele_Position.Split(',');
-                    int.TryParse(_cords[0], out x);
-                    int.TryParse(_cords[2], out z);
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= 50 * 50)
+                    string[] _oldCords = _pos.Split(',');
+                    int.TryParse(_oldCords[0], out x);
+                    int.TryParse(_oldCords[1], out y);
+                    int.TryParse(_oldCords[2], out z);
+                    Players.NoFlight.Add(_cInfo.entityId);
+                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                    _sql = string.Format("UPDATE Players SET newTeleSpawn = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
+                    SQL.FastQuery(_sql);
+                    string _phrase530;
+                    if (!Phrases.Dict.TryGetValue(530, out _phrase530))
                     {
-                        string[] _oldCords = p.NewTeleSpawn.Split(',');
-                        int.TryParse(_oldCords[0], out x);
-                        int.TryParse(_oldCords[1], out y);
-                        int.TryParse(_oldCords[2], out z);
-                        Players.NoFlight.Add(_cInfo.entityId);
-                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].NewTeleSpawn = ("0, 0, 0");
-                        PersistentContainer.Instance.Save();
-                        string _phrase530;
-                        if (!Phrases.Dict.TryGetValue(530, out _phrase530))
-                        {
-                            _phrase530 = "{PlayerName} you have been sent back to your original spawn location. Good luck.";
-                        }
-                        _phrase530 = _phrase530.Replace("{PlayerName}", _cInfo.playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase530), Config.Server_Response_Name, false, "ServerTools", false));
+                        _phrase530 = "{PlayerName} you have been sent back to your original spawn location. Good luck.";
                     }
-                    else
-                    {
-                        string _phrase529;
-                        if (!Phrases.Dict.TryGetValue(529, out _phrase529))
-                        {
-                            _phrase529 = "{PlayerName} you have left the new player area. Return to it before using /ready.";
-                        }
-                        _phrase529 = _phrase529.Replace("{PlayerName}", _cInfo.playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase529), Config.Server_Response_Name, false, "ServerTools", false));
-                    }
+                    _phrase530 = _phrase530.Replace("{PlayerName}", _cInfo.playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase530), Config.Server_Response_Name, false, "ServerTools", false));
                 }
                 else
                 {
-                    string _phrase528;
-                    if (!Phrases.Dict.TryGetValue(528, out _phrase528))
+                    string _phrase529;
+                    if (!Phrases.Dict.TryGetValue(529, out _phrase529))
                     {
-                        _phrase528 = "{PlayerName} you have no saved return point or you have used it.";
+                        _phrase529 = "{PlayerName} you have left the new player area. Return to it before using /ready.";
                     }
-                    _phrase528 = _phrase528.Replace("{PlayerName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase528), Config.Server_Response_Name, false, "ServerTools", false));
+                    _phrase529 = _phrase529.Replace("{PlayerName}", _cInfo.playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase529), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             else
