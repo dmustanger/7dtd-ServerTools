@@ -256,7 +256,8 @@ namespace ServerTools
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                int _playerSpentCoins;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
                 _result.Dispose();
                 int currentCoins = 0;
                 int gameMode = world.GetGameMode();
@@ -342,7 +343,8 @@ namespace ServerTools
             int.TryParse(_value[3], out _price);
             string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            int _playerSpentCoins;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
             _result.Dispose();
             _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _price, _cInfo.playerId);
             SQL.FastQuery(_sql);
@@ -355,7 +357,8 @@ namespace ServerTools
             PersistentContainer.Instance.Save();
             _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _steamId);
             DataTable _result1 = SQL.TQuery(_sql);
-            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins1);
+            int _playerSpentCoins1;
+            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins1);
             _result1.Dispose();
             _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins1 + _newCoin2, _steamId);
             SQL.FastQuery(_sql);

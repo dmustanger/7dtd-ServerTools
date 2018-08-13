@@ -61,7 +61,8 @@ namespace ServerTools
             int _deaths = XUiM_Player.GetDeaths(_player);
             string _sql = string.Format("SELECT sessionTime FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _oldSession);
+            int _oldSession;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _oldSession);
             _result.Dispose();
             int _newSession = _oldSession + _timepassed;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = 0;

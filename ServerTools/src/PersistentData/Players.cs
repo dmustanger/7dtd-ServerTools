@@ -240,15 +240,19 @@ namespace ServerTools
                                                 }
                                                 string _sql = string.Format("SELECT bounty, bountyHunter FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                                                 DataTable _result = SQL.TQuery(_sql);
-                                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bounty);
-                                                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out int _hunterCountVictim);
+                                                int _bounty;
+                                                int _hunterCountVictim;
+                                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bounty);
+                                                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _hunterCountVictim);
                                                 _result.Dispose();
                                                 if (_bounty > 0)
                                                 {
                                                     _sql = string.Format("SELECT playerSpentCoins, bountyHunter FROM Players WHERE steamid = '{0}'", _cInfo2.playerId);
                                                     DataTable _result2 = SQL.TQuery(_sql);
-                                                    int.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
-                                                    int.TryParse(_result2.Rows[0].ItemArray.GetValue(1).ToString(), out int _hunterCountKiller);
+                                                    int _playerSpentCoins;
+                                                    int _hunterCountKiller;
+                                                    int.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+                                                    int.TryParse(_result2.Rows[0].ItemArray.GetValue(1).ToString(), out _hunterCountKiller);
                                                     _result2.Dispose();
                                                     if (Bonus > 0 && _hunterCountVictim >= Bonus)
                                                     {
@@ -312,7 +316,8 @@ namespace ServerTools
                                                             {
                                                                 _sql = string.Format("SELECT bounty FROM Players WHERE steamid = '{0}'", _cInfo2.playerId);
                                                                 DataTable _result3 = SQL.TQuery(_sql);
-                                                                int.TryParse(_result3.Rows[0].ItemArray.GetValue(0).ToString(), out int _oldBounty);
+                                                                int _oldBounty;
+                                                                int.TryParse(_result3.Rows[0].ItemArray.GetValue(0).ToString(), out _oldBounty);
                                                                 _result3.Dispose();
                                                                 _sql = string.Format("UPDATE Players SET bounty = {0} WHERE steamid = '{1}'", _oldBounty + (_player2.Level * Bounties.Bounty), _cInfo.playerId);
                                                                 SQL.FastQuery(_sql);
@@ -348,7 +353,8 @@ namespace ServerTools
                                     World world = GameManager.Instance.World;
                                     string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                                     DataTable _result = SQL.TQuery(_sql);
-                                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                                    int _playerSpentCoins;
+                                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
                                     _result.Dispose();
                                     int currentCoins = 0;
                                     int gameMode = world.GetGameMode();

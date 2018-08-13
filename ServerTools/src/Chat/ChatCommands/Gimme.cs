@@ -241,7 +241,8 @@ namespace ServerTools
             {
                 string _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
-                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out DateTime _lastgimme);
+                DateTime _lastgimme;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastgimme);
                 _result.Dispose();
                 TimeSpan varTime = DateTime.Now - _lastgimme;
                 double fractionalMinutes = varTime.TotalMinutes;

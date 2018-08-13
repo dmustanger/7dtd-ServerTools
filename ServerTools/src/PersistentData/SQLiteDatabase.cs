@@ -75,7 +75,8 @@ namespace ServerTools
             }
             else
             {
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _version);
+                int _version;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _version);
                 if (_version != SQL.Sql_version)
                 {
                     SQL.UpdateSQL(_version);

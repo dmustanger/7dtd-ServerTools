@@ -334,8 +334,10 @@ namespace ServerTools
                 {
                     string _sql = string.Format("SELECT jailTime, jailDate FROM Players WHERE steamid = '{0}'", _id);
                     DataTable _result = SQL.TQuery(_sql);
-                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _jailTime);
-                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out DateTime _jailDate);
+                    int _jailTime;
+                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _jailTime);
+                    DateTime _jailDate;
+                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _jailDate);
                     _result.Dispose();
                     if (_jailTime == -1)
                     {
@@ -391,9 +393,11 @@ namespace ServerTools
             DataTable _result = SQL.TQuery(_sql);
             if (_result.Rows.Count > 0)
             {
+                int _jailTime;
+                DateTime _jailDate;
                 foreach (DataRow row in _result.Rows)
                 {
-                    int.TryParse(row[1].ToString(), out int _jailTime);
+                    int.TryParse(row[1].ToString(), out _jailTime);
                     if (_jailTime > 0 || _jailTime == -1)
                     {
                         if (_jailTime == -1)
@@ -403,7 +407,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            DateTime.TryParse(row[2].ToString(), out DateTime _jailDate);
+                            DateTime.TryParse(row[2].ToString(), out _jailDate);
                             TimeSpan varTime = DateTime.Now - _jailDate;
                             double fractionalMinutes = varTime.TotalMinutes;
                             int _timepassed = (int)fractionalMinutes;

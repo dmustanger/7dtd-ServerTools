@@ -27,7 +27,8 @@ namespace ServerTools
             {
                 string _sql = string.Format("SELECT lastBike FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
-                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out DateTime _lastBike);
+                DateTime _lastBike;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastBike);
                 _result.Dispose();
                 TimeSpan varTime = DateTime.Now - _lastBike;
                 double fractionalMinutes = varTime.TotalMinutes;
@@ -106,7 +107,8 @@ namespace ServerTools
             int currentCoins = 0;
             string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            int _playerSpentCoins;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
             _result.Dispose();
             int gameMode = world.GetGameMode();
             if (gameMode == 7)
@@ -179,7 +181,8 @@ namespace ServerTools
             {
                 string _sql = string.Format("SELECT bikeId FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bikeId);
+                int _bikeId;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bikeId);
                 _result.Dispose();
                 if (_bikeId != 0)
                 {
@@ -211,7 +214,8 @@ namespace ServerTools
                                         {
                                             _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                                             DataTable _result1 = SQL.TQuery(_sql);
-                                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                                            int _playerSpentCoins;
+                                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
                                             _result1.Dispose();
                                             _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
                                             SQL.FastQuery(_sql);

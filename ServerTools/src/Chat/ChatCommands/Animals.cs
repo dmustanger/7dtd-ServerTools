@@ -141,7 +141,8 @@ namespace ServerTools
             int currentCoins = 0;
             string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            int _playerSpentCoins;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
             _result.Dispose();
             int gameMode = world.GetGameMode();
             if (gameMode == 7)
@@ -230,7 +231,8 @@ namespace ServerTools
                 {
                     string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                     DataTable _result = SQL.TQuery(_sql);
-                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                    int _playerSpentCoins;
+                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
                     _result.Dispose();
                     _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
                     SQL.FastQuery(_sql);

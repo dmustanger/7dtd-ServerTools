@@ -21,7 +21,8 @@ namespace ServerTools
                     int _cost = _player.Level * Bounty;
                     string _sql = string.Format("SELECT bounty FROM Players WHERE steamid = '{0}'", _cInfo1.playerId);
                     DataTable _result = SQL.TQuery(_sql);
-                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _currentbounty);
+                    int _currentbounty;
+                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _currentbounty);
                     _result.Dispose();
                     string _phrase911;
                     if (!Phrases.Dict.TryGetValue(911, out _phrase911))
@@ -67,7 +68,8 @@ namespace ServerTools
                             }
                             string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                             DataTable _result = SQL.TQuery(_sql);
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                            int _playerSpentCoins;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
                             _result.Dispose();
                             int currentCoins = 0;
                             int gameMode = GameManager.Instance.World.GetGameMode();
@@ -83,7 +85,8 @@ namespace ServerTools
                             {
                                 _sql = string.Format("SELECT bounty FROM Players WHERE steamid = '{0}'", _cInfo1.playerId);
                                 DataTable _result1 = SQL.TQuery(_sql);
-                                int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out int _bounty);
+                                int _bounty;
+                                int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _bounty);
                                 _result1.Dispose();
                                 _sql = string.Format("UPDATE Players SET bounty = {0} WHERE steamid = '{1}'", _bounty + _cost, _cInfo1.playerId);
                                 SQL.FastQuery(_sql);
@@ -114,7 +117,8 @@ namespace ServerTools
                         _cost = _player.Level * Bounty;
                         string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                         DataTable _result = SQL.TQuery(_sql);
-                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                        int _playerSpentCoins;
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
                         _result.Dispose();
                         int currentCoins = 0;
                         int gameMode = GameManager.Instance.World.GetGameMode();
@@ -130,7 +134,8 @@ namespace ServerTools
                         {
                             _sql = string.Format("SELECT bounty FROM Players WHERE steamid = '{0}'", _cInfo1.playerId);
                             DataTable _result1 = SQL.TQuery(_sql);
-                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out int _bounty);
+                            int _bounty;
+                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _bounty);
                             _result1.Dispose();
                             _sql = string.Format("UPDATE Players SET bounty = {0} WHERE steamid = '{1}'", _bounty + _cost, _cInfo1.playerId);
                             SQL.FastQuery(_sql);

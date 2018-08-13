@@ -43,7 +43,8 @@ namespace ServerTools
                     {
                         string _sql = string.Format("SELECT muteTime FROM Players WHERE steamid = '{0}'", _PlayertoMute.playerId);
                         DataTable _result = SQL.TQuery(_sql);
-                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _muteTime);
+                        int _muteTime;
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _muteTime);
                         _result.Dispose();
                         if (_muteTime > 0 || _muteTime == -1)
                         {
@@ -170,9 +171,11 @@ namespace ServerTools
             DataTable _result = SQL.TQuery(_sql);
             if (_result.Rows.Count > 0)
             {
+                int _muteTime;
+                DateTime _muteDate;
                 foreach (DataRow row in _result.Rows)
                 {
-                    int.TryParse(row[1].ToString(), out int _muteTime);
+                    int.TryParse(row[1].ToString(), out _muteTime);
                     if (_muteTime > 0 || _muteTime == -1)
                     {
                         if (_muteTime == -1)
@@ -182,7 +185,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            DateTime.TryParse(row[2].ToString(), out DateTime _muteDate);
+                            DateTime.TryParse(row[2].ToString(), out _muteDate);
                             TimeSpan varTime = DateTime.Now - _muteDate;
                             double fractionalMinutes = varTime.TotalMinutes;
                             int _timepassed = (int)fractionalMinutes;
@@ -209,8 +212,10 @@ namespace ServerTools
                 string _id = Mutes[i];
                 string _sql = string.Format("SELECT muteTime, muteDate FROM Players WHERE steamid = '{0}'", _id);
                 DataTable _result = SQL.TQuery(_sql);
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _muteTime);
-                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out DateTime _muteDate);
+                int _muteTime;
+                DateTime _muteDate;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _muteTime);
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _muteDate);
                 _result.Dispose();
                 if (_muteTime != -1)
                 {

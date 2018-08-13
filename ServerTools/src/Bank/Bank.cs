@@ -28,7 +28,8 @@ namespace ServerTools
             _result.Dispose();
             if (TransferId.ContainsKey(_cInfo.playerId))
             {
-                TransferId.TryGetValue(_cInfo.playerId, out int _id);
+                int _id;
+                TransferId.TryGetValue(_cInfo.playerId, out _id);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank account is worth {2}. Transfer Id is {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _bank, _id), Config.Server_Response_Name, false, "ServerTools", false));
             }
             else
@@ -230,7 +231,8 @@ namespace ServerTools
 
         public static void Withdraw(ClientInfo _cInfo, string _amount)
         {
-            if (int.TryParse(_amount, out int _coinAmount))
+            int _coinAmount;
+            if (int.TryParse(_amount, out _coinAmount))
             {
                 string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
@@ -299,7 +301,8 @@ namespace ServerTools
 
         public static void WalletDeposit(ClientInfo _cInfo, string _amount)
         {
-            if (int.TryParse(_amount, out int _coinAmount))
+            int _coinAmount;
+            if (int.TryParse(_amount, out _coinAmount))
             {
                 World world = GameManager.Instance.World;
                 string _sql = string.Format("SELECT bank, playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
@@ -358,7 +361,8 @@ namespace ServerTools
 
         public static void WalletWithdraw(ClientInfo _cInfo, string _amount)
         {
-            if (int.TryParse(_amount, out int _coinAmount))
+            int _coinAmount;
+            if (int.TryParse(_amount, out _coinAmount))
             {
                 string _sql = string.Format("SELECT bank, playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);

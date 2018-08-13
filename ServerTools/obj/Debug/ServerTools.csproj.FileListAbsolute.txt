@@ -81,13 +81,12 @@ C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.4\bin\Mods\Server
 C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.4\bin\Mods\ServerTools\ModInfo.xml
 C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.4\bin\Mods\ServerTools\Changelog.txt
 C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-6.4\bin\Mods\ServerTools\ServerTools.dll
-C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csprojAssemblyReference.cache
 C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
 C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.cache
-C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csproj.CoreCompileInputs.cache
 C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.dll
 C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\ChatCommandExamples.txt
 C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\ConsoleCommandExamples.txt
 C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\ModInfo.xml
 C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\Changelog.txt
 C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\ServerTools.dll
+C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache

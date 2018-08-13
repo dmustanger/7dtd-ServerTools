@@ -12,12 +12,12 @@ namespace ServerTools
             string _name1 = "-", _name2 = "-", _name3 = "-";
             string _sql = "SELECT playername, bank, wallet FROM Players";
             DataTable _result = SQL.TQuery(_sql);
+            int _bank;
+            int _wallet;
             foreach (DataRow row in _result.Rows)
             {
-                int _bank;
-                int _wallet;
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _wallet);
+                int.TryParse(row[0].ToString(), out _bank);
+                int.TryParse(row[1].ToString(), out _wallet);
                 int _total = 0;
                 if (Wallet.IsEnabled && Bank.IsEnabled)
                 {
