@@ -1,4 +1,6 @@
-﻿namespace ServerTools
+﻿using System.Data;
+
+namespace ServerTools
 {
     public class Whisper
     {
@@ -37,8 +39,8 @@
             else
             {
                 _targetInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("(PM) {0}", _strings[1]), _cInfo.playerName, false, "", false));
-                PersistentContainer.Instance.Players[_targetInfo.playerId, true].LastWhisper = _cInfo.playerId;
-                PersistentContainer.Instance.Save();
+                string _sql = string.Format("UPDATE Players SET lastwhisper = '{0}' WHERE steamid = '{1}'", _cInfo.playerId, _targetInfo.playerId);
+                SQL.FastQuery(_sql);
             }
         }
 
@@ -60,7 +62,11 @@
             {
                 _message = _message.Replace("RE ", "");
             }
-            if (PersistentContainer.Instance.Players[_cInfo.playerId, true].LastWhisper == null)
+            string _sql = string.Format("SELECT lastwhisper FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            string _lastwhisper = _result.Rows[0].ItemArray.GetValue(0).ToString();
+            _result.Dispose();
+            if (_lastwhisper == "Unknown")
             {
                 string _phrase15;
                 if (!Phrases.Dict.TryGetValue(15, out _phrase15))
@@ -72,7 +78,8 @@
             }
             else
             {
-                ClientInfo _cInfo1 = ConnectionManager.Instance.GetClientInfoForPlayerId(PersistentContainer.Instance.Players[_cInfo.playerId, true].LastWhisper);
+
+                ClientInfo _cInfo1 = ConnectionManager.Instance.GetClientInfoForPlayerId(_lastwhisper);
                 if (_cInfo1 == null)
                 {
                     string _phrase16;
@@ -86,8 +93,8 @@
                 else
                 {
                     _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("(PM) {0}", _message), _cInfo.playerName, false, "", false));
-                    PersistentContainer.Instance.Players[_cInfo1.playerId, true].LastWhisper = _cInfo.playerId;
-                    PersistentContainer.Instance.Save();
+                    _sql = string.Format("UPDATE Players SET lastwhisper = '{0}' WHERE steamid = '{1}'", _cInfo.playerId, _cInfo1.playerId);
+                    SQL.FastQuery(_sql);
                 }
             }
         }

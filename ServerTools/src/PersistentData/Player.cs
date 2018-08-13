@@ -43,7 +43,7 @@ namespace ServerTools
         //private string homeposition2;
         private string clanname;
         private string invitedtoclan;
-        private string lastwhisper;
+        //private string lastwhisper;
         private string ipAddress;
         private DateTime lastWaypoint;
         private DateTime lastMarket;
@@ -876,17 +876,17 @@ namespace ServerTools
             }
         }
 
-        public string LastWhisper
-        {
-            get
-            {
-                return lastwhisper;
-            }
-            set
-            {
-                lastwhisper = value;
-            }
-        }
+        //public string LastWhisper
+        //{
+            //get
+            //{
+                //return lastwhisper;
+            //}
+            //set
+            //{
+                //lastwhisper = value;
+            //}
+        //}
 
         public string IP
         {

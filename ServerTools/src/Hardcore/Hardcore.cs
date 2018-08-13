@@ -98,7 +98,6 @@ namespace ServerTools
             PersistentContainer.Instance.Players[_cInfo.playerId, true].RespawnTime = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].ClanName = null;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].InvitedToClan = null;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastWhisper = null;
             PersistentContainer.Instance.Save();
             _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result1 = SQL.TQuery(_sql);
@@ -127,7 +126,8 @@ namespace ServerTools
                     "newTeleSpawn = 'Unknown', " +
                     "homeposition = 'Unknown', " +
                     "homeposition2 = 'Unknown', " +
-                    "lastsethome = '10/29/2000 7:30:00 AM' " +
+                    "lastsethome = '10/29/2000 7:30:00 AM', " +
+                    "lastwhisper = 'Unknown' " +
                     "WHERE steamid = '{6}'", _newSession, _player.KilledPlayers, _player.KilledZombies, _player.Score, _deaths, _name, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }

@@ -64,7 +64,8 @@ namespace ServerTools
                 "newTeleSpawn TEXT DEFAULT 'Unknown', " +
                 "homeposition TEXT DEFAULT 'Unknown', " +
                 "homeposition2 TEXT DEFAULT 'Unknown', " +
-                "lastsethome TEXT DEFAULT '10/29/2000 7:30:00 AM' " +
+                "lastsethome TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
+                "lastwhisper TEXT DEFAULT 'Unknown', " +
                 ");");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER);");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");
