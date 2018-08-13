@@ -233,7 +233,7 @@ namespace ServerTools
                     }
                     string _mposition = x + "," + y + "," + z;
                     MarketPlayers.Add(_cInfo.entityId);
-                    string _sql = string.Format("UPDATE Players SET marketReturn = {0} WHERE steamid = '{1}'", _mposition, _cInfo.playerId);
+                    string _sql = string.Format("UPDATE Players SET marketReturn = '{0}' WHERE steamid = '{1}'", _mposition, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                     string _phrase561;
                     if (!Phrases.Dict.TryGetValue(561, out _phrase561))

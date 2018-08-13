@@ -498,7 +498,7 @@ namespace ServerTools
                 DataTable _result = SQL.TQuery(_sql);
                 int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
                 _result.Dispose();
-                _sql = string.Format("UPDATE Players SET playerSpentCoins = '{0}' WHERE steamid = '{1}'", _playerSpentCoins - _price, _cInfo.playerId);
+                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _price, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }
             else

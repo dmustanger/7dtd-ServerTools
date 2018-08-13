@@ -61,7 +61,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    _sql = string.Format("UPDATE Players SET playername = '{0}, last_joined = '{1}' WHERE steamid = '{2}'", _name, DateTime.Now, _cInfo.playerId);
+                    _sql = string.Format("UPDATE Players SET playername = '{0}', last_joined = '{1}' WHERE steamid = '{2}'", _name, DateTime.Now, _cInfo.playerId);
                 }
                 if (StopServer.NoEntry)
                 {
