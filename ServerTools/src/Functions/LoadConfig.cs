@@ -126,7 +126,7 @@ namespace ServerTools
                                 MySqlDatabase.Database = _line.GetAttribute("DatabaseName");
                                 MySqlDatabase.UserName = _line.GetAttribute("UserName");
                                 MySqlDatabase.Password = _line.GetAttribute("Password");
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out SQL.IsMySql))
+                                if (!bool.TryParse(_line.GetAttribute("EnableMySql"), out SQL.IsMySql))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring DataBase entry because of invalid (true/false) value for 'EnableMySql' attribute: {0}", subChild.OuterXml));
                                     continue;
