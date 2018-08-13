@@ -14,8 +14,10 @@ namespace ServerTools
             DataTable _result = SQL.TQuery(_sql);
             foreach (DataRow row in _result.Rows)
             {
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out int _bank);
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out int _wallet);
+                int _bank;
+                int _wallet;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _wallet);
                 int _total = 0;
                 if (Wallet.IsEnabled && Bank.IsEnabled)
                 {
