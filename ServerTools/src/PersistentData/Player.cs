@@ -39,8 +39,8 @@ namespace ServerTools
         //private string newTeleSpawn;
         //private string jailName;
         //private string muteName;
-        private string homeposition;
-        private string homeposition2;
+        //private string homeposition;
+        //private string homeposition2;
         private string clanname;
         private string invitedtoclan;
         private string lastwhisper;
@@ -74,7 +74,7 @@ namespace ServerTools
         private DateTime lastVoteReward;
         //private DateTime lastgimme;
         //private DateTime lastkillme;
-        private DateTime lastsethome;
+        //private DateTime lastsethome;
         private bool firstClaim;
         private bool isclanowner;
         private bool isclanofficer;
@@ -660,17 +660,17 @@ namespace ServerTools
             }
         }
 
-        public DateTime LastSetHome
-        {
-            get
-            {
-                return lastsethome;
-            }
-            set
-            {
-                lastsethome = value;
-            }
-        }
+        //public DateTime LastSetHome
+        //{
+            //get
+            //{
+                //return lastsethome;
+            //}
+            //set
+            //{
+                //lastsethome = value;
+            //}
+        //}
 
         public DateTime LastVoteReward
         {
@@ -828,29 +828,29 @@ namespace ServerTools
             //}
         //}
 
-        public string HomePosition
-        {
-            get
-            {
-                return homeposition;
-            }
-            set
-            {
-                homeposition = value;
-            }
-        }
+        //public string HomePosition
+        //{
+            //get
+            //{
+                //return homeposition;
+            //}
+            //set
+            //{
+                //homeposition = value;
+            //}
+        //}
 
-        public string HomePosition2
-        {
-            get
-            {
-                return homeposition2;
-            }
-            set
-            {
-                homeposition2 = value;
-            }
-        }
+        //public string HomePosition2
+        //{
+            //get
+            //{
+                //return homeposition2;
+            //}
+            //set
+            //{
+                //homeposition2 = value;
+            //}
+        //}
 
         public string ClanName
         {

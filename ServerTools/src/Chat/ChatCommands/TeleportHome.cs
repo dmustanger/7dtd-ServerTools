@@ -33,8 +33,8 @@ namespace ServerTools
                     if (_cInfo.entityId == _id)
                     {
                         string _sposition = x + "," + y + "," + z;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition = _sposition;
-                        PersistentContainer.Instance.Save();
+                        string _sql = string.Format("UPDATE Players SET homeposition = '{0}' WHERE steamid = '{1}'", _sposition, _cInfo.playerId);
+                        SQL.FastQuery(_sql);
                         string _phrase10;
                         if (!Phrases.Dict.TryGetValue(10, out _phrase10))
                         {
@@ -175,8 +175,13 @@ namespace ServerTools
         {
             if (!Event.Players.Contains(_cInfo.entityId))
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null || p.HomePosition == null)
+                string _sql = string.Format("SELECT homeposition, lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                string lasthome = _result.Rows[0].ItemArray.GetValue(1).ToString();
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out DateTime _lastsethome);
+                string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                _result.Dispose();
+                if (_pos == "Unknown")
                 {
                     string _phrase11;
                     if (!Phrases.Dict.TryGetValue(11, out _phrase11))
@@ -200,29 +205,29 @@ namespace ServerTools
                     {
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
-                            CommandCost(_cInfo, p.HomePosition, _announce);
+                            CommandCost(_cInfo, _pos, _announce);
                         }
                         else
                         {
-                            Home(_cInfo, p.HomePosition, _announce);
+                            Home(_cInfo, _pos, _announce);
                         }
                     }
                     else
                     {
-                        if (p.LastSetHome == null)
+                        if (lasthome == "Unknown")
                         {
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
-                                CommandCost(_cInfo, p.HomePosition, _announce);
+                                CommandCost(_cInfo, _pos, _announce);
                             }
                             else
                             {
-                                Home(_cInfo, p.HomePosition, _announce);
+                                Home(_cInfo, _pos, _announce);
                             }
                         }
                         else
                         {
-                            TimeSpan varTime = DateTime.Now - p.LastSetHome;
+                            TimeSpan varTime = DateTime.Now - _lastsethome;
                             double fractionalMinutes = varTime.TotalMinutes;
                             int _timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -239,11 +244,11 @@ namespace ServerTools
                                         {
                                             if (Wallet.IsEnabled && Command_Cost >= 1)
                                             {
-                                                CommandCost(_cInfo, p.HomePosition, _announce);
+                                                CommandCost(_cInfo, _pos, _announce);
                                             }
                                             else
                                             {
-                                                Home(_cInfo, p.HomePosition, _announce);
+                                                Home(_cInfo, _pos, _announce);
                                             }
                                         }
                                         else
@@ -275,11 +280,11 @@ namespace ServerTools
                                 {
                                     if (Wallet.IsEnabled && Command_Cost >= 1)
                                     {
-                                        CommandCost(_cInfo, p.HomePosition, _announce);
+                                        CommandCost(_cInfo, _pos, _announce);
                                     }
                                     else
                                     {
-                                        Home(_cInfo, p.HomePosition, _announce);
+                                        Home(_cInfo, _pos, _announce);
                                     }
                                 }
                                 else
@@ -416,23 +421,27 @@ namespace ServerTools
             }
             Players.NoFlight.Add(_cInfo.entityId);
             TeleportDelay.TeleportQue(_cInfo, x, y, z);
+            string _sql;
             if (Wallet.IsEnabled && Command_Cost >= 1)
             {
-                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
                 int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
                 _result.Dispose();
                 _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastSetHome = DateTime.Now;
-            PersistentContainer.Instance.Save();
+            _sql = string.Format("UPDATE Players SET lastsethome = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+            SQL.FastQuery(_sql);
         }
 
         public static void DelHome(ClientInfo _cInfo, string _playerName, bool _announce)
         {
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p.HomePosition != null)
+            string _sql = string.Format("SELECT homeposition FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
+            _result.Dispose();
+            if (_pos != "Unknown")
             {
                 if (_announce)
                 {
@@ -442,8 +451,8 @@ namespace ServerTools
                 {
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} deleted home.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
                 }
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition = null;
-                PersistentContainer.Instance.Save();
+                _sql = string.Format("UPDATE Players SET homeposition = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
+                SQL.FastQuery(_sql);
             }
             else
             {
@@ -476,8 +485,8 @@ namespace ServerTools
                     if (_cInfo.entityId == _id)
                     {
                         string _sposition = x + "," + y + "," + z;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition2 = _sposition;
-                        PersistentContainer.Instance.Save();
+                        string _sql = string.Format("UPDATE Players SET homeposition2 = '{0}' WHERE steamid = '{1}'", _sposition, _cInfo.playerId);
+                        SQL.FastQuery(_sql);
                         string _phrase607;
                         if (!Phrases.Dict.TryGetValue(607, out _phrase607))
                         {
@@ -618,8 +627,17 @@ namespace ServerTools
         {
             if (!Event.Players.Contains(_cInfo.entityId))
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null || p.HomePosition2 == null)
+                string _sql = string.Format("SELECT homeposition2, lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                string lasthome = _result.Rows[0].ItemArray.GetValue(1).ToString();
+                DateTime _lastsethome = DateTime.Now;
+                if (lasthome != "Unknown")
+                {
+                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastsethome);
+                }
+                string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                _result.Dispose();
+                if (_pos == "Unknown")
                 {
                     string _phrase11;
                     if (!Phrases.Dict.TryGetValue(11, out _phrase11))
@@ -643,29 +661,29 @@ namespace ServerTools
                     {
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
-                            CommandCost2(_cInfo, p.HomePosition2, _announce);
+                            CommandCost2(_cInfo, _pos, _announce);
                         }
                         else
                         {
-                            Home2(_cInfo, p.HomePosition2, _announce);
+                            Home2(_cInfo, _pos, _announce);
                         }
                     }
                     else
                     {
-                        if (p.LastSetHome == null)
+                        if (lasthome == "Unknown")
                         {
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
-                                CommandCost2(_cInfo, p.HomePosition2, _announce);
+                                CommandCost2(_cInfo, _pos, _announce);
                             }
                             else
                             {
-                                Home2(_cInfo, p.HomePosition2, _announce);
+                                Home2(_cInfo, _pos, _announce);
                             }
                         }
                         else
                         {
-                            TimeSpan varTime = DateTime.Now - p.LastSetHome;
+                            TimeSpan varTime = DateTime.Now - _lastsethome;
                             double fractionalMinutes = varTime.TotalMinutes;
                             int _timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -682,11 +700,11 @@ namespace ServerTools
                                         {
                                             if (Wallet.IsEnabled && Command_Cost >= 1)
                                             {
-                                                CommandCost2(_cInfo, p.HomePosition2, _announce);
+                                                CommandCost2(_cInfo, _pos, _announce);
                                             }
                                             else
                                             {
-                                                Home2(_cInfo, p.HomePosition2, _announce);
+                                                Home2(_cInfo, _pos, _announce);
                                             }
                                         }
                                         else
@@ -718,11 +736,11 @@ namespace ServerTools
                                 {
                                     if (Wallet.IsEnabled && Command_Cost >= 1)
                                     {
-                                        CommandCost2(_cInfo, p.HomePosition2, _announce);
+                                        CommandCost2(_cInfo, _pos, _announce);
                                     }
                                     else
                                     {
-                                        Home2(_cInfo, p.HomePosition2, _announce);
+                                        Home2(_cInfo, _pos, _announce);
                                     }
                                 }
                                 else
@@ -863,16 +881,17 @@ namespace ServerTools
             DataTable _result = SQL.TQuery(_sql);
             int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
             _result.Dispose();
-            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
+            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, lastsethome = '{1}' WHERE steamid = '{2}'", _playerSpentCoins - Command_Cost, DateTime.Now, _cInfo.playerId);
             SQL.FastQuery(_sql);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastSetHome = DateTime.Now;
-            PersistentContainer.Instance.Save();
         }
 
         public static void DelHome2(ClientInfo _cInfo, string _playerName, bool _announce)
         {
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p.HomePosition2 != null)
+            string _sql = string.Format("SELECT homeposition2 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
+            _result.Dispose();
+            if (_pos != "Unknown")
             {
                 if (_announce)
                 {
@@ -894,8 +913,8 @@ namespace ServerTools
                     _phrase609 = _phrase609.Replace("{PlayerName}", _cInfo.playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase609), Config.Server_Response_Name, false, "ServerTools", false));
                 }
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].HomePosition2 = null;
-                PersistentContainer.Instance.Save();
+                _sql = string.Format("UPDATE Players SET homeposition2 = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
+                SQL.FastQuery(_sql);
             }
             else
             {
@@ -928,8 +947,17 @@ namespace ServerTools
             {
                 World world = GameManager.Instance.World;
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null || p.HomePosition == null)
+                string _sql = string.Format("SELECT homeposition, lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                string lasthome = _result.Rows[0].ItemArray.GetValue(1).ToString();
+                DateTime _lastsethome = DateTime.Now;
+                if (lasthome != "Unknown")
+                {
+                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastsethome);
+                }  
+                _result.Dispose();
+                if (_pos == "Unknown")
                 {
                     string _phrase11;
                     if (!Phrases.Dict.TryGetValue(11, out _phrase11))
@@ -953,29 +981,29 @@ namespace ServerTools
                     {
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
-                            FCommandCost(_cInfo, p.HomePosition, _announce);
+                            FCommandCost(_cInfo, _pos, _announce);
                         }
                         else
                         {
-                            FHome(_cInfo, p.HomePosition, _announce, _player);
+                            FHome(_cInfo, _pos, _announce, _player);
                         }
                     }
                     else
                     {
-                        if (p.LastSetHome == null)
+                        if (lasthome == "Unknown")
                         {
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
-                                FCommandCost(_cInfo, p.HomePosition, _announce);
+                                FCommandCost(_cInfo, _pos, _announce);
                             }
                             else
                             {
-                                FHome(_cInfo, p.HomePosition, _announce, _player);
+                                FHome(_cInfo, _pos, _announce, _player);
                             }
                         }
                         else
                         {
-                            TimeSpan varTime = DateTime.Now - p.LastSetHome;
+                            TimeSpan varTime = DateTime.Now - _lastsethome;
                             double fractionalMinutes = varTime.TotalMinutes;
                             int _timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -992,11 +1020,11 @@ namespace ServerTools
                                         {
                                             if (Wallet.IsEnabled && Command_Cost >= 1)
                                             {
-                                                FCommandCost(_cInfo, p.HomePosition, _announce);
+                                                FCommandCost(_cInfo, _pos, _announce);
                                             }
                                             else
                                             {
-                                                FHome(_cInfo, p.HomePosition, _announce, _player);
+                                                FHome(_cInfo, _pos, _announce, _player);
                                             }
                                         }
                                         else
@@ -1028,11 +1056,11 @@ namespace ServerTools
                                 {
                                     if (Wallet.IsEnabled && Command_Cost >= 1)
                                     {
-                                        FCommandCost(_cInfo, p.HomePosition, _announce);
+                                        FCommandCost(_cInfo, _pos, _announce);
                                     }
                                     else
                                     {
-                                        FHome(_cInfo, p.HomePosition, _announce, _player);
+                                        FHome(_cInfo, _pos, _announce, _player);
                                     }
                                 }
                                 else
@@ -1173,10 +1201,8 @@ namespace ServerTools
             DataTable _result = SQL.TQuery(_sql);
             int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
             _result.Dispose();
-            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
+            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, lastsethome = '{1}' WHERE steamid = '{2}'", _playerSpentCoins - Command_Cost, DateTime.Now, _cInfo.playerId);
             SQL.FastQuery(_sql);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastSetHome = DateTime.Now;
-            PersistentContainer.Instance.Save();
             string _phrase818;
             if (!Phrases.Dict.TryGetValue(818, out _phrase818))
             {
@@ -1193,8 +1219,17 @@ namespace ServerTools
             {
                 World world = GameManager.Instance.World;
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null || p.HomePosition2 == null)
+                string _sql = string.Format("SELECT homeposition2, lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                string lasthome = _result.Rows[0].ItemArray.GetValue(1).ToString();
+                DateTime _lastsethome = DateTime.Now;
+                if (lasthome != "Unknown")
+                {
+                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastsethome);
+                }
+                _result.Dispose();
+                if (_pos == "Unknown")
                 {
                     string _phrase608;
                     if (!Phrases.Dict.TryGetValue(608, out _phrase608))
@@ -1218,29 +1253,29 @@ namespace ServerTools
                     {
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
-                            FCommandCost2(_cInfo, p.HomePosition2, _announce);
+                            FCommandCost2(_cInfo, _pos, _announce);
                         }
                         else
                         {
-                            FHome2(_cInfo, p.HomePosition2, _announce, _player);
+                            FHome2(_cInfo, _pos, _announce, _player);
                         }
                     }
                     else
                     {
-                        if (p.LastSetHome == null)
+                        if (lasthome == "Unknown")
                         {
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
-                                FCommandCost2(_cInfo, p.HomePosition2, _announce);
+                                FCommandCost2(_cInfo, _pos, _announce);
                             }
                             else
                             {
-                                FHome2(_cInfo, p.HomePosition2, _announce, _player);
+                                FHome2(_cInfo, _pos, _announce, _player);
                             }
                         }
                         else
                         {
-                            TimeSpan varTime = DateTime.Now - p.LastSetHome;
+                            TimeSpan varTime = DateTime.Now - _lastsethome;
                             double fractionalMinutes = varTime.TotalMinutes;
                             int _timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -1257,11 +1292,11 @@ namespace ServerTools
                                         {
                                             if (Wallet.IsEnabled && Command_Cost >= 1)
                                             {
-                                                FCommandCost2(_cInfo, p.HomePosition2, _announce);
+                                                FCommandCost2(_cInfo, _pos, _announce);
                                             }
                                             else
                                             {
-                                                FHome2(_cInfo, p.HomePosition2, _announce, _player);
+                                                FHome2(_cInfo, _pos, _announce, _player);
                                             }
                                         }
                                         else
@@ -1293,11 +1328,11 @@ namespace ServerTools
                                 {
                                     if (Wallet.IsEnabled && Command_Cost >= 1)
                                     {
-                                        FCommandCost2(_cInfo, p.HomePosition2, _announce);
+                                        FCommandCost2(_cInfo, _pos, _announce);
                                     }
                                     else
                                     {
-                                        FHome2(_cInfo, p.HomePosition2, _announce, _player);
+                                        FHome2(_cInfo, _pos, _announce, _player);
                                     }
                                 }
                                 else
@@ -1438,10 +1473,8 @@ namespace ServerTools
             DataTable _result = SQL.TQuery(_sql);
             int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
             _result.Dispose();
-            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
+            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, lastsethome = '{1}' WHERE steamid = '{2}'", _playerSpentCoins - Command_Cost, DateTime.Now, _cInfo.playerId);
             SQL.FastQuery(_sql);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastSetHome = DateTime.Now;
-            PersistentContainer.Instance.Save();
             string _phrase818;
             if (!Phrases.Dict.TryGetValue(818, out _phrase818))
             {
@@ -1528,15 +1561,17 @@ namespace ServerTools
                 int y = (int)_position.y;
                 int z = (int)_position.z;
                 string _sposition = x + "," + y + "," + z;
+                string _sql;
                 if (_idAndHome[1] == 1)
                 {
-                    PersistentContainer.Instance.Players[_cInfo2.playerId, true].HomePosition = _sposition;
+                    _sql = string.Format("UPDATE Players SET homeposition = '{0}' WHERE steamid = '{1}'", _sposition, _cInfo2.playerId);
+                    SQL.FastQuery(_sql);
                 }
                 else
                 {
-                    PersistentContainer.Instance.Players[_cInfo2.playerId, true].HomePosition2 = _sposition;
+                    _sql = string.Format("UPDATE Players SET homeposition2 = '{0}' WHERE steamid = '{1}'", _sposition, _cInfo2.playerId);
+                    SQL.FastQuery(_sql);
                 }
-                PersistentContainer.Instance.Save();
                 string _phrase10;
                 if (!Phrases.Dict.TryGetValue(10, out _phrase10))
                 {

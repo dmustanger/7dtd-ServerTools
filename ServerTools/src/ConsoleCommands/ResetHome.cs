@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ServerTools
 {
@@ -44,11 +45,14 @@ namespace ServerTools
                         return;
                     }
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                    if (p.LastSetHome != null)
+                    string _sql = string.Format("SELECT lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    DataTable _result = SQL.TQuery(_sql);
+                    string _lastsethome = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                    _result.Dispose();
+                    if (_lastsethome != "Unknown")
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].LastSetHome = DateTime.Now.AddDays(-2);
-                        PersistentContainer.Instance.Save();
+                        _sql = string.Format("UPDATE Players SET lastsethome = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
+                        SQL.FastQuery(_sql);
                         SdtdConsole.Instance.Output("Players chat command /home and /home2 delay reset.");
                     }
                     else
