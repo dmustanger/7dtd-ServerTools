@@ -138,7 +138,10 @@ namespace ServerTools
                                 string _muteId = MutePlayer.Mutes[i];
                                 string _sql = string.Format("SELECT muteTime, muteName, muteDate FROM Players WHERE steamid = '{0}'", _muteId);
                                 DataTable _result = SQL.TQuery(_sql);
-                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _muteTime);
+                                int _muteTime;
+                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _muteTime);
+                                DateTime _muteDate;
+                                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _muteDate);
                                 if (_muteTime == -1)
                                 {
                                     SdtdConsole.Instance.Output(string.Format("Steam id {0}, player name {1} is muted indefinitely", _id, _result.Rows[0].ItemArray.GetValue(1).ToString()));
@@ -146,7 +149,6 @@ namespace ServerTools
                                 }
                                 if (_muteTime > 0)
                                 {
-                                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out DateTime _muteDate);
                                     TimeSpan varTime = DateTime.Now - _muteDate;
                                     double fractionalMinutes = varTime.TotalMinutes;
                                     int _timepassed = (int)fractionalMinutes;

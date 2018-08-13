@@ -177,8 +177,8 @@ namespace ServerTools
             {
                 string _sql = string.Format("SELECT homeposition, lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
-                string lasthome = _result.Rows[0].ItemArray.GetValue(1).ToString();
-                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out DateTime _lastsethome);
+                DateTime _lastsethome;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _lastsethome);
                 string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
                 _result.Dispose();
                 if (_pos == "Unknown")
@@ -214,7 +214,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        if (lasthome == "Unknown")
+                        if (_lastsethome.ToString() == "10/29/2000 7:30:00 AM")
                         {
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
@@ -324,7 +324,8 @@ namespace ServerTools
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            int _playerSpentCoins;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
             _result.Dispose();
             int currentCoins = 0;
             int gameMode = world.GetGameMode();
@@ -426,7 +427,8 @@ namespace ServerTools
             {
                 _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+                int _playerSpentCoins;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
                 _result.Dispose();
                 _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
                 SQL.FastQuery(_sql);
@@ -629,13 +631,9 @@ namespace ServerTools
             {
                 string _sql = string.Format("SELECT homeposition2, lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
-                string lasthome = _result.Rows[0].ItemArray.GetValue(1).ToString();
-                DateTime _lastsethome = DateTime.Now;
-                if (lasthome != "Unknown")
-                {
-                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastsethome);
-                }
                 string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                DateTime _lastsethome;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _lastsethome);
                 _result.Dispose();
                 if (_pos == "Unknown")
                 {
@@ -670,7 +668,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        if (lasthome == "Unknown")
+                        if (_lastsethome.ToString() == "10/29/2000 7:30:00 AM")
                         {
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
@@ -780,7 +778,8 @@ namespace ServerTools
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            int _playerSpentCoins;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
             _result.Dispose();
             int currentCoins = 0;
             int gameMode = world.GetGameMode();
@@ -879,7 +878,8 @@ namespace ServerTools
             TeleportDelay.TeleportQue(_cInfo, x, y, z);
             string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            int _playerSpentCoins;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
             _result.Dispose();
             _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, lastsethome = '{1}' WHERE steamid = '{2}'", _playerSpentCoins - Command_Cost, DateTime.Now, _cInfo.playerId);
             SQL.FastQuery(_sql);
@@ -950,12 +950,8 @@ namespace ServerTools
                 string _sql = string.Format("SELECT homeposition, lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
                 string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
-                string lasthome = _result.Rows[0].ItemArray.GetValue(1).ToString();
-                DateTime _lastsethome = DateTime.Now;
-                if (lasthome != "Unknown")
-                {
-                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastsethome);
-                }  
+                DateTime _lastsethome;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _lastsethome);
                 _result.Dispose();
                 if (_pos == "Unknown")
                 {
@@ -990,7 +986,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        if (lasthome == "Unknown")
+                        if (_lastsethome.ToString() == "10/29/2000 7:30:00 AM")
                         {
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
@@ -1100,7 +1096,8 @@ namespace ServerTools
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            int _playerSpentCoins;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
             _result.Dispose();
             int currentCoins = 0;
             int gameMode = world.GetGameMode();
@@ -1199,7 +1196,8 @@ namespace ServerTools
             TeleportDelay.TeleportQue(_cInfo, x, y, z);
             string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            int _playerSpentCoins;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
             _result.Dispose();
             _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, lastsethome = '{1}' WHERE steamid = '{2}'", _playerSpentCoins - Command_Cost, DateTime.Now, _cInfo.playerId);
             SQL.FastQuery(_sql);
@@ -1222,12 +1220,8 @@ namespace ServerTools
                 string _sql = string.Format("SELECT homeposition2, lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
                 string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
-                string lasthome = _result.Rows[0].ItemArray.GetValue(1).ToString();
-                DateTime _lastsethome = DateTime.Now;
-                if (lasthome != "Unknown")
-                {
-                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastsethome);
-                }
+                DateTime _lastsethome;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _lastsethome);
                 _result.Dispose();
                 if (_pos == "Unknown")
                 {
@@ -1262,7 +1256,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        if (lasthome == "Unknown")
+                        if (_lastsethome.ToString() == "10/29/2000 7:30:00 AM")
                         {
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
@@ -1372,7 +1366,8 @@ namespace ServerTools
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            int _playerSpentCoins;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
             _result.Dispose();
             int currentCoins = 0;
             int gameMode = world.GetGameMode();
@@ -1471,7 +1466,8 @@ namespace ServerTools
             TeleportDelay.TeleportQue(_cInfo, x, y, z);
             string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
+            int _playerSpentCoins;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
             _result.Dispose();
             _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, lastsethome = '{1}' WHERE steamid = '{2}'", _playerSpentCoins - Command_Cost, DateTime.Now, _cInfo.playerId);
             SQL.FastQuery(_sql);
@@ -1565,13 +1561,12 @@ namespace ServerTools
                 if (_idAndHome[1] == 1)
                 {
                     _sql = string.Format("UPDATE Players SET homeposition = '{0}' WHERE steamid = '{1}'", _sposition, _cInfo2.playerId);
-                    SQL.FastQuery(_sql);
                 }
                 else
                 {
                     _sql = string.Format("UPDATE Players SET homeposition2 = '{0}' WHERE steamid = '{1}'", _sposition, _cInfo2.playerId);
-                    SQL.FastQuery(_sql);
                 }
+                SQL.FastQuery(_sql);
                 string _phrase10;
                 if (!Phrases.Dict.TryGetValue(10, out _phrase10))
                 {

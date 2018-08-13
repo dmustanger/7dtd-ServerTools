@@ -17,9 +17,10 @@ namespace ServerTools
                 int _timepassed = (int)fractionalMinutes;
                 string _sql = string.Format("SELECT sessionTime FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int sessionTime);
+                int _sessionTime;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _sessionTime);
                 _result.Dispose();
-                int _sessionTime = sessionTime + _timepassed;
+                _sessionTime = _sessionTime + _timepassed;
                 string _phrase570;
                 if (!Phrases.Dict.TryGetValue(570, out _phrase570))
                 {

@@ -21,7 +21,8 @@ namespace ServerTools
             {
                 string _sql = string.Format("SELECT lastkillme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
-                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out DateTime _lastkillme);
+                DateTime _lastkillme;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastkillme);
                 _result.Dispose();
                 TimeSpan varTime = DateTime.Now - _lastkillme;
                 double fractionalMinutes = varTime.TotalMinutes;
@@ -155,7 +156,7 @@ namespace ServerTools
                 }
             }
             _player.DamageEntity(new DamageSource(EnumDamageSourceType.Bullet), 99999, false, 1f);
-            string _sql = string.Format("UPDATE Players SET lastkillme = '{0}' WHERE steamid = '{1}'", DateTime.Now.ToString(), _cInfo.playerId);
+            string _sql = string.Format("UPDATE Players SET lastkillme = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
             SQL.FastQuery(_sql);
         }
     }

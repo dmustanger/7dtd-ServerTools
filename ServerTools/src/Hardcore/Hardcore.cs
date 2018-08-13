@@ -126,7 +126,7 @@ namespace ServerTools
                     "newTeleSpawn = 'Unknown', " +
                     "homeposition = 'Unknown', " +
                     "homeposition2 = 'Unknown', " +
-                    "lastsethome = 'Unknown' " +
+                    "lastsethome = '10/29/2000 7:30:00 AM' " +
                     "WHERE steamid = '{6}'", _newSession, _player.KilledPlayers, _player.KilledZombies, _player.Score, _deaths, _name, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }

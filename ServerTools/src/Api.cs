@@ -57,12 +57,13 @@ namespace ServerTools
                 if (_result.Rows.Count == 0)
                 {
                     _sql = string.Format("INSERT INTO Players (steamid, playername, last_joined) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _name, DateTime.Now);
-                    SQL.FastQuery(_sql);
                 }
                 else
                 {
                     _sql = string.Format("UPDATE Players SET playername = '{0}', last_joined = '{1}' WHERE steamid = '{2}'", _name, DateTime.Now, _cInfo.playerId);
                 }
+                _result.Dispose();
+                SQL.FastQuery(_sql);
                 if (StopServer.NoEntry)
                 {
                     int _seconds = (60 - Timers._sSCD);
@@ -201,8 +202,9 @@ namespace ServerTools
                     }
                     string _sql = string.Format("SELECT eventReturn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                     DataTable _result1 = SQL.TQuery(_sql);
+                    string _eventReturn = _result1.Rows[0].ItemArray.GetValue(0).ToString();
                     _result1.Dispose();
-                    if (_result1.Rows[0].ItemArray.GetValue(0).ToString() != "Unknown")
+                    if (_eventReturn != "Unknown")
                     {
                         Event.OfflineReturn(_cInfo);
                     }
@@ -215,17 +217,18 @@ namespace ServerTools
                             World world = GameManager.Instance.World;
                             _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                             DataTable _result = SQL.TQuery(_sql);
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int spentCoins);
+                            int _spentCoins;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _spentCoins);
                             _result.Dispose();
                             int currentCoins = 0;
                             int gameMode = world.GetGameMode();
                             if (gameMode == 7)
                             {
-                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
+                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _spentCoins;
                             }
                             else
                             {
-                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
+                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _spentCoins;
                             }
                             _sql = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
                             SQL.FastQuery(_sql);
@@ -261,17 +264,18 @@ namespace ServerTools
                             World world = GameManager.Instance.World;
                             _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                             DataTable _result = SQL.TQuery(_sql);
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int spentCoins);
+                            int _spentCoins;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _spentCoins);
                             _result.Dispose();
                             int currentCoins = 0;
                             int gameMode = world.GetGameMode();
                             if (gameMode == 7)
                             {
-                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
+                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _spentCoins;
                             }
                             else
                             {
-                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
+                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _spentCoins;
                             }
                             _sql = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
                             SQL.FastQuery(_sql);
@@ -325,17 +329,18 @@ namespace ServerTools
                                 World world = GameManager.Instance.World;
                                 _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                                 DataTable _result = SQL.TQuery(_sql);
-                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int spentCoins);
+                                int _spentCoins;
+                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _spentCoins);
                                 _result.Dispose();
                                 int currentCoins = 0;
                                 int gameMode = world.GetGameMode();
                                 if (gameMode == 7)
                                 {
-                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
+                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _spentCoins;
                                 }
                                 else
                                 {
-                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + spentCoins;
+                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _spentCoins;
                                 }
                                 _sql = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
                                 SQL.FastQuery(_sql);
@@ -406,14 +411,16 @@ namespace ServerTools
                                 int _hours = _timepassed / 60 * 10;
                                 string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                                 DataTable _result = SQL.TQuery(_sql);
-                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _oldCoin);
+                                int _oldCoin;
+                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _oldCoin);
                                 _result.Dispose();
                                 _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _oldCoin + _hours, _cInfo.playerId);
                                 SQL.FastQuery(_sql);
                             }
                             string _sql1 = string.Format("SELECT sessionTime FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                             DataTable _result1 = SQL.TQuery(_sql1);
-                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out int _sessionTime);
+                            int _sessionTime;
+                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _sessionTime);
                             _result1.Dispose();
                             _sql1 = string.Format("UPDATE Players SET sessionTime = {0} WHERE steamid = '{1}'", _sessionTime + _timepassed, _cInfo.playerId);
                             SQL.FastQuery(_sql1);

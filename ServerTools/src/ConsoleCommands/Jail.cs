@@ -203,8 +203,10 @@ namespace ServerTools
                             string _id = Jail.Jailed[i];
                             string _sql = string.Format("SELECT jailTime, jailName, jailDate FROM Players WHERE steamid = '{0}'", _id);
                             DataTable _result = SQL.TQuery(_sql);
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _jailTime);
-                            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out DateTime _jailDate);
+                            int _jailTime;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _jailTime);
+                            DateTime _jailDate;
+                            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _jailDate);
                             if (_jailTime > 0)
                             {
                                 TimeSpan varTime = DateTime.Now - _jailDate;

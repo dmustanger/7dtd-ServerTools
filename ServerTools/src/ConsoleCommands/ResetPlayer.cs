@@ -118,7 +118,7 @@ namespace ServerTools
                                 "newTeleSpawn = 'Unknown', " +
                                 "homeposition = 'Unknown', " +
                                 "homeposition2 = 'Unknown', " +
-                                "lastsethome = 'Unknown' " +
+                                "lastsethome = '10/29/2000 7:30:00 AM' " +
                                 "WHERE steamid = '{0}'", _cInfo.playerId);
                             SQL.FastQuery(_sql);
                         }
@@ -217,7 +217,7 @@ namespace ServerTools
                                     "newTeleSpawn = 'Unknown', " +
                                     "homeposition = 'Unknown', " +
                                     "homeposition2 = 'Unknown', " +
-                                    "lastsethome = 'Unknown' " +
+                                    "lastsethome = '10/29/2000 7:30:00 AM' " +
                                     "WHERE steamid = '{0}'", _value.ToString());
                                 SQL.FastQuery(_sql);
                             }

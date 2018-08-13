@@ -23,7 +23,8 @@ namespace ServerTools
         {
             string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank);
+            int _bank;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
             _result.Dispose();
             if (TransferId.ContainsKey(_cInfo.playerId))
             {
@@ -42,7 +43,8 @@ namespace ServerTools
             TransferId.Add(_cInfo.playerId, _rndId);
             string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank);
+            int _bank;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank account is worth {2}. Transfer Id is {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _bank, _rndId), Config.Server_Response_Name, false, "ServerTools", false));
             _result.Dispose();
         }
@@ -159,12 +161,13 @@ namespace ServerTools
                                                 {
                                                     string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                                                     DataTable _result = SQL.TQuery(_sql);
-                                                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _banktotal);
+                                                    int _bank;
+                                                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
                                                     _result.Dispose();
                                                     double _percent = _coinAmount * 0.05;
                                                     int _newCoin = _coinAmount - (int)_percent;
                                                     double _newLimit = Limit + (Limit * 0.05);
-                                                    if (_banktotal + _coinAmount <= (int)_newLimit)
+                                                    if (_bank + _coinAmount <= (int)_newLimit)
                                                     {
                                                         Found = true;
                                                         int _newCount = item.count - _coinAmount;
@@ -181,7 +184,7 @@ namespace ServerTools
                                                         }
                                                         ItemStack itemStack = new ItemStack(_itemValue, _newCount);
                                                         SecureLoot.UpdateSlot(slotNumber, itemStack);
-                                                        _sql = string.Format("UPDATE Players SET bank = {0} WHERE steamid = '{1}'", _banktotal + _newCoin, _cInfo.playerId);
+                                                        _sql = string.Format("UPDATE Players SET bank = {0} WHERE steamid = '{1}'", _bank + _newCoin, _cInfo.playerId);
                                                         SQL.FastQuery(_sql);
                                                         using (StreamWriter sw = new StreamWriter(filepath, true))
                                                         {
@@ -194,7 +197,7 @@ namespace ServerTools
                                                     }
                                                     else
                                                     {
-                                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank can not hold this much. The bank can hold {2} total. You currently have {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, Limit, _banktotal), Config.Server_Response_Name, false, "ServerTools", false));
+                                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank can not hold this much. The bank can hold {2} total. You currently have {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, Limit, _bank), Config.Server_Response_Name, false, "ServerTools", false));
                                                     }
                                                 }
                                                 else
@@ -231,7 +234,8 @@ namespace ServerTools
             {
                 string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank);
+                int _bank;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
                 _result.Dispose();
                 if (_bank >= _coinAmount)
                 {
@@ -300,8 +304,10 @@ namespace ServerTools
                 World world = GameManager.Instance.World;
                 string _sql = string.Format("SELECT bank, playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank);
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out int _playerSpentCoins);
+                int _bank;
+                int _playerSpentCoins;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _playerSpentCoins);
                 _result.Dispose();
                 int currentCoins = 0;
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
@@ -356,8 +362,10 @@ namespace ServerTools
             {
                 string _sql = string.Format("SELECT bank, playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank);
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out int _playerSpentCoins);
+                int _bank;
+                int _playerSpentCoins;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _playerSpentCoins);
                 _result.Dispose();
                 if (_bank >= _coinAmount)
                 {
@@ -399,7 +407,8 @@ namespace ServerTools
                         {
                             string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                             DataTable _result = SQL.TQuery(_sql);
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank);
+                            int _bank;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
                             _result.Dispose();
                             if (_bank >= _amount)
                             {
@@ -415,7 +424,8 @@ namespace ServerTools
                                             SQL.FastQuery(_sql);
                                             _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo1.playerId);
                                             DataTable _result1 = SQL.TQuery(_sql);
-                                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out int _bank1);
+                                            int _bank1;
+                                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _bank1);
                                             _result1.Dispose();
                                             _sql = string.Format("UPDATE Players SET bank = {0} WHERE steamid = '{1}'", _bank1 + _amount, _cInfo1.playerId);
                                             SQL.FastQuery(_sql);

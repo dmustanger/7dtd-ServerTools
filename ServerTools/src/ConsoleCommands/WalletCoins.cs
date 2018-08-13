@@ -57,8 +57,8 @@ namespace ServerTools
                         DataTable _result = SQL.TQuery(_sql);
                         if (_result.Rows.Count !=0)
                         {
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
-                            int _newCoins = _playerSpentCoins + _adjustCoins;
+                            int _playerSpentCoins;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
                             _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins + _adjustCoins, _steamid);
                             SQL.FastQuery(_sql);
                             if (_adjustCoins >= 0)
@@ -86,10 +86,14 @@ namespace ServerTools
                     {
                         int currentCoins;
                         World world = GameManager.Instance.World;
-                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out int _playerSpentCoins);
-                        int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out int _zkills);
-                        int.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out int _kills);
-                        int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out int _deaths);
+                        int _playerSpentCoins;
+                        int _zkills;
+                        int _kills;
+                        int _deaths;
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _zkills);
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _kills);
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _deaths);
                         int gameMode = world.GetGameMode();
                         if (gameMode == 7)
                         {

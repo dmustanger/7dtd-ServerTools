@@ -47,11 +47,12 @@ namespace ServerTools
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                     string _sql = string.Format("SELECT lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                     DataTable _result = SQL.TQuery(_sql);
-                    string _lastsethome = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                    DateTime _lastsethome;
+                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _lastsethome);
                     _result.Dispose();
-                    if (_lastsethome != "Unknown")
+                    if (_lastsethome.ToString() != "10/29/2000 7:30:00 AM")
                     {
-                        _sql = string.Format("UPDATE Players SET lastsethome = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
+                        _sql = string.Format("UPDATE Players SET lastsethome = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _cInfo.playerId);
                         SQL.FastQuery(_sql);
                         SdtdConsole.Instance.Output("Players chat command /home and /home2 delay reset.");
                     }
