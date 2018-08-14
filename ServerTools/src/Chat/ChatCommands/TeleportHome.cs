@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class TeleportHome
     {
-        public static bool IsEnabled = false, Set_Home2_Enabled = false, Set_Home2_Donor_Only = false;
+        public static bool IsEnabled = false, Set_Home2_Enabled = false, Set_Home2_Donor_Only = false, PvP_Check = false, Zombie_Check = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
         public static Dictionary<int, DateTime> Invite = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> FriendPosition = new Dictionary<int, string>();
@@ -19,132 +19,34 @@ namespace ServerTools
         {
             if (!Event.Players.Contains(_cInfo.entityId))
             {
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                World world = GameManager.Instance.World;
+                EntityPlayer _player = world.Players.dict[_cInfo.entityId];
                 Vector3 _position = _player.GetPosition();
                 int x = (int)_position.x;
                 int y = (int)_position.y;
                 int z = (int)_position.z;
-                Vector3i _vec3i = new Vector3i (_player.position.x, _player.position.y, _player.position.z);
+                Vector3i _vec3i = new Vector3i(x, y, z);
                 PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
-                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetLandProtectionBlockOwner(_vec3i);
-                if (_persistentPlayerData != null)
+                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_player.entityId);
+                EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
+                if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                 {
-                    int _id = _persistentPlayerData.EntityId;
-                    if (_cInfo.entityId == _id)
+                    string _sposition = x + "," + y + "," + z;
+                    string _sql = string.Format("UPDATE Players SET homeposition = '{0}' WHERE steamid = '{1}'", _sposition, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
+                    string _phrase10;
+                    if (!Phrases.Dict.TryGetValue(10, out _phrase10))
                     {
-                        string _sposition = x + "," + y + "," + z;
-                        string _sql = string.Format("UPDATE Players SET homeposition = '{0}' WHERE steamid = '{1}'", _sposition, _cInfo.playerId);
-                        SQL.FastQuery(_sql);
-                        string _phrase10;
-                        if (!Phrases.Dict.TryGetValue(10, out _phrase10))
-                        {
-                            _phrase10 = "{PlayerName} your home has been saved.";
-                        }
-                        _phrase10 = _phrase10.Replace("{PlayerName}", _cInfo.playerName);
-                        if (_announce)
-                        {
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase10), Config.Server_Response_Name, false, "ServerTools", true);
-                        }
-                        else
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase10), Config.Server_Response_Name, false, "ServerTools", false));
-                        }
+                        _phrase10 = "{PlayerName} your home has been saved.";
+                    }
+                    _phrase10 = _phrase10.Replace("{PlayerName}", _cInfo.playerName);
+                    if (_announce)
+                    {
+                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase10), Config.Server_Response_Name, false, "ServerTools", true);
                     }
                     else
                     {
-                        ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForEntityId(_id);
-                        if (_cInfo2 != null)
-                        {
-                            if (!FriendTeleport.Dict.ContainsKey(_cInfo2.entityId))
-                            {
-                                if (!HomeRequest.ContainsKey(_cInfo2.entityId))
-                                {
-                                    int[] _idAndHome = { _cInfo.entityId, 1 };
-                                    HomeRequest.Add(_cInfo2.entityId, _idAndHome);
-                                    HomeRequestTime.Add(_cInfo2.entityId, DateTime.Now);
-                                    HomeRequestPos.Add(_cInfo2.entityId, _position);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you need permission from the claim owner to set your home here. They have been sent a request.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                    _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, {2} is requesting to set their home in your claimed space located at {3} {4} {5}. Type /accept or /decline in the next 5 minutes.[-]", Config.Chat_Response_Color, _cInfo2.playerName, _cInfo.playerName, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                else
-                                {
-                                    DateTime _time;
-                                    HomeRequestTime.TryGetValue(_cInfo2.entityId, out _time);
-                                    TimeSpan varTime = DateTime.Now - _time;
-                                    double fractionalMinutes = varTime.TotalMinutes;
-                                    int _timepassed = (int)fractionalMinutes;
-                                    if (_timepassed <= 5)
-                                    {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the claim owner is handling a request already. Try again in a few minutes.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
-                                    else
-                                    {
-                                        if (HomeRequest.ContainsKey(_cInfo2.entityId))
-                                        {
-                                            HomeRequest.Remove(_cInfo2.entityId);
-                                            HomeRequestTime.Remove(_cInfo2.entityId);
-                                            HomeRequestPos.Remove(_cInfo2.entityId);
-                                        }
-                                        int[] _idAndHome = { _cInfo.entityId, 1 };
-                                        HomeRequest.Add(_cInfo2.entityId, _idAndHome);
-                                        HomeRequestTime.Add(_cInfo2.entityId, DateTime.Now);
-                                        HomeRequestPos.Add(_cInfo2.entityId, _position);
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you need permission from the claim owner to set your home here. They have been sent a request.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                        _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, {2} is requesting to set their home in your claimed space located at {3} {4} {5}. Type /accept or /decline in the next 5 minutes.[-]", Config.Chat_Response_Color, _cInfo2.playerName, _cInfo.playerName, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
-                                }
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you need permission from the claim owner to set your home here. They have been sent a request.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, {2} is requesting to set their home in your claimed space located at {3} {4} {5}. Type /accept or /decline in the next 5 minutes.[-]", Config.Chat_Response_Color, _cInfo2.playerName, _cInfo.playerName, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            else
-                            {
-                                int _dictValue;
-                                FriendTeleport.Dict.TryGetValue(_cInfo2.entityId, out _dictValue);
-                                DateTime _dict1Value;
-                                FriendTeleport.Dict1.TryGetValue(_cInfo2.entityId, out _dict1Value);
-                                TimeSpan varTime = DateTime.Now - _dict1Value;
-                                double fractionalSeconds = varTime.TotalSeconds;
-                                int _timepassed = (int)fractionalSeconds;
-                                if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                                {
-                                    if (ReservedSlots.Dict.ContainsKey(_cInfo2.playerId))
-                                    {
-                                        DateTime _dt;
-                                        ReservedSlots.Dict.TryGetValue(_cInfo2.playerId, out _dt);
-                                        if (DateTime.Now < _dt)
-                                        {
-                                            int _newTime = _timepassed / 2;
-                                            _timepassed = _newTime;
-                                        }
-                                    }
-                                }
-                                if (_timepassed <= 30)
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the claim owner is handling a request already. Try again in a few minutes.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                else
-                                {
-                                    FriendTeleport.Dict.Remove(_cInfo.entityId);
-                                    FriendTeleport.Dict1.Remove(_cInfo.entityId);
-                                    if (HomeRequest.ContainsKey(_cInfo2.entityId))
-                                    {
-                                        HomeRequest.Remove(_cInfo2.entityId);
-                                        HomeRequestTime.Remove(_cInfo2.entityId);
-                                        HomeRequestPos.Remove(_cInfo2.entityId);
-                                    }
-                                    int[] _idAndHome = { _cInfo.entityId, 1 };
-                                    HomeRequest.Add(_cInfo2.entityId, _idAndHome);
-                                    HomeRequestTime.Add(_cInfo2.entityId, DateTime.Now);
-                                    HomeRequestPos.Add(_cInfo2.entityId, _position);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you need permission from the claim owner to set your home here. They have been sent a request.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                    _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, {2} is requesting to set their home in your claimed space located at {3} {4} {5}. Type /accept or /decline in the next 5 minutes.[-]", Config.Chat_Response_Color, _cInfo2.playerName, _cInfo.playerName, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
-                        }
-                        else
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this claim owner is offline, you can not save your home here.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                        }
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase10), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
                 else
@@ -152,7 +54,7 @@ namespace ServerTools
                     string _phrase817;
                     if (!Phrases.Dict.TryGetValue(817, out _phrase817))
                     {
-                        _phrase817 = "{PlayerName} you are not inside your own or another player's claimed space. You can not save this as your home.";
+                        _phrase817 = "{PlayerName} you are not inside your own or a friend's claimed space. You can not save this as your home.";
                     }
                     _phrase817 = _phrase817.Replace("{PlayerName}", _cInfo.playerName);
                     if (_announce)
@@ -346,66 +248,22 @@ namespace ServerTools
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (TeleportDelay.PvP_Check)
+            if (PvP_Check)
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                for (int i = 0; i < _cInfoList.Count; i++)
+                if (Teleportation.PCheck(_cInfo, _player))
                 {
-                    ClientInfo _cInfo2 = _cInfoList[i];
-                    if (_cInfo2 != null)
-                    {
-                        EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
-                        if (_player2 != null)
-                        {
-                            Vector3 _pos2 = _player2.GetPosition();
-                            if ((x - (int)_pos2.x) * (x - (int)_pos2.x) + (z - (int)_pos2.z) * (z - (int)_pos2.z) <= 50 * 50)
-                            {
-                                if (!_player.IsFriendsWith(_player2))
-                                {
-                                    string _phrase819;
-                                    if (!Phrases.Dict.TryGetValue(819, out _phrase819))
-                                    {
-                                        _phrase819 = "{PlayerName} you are too close to a player that is not a friend. Command unavailable.";
-                                    }
-                                    _phrase819 = _phrase819.Replace("{PlayerName}", _cInfo.playerName);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase819), Config.Server_Response_Name, false, "ServerTools", false));
-                                    return;
-                                }
-                            }
-                        }
-                    }
+                    return;
                 }
             }
-            if (TeleportDelay.Zombie_Check)
+            if (Zombie_Check)
             {
-                World world = GameManager.Instance.World;
-                List<Entity> Entities = world.Entities.list;
-                for (int i = 0; i < Entities.Count; i++)
+                if (Teleportation.ZCheck(_cInfo, _player))
                 {
-                    Entity _entity = Entities[i];
-                    if (_entity != null)
-                    {
-                        EntityType _type = _entity.entityType;
-                        if (_type == EntityType.Zombie)
-                        {
-                            Vector3 _pos2 = _entity.GetPosition();
-                            if ((x - (int)_pos2.x) * (x - (int)_pos2.x) + (z - (int)_pos2.z) * (z - (int)_pos2.z) <= 20 * 20)
-                            {
-                                string _phrase820;
-                                if (!Phrases.Dict.TryGetValue(820, out _phrase820))
-                                {
-                                    _phrase820 = "{PlayerName} you are too close to a zombie. Command unavailable.";
-                                }
-                                _phrase820 = _phrase820.Replace("{PlayerName}", _cInfo.playerName);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase820), Config.Server_Response_Name, false, "ServerTools", false));
-                                return;
-                            }
-                        }
-                    }
+                    return;
                 }
             }
             Players.NoFlight.Add(_cInfo.entityId);
-            TeleportDelay.TeleportQue(_cInfo, x, y, z);
+            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
             string _sql;
             if (Wallet.IsEnabled && Command_Cost >= 1)
             {
@@ -457,140 +315,42 @@ namespace ServerTools
         {
             if (!Event.Players.Contains(_cInfo.entityId))
             {
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                World world = GameManager.Instance.World;
+                EntityPlayer _player = world.Players.dict[_cInfo.entityId];
                 Vector3 _position = _player.GetPosition();
                 int x = (int)_position.x;
                 int y = (int)_position.y;
                 int z = (int)_position.z;
-                Vector3i _vec3i = new Vector3i(_player.position.x, _player.position.y, _player.position.z);
+                Vector3i _vec3i = new Vector3i(x, y, z);
                 PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
-                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetLandProtectionBlockOwner(_vec3i);
-                if (_persistentPlayerData != null)
+                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_player.entityId);
+                EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
+                if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                 {
-                    int _id = _persistentPlayerData.EntityId;
-                    if (_cInfo.entityId == _id)
+                    string _sposition = x + "," + y + "," + z;
+                    string _sql = string.Format("UPDATE Players SET homeposition2 = '{0}' WHERE steamid = '{1}'", _sposition, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
+                    string _phrase607;
+                    if (!Phrases.Dict.TryGetValue(607, out _phrase607))
                     {
-                        string _sposition = x + "," + y + "," + z;
-                        string _sql = string.Format("UPDATE Players SET homeposition2 = '{0}' WHERE steamid = '{1}'", _sposition, _cInfo.playerId);
-                        SQL.FastQuery(_sql);
-                        string _phrase607;
-                        if (!Phrases.Dict.TryGetValue(607, out _phrase607))
-                        {
-                            _phrase607 = "{PlayerName} your home2 has been saved.";
-                        }
-                        _phrase607 = _phrase607.Replace("{PlayerName}", _cInfo.playerName);
-                        if (_announce)
-                        {
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase607), Config.Server_Response_Name, false, "ServerTools", true);
-                        }
-                        else
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase607), Config.Server_Response_Name, false, "ServerTools", false));
-                        }
+                        _phrase607 = "{PlayerName} your home2 has been saved.";
+                    }
+                    _phrase607 = _phrase607.Replace("{PlayerName}", _cInfo.playerName);
+                    if (_announce)
+                    {
+                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase607), Config.Server_Response_Name, false, "ServerTools", true);
                     }
                     else
                     {
-                        ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForEntityId(_id);
-                        if (_cInfo2 != null)
-                        {
-                            if (!FriendTeleport.Dict.ContainsKey(_cInfo2.entityId))
-                            {
-                                if (!HomeRequest.ContainsKey(_cInfo2.entityId))
-                                {
-                                    int[] _idAndHome = { _cInfo.entityId, 2 };
-                                    HomeRequest.Add(_cInfo2.entityId, _idAndHome);
-                                    HomeRequestTime.Add(_cInfo2.entityId, DateTime.Now);
-                                    HomeRequestPos.Add(_cInfo2.entityId, _position);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you need permission from the claim owner to set your home here. They have been sent a request.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                    _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, {2} is requesting to set their home in your claimed space located at {3} {4} {5}. Type /accept or /decline in the next 5 minutes.[-]", Config.Chat_Response_Color, _cInfo2.playerName, _cInfo.playerName, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                else
-                                {
-                                    DateTime _time;
-                                    HomeRequestTime.TryGetValue(_cInfo2.entityId, out _time);
-                                    TimeSpan varTime = DateTime.Now - _time;
-                                    double fractionalMinutes = varTime.TotalMinutes;
-                                    int _timepassed = (int)fractionalMinutes;
-                                    if (_timepassed <= 5)
-                                    {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the claim owner is handling a request already. Try again in a few minutes.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
-                                    else
-                                    {
-                                        if (HomeRequest.ContainsKey(_cInfo2.entityId))
-                                        {
-                                            HomeRequest.Remove(_cInfo2.entityId);
-                                            HomeRequestTime.Remove(_cInfo2.entityId);
-                                            HomeRequestPos.Remove(_cInfo2.entityId);
-                                        }
-                                        int[] _idAndHome = { _cInfo.entityId, 2 };
-                                        HomeRequest.Add(_cInfo2.entityId, _idAndHome);
-                                        HomeRequestTime.Add(_cInfo2.entityId, DateTime.Now);
-                                        HomeRequestPos.Add(_cInfo2.entityId, _position);
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you need permission from the claim owner to set your home here. They have been sent a request.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                        _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, {2} is requesting to set their home in your claimed space located at {3} {4} {5}. Type /accept or /decline in the next 5 minutes.[-]", Config.Chat_Response_Color, _cInfo2.playerName, _cInfo.playerName, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
-                                }
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you need permission from the claim owner to set your home here. They have been sent a request.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, {2} is requesting to set their home in your claimed space located at {3} {4} {5}. Type /accept or /decline in the next 5 minutes.[-]", Config.Chat_Response_Color, _cInfo2.playerName, _cInfo.playerName, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            else
-                            {
-                                int _dictValue;
-                                FriendTeleport.Dict.TryGetValue(_cInfo2.entityId, out _dictValue);
-                                DateTime _dict1Value;
-                                FriendTeleport.Dict1.TryGetValue(_cInfo2.entityId, out _dict1Value);
-                                TimeSpan varTime = DateTime.Now - _dict1Value;
-                                double fractionalSeconds = varTime.TotalSeconds;
-                                int _timepassed = (int)fractionalSeconds;
-                                if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                                {
-                                    if (ReservedSlots.Dict.ContainsKey(_cInfo2.playerId))
-                                    {
-                                        DateTime _dt;
-                                        ReservedSlots.Dict.TryGetValue(_cInfo2.playerId, out _dt);
-                                        if (DateTime.Now < _dt)
-                                        {
-                                            int _newTime = _timepassed / 2;
-                                            _timepassed = _newTime;
-                                        }
-                                    }
-                                }
-                                if (_timepassed <= 30)
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the claim owner is handling a request already. Try again in 1 minute.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                else
-                                {
-                                    FriendTeleport.Dict.Remove(_cInfo.entityId);
-                                    FriendTeleport.Dict1.Remove(_cInfo.entityId);
-                                    if (HomeRequest.ContainsKey(_cInfo2.entityId))
-                                    {
-                                        HomeRequest.Remove(_cInfo2.entityId);
-                                        HomeRequestTime.Remove(_cInfo2.entityId);
-                                        HomeRequestPos.Remove(_cInfo2.entityId);
-                                    }
-                                    int[] _idAndHome = { _cInfo.entityId, 2 };
-                                    HomeRequest.Add(_cInfo2.entityId, _idAndHome);
-                                    HomeRequestTime.Add(_cInfo2.entityId, DateTime.Now);
-                                    HomeRequestPos.Add(_cInfo2.entityId, _position);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you need permission from the claim owner to set your home here. They have been sent a request.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                    _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, {2} is requesting to set their home in your claimed space located at {3} {4} {5}. Type /accept or /decline in the next 5 minutes.[-]", Config.Chat_Response_Color, _cInfo2.playerName, _cInfo.playerName, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                            }
-                        }
-                        else
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this claim owner is offline, you can not save your home here.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                        }
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase607), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
-                else
+                if (_owner == EnumLandClaimOwner.None)
                 {
                     string _phrase817;
                     if (!Phrases.Dict.TryGetValue(817, out _phrase817))
                     {
-                        _phrase817 = "{PlayerName} you are not inside your own or another player's claimed space. You can not save this as your home.";
+                        _phrase817 = "{PlayerName} you are not inside your own or a friend's claimed space. You can not save this as your home.";
                     }
                     _phrase817 = _phrase817.Replace("{PlayerName}", _cInfo.playerName);
                     if (_announce)
@@ -800,66 +560,22 @@ namespace ServerTools
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (TeleportDelay.PvP_Check)
+            if (PvP_Check)
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                for (int i = 0; i < _cInfoList.Count; i++)
+                if (Teleportation.PCheck(_cInfo, _player))
                 {
-                    ClientInfo _cInfo2 = _cInfoList[i];
-                    if (_cInfo2 != null)
-                    {
-                        EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
-                        if (_player2 != null)
-                        {
-                            Vector3 _pos2 = _player2.GetPosition();
-                            if ((x - (int)_pos2.x) * (x - (int)_pos2.x) + (z - (int)_pos2.z) * (z - (int)_pos2.z) <= 50 * 50)
-                            {
-                                if (!_player.IsFriendsWith(_player2))
-                                {
-                                    string _phrase819;
-                                    if (!Phrases.Dict.TryGetValue(819, out _phrase819))
-                                    {
-                                        _phrase819 = "{PlayerName} you are too close to a player that is not a friend. Command unavailable.";
-                                    }
-                                    _phrase819 = _phrase819.Replace("{PlayerName}", _cInfo.playerName);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase819), Config.Server_Response_Name, false, "ServerTools", false));
-                                    return;
-                                }
-                            }
-                        }
-                    }
+                    return;
                 }
             }
-            if (TeleportDelay.Zombie_Check)
+            if (Zombie_Check)
             {
-                World world = GameManager.Instance.World;
-                List<Entity> Entities = world.Entities.list;
-                for (int i = 0; i < Entities.Count; i++)
+                if (Teleportation.ZCheck(_cInfo, _player))
                 {
-                    Entity _entity = Entities[i];
-                    if (_entity != null)
-                    {
-                        EntityType _type = _entity.entityType;
-                        if (_type == EntityType.Zombie)
-                        {
-                            Vector3 _pos2 = _entity.GetPosition();
-                            if ((x - (int)_pos2.x) * (x - (int)_pos2.x) + (z - (int)_pos2.z) * (z - (int)_pos2.z) <= 20 * 20)
-                            {
-                                string _phrase820;
-                                if (!Phrases.Dict.TryGetValue(820, out _phrase820))
-                                {
-                                    _phrase820 = "{PlayerName} you are too close to a zombie. Command unavailable.";
-                                }
-                                _phrase820 = _phrase820.Replace("{PlayerName}", _cInfo.playerName);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase820), Config.Server_Response_Name, false, "ServerTools", false));
-                                return;
-                            }
-                        }
-                    }
+                    return;
                 }
             }
             Players.NoFlight.Add(_cInfo.entityId);
-            TeleportDelay.TeleportQue(_cInfo, x, y, z);
+            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
             string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
             int _playerSpentCoins;
@@ -1103,66 +819,22 @@ namespace ServerTools
             int.TryParse(_cords[0], out x);
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
-            if (TeleportDelay.PvP_Check)
+            if (PvP_Check)
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                for (int i = 0; i < _cInfoList.Count; i++)
+                if (Teleportation.PCheck(_cInfo, _player))
                 {
-                    ClientInfo _cInfo2 = _cInfoList[i];
-                    if (_cInfo2 != null)
-                    {
-                        EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
-                        if (_player2 != null)
-                        {
-                            Vector3 _pos2 = _player2.GetPosition();
-                            if ((x - (int)_pos2.x) * (x - (int)_pos2.x) + (z - (int)_pos2.z) * (z - (int)_pos2.z) <= 50 * 50)
-                            {
-                                if (!_player.IsFriendsWith(_player2))
-                                {
-                                    string _phrase819;
-                                    if (!Phrases.Dict.TryGetValue(819, out _phrase819))
-                                    {
-                                        _phrase819 = "{PlayerName} you are too close to a player that is not a friend. Command unavailable.";
-                                    }
-                                    _phrase819 = _phrase819.Replace("{PlayerName}", _cInfo.playerName);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase819), Config.Server_Response_Name, false, "ServerTools", false));
-                                    return;
-                                }
-                            }
-                        }
-                    }
+                    return;
                 }
             }
-            if (TeleportDelay.Zombie_Check)
+            if (Zombie_Check)
             {
-                World world = GameManager.Instance.World;
-                List<Entity> Entities = world.Entities.list;
-                for (int i = 0; i < Entities.Count; i++)
+                if (Teleportation.ZCheck(_cInfo, _player))
                 {
-                    Entity _entity = Entities[i];
-                    if (_entity != null)
-                    {
-                        EntityType _type = _entity.entityType;
-                        if (_type == EntityType.Zombie)
-                        {
-                            Vector3 _pos2 = _entity.GetPosition();
-                            if ((x - (int)_pos2.x) * (x - (int)_pos2.x) + (z - (int)_pos2.z) * (z - (int)_pos2.z) <= 20 * 20)
-                            {
-                                string _phrase820;
-                                if (!Phrases.Dict.TryGetValue(820, out _phrase820))
-                                {
-                                    _phrase820 = "{PlayerName} you are too close to a zombie. Command unavailable.";
-                                }
-                                _phrase820 = _phrase820.Replace("{PlayerName}", _cInfo.playerName);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase820), Config.Server_Response_Name, false, "ServerTools", false));
-                                return;
-                            }
-                        }
-                    }
+                    return;
                 }
             }
             Players.NoFlight.Add(_cInfo.entityId);
-            TeleportDelay.TeleportQue(_cInfo, x, y, z);
+            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
             string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
             int _playerSpentCoins;
@@ -1358,66 +1030,22 @@ namespace ServerTools
             int.TryParse(_cords[0], out x);
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
-            if (TeleportDelay.PvP_Check)
+            if (PvP_Check)
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                for (int i = 0; i < _cInfoList.Count; i++)
+                if (Teleportation.PCheck(_cInfo, _player))
                 {
-                    ClientInfo _cInfo2 = _cInfoList[i];
-                    if (_cInfo2 != null)
-                    {
-                        EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
-                        if (_player2 != null)
-                        {
-                            Vector3 _pos2 = _player2.GetPosition();
-                            if ((x - (int)_pos2.x) * (x - (int)_pos2.x) + (z - (int)_pos2.z) * (z - (int)_pos2.z) <= 50 * 50)
-                            {
-                                if (!_player.IsFriendsWith(_player2))
-                                {
-                                    string _phrase819;
-                                    if (!Phrases.Dict.TryGetValue(819, out _phrase819))
-                                    {
-                                        _phrase819 = "{PlayerName} you are too close to a player that is not a friend. Command unavailable.";
-                                    }
-                                    _phrase819 = _phrase819.Replace("{PlayerName}", _cInfo.playerName);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase819), Config.Server_Response_Name, false, "ServerTools", false));
-                                    return;
-                                }
-                            }
-                        }
-                    }
+                    return;
                 }
             }
-            if (TeleportDelay.Zombie_Check)
+            if (Zombie_Check)
             {
-                World world = GameManager.Instance.World;
-                List<Entity> Entities = world.Entities.list;
-                for (int i = 0; i < Entities.Count; i++)
+                if (Teleportation.ZCheck(_cInfo, _player))
                 {
-                    Entity _entity = Entities[i];
-                    if (_entity != null)
-                    {
-                        EntityType _type = _entity.entityType;
-                        if (_type == EntityType.Zombie)
-                        {
-                            Vector3 _pos2 = _entity.GetPosition();
-                            if ((x - (int)_pos2.x) * (x - (int)_pos2.x) + (z - (int)_pos2.z) * (z - (int)_pos2.z) <= 20 * 20)
-                            {
-                                string _phrase820;
-                                if (!Phrases.Dict.TryGetValue(820, out _phrase820))
-                                {
-                                    _phrase820 = "{PlayerName} you are too close to a zombie. Command unavailable.";
-                                }
-                                _phrase820 = _phrase820.Replace("{PlayerName}", _cInfo.playerName);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase820), Config.Server_Response_Name, false, "ServerTools", false));
-                                return;
-                            }
-                        }
-                    }
+                    return;
                 }
             }
             Players.NoFlight.Add(_cInfo.entityId);
-            TeleportDelay.TeleportQue(_cInfo, x, y, z);
+            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
             string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
             int _playerSpentCoins;
@@ -1487,7 +1115,7 @@ namespace ServerTools
                         int.TryParse(_cords[1], out y);
                         int.TryParse(_cords[2], out z);
                         Players.NoFlight.Add(_cInfo.entityId);
-                        TeleportDelay.TeleportQue(_cInfo, x, y, z);
+                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
                         Invite.Remove(_cInfo.entityId);
                         FriendPosition.Remove(_cInfo.entityId);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} sending you to your friend's home.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));

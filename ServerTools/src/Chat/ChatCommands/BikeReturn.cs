@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -125,17 +126,18 @@ namespace ServerTools
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             if (_player.AttachedToEntity != null)
             {
-                int _counter = 0;
-                int _claimSize = GameStats.GetInt(EnumGameStats.LandClaimSize) / 2;
+                World world = GameManager.Instance.World;
+                Vector3 _position = _player.GetPosition();
+                int x = (int)_position.x;
+                int y = (int)_position.y;
+                int z = (int)_position.z;
+                Vector3i _vec3i = new Vector3i(x, y, z);
                 PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
-                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerData(_cInfo.playerId);
-                List<Vector3i> _blocks = _persistentPlayerData.LPBlocks;
-                for (int i = 0; i < _blocks.Count; i++)
+                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_player.entityId);
+                EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
+                if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                 {
-                    Vector3i _vec3i = _blocks[i];
-                    if ((_vec3i.x - _player.position.x) * (_vec3i.x - _player.position.x) + (_vec3i.z - _player.position.z) * (_vec3i.z - _player.position.z) <= _claimSize * _claimSize)
-                    {
-                        string _phrase781;
+                    string _phrase781;
                         if (!Phrases.Dict.TryGetValue(781, out _phrase781))
                         {
                             _phrase781 = "{PlayerName} saved your current bike for retrieval.";
@@ -144,18 +146,13 @@ namespace ServerTools
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase781), Config.Server_Response_Name, false, "ServerTools", false));
                         string _sql = string.Format("UPDATE Players SET bikeId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
                         SQL.FastQuery(_sql);
-                    }
-                    else
-                    {
-                        _counter++;
-                    }
                 }
-                if (_counter == _blocks.Count)
+                else
                 {
                     string _phrase780;
                     if (!Phrases.Dict.TryGetValue(780, out _phrase780))
                     {
-                        _phrase780 = "{PlayerName} you do not own this land. You can only save your bike inside your own claimed space.";
+                        _phrase780 = "{PlayerName} you have not claimed this space or a friend. You can only save your bike inside a claimed space.";
                     }
                     _phrase780 = _phrase780.Replace("{PlayerName}", _cInfo.playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase780), Config.Server_Response_Name, false, "ServerTools", false));

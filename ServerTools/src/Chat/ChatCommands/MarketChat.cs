@@ -7,7 +7,7 @@ namespace ServerTools
 {
     class MarketChat
     {
-        public static bool IsEnabled = false, Return = false;
+        public static bool IsEnabled = false, Return = false, PvP_Check = false, Zombie_Check = false;
         public static int Delay_Between_Uses = 5, Market_Size = 25, Command_Cost = 0;
         public static List<int> MarketPlayers = new List<int>();
 
@@ -158,62 +158,18 @@ namespace ServerTools
                     x = (int)_position.x;
                     y = (int)_position.y;
                     z = (int)_position.z;
-                    if (TeleportDelay.PvP_Check)
+                    if (PvP_Check)
                     {
-                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                        for (int i = 0; i < _cInfoList.Count; i++)
+                        if (Teleportation.PCheck(_cInfo, _player))
                         {
-                            ClientInfo _cInfo2 = _cInfoList[i];
-                            if (_cInfo2 != null)
-                            {
-                                EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
-                                if (_player2 != null)
-                                {
-                                    Vector3 _pos2 = _player2.GetPosition();
-                                    if ((x - (int)_pos2.x) * (x - (int)_pos2.x) + (z - (int)_pos2.z) * (z - (int)_pos2.z) <= 50 * 50)
-                                    {
-                                        if (!_player.IsFriendsWith(_player2))
-                                        {
-                                            string _phrase819;
-                                            if (!Phrases.Dict.TryGetValue(819, out _phrase819))
-                                            {
-                                                _phrase819 = "{PlayerName} you are too close to a player that is not a friend. Command unavailable.";
-                                            }
-                                            _phrase819 = _phrase819.Replace("{PlayerName}", _cInfo.playerName);
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase819), Config.Server_Response_Name, false, "ServerTools", false));
-                                            return;
-                                        }
-                                    }
-                                }
-                            }
+                            return;
                         }
                     }
-                    if (TeleportDelay.Zombie_Check)
+                    if (Zombie_Check)
                     {
-                        World world = GameManager.Instance.World;
-                        List<Entity> Entities = world.Entities.list;
-                        for (int i = 0; i < Entities.Count; i++)
+                        if (Teleportation.ZCheck(_cInfo, _player))
                         {
-                            Entity _entity = Entities[i];
-                            if (_entity != null)
-                            {
-                                EntityType _type = _entity.entityType;
-                                if (_type == EntityType.Zombie)
-                                {
-                                    Vector3 _pos2 = _entity.GetPosition();
-                                    if ((x - (int)_pos2.x) * (x - (int)_pos2.x) + (z - (int)_pos2.z) * (z - (int)_pos2.z) <= 20 * 20)
-                                    {
-                                        string _phrase820;
-                                        if (!Phrases.Dict.TryGetValue(820, out _phrase820))
-                                        {
-                                            _phrase820 = "{PlayerName} you are too close to a zombie. Command unavailable.";
-                                        }
-                                        _phrase820 = _phrase820.Replace("{PlayerName}", _cInfo.playerName);
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase820), Config.Server_Response_Name, false, "ServerTools", false));
-                                        return;
-                                    }
-                                }
-                            }
+                            return;
                         }
                     }
                     string _mposition = x + "," + y + "," + z;
@@ -233,7 +189,7 @@ namespace ServerTools
                 int.TryParse(_cords[1], out y);
                 int.TryParse(_cords[2], out z);
                 Players.NoFlight.Add(_cInfo.entityId);
-                TeleportDelay.TeleportQue(_cInfo, x, y, z);
+                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
                 string _phrase562;
                 if (!Phrases.Dict.TryGetValue(562, out _phrase562))
                 {
@@ -287,7 +243,7 @@ namespace ServerTools
                     int.TryParse(_returnCoords[1], out y);
                     int.TryParse(_returnCoords[2], out z);
                     Players.NoFlight.Add(_cInfo.entityId);
-                    TeleportDelay.TeleportQue(_cInfo, x, y, z);
+                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
                     MarketPlayers.Remove(_cInfo.entityId);
                     string _phrase555;
                     if (!Phrases.Dict.TryGetValue(555, out _phrase555))

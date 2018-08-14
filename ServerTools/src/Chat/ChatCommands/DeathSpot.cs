@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -177,7 +178,7 @@ namespace ServerTools
                             int.TryParse(_cords[0], out x);
                             int.TryParse(_cords[1], out y);
                             int.TryParse(_cords[2], out z);
-                            TeleportDelay.TeleportQue(_cInfo, x, y, z);
+                            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
                             Players.LastDeathPos.Remove(_cInfo.entityId);
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
