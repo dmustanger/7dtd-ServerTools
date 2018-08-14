@@ -186,11 +186,16 @@ namespace ServerTools
         public static void ClaimCheck(ClientInfo _cInfo, string _waypoint)
         {
             World world = GameManager.Instance.World;
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            Vector3 _pos = _player.position;
-            Vector3i _posVec3i = new Vector3i((int)_pos.x, (int)_pos.y, (int)_pos.z);
-            PersistentPlayerData _owner = GameManager.Instance.GetPersistentPlayerList().GetLandProtectionBlockOwner(_posVec3i);
-            if (_owner.PlayerId == null)
+            EntityPlayer _player = world.Players.dict[_cInfo.entityId];
+            Vector3 _position = _player.GetPosition();
+            int x = (int)_position.x;
+            int y = (int)_position.y;
+            int z = (int)_position.z;
+            Vector3i _vec3i = new Vector3i(x, y, z);
+            PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
+            PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_player.entityId);
+            EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
+            if (_owner == EnumLandClaimOwner.None)
             {
                 CommandCost(_cInfo, _waypoint);
             }
@@ -254,7 +259,7 @@ namespace ServerTools
                                 int.TryParse(_cordsplit[1], out y);
                                 int.TryParse(_cordsplit[2], out z);
                                 Players.NoFlight.Add(_cInfo.entityId);
-                                TeleportDelay.TeleportQue(_cInfo, x, y, z);
+                                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
                                 int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
                                 _result.Dispose();
                                 _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, lastWaypoint = '{1}' WHERE steamid = '{2}'", _playerSpentCoins - Command_Cost, DateTime.Now, _cInfo.playerId);
@@ -304,7 +309,7 @@ namespace ServerTools
                                 int.TryParse(_cordsplit[1], out y);
                                 int.TryParse(_cordsplit[2], out z);
                                 Players.NoFlight.Add(_cInfo.entityId);
-                                TeleportDelay.TeleportQue(_cInfo, x, y, z);
+                                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
                                 _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, lastWaypoint = '{1}' WHERE steamid = '{2}'", _playerSpentCoins - Command_Cost, DateTime.Now, _cInfo.playerId);
                                 SQL.FastQuery(_sql);
                                 string _phrase577;
@@ -353,7 +358,7 @@ namespace ServerTools
                             int.TryParse(_cordsplit[1], out y);
                             int.TryParse(_cordsplit[2], out z);
                             Players.NoFlight.Add(_cInfo.entityId);
-                            TeleportDelay.TeleportQue(_cInfo, x, y, z);
+                            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
                             int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
                             _result.Dispose();
                             _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, lastWaypoint = '{1}' WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, DateTime.Now, _cInfo.playerId);
@@ -408,11 +413,16 @@ namespace ServerTools
             if (!Event.Players.Contains(_cInfo.entityId))
             {
                 World world = GameManager.Instance.World;
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                Vector3 _pos = _player.position;
-                Vector3i _posVec3i = new Vector3i((int)_pos.x, (int)_pos.y, (int)_pos.z);
-                PersistentPlayerData _owner = GameManager.Instance.GetPersistentPlayerList().GetLandProtectionBlockOwner(_posVec3i);
-                if (_owner.PlayerId == null)
+                EntityPlayer _player = world.Players.dict[_cInfo.entityId];
+                Vector3 _position = _player.GetPosition();
+                int x = (int)_position.x;
+                int y = (int)_position.y;
+                int z = (int)_position.z;
+                Vector3i _vec3i = new Vector3i(x, y, z);
+                PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
+                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_player.entityId);
+                EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
+                if (_owner == EnumLandClaimOwner.None)
                 {
                     SetPoint(_cInfo, _waypoint);
                 }

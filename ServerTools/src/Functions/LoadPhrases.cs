@@ -1055,13 +1055,13 @@ namespace ServerTools
                 string _phrase627;
                 if (!Dict.TryGetValue(627, out _phrase627))
                 {
-                    _phrase627 = "Sent your friend {FriendsName} a teleport request.";
+                    _phrase627 = "Sent your friend {PlayerName} a teleport request.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"627\" Phrase=\"{0}\" />", _phrase627));
                 string _phrase628;
                 if (!Dict.TryGetValue(628, out _phrase628))
                 {
-                    _phrase628 = "{SenderName} would like to teleport to you. Type /accept in chat in the next 30 seconds to accept the request.";
+                    _phrase628 = "{PlayerName} would like to teleport to you. Type /accept in chat to accept the request.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"628\" Phrase=\"{0}\" />", _phrase628));
                 string _phrase629;
@@ -1340,7 +1340,7 @@ namespace ServerTools
                 string _phrase780;
                 if (!Dict.TryGetValue(780, out _phrase780))
                 {
-                    _phrase780 = "{PlayerName} you do not own this land. You can only save your bike inside your own claimed space.";
+                    _phrase780 = "{PlayerName} you have not claimed this space or a friend. You can only save your bike inside a claimed space.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"780\" Phrase=\"{0}\" />", _phrase780));
                 string _phrase781;
@@ -1511,7 +1511,7 @@ namespace ServerTools
                 string _phrase817;
                 if (!Dict.TryGetValue(817, out _phrase817))
                 {
-                    _phrase817 = "{PlayerName} you are not inside your own or an allies claimed space. You can not save this as your home.";
+                    _phrase817 = "{PlayerName} you are not inside your own or a friend's claimed space. You can not save this as your home.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"817\" Phrase=\"{0}\" />", _phrase817));
                 string _phrase818;
