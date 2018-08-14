@@ -44,8 +44,8 @@ namespace ServerTools
         private string clanname;
         private string invitedtoclan;
         //private string lastwhisper;
-        private string ipAddress;
-        private DateTime lastWaypoint;
+        //private string ipAddress;
+        //private DateTime lastWaypoint;
         private DateTime lastMarket;
         private DateTime lastStuck;
         private DateTime lastLobby;
@@ -336,17 +336,17 @@ namespace ServerTools
             //}
         //}
 
-        public DateTime LastWaypoint
-        {
-            get
-            {
-                return lastWaypoint;
-            }
-            set
-            {
-                lastWaypoint = value;
-            }
-        }
+        //public DateTime LastWaypoint
+        //{
+            //get
+            //{
+                //return lastWaypoint;
+            //}
+            //set
+            //{
+                //lastWaypoint = value;
+            //}
+        //}
 
         public DateTime LastMarket
         {
@@ -888,17 +888,17 @@ namespace ServerTools
             //}
         //}
 
-        public string IP
-        {
-            get
-            {
-                return ipAddress;
-            }
-            set
-            {
-                ipAddress = value;
-            }
-        }
+        //public string IP
+        //{
+            //get
+            //{
+                //return ipAddress;
+            //}
+            //set
+            //{
+                //ipAddress = value;
+            //}
+        //}
 
         public bool IsClanOwner
         {

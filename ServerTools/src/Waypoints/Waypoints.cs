@@ -109,14 +109,19 @@ namespace ServerTools
                 }
                 else
                 {
+                    string _sql = string.Format("SELECT lastWaypoint FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    DataTable _result = SQL.TQuery(_sql);
+                    DateTime _lastWaypoint;
+                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastWaypoint);
+                    _result.Dispose();
                     Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                    if (p == null || p.LastWaypoint == null)
+                    if (_lastWaypoint.ToString() == "10/29/2000 7:30:00 AM")
                     {
                         ClaimCheck(_cInfo, _waypoint);
                     }
                     else
                     {
-                        TimeSpan varTime = DateTime.Now - p.LastWaypoint;
+                        TimeSpan varTime = DateTime.Now - _lastWaypoint;
                         double fractionalMinutes = varTime.TotalMinutes;
                         int _timepassed = (int)fractionalMinutes;
                         if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -239,125 +244,67 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo, string _waypoint)
         {
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int _playerSpentCoins;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+            _result.Dispose();
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p != null)
+            int _wp;
+            if (int.TryParse(_waypoint, out _wp))
             {
-                int _wp;
-                if (int.TryParse(_waypoint, out _wp))
+                if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                 {
-                    if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                    DateTime _dt;
+                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                    if (DateTime.Now < _dt)
                     {
-                        DateTime _dt;
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                        if (DateTime.Now < _dt)
+                        if (_wp >= 1 && _wp <= Donator_Waypoints)
                         {
-                            if (_wp >= 1 && _wp <= Donator_Waypoints)
+                            string _cords = p.Waypoints[_wp];
+                            if (_cords != null)
                             {
-                                string _cords = p.Waypoints[_wp];
-                                if (_cords != null)
+                                int x, y, z;
+                                string[] _cordsplit = _cords.Split(',');
+                                int.TryParse(_cordsplit[0], out x);
+                                int.TryParse(_cordsplit[1], out y);
+                                int.TryParse(_cordsplit[2], out z);
+                                Players.NoFlight.Add(_cInfo.entityId);
+                                TeleportDelay.TeleportQue(_cInfo, x, y, z);
+                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+                                _result.Dispose();
+                                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, lastWaypoint = '{1}' WHERE steamid = '{2}'", _playerSpentCoins - Command_Cost, DateTime.Now, _cInfo.playerId);
+                                SQL.FastQuery(_sql);
+                                string _phrase577;
+                                if (!Phrases.Dict.TryGetValue(577, out _phrase577))
                                 {
-                                    int x, y, z;
-                                    string[] _cordsplit = _cords.Split(',');
-                                    int.TryParse(_cordsplit[0], out x);
-                                    int.TryParse(_cordsplit[1], out y);
-                                    int.TryParse(_cordsplit[2], out z);
-                                    Players.NoFlight.Add(_cInfo.entityId);
-                                    TeleportDelay.TeleportQue(_cInfo, x, y, z);
-                                    string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                    DataTable _result = SQL.TQuery(_sql);
-                                    int _playerSpentCoins;
-                                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                                    _result.Dispose();
-                                    _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
-                                    SQL.FastQuery(_sql);
-                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].LastWaypoint = DateTime.Now;
-                                    PersistentContainer.Instance.Save();
-                                    string _phrase577;
-                                    if (!Phrases.Dict.TryGetValue(577, out _phrase577))
-                                    {
-                                        _phrase577 = "{PlayerName}, traveling to waypoint number {Waypoint}.";
-                                    }
-                                    _phrase577 = _phrase577.Replace("{PlayerName}", _cInfo.playerName);
-                                    _phrase577 = _phrase577.Replace("{Waypoint}", _wp.ToString());
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase577), Config.Server_Response_Name, false, "ServerTools", false));
+                                    _phrase577 = "{PlayerName}, traveling to waypoint number {Waypoint}.";
                                 }
-                                else
-                                {
-                                    string _phrase578;
-                                    if (!Phrases.Dict.TryGetValue(578, out _phrase578))
-                                    {
-                                        _phrase578 = "{PlayerName}, you have not saved this waypoint.";
-                                    }
-                                    _phrase578 = _phrase578.Replace("{PlayerName}", _cInfo.playerName);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase578), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
+                                _phrase577 = _phrase577.Replace("{PlayerName}", _cInfo.playerName);
+                                _phrase577 = _phrase577.Replace("{Waypoint}", _wp.ToString());
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase577), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                             else
                             {
-                                string _phrase581;
-                                if (!Phrases.Dict.TryGetValue(581, out _phrase581))
+                                string _phrase578;
+                                if (!Phrases.Dict.TryGetValue(578, out _phrase578))
                                 {
-                                    _phrase581 = "{PlayerName}, this is an invalid waypoint number. You have a maximum {DonatorCount} waypoints.";
+                                    _phrase578 = "{PlayerName}, you have not saved this waypoint.";
                                 }
-                                _phrase581 = _phrase581.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase581 = _phrase581.Replace("{DonatorCount}", Donator_Waypoints.ToString());
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase581), Config.Server_Response_Name, false, "ServerTools", false));
+                                _phrase578 = _phrase578.Replace("{PlayerName}", _cInfo.playerName);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase578), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                         }
                         else
                         {
-                            if (_wp >= 1 && _wp <= Waypoints)
+                            string _phrase581;
+                            if (!Phrases.Dict.TryGetValue(581, out _phrase581))
                             {
-                                string _cords = p.Waypoints[_wp];
-                                if (_cords != null)
-                                {
-                                    int x, y, z;
-                                    string[] _cordsplit = _cords.Split(',');
-                                    int.TryParse(_cordsplit[0], out x);
-                                    int.TryParse(_cordsplit[1], out y);
-                                    int.TryParse(_cordsplit[2], out z);
-                                    Players.NoFlight.Add(_cInfo.entityId);
-                                    TeleportDelay.TeleportQue(_cInfo, x, y, z);
-                                    string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                    DataTable _result = SQL.TQuery(_sql);
-                                    int _playerSpentCoins;
-                                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                                    _result.Dispose();
-                                    _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
-                                    SQL.FastQuery(_sql);
-                                    PersistentContainer.Instance.Players[_cInfo.playerId, true].LastWaypoint = DateTime.Now;
-                                    PersistentContainer.Instance.Save();
-                                    string _phrase577;
-                                    if (!Phrases.Dict.TryGetValue(577, out _phrase577))
-                                    {
-                                        _phrase577 = "{PlayerName}, traveling to waypoint number {Waypoint}.";
-                                    }
-                                    _phrase577 = _phrase577.Replace("{PlayerName}", _cInfo.playerName);
-                                    _phrase577 = _phrase577.Replace("{Waypoint}", _wp.ToString());
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase577), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                else
-                                {
-                                    string _phrase578;
-                                    if (!Phrases.Dict.TryGetValue(578, out _phrase578))
-                                    {
-                                        _phrase578 = "{PlayerName}, you have not saved this waypoint.";
-                                    }
-                                    _phrase578 = _phrase578.Replace("{PlayerName}", _cInfo.playerName);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase578), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
+                                _phrase581 = "{PlayerName}, this is an invalid waypoint number. You have a maximum {DonatorCount} waypoints.";
                             }
-                            else
-                            {
-                                string _phrase579;
-                                if (!Phrases.Dict.TryGetValue(579, out _phrase579))
-                                {
-                                    _phrase579 = "{PlayerName}, this is an invalid waypoint number. You have a maximum {Count} waypoints.";
-                                }
-                                _phrase579 = _phrase579.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase579 = _phrase579.Replace("{Count}", Waypoints.ToString());
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase579), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
+                            _phrase581 = _phrase581.Replace("{PlayerName}", _cInfo.playerName);
+                            _phrase581 = _phrase581.Replace("{DonatorCount}", Donator_Waypoints.ToString());
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase581), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                     else
@@ -374,15 +321,8 @@ namespace ServerTools
                                 int.TryParse(_cordsplit[2], out z);
                                 Players.NoFlight.Add(_cInfo.entityId);
                                 TeleportDelay.TeleportQue(_cInfo, x, y, z);
-                                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                DataTable _result = SQL.TQuery(_sql);
-                                int _playerSpentCoins;
-                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                                _result.Dispose();
-                                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
+                                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, lastWaypoint = '{1}' WHERE steamid = '{2}'", _playerSpentCoins - Command_Cost, DateTime.Now, _cInfo.playerId);
                                 SQL.FastQuery(_sql);
-                                PersistentContainer.Instance.Players[_cInfo.playerId, true].LastWaypoint = DateTime.Now;
-                                PersistentContainer.Instance.Save();
                                 string _phrase577;
                                 if (!Phrases.Dict.TryGetValue(577, out _phrase577))
                                 {
@@ -418,14 +358,64 @@ namespace ServerTools
                 }
                 else
                 {
-                    string _phrase580;
-                    if (!Phrases.Dict.TryGetValue(580, out _phrase580))
+                    if (_wp >= 1 && _wp <= Waypoints)
                     {
-                        _phrase580 = "{PlayerName}, this is not a valid waypoint number.";
+                        string _cords = p.Waypoints[_wp];
+                        if (_cords != null)
+                        {
+                            int x, y, z;
+                            string[] _cordsplit = _cords.Split(',');
+                            int.TryParse(_cordsplit[0], out x);
+                            int.TryParse(_cordsplit[1], out y);
+                            int.TryParse(_cordsplit[2], out z);
+                            Players.NoFlight.Add(_cInfo.entityId);
+                            TeleportDelay.TeleportQue(_cInfo, x, y, z);
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+                            _result.Dispose();
+                            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, lastWaypoint = '{1}' WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, DateTime.Now, _cInfo.playerId);
+                            SQL.FastQuery(_sql);
+                            string _phrase577;
+                            if (!Phrases.Dict.TryGetValue(577, out _phrase577))
+                            {
+                                _phrase577 = "{PlayerName}, traveling to waypoint number {Waypoint}.";
+                            }
+                            _phrase577 = _phrase577.Replace("{PlayerName}", _cInfo.playerName);
+                            _phrase577 = _phrase577.Replace("{Waypoint}", _wp.ToString());
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase577), Config.Server_Response_Name, false, "ServerTools", false));
+                        }
+                        else
+                        {
+                            string _phrase578;
+                            if (!Phrases.Dict.TryGetValue(578, out _phrase578))
+                            {
+                                _phrase578 = "{PlayerName}, you have not saved this waypoint.";
+                            }
+                            _phrase578 = _phrase578.Replace("{PlayerName}", _cInfo.playerName);
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase578), Config.Server_Response_Name, false, "ServerTools", false));
+                        }
                     }
-                    _phrase580 = _phrase580.Replace("{PlayerName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase580), Config.Server_Response_Name, false, "ServerTools", false));
+                    else
+                    {
+                        string _phrase579;
+                        if (!Phrases.Dict.TryGetValue(579, out _phrase579))
+                        {
+                            _phrase579 = "{PlayerName}, this is an invalid waypoint number. You have a maximum {Count} waypoints.";
+                        }
+                        _phrase579 = _phrase579.Replace("{PlayerName}", _cInfo.playerName);
+                        _phrase579 = _phrase579.Replace("{Count}", Waypoints.ToString());
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase579), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
                 }
+            }
+            else
+            {
+                string _phrase580;
+                if (!Phrases.Dict.TryGetValue(580, out _phrase580))
+                {
+                    _phrase580 = "{PlayerName}, this is not a valid waypoint number.";
+                }
+                _phrase580 = _phrase580.Replace("{PlayerName}", _cInfo.playerName);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase580), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
