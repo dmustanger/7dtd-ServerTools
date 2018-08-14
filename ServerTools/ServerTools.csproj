@@ -158,6 +158,7 @@
     <Compile Include="src\ReservedSlots\ReservedSlots.cs" />
     <Compile Include="src\StartingItems\StartingItems.cs" />
     <Compile Include="src\StopServer\StopServer.cs" />
+    <Compile Include="src\Teleportation\Teleportation.cs" />
     <Compile Include="src\Teleportation\TeleportDelay.cs" />
     <Compile Include="src\VoteReward\VoteReward.cs" />
     <Compile Include="src\Watchlist\Watchlist.cs" />
