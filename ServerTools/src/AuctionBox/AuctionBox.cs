@@ -252,23 +252,6 @@ namespace ServerTools
         {
             if (AuctionItems.ContainsKey(_purchase))
             {
-                World world = GameManager.Instance.World;
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TQuery(_sql);
-                int _playerSpentCoins;
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                _result.Dispose();
-                int currentCoins = 0;
-                int gameMode = world.GetGameMode();
-                if (gameMode == 7)
-                {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                }
-                else
-                {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                }
                 List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
                 for (int i = 0; i < playerlist.Count; i++)
                 {
@@ -281,20 +264,21 @@ namespace ServerTools
                         {
                             int _coinValue;
                             int.TryParse(_value[3], out _coinValue);
-                            if (currentCoins >= _coinValue)
+                            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                            if (_currentCoins >= _coinValue)
                             {
                                 BuyAuction(_cInfo, _purchase, _value, _steamId);
                             }
                             else
                             {
                                 int _missing;
-                                if (currentCoins >= 0)
+                                if (_currentCoins >= 0)
                                 {
-                                    _missing = _coinValue - currentCoins;
+                                    _missing = _coinValue - _currentCoins;
                                 }
                                 else
                                 {
-                                    _missing = _coinValue + currentCoins;
+                                    _missing = _coinValue + _currentCoins;
                                 }
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you can not make this purchase. You need {2} more {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _missing, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                             }

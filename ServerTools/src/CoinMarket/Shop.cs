@@ -253,23 +253,8 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo, string _playerName, EntityPlayer _player)
         {
-            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            int _playerSpentCoins;
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-            _result.Dispose();
-            World world = GameManager.Instance.World;
-            int currentCoins = 0;
-            int gameMode = world.GetGameMode();
-            if (gameMode == 7)
-            {
-                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-            }
-            else
-            {
-                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-            }
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, currentCoins, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _currentCoins, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
             string _phrase617;
             if (!Phrases.Dict.TryGetValue(617, out _phrase617))
             {
@@ -372,28 +357,12 @@ namespace ServerTools
                                 int[] _integerValues;
                                 if (dict1.TryGetValue(_id, out _integerValues))
                                 {
-                                    World world = GameManager.Instance.World;
-                                    int currentCoins;
-                                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                    string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                    DataTable _result = SQL.TQuery(_sql);
-                                    int _playerSpentCoins;
-                                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                                    _result.Dispose();
-                                    int gameMode = world.GetGameMode();
-                                    if (gameMode == 7)
-                                    {
-                                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                                    }
-                                    else
-                                    {
-                                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                                    }
+                                    int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
                                     int _newAmount = _integerValues[2] * _amount;
-                                    if (currentCoins >= _newAmount)
+                                    if (_currentCoins >= _newAmount)
                                     {
                                         int _newCount = _integerValues[0] * _amount;
-                                        ShopPurchase(_cInfo, _stringValues[0], _newCount, _integerValues[1], _newAmount, _playerName, currentCoins);
+                                        ShopPurchase(_cInfo, _stringValues[0], _newCount, _integerValues[1], _newAmount, _playerName, _currentCoins);
                                     }
                                     else
                                     {
@@ -404,7 +373,7 @@ namespace ServerTools
                                         }
                                         _phrase621 = _phrase621.Replace("{PlayerName}", _playerName);
                                         _phrase621 = _phrase621.Replace("{CoinName}", Wallet.Coin_Name);
-                                        _phrase621 = _phrase621.Replace("{WalletBalance}", currentCoins.ToString());
+                                        _phrase621 = _phrase621.Replace("{WalletBalance}", _currentCoins.ToString());
                                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase621), Config.Server_Response_Name, false, "ServerTools", false));
                                     }
                                 }
@@ -425,26 +394,10 @@ namespace ServerTools
                             int[] _integerValues;
                             if (dict1.TryGetValue(_id, out _integerValues))
                             {
-                                World world = GameManager.Instance.World;
-                                int currentCoins;
-                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                DataTable _result = SQL.TQuery(_sql);
-                                int _playerSpentCoins;
-                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                                _result.Dispose();
-                                int gameMode = world.GetGameMode();
-                                if (gameMode == 7)
+                                int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                                if (_currentCoins >= _integerValues[2])
                                 {
-                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                                }
-                                else
-                                {
-                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                                }
-                                if (currentCoins >= _integerValues[2])
-                                {
-                                    ShopPurchase(_cInfo, _stringValues[0], _integerValues[0], _integerValues[1], _integerValues[2], _playerName, currentCoins);
+                                    ShopPurchase(_cInfo, _stringValues[0], _integerValues[0], _integerValues[1], _integerValues[2], _playerName, _currentCoins);
                                 }
                                 else
                                 {
@@ -455,7 +408,7 @@ namespace ServerTools
                                     }
                                     _phrase621 = _phrase621.Replace("{PlayerName}", _playerName);
                                     _phrase621 = _phrase621.Replace("{CoinName}", Wallet.Coin_Name);
-                                    _phrase621 = _phrase621.Replace("{WalletBalance}", currentCoins.ToString());
+                                    _phrase621 = _phrase621.Replace("{WalletBalance}", _currentCoins.ToString());
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase621), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                             }

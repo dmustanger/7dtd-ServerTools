@@ -894,26 +894,14 @@ namespace ServerTools
 
         public static void CommandResponse(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int[] _c)
         {
-            World world = GameManager.Instance.World;
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-
-            int currentCoins = 0;
-            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            int _playerSpentCoins;
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-            _result.Dispose();
-            int gameMode = world.GetGameMode();
-            if (gameMode == 7)
+            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+            if (_currentCoins >= _c[2])
             {
-                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-            }
-            else
-            {
-                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-            }
-            if (currentCoins >= _c[2])
-            {
+                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                int _playerSpentCoins;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+                _result.Dispose();
                 int _newCoins = _playerSpentCoins - _c[2];
                 _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _newCoins, _cInfo.playerId);
                 SQL.FastQuery(_sql);

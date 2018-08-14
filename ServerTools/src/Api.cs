@@ -326,23 +326,8 @@ namespace ServerTools
                         {
                             if (Wallet.IsEnabled)
                             {
-                                World world = GameManager.Instance.World;
-                                _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                DataTable _result = SQL.TQuery(_sql);
-                                int _spentCoins;
-                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _spentCoins);
-                                _result.Dispose();
-                                int currentCoins = 0;
-                                int gameMode = world.GetGameMode();
-                                if (gameMode == 7)
-                                {
-                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _spentCoins;
-                                }
-                                else
-                                {
-                                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _spentCoins;
-                                }
-                                _sql = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
+                                int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                                _sql = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", _currentCoins, _cInfo.playerId);
                                 SQL.FastQuery(_sql);
                             }
                         }

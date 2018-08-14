@@ -63,26 +63,17 @@ namespace ServerTools
                     {
                         if (_lottoValue > 0)
                         {
-                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                            DataTable _result = SQL.TQuery(_sql);
-                            int _playerSpentCoins;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                            _result.Dispose();
-                            int currentCoins;
-                            if (GameManager.Instance.World.GetGameMode() == 7)
-                            {
-                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                            }
-                            else
-                            {
-                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                            }
-                            if (currentCoins >= _lottoValue)
+                            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                            if (_currentCoins >= _lottoValue)
                             {
                                 OpenLotto = true;
                                 LottoValue = _lottoValue;
                                 LottoEntries.Add(_cInfo);
+                                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                DataTable _result = SQL.TQuery(_sql);
+                                int _playerSpentCoins;
+                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+                                _result.Dispose();
                                 _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - LottoValue, _cInfo.playerId);
                                 SQL.FastQuery(_sql);
                                 string _phrase538;
@@ -144,26 +135,17 @@ namespace ServerTools
         {
             if (OpenLotto)
             {
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TQuery(_sql);
-                int _playerSpentCoins;
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                _result.Dispose();
-                int currentCoins = 0;
-                if (GameManager.Instance.World.GetGameMode() == 7)
-                {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                }
-                else
-                {
-                    currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                }
-                if (currentCoins >= LottoValue)
+                int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                if (_currentCoins >= LottoValue)
                 {
                     if (!LottoEntries.Contains(_cInfo))
                     {
                         LottoEntries.Add(_cInfo);
+                        string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        int _playerSpentCoins;
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+                        _result.Dispose();
                         _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - LottoValue, _cInfo.playerId);
                         SQL.FastQuery(_sql);
                         string _phrase541;

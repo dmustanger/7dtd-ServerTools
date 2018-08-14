@@ -66,23 +66,14 @@ namespace ServerTools
                             {
                                 _cost = _minimum;
                             }
-                            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                            DataTable _result = SQL.TQuery(_sql);
-                            int _playerSpentCoins;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                            _result.Dispose();
-                            int currentCoins = 0;
-                            int gameMode = GameManager.Instance.World.GetGameMode();
-                            if (gameMode == 7)
+                            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                            if (_currentCoins >= _cost)
                             {
-                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                            }
-                            else
-                            {
-                                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                            }
-                            if (currentCoins >= _cost)
-                            {
+                                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                DataTable _result = SQL.TQuery(_sql);
+                                int _playerSpentCoins;
+                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+                                _result.Dispose();
                                 _sql = string.Format("SELECT bounty FROM Players WHERE steamid = '{0}'", _cInfo1.playerId);
                                 DataTable _result1 = SQL.TQuery(_sql);
                                 int _bounty;
@@ -96,7 +87,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} .[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you do not have enough in your wallet for this bounty: {3}.[-]", Config.Chat_Response_Color, _playerName, _cost), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                         }
                     }
@@ -115,23 +106,14 @@ namespace ServerTools
                     {
                         EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
                         _cost = _player.Level * Bounty;
-                        string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        int _playerSpentCoins;
-                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                        _result.Dispose();
-                        int currentCoins = 0;
-                        int gameMode = GameManager.Instance.World.GetGameMode();
-                        if (gameMode == 7)
+                        int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                        if (_currentCoins >= _cost)
                         {
-                            currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                        }
-                        else
-                        {
-                            currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                        }
-                        if (currentCoins >= _cost)
-                        {
+                            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result = SQL.TQuery(_sql);
+                            int _playerSpentCoins;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+                            _result.Dispose();
                             _sql = string.Format("SELECT bounty FROM Players WHERE steamid = '{0}'", _cInfo1.playerId);
                             DataTable _result1 = SQL.TQuery(_sql);
                             int _bounty;

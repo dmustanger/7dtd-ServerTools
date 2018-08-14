@@ -320,24 +320,8 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo, string _pos, bool _announce)
         {
-            World world = GameManager.Instance.World;
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            int _playerSpentCoins;
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-            _result.Dispose();
-            int currentCoins = 0;
-            int gameMode = world.GetGameMode();
-            if (gameMode == 7)
-            {
-                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-            }
-            else
-            {
-                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-            }
-            if (currentCoins >= Command_Cost)
+            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+            if (_currentCoins >= Command_Cost)
             {
                 Home(_cInfo, _pos, _announce);
             }
@@ -981,7 +965,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            FHome(_cInfo, _pos, _announce, _player);
+                            FHome(_cInfo, _pos, _announce);
                         }
                     }
                     else
@@ -994,7 +978,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                FHome(_cInfo, _pos, _announce, _player);
+                                FHome(_cInfo, _pos, _announce);
                             }
                         }
                         else
@@ -1020,7 +1004,7 @@ namespace ServerTools
                                             }
                                             else
                                             {
-                                                FHome(_cInfo, _pos, _announce, _player);
+                                                FHome(_cInfo, _pos, _announce);
                                             }
                                         }
                                         else
@@ -1056,7 +1040,7 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        FHome(_cInfo, _pos, _announce, _player);
+                                        FHome(_cInfo, _pos, _announce);
                                     }
                                 }
                                 else
@@ -1092,26 +1076,10 @@ namespace ServerTools
 
         public static void FCommandCost(ClientInfo _cInfo, string _pos, bool _announce)
         {
-            World world = GameManager.Instance.World;
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            int _playerSpentCoins;
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-            _result.Dispose();
-            int currentCoins = 0;
-            int gameMode = world.GetGameMode();
-            if (gameMode == 7)
+            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+            if (_currentCoins >= Command_Cost)
             {
-                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-            }
-            else
-            {
-                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-            }
-            if (currentCoins >= Command_Cost)
-            {
-                FHome(_cInfo, _pos, _announce, _player);
+                FHome(_cInfo, _pos, _announce);
             }
             else
             {
@@ -1126,8 +1094,9 @@ namespace ServerTools
             }
         }
 
-        private static void FHome(ClientInfo _cInfo, string _pos, bool _announce, EntityPlayer _player)
+        private static void FHome(ClientInfo _cInfo, string _pos, bool _announce)
         {
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             FriendInvite(_cInfo, _player.position, _pos);
             int x, y, z;
             string[] _cords = _pos.Split(',');
@@ -1251,7 +1220,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            FHome2(_cInfo, _pos, _announce, _player);
+                            FHome2(_cInfo, _pos, _announce);
                         }
                     }
                     else
@@ -1264,7 +1233,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                FHome2(_cInfo, _pos, _announce, _player);
+                                FHome2(_cInfo, _pos, _announce);
                             }
                         }
                         else
@@ -1290,7 +1259,7 @@ namespace ServerTools
                                             }
                                             else
                                             {
-                                                FHome2(_cInfo, _pos, _announce, _player);
+                                                FHome2(_cInfo, _pos, _announce);
                                             }
                                         }
                                         else
@@ -1326,7 +1295,7 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        FHome2(_cInfo, _pos, _announce, _player);
+                                        FHome2(_cInfo, _pos, _announce);
                                     }
                                 }
                                 else
@@ -1362,26 +1331,10 @@ namespace ServerTools
 
         public static void FCommandCost2(ClientInfo _cInfo, string _pos, bool _announce)
         {
-            World world = GameManager.Instance.World;
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            int _playerSpentCoins;
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-            _result.Dispose();
-            int currentCoins = 0;
-            int gameMode = world.GetGameMode();
-            if (gameMode == 7)
+            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+            if (_currentCoins >= Command_Cost)
             {
-                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-            }
-            else
-            {
-                currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-            }
-            if (currentCoins >= Command_Cost)
-            {
-                FHome2(_cInfo, _pos, _announce, _player);
+                FHome2(_cInfo, _pos, _announce);
             }
             else
             {
@@ -1396,8 +1349,9 @@ namespace ServerTools
             }
         }
 
-        private static void FHome2(ClientInfo _cInfo, string _pos, bool _announce, EntityPlayer _player)
+        private static void FHome2(ClientInfo _cInfo, string _pos, bool _announce)
         {
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             FriendInvite(_cInfo, _player.position, _pos);
             int x, y, z;
             string[] _cords = _pos.Split(',');
