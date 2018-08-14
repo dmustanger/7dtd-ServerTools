@@ -23,20 +23,17 @@ Added check to Event system so players can not save or use waypoints while signe
 Added chat command /infoticker to turn on and off infoticker messages for each individual player. Resets on server restart
 Added console commands to setup zones while in game or see a list of existing zones
 Added option to Wallet called Lose_On_Death. If a player has not put their wallet coins into the bank, they will lose them when they die
-Added permission system when setting a home point. If inside another player's claim space, they must give permission by typing /accept or /decline
-Added Teleport tool. Two options available, Player_Check and Zombie_Check. Commands that teleport the player will not work if too close to a player or zombie while true.
-Players must be 50 blocks away and zombies must be 20. Does not apply to the market or lobby return
-Added two options from Teleport to Suicide, Player_Check and Zombie_Check. A player can not suicide if players or zombies are too close. Players must be 25 blocks away
-and zombies must be 10
 Added option to Real_World_Time called Adjustment. This is the number of hours to adjust the time plus or minus to match the time zone of your choice
 Added option to Zones.xml called 15MinuteNotice. If a player remains in the same zone for over 15 minutes the 15MinuteNotice will execute. It sends a message only
 Added Kill_Notice weapon list. Set what the weapon is announced as. Set custom weapon names or fun notices. Add item names from mods. Creates a KillNotice.xml
 Added internal code to allow all commands be made of lower, upper case, or a mix and still trigger a chat command
+Added options to multiple tools called Zombie_Check and PvP Check. These will look for zombie or players too close if they are teleporting with that tools commands
 Changed phrase system to build the dictionary from the id & phrase instead of just the number which will allow phrases to be changed in a live server
 Changed prefix system so clan tags do not take over other prefixes
 Changed Custom commands so that responses using the say command do not require &quot; anymore
 Changed Event system so players can no longer use Home commands while signed up for or inside an event
 Changed chat command /commands so that it does not require Custom_Commands to be set to true
+Changed how player data is saved. Now using sqlite/mysql database
 Fixed /sethome and /sethome2 repeating the response based on how many claims you have placed
 Fixed /commands creating large spaces and skipping some lines when not necessary
 Fixed /mogul to work off the wallet, bank or both
@@ -50,8 +47,10 @@ Fixed duplicate phrases and cleared out ones not in use
 Fixed bank withdraw into coins when over the stack limit. Players may only withdraw the max stack at one time
 Fixed bank transfer not deducting the proper amount from the sender
 Fixed chat command /clancommands not responding
+Fixed one timer for a vote process not clearing
+Fixed internal code for claim checks
+Removed teleport delay now that tools have optional zombie and player checks on teleportation
 Updated HowTo.xml
-Changed how player data is saved. We are now using sqlite/mysql database
 
 10.7
 
