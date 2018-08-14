@@ -225,10 +225,6 @@ namespace ServerTools
 
         public static void Checkplayer(ClientInfo _cInfo, bool _announce, string _playerName)
         {
-            if (Always_Show_Response)
-            {
-                _announce = true;
-            }
             bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
