@@ -66,7 +66,8 @@ namespace ServerTools
                 "homeposition2 TEXT DEFAULT 'Unknown', " +
                 "lastsethome TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
                 "lastwhisper TEXT DEFAULT 'Unknown', " +
-                "lastWaypoint TEXT DEFAULT '10/29/2000 7:30:00 AM' " +
+                "lastWaypoint TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
+                "lastMarket '10/29/2000 7:30:00 AM' " +
                 ");");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER);");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");

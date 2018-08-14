@@ -46,7 +46,7 @@ namespace ServerTools
         //private string lastwhisper;
         //private string ipAddress;
         //private DateTime lastWaypoint;
-        private DateTime lastMarket;
+        //private DateTime lastMarket;
         private DateTime lastStuck;
         private DateTime lastLobby;
         private DateTime cancelTime;
@@ -348,17 +348,17 @@ namespace ServerTools
             //}
         //}
 
-        public DateTime LastMarket
-        {
-            get
-            {
-                return lastMarket;
-            }
-            set
-            {
-                lastMarket = value;
-            }
-        }
+        //public DateTime LastMarket
+        //{
+            //get
+            //{
+                //return lastMarket;
+            //}
+            //set
+            //{
+                //lastMarket = value;
+            //}
+        //}
 
         public int AuctionData
         {

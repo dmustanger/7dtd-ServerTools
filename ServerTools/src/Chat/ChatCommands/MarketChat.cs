@@ -27,8 +27,12 @@ namespace ServerTools
             }
             else
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null || p.LastMarket == null)
+                string _sql = string.Format("SELECT lastMarket FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                DateTime _lastMarket;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastMarket);
+                _result.Dispose();
+                if (_lastMarket.ToString() == "10/29/2000 7:30:00 AM")
                 {
                     if (Wallet.IsEnabled && Command_Cost >= 1)
                     {
@@ -41,7 +45,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    TimeSpan varTime = DateTime.Now - p.LastMarket;
+                    TimeSpan varTime = DateTime.Now - _lastMarket;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
                     if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -151,6 +155,7 @@ namespace ServerTools
             if (SetLobby.Lobby_Position != "0,0,0")
             {
                 int x, y, z;
+                string _sql;
                 if (Return)
                 {
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
@@ -174,7 +179,7 @@ namespace ServerTools
                     }
                     string _mposition = x + "," + y + "," + z;
                     MarketPlayers.Add(_cInfo.entityId);
-                    string _sql = string.Format("UPDATE Players SET marketReturn = '{0}' WHERE steamid = '{1}'", _mposition, _cInfo.playerId);
+                    _sql = string.Format("UPDATE Players SET marketReturn = '{0}' WHERE steamid = '{1}'", _mposition, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                     string _phrase561;
                     if (!Phrases.Dict.TryGetValue(561, out _phrase561))
@@ -199,7 +204,7 @@ namespace ServerTools
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase562), Config.Server_Response_Name, false, "ServerTools", false));
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                     DataTable _result = SQL.TQuery(_sql);
                     int _playerSpentCoins;
                     int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
@@ -207,8 +212,8 @@ namespace ServerTools
                     _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].LastMarket = DateTime.Now;
-                PersistentContainer.Instance.Save();
+                _sql = string.Format("UPDATE Players SET lastMarket = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                SQL.FastQuery(_sql);
             }
             else
             {
