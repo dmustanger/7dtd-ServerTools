@@ -1775,12 +1775,12 @@ namespace ServerTools
                             if (!InfoTicker.exemptionList.Contains(_cInfo.playerId))
                             {
                                 InfoTicker.exemptionList.Add(_cInfo.playerId);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have turned off infoticker messages until the server restarts.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have turned off infoticker messages until the server restarts.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                             else
                             {
                                 InfoTicker.exemptionList.Remove(_cInfo.playerId);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have turned on infoticker messages.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have turned on infoticker messages.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                             return false;
                         }
