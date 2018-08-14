@@ -1197,7 +1197,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (FriendTeleport.IsEnabled && _message.ToLower() == ("accept") || TeleportHome.IsEnabled && _message.ToLower() == ("accept"))
+                        if (FriendTeleport.IsEnabled && _message.ToLower() == ("accept"))
                         {
                             if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
                             {
@@ -1230,32 +1230,6 @@ namespace ServerTools
                                     FriendTeleport.Dict.Remove(_cInfo.entityId);
                                     FriendTeleport.Dict1.Remove(_cInfo.entityId);
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your friend's teleport request has expired.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                return false;
-                            }
-                            if (TeleportHome.HomeRequest.ContainsKey(_cInfo.entityId))
-                            {
-                                int[] _idAndHome;
-                                TeleportHome.HomeRequest.TryGetValue(_cInfo.entityId, out _idAndHome);
-                                Vector3 _position;
-                                TeleportHome.HomeRequestPos.TryGetValue(_cInfo.entityId, out _position);
-                                DateTime _time;
-                                TeleportHome.HomeRequestTime.TryGetValue(_cInfo.entityId, out _time);
-                                TimeSpan varTime = DateTime.Now - _time;
-                                double fractionalSeconds = varTime.TotalSeconds;
-                                int _timepassed = (int)fractionalSeconds;
-                                if (_timepassed <= 2)
-                                {
-                                    TeleportHome.HomeRequest.Remove(_cInfo.entityId);
-                                    TeleportHome.HomeRequestTime.Remove(_cInfo.entityId);
-                                    TeleportHome.HomeRequestPos.Remove(_cInfo.entityId);
-                                    TeleportHome.AcceptRequest(_cInfo, _idAndHome, _position);
-                                }
-                                else
-                                {
-                                    TeleportHome.HomeRequest.Remove(_cInfo.entityId);
-                                    TeleportHome.HomeRequestTime.Remove(_cInfo.entityId);
-                                    TeleportHome.HomeRequestPos.Remove(_cInfo.entityId);
                                 }
                                 return false;
                             }
