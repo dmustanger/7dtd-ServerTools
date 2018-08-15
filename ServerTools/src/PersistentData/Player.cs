@@ -81,8 +81,8 @@ namespace ServerTools
         private bool isclanofficer;
         //private bool ismuted;
         //private bool isjailed;
-        private bool isremovedfromjail = true;
-        private bool startingItems;
+        //private bool isremovedfromjail = true;
+        //private bool startingItems;
         private bool poll;
 
         public string[] Waypoints
@@ -313,17 +313,17 @@ namespace ServerTools
             //}
         //}
 
-        public bool StartingItems
-        {
-            get
-            {
-                return startingItems;
-            }
-            set
-            {
-                startingItems = value;
-            }
-        }
+        //public bool StartingItems
+        //{
+            //get
+            //{
+                //return startingItems;
+            //}
+            //set
+            //{
+                //startingItems = value;
+            //}
+        //}
 
         //public int WorldSeedCoins
         //{
@@ -961,17 +961,17 @@ namespace ServerTools
             //}
         //}
         
-        public bool IsRemovedFromJail
-        {
-            get
-            {
-                return isremovedfromjail;
-            }
-            set
-            {
-                isremovedfromjail = value;
-            }
-        }
+        //public bool IsRemovedFromJail
+        //{
+            //get
+            //{
+                //return isremovedfromjail;
+            //}
+            //set
+            //{
+                //isremovedfromjail = value;
+            //}
+        //}
 
         public bool Poll
         {

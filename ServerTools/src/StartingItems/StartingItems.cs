@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Xml;
 using UnityEngine;
@@ -167,17 +168,14 @@ namespace ServerTools
         {
             if (startItemList.Count > 0)
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null)
+                string _sql = string.Format("SELECT startingItems FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                bool _startingItems;
+                bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _startingItems);
+                _result.Dispose();
+                if (!_startingItems)
                 {
                     Exec(_cInfo);
-                }
-                else
-                {
-                    if (!p.StartingItems)
-                    {
-                        Exec(_cInfo);
-                    }
                 }
             }
             else
@@ -229,8 +227,8 @@ namespace ServerTools
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                 Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
             }
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = true;
-            PersistentContainer.Instance.Save();
+            string _sql = string.Format("UPDATE Players SET startingItems = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
+            SQL.FastQuery(_sql);
         }
     }
 }
