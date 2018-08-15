@@ -72,7 +72,6 @@ namespace ServerTools
             PersistentContainer.Instance.Players[_cInfo.playerId, true].IsClanOfficer = false;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].IsMuted = false;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].IsJailed = false;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastLobby = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].CancelTime = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].SellDate = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].Log = DateTime.Now.AddDays(-5);
@@ -126,6 +125,7 @@ namespace ServerTools
                     "lastsethome = '10/29/2000 7:30:00 AM', " +
                     "lastwhisper = 'Unknown', " +
                     "lastStuck = '10/29/2000 7:30:00 AM' " +
+                    "lastLobby = '10/29/2000 7:30:00 AM' " +
                     "WHERE steamid = '{6}'", _newSession, _player.KilledPlayers, _player.KilledZombies, _player.Score, _deaths, _name, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }

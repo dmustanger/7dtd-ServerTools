@@ -48,7 +48,7 @@ namespace ServerTools
         //private DateTime lastWaypoint;
         //private DateTime lastMarket;
         //private DateTime lastStuck;
-        private DateTime lastLobby;
+        //private DateTime lastLobby;
         private DateTime cancelTime;
         private DateTime sellDate;
         private DateTime log;
@@ -384,17 +384,17 @@ namespace ServerTools
             //}
         //}
 
-        public DateTime LastLobby
-        {
-            get
-            {
-                return lastLobby;
-            }
-            set
-            {
-                lastLobby = value;
-            }
-        }
+        //public DateTime LastLobby
+        //{
+            //get
+            //{
+                //return lastLobby;
+            //}
+            //set
+            //{
+                //lastLobby = value;
+            //}
+        //}
 
         public DateTime Log
         {
