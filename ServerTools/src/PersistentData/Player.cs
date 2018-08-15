@@ -79,7 +79,7 @@ namespace ServerTools
         //private bool firstClaim;
         private bool isclanowner;
         private bool isclanofficer;
-        private bool ismuted;
+        //private bool ismuted;
         private bool isjailed;
         private bool isremovedfromjail = true;
         private bool startingItems;
@@ -937,17 +937,17 @@ namespace ServerTools
             //}
         //}
 
-        public bool IsMuted
-        {
-            get
-            {
-                return ismuted;
-            }
-            set
-            {
-                ismuted = value;
-            }
-        }
+        //public bool IsMuted
+        //{
+            //get
+            //{
+                //return ismuted;
+            //}
+            //set
+            //{
+                //ismuted = value;
+            //}
+        //}
 
         public bool IsJailed
         {
