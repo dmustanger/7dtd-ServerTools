@@ -8,6 +8,7 @@ namespace ServerTools
         private static MySqlConnection connection;
         private static MySqlCommand cmd;
         public static string Server = "localhost";
+        public static int Port = 3306;
         public static string Database = "ServerTools";
         public static string UserName = "UserName";
         public static string Password = "ChangeMe";
@@ -15,7 +16,7 @@ namespace ServerTools
         public static void SetConnection()
         {
             string _connectionString;
-            _connectionString = string.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};", Server, Database, UserName, Password);
+            _connectionString = string.Format("SERVER={0};PORT={1};DATABASE={2};UID={3};PASSWORD={4};", Server, Port, Database, UserName, Password);
             connection = new MySqlConnection(_connectionString);
             try
             {
