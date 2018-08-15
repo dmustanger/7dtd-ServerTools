@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Xml;
 using UnityEngine;
@@ -328,8 +329,12 @@ namespace ServerTools
         public static void ReturnToPosition(ClientInfo _cInfo)
         {
             bool _donator = false;
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            TimeSpan varTime = DateTime.Now - p.RespawnTime;
+            string _sql = string.Format("SELECT respawnTime FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            DateTime _respawnTime;
+            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _respawnTime);
+            _result.Dispose();
+            TimeSpan varTime = DateTime.Now - _respawnTime;
             double fractionalMinutes = varTime.TotalMinutes;
             int _timepassed = (int)fractionalMinutes;
             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)

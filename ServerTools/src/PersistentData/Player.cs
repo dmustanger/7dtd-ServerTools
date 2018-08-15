@@ -69,7 +69,7 @@ namespace ServerTools
         private DateTime customCommand8;
         private DateTime customCommand9;
         private DateTime customCommand10;
-        private DateTime respawnTime;
+        //private DateTime respawnTime;
         private DateTime lastTravel;
         private DateTime lastAnimals;
         private DateTime lastVoteReward;
@@ -625,17 +625,17 @@ namespace ServerTools
             }
         }
 
-        public DateTime RespawnTime
-        {
-            get
-            {
-                return respawnTime;
-            }
-            set
-            {
-                respawnTime = value;
-            }
-        }
+        //public DateTime RespawnTime
+        //{
+            //get
+            //{
+                //return respawnTime;
+            //}
+            //set
+            //{
+                //respawnTime = value;
+            //}
+        //}
 
         public DateTime LastTravel
         {

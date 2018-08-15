@@ -71,8 +71,9 @@ namespace ServerTools
                 "lastStuck TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
                 "lastLobby TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
                 "lastLog TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
-                "lastDied TEXT DEFAULT '10/29/2000 7:30:00 AM' " +
-                "lastFriendTele TEXT DEFAULT '10/29/2000 7:30:00 AM' " +
+                "lastDied TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
+                "lastFriendTele TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
+                "respawnTime TEXT DEFAULT '10/29/2000 7:30:00 AM' " +
                 ");");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER);");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");
