@@ -78,7 +78,8 @@ namespace ServerTools
                 "lastAnimals TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
                 "lastVoteReward TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
                 "firstClaim TEXT DEFAULT 'false', " +
-                "ismuted TEXT DEFAULT 'false' " +
+                "ismuted TEXT DEFAULT 'false', " +
+                "isjailed TEXT DEFAULT 'false' " +
                 ");");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER);");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");
