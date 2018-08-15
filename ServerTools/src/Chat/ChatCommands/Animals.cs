@@ -29,8 +29,12 @@ namespace ServerTools
             }
             else
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null || p.LastAnimals == null)
+                string _sql = string.Format("SELECT lastAnimals FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                DateTime _lastAnimals;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastAnimals);
+                _result.Dispose();
+                if (_lastAnimals.ToString() == "10/29/2000 7:30:00 AM")
                 {
                     if (Wallet.IsEnabled && Command_Cost >= 1)
                     {
@@ -43,7 +47,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    TimeSpan varTime = DateTime.Now - p.LastAnimals;
+                    TimeSpan varTime = DateTime.Now - _lastAnimals;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
                     if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -211,9 +215,10 @@ namespace ServerTools
                 {
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase715), Config.Server_Response_Name, false, "ServerTools", false));
                 }
+                string _sql;
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                     DataTable _result = SQL.TQuery(_sql);
                     int _playerSpentCoins;
                     int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
@@ -221,8 +226,8 @@ namespace ServerTools
                     _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now;
-                PersistentContainer.Instance.Save();
+                _sql = string.Format("UPDATE Players SET lastAnimals = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                SQL.FastQuery(_sql);
             }
             else
             {
