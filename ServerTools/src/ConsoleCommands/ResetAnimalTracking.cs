@@ -77,6 +77,10 @@ namespace ServerTools
                                 SQL.FastQuery(_sql);
                                 SdtdConsole.Instance.Output("Animal tracking delay reset.");
                             }
+                            else
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a animal tracking delay to reset.", _params[1]));
+                            }
                         }
                         else
                         {

@@ -72,7 +72,7 @@ namespace ServerTools
         //private DateTime respawnTime;
         //private DateTime lastTravel;
         //private DateTime lastAnimals;
-        private DateTime lastVoteReward;
+        //private DateTime lastVoteReward;
         //private DateTime lastgimme;
         //private DateTime lastkillme;
         //private DateTime lastsethome;
@@ -673,17 +673,17 @@ namespace ServerTools
             //}
         //}
 
-        public DateTime LastVoteReward
-        {
-            get
-            {
-                return lastVoteReward;
-            }
-            set
-            {
-                lastVoteReward = value;
-            }
-        }
+        //public DateTime LastVoteReward
+        //{
+            //get
+            //{
+                //return lastVoteReward;
+            //}
+            //set
+            //{
+                //lastVoteReward = value;
+            //}
+        //}
 
         //public int Bank
         //{

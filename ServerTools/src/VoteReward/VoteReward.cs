@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Net;
 using System.Xml;
@@ -199,14 +200,18 @@ namespace ServerTools
                 }
                 else
                 {
-                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                    if (p == null || p.LastVoteReward == null)
+                    string _sql = string.Format("SELECT lastVoteReward FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    DataTable _result = SQL.TQuery(_sql);
+                    DateTime _lastVoteReward;
+                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastVoteReward);
+                    _result.Dispose();
+                    if (_lastVoteReward.ToString() == "10/29/2000 7:30:00 AM")
                     {
                         Open(_cInfo);
                     }
                     else
                     {
-                        TimeSpan varTime = DateTime.Now - p.LastVoteReward;
+                        TimeSpan varTime = DateTime.Now - _lastVoteReward;
                         double fractionalHours = varTime.TotalHours;
                         int _timepassed = (int)fractionalHours;
                         if (_timepassed >= Delay_Between_Uses)
@@ -404,8 +409,8 @@ namespace ServerTools
                             list.Clear();
                             list = new List<string>(dict.Keys);
                             _counter = 0;
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now;
-                            PersistentContainer.Instance.Save();
+                            string _sql = string.Format("UPDATE Players SET lastVoteReward = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                            SQL.FastQuery(_sql);
                             string _phrase703;
                             if (!Phrases.Dict.TryGetValue(703, out _phrase703))
                             {
@@ -461,8 +466,8 @@ namespace ServerTools
                         {
                             Entity entity = EntityFactory.CreateEntity(i, new Vector3((float)_x, (float)_y, (float)_z));
                             GameManager.Instance.World.SpawnEntityInWorld(entity);
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now;
-                            PersistentContainer.Instance.Save();
+                            string _sql = string.Format("UPDATE Players SET lastVoteReward = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                            SQL.FastQuery(_sql);
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Spawned a {1} near you.[-]", Config.Chat_Response_Color, eClass.entityClassName), Config.Server_Response_Name, false, "ServerTools", false));
                             string _phrase701;
                             if (!Phrases.Dict.TryGetValue(701, out _phrase701))
