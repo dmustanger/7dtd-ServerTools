@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using UnityEngine;
 
@@ -33,40 +34,37 @@ namespace ServerTools
 
         public static void Check(ClientInfo _cInfo, string _message)
         {
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p == null)
+            string _sql = string.Format("SELECT lastLog FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            DateTime _lastLog;
+            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastLog);
+            _result.Dispose();
+            if (_lastLog.ToString() != "10/29/2000 7:30:00 AM")
             {
-                Exec(_cInfo, _message);
-            }
-            else
-            {
-                if (p.Log != null)
-                {
-                    TimeSpan varTime = DateTime.Now - p.Log;
-                    double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
-                    if (_timepassed >= Delay)
-                    {
-                        Exec(_cInfo, _message);
-                    }
-                    else
-                    {
-                        int _timeleft = Delay - _timepassed;
-                        string _phrase795;
-                        if (!Phrases.Dict.TryGetValue(795, out _phrase795))
-                        {
-                            _phrase795 = "{PlayerName} you can only use /report once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                        }
-                        _phrase795 = _phrase795.Replace("{PlayerName}", _cInfo.playerName);
-                        _phrase795 = _phrase795.Replace("{DelayBetweenUses}", Delay.ToString());
-                        _phrase795 = _phrase795.Replace("{TimeRemaining}", _timeleft.ToString());
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase795), Config.Server_Response_Name, false, "ServerTools", false));
-                    }
-                }
-                else
+                TimeSpan varTime = DateTime.Now - _lastLog;
+                double fractionalMinutes = varTime.TotalMinutes;
+                int _timepassed = (int)fractionalMinutes;
+                if (_timepassed >= Delay)
                 {
                     Exec(_cInfo, _message);
                 }
+                else
+                {
+                    int _timeleft = Delay - _timepassed;
+                    string _phrase795;
+                    if (!Phrases.Dict.TryGetValue(795, out _phrase795))
+                    {
+                        _phrase795 = "{PlayerName} you can only use /report once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    }
+                    _phrase795 = _phrase795.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase795 = _phrase795.Replace("{DelayBetweenUses}", Delay.ToString());
+                    _phrase795 = _phrase795.Replace("{TimeRemaining}", _timeleft.ToString());
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase795), Config.Server_Response_Name, false, "ServerTools", false));
+                }
+            }
+            else
+            {
+                Exec(_cInfo, _message);
             }
         }
 
@@ -106,8 +104,8 @@ namespace ServerTools
             }
             _phrase797 = _phrase797.Replace("{PlayerName}", _cInfo.playerName);
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase797), Config.Server_Response_Name, false, "ServerTools", false));
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].Log = DateTime.Now;
-            PersistentContainer.Instance.Save();
+            string _sql = string.Format("UPDATE Players SET lastLog = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+            SQL.FastQuery(_sql);
             Log.Out(string.Format("[SERVERTOOLS] Report sent by player name {0}", _cInfo.playerName));
         }
     }

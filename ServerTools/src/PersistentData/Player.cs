@@ -51,7 +51,7 @@ namespace ServerTools
         //private DateTime lastLobby;
         private DateTime cancelTime;
         private DateTime sellDate;
-        private DateTime log;
+        //private DateTime log;
         //private DateTime jailDate;
         //private DateTime muteDate;
         //private DateTime lastBike;
@@ -396,17 +396,17 @@ namespace ServerTools
             //}
         //}
 
-        public DateTime Log
-        {
-            get
-            {
-                return log;
-            }
-            set
-            {
-                log = value;
-            }
-        }
+        //public DateTime Log
+        //{
+            //get
+            //{
+                //return log;
+            //}
+            //set
+            //{
+                //log = value;
+            //}
+        //}
 
         public DateTime CancelTime
         {
