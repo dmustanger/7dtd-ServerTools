@@ -82,7 +82,6 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand8 = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand9 = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand10 = DateTime.Now.AddDays(-5);
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].LastTravel = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastAnimals = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastVoteReward = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].ClanName = null;
@@ -115,7 +114,8 @@ namespace ServerTools
                                 "lastLog = '10/29/2000 7:30:00 AM', " +
                                 "lastBackpack = '10/29/2000 7:30:00 AM', " +
                                 "lastFriendTele = '10/29/2000 7:30:00 AM', " +
-                                "respawnTime = '10/29/2000 7:30:00 AM' " +
+                                "respawnTime = '10/29/2000 7:30:00 AM', " +
+                                "lastTravel = '10/29/2000 7:30:00 AM' " +
                                 "WHERE steamid = '{0}'", _cInfo.playerId);
                             SQL.FastQuery(_sql);
                         }
@@ -178,7 +178,6 @@ namespace ServerTools
                             PersistentContainer.Instance.Players[_value.ToString(), true].CustomCommand8 = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].CustomCommand9 = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].CustomCommand10 = DateTime.Now.AddDays(-5);
-                            PersistentContainer.Instance.Players[_value.ToString(), true].LastTravel = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].LastAnimals = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].LastVoteReward = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].ClanName = null;
@@ -211,7 +210,8 @@ namespace ServerTools
                                     "lastLog = '10/29/2000 7:30:00 AM', " +
                                     "lastDied = '10/29/2000 7:30:00 AM', " +
                                     "lastFriendTele = '10/29/2000 7:30:00 AM', " +
-                                    "respawnTime = '10/29/2000 7:30:00 AM' " +
+                                    "respawnTime = '10/29/2000 7:30:00 AM', " +
+                                    "lastTravel = '10/29/2000 7:30:00 AM' " +
                                     "WHERE steamid = '{0}'", _value.ToString());
                                 SQL.FastQuery(_sql);
                             }
