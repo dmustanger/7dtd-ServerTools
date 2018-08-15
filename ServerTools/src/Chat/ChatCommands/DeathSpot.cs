@@ -25,8 +25,12 @@ namespace ServerTools
             }
             else
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null || p.LastDied == null)
+                string _sql = string.Format("SELECT lastDied FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                DateTime _lastDied;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastDied);
+                _result.Dispose();
+                if (_lastDied.ToString() == "10/29/2000 7:30:00 AM")
                 {
                     if (Wallet.IsEnabled && Command_Cost >= 1)
                     {
@@ -39,7 +43,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    TimeSpan varTime = DateTime.Now - p.LastDied;
+                    TimeSpan varTime = DateTime.Now - _lastDied;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
                     if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -180,9 +184,10 @@ namespace ServerTools
                             int.TryParse(_cords[2], out z);
                             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
                             Players.LastDeathPos.Remove(_cInfo.entityId);
+                            string _sql;
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
-                                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                                 DataTable _result = SQL.TQuery(_sql);
                                 int _playerSpentCoins;
                                 int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
@@ -190,8 +195,8 @@ namespace ServerTools
                                 _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
                                 SQL.FastQuery(_sql);
                             }
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastDied = DateTime.Now;
-                            PersistentContainer.Instance.Save();
+                            _sql = string.Format("UPDATE Players SET lastDied = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                            SQL.FastQuery(_sql);
                             string _phrase736;
                             if (!Phrases.Dict.TryGetValue(736, out _phrase736))
                             {

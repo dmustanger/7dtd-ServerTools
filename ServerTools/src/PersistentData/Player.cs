@@ -55,8 +55,9 @@ namespace ServerTools
         //private DateTime jailDate;
         //private DateTime muteDate;
         //private DateTime lastBike;
-        private DateTime lastBackpack;
-        private DateTime lastDied;
+               //lastBackpack same as lastDied?
+        //private DateTime lastBackpack;
+        //private DateTime lastDied;
         private DateTime lastFriendTele;
         private DateTime customCommand1;
         private DateTime customCommand2;
@@ -468,29 +469,29 @@ namespace ServerTools
             //}
         //}
 
-        public DateTime LastBackpack
-        {
-            get
-            {
-                return lastBackpack;
-            }
-            set
-            {
-                lastBackpack = value;
-            }
-        }
+        //public DateTime LastBackpack
+        //{
+            //get
+            //{
+                //return lastBackpack;
+            //}
+            //set
+            //{
+                //lastBackpack = value;
+            //}
+        //}
 
-        public DateTime LastDied
-        {
-            get
-            {
-                return lastDied;
-            }
-            set
-            {
-                lastDied = value;
-            }
-        }
+        //public DateTime LastDied
+        //{
+            //get
+            //{
+                //return lastDied;
+            //}
+            //set
+            //{
+                //lastDied = value;
+            //}
+        //}
 
         public DateTime LastFriendTele
         {
