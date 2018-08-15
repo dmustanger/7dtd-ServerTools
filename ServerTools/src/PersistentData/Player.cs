@@ -47,7 +47,7 @@ namespace ServerTools
         //private string ipAddress;
         //private DateTime lastWaypoint;
         //private DateTime lastMarket;
-        private DateTime lastStuck;
+        //private DateTime lastStuck;
         private DateTime lastLobby;
         private DateTime cancelTime;
         private DateTime sellDate;
@@ -372,17 +372,17 @@ namespace ServerTools
             }
         }
 
-        public DateTime LastStuck
-        {
-            get
-            {
-                return lastStuck;
-            }
-            set
-            {
-                lastStuck = value;
-            }
-        }
+        //public DateTime LastStuck
+        //{
+            //get
+            //{
+                //return lastStuck;
+            //}
+            //set
+            //{
+                //lastStuck = value;
+            //}
+        //}
 
         public DateTime LastLobby
         {

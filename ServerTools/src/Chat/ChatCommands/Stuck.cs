@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Data;
 using UnityEngine;
 
 namespace ServerTools
@@ -20,14 +18,18 @@ namespace ServerTools
             }
             else
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null || p.LastStuck == null)
+                string _sql = string.Format("SELECT lastMarket FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                DateTime _lastStuck;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastStuck);
+                _result.Dispose();
+                if (_lastStuck.ToString() == "10/29/2000 7:30:00 AM")
                 {
                     CheckLP(_cInfo);
                 }
                 else
                 {
-                    TimeSpan varTime = DateTime.Now - p.LastStuck;
+                    TimeSpan varTime = DateTime.Now - _lastStuck;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
                     if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -179,8 +181,8 @@ namespace ServerTools
             {
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase922), Config.Server_Response_Name, false, "ServerTools", false));
             }
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].LastStuck = DateTime.Now;
-            PersistentContainer.Instance.Save();
+            string _sql = string.Format("UPDATE Players SET lastStuck = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+            SQL.FastQuery(_sql);
         }
     }
 }

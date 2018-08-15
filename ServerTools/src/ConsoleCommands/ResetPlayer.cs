@@ -70,14 +70,11 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].IsClanOfficer = false;
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].IsMuted = false;
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].IsJailed = false;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].LastStuck = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastLobby = DateTime.Now.AddDays(-5);
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].LastStuck = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].CancelTime = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].SellDate = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].Log = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastBackpack = DateTime.Now.AddDays(-5);
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].LastStuck = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].LastFriendTele = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand1 = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand2 = DateTime.Now.AddDays(-5);
@@ -118,7 +115,8 @@ namespace ServerTools
                                 "homeposition = 'Unknown', " +
                                 "homeposition2 = 'Unknown', " +
                                 "lastsethome = '10/29/2000 7:30:00 AM', " +
-                                "lastwhisper = 'Unknown' " +
+                                "lastwhisper = 'Unknown', " +
+                                "lastStuck = '10/29/2000 7:30:00 AM' " +
                                 "WHERE steamid = '{0}'", _cInfo.playerId);
                             SQL.FastQuery(_sql);
                         }
@@ -169,14 +167,11 @@ namespace ServerTools
                             PersistentContainer.Instance.Players[_value.ToString(), true].IsClanOfficer = false;
                             PersistentContainer.Instance.Players[_value.ToString(), true].IsMuted = false;
                             PersistentContainer.Instance.Players[_value.ToString(), true].IsJailed = false;
-                            PersistentContainer.Instance.Players[_value.ToString(), true].LastStuck = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].LastLobby = DateTime.Now.AddDays(-5);
-                            PersistentContainer.Instance.Players[_value.ToString(), true].LastStuck = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].CancelTime = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].SellDate = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].Log = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].LastBackpack = DateTime.Now.AddDays(-5);
-                            PersistentContainer.Instance.Players[_value.ToString(), true].LastStuck = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].LastFriendTele = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].CustomCommand1 = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].CustomCommand2 = DateTime.Now.AddDays(-5);
@@ -217,7 +212,8 @@ namespace ServerTools
                                     "homeposition = 'Unknown', " +
                                     "homeposition2 = 'Unknown', " +
                                     "lastsethome = '10/29/2000 7:30:00 AM', " +
-                                    "lastwhisper = 'Unknown' " +
+                                    "lastwhisper = 'Unknown', " +
+                                    "lastStuck = '10/29/2000 7:30:00 AM' " +
                                     "WHERE steamid = '{0}'", _value.ToString());
                                 SQL.FastQuery(_sql);
                             }
