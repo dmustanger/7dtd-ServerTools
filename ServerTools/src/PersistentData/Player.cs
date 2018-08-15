@@ -76,7 +76,7 @@ namespace ServerTools
         //private DateTime lastgimme;
         //private DateTime lastkillme;
         //private DateTime lastsethome;
-        private bool firstClaim;
+        //private bool firstClaim;
         private bool isclanowner;
         private bool isclanofficer;
         private bool ismuted;
@@ -925,17 +925,17 @@ namespace ServerTools
             }
         }
 
-        public bool FirstClaim
-        {
-            get
-            {
-                return firstClaim;
-            }
-            set
-            {
-                firstClaim = value;
-            }
-        }
+        //public bool FirstClaim
+        //{
+            //get
+            //{
+                //return firstClaim;
+            //}
+            //set
+            //{
+                //firstClaim = value;
+            //}
+        //}
 
         public bool IsMuted
         {

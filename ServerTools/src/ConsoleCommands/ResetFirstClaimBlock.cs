@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ServerTools
 {
@@ -33,27 +34,47 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("reset"))
                 {
-                    if (_params.Count != 2)
-                    {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
-                        return;
-                    }
-                    if (_params[1].Length < 1 || _params[1].Length > 17)
-                    {
-                        SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}.", _params[1]));
-                        return;
-                    }
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                    if (p != null)
+                    if (_cInfo != null)
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].FirstClaim = false;
-                        PersistentContainer.Instance.Save();
-                        SdtdConsole.Instance.Output("Players first claim block reset.");
+                        string _sql = string.Format("SELECT firstClaim FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        bool _firstClaim;
+                        bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _firstClaim);
+                        _result.Dispose();
+                        if (_firstClaim)
+                        {
+                            _sql = string.Format("UPDATE Players SET firstClaim = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                            SQL.FastQuery(_sql);
+                            SdtdConsole.Instance.Output("Players first claim block reset.");
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a first claim block to reset.", _params[1]));
+                        }
+                    }
+                    else if (_params[1].Length == 17)
+                    {
+                        string _id = SQL.EscapeString(_params[1]);
+                        string _sql = string.Format("SELECT firstClaim FROM Players WHERE steamid = '{0}'", _id);
+                        DataTable _result = SQL.TQuery(_sql);
+                        bool _firstClaim;
+                        bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _firstClaim);
+                        _result.Dispose();
+                        if (_firstClaim)
+                        {
+                            _sql = string.Format("UPDATE Players SET firstClaim = 'false' WHERE steamid = '{0}'", _id);
+                            SQL.FastQuery(_sql);
+                            SdtdConsole.Instance.Output("Players first claim block reset.");
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a first claim block to reset.", _params[1]));
+                        }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a first claim block to reset.", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}.", _params[1]));
                     }
                 }
                 else

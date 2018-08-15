@@ -67,7 +67,6 @@ namespace ServerTools
             int _newSession = _oldSession + _timepassed;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = 0;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].StartingItems = false;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].FirstClaim = false;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].IsClanOwner = false;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].IsClanOfficer = false;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].IsMuted = false;
@@ -124,7 +123,8 @@ namespace ServerTools
                     "respawnTime = '10/29/2000 7:30:00 AM', " +
                     "lastTravel = '10/29/2000 7:30:00 AM', " +
                     "lastAnimals = '10/29/2000 7:30:00 AM', " +
-                    "lastVoteReward = '10/29/2000 7:30:00 AM' " +
+                    "lastVoteReward = '10/29/2000 7:30:00 AM', " +
+                    "firstClaim = 'false' " +
                     "WHERE steamid = '{6}'", _newSession, _player.KilledPlayers, _player.KilledZombies, _player.Score, _deaths, _name, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }

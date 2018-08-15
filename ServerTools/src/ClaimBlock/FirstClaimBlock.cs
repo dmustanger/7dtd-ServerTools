@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Data;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -8,10 +9,15 @@ namespace ServerTools
 
         public static void firstClaim(ClientInfo _cInfo)
         {
-            World world = GameManager.Instance.World;
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p == null || !p.FirstClaim)
+            
+            string _sql = string.Format("SELECT firstClaim FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            bool _firstClaim;
+            bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _firstClaim);
+            _result.Dispose();
+            if (!_firstClaim)
             {
+                World world = GameManager.Instance.World;
                 string claimBlock = "keystoneBlock";
                 ItemValue itemValue;
                 itemValue = new ItemValue(ItemClass.GetItem(claimBlock).type, 1, 1, true);
@@ -34,8 +40,8 @@ namespace ServerTools
                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Claim block has been added to your inventory or if inventory is full, it dropped at your feet.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                PersistentContainer.Instance.Players[_cInfo.playerId, true].FirstClaim = true;
-                PersistentContainer.Instance.Save();
+                _sql = string.Format("UPDATE Players SET firstClaim = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
+                SQL.FastQuery(_sql);
             }
             else
             {
