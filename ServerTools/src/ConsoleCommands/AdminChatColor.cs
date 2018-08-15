@@ -30,7 +30,7 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count < 1 || _params.Count > 1)
+                if (_params.Count != 1)
                 {
                     SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
                     return;
@@ -42,36 +42,28 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("off"))
                 {
-                    if (_params.Count != 1)
+                    var _id = _senderInfo.RemoteClientInfo;
+                    if (_id != null)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
-                        return;
+                        AdminColorOff.Add(_id.playerId);
+                        SdtdConsole.Instance.Output(string.Format("Set your admin chat color to off {0}.", _id.playerName));
                     }
                     else
                     {
-                        var _id = _senderInfo.RemoteClientInfo;
-                        if (_id != null)
-                        {
-                            AdminColorOff.Add(_id.playerId);
-                        }
-                        SdtdConsole.Instance.Output(string.Format("Set your admin chat color to off {0}.", _id.playerName));
+                        SdtdConsole.Instance.Output("You must be in game to run this command.");
                     }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (_params.Count != 1)
+                    var _id = _senderInfo.RemoteClientInfo;
+                    if (_id != null)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
-                        return;
+                        AdminColorOff.Remove(_id.playerId);
+                        SdtdConsole.Instance.Output(string.Format("Set your admin chat color to on {0}.", _id.playerName));
                     }
                     else
                     {
-                        var _id = _senderInfo.RemoteClientInfo;
-                        if (_id != null)
-                        {
-                            AdminColorOff.Remove(_id.playerId);
-                        }
-                        SdtdConsole.Instance.Output(string.Format("Set your admin chat color to on {0}.", _id.playerName));
+                        SdtdConsole.Instance.Output("You must be in game to run this command.");
                     }
                 }
                 else
