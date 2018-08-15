@@ -72,7 +72,6 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].IsJailed = false;
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].CancelTime = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].SellDate = DateTime.Now.AddDays(-5);
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].LastFriendTele = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand1 = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand2 = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand3 = DateTime.Now.AddDays(-5);
@@ -116,7 +115,8 @@ namespace ServerTools
                                 "lastStuck = '10/29/2000 7:30:00 AM', " +
                                 "lastLobby = '10/29/2000 7:30:00 AM', " +
                                 "lastLog = '10/29/2000 7:30:00 AM', " +
-                                "lastBackpack = '10/29/2000 7:30:00 AM' " +
+                                "lastBackpack = '10/29/2000 7:30:00 AM', " +
+                                "lastFriendTele = '10/29/2000 7:30:00 AM' " +
                                 "WHERE steamid = '{0}'", _cInfo.playerId);
                             SQL.FastQuery(_sql);
                         }
@@ -169,7 +169,6 @@ namespace ServerTools
                             PersistentContainer.Instance.Players[_value.ToString(), true].IsJailed = false;
                             PersistentContainer.Instance.Players[_value.ToString(), true].CancelTime = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].SellDate = DateTime.Now.AddDays(-5);
-                            PersistentContainer.Instance.Players[_value.ToString(), true].LastFriendTele = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].CustomCommand1 = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].CustomCommand2 = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].CustomCommand3 = DateTime.Now.AddDays(-5);
@@ -213,7 +212,8 @@ namespace ServerTools
                                     "lastStuck = '10/29/2000 7:30:00 AM', " +
                                     "lastLobby = '10/29/2000 7:30:00 AM', " +
                                     "lastLog = '10/29/2000 7:30:00 AM', " +
-                                    "lastDied = '10/29/2000 7:30:00 AM' " +
+                                    "lastDied = '10/29/2000 7:30:00 AM', " +
+                                    "lastFriendTele = '10/29/2000 7:30:00 AM' " +
                                     "WHERE steamid = '{0}'", _value.ToString());
                                 SQL.FastQuery(_sql);
                             }

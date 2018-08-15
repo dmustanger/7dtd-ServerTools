@@ -58,7 +58,7 @@ namespace ServerTools
                //lastBackpack same as lastDied?
         //private DateTime lastBackpack;
         //private DateTime lastDied;
-        private DateTime lastFriendTele;
+        //private DateTime lastFriendTele;
         private DateTime customCommand1;
         private DateTime customCommand2;
         private DateTime customCommand3;
@@ -493,17 +493,17 @@ namespace ServerTools
             //}
         //}
 
-        public DateTime LastFriendTele
-        {
-            get
-            {
-                return lastFriendTele;
-            }
-            set
-            {
-                lastFriendTele = value;
-            }
-        }
+        //public DateTime LastFriendTele
+        //{
+            //get
+            //{
+                //return lastFriendTele;
+            //}
+            //set
+            //{
+                //lastFriendTele = value;
+            //}
+        //}
 
         public DateTime CustomCommand1
         {

@@ -45,8 +45,12 @@ namespace ServerTools
         public static void CheckDelay(ClientInfo _cInfo, string _message, bool _announce)
         {
             bool _donator = false;
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (Delay_Between_Uses < 1 || p == null || p.LastFriendTele == null)
+            string _sql = string.Format("SELECT lastFriendTele FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            DateTime _lastFriendTele;
+            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastFriendTele);
+            _result.Dispose();
+            if (Delay_Between_Uses < 1 || _lastFriendTele.ToString() == "10/29/2000 7:30:00 AM")
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
@@ -59,7 +63,7 @@ namespace ServerTools
             }
             else
             {
-                TimeSpan varTime = DateTime.Now - p.LastFriendTele;
+                TimeSpan varTime = DateTime.Now - _lastFriendTele;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int _timepassed = (int)fractionalMinutes;
                 if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -249,9 +253,10 @@ namespace ServerTools
             {
                 Players.NoFlight.Add(_cInfo2.entityId);
                 _cInfo2.SendPackage(new NetPackageTeleportPlayer(new Vector3((int)_player.position.x, (int)_player.position.y, (int)_player.position.z), false));
+                string _sql;
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                     DataTable _result = SQL.TQuery(_sql);
                     int _playerSpentCoins;
                     int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
@@ -259,8 +264,8 @@ namespace ServerTools
                     _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
-                PersistentContainer.Instance.Players[_cInfo2.playerId, true].LastFriendTele = DateTime.Now;
-                PersistentContainer.Instance.Save();
+                _sql = string.Format("UPDATE Players SET lastFriendTele = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo2.playerId);
+                SQL.FastQuery(_sql);
                 string _phrase631;
                 if (!Phrases.Dict.TryGetValue(631, out _phrase631))
                 {

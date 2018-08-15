@@ -87,6 +87,7 @@ namespace ServerTools
                 "lastLobby VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
                 "lastLog VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
                 "lastDied VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
+                "lastFriendTele VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
                 "PRIMARY KEY (steamid)) ENGINE = InnoDB;");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER) ENGINE = InnoDB;");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");
