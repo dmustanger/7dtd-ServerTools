@@ -64,8 +64,6 @@ namespace ServerTools
                             File.Delete(_filepath1);
                         }
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = 0;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].IsClanOwner = false;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].IsClanOfficer = false;
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].CancelTime = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].SellDate = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand1 = DateTime.Now.AddDays(-5);
@@ -78,8 +76,6 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand8 = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand9 = DateTime.Now.AddDays(-5);
                         PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand10 = DateTime.Now.AddDays(-5);
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].ClanName = null;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].InvitedToClan = null;
                         PersistentContainer.Instance.Save();
                         string _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                         DataTable _result = SQL.TQuery(_sql);
@@ -115,7 +111,11 @@ namespace ServerTools
                                 "firstClaim = 'false', " +
                                 "ismuted = 'false', " +
                                 "isjailed = 'false', " +
-                                "startingItems = 'false' " +
+                                "startingItems = 'false', " +
+                                "clanname = 'Unknown', " +
+                                "invitedtoclan = 'Unknown', " +
+                                "isclanowner = 'false', " +
+                                "isclanofficer = 'false' " +
                                 "WHERE steamid = '{0}'", _cInfo.playerId);
                             SQL.FastQuery(_sql);
                         }
@@ -160,8 +160,6 @@ namespace ServerTools
                                 File.Delete(_filepath1);
                             }
                             PersistentContainer.Instance.Players[_value.ToString(), true].AuctionData = 0;
-                            PersistentContainer.Instance.Players[_value.ToString(), true].IsClanOwner = false;
-                            PersistentContainer.Instance.Players[_value.ToString(), true].IsClanOfficer = false;
                             PersistentContainer.Instance.Players[_value.ToString(), true].CancelTime = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].SellDate = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].CustomCommand1 = DateTime.Now.AddDays(-5);
@@ -174,8 +172,6 @@ namespace ServerTools
                             PersistentContainer.Instance.Players[_value.ToString(), true].CustomCommand8 = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].CustomCommand9 = DateTime.Now.AddDays(-5);
                             PersistentContainer.Instance.Players[_value.ToString(), true].CustomCommand10 = DateTime.Now.AddDays(-5);
-                            PersistentContainer.Instance.Players[_value.ToString(), true].ClanName = null;
-                            PersistentContainer.Instance.Players[_value.ToString(), true].InvitedToClan = null;
                             PersistentContainer.Instance.Save();
                             string _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _value.ToString());
                             DataTable _result = SQL.TQuery(_sql);
@@ -211,7 +207,11 @@ namespace ServerTools
                                     "firstClaim = 'false', " +
                                     "ismuted = 'false', " +
                                     "isjailed = 'false', " +
-                                    "startingItems = 'false' " +
+                                    "startingItems = 'false', " +
+                                    "clanname = 'Unknown', " +
+                                    "invitedtoclan = 'Unknown', " +
+                                    "isclanowner = 'false', " +
+                                    "isclanofficer = 'false' " +
                                     "WHERE steamid = '{0}'", _value.ToString());
                                 SQL.FastQuery(_sql);
                             }

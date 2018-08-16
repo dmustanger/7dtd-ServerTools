@@ -12,7 +12,6 @@ namespace ServerTools
     {
         public static int Bonus = 0;
         public Dictionary<string, Player> players = new Dictionary<string, Player>();
-        public Dictionary<string, string> clans = new Dictionary<string, string>();
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
         public static Dictionary<int, DateTime> DeathTime = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> LastDeathPos = new Dictionary<int, string>();
@@ -35,14 +34,6 @@ namespace ServerTools
             if (!Directory.Exists(API.GamePath + "/Bounties"))
             {
                 Directory.CreateDirectory(API.GamePath + "/Bounties");
-            }
-        }
-
-        public List<string> ClanList
-        {
-            get
-            {
-                return new List<string>(clans.Keys);
             }
         }
 
@@ -75,24 +66,6 @@ namespace ServerTools
                         return p;
                     }
                     return null;
-                }
-            }
-        }
-
-        public void GetClans()
-        {
-            foreach (string _id in PersistentContainer.Instance.Players.SteamIDs)
-            {
-                Player p = PersistentContainer.Instance.Players[_id, false];
-                if (p.IsClanOwner)
-                {
-                    if (!clans.ContainsKey(p.ClanName))
-                    {
-                        if (p.ClanName != null)
-                        {
-                            clans.Add(p.ClanName, _id);
-                        }
-                    }
                 }
             }
         }
@@ -224,16 +197,20 @@ namespace ServerTools
                                                 {
                                                     if (ClanManager.ClanMember.Contains(_cInfo.playerId) && ClanManager.ClanMember.Contains(_cInfo2.playerId))
                                                     {
-                                                        Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
+                                                        string _sql1 = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                                        DataTable _result1 = SQL.TQuery(_sql1);
+                                                        string _clanName = _result1.Rows[0].ItemArray.GetValue(0).ToString();
+                                                        _result1.Dispose();
+                                                        _sql1 = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo2.playerId);
+                                                        DataTable _result2 = SQL.TQuery(_sql1);
+                                                        string _clanName2 = _result2.Rows[0].ItemArray.GetValue(0).ToString();
+                                                        _result2.Dispose();
                                                         Player p2 = PersistentContainer.Instance.Players[_cInfo2.playerId, false];
-                                                        if (p != null && p2 != null)
+                                                        if (_clanName != "Unknown" && _clanName2 != "Unknown")
                                                         {
-                                                            if (p.ClanName != null && p2.ClanName != null)
+                                                            if (_clanName == _clanName2)
                                                             {
-                                                                if (p.ClanName == p2.ClanName)
-                                                                {
-                                                                    return;
-                                                                }
+                                                                return;
                                                             }
                                                         }
                                                     }

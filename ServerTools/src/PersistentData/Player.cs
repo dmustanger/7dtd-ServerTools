@@ -41,8 +41,8 @@ namespace ServerTools
         //private string muteName;
         //private string homeposition;
         //private string homeposition2;
-        private string clanname;
-        private string invitedtoclan;
+        //private string clanname;
+        //private string invitedtoclan;
         //private string lastwhisper;
         //private string ipAddress;
         //private DateTime lastWaypoint;
@@ -77,13 +77,13 @@ namespace ServerTools
         //private DateTime lastkillme;
         //private DateTime lastsethome;
         //private bool firstClaim;
-        private bool isclanowner;
-        private bool isclanofficer;
+        //private bool isclanowner;
+        //private bool isclanofficer;
         //private bool ismuted;
         //private bool isjailed;
         //private bool isremovedfromjail = true;
         //private bool startingItems;
-        private bool poll;
+        //private bool poll;
 
         public string[] Waypoints
         {
@@ -853,29 +853,29 @@ namespace ServerTools
             //}
         //}
 
-        public string ClanName
-        {
-            get
-            {
-                return clanname;
-            }
-            set
-            {
-                clanname = value;
-            }
-        }
+        //public string ClanName
+        //{
+            //get
+            //{
+                //return clanname;
+            //}
+            //set
+            //{
+                //clanname = value;
+            //}
+        //}
 
-        public string InvitedToClan
-        {
-            get
-            {
-                return invitedtoclan;
-            }
-            set
-            {
-                invitedtoclan = value;
-            }
-        }
+        //public string InvitedToClan
+        //{
+            //get
+            //{
+                //return invitedtoclan;
+            //}
+            //set
+            //{
+                //invitedtoclan = value;
+            //}
+        //}
 
         //public string LastWhisper
         //{
@@ -901,29 +901,29 @@ namespace ServerTools
             //}
         //}
 
-        public bool IsClanOwner
-        {
-            get
-            {
-                return isclanowner;
-            }
-            set
-            {
-                isclanowner = value;
-            }
-        }
+        //public bool IsClanOwner
+        //{
+            //get
+            //{
+                //return isclanowner;
+            //}
+            //set
+            //{
+                //isclanowner = value;
+            //}
+        //}
 
-        public bool IsClanOfficer
-        {
-            get
-            {
-                return isclanofficer;
-            }
-            set
-            {
-                isclanofficer = value;
-            }
-        }
+        //public bool IsClanOfficer
+        //{
+            //get
+            //{
+                //return isclanofficer;
+            //}
+            //set
+            //{
+                //isclanofficer = value;
+            //}
+        //}
 
         //public bool FirstClaim
         //{
@@ -973,17 +973,17 @@ namespace ServerTools
             //}
         //}
 
-        public bool Poll
-        {
-            get
-            {
-                return poll;
-            }
-            set
-            {
-                poll = value;
-            }
-        }
+        //public bool Poll
+        //{
+            //get
+            //{
+                //return poll;
+            //}
+            //set
+            //{
+                //poll = value;
+            //}
+        //}
 
         public Player(string steamId)
         {

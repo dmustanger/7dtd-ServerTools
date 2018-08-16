@@ -96,6 +96,10 @@ namespace ServerTools
                 "ismuted VARCHAR(10) DEFAULT 'false', " +
                 "isjailed VARCHAR(10) DEFAULT 'false', " +
                 "startingItems VARCHAR(10) DEFAULT 'false', " +
+                "clanname VARCHAR(50) DEFAULT 'Unknown', " +
+                "invitedtoclan VARCHAR(50) DEFAULT 'Unknown', " +
+                "isclanowner VARCHAR(10) DEFAULT 'false', " +
+                "isclanofficer VARCHAR(10) DEFAULT 'false', " +
                 "PRIMARY KEY (steamid)) ENGINE = InnoDB;");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER) ENGINE = InnoDB;");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");

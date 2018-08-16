@@ -66,8 +66,6 @@ namespace ServerTools
             _result.Dispose();
             int _newSession = _oldSession + _timepassed;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = 0;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].IsClanOwner = false;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].IsClanOfficer = false;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].CancelTime = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].SellDate = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand1 = DateTime.Now.AddDays(-5);
@@ -80,8 +78,6 @@ namespace ServerTools
             PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand8 = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand9 = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand10 = DateTime.Now.AddDays(-5);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].ClanName = null;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].InvitedToClan = null;
             PersistentContainer.Instance.Save();
             _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result1 = SQL.TQuery(_sql);
@@ -124,7 +120,11 @@ namespace ServerTools
                     "firstClaim = 'false', " +
                     "ismuted = 'false', " +
                     "isjailed = 'false', " +
-                    "startingItems = 'false' " +
+                    "startingItems = 'false', " +
+                    "clanname = 'Unknown', " +
+                    "invitedtoclan = 'Unknown', " +
+                    "isclanowner = 'false', " +
+                    "isclanofficer = 'false' " +
                     "WHERE steamid = '{6}'", _newSession, _player.KilledPlayers, _player.KilledZombies, _player.Score, _deaths, _name, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }

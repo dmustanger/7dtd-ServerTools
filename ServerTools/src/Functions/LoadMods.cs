@@ -64,12 +64,12 @@
             }
             if (ClanManager.IsEnabled)
             {
-                PersistentContainer.Instance.Players.GetClans();
+                ClanManager.GetClans();
                 ClanManager.BuildList();
             }
             if (!ClanManager.IsEnabled)
             {
-                PersistentContainer.Instance.Players.clans.Clear();
+                ClanManager.clans.Clear();
                 ClanManager.ClanMember.Clear();
             }
             if (!InfoTicker.IsEnabled && InfoTicker.IsRunning)

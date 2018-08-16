@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Data;
 
 namespace ServerTools
 {
@@ -93,15 +93,19 @@ namespace ServerTools
                             }
                             else
                             {
+                                string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                DataTable _result = SQL.TQuery(_sql);
+                                string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                                _result.Dispose();
                                 if (Admin_Prefix != "")
                                 {
-                                    _playerName = string.Format("{0}({1}){2} {3}[-]", Admin_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, Admin_Prefix, _playerName);
+                                    _playerName = string.Format("{0}({1}){2} {3}[-]", Admin_Color, _clanname, Admin_Prefix, _playerName);
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                     return false;
                                 }
                                 else
                                 {
-                                    _playerName = string.Format("{0}({1}) {2}[-]", Admin_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                                    _playerName = string.Format("{0}({1}) {2}[-]", Admin_Color, _clanname, _playerName);
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                     return false;
                                 }
@@ -126,15 +130,19 @@ namespace ServerTools
                             }
                             else
                             {
+                                string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                DataTable _result = SQL.TQuery(_sql);
+                                string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                                _result.Dispose();
                                 if (Mod_Prefix != "")
                                 {
-                                    _playerName = string.Format("{0}({1}){2} {3}[-]", Mod_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, Mod_Prefix, _playerName);
+                                    _playerName = string.Format("{0}({1}){2} {3}[-]", Mod_Color, _clanname, Mod_Prefix, _playerName);
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                     return false;
                                 }
                                 else
                                 {
-                                    _playerName = string.Format("{0}({1}) {2}[-]", Mod_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                                    _playerName = string.Format("{0}({1}) {2}[-]", Mod_Color, _clanname, _playerName);
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                     return false;
                                 }
@@ -169,15 +177,19 @@ namespace ServerTools
                                     }
                                     else
                                     {
+                                        string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                        DataTable _result = SQL.TQuery(_sql);
+                                        string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                                        _result.Dispose();
                                         if (Don_Prefix1 != "")
                                         {
-                                            _playerName = string.Format("{0}({1}){2} {3}[-]", Don_Color1, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, Don_Prefix1, _playerName);
+                                            _playerName = string.Format("{0}({1}){2} {3}[-]", Don_Color1, _clanname, Don_Prefix1, _playerName);
                                             GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                             return false;
                                         }
                                         else
                                         {
-                                            _playerName = string.Format("{0}({1}) {2}[-]", Don_Color1, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                                            _playerName = string.Format("{0}({1}) {2}[-]", Don_Color1, _clanname, _playerName);
                                             GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                             return false;
                                         }
@@ -210,15 +222,19 @@ namespace ServerTools
                                     }
                                     else
                                     {
+                                        string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                        DataTable _result = SQL.TQuery(_sql);
+                                        string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                                        _result.Dispose();
                                         if (Don_Prefix2 != "")
                                         {
-                                            _playerName = string.Format("{0}({1}){2} {3}[-]", Don_Color2, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, Don_Prefix2, _playerName);
+                                            _playerName = string.Format("{0}({1}){2} {3}[-]", Don_Color2, _clanname, Don_Prefix2, _playerName);
                                             GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                             return false;
                                         }
                                         else
                                         {
-                                            _playerName = string.Format("{0}({1}) {2}[-]", Don_Color2, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                                            _playerName = string.Format("{0}({1}) {2}[-]", Don_Color2, _clanname, _playerName);
                                             GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                             return false;
                                         }
@@ -251,15 +267,19 @@ namespace ServerTools
                                     }
                                     else
                                     {
+                                        string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                        DataTable _result = SQL.TQuery(_sql);
+                                        string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                                        _result.Dispose();
                                         if (Don_Prefix3 != "")
                                         {
-                                            _playerName = string.Format("{0}({1}){2} {3}[-]", Don_Color3, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, Don_Prefix3, _playerName);
+                                            _playerName = string.Format("{0}({1}){2} {3}[-]", Don_Color3, _clanname, Don_Prefix3, _playerName);
                                             GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                             return false;
                                         }
                                         else
                                         {
-                                            _playerName = string.Format("{0}({1}) {2}[-]", Don_Color3, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                                            _playerName = string.Format("{0}({1}) {2}[-]", Don_Color3, _clanname, _playerName);
                                             GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                             return false;
                                         }
@@ -287,15 +307,19 @@ namespace ServerTools
                         }
                         else
                         {
+                            string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result = SQL.TQuery(_sql);
+                            string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                            _result.Dispose();
                             if (Special_Player_Prefix != "")
                             {
-                                _playerName = string.Format("{0}({1}){2} {3}[-]", Special_Player_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, Special_Player_Prefix, _playerName);
+                                _playerName = string.Format("{0}({1}){2} {3}[-]", Special_Player_Color, _clanname, Special_Player_Prefix, _playerName);
                                 GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                 return false;
                             }
                             else
                             {
-                                _playerName = string.Format("{0}({1}) {2}[-]", Special_Player_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                                _playerName = string.Format("{0}({1}) {2}[-]", Special_Player_Color, _clanname, _playerName);
                                 GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                 return false;
                             }
@@ -320,15 +344,19 @@ namespace ServerTools
                         }
                         else
                         {
+                            string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result = SQL.TQuery(_sql);
+                            string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                            _result.Dispose();
                             if (Normal_Player_Prefix != "")
                             {
-                                _playerName = string.Format("{0}({1}){2} {3}[-]", Normal_Player_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, Normal_Player_Prefix, _playerName);
+                                _playerName = string.Format("{0}({1}){2} {3}[-]", Normal_Player_Color, _clanname, Normal_Player_Prefix, _playerName);
                                 GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                 return false;
                             }
                             else
                             {
-                                _playerName = string.Format("{0}({1}) {2}[-]", Normal_Player_Color, PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                                _playerName = string.Format("{0}({1}) {2}[-]", Normal_Player_Color, _clanname, _playerName);
                                 GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                 return false;
                             }
@@ -336,7 +364,11 @@ namespace ServerTools
                     }
                     if (ClanManager.IsEnabled && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && _secondaryName != "Coppis" && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && ClanManager.ClanMember.Contains(_cInfo.playerId))
                     {
-                        _playerName = string.Format("({0}) {1}", PersistentContainer.Instance.Players[_cInfo.playerId, false].ClanName, _playerName);
+                        string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                        _result.Dispose();
+                        _playerName = string.Format("({0}) {1}", _clanname, _playerName);
                         GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                         return false;
                     }

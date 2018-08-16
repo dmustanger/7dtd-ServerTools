@@ -80,7 +80,11 @@ namespace ServerTools
                 "firstClaim TEXT DEFAULT 'false', " +
                 "ismuted TEXT DEFAULT 'false', " +
                 "isjailed TEXT DEFAULT 'false', " +
-                "startingItems TEXT DEFAULT 'false' " +
+                "startingItems TEXT DEFAULT 'false', " +
+                "clanname TEXT DEFAULT 'Unknown', " +
+                "invitedtoclan TEXT DEFAULT 'Unknown', " +
+                "isclanowner TEXT DEFAULT 'false', " +
+                "isclanofficer TEXT DEFAULT 'false' " +
                 ");");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER);");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");
