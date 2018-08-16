@@ -1526,6 +1526,21 @@
             if any.
             </returns>
         </member>
+        <member name="M:System.Data.SQLite.SQLite3.IsAllowedToUsePool(System.Data.SQLite.SQLiteOpenFlagsEnum)">
+            <summary>
+            This method attempts to determine if a database connection opened
+            with the specified <see cref="T:system.Data.SQLite.SQLiteOpenFlagsEnum"/> should be
+            allowed into the connection pool.
+            </summary>
+            <param name="openFlags">
+            The <see cref="T:system.Data.SQLite.SQLiteOpenFlagsEnum"/> that were specified when the
+            connection was opened.
+            </param>
+            <returns>
+            Non-zero if the connection should (eventually) be allowed into the
+            connection pool; otherwise, zero.
+            </returns>
+        </member>
         <member name="F:System.Data.SQLite.SQLite3.have_errstr">
             <summary>
             Has the sqlite3_errstr() core library API been checked for yet?
@@ -2594,6 +2609,14 @@
             output for trigger programs.
             </summary>
         </member>
+        <member name="F:System.Data.SQLite.SQLiteConfigDbOpsEnum.SQLITE_DBCONFIG_RESET_DATABASE">
+            <summary>
+            This option is used as part of the process to reset a database back
+            to an empty state.  Because resetting a database is destructive and
+            irreversible, the process requires the use of this obscure flag and
+            multiple steps to help ensure that it does not happen by accident.
+            </summary>
+        </member>
         <member name="T:System.Data.SQLite.SQLiteTraceFlags">
             <summary>
             These constants are used with the sqlite3_trace_v2() API and the
@@ -2636,6 +2659,35 @@
             </param>
             <param name="i">
             The index of the blob column.
+            </param>
+            <param name="readOnly">
+            Non-zero to open the blob object for read-only access.
+            </param>
+            <returns>
+            The newly created <see cref="T:system.Data.SQLite.SQLiteBlob"/> instance -OR- null
+            if an error occurs.
+            </returns>
+        </member>
+        <member name="M:System.Data.SQLite.SQLiteBlob.Create(System.Data.SQLite.SQLiteConnection,System.String,System.String,System.String,System.Int64,System.Boolean)">
+            <summary>
+            Creates a <see cref="T:system.Data.SQLite.SQLiteBlob"/> object.  This will not work
+            for tables that were created WITHOUT ROWID.
+            </summary>
+            <param name="connection">
+            The connection to use when opening the blob object.
+            </param>
+            <param name="databaseName">
+            The name of the database containing the blob object.
+            </param>
+            <param name="tableName">
+            The name of the table containing the blob object.
+            </param>
+            <param name="columnName">
+            The name of the column containing the blob object.
+            </param>
+            <param name="rowId">
+            The integer identifier for the row associated with the desired
+            blob object.
             </param>
             <param name="readOnly">
             Non-zero to open the blob object for read-only access.
@@ -7837,6 +7889,19 @@
             <param name="i">The index of the column.</param>
             <returns>double</returns>
         </member>
+        <member name="M:System.Data.SQLite.SQLiteDataReader.GetFieldAffinity(System.Int32)">
+            <summary>
+            Determines and returns the <see cref="T:system.Data.SQLite.TypeAffinity"/> of the
+            specified column.
+            </summary>
+            <param name="i">
+            The index of the column.
+            </param>
+            <returns>
+            The <see cref="T:system.Data.SQLite.TypeAffinity"/> associated with the specified
+            column, if any.
+            </returns>
+        </member>
         <member name="M:System.Data.SQLite.SQLiteDataReader.GetFieldType(System.Int32)">
             <summary>
             Returns the .NET type of a given column
@@ -8539,6 +8604,11 @@
             A database table is locked in shared-cache mode.
             </summary>
         </member>
+        <member name="F:System.Data.SQLite.SQLiteErrorCode.Locked_Vtab">
+            <summary>
+            A virtual table in the database is locked.
+            </summary>
+        </member>
         <member name="F:System.Data.SQLite.SQLiteErrorCode.Busy_Recovery">
             <summary>
             A database file is locked due to a recovery operation.
@@ -8572,6 +8642,11 @@
         <member name="F:System.Data.SQLite.SQLiteErrorCode.Corrupt_Vtab">
             <summary>
             A virtual table is malformed.
+            </summary>
+        </member>
+        <member name="F:System.Data.SQLite.SQLiteErrorCode.Corrupt_Sequence">
+            <summary>
+            A required sequence table is missing or corrupt.
             </summary>
         </member>
         <member name="F:System.Data.SQLite.SQLiteErrorCode.ReadOnly_Recovery">
@@ -9807,6 +9882,12 @@
             The base SQLite object to interop with.
             </summary>
         </member>
+        <member name="F:System.Data.SQLite.SQLiteLog._attemptedInitialize">
+            <summary>
+            This will be non-zero if an attempt was already made to initialize
+            the (managed) logging subsystem.
+            </summary>
+        </member>
         <member name="F:System.Data.SQLite.SQLiteLog._enabled">
             <summary>
             This will be non-zero if logging is currently enabled.
@@ -9816,6 +9897,15 @@
             <summary>
             Initializes the SQLite logging facilities.
             </summary>
+        </member>
+        <member name="M:System.Data.SQLite.SQLiteLog.Initialize(System.String)">
+            <summary>
+            Initializes the SQLite logging facilities.
+            </summary>
+            <param name="className">
+            The name of the managed class that called this method.  This
+            parameter may be null.
+            </param>
         </member>
         <member name="M:System.Data.SQLite.SQLiteLog.DomainUnload(System.Object,System.EventArgs)">
             <summary>
@@ -10789,7 +10879,8 @@
         </member>
         <member name="F:System.Data.SQLite.HelperMethods.staticSyncRoot">
             <summary>
-            This lock is used to protect the static <see cref="F:system.Data.SQLite.HelperMethods.isMono"/> field.
+            This lock is used to protect the static <see cref="F:system.Data.SQLite.HelperMethods.isMono"/> and
+            <see cref="F:system.Data.SQLite.HelperMethods.isDotNetCore"/> fields.
             </summary>
         </member>
         <member name="F:System.Data.SQLite.HelperMethods.MonoRuntimeType">
@@ -10797,11 +10888,24 @@
             This type is only present when running on Mono.
             </summary>
         </member>
+        <member name="F:System.Data.SQLite.HelperMethods.DotNetCoreLibType">
+            <summary>
+            This type is only present when running on .NET Core.
+            </summary>
+        </member>
         <member name="F:System.Data.SQLite.HelperMethods.isMono">
             <summary>
             Keeps track of whether we are running on Mono.  Initially null, it is
             set by the <see cref="M:system.Data.SQLite.HelperMethods.IsMono"/> method on its first call.  Later, it
             is returned verbatim by the <see cref="M:system.Data.SQLite.HelperMethods.IsMono"/> method.
+            </summary>
+        </member>
+        <member name="F:System.Data.SQLite.HelperMethods.isDotNetCore">
+            <summary>
+            Keeps track of whether we are running on .NET Core.  Initially null,
+            it is set by the <see cref="M:system.Data.SQLite.HelperMethods.IsDotNetCore"/> method on its first
+            call.  Later, it is returned verbatim by the
+            <see cref="M:system.Data.SQLite.HelperMethods.IsDotNetCore"/> method.
             </summary>
         </member>
         <member name="F:System.Data.SQLite.HelperMethods.debuggerBreak">
@@ -10825,6 +10929,14 @@
             </summary>
             <returns>
             Non-zero if this assembly is running on Mono.
+            </returns>
+        </member>
+        <member name="M:System.Data.SQLite.HelperMethods.IsDotNetCore">
+            <summary>
+            Determines whether or not this assembly is running on .NET Core.
+            </summary>
+            <returns>
+            Non-zero if this assembly is running on .NET Core.
             </returns>
         </member>
         <member name="M:System.Data.SQLite.HelperMethods.ResetBreakIntoDebugger">
@@ -10990,6 +11102,15 @@
             The native module handle upon success -OR- IntPtr.Zero on failure.
             </returns>
         </member>
+        <member name="M:System.Data.SQLite.NativeLibraryHelper.GetMachineWin32">
+            <summary>
+            Attempts to determine the machine name of the current process using
+            the Win32 API.
+            </summary>
+            <returns>
+            The machine name for the current process -OR- null on failure.
+            </returns>
+        </member>
         <member name="M:System.Data.SQLite.NativeLibraryHelper.LoadLibraryPosix(System.String)">
             <summary>
             Attempts to load the specified native library file using the POSIX
@@ -11000,6 +11121,15 @@
             </param>
             <returns>
             The native module handle upon success -OR- IntPtr.Zero on failure.
+            </returns>
+        </member>
+        <member name="M:System.Data.SQLite.NativeLibraryHelper.GetMachinePosix">
+            <summary>
+            Attempts to determine the machine name of the current process using
+            the POSIX API.
+            </summary>
+            <returns>
+            The machine name for the current process -OR- null on failure.
             </returns>
         </member>
         <member name="M:System.Data.SQLite.NativeLibraryHelper.LoadLibrary(System.String)">
@@ -11013,6 +11143,14 @@
             The native module handle upon success -OR- IntPtr.Zero on failure.
             </returns>
         </member>
+        <member name="M:System.Data.SQLite.NativeLibraryHelper.GetMachine">
+            <summary>
+            Attempts to determine the machine name of the current process.
+            </summary>
+            <returns>
+            The machine name for the current process -OR- null on failure.
+            </returns>
+        </member>
         <member name="T:System.Data.SQLite.NativeLibraryHelper.LoadLibraryCallback">
             <summary>
             This delegate is used to wrap the concept of loading a native
@@ -11024,6 +11162,15 @@
             </param>
             <returns>
             The native module handle upon success -OR- IntPtr.Zero on failure.
+            </returns>
+        </member>
+        <member name="T:System.Data.SQLite.NativeLibraryHelper.GetMachineCallback">
+            <summary>
+            This delegate is used to wrap the concept of querying the machine
+            name of the current process.
+            </summary>
+            <returns>
+            The machine name for the current process -OR- null on failure.
             </returns>
         </member>
         <member name="T:System.Data.SQLite.UnsafeNativeMethodsPosix">
@@ -11056,6 +11203,20 @@
             For use with dlopen(), the defaults used by this class.
             </summary>
         </member>
+        <member name="M:System.Data.SQLite.UnsafeNativeMethodsPosix.uname(System.Data.SQLite.UnsafeNativeMethodsPosix.utsname_interop@)">
+            <summary>
+            This is the P/Invoke method that wraps the native Unix uname
+            function.  See the POSIX documentation for full details on what it
+            does.
+            </summary>
+            <param name="name">
+            Structure containing a preallocated byte buffer to fill with the
+            requested information.
+            </param>
+            <returns>
+            Zero for success and less than zero upon failure.
+            </returns>
+        </member>
         <member name="M:System.Data.SQLite.UnsafeNativeMethodsPosix.dlopen(System.String,System.Int32)">
             <summary>
             This is the P/Invoke method that wraps the native Unix dlopen
@@ -11072,6 +11233,56 @@
             <returns>
             The native module handle upon success -OR- IntPtr.Zero on failure.
             </returns>
+        </member>
+        <member name="M:System.Data.SQLite.UnsafeNativeMethodsPosix.dlclose(System.IntPtr)">
+            <summary>
+            This is the P/Invoke method that wraps the native Unix dlclose
+            function.  See the POSIX documentation for full details on what it
+            does.
+            </summary>
+            <param name="module">
+            The handle to the loaded native library.
+            </param>
+            <returns>
+            Zero upon success -OR- non-zero on failure.
+            </returns>
+        </member>
+        <member name="F:System.Data.SQLite.UnsafeNativeMethodsPosix.utsNameSeparators">
+            <summary>
+            These are the characters used to separate the string fields within
+            the raw buffer returned by the <see cref="M:system.Data.SQLite.UnsafeNativeMethodsPosix.uname(System.Data.SQLite.UnsafeNativeMethodsPosix.utsname_interop@)"/> P/Invoke method.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.UnsafeNativeMethodsPosix.GetOsVersionInfo(System.Data.SQLite.UnsafeNativeMethodsPosix.utsname@)">
+            <summary>
+            This method is a wrapper around the <see cref="M:system.Data.SQLite.UnsafeNativeMethodsPosix.uname(System.Data.SQLite.UnsafeNativeMethodsPosix.utsname_interop@)"/> P/Invoke
+            method that extracts and returns the human readable strings from
+            the raw buffer.
+            </summary>
+            <param name="utsName">
+            This structure, which contains strings, will be filled based on the
+            data placed in the raw buffer returned by the <see cref="M:system.Data.SQLite.UnsafeNativeMethodsPosix.uname(System.Data.SQLite.UnsafeNativeMethodsPosix.utsname_interop@)"/>
+            P/Invoke method.
+            </param>
+            <returns>
+            Non-zero upon success; otherwise, zero.
+            </returns>
+        </member>
+        <member name="T:System.Data.SQLite.UnsafeNativeMethodsPosix.utsname">
+            <summary>
+            This structure is used when running on POSIX operating systems
+            to store information about the current machine, including the
+            human readable name of the operating system as well as that of
+            the underlying hardware.
+            </summary>
+        </member>
+        <member name="T:System.Data.SQLite.UnsafeNativeMethodsPosix.utsname_interop">
+            <summary>
+            This structure is passed directly to the P/Invoke method to
+            obtain the information about the current machine, including
+            the human readable name of the operating system as well as
+            that of the underlying hardware.
+            </summary>
         </member>
         <member name="T:System.Data.SQLite.UnsafeNativeMethodsWin32">
             <summary>
@@ -11090,6 +11301,28 @@
             <returns>
             The native module handle upon success -OR- IntPtr.Zero on failure.
             </returns>
+        </member>
+        <member name="M:System.Data.SQLite.UnsafeNativeMethodsWin32.GetSystemInfo(System.Data.SQLite.UnsafeNativeMethodsWin32.SYSTEM_INFO@)">
+            <summary>
+            This is the P/Invoke method that wraps the native Win32 GetSystemInfo
+            function.  See the MSDN documentation for full details on what it
+            does.
+            </summary>
+            <param name="systemInfo">
+            The system information structure to be filled in by the function.
+            </param>
+        </member>
+        <member name="T:System.Data.SQLite.UnsafeNativeMethodsWin32.ProcessorArchitecture">
+            <summary>
+            This enumeration contains the possible values for the processor
+            architecture field of the system information structure.
+            </summary>
+        </member>
+        <member name="T:System.Data.SQLite.UnsafeNativeMethodsWin32.SYSTEM_INFO">
+            <summary>
+            This structure contains information about the current computer. This
+            includes the processor type, page size, memory addresses, etc.
+            </summary>
         </member>
         <member name="T:System.Data.SQLite.UnsafeNativeMethods">
             <summary>
@@ -11408,7 +11641,7 @@
             this class -OR- null if its value cannot be determined.
             </returns>
         </member>
-        <member name="M:System.Data.SQLite.UnsafeNativeMethods.SearchForDirectory(System.String@,System.String@)">
+        <member name="M:System.Data.SQLite.UnsafeNativeMethods.SearchForDirectory(System.String@,System.String@,System.Boolean@)">
             <summary>
             Searches for the native SQLite library in the directory containing
             the assembly currently being executed as well as the base directory
@@ -11422,6 +11655,11 @@
             Upon success, this parameter will be modified to refer to the name
             of the immediate directory (i.e. the offset from the base directory)
             containing the native SQLite library.
+            </param>
+            <param name="allowBaseDirectoryOnly">
+            Upon success, this parameter will be modified to non-zero only if
+            the base directory itself should be allowed for loading the native
+            library.
             </param>
             <returns>
             Non-zero (success) if the native SQLite library was found; otherwise,
@@ -11473,7 +11711,7 @@
             if it cannot be determined.
             </returns>
         </member>
-        <member name="M:System.Data.SQLite.UnsafeNativeMethods.PreLoadSQLiteDll(System.String,System.String,System.String@,System.IntPtr@)">
+        <member name="M:System.Data.SQLite.UnsafeNativeMethods.PreLoadSQLiteDll(System.String,System.String,System.Boolean,System.String@,System.IntPtr@)">
             <summary>
             Attempts to load the native SQLite library based on the specified
             directory and processor architecture.
@@ -11487,6 +11725,10 @@
             The requested processor architecture, null for default (the
             processor architecture of the current process).  This caller should
             almost always specify null for this parameter.
+            </param>
+            <param name="allowBaseDirectoryOnly">
+            Non-zero indicates that the native SQLite library can be loaded
+            from the base directory itself.
             </param>
             <param name="nativeModuleFileName">
             The candidate native module file name to load will be stored here,
@@ -11568,7 +11810,7 @@
             <summary>
             <para><code>
             int (*xCreate)(sqlite3 *db, void *pAux,
-                         int argc, char **argv,
+                         int argc, char *const*argv,
                          sqlite3_vtab **ppVTab,
                          char **pzErr);
             </code></para>
@@ -11797,7 +12039,7 @@
             <summary>
             <para><code>
             int (*xConnect)(sqlite3*, void *pAux,
-                         int argc, char **argv,
+                         int argc, char *const*argv,
                          sqlite3_vtab **ppVTab,
                          char **pzErr);
             </code></para>
@@ -12541,7 +12783,7 @@
             </para>
             <para>
             When doing an insert without a rowid (argc>1, argv[1] is an SQL NULL),
-            on a virtual table that uses ROWID (but not on a WITHOUT ROWID virtual table,
+            on a virtual table that uses ROWID (but not on a WITHOUT ROWID virtual table),
             the implementation must set *pRowid to the rowid of the newly inserted row; 
             this will become the value returned by the sqlite3_last_insert_rowid()
             function. Setting this value in all the other cases is a harmless no-op;
@@ -12558,21 +12800,24 @@
             <![CDATA[<dl>]]>
             <![CDATA[<dt>]]><![CDATA[<b>]]>argc = 1 <![CDATA[<br>]]> argv[0] &#8800; NULL<![CDATA[</b>]]>
             <![CDATA[</dt>]]><![CDATA[<dd>]]>
-            The single row with rowid or PRIMARY KEY equal to argv[0] is deleted. 
+            DELETE: The single row with rowid or PRIMARY KEY equal to argv[0] is deleted. 
             No insert occurs.
             <![CDATA[</dd>]]><![CDATA[<dt>]]><![CDATA[<b>]]>argc &gt; 1 <![CDATA[<br>]]> argv[0] = NULL<![CDATA[</b>]]>
             <![CDATA[</dt>]]><![CDATA[<dd>]]>
-            A new row is inserted with column values taken from
+            INSERT: A new row is inserted with column values taken from
             argv[2] and following.  In a rowid virtual table, if argv[1] is an SQL NULL,
             then a new unique rowid is generated automatically.  The argv[1] will be NULL
             for a WITHOUT ROWID virtual table, in which case the implementation should
             take the PRIMARY KEY value from the appropriate column in argv[2] and following.
             <![CDATA[</dd>]]><![CDATA[<dt>]]><![CDATA[<b>]]>argc &gt; 1 <![CDATA[<br>]]> argv[0] &#8800; NULL <![CDATA[<br>]]> argv[0] = argv[1]<![CDATA[</b>]]>
             <![CDATA[</dt>]]><![CDATA[<dd>]]>
+            UPDATE:
             The row with rowid or PRIMARY KEY argv[0] is updated with new values 
             in argv[2] and following parameters.
             <![CDATA[</dd>]]><![CDATA[<dt>]]><![CDATA[<b>]]>argc &gt; 1 <![CDATA[<br>]]> argv[0] &#8800; NULL <![CDATA[<br>]]> argv[0] &#8800; argv[1]<![CDATA[</b>]]>
-            <![CDATA[</dt>]]><![CDATA[<dd>]]> The row with rowid or PRIMARY KEY argv[0] is updated with 
+            <![CDATA[</dt>]]><![CDATA[<dd>]]>
+            UPDATE with rowid or PRIMARY KEY change:
+            The row with rowid or PRIMARY KEY argv[0] is updated with 
             the rowid or PRIMARY KEY in argv[1] 
             and new values in argv[2] and following parameters. This will occur 
             when an SQL statement updates a rowid, as in the statement:
@@ -14456,10 +14701,37 @@
             manipulate, and free native memory provided by the SQLite core library.
             </summary>
         </member>
+        <member name="M:System.Data.SQLite.SQLiteMemory.CanUseSize64">
+            <summary>
+            Determines if the native sqlite3_msize() API can be used, based on
+            the available version of the SQLite core library.
+            </summary>
+            <returns>
+            Non-zero if the native sqlite3_msize() API is supported by the
+            SQLite core library.
+            </returns>
+        </member>
         <member name="M:System.Data.SQLite.SQLiteMemory.Allocate(System.Int32)">
             <summary>
             Allocates at least the specified number of bytes of native memory
             via the SQLite core library sqlite3_malloc() function and returns
+            the resulting native pointer.  If the TRACK_MEMORY_BYTES option
+            was enabled at compile-time, adjusts the number of bytes currently
+            allocated by this class.
+            </summary>
+            <param name="size">
+            The number of bytes to allocate.
+            </param>
+            <returns>
+            The native pointer that points to a block of memory of at least the
+            specified size -OR- <see cref="F:System.IntPtr.Zero"/> if the memory could
+            not be allocated.
+            </returns>
+        </member>
+        <member name="M:System.Data.SQLite.SQLiteMemory.Allocate64(System.UInt64)">
+            <summary>
+            Allocates at least the specified number of bytes of native memory
+            via the SQLite core library sqlite3_malloc64() function and returns
             the resulting native pointer.  If the TRACK_MEMORY_BYTES option
             was enabled at compile-time, adjusts the number of bytes currently
             allocated by this class.
@@ -14491,17 +14763,58 @@
             not be allocated.
             </returns>
         </member>
+        <member name="M:System.Data.SQLite.SQLiteMemory.Allocate64Untracked(System.UInt64)">
+            <summary>
+            Allocates at least the specified number of bytes of native memory
+            via the SQLite core library sqlite3_malloc64() function and returns
+            the resulting native pointer without adjusting the number of
+            allocated bytes currently tracked by this class.  This is useful
+            when dealing with blocks of memory that will be freed directly by
+            the SQLite core library.
+            </summary>
+            <param name="size">
+            The number of bytes to allocate.
+            </param>
+            <returns>
+            The native pointer that points to a block of memory of at least the
+            specified size -OR- <see cref="F:System.IntPtr.Zero"/> if the memory could
+            not be allocated.
+            </returns>
+        </member>
         <member name="M:System.Data.SQLite.SQLiteMemory.Size(System.IntPtr)">
             <summary>
             Gets and returns the actual size of the specified memory block
-            that was previously obtained from the <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate(System.Int32)"/> or
-            <see cref="M:system.Data.SQLite.SQLiteMemory.AllocateUntracked(System.Int32)"/> methods or directly from the
+            that was previously obtained from the <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate(System.Int32)"/>,
+            <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate64(System.UInt64)"/>, <see cref="M:system.Data.SQLite.SQLiteMemory.AllocateUntracked(System.Int32)"/>, or
+            <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate64Untracked(System.UInt64)"/> methods or directly from the
             SQLite core library.
             </summary>
             <param name="pMemory">
-            The native pointer to the memory block previously obtained from the
-            <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate(System.Int32)"/> or <see cref="M:system.Data.SQLite.SQLiteMemory.AllocateUntracked(System.Int32)"/> methods
-            or directly from the SQLite core library.
+            The native pointer to the memory block previously obtained from
+            the <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate(System.Int32)"/>, <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate64(System.UInt64)"/>,
+            <see cref="M:system.Data.SQLite.SQLiteMemory.AllocateUntracked(System.Int32)"/>, or
+            <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate64Untracked(System.UInt64)"/> methods or directly from the
+            SQLite core library.
+            </param>
+            <returns>
+            The actual size, in bytes, of the memory block specified via the
+            native pointer.
+            </returns>
+        </member>
+        <member name="M:System.Data.SQLite.SQLiteMemory.Size64(System.IntPtr)">
+            <summary>
+            Gets and returns the actual size of the specified memory block
+            that was previously obtained from the <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate(System.Int32)"/>,
+            <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate64(System.UInt64)"/>, <see cref="M:system.Data.SQLite.SQLiteMemory.AllocateUntracked(System.Int32)"/>, or
+            <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate64Untracked(System.UInt64)"/> methods or directly from the
+            SQLite core library.
+            </summary>
+            <param name="pMemory">
+            The native pointer to the memory block previously obtained from
+            the <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate(System.Int32)"/>, <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate64(System.UInt64)"/>,
+            <see cref="M:system.Data.SQLite.SQLiteMemory.AllocateUntracked(System.Int32)"/>, or
+            <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate64Untracked(System.UInt64)"/> methods or directly from the
+            SQLite core library.
             </param>
             <returns>
             The actual size, in bytes, of the memory block specified via the
@@ -14511,13 +14824,13 @@
         <member name="M:System.Data.SQLite.SQLiteMemory.Free(System.IntPtr)">
             <summary>
             Frees a memory block previously obtained from the
-            <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate(System.Int32)"/> method.  If the TRACK_MEMORY_BYTES option
-            was enabled at compile-time, adjusts the number of bytes currently
-            allocated by this class.
+            <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate(System.Int32)"/> or <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate64(System.UInt64)"/> methods.  If
+            the TRACK_MEMORY_BYTES option was enabled at compile-time, adjusts
+            the number of bytes currently allocated by this class.
             </summary>
             <param name="pMemory">
             The native pointer to the memory block previously obtained from the
-            <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate(System.Int32)"/> method.
+            <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate(System.Int32)"/> or <see cref="M:system.Data.SQLite.SQLiteMemory.Allocate64(System.UInt64)"/> methods.
             </param>
         </member>
         <member name="M:System.Data.SQLite.SQLiteMemory.FreeUntracked(System.IntPtr)">
