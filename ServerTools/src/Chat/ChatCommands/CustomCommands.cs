@@ -1004,7 +1004,6 @@ namespace ServerTools
                     _sql = string.Format("UPDATE Players SET customCommand10 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
-                PersistentContainer.Instance.Save();
                 string[] _r;
                 if (Dict.TryGetValue(_message, out _r))
                 {
