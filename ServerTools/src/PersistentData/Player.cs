@@ -59,16 +59,16 @@ namespace ServerTools
         //private DateTime lastBackpack;
         //private DateTime lastDied;
         //private DateTime lastFriendTele;
-        private DateTime customCommand1;
-        private DateTime customCommand2;
-        private DateTime customCommand3;
-        private DateTime customCommand4;
-        private DateTime customCommand5;
-        private DateTime customCommand6;
-        private DateTime customCommand7;
-        private DateTime customCommand8;
-        private DateTime customCommand9;
-        private DateTime customCommand10;
+        //private DateTime customCommand1;
+        //private DateTime customCommand2;
+        //private DateTime customCommand3;
+        //private DateTime customCommand4;
+        //private DateTime customCommand5;
+        //private DateTime customCommand6;
+        //private DateTime customCommand7;
+        //private DateTime customCommand8;
+        //private DateTime customCommand9;
+        //private DateTime customCommand10;
         //private DateTime respawnTime;
         //private DateTime lastTravel;
         //private DateTime lastAnimals;
@@ -505,125 +505,125 @@ namespace ServerTools
             //}
         //}
 
-        public DateTime CustomCommand1
-        {
-            get
-            {
-                return customCommand1;
-            }
-            set
-            {
-                customCommand1 = value;
-            }
-        }
+        //public DateTime CustomCommand1
+        //{
+            //get
+            //{
+                //return customCommand1;
+            //}
+            //set
+            //{
+                //customCommand1 = value;
+            //}
+        //}
 
-        public DateTime CustomCommand2
-        {
-            get
-            {
-                return customCommand2;
-            }
-            set
-            {
-                customCommand2 = value;
-            }
-        }
+        //public DateTime CustomCommand2
+        //{
+            //get
+            //{
+                //return customCommand2;
+            //}
+            //set
+            //{
+                //customCommand2 = value;
+            //}
+        //}
 
-        public DateTime CustomCommand3
-        {
-            get
-            {
-                return customCommand3;
-            }
-            set
-            {
-                customCommand3 = value;
-            }
-        }
+        //public DateTime CustomCommand3
+        //{
+            //get
+            //{
+                //return customCommand3;
+            //}
+            //set
+            //{
+                //customCommand3 = value;
+            //}
+        //}
 
-        public DateTime CustomCommand4
-        {
-            get
-            {
-                return customCommand4;
-            }
-            set
-            {
-                customCommand4 = value;
-            }
-        }
+        //public DateTime CustomCommand4
+        //{
+            //get
+            //{
+                //return customCommand4;
+            //}
+            //set
+            //{
+                //customCommand4 = value;
+            //}
+        //}
 
-        public DateTime CustomCommand5
-        {
-            get
-            {
-                return customCommand5;
-            }
-            set
-            {
-                customCommand5 = value;
-            }
-        }
+        //public DateTime CustomCommand5
+        //{
+            //get
+            //{
+                //return customCommand5;
+            //}
+            //set
+            //{
+                //customCommand5 = value;
+            //}
+        //}
 
-        public DateTime CustomCommand6
-        {
-            get
-            {
-                return customCommand6;
-            }
-            set
-            {
-                customCommand6 = value;
-            }
-        }
+        //public DateTime CustomCommand6
+        //{
+            //get
+            //{
+                //return customCommand6;
+            //}
+            //set
+            //{
+                //customCommand6 = value;
+            //}
+        //}
 
-        public DateTime CustomCommand7
-        {
-            get
-            {
-                return customCommand7;
-            }
-            set
-            {
-                customCommand7 = value;
-            }
-        }
+        //public DateTime CustomCommand7
+        //{
+            //get
+            //{
+                //return customCommand7;
+            //}
+            //set
+            //{
+                //customCommand7 = value;
+            //}
+        //}
 
-        public DateTime CustomCommand8
-        {
-            get
-            {
-                return customCommand8;
-            }
-            set
-            {
-                customCommand8 = value;
-            }
-        }
+        //public DateTime CustomCommand8
+        //{
+            //get
+            //{
+                //return customCommand8;
+            //}
+            //set
+            //{
+                //customCommand8 = value;
+            //}
+        //}
 
-        public DateTime CustomCommand9
-        {
-            get
-            {
-                return customCommand9;
-            }
-            set
-            {
-                customCommand9 = value;
-            }
-        }
+        //public DateTime CustomCommand9
+        //{
+            //get
+            //{
+                //return customCommand9;
+            //}
+            //set
+            //{
+                //customCommand9 = value;
+            //}
+        //}
 
-        public DateTime CustomCommand10
-        {
-            get
-            {
-                return customCommand10;
-            }
-            set
-            {
-                customCommand10 = value;
-            }
-        }
+        //public DateTime CustomCommand10
+        //{
+            //get
+            //{
+                //return customCommand10;
+            //}
+            //set
+            //{
+                //customCommand10 = value;
+            //}
+        //}
 
         //public DateTime RespawnTime
         //{

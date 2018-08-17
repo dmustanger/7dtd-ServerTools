@@ -68,16 +68,6 @@ namespace ServerTools
             PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = 0;
             PersistentContainer.Instance.Players[_cInfo.playerId, true].CancelTime = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Players[_cInfo.playerId, true].SellDate = DateTime.Now.AddDays(-5);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand1 = DateTime.Now.AddDays(-5);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand2 = DateTime.Now.AddDays(-5);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand3 = DateTime.Now.AddDays(-5);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand4 = DateTime.Now.AddDays(-5);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand5 = DateTime.Now.AddDays(-5);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand6 = DateTime.Now.AddDays(-5);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand7 = DateTime.Now.AddDays(-5);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand8 = DateTime.Now.AddDays(-5);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand9 = DateTime.Now.AddDays(-5);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand10 = DateTime.Now.AddDays(-5);
             PersistentContainer.Instance.Save();
             _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result1 = SQL.TQuery(_sql);
@@ -124,7 +114,17 @@ namespace ServerTools
                     "clanname = 'Unknown', " +
                     "invitedtoclan = 'Unknown', " +
                     "isclanowner = 'false', " +
-                    "isclanofficer = 'false' " +
+                    "isclanofficer = 'false', " +
+                    "customCommand1 = '10/29/2000 7:30:00 AM', " +
+                    "customCommand2 = '10/29/2000 7:30:00 AM', " +
+                    "customCommand3 = '10/29/2000 7:30:00 AM', " +
+                    "customCommand4 = '10/29/2000 7:30:00 AM', " +
+                    "customCommand5 = '10/29/2000 7:30:00 AM', " +
+                    "customCommand6 = '10/29/2000 7:30:00 AM', " +
+                    "customCommand7 = '10/29/2000 7:30:00 AM', " +
+                    "customCommand8 = '10/29/2000 7:30:00 AM', " +
+                    "customCommand9 = '10/29/2000 7:30:00 AM', " +
+                    "customCommand10 = '10/29/2000 7:30:00 AM' " +
                     "WHERE steamid = '{6}'", _newSession, _player.KilledPlayers, _player.KilledZombies, _player.Score, _deaths, _name, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }

@@ -90,3 +90,12 @@ C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\ModInfo.xm
 C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\Changelog.txt
 C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\ServerTools.dll
 C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache
+C:\Users\xring\OneDrive\Documents\GitHub\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache
+C:\Users\xring\OneDrive\Documents\GitHub\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
+C:\Users\xring\OneDrive\Documents\GitHub\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.Cache
+C:\Users\xring\OneDrive\Documents\GitHub\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.dll
+C:\Users\xring\OneDrive\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\ChatCommandExamples.txt
+C:\Users\xring\OneDrive\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\ConsoleCommandExamples.txt
+C:\Users\xring\OneDrive\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\ModInfo.xml
+C:\Users\xring\OneDrive\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\Changelog.txt
+C:\Users\xring\OneDrive\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\ServerTools.dll

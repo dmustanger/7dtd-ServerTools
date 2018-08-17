@@ -100,6 +100,16 @@ namespace ServerTools
                 "invitedtoclan VARCHAR(50) DEFAULT 'Unknown', " +
                 "isclanowner VARCHAR(10) DEFAULT 'false', " +
                 "isclanofficer VARCHAR(10) DEFAULT 'false', " +
+                "customCommand1 VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand2 VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand3 VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand4 VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand5 VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand6 VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand7 VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand8 VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand9 VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand10 VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
                 "PRIMARY KEY (steamid)) ENGINE = InnoDB;");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER) ENGINE = InnoDB;");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");

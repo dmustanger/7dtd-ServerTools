@@ -84,7 +84,17 @@ namespace ServerTools
                 "clanname TEXT DEFAULT 'Unknown', " +
                 "invitedtoclan TEXT DEFAULT 'Unknown', " +
                 "isclanowner TEXT DEFAULT 'false', " +
-                "isclanofficer TEXT DEFAULT 'false' " +
+                "isclanofficer TEXT DEFAULT 'false', " +
+                "customCommand1 TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand2 TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand3 TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand4 TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand5 TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand6 TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand7 TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand8 TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand9 TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
+                "customCommand10 TEXT DEFAULT '10/29/2000 7:30:00 AM' " +
                 ");");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER);");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");

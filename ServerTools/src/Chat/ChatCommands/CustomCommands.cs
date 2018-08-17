@@ -488,12 +488,16 @@ namespace ServerTools
                 else
                 {
                     bool _donator = false;
-                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                     if (_c[0] == 1)
                     {
-                        if (p.CustomCommand1 != null)
+                        string _sql = string.Format("SELECT customCommand1 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        DateTime _customCommand1;
+                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand1);
+                        _result.Dispose();
+                        if (_customCommand1.ToString() != "10/29/2000 7:30:00 AM")
                         {
-                            TimeSpan varTime = DateTime.Now - p.CustomCommand1;
+                            TimeSpan varTime = DateTime.Now - _customCommand1;
                             double fractionalMinutes = varTime.TotalMinutes;
                             _timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -526,9 +530,14 @@ namespace ServerTools
                     }
                     if (_c[0] == 2)
                     {
-                        if (p.CustomCommand2 != null)
+                        string _sql = string.Format("SELECT customCommand2 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        DateTime _customCommand2;
+                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand2);
+                        _result.Dispose();
+                        if (_customCommand2.ToString() != "10/29/2000 7:30:00 AM")
                         {
-                            TimeSpan varTime = DateTime.Now - p.CustomCommand2;
+                            TimeSpan varTime = DateTime.Now - _customCommand2;
                             double fractionalMinutes = varTime.TotalMinutes;
                             _timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -561,9 +570,14 @@ namespace ServerTools
                     }
                     if (_c[0] == 3)
                     {
-                        if (p.CustomCommand3 != null)
+                        string _sql = string.Format("SELECT customCommand3 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        DateTime _customCommand3;
+                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand3);
+                        _result.Dispose();
+                        if (_customCommand3.ToString() != "10/29/2000 7:30:00 AM")
                         {
-                            TimeSpan varTime = DateTime.Now - p.CustomCommand3;
+                            TimeSpan varTime = DateTime.Now - _customCommand3;
                             double fractionalMinutes = varTime.TotalMinutes;
                             _timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -596,9 +610,14 @@ namespace ServerTools
                     }
                     if (_c[0] == 4)
                     {
-                        if (p.CustomCommand4 != null)
+                        string _sql = string.Format("SELECT customCommand4 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        DateTime _customCommand4;
+                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand4);
+                        _result.Dispose();
+                        if (_customCommand4.ToString() != "10/29/2000 7:30:00 AM")
                         {
-                            TimeSpan varTime = DateTime.Now - p.CustomCommand4;
+                            TimeSpan varTime = DateTime.Now - _customCommand4;
                             double fractionalMinutes = varTime.TotalMinutes;
                             _timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -631,9 +650,14 @@ namespace ServerTools
                     }
                     if (_c[0] == 5)
                     {
-                        if (p.CustomCommand5 != null)
+                        string _sql = string.Format("SELECT customCommand5 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        DateTime _customCommand5;
+                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand5);
+                        _result.Dispose();
+                        if (_customCommand5.ToString() != "10/29/2000 7:30:00 AM")
                         {
-                            TimeSpan varTime = DateTime.Now - p.CustomCommand5;
+                            TimeSpan varTime = DateTime.Now - _customCommand5;
                             double fractionalMinutes = varTime.TotalMinutes;
                             _timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -666,9 +690,14 @@ namespace ServerTools
                     }
                     if (_c[0] == 6)
                     {
-                        if (p.CustomCommand6 != null)
+                        string _sql = string.Format("SELECT customCommand6 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        DateTime _customCommand6;
+                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand6);
+                        _result.Dispose();
+                        if (_customCommand6.ToString() != "10/29/2000 7:30:00 AM")
                         {
-                            TimeSpan varTime = DateTime.Now - p.CustomCommand6;
+                            TimeSpan varTime = DateTime.Now - _customCommand6;
                             double fractionalMinutes = varTime.TotalMinutes;
                             _timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -701,9 +730,14 @@ namespace ServerTools
                     }
                     if (_c[0] == 7)
                     {
-                        if (p.CustomCommand7 != null)
+                        string _sql = string.Format("SELECT customCommand7 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        DateTime _customCommand7;
+                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand7);
+                        _result.Dispose();
+                        if (_customCommand7.ToString() != "10/29/2000 7:30:00 AM")
                         {
-                            TimeSpan varTime = DateTime.Now - p.CustomCommand7;
+                            TimeSpan varTime = DateTime.Now - _customCommand7;
                             double fractionalMinutes = varTime.TotalMinutes;
                             _timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -736,9 +770,14 @@ namespace ServerTools
                     }
                     if (_c[0] == 8)
                     {
-                        if (p.CustomCommand8 != null)
+                        string _sql = string.Format("SELECT customCommand8 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        DateTime _customCommand8;
+                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand8);
+                        _result.Dispose();
+                        if (_customCommand8.ToString() != "10/29/2000 7:30:00 AM")
                         {
-                            TimeSpan varTime = DateTime.Now - p.CustomCommand8;
+                            TimeSpan varTime = DateTime.Now - _customCommand8;
                             double fractionalMinutes = varTime.TotalMinutes;
                             _timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -771,9 +810,14 @@ namespace ServerTools
                     }
                     if (_c[0] == 9)
                     {
-                        if (p.CustomCommand9 != null)
+                        string _sql = string.Format("SELECT customCommand9 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        DateTime _customCommand9;
+                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand9);
+                        _result.Dispose();
+                        if (_customCommand9.ToString() != "10/29/2000 7:30:00 AM")
                         {
-                            TimeSpan varTime = DateTime.Now - p.CustomCommand9;
+                            TimeSpan varTime = DateTime.Now - _customCommand9;
                             double fractionalMinutes = varTime.TotalMinutes;
                             _timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -806,9 +850,14 @@ namespace ServerTools
                     }
                     if (_c[0] == 10)
                     {
-                        if (p.CustomCommand10 != null)
+                        string _sql = string.Format("SELECT customCommand10 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        DateTime _customCommand10;
+                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand10);
+                        _result.Dispose();
+                        if (_customCommand10.ToString() != "10/29/2000 7:30:00 AM")
                         {
-                            TimeSpan varTime = DateTime.Now - p.CustomCommand10;
+                            TimeSpan varTime = DateTime.Now - _customCommand10;
                             double fractionalMinutes = varTime.TotalMinutes;
                             _timepassed = (int)fractionalMinutes;
                             if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
@@ -907,43 +956,53 @@ namespace ServerTools
                 SQL.FastQuery(_sql);
                 if (_c[0] == 1)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand1 = DateTime.Now;
+                    _sql = string.Format("UPDATE Players SET customCommand1 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 2)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand2 = DateTime.Now;
+                    _sql = string.Format("UPDATE Players SET customCommand2 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 3)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand3 = DateTime.Now;
+                    _sql = string.Format("UPDATE Players SET customCommand3 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 4)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand4 = DateTime.Now;
+                    _sql = string.Format("UPDATE Players SET customCommand4 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 5)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand5 = DateTime.Now;
+                    _sql = string.Format("UPDATE Players SET customCommand5 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 6)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand6 = DateTime.Now;
+                    _sql = string.Format("UPDATE Players SET customCommand6 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 7)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand7 = DateTime.Now;
+                    _sql = string.Format("UPDATE Players SET customCommand7 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 8)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand8 = DateTime.Now;
+                    _sql = string.Format("UPDATE Players SET customCommand8 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 9)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand9 = DateTime.Now;
+                    _sql = string.Format("UPDATE Players SET customCommand9 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 10)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId, true].CustomCommand10 = DateTime.Now;
+                    _sql = string.Format("UPDATE Players SET customCommand10 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                 }
                 PersistentContainer.Instance.Save();
                 string[] _r;
