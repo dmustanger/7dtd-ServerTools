@@ -1484,15 +1484,17 @@ namespace ServerTools
                                         int _purchase;
                                         if (int.TryParse(_message, out _purchase))
                                         {
-                                            if (AuctionBox.AuctionItems.ContainsKey(_purchase))
+                                            string _sql = string.Format("SELECT * FROM Auction WHERE auctionid = {0}", _purchase);
+                                            DataTable _result = SQL.TQuery(_sql);
+                                            if (_result.Rows.Count > 0)
                                             {
                                                 AuctionBox.WalletCheck(_cInfo, _purchase);
                                             }
                                             else
                                             {
                                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have used an auction item # that does not exist or has sold. Type /auction.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                                
                                             }
+                                            _result.Dispose();
                                         }
                                     }
                                 }
@@ -1508,7 +1510,9 @@ namespace ServerTools
                                     int _purchase;
                                     if (int.TryParse(_message, out _purchase))
                                     {
-                                        if (AuctionBox.AuctionItems.ContainsKey(_purchase))
+                                        string _sql = string.Format("SELECT steamid FROM Auction WHERE auctionid = {0}", _purchase);
+                                        DataTable _result = SQL.TQuery(_sql);
+                                        if (_result.Rows.Count > 0)
                                         {
                                             AuctionBox.WalletCheck(_cInfo, _purchase);
                                         }
@@ -1516,6 +1520,7 @@ namespace ServerTools
                                         {
                                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have used an auction item # that does not exist or has sold. Type /auction.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                                         }
+                                        _result.Dispose();
                                     }
                                 }
                             }

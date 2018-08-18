@@ -212,10 +212,6 @@
             {
                 DupeLog.Load();
             }
-            if (AuctionBox.IsEnabled)
-            {
-                AuctionBox.AuctionList();
-            }
             if (MutePlayer.IsEnabled)
             {
                 MutePlayer.MuteList();

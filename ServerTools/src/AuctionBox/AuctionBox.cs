@@ -10,7 +10,6 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, No_Admins = false;
         public static int Delay_Between_Uses = 24, Admin_Level = 0;
-        public static Dictionary<int, string[]> AuctionItems = new Dictionary<int, string[]>();
         private static DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
         private static List<Chunk> chunkArray = new List<Chunk>();
         private static string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
@@ -33,78 +32,97 @@ namespace ServerTools
             }
             else
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p == null || p.SellDate == null)
+                string _sql = string.Format("SELECT sellDate FROM Auction WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                if (_result.Rows.Count == 0)
                 {
                     CheckBox(_cInfo, _price);
                 }
                 else
                 {
-                    TimeSpan varTime = DateTime.Now - p.SellDate;
-                    double fractionalHours = varTime.TotalHours;
-                    int _timepassed = (int)fractionalHours;
-                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                    DateTime _sellDate;
+                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _sellDate);
+                    if (_sellDate.ToString() == "10/29/2000 7:30:00 AM")
                     {
-                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        CheckBox(_cInfo, _price);
+                    }
+                    else
+                    {
+                        TimeSpan varTime = DateTime.Now - _sellDate;
+                        double fractionalHours = varTime.TotalHours;
+                        int _timepassed = (int)fractionalHours;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                         {
-                            DateTime _dt;
-                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                            if (DateTime.Now < _dt)
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                _donator = true;
-                                int _newDelay = Delay_Between_Uses / 2;
-                                if (_timepassed >= _newDelay)
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    CheckBox(_cInfo, _price);
-                                }
-                                else
-                                {
-                                    int _timeleft = _newDelay - _timepassed;
-                                    string _phrase900;
-                                    if (!Phrases.Dict.TryGetValue(900, out _phrase900))
+                                    _donator = true;
+                                    int _newDelay = Delay_Between_Uses / 2;
+                                    if (_timepassed >= _newDelay)
                                     {
-                                        _phrase900 = "{PlayerName} you can only use /auction sell {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
+                                        CheckBox(_cInfo, _price);
                                     }
-                                    _phrase900 = _phrase900.Replace("{PlayerName}", _cInfo.playerName);
-                                    _phrase900 = _phrase900.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                    _phrase900 = _phrase900.Replace("{TimeRemaining}", _timeleft.ToString());
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase900), Config.Server_Response_Name, false, "ServerTools", false));
+                                    else
+                                    {
+                                        int _timeleft = _newDelay - _timepassed;
+                                        string _phrase900;
+                                        if (!Phrases.Dict.TryGetValue(900, out _phrase900))
+                                        {
+                                            _phrase900 = "{PlayerName} you can only use /auction sell {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
+                                        }
+                                        _phrase900 = _phrase900.Replace("{PlayerName}", _cInfo.playerName);
+                                        _phrase900 = _phrase900.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                                        _phrase900 = _phrase900.Replace("{TimeRemaining}", _timeleft.ToString());
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase900), Config.Server_Response_Name, false, "ServerTools", false));
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (!_donator)
-                    {
-                        if (_timepassed >= Delay_Between_Uses)
+                        if (!_donator)
                         {
-                            CheckBox(_cInfo, _price);
-                        }
-                        else
-                        {
-                            int _timeleft = Delay_Between_Uses - _timepassed;
-                            string _phrase900;
-                                    if (!Phrases.Dict.TryGetValue(900, out _phrase900))
-                                    {
-                                        _phrase900 = "{PlayerName} you can only use /auction sell {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
-                                    }
-                                    _phrase900 = _phrase900.Replace("{PlayerName}", _cInfo.playerName);
-                                    _phrase900 = _phrase900.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                                    _phrase900 = _phrase900.Replace("{TimeRemaining}", _timeleft.ToString());
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase900), Config.Server_Response_Name, false, "ServerTools", false));
+                            if (_timepassed >= Delay_Between_Uses)
+                            {
+                                CheckBox(_cInfo, _price);
+                            }
+                            else
+                            {
+                                int _timeleft = Delay_Between_Uses - _timepassed;
+                                string _phrase900;
+                                if (!Phrases.Dict.TryGetValue(900, out _phrase900))
+                                {
+                                    _phrase900 = "{PlayerName} you can only use /auction sell {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
+                                }
+                                _phrase900 = _phrase900.Replace("{PlayerName}", _cInfo.playerName);
+                                _phrase900 = _phrase900.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                                _phrase900 = _phrase900.Replace("{TimeRemaining}", _timeleft.ToString());
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase900), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
                         }
                     }
                 }
+                _result.Dispose();
             }
         }
 
         public static void CheckBox(ClientInfo _cInfo, string _price)
         {
-            int _p;
-            if (int.TryParse(_price, out _p))
+            string _sql = string.Format("SELECT auctionid, steamid FROM Auction WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            if (_result.Rows.Count > 0)
             {
-                if (_p > 0)
+                int _auctionid;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _auctionid);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have auction item # {2} in the auction already. Wait for it to sell or cancel it with /auction cancel.[-]", Config.Chat_Response_Color, _cInfo.playerName, _auctionid), Config.Server_Response_Name, false, "ServerTools", false));
+            }
+            else
+            {
+                int _p;
+                if (int.TryParse(_price, out _p))
                 {
-                    if (!AuctionItems.ContainsKey(_cInfo.entityId))
+                    if (_p > 0)
                     {
                         ChunkClusterList chunklist = GameManager.Instance.World.ChunkClusters;
                         for (int i = 0; i < chunklist.Count; i++)
@@ -160,17 +178,13 @@ namespace ServerTools
                                                     {
                                                         ItemClass _itemClass = ItemClass.list[item.itemValue.type];
                                                         string _itemName = _itemClass.GetItemName();
-                                                        string[] _auctionItem = { item.count.ToString(), _itemName, item.itemValue.Quality.ToString(), _price };
                                                         SecureLoot.UpdateSlot(slotNumber, ItemStack.Empty);
-                                                        AuctionItems.Add(_cInfo.entityId, _auctionItem);
-                                                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CancelTime = DateTime.Now;
-                                                        PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = _cInfo.entityId;
-                                                        PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionItem = _auctionItem;
-                                                        PersistentContainer.Instance.Save();
+                                                        _sql = string.Format("INSERT INTO Auction (steamid, itemName, itemCount, itemQuality, itemPrice, cancelTime) VALUES ('{0}', '{1}', {2}, {3}, {4}, '{5}')", _cInfo.playerId, _itemName, item.count, item.itemValue.Quality, _price, DateTime.Now);
+                                                        SQL.FastQuery(_sql);
                                                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your auction item {2} has been removed from the secure loot and added to the auction.[-]", Config.Chat_Response_Color, _cInfo.playerName, _itemName), Config.Server_Response_Name, false, "ServerTools", false));
                                                         using (StreamWriter sw = new StreamWriter(filepath, true))
                                                         {
-                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} {3}, {4} quality to the auction for {5} {6}. Entry # {7}", DateTime.Now, _cInfo.playerName, item.count, _itemName, item.itemValue.Quality, _price, Wallet.Coin_Name, _cInfo.entityId));
+                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} {3}, {4} quality to the auction for {5} {6}.", DateTime.Now, _cInfo.playerName, item.count, _itemName, item.itemValue.Quality, _price, Wallet.Coin_Name));
                                                             sw.WriteLine();
                                                             sw.Flush();
                                                             sw.Close();
@@ -185,60 +199,44 @@ namespace ServerTools
                                 }
                             }
                         }
-                        if (!AuctionItems.ContainsKey(_cInfo.entityId))
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} auction sell failed. No items were found in a secure chest you own near by.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} place an item in a chest and stand very close to it, then use /auction sell #.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                        }
                     }
                     else
                     {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have auction item # {2} in the auction already. Wait for it to sell or cancel it with /auction cancel.[-]", Config.Chat_Response_Color, _cInfo.playerName, _cInfo.entityId), Config.Server_Response_Name, false, "ServerTools", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you need to input a price greater than zero. This is not a transfer system.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you need to input a price greater than zero. This is not a transfer system.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your sell price must be an integer and greater than zero.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
-            else
-            {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your sell price must be an integer and greater than zero.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-            }
-        }
-
-        public static void AuctionList()
-        {
-            List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
-            for (int i = 0; i < playerlist.Count; i++)
-            {
-                string _steamId = playerlist[i];
-                Player p = PersistentContainer.Instance.Players[_steamId, false];
-                if (p != null)
-                {
-                    if (p.AuctionItem != null)
-                    {
-                        AuctionItems.Add(p.AuctionData, p.AuctionItem);
-                    }
-                }
-            }
+            _result.Dispose();
         }
 
         public static void AuctionList(ClientInfo _cInfo)
         {
-            if (AuctionItems.Count > 0)
+            string _sql = "SELECT * FROM Auction";
+            DataTable _result = SQL.TQuery(_sql);
+            if (_result.Rows.Count > 0)
             {
-                foreach (var _auctionItem in AuctionItems)
+                foreach (DataRow row in _result.Rows)
                 {
-                    int _quality;
-                    int.TryParse(_auctionItem.Value[2], out _quality);
-                    if (_quality > 1)
+                    int _id;
+                    int.TryParse(row[0].ToString(), out _id);
+                    string _itemName = row[2].ToString();
+                    int _itemCount;
+                    int.TryParse(row[3].ToString(), out _itemCount);
+                    int _itemQuality;
+                    int.TryParse(row[4].ToString(), out _itemQuality);
+                    int _itemPrice;
+                    int.TryParse(row[5].ToString(), out _itemPrice);
+                    if (_itemQuality > 1)
                     {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} at {4} quality, for {5} {6}[-]", Config.Chat_Response_Color, _auctionItem.Key, _auctionItem.Value[0], _auctionItem.Value[1], _auctionItem.Value[2], _auctionItem.Value[3], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} at {4} quality, for {5} {6}[-]", Config.Chat_Response_Color, _id, _itemCount, _itemName, _itemQuality, _itemPrice, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                     else
                     {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, _auctionItem.Key, _auctionItem.Value[0], _auctionItem.Value[1], _auctionItem.Value[3], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, _id, _itemCount, _itemName, _itemPrice, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
             }
@@ -246,74 +244,71 @@ namespace ServerTools
             {
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} no items are currently for sale.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
             }
+            _result.Dispose();
         }
 
         public static void WalletCheck(ClientInfo _cInfo, int _purchase)
         {
-            if (AuctionItems.ContainsKey(_purchase))
+            string _sql = string.Format("SELECT itemPrice FROM Auction WHERE auctionid = {0}", _purchase);
+            DataTable _result = SQL.TQuery(_sql);
+            if (_result.Rows.Count > 0)
             {
-                List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
-                for (int i = 0; i < playerlist.Count; i++)
+                int _coinValue;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _coinValue);
+                int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                if (_currentCoins >= _coinValue)
                 {
-                    string _steamId = playerlist[i];
-                    Player _seller = PersistentContainer.Instance.Players[_steamId, false];
-                    if (_seller.AuctionData == _purchase)
+                    BuyAuction(_cInfo, _purchase);
+                }
+                else
+                {
+                    int _missing;
+                    if (_currentCoins >= 0)
                     {
-                        string[] _value;
-                        if (AuctionItems.TryGetValue(_purchase, out _value))
-                        {
-                            int _coinValue;
-                            int.TryParse(_value[3], out _coinValue);
-                            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
-                            if (_currentCoins >= _coinValue)
-                            {
-                                BuyAuction(_cInfo, _purchase, _value, _steamId);
-                            }
-                            else
-                            {
-                                int _missing;
-                                if (_currentCoins >= 0)
-                                {
-                                    _missing = _coinValue - _currentCoins;
-                                }
-                                else
-                                {
-                                    _missing = _coinValue + _currentCoins;
-                                }
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you can not make this purchase. You need {2} more {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _missing, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                        }
+                        _missing = _coinValue - _currentCoins;
                     }
+                    else
+                    {
+                        _missing = _coinValue + _currentCoins;
+                    }
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you can not make this purchase. You need {2} more {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _missing, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             else
             {
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this # could not be found. Please check the auction list by typing /auction.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
             }
+            _result.Dispose();
         }
 
-        public static void BuyAuction(ClientInfo _cInfo, int _purchase, string[] _value, string _steamId)
+        public static void BuyAuction(ClientInfo _cInfo, int _purchase)
         {
+            string _sql = string.Format("SELECT * FROM Auction WHERE auctionid = {0}", _purchase);
+            DataTable _result = SQL.TQuery(_sql);
+            string _steamid = _result.Rows[0].ItemArray.GetValue(1).ToString();
+            string _itemName = _result.Rows[0].ItemArray.GetValue(2).ToString();
+            int _itemCount;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _itemCount);
             int _quality;
-            int.TryParse(_value[2], out _quality);
-            ItemValue itemValue = ItemClass.GetItem(_value[1], true);
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(4).ToString(), out _quality);
+            int _itemPrice;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(5).ToString(), out _itemPrice);
+            ItemValue itemValue = ItemClass.GetItem(_itemName, true);
             if (itemValue.type == ItemValue.None.type)
             {
-                Log.Out(string.Format("Could not find itemValue {0}", itemValue));
+                Log.Out(string.Format("Could not find itemValue for {0}", _itemName));
                 return;
             }
             else
             {
-                itemValue = new ItemValue(ItemClass.GetItem(_value[1]).type, _quality, _quality, true);
+                itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, true);
             }
-            int _count;
-            int.TryParse(_value[0], out _count);
             World world = GameManager.Instance.World;
             var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
             {
                 entityClass = EntityClass.FromString("item"),
                 id = EntityFactory.nextEntityID++,
-                itemStack = new ItemStack(itemValue, _count),
+                itemStack = new ItemStack(itemValue, _itemCount),
                 pos = world.Players.dict[_cInfo.entityId].position,
                 rot = new Vector3(20f, 0f, 20f),
                 lifetime = 60f,
@@ -322,40 +317,34 @@ namespace ServerTools
             world.SpawnEntityInWorld(entityItem);
             _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
             world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-
-            int _price;
-            int.TryParse(_value[3], out _price);
-            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            int _playerSpentCoins;
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-            _result.Dispose();
-            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _price, _cInfo.playerId);
-            SQL.FastQuery(_sql);
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have purchased {2} {3} from the auction for {4} {5}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _value[0], _value[1], _value[3], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
-            double _percent = _price * 0.05;
-            int _newCoin2 = _price - (int)_percent;
-            PersistentContainer.Instance.Players[_steamId, true].SellDate = DateTime.Now;
-            PersistentContainer.Instance.Players[_steamId, true].AuctionData = 0;
-            PersistentContainer.Instance.Players[_steamId, true].AuctionItem = null;
-            PersistentContainer.Instance.Save();
-            _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _steamId);
+            _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result1 = SQL.TQuery(_sql);
-            int _playerSpentCoins1;
-            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins1);
+            int _playerSpentCoins;
+            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
             _result1.Dispose();
-            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins1 + _newCoin2, _steamId);
+            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _itemPrice, _cInfo.playerId);
             SQL.FastQuery(_sql);
-            AuctionItems.Remove(_purchase);
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have purchased {2} {3} from the auction for {4} {5}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _itemCount, _itemName, _itemPrice, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+            double _percent = _itemPrice * 0.05;
+            int _newCoin2 = _itemPrice - (int)_percent;
+            _sql = string.Format("DELETE FROM Auction WHERE auctionid = {0}", _purchase);
+            SQL.FastQuery(_sql);
+            _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _steamid);
+            DataTable _result2 = SQL.TQuery(_sql);
+            int _playerSpentCoins1;
+            int.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins1);
+            _result2.Dispose();
+            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins1 + _newCoin2, _steamid);
+            SQL.FastQuery(_sql);
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} seller has received the funds in their wallet.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-            ClientInfo _cInfo1 = ConnectionManager.Instance.GetClientInfoForPlayerId(_steamId);
+            ClientInfo _cInfo1 = ConnectionManager.Instance.GetClientInfoForPlayerId(_steamid);
             if (_cInfo1 != null)
             {
                 _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your auction item was purchased and the value placed in your wallet.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
             }
             using (StreamWriter sw = new StreamWriter(filepath, true))
             {
-                sw.WriteLine(string.Format("{0}: {1} has purchased auction entry {2}, profits went to steam id {3}", DateTime.Now, _cInfo.playerName, _purchase, _steamId));
+                sw.WriteLine(string.Format("{0}: {1} has purchased auction entry {2}, profits went to steam id {3}", DateTime.Now, _cInfo.playerName, _purchase, _steamid));
                 sw.WriteLine();
                 sw.Flush();
                 sw.Close();
@@ -364,72 +353,68 @@ namespace ServerTools
 
         public static void CancelAuction(ClientInfo _cInfo)
         {
-            if (AuctionItems.ContainsKey(_cInfo.entityId))
+            string _sql = string.Format("SELECT * FROM Auction WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            if (_result.Rows.Count > 0)
             {
-                Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                if (p != null)
+                DateTime _cancelTime;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(6).ToString(), out _cancelTime);
+                TimeSpan varTime = DateTime.Now - _cancelTime;
+                double fractionalMinutes = varTime.TotalMinutes;
+                int _timepassed = (int)fractionalMinutes;
+                if (_timepassed >= 15)
                 {
-                    TimeSpan varTime = DateTime.Now - p.CancelTime;
-                    double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
-                    if (_timepassed >= 15)
+                    string _itemName = _result.Rows[0].ItemArray.GetValue(2).ToString();
+                    ItemValue itemValue = ItemClass.GetItem(_itemName, true);
+                    if (itemValue.type == ItemValue.None.type)
                     {
-                        string[] _value;
-                        if (AuctionItems.TryGetValue(_cInfo.entityId, out _value))
-                        {
-                            ItemValue itemValue = ItemClass.GetItem(_value[1], true);
-                            if (itemValue.type == ItemValue.None.type)
-                            {
-                                Log.Out(string.Format("Could not find itemValue {0}", itemValue));
-                                return;
-                            }
-                            else
-                            {
-                                int _quality;
-                                int.TryParse(_value[2], out _quality);
-                                itemValue = new ItemValue(ItemClass.GetItem(_value[1]).type, _quality, _quality, true);
-                            }
-                            int _count;
-                            int.TryParse(_value[0], out _count);
-                            World world = GameManager.Instance.World;
-                            var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                            {
-                                entityClass = EntityClass.FromString("item"),
-                                id = EntityFactory.nextEntityID++,
-                                itemStack = new ItemStack(itemValue, _count),
-                                pos = world.Players.dict[_cInfo.entityId].position,
-                                rot = new Vector3(20f, 0f, 20f),
-                                lifetime = 60f,
-                                belongsPlayerId = _cInfo.entityId
-                            });
-                            world.SpawnEntityInWorld(entityItem);
-                            _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
-                            world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                            AuctionItems.Remove(_cInfo.entityId);
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = 0;
-                            PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionItem = null;
-                            PersistentContainer.Instance.Save();
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your auction item has returned to you.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                            using (StreamWriter sw = new StreamWriter(filepath, true))
-                            {
-                                sw.WriteLine(string.Format("{0}: {1} has cancelled their auction entry # {2}.", DateTime.Now, _cInfo.playerName, _cInfo.entityId));
-                                sw.WriteLine();
-                                sw.Flush();
-                                sw.Close();
-                            }
-                        }
+                        Log.Out(string.Format("Could not find itemValue {0}", itemValue));
+                        return;
                     }
                     else
                     {
-                        int _timeleft = 15 - _timepassed;
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you must wait 15 minutes before you can cancel your auction item. Be careful what you sell. Time remaining: {2} minutes[-]", Config.Chat_Response_Color, _cInfo.playerName, _timeleft), Config.Server_Response_Name, false, "ServerTools", false));
+                        int _quality;
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(4).ToString(), out _quality);
+                        itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, true);
                     }
+                    int _itemCount;
+                    int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _itemCount);
+                    World world = GameManager.Instance.World;
+                    var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                    {
+                        entityClass = EntityClass.FromString("item"),
+                        id = EntityFactory.nextEntityID++,
+                        itemStack = new ItemStack(itemValue, _itemCount),
+                        pos = world.Players.dict[_cInfo.entityId].position,
+                        rot = new Vector3(20f, 0f, 20f),
+                        lifetime = 60f,
+                        belongsPlayerId = _cInfo.entityId
+                    });
+                    world.SpawnEntityInWorld(entityItem);
+                    _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
+                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+                    _sql = string.Format("DELETE FROM Auction WHERE steamid = '{0}'", _cInfo.playerId);
+                    SQL.FastQuery(_sql);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your auction item has returned to you.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                    using (StreamWriter sw = new StreamWriter(filepath, true))
+                    {
+                        sw.WriteLine(string.Format("{0}: {1} has cancelled their auction entry # {2}.", DateTime.Now, _cInfo.playerName, _cInfo.entityId));
+                        sw.WriteLine();
+                        sw.Flush();
+                        sw.Close();
+                    }
+                }
+                else
+                {
+                    int _timeleft = 15 - _timepassed;
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you must wait 15 minutes before you can cancel your auction item. Be careful what you sell. Time remaining: {2} minutes[-]", Config.Chat_Response_Color, _cInfo.playerName, _timeleft), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             else
             {
                 Log.Out("No auction item found for this player");
             }
+            _result.Dispose();
         }
     }
 }

@@ -65,10 +65,6 @@ namespace ServerTools
             int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _oldSession);
             _result.Dispose();
             int _newSession = _oldSession + _timepassed;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = 0;
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].CancelTime = DateTime.Now.AddDays(-5);
-            PersistentContainer.Instance.Players[_cInfo.playerId, true].SellDate = DateTime.Now.AddDays(-5);
-            PersistentContainer.Instance.Save();
             _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result1 = SQL.TQuery(_sql);
             if (_result1.Rows.Count != 0)
@@ -127,6 +123,14 @@ namespace ServerTools
                     "customCommand10 = '10/29/2000 7:30:00 AM' " +
                     "WHERE steamid = '{6}'", _newSession, _player.KilledPlayers, _player.KilledZombies, _player.Score, _deaths, _name, _cInfo.playerId);
                 SQL.FastQuery(_sql);
+                _sql = string.Format("SELECT steamid FROM Auction WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result2 = SQL.TQuery(_sql);
+                if (_result2.Rows.Count > 0)
+                {
+                    _sql = string.Format("DELETE FROM Auction WHERE steamid = '{0}'", _cInfo.playerId);
+                    SQL.FastQuery(_sql);
+                }
+                _result2.Dispose();
             }
             _result1.Dispose();
             if (ClanManager.ClanMember.Contains(_cInfo.playerId))

@@ -28,18 +28,14 @@ namespace ServerTools
                     SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
-                if (_params[0].Length < 1 || _params[0].Length > 17)
-                {
-                    SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}", _params[0]));
-                    return;
-                }
                 ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
                 if (_cInfo != null)
                 {
                     string _filepath = string.Format("{0}/Player/{1}.map", GameUtils.GetSaveGameDir(), _cInfo.playerId);
                     string _filepath1 = string.Format("{0}/Player/{1}.ttp", GameUtils.GetSaveGameDir(), _cInfo.playerId);
-                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-                    if (p != null)
+                    string _sql = string.Format("SELECT steamid FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    DataTable _result = SQL.TQuery(_sql);
+                    if (_result.Rows.Count != 0)
                     {
                         string _phrase400;
                         if (!Phrases.Dict.TryGetValue(400, out _phrase400))
@@ -63,178 +59,77 @@ namespace ServerTools
                         {
                             File.Delete(_filepath1);
                         }
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].AuctionData = 0;
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].CancelTime = DateTime.Now.AddDays(-5);
-                        PersistentContainer.Instance.Players[_cInfo.playerId, true].SellDate = DateTime.Now.AddDays(-5);
-                        PersistentContainer.Instance.Save();
-                        string _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        if (_result.Rows.Count != 0)
+                        _sql = string.Format("UPDATE Players SET playername = 'Unknown', last_gimme = '10/29/2000 7:30:00 AM', lastkillme = '10/29/2000 7:30:00 AM', playerSpentCoins = 0, sessionTime = 0, bikeId = 0, lastBike = '10/29/2000 7:30:00 AM', jailName = 'Unknown', jailDate = '10/29/2000 7:30:00 AM', muteName = 'Unknown', muteDate = '10/29/2000 7:30:00 AM', lobbyReturn = 'Unknown', newTeleSpawn = 'Unknown', homeposition = 'Unknown', homeposition2 = 'Unknown', lastsethome = '10/29/2000 7:30:00 AM', lastwhisper = 'Unknown', lastStuck = '10/29/2000 7:30:00 AM', lastLobby = '10/29/2000 7:30:00 AM', lastLog = '10/29/2000 7:30:00 AM', lastBackpack = '10/29/2000 7:30:00 AM', lastFriendTele = '10/29/2000 7:30:00 AM', respawnTime = '10/29/2000 7:30:00 AM', lastTravel = '10/29/2000 7:30:00 AM', lastAnimals = '10/29/2000 7:30:00 AM', lastVoteReward = '10/29/2000 7:30:00 AM', firstClaim = 'false', ismuted = 'false', isjailed = 'false', startingItems = 'false', clanname = 'Unknown', invitedtoclan = 'Unknown', isclanowner = 'false', isclanofficer = 'false', customCommand1 = '10/29/2000 7:30:00 AM', customCommand2 = '10/29/2000 7:30:00 AM', customCommand3 = '10/29/2000 7:30:00 AM', customCommand4 = '10/29/2000 7:30:00 AM', customCommand5 = '10/29/2000 7:30:00 AM', customCommand6 = '10/29/2000 7:30:00 AM', customCommand7 = '10/29/2000 7:30:00 AM', customCommand8 = '10/29/2000 7:30:00 AM', customCommand9 = '10/29/2000 7:30:00 AM', customCommand10 = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _cInfo.playerId);
+                        SQL.FastQuery(_sql);
+                        _sql = string.Format("SELECT * FROM Auction WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result1 = SQL.TQuery(_sql);
+                        if (_result1.Rows.Count != 0)
                         {
-                            _sql = string.Format("UPDATE Players SET " +
-                                "playername = 'Unknown', " +
-                                "last_gimme = '10/29/2000 7:30:00 AM', " +
-                                "lastkillme = '10/29/2000 7:30:00 AM', " +
-                                "playerSpentCoins = 0, " +
-                                "sessionTime = 0, " +
-                                "bikeId = 0, " +
-                                "lastBike = '10/29/2000 7:30:00 AM', " +
-                                "jailName = 'Unknown', " +
-                                "jailDate = '10/29/2000 7:30:00 AM', " +
-                                "muteName = 'Unknown', " +
-                                "muteDate = '10/29/2000 7:30:00 AM', " +
-                                "lobbyReturn = 'Unknown', " +
-                                "newTeleSpawn = 'Unknown', " +
-                                "homeposition = 'Unknown', " +
-                                "homeposition2 = 'Unknown', " +
-                                "lastsethome = '10/29/2000 7:30:00 AM', " +
-                                "lastwhisper = 'Unknown', " +
-                                "lastStuck = '10/29/2000 7:30:00 AM', " +
-                                "lastLobby = '10/29/2000 7:30:00 AM', " +
-                                "lastLog = '10/29/2000 7:30:00 AM', " +
-                                "lastBackpack = '10/29/2000 7:30:00 AM', " +
-                                "lastFriendTele = '10/29/2000 7:30:00 AM', " +
-                                "respawnTime = '10/29/2000 7:30:00 AM', " +
-                                "lastTravel = '10/29/2000 7:30:00 AM', " +
-                                "lastAnimals = '10/29/2000 7:30:00 AM', " +
-                                "lastVoteReward = '10/29/2000 7:30:00 AM', " +
-                                "firstClaim = 'false', " +
-                                "ismuted = 'false', " +
-                                "isjailed = 'false', " +
-                                "startingItems = 'false', " +
-                                "clanname = 'Unknown', " +
-                                "invitedtoclan = 'Unknown', " +
-                                "isclanowner = 'false', " +
-                                "isclanofficer = 'false', " +
-                                "customCommand1 = '10/29/2000 7:30:00 AM', " +
-                                "customCommand2 = '10/29/2000 7:30:00 AM', " +
-                                "customCommand3 = '10/29/2000 7:30:00 AM', " +
-                                "customCommand4 = '10/29/2000 7:30:00 AM', " +
-                                "customCommand5 = '10/29/2000 7:30:00 AM', " +
-                                "customCommand6 = '10/29/2000 7:30:00 AM', " +
-                                "customCommand7 = '10/29/2000 7:30:00 AM', " +
-                                "customCommand8 = '10/29/2000 7:30:00 AM', " +
-                                "customCommand9 = '10/29/2000 7:30:00 AM', " +
-                                "customCommand10 = '10/29/2000 7:30:00 AM' " +
-                                "WHERE steamid = '{0}'", _cInfo.playerId);
+                            _sql = string.Format("DELETE FROM Auction WHERE steamid = '{0}'", _cInfo.playerId);
                             SQL.FastQuery(_sql);
                         }
-                        _result.Dispose();
-                        string _phrase401;
-                        if (!Phrases.Dict.TryGetValue(401, out _phrase401))
-                        {
-                            _phrase401 = "You have reset the profile for Player {SteamId}.";
-                        }
-                        _phrase401 = _phrase401.Replace("{SteamId}", _params[0]);
-                        SdtdConsole.Instance.Output(string.Format("{0}", _phrase401));
+                        _result1.Dispose();
                     }
-                    else
+                    _result.Dispose();
+                    string _phrase401;
+                    if (!Phrases.Dict.TryGetValue(401, out _phrase401))
                     {
-                        SdtdConsole.Instance.Output(string.Format("Player file {0}.ttp does not exist", _params[0]));
+                        _phrase401 = "You have reset the profile for Player {SteamId}.";
                     }
+                    _phrase401 = _phrase401.Replace("{SteamId}", _params[0]);
+                    SdtdConsole.Instance.Output(string.Format("{0}", _phrase401));
                 }
-                else
+                else if (_params[0].Length == 17)
                 {
-                    int _value = 0;
-                    if (int.TryParse(_params[0], out _value))
+                    string _steamid = SQL.EscapeString(_params[0]);
+                    string _filepath = string.Format("{0}/Player/{1}.map", GameUtils.GetSaveGameDir(), _steamid);
+                    string _filepath1 = string.Format("{0}/Player/{1}.ttp", GameUtils.GetSaveGameDir(), _steamid);
+                    string _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _steamid);
+                    DataTable _result = SQL.TQuery(_sql);
+                    if (_result.Rows.Count != 0)
                     {
-                        string _filepath = string.Format("{0}/Player/{1}.map", GameUtils.GetSaveGameDir(), _value.ToString());
-                        string _filepath1 = string.Format("{0}/Player/{1}.ttp", GameUtils.GetSaveGameDir(), _value.ToString());
-                        Player p = PersistentContainer.Instance.Players[_value.ToString(), false];
-                        if (p != null)
+                        if (!File.Exists(_filepath))
                         {
-                            if (!File.Exists(_filepath))
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Could not find file {0}.map", _params[0]));
-                            }
-                            else
-                            {
-                                File.Delete(_filepath);
-                            }
-                            if (!File.Exists(_filepath1))
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Could not find file {0}.ttp", _params[0]));
-                            }
-                            else
-                            {
-                                File.Delete(_filepath1);
-                            }
-                            PersistentContainer.Instance.Players[_value.ToString(), true].AuctionData = 0;
-                            PersistentContainer.Instance.Players[_value.ToString(), true].CancelTime = DateTime.Now.AddDays(-5);
-                            PersistentContainer.Instance.Players[_value.ToString(), true].SellDate = DateTime.Now.AddDays(-5);
-                            PersistentContainer.Instance.Save();
-                            string _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _value.ToString());
-                            DataTable _result = SQL.TQuery(_sql);
-                            if (_result.Rows.Count != 0)
-                            {
-                                _sql = string.Format("UPDATE Players SET " +
-                                    "playername = 'Unknown', " +
-                                    "last_gimme = '10/29/2000 7:30:00 AM', " +
-                                    "lastkillme = '10/29/2000 7:30:00 AM', " +
-                                    "playerSpentCoins = 0, " +
-                                    "sessionTime = 0, " +
-                                    "bikeId = 0, " +
-                                    "lastBike = '10/29/2000 7:30:00 AM', " +
-                                    "jailName = 'Unknown', " +
-                                    "jailDate = '10/29/2000 7:30:00 AM', " +
-                                    "muteName = 'Unknown', " +
-                                    "muteDate = '10/29/2000 7:30:00 AM', " +
-                                    "lobbyReturn = 'Unknown', " +
-                                    "newTeleSpawn = 'Unknown', " +
-                                    "homeposition = 'Unknown', " +
-                                    "homeposition2 = 'Unknown', " +
-                                    "lastsethome = '10/29/2000 7:30:00 AM', " +
-                                    "lastwhisper = 'Unknown', " +
-                                    "lastStuck = '10/29/2000 7:30:00 AM', " +
-                                    "lastLobby = '10/29/2000 7:30:00 AM', " +
-                                    "lastLog = '10/29/2000 7:30:00 AM', " +
-                                    "lastDied = '10/29/2000 7:30:00 AM', " +
-                                    "lastFriendTele = '10/29/2000 7:30:00 AM', " +
-                                    "respawnTime = '10/29/2000 7:30:00 AM', " +
-                                    "lastTravel = '10/29/2000 7:30:00 AM', " +
-                                    "lastAnimals = '10/29/2000 7:30:00 AM', " +
-                                    "lastVoteReward = '10/29/2000 7:30:00 AM', " +
-                                    "firstClaim = 'false', " +
-                                    "ismuted = 'false', " +
-                                    "isjailed = 'false', " +
-                                    "startingItems = 'false', " +
-                                    "clanname = 'Unknown', " +
-                                    "invitedtoclan = 'Unknown', " +
-                                    "isclanowner = 'false', " +
-                                    "isclanofficer = 'false', " +
-                                    "customCommand1 = '10/29/2000 7:30:00 AM', " +
-                                    "customCommand2 = '10/29/2000 7:30:00 AM', " +
-                                    "customCommand3 = '10/29/2000 7:30:00 AM', " +
-                                    "customCommand4 = '10/29/2000 7:30:00 AM', " +
-                                    "customCommand5 = '10/29/2000 7:30:00 AM', " +
-                                    "customCommand6 = '10/29/2000 7:30:00 AM', " +
-                                    "customCommand7 = '10/29/2000 7:30:00 AM', " +
-                                    "customCommand8 = '10/29/2000 7:30:00 AM', " +
-                                    "customCommand9 = '10/29/2000 7:30:00 AM', " +
-                                    "customCommand10 = '10/29/2000 7:30:00 AM' " +
-                                    "WHERE steamid = '{0}'", _value.ToString());
-                                SQL.FastQuery(_sql);
-                            }
-                            _result.Dispose();
-                            string _phrase401;
-                            if (!Phrases.Dict.TryGetValue(401, out _phrase401))
-                            {
-                                _phrase401 = "You have reset the profile for Player {SteamId}.";
-                            }
-                            _phrase401 = _phrase401.Replace("{SteamId}", _params[0]);
-                            SdtdConsole.Instance.Output(string.Format("{0}", _phrase401));
+                            SdtdConsole.Instance.Output(string.Format("Could not find file {0}.map", _params[0]));
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Player file {0}.ttp does not exist", _params[0]));
+                            File.Delete(_filepath);
                         }
+                        if (!File.Exists(_filepath1))
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Could not find file {0}.ttp", _params[0]));
+                        }
+                        else
+                        {
+                            File.Delete(_filepath1);
+                        }
+                        _sql = string.Format("UPDATE Players SET playername = 'Unknown', last_gimme = '10/29/2000 7:30:00 AM', lastkillme = '10/29/2000 7:30:00 AM', playerSpentCoins = 0, sessionTime = 0, bikeId = 0, lastBike = '10/29/2000 7:30:00 AM', jailName = 'Unknown', jailDate = '10/29/2000 7:30:00 AM', muteName = 'Unknown', muteDate = '10/29/2000 7:30:00 AM', lobbyReturn = 'Unknown', newTeleSpawn = 'Unknown', homeposition = 'Unknown', homeposition2 = 'Unknown', lastsethome = '10/29/2000 7:30:00 AM', lastwhisper = 'Unknown', lastStuck = '10/29/2000 7:30:00 AM', lastLobby = '10/29/2000 7:30:00 AM', lastLog = '10/29/2000 7:30:00 AM', lastDied = '10/29/2000 7:30:00 AM', lastFriendTele = '10/29/2000 7:30:00 AM', respawnTime = '10/29/2000 7:30:00 AM', lastTravel = '10/29/2000 7:30:00 AM', lastAnimals = '10/29/2000 7:30:00 AM', lastVoteReward = '10/29/2000 7:30:00 AM', firstClaim = 'false', ismuted = 'false', isjailed = 'false', startingItems = 'false', clanname = 'Unknown', invitedtoclan = 'Unknown', isclanowner = 'false', isclanofficer = 'false', customCommand1 = '10/29/2000 7:30:00 AM', customCommand2 = '10/29/2000 7:30:00 AM', customCommand3 = '10/29/2000 7:30:00 AM', customCommand4 = '10/29/2000 7:30:00 AM', customCommand5 = '10/29/2000 7:30:00 AM', customCommand6 = '10/29/2000 7:30:00 AM', customCommand7 = '10/29/2000 7:30:00 AM', customCommand8 = '10/29/2000 7:30:00 AM', customCommand9 = '10/29/2000 7:30:00 AM', customCommand10 = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _steamid);
+                        SQL.FastQuery(_sql);
+                        _sql = string.Format("SELECT * FROM Auction WHERE steamid = '{0}'", _steamid);
+                        DataTable _result1 = SQL.TQuery(_sql);
+                        if (_result1.Rows.Count != 0)
+                        {
+                            _sql = string.Format("DELETE FROM Auction WHERE steamid = '{0}'", _steamid);
+                            SQL.FastQuery(_sql);
+                        }
+                        _result1.Dispose();
                     }
-                    else
+                    _result.Dispose();
+                    string _phrase401;
+                    if (!Phrases.Dict.TryGetValue(401, out _phrase401))
                     {
-                        SdtdConsole.Instance.Output(string.Format("Player id {0} is not a valid integer", _params[0]));
-                        return;
+                        _phrase401 = "You have reset the profile for Player {SteamId}.";
                     }
+                    _phrase401 = _phrase401.Replace("{SteamId}", _params[0]);
+                    SdtdConsole.Instance.Output(string.Format("{0}", _phrase401));
                 }
+                else
+                {
+                    SdtdConsole.Instance.Output(string.Format("Player id {0} is not a valid integer", _params[0]));
+                    return;
+                }
+                
             }
             catch (Exception e)
             {

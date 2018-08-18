@@ -111,6 +111,15 @@ namespace ServerTools
                 "customCommand9 VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
                 "customCommand10 VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
                 "PRIMARY KEY (steamid)) ENGINE = InnoDB;");
+            FastQuery("CREATE TABLE IF NOT EXISTS Auction (" +
+                "auctionid INT NOT NULL AUTO_INCREMENT, " +
+                "steamid VARCHAR(50) NOT NULL, " +
+                "itemName VARCHAR(50) NOT NULL, " +
+                "itemCount INT NOT NULL, " +
+                "itemQuality INT NOT NULL, " +
+                "itemPrice INT NOT NULL, " +
+                "cancelTime VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
+                "PRIMARY KEY (steamid)) ENGINE = InnoDB;");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER) ENGINE = InnoDB;");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");
             if (_result.Rows.Count == 0)

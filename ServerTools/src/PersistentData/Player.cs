@@ -26,11 +26,11 @@ namespace ServerTools
         //private int zkills;
         //private int kills;
         //private int deaths;
-        private int auctionData;
+        //private int auctionData;
         //private int playerSpentCoins;
         private string[] waypointName;
         private string[] waypoints;
-        private string[] auctionItem;
+        //private string[] auctionItem;
         //private string playerName;
         //private string eventReturn;
         //private string hardcoreName;
@@ -49,8 +49,8 @@ namespace ServerTools
         //private DateTime lastMarket;
         //private DateTime lastStuck;
         //private DateTime lastLobby;
-        private DateTime cancelTime;
-        private DateTime sellDate;
+        //private DateTime cancelTime;
+        //private DateTime sellDate;
         //private DateTime log;
         //private DateTime jailDate;
         //private DateTime muteDate;
@@ -109,17 +109,17 @@ namespace ServerTools
             }
         }
 
-        public string[] AuctionItem
-        {
-            get
-            {
-                return auctionItem;
-            }
-            set
-            {
-                auctionItem = value;
-            }
-        }
+        //public string[] AuctionItem
+        //{
+            //get
+            //{
+                //return auctionItem;
+            //}
+            //set
+            //{
+                //auctionItem = value;
+            //}
+        //}
 
         //public int HomeRequest
         //{
@@ -361,17 +361,17 @@ namespace ServerTools
             //}
         //}
 
-        public int AuctionData
-        {
-            get
-            {
-                return auctionData;
-            }
-            set
-            {
-                auctionData = value;
-            }
-        }
+        //public int AuctionData
+        //{
+            //get
+            //{
+                //return auctionData;
+            //}
+            //set
+            //{
+                //auctionData = value;
+            //}
+        //}
 
         //public DateTime LastStuck
         //{
@@ -409,29 +409,29 @@ namespace ServerTools
             //}
         //}
 
-        public DateTime CancelTime
-        {
-            get
-            {
-                return cancelTime;
-            }
-            set
-            {
-                cancelTime = value;
-            }
-        }
+        //public DateTime CancelTime
+        //{
+            //get
+            //{
+                //return cancelTime;
+            //}
+            //set
+            //{
+                //cancelTime = value;
+            //}
+        //}
 
-        public DateTime SellDate
-        {
-            get
-            {
-                return sellDate;
-            }
-            set
-            {
-                sellDate = value;
-            }
-        }
+        //public DateTime SellDate
+        //{
+            //get
+            //{
+                //return sellDate;
+            //}
+            //set
+            //{
+                //sellDate = value;
+            //}
+        //}
 
         //public DateTime JailDate
         //{
