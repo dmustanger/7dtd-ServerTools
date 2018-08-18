@@ -193,13 +193,7 @@ namespace ServerTools
                                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase782), Config.Server_Response_Name, false, "ServerTools", false));
                                         if (Wallet.IsEnabled && Command_Cost >= 1)
                                         {
-                                            _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                            DataTable _result1 = SQL.TQuery(_sql);
-                                            int _playerSpentCoins;
-                                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                                            _result1.Dispose();
-                                            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
-                                            SQL.FastQuery(_sql);
+                                            Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                                         }
                                         _sql = string.Format("UPDATE Players SET lastBike = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                                         SQL.FastQuery(_sql);

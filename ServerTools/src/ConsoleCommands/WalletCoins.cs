@@ -57,10 +57,7 @@ namespace ServerTools
                         DataTable _result = SQL.TQuery(_sql);
                         if (_result.Rows.Count !=0)
                         {
-                            int _playerSpentCoins;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins + _adjustCoins, _steamid);
-                            SQL.FastQuery(_sql);
+                            Wallet.AddCoinsToWallet(_steamid, _adjustCoins);
                             if (_adjustCoins >= 0)
                             {
                                 SdtdConsole.Instance.Output(string.Format("Added {0} {1} to player id {2} wallet", _params[1], Wallet.Coin_Name, _steamid));

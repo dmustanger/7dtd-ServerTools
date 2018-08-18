@@ -317,25 +317,13 @@ namespace ServerTools
             world.SpawnEntityInWorld(entityItem);
             _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
             world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-            _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result1 = SQL.TQuery(_sql);
-            int _playerSpentCoins;
-            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-            _result1.Dispose();
-            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _itemPrice, _cInfo.playerId);
-            SQL.FastQuery(_sql);
+            Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _itemPrice);
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have purchased {2} {3} from the auction for {4} {5}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _itemCount, _itemName, _itemPrice, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
             double _percent = _itemPrice * 0.05;
             int _newCoin2 = _itemPrice - (int)_percent;
             _sql = string.Format("DELETE FROM Auction WHERE auctionid = {0}", _purchase);
             SQL.FastQuery(_sql);
-            _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _steamid);
-            DataTable _result2 = SQL.TQuery(_sql);
-            int _playerSpentCoins1;
-            int.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins1);
-            _result2.Dispose();
-            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins1 + _newCoin2, _steamid);
-            SQL.FastQuery(_sql);
+            Wallet.AddCoinsToWallet(_steamid, _newCoin2);
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} seller has received the funds in their wallet.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
             ClientInfo _cInfo1 = ConnectionManager.Instance.GetClientInfoForPlayerId(_steamid);
             if (_cInfo1 != null)

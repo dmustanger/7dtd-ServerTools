@@ -233,11 +233,6 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo, string _waypoint)
         {
-            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            int _playerSpentCoins;
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-            _result.Dispose();
             Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
             int _wp;
             if (int.TryParse(_waypoint, out _wp))
@@ -260,9 +255,8 @@ namespace ServerTools
                                 int.TryParse(_cordsplit[2], out z);
                                 Players.NoFlight.Add(_cInfo.entityId);
                                 _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
-                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                                _result.Dispose();
-                                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, lastWaypoint = '{1}' WHERE steamid = '{2}'", _playerSpentCoins - Command_Cost, DateTime.Now, _cInfo.playerId);
+                                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                                 string _sql = string.Format("UPDATE Players SET lastWaypoint = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                                 SQL.FastQuery(_sql);
                                 string _phrase577;
                                 if (!Phrases.Dict.TryGetValue(577, out _phrase577))
@@ -310,7 +304,8 @@ namespace ServerTools
                                 int.TryParse(_cordsplit[2], out z);
                                 Players.NoFlight.Add(_cInfo.entityId);
                                 _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
-                                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, lastWaypoint = '{1}' WHERE steamid = '{2}'", _playerSpentCoins - Command_Cost, DateTime.Now, _cInfo.playerId);
+                                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                                string _sql = string.Format("UPDATE Players SET lastWaypoint = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                                 SQL.FastQuery(_sql);
                                 string _phrase577;
                                 if (!Phrases.Dict.TryGetValue(577, out _phrase577))
@@ -359,9 +354,8 @@ namespace ServerTools
                             int.TryParse(_cordsplit[2], out z);
                             Players.NoFlight.Add(_cInfo.entityId);
                             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                            _result.Dispose();
-                            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, lastWaypoint = '{1}' WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, DateTime.Now, _cInfo.playerId);
+                            Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                            string _sql = string.Format("UPDATE Players SET lastWaypoint = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                             SQL.FastQuery(_sql);
                             string _phrase577;
                             if (!Phrases.Dict.TryGetValue(577, out _phrase577))

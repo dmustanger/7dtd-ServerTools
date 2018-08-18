@@ -946,62 +946,55 @@ namespace ServerTools
             int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
             if (_currentCoins >= _c[2])
             {
-                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TQuery(_sql);
-                int _playerSpentCoins;
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                _result.Dispose();
-                int _newCoins = _playerSpentCoins - _c[2];
-                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _newCoins, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _c[2]);
                 if (_c[0] == 1)
                 {
-                    _sql = string.Format("UPDATE Players SET customCommand1 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    string _sql = string.Format("UPDATE Players SET customCommand1 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 2)
                 {
-                    _sql = string.Format("UPDATE Players SET customCommand2 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    string _sql = string.Format("UPDATE Players SET customCommand2 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 3)
                 {
-                    _sql = string.Format("UPDATE Players SET customCommand3 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    string _sql = string.Format("UPDATE Players SET customCommand3 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 4)
                 {
-                    _sql = string.Format("UPDATE Players SET customCommand4 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    string _sql = string.Format("UPDATE Players SET customCommand4 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 5)
                 {
-                    _sql = string.Format("UPDATE Players SET customCommand5 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    string _sql = string.Format("UPDATE Players SET customCommand5 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 6)
                 {
-                    _sql = string.Format("UPDATE Players SET customCommand6 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    string _sql = string.Format("UPDATE Players SET customCommand6 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 7)
                 {
-                    _sql = string.Format("UPDATE Players SET customCommand7 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    string _sql = string.Format("UPDATE Players SET customCommand7 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 8)
                 {
-                    _sql = string.Format("UPDATE Players SET customCommand8 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    string _sql = string.Format("UPDATE Players SET customCommand8 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 9)
                 {
-                    _sql = string.Format("UPDATE Players SET customCommand9 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    string _sql = string.Format("UPDATE Players SET customCommand9 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 if (_c[0] == 10)
                 {
-                    _sql = string.Format("UPDATE Players SET customCommand10 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    string _sql = string.Format("UPDATE Players SET customCommand10 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 string[] _r;

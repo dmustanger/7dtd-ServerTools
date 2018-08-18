@@ -69,13 +69,7 @@ namespace ServerTools
                                 OpenLotto = true;
                                 LottoValue = _lottoValue;
                                 LottoEntries.Add(_cInfo);
-                                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                DataTable _result = SQL.TQuery(_sql);
-                                int _playerSpentCoins;
-                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                                _result.Dispose();
-                                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - LottoValue, _cInfo.playerId);
-                                SQL.FastQuery(_sql);
+                                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, LottoValue);
                                 string _phrase538;
                                 if (!Phrases.Dict.TryGetValue(538, out _phrase538))
                                 {
@@ -141,13 +135,7 @@ namespace ServerTools
                     if (!LottoEntries.Contains(_cInfo))
                     {
                         LottoEntries.Add(_cInfo);
-                        string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        int _playerSpentCoins;
-                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                        _result.Dispose();
-                        _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - LottoValue, _cInfo.playerId);
-                        SQL.FastQuery(_sql);
+                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, LottoValue);
                         string _phrase541;
                         if (!Phrases.Dict.TryGetValue(541, out _phrase541))
                         {
@@ -212,13 +200,7 @@ namespace ServerTools
             OpenLotto = false;
             LottoValue = 0;
             LottoEntries.Clear();
-            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _winner.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            int _playerSpentCoins;
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-            _result.Dispose();
-            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins + _winnings, _winner.playerId);
-            SQL.FastQuery(_sql);
+            Wallet.AddCoinsToWallet(_winner.playerId, _winnings);
             string _phrase544;
             if (!Phrases.Dict.TryGetValue(544, out _phrase544))
             {

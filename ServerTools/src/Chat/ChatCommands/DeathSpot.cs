@@ -187,13 +187,7 @@ namespace ServerTools
                             string _sql;
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
-                                _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                DataTable _result = SQL.TQuery(_sql);
-                                int _playerSpentCoins;
-                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                                _result.Dispose();
-                                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - Command_Cost, _cInfo.playerId);
-                                SQL.FastQuery(_sql);
+                                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                             }
                             _sql = string.Format("UPDATE Players SET lastDied = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                             SQL.FastQuery(_sql);

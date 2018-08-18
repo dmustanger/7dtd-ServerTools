@@ -37,5 +37,27 @@ namespace ServerTools
             }
             return _currentCoins;
         }
+
+        public static void AddCoinsToWallet(string _steamid, int _amount)
+        {
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _steamid);
+            DataTable _result = SQL.TQuery(_sql);
+            int _playerSpentCoins;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+            _result.Dispose();
+            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins + _amount, _steamid);
+            SQL.FastQuery(_sql);
+        }
+
+        public static void SubtractCoinsFromWallet (string _steamid, int _amount)
+        {
+            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _steamid);
+            DataTable _result = SQL.TQuery(_sql);
+            int _playerSpentCoins;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+            _result.Dispose();
+            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _amount, _steamid);
+            SQL.FastQuery(_sql);
+        }
     }
 }

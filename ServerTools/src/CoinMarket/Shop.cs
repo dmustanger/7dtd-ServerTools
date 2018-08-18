@@ -450,13 +450,7 @@ namespace ServerTools
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                 SdtdConsole.Instance.Output(string.Format("Sold {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was purchased through the shop. If your bag is full, check the ground.[-]", Config.Chat_Response_Color, _count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), Config.Server_Response_Name, false, "ServerTools", false));
-                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TQuery(_sql);
-                int _playerSpentCoins;
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                _result.Dispose();
-                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _price, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _price);
             }
             else
             {

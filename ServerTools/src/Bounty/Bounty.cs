@@ -69,19 +69,13 @@ namespace ServerTools
                             int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
                             if (_currentCoins >= _cost)
                             {
-                                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _cost);
+                                string _sql = string.Format("SELECT bounty FROM Players WHERE steamid = '{0}'", _cInfo1.playerId);
                                 DataTable _result = SQL.TQuery(_sql);
-                                int _playerSpentCoins;
-                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                                _result.Dispose();
-                                _sql = string.Format("SELECT bounty FROM Players WHERE steamid = '{0}'", _cInfo1.playerId);
-                                DataTable _result1 = SQL.TQuery(_sql);
                                 int _bounty;
-                                int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _bounty);
-                                _result1.Dispose();
+                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bounty);
+                                _result.Dispose();
                                 _sql = string.Format("UPDATE Players SET bounty = {0} WHERE steamid = '{1}'", _bounty + _cost, _cInfo1.playerId);
-                                SQL.FastQuery(_sql);
-                                _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _cost, _cInfo.playerId);
                                 SQL.FastQuery(_sql);
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have added {2} bounty to {3}.[-]", Config.Chat_Response_Color, _playerName, _cost, _cInfo1.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                             }
@@ -109,20 +103,15 @@ namespace ServerTools
                         int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
                         if (_currentCoins >= _cost)
                         {
-                            string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _cost);
+                            string _sql = string.Format("SELECT bounty FROM Players WHERE steamid = '{0}'", _cInfo1.playerId);
                             DataTable _result = SQL.TQuery(_sql);
-                            int _playerSpentCoins;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                            _result.Dispose();
-                            _sql = string.Format("SELECT bounty FROM Players WHERE steamid = '{0}'", _cInfo1.playerId);
-                            DataTable _result1 = SQL.TQuery(_sql);
                             int _bounty;
-                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _bounty);
-                            _result1.Dispose();
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bounty);
+                            _result.Dispose();
                             _sql = string.Format("UPDATE Players SET bounty = {0} WHERE steamid = '{1}'", _bounty + _cost, _cInfo1.playerId);
                             SQL.FastQuery(_sql);
-                            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _cost, _cInfo.playerId);
-                            SQL.FastQuery(_sql);
+                            
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have added {2} bounty to {3}.[-]", Config.Chat_Response_Color, _playerName, _cost, _cInfo1.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                         else
