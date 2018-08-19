@@ -64,11 +64,6 @@ namespace ServerTools
                         return false;
                     }
                 }
-                if (Waypoint.SavingPoint.ContainsKey(_cInfo.entityId))
-                {
-                    Waypoint.SetPointName(_cInfo, _message);
-                    return false;
-                }
                 if (!Jail.Jailed.Contains(_cInfo.playerId))
                 {
                     if (Admin_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && _secondaryName != "Coppis" && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && !AdminChatColor.AdminColorOff.Contains(_cInfo.playerId))

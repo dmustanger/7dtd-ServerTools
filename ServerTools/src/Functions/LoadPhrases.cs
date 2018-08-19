@@ -824,7 +824,7 @@ namespace ServerTools
                 string _phrase577;
                 if (!Dict.TryGetValue(577, out _phrase577))
                 {
-                    _phrase577 = "{PlayerName}, traveling to waypoint number {Waypoint}.";
+                    _phrase577 = "{PlayerName}, traveling to waypoint {Waypoint}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"577\" Phrase=\"{0}\" />", _phrase577));
                 string _phrase578;
@@ -836,19 +836,19 @@ namespace ServerTools
                 string _phrase579;
                 if (!Dict.TryGetValue(579, out _phrase579))
                 {
-                    _phrase579 = "{PlayerName}, this is an invalid waypoint number. You have a maximum {Count} waypoints.";
+                    _phrase579 = "{PlayerName}, You have a maximum {Count} waypoints.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"579\" Phrase=\"{0}\" />", _phrase579));
                 string _phrase580;
                 if (!Dict.TryGetValue(580, out _phrase580))
                 {
-                    _phrase580 = "{PlayerName}, this is not a valid waypoint number.";
+                    _phrase580 = "{PlayerName}, this is not a valid waypoint.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"580\" Phrase=\"{0}\" />", _phrase580));
                 string _phrase581;
                 if (!Dict.TryGetValue(581, out _phrase581))
                 {
-                    _phrase581 = "{PlayerName}, this is an invalid waypoint number. You have a maximum {DonatorCount} waypoints.";
+                    _phrase581 = "{PlayerName}, You have a maximum {DonatorCount} waypoints.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"581\" Phrase=\"{0}\" />", _phrase581));
                 string _phrase582;
@@ -860,7 +860,7 @@ namespace ServerTools
                 string _phrase583;
                 if (!Dict.TryGetValue(583, out _phrase583))
                 {
-                    _phrase583 = "{PlayerName}, waypoint number {Number} has been deleted.";
+                    _phrase583 = "{PlayerName}, waypoint {Waypoint} has been deleted.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"583\" Phrase=\"{0}\" />", _phrase583));
                 string _phrase584;

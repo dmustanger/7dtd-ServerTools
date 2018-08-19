@@ -7,7 +7,7 @@ namespace ServerTools
     public class Player
     {
         private readonly string steamId;
-        [OptionalField]
+        //[OptionalField]
         //private int homeRequest;
         //private int wallet;
         //private int bank;
@@ -28,8 +28,8 @@ namespace ServerTools
         //private int deaths;
         //private int auctionData;
         //private int playerSpentCoins;
-        private string[] waypointName;
-        private string[] waypoints;
+        //private string[] waypointName;
+        //private string[] waypoints;
         //private string[] auctionItem;
         //private string playerName;
         //private string eventReturn;
@@ -85,29 +85,29 @@ namespace ServerTools
         //private bool startingItems;
         //private bool poll;
 
-        public string[] Waypoints
-        {
-            get
-            {
-                return waypoints;
-            }
-            set
-            {
-                waypoints = value;
-            }
-        }
+        //public string[] Waypoints
+        //{
+            //get
+            //{
+                //return waypoints;
+            //}
+            //set
+            //{
+                //waypoints = value;
+            //}
+        //}
 
-        public string[] WaypointName
-        {
-            get
-            {
-                return waypointName;
-            }
-            set
-            {
-                waypointName = value;
-            }
-        }
+        //public string[] WaypointName
+        //{
+            //get
+            //{
+                //return waypointName;
+            //}
+            //set
+            //{
+                //waypointName = value;
+            //}
+        //}
 
         //public string[] AuctionItem
         //{
