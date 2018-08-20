@@ -1640,63 +1640,38 @@ namespace ServerTools
                         }
                         if (_message.ToLower() == "pollyes")
                         {
-                            if (PersistentContainer.Instance.PollOpen)
-                            {
-                                if (!Poll.PolledYes.Contains(_cInfo.entityId) && !Poll.PolledNo.Contains(_cInfo.entityId))
-                                {
-                                    Poll.VoteYes(_cInfo);
-                                }
-                                else
-                                {
-                                    string _phrase812;
-                                    if (!Phrases.Dict.TryGetValue(812, out _phrase812))
-                                    {
-                                        _phrase812 = "{PlayerName} you have already voted on the poll";
-                                    }
-                                    _phrase812 = _phrase812.Replace("{PlayerName}", _playerName);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase812), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                return false;
-                            }
+                            Poll.VoteYes(_cInfo);
+                            return false;
                         }
                         if (_message.ToLower() == "pollno")
                         {
-                            if (PersistentContainer.Instance.PollOpen)
-                            {
-                                if (!Poll.PolledYes.Contains(_cInfo.entityId) && !Poll.PolledNo.Contains(_cInfo.entityId))
-                                {
-                                    Poll.VoteNo(_cInfo);
-                                }
-                                else
-                                {
-                                    string _phrase812;
-                                    if (!Phrases.Dict.TryGetValue(812, out _phrase812))
-                                    {
-                                        _phrase812 = "{PlayerName} you have already voted on the poll.";
-                                    }
-                                    _phrase812 = _phrase812.Replace("{PlayerName}", _playerName);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase812), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
-                                return false;
-                            }
+                            Poll.VoteNo(_cInfo);
+                            return false;
                         }
                         if (_message.ToLower() == "poll")
                         {
-                            if (PersistentContainer.Instance.PollOpen)
+                            string _sql = "SELECT pollMessage, pollYes, pollNo FROM Polls WHERE pollOpen = 'true'";
+                            DataTable _result = SQL.TQuery(_sql);
+                            if (_result.Rows.Count > 0)
                             {
                                 string _phrase926;
                                 if (!Phrases.Dict.TryGetValue(926, out _phrase926))
                                 {
                                     _phrase926 = "Poll: {Message}";
                                 }
-                                _phrase926 = _phrase926.Replace("{Message}", PersistentContainer.Instance.PollMessage);
+                                string _pollMessage = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                                _phrase926 = _phrase926.Replace("{Message}", _pollMessage);
                                 string _phrase813;
                                 if (!Phrases.Dict.TryGetValue(813, out _phrase813))
                                 {
                                     _phrase813 = "Currently, the pole is yes {YesCount} / no {NoCount}.";
                                 }
-                                _phrase813 = _phrase813.Replace("{YesCount}", PersistentContainer.Instance.PollYes.ToString());
-                                _phrase813 = _phrase813.Replace("{NoCount}", PersistentContainer.Instance.PollNo.ToString());
+                                int _pollYes;
+                                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _pollYes);
+                                int _pollNo;
+                                int.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _pollNo);
+                                _phrase813 = _phrase813.Replace("{YesCount}", _pollYes.ToString());
+                                _phrase813 = _phrase813.Replace("{NoCount}", _pollNo.ToString());
                                 if (_announce)
                                 {
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase926), Config.Server_Response_Name, false, "ServerTools", true);

@@ -1,4 +1,6 @@
-﻿namespace ServerTools
+﻿using System.Data;
+
+namespace ServerTools
 {
     public class Mods
     {
@@ -54,10 +56,13 @@
                 DupeLog.CreateFolder();
             }
             Poll.CreateFolder();
-            if (PersistentContainer.Instance.PollOpen)
+            string _sql = "SELECT pollOpen WHERE pollOpen = 'true'";
+            DataTable _result = SQL.TQuery(_sql);
+            if (_result.Rows.Count > 0)
             {
                 Poll.Check();
             }
+            _result.Dispose();
             if (ChatHook.Special_Player_Name_Coloring)
             {
                 ChatHook.SpecialIdCheck();

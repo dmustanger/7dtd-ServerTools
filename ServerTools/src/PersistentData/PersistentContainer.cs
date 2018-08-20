@@ -10,28 +10,28 @@ namespace ServerTools
     {
         private static string filepath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
         private Players players;
-        private DateTime pollTime;
-        private bool pollOpen;
+        //private DateTime pollTime;
+        //private bool pollOpen;
         private int eventTime;
         private int eventPlayerCount;
         private int eventTeams;
         private int eventTimeOld;
         private int eventPlayerCountOld;
         private int eventTeamsOld;
-        private int pollHours;
-        private int pollYes;
-        private int pollNo;
-        private int lastPollHours;
-        private int lastPollYes;
-        private int lastPollNo;
-        private List<int> polledYes;
-        private List<int> polledNo;
+        //private int pollHours;
+        //private int pollYes;
+        //private int pollNo;
+        //private int lastPollHours;
+        //private int lastPollYes;
+        //private int lastPollNo;
+        //private List<int> polledYes;
+        //private List<int> polledNo;
         private List<string> eventSpawn;
         private List<string> eventRespawn;
         private List<string> eventSpawnOld;
         private List<string> eventRespawnOld;
-        private string pollMessage;
-        private string lastPollMessage;
+        //private string pollMessage;
+        //private string lastPollMessage;
         private string eventName;
         private string eventInvite;
         private string eventNameOld;
@@ -96,29 +96,29 @@ namespace ServerTools
             return false;
         }
 
-        public bool PollOpen
-        {
-            get
-            {
-                return pollOpen;
-            }
-            set
-            {
-                pollOpen = value;
-            }
-        }
+        //public bool PollOpen
+        //{
+            //get
+            //{
+                //return pollOpen;
+            //}
+            //set
+            //{
+                //pollOpen = value;
+            //}
+        //}
 
-        public DateTime PollTime
-        {
-            get
-            {
-                return pollTime;
-            }
-            set
-            {
-                pollTime = value;
-            }
-        }
+        //public DateTime PollTime
+        //{
+            //get
+            //{
+                //return pollTime;
+            //}
+            //set
+            //{
+                //pollTime = value;
+            //}
+        //}
 
         public int EventTime
         {
@@ -192,101 +192,101 @@ namespace ServerTools
             }
         }
 
-        public int PollHours
-        {
-            get
-            {
-                return pollHours;
-            }
-            set
-            {
-                pollHours = value;
-            }
-        }
+        //public int PollHours
+        //{
+            //get
+            //{
+                //return pollHours;
+            //}
+            //set
+            //{
+                //pollHours = value;
+            //}
+        //}
 
-        public int PollYes
-        {
-            get
-            {
-                return pollYes;
-            }
-            set
-            {
-                pollYes = value;
-            }
-        }
+        //public int PollYes
+        //{
+            //get
+            //{
+                //return pollYes;
+            //}
+            //set
+            //{
+                //pollYes = value;
+            //}
+        //}
 
-        public int PollNo
-        {
-            get
-            {
-                return pollNo;
-            }
-            set
-            {
-                pollNo = value;
-            }
-        }
+        //public int PollNo
+        //{
+            //get
+            //{
+                //return pollNo;
+            //}
+            //set
+            //{
+                //pollNo = value;
+            //}
+        //}
 
-        public int LastPollHours
-        {
-            get
-            {
-                return lastPollHours;
-            }
-            set
-            {
-                lastPollHours = value;
-            }
-        }
+        //public int LastPollHours
+        //{
+            //get
+            //{
+                //return lastPollHours;
+            //}
+            //set
+            //{
+                //lastPollHours = value;
+            //}
+        //}
 
-        public int LastPollYes
-        {
-            get
-            {
-                return lastPollYes;
-            }
-            set
-            {
-                lastPollYes = value;
-            }
-        }
+        //public int LastPollYes
+        //{
+            //get
+            //{
+                //return lastPollYes;
+            //}
+            //set
+            //{
+                //lastPollYes = value;
+            //}
+        //}
 
-        public int LastPollNo
-        {
-            get
-            {
-                return lastPollNo;
-            }
-            set
-            {
-                lastPollNo = value;
-            }
-        }
+        //public int LastPollNo
+        //{
+            //get
+            //{
+                //return lastPollNo;
+            //}
+            //set
+            //{
+                //lastPollNo = value;
+            //}
+        //}
 
-        public List<int> PolledYes
-        {
-            get
-            {
-                return polledYes;
-            }
-            set
-            {
-                polledYes = value;
-            }
-        }
+        //public List<int> PolledYes
+        //{
+            //get
+            //{
+                //return polledYes;
+            //}
+            //set
+            //{
+                //polledYes = value;
+            //}
+        //}
 
-        public List<int> PolledNo
-        {
-            get
-            {
-                return polledNo;
-            }
-            set
-            {
-                polledNo = value;
-            }
-        }
+        //public List<int> PolledNo
+        //{
+            //get
+            //{
+                //return polledNo;
+            //}
+            //set
+            //{
+                //polledNo = value;
+            //}
+        //}
 
         public List<string> EventSpawn
         {
@@ -336,29 +336,29 @@ namespace ServerTools
             }
         }
 
-        public string PollMessage
-        {
-            get
-            {
-                return pollMessage;
-            }
-            set
-            {
-                pollMessage = value;
-            }
-        }
+        //public string PollMessage
+        //{
+            //get
+            //{
+                //return pollMessage;
+            //}
+            //set
+            //{
+                //pollMessage = value;
+            //}
+        //}
 
-        public string LastPollMessage
-        {
-            get
-            {
-                return lastPollMessage;
-            }
-            set
-            {
-                lastPollMessage = value;
-            }
-        }
+        //public string LastPollMessage
+        //{
+            //get
+            //{
+                //return lastPollMessage;
+            //}
+            //set
+            //{
+                //lastPollMessage = value;
+            //}
+        //}
 
         public string EventName
         {

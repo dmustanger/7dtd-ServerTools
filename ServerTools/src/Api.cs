@@ -174,15 +174,18 @@ namespace ServerTools
                             StartingItems.Que.Add(_cInfo.playerId);
                         }
                     }
-                    if (PersistentContainer.Instance.PollOpen && !Poll.PolledYes.Contains(_cInfo.entityId) && !Poll.PolledNo.Contains(_cInfo.entityId))
+                    string _sql = "SELECT pollOpen WHERE pollOpen = 'true'";
+                    DataTable _result = SQL.TQuery(_sql);
+                    if (_result.Rows.Count > 0 && !Poll.PolledYes.Contains(_cInfo.playerId) && !Poll.PolledNo.Contains(_cInfo.playerId))
                     {
                         Poll.Message(_cInfo);
                     }
+                    _result.Dispose();
                     if (Hardcore.IsEnabled)
                     {
                         Hardcore.Announce(_cInfo);
                     }
-                    string _sql = string.Format("UPDATE Players playername = '{0}' wallet = 0, playerSpentCoins = 0, sessionTime = 0, zkills = 0, kills = 0, deaths = 0 WHERE steamid = '{1}'", _cInfo.playerName, _cInfo.playerId);
+                    _sql = string.Format("UPDATE Players playername = '{0}' wallet = 0, playerSpentCoins = 0, sessionTime = 0, zkills = 0, kills = 0, deaths = 0 WHERE steamid = '{1}'", _cInfo.playerName, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 if (_respawnReason == RespawnType.JoinMultiplayer)
@@ -192,15 +195,18 @@ namespace ServerTools
                     int _deathCount = XUiM_Player.GetDeaths(_player);
                     int _killCount = XUiM_Player.GetPlayerKills(_player);
                     Players.FriendList(_cInfo);
-                    if (PersistentContainer.Instance.PollOpen && !Poll.PolledYes.Contains(_cInfo.entityId) && !Poll.PolledNo.Contains(_cInfo.entityId))
+                    string _sql = "SELECT pollOpen WHERE pollOpen = 'true'";
+                    DataTable _result = SQL.TQuery(_sql);
+                    if (_result.Rows.Count > 0 && !Poll.PolledYes.Contains(_cInfo.playerId) && !Poll.PolledNo.Contains(_cInfo.playerId))
                     {
                         Poll.Message(_cInfo);
                     }
+                    _result.Dispose();
                     if (Hardcore.IsEnabled)
                     {
                         Hardcore.Check(_cInfo);
                     }
-                    string _sql = string.Format("SELECT eventReturn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    _sql = string.Format("SELECT eventReturn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                     DataTable _result1 = SQL.TQuery(_sql);
                     string _eventReturn = _result1.Rows[0].ItemArray.GetValue(0).ToString();
                     _result1.Dispose();

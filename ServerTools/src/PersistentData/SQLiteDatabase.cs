@@ -118,6 +118,14 @@ namespace ServerTools
                 "wayPointName TEXT NOT NULL, " +
                 "position TEXT NOT NULL " +
                 ");");
+            FastQuery("CREATE TABLE IF NOT EXISTS Polls (" +
+                "pollOpen TEXT DEFAULT 'false', " +
+                "pollTime TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
+                "pollHours INTEGER NOT NULL, " +
+                "pollMessage TEXT NOT NULL, " +
+                "pollYes INTEGER DEFAULT 0, " +
+                "pollNo INTEGER DEFAULT 0 " +
+                ");");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER);");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");
             if (_result.Rows.Count == 0)
