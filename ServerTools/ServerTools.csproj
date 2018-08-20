@@ -50,6 +50,7 @@
     <Compile Include="src\ConsoleCommands\TraderList.cs" />
     <Compile Include="src\ConsoleCommands\ZoneSetup.cs" />
     <Compile Include="src\Event\Event.cs" />
+    <Compile Include="src\Functions\UpdateToSqlFromBin.cs" />
     <Compile Include="src\Hardcore\Hardcore.cs" />
     <Compile Include="src\AntiCheat\CredentialCheck.cs" />
     <Compile Include="src\AntiCheat\HatchElevator.cs" />

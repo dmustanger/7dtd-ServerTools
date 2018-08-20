@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System.Data;
+using System.IO;
 
 namespace ServerTools
 {
@@ -39,6 +40,13 @@ namespace ServerTools
             }
             connection.Close();
             CreateTables();
+            // can remove the below a few months after release
+            string _binpath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
+            if (File.Exists(_binpath))
+            {
+                UpdateToSqlFromBin.Exec();
+            }
+            //----------------------------------------------------------------------------------------
         }
 
         private static void CreateTables()
