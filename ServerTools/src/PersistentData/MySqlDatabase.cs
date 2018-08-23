@@ -17,7 +17,7 @@ namespace ServerTools
         public static void SetConnection()
         {
             string _connectionString;
-            _connectionString = string.Format("SERVER={0};PORT={1};DATABASE={2};UID={3};PASSWORD={4};", Server, Port, Database, UserName, Password);
+            _connectionString = string.Format("SERVER={0};PORT={1};DATABASE={2};UID={3};PASSWORD={4};CHARSET=utf8;", Server, Port, Database, UserName, Password);
             connection = new MySqlConnection(_connectionString);
             try
             {
