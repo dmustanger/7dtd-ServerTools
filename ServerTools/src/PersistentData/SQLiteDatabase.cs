@@ -119,12 +119,30 @@ namespace ServerTools
                 "position TEXT NOT NULL " +
                 ");");
             FastQuery("CREATE TABLE IF NOT EXISTS Polls (" +
+                "pollid INTEGER PRIMARY KEY, " +
                 "pollOpen TEXT DEFAULT 'false', " +
                 "pollTime TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
                 "pollHours INTEGER NOT NULL, " +
                 "pollMessage TEXT NOT NULL, " +
                 "pollYes INTEGER DEFAULT 0, " +
                 "pollNo INTEGER DEFAULT 0 " +
+                ");");
+            FastQuery("CREATE TABLE IF NOT EXISTS Events (" +
+                "eventid INTEGER PRIMARY KEY, " +
+                "eventAdmin TEXT, " +
+                "eventName TEXT, " +
+                "eventInvite TEXT, " +
+                "eventTeams INTEGER, " +
+                "eventPlayerCount INTEGER, " +
+                "eventTime INTEGER, " +
+                "eventActive TEXT " +
+                ");");
+            FastQuery("CREATE TABLE IF NOT EXISTS EventSpawns (" +
+                "eventid INTEGER NOT NULL, " +
+                "eventTeam INTEGER NOT NULL, " +
+                "eventSpawn TEXT NOT NULL, " +
+                "eventRespawn TEXT, " +
+                "FOREIGN KEY(eventid) REFERENCES Events(eventid) " +
                 ");");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER);");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");

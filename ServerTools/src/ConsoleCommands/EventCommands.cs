@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 namespace ServerTools
@@ -17,12 +18,12 @@ namespace ServerTools
                 "  1. event new" +
                 "  2. event check" +
                 "  3. event cancel" +
-                "  4. event last" +
+                "  4. event list" +
                 "  5. event remove <Id>" +
                 "1. Starts a new event. No other admin can be running an event at the same time\n" +
                 "2. Shows the settings and player list of the running event\n" +
                 "3. Stops the current event and sends players back to their return points\n" +
-                "4. Shows the last event settings and starts a setup with them.\n" +
+                "4. Shows a list of past event settings and starts a setup with them.\n" +
                 "5. Remove a single player from a running event, sending them back to their return point.\n";
         }
 
@@ -67,6 +68,8 @@ namespace ServerTools
                         Event.Spawning.Clear();
                         Event.Respawning.Clear();
                         Event.Admin = _senderInfo.RemoteClientInfo.playerName;
+                        string _sql = string.Format("INSERT INTO Events (eventAdmin) VALUES ('{0}')", Event.Admin);
+                        SQL.FastQuery(_sql);
                         SdtdConsole.Instance.Output("You have started to open a new event. You must complete the setup within 15 minutes.");
                         SdtdConsole.Instance.Output("What would you like to name your new event? Type event name {Name}.");
                         return;
@@ -82,7 +85,8 @@ namespace ServerTools
                             string _name = string.Join(" ", _params.ToArray());
                             _name = _name.Replace("event ", "");
                             _name = _name.Replace("name ", "");
-                            PersistentContainer.Instance.EventName = _name;
+                            string _sql = string.Format("UPDATE Events SET eventName = '{0}' WHERE eventAdmin = '{1}'", _name, Event.Admin);
+                            SQL.FastQuery(_sql);
                             SdtdConsole.Instance.Output(string.Format("The event name has been set to {0}.", _name));
                             SdtdConsole.Instance.Output("What would you like the invitation for players to say? Type event invite {Invitation}.");
                             return;
@@ -109,7 +113,8 @@ namespace ServerTools
                             string _invite = string.Join(" ", _params.ToArray());
                             _invite = _invite.Replace("event ", "");
                             _invite = _invite.Replace("invite ", "");
-                            PersistentContainer.Instance.EventInvite = _invite;
+                            string _sql = string.Format("UPDATE Events SET eventInvite = '{0}' WHERE eventAdmin = '{1}'", _invite, Event.Admin);
+                            SQL.FastQuery(_sql);
                             SdtdConsole.Instance.Output(string.Format("The event invitation has been set to {0}.", _invite));
                             SdtdConsole.Instance.Output("How many teams, total players, and time in minutes will the event last? Type event info <TeamCount> <TotalPlayers> <TimeInMin>.");
                             return;
@@ -154,10 +159,8 @@ namespace ServerTools
                                             _eventTime = 1;
                                         }
                                         Event.Info = true;
-                                        PersistentContainer.Instance.EventTeams = _teamCount;
-                                        PersistentContainer.Instance.EventPlayerCount = _playerCount;
-                                        PersistentContainer.Instance.EventTime = _eventTime;
-                                        PersistentContainer.Instance.Save();
+                                        string _sql = string.Format("UPDATE Events SET eventTeams = {0}, eventPlayerCount = {1}, eventTime = {2} WHERE eventAdmin = '{1}'", _teamCount, _playerCount, _eventTime, Event.Admin);
+                                        SQL.FastQuery(_sql);
                                         SdtdConsole.Instance.Output(string.Format("The event info has been set: team count {0}, total players {1}, event time {2}.", _teamCount, _playerCount, _eventTime));
                                         if (_teamCount == 1)
                                         {
@@ -198,19 +201,28 @@ namespace ServerTools
                             int z = (int)_position.z;
                             string _sposition = x + "," + y + "," + z;
                             Event.Spawning.Add(_sposition);
-                            if (Event.Spawning.Count == PersistentContainer.Instance.EventTeams)
+                            string _sql = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}'", Event.Admin);
+                            DataTable _result = SQL.TQuery(_sql);
+                            int _eventid;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
+                            int _eventTeams;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _eventTeams);
+                            _result.Dispose();
+                            if (Event.Spawning.Count == _eventTeams)
                             {
                                 Event.Spawn = true;
-                                PersistentContainer.Instance.EventSpawn = Event.Spawning;
-                                PersistentContainer.Instance.Save();
+                                _sql = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventSpawn) VALUES ({0}, {1}, '{2}')", _eventid, Event.Spawning.Count, _sposition);
+                                SQL.FastQuery(_sql);
                                 SdtdConsole.Instance.Output(string.Format("The spawn position for team {0} has been set to {1} {2} {3}.", Event.Spawning.Count, x, y, z));
                                 SdtdConsole.Instance.Output("Stand where you would like the respawn for team 1 if they die during the event, then type event respawn.");
                                 return;
                             }
                             else
                             {
+                                _sql = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventSpawn) VALUES ({0}, {1}, '{2}')", _eventid, Event.Spawning.Count, _sposition);
+                                SQL.FastQuery(_sql);
                                 SdtdConsole.Instance.Output(string.Format("The spawn position for team {0} has been set to {1} {2} {3}.", Event.Spawning.Count, x, y, z));
-                                SdtdConsole.Instance.Output(string.Format("Stand where you would like the spawn for team {0} when the event starts and type event spawn.", Event.Respawning.Count + 1));
+                                SdtdConsole.Instance.Output(string.Format("Stand where you would like the spawn for team {0} when the event starts and type event spawn.", Event.Spawning.Count + 1));
                                 return;
                             }
                         }
@@ -239,18 +251,27 @@ namespace ServerTools
                             int z = (int)_position.z;
                             string _sposition = x + "," + y + "," + z;
                             Event.Respawning.Add(_sposition);
-                            if (Event.Respawning.Count == PersistentContainer.Instance.EventTeams)
+                            string _sql = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}'", Event.Admin);
+                            DataTable _result = SQL.TQuery(_sql);
+                            int _eventid;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
+                            int _eventTeams;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _eventTeams);
+                            _result.Dispose();
+                            if (Event.Respawning.Count == _eventTeams)
                             {
                                 Event.Respawn = true;
                                 Event.Complete = true;
-                                PersistentContainer.Instance.EventRespawn = Event.Respawning;
-                                PersistentContainer.Instance.Save();
+                                _sql = string.Format("UPDATE EventSpawns SET eventRespawn = '{0}' WHERE eventid = {1} AND eventTeam = {2}", _sposition, _eventid, Event.Respawning.Count);
+                                SQL.FastQuery(_sql);
                                 SdtdConsole.Instance.Output(string.Format("The respawn position for team {0} has been set to {1} {2} {3}.", Event.Respawning.Count, x, y, z));
                                 SdtdConsole.Instance.Output("Setup is complete. Type event start to send out the invitation.");
                                 return;
                             }
                             else
                             {
+                                _sql = string.Format("UPDATE EventSpawns SET eventRespawn = '{0}' WHERE eventid = {1} AND eventTeam = {2}", _sposition, _eventid, Event.Respawning.Count);
+                                SQL.FastQuery(_sql);
                                 SdtdConsole.Instance.Output(string.Format("The respawn position for team {0} has been set to {1} {2} {3}.", Event.Respawning.Count, x, y, z));
                                 SdtdConsole.Instance.Output(string.Format("Stand where you would like the respawn for team {0} if they die during the event and type event respawn.", Event.Respawning.Count + 1));
                                 return;
@@ -278,14 +299,23 @@ namespace ServerTools
                             {
                                 Event.Setup = false;
                                 Event.Invited = true;
+                                string _sql = string.Format("SELECT eventid, eventName, eventInvite FROM Events WHERE eventAdmin = '{0}'", Event.Admin);
+                                DataTable _result = SQL.TQuery(_sql);
+                                int _eventid;
+                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
+                                string _eventName = _result.Rows[0].ItemArray.GetValue(1).ToString();
+                                string _eventInvite = _result.Rows[0].ItemArray.GetValue(2).ToString();
+                                _result.Dispose();
+                                _sql = string.Format("UPDATE Events SET eventActive = 'true' WHERE eventid = {0} AND eventAdmin = '{1}'", _eventid, Event.Admin);
+                                SQL.FastQuery(_sql);
                                 List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                                 for (int i = 0; i < _cInfoList.Count; i++)
                                 {
                                     ClientInfo _cInfo = _cInfoList[i];
                                     if (_cInfo != null)
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Event: {1}[-]", Config.Chat_Response_Color, PersistentContainer.Instance.EventName), Config.Server_Response_Name, false, "ServerTools", false));
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, PersistentContainer.Instance.EventInvite), Config.Server_Response_Name, false, "ServerTools", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Event: {1}[-]", Config.Chat_Response_Color, _eventName), Config.Server_Response_Name, false, "ServerTools", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _eventInvite), Config.Server_Response_Name, false, "ServerTools", false));
                                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} type /event if you want to join the event. You will return to where you are when it ends.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                                     }
                                 }
@@ -314,20 +344,20 @@ namespace ServerTools
                     {
                         if (Event.Admin == _senderInfo.RemoteClientInfo.playerName)
                         {
-                            SdtdConsole.Instance.Output(string.Format("Event: {0}.", PersistentContainer.Instance.EventName));
-                            SdtdConsole.Instance.Output(string.Format("Invitation: {0}.", PersistentContainer.Instance.EventInvite));
-                            SdtdConsole.Instance.Output(string.Format("Info: Teams {0}, Players {1}, Time {2} minutes.", PersistentContainer.Instance.EventTeams, PersistentContainer.Instance.EventPlayerCount, PersistentContainer.Instance.EventTime));
-
-                            for (int i = 0; i < PersistentContainer.Instance.EventSpawnOld.Count; i++)
-                            {
-                                string _teamSpawn = PersistentContainer.Instance.EventSpawnOld[i];
-                                SdtdConsole.Instance.Output(string.Format("Spawn Point: {0} for team {1}.", _teamSpawn, i));
-                            }
-                            for (int i = 0; i < PersistentContainer.Instance.EventRespawnOld.Count; i++)
-                            {
-                                string _teamRespawn = PersistentContainer.Instance.EventRespawnOld[i];
-                                SdtdConsole.Instance.Output(string.Format("Respawn Point: {0} for team {1}.", _teamRespawn, i));
-                            }
+                            string _sql = string.Format("SELECT eventName, eventInvite, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventAdmin = '{0}' AND eventActive = 'true'", Event.Admin);
+                            DataTable _result = SQL.TQuery(_sql);
+                            string _eventName = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                            string _eventInvite = _result.Rows[0].ItemArray.GetValue(1).ToString();
+                            int _eventTeams;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _eventTeams);
+                            int _eventPlayerCount;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _eventPlayerCount);
+                            int _eventTime;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(4).ToString(), out _eventTime);
+                            _result.Dispose();
+                            SdtdConsole.Instance.Output(string.Format("Event: {0}.", _eventName));
+                            SdtdConsole.Instance.Output(string.Format("Invitation: {0}.", _eventInvite));
+                            SdtdConsole.Instance.Output(string.Format("Info: Teams {0}, Players {1}, Time {2} minutes.", _eventTeams, _eventPlayerCount, _eventTime));
                             for (int i = 0; i < Event.Players.Count; i++)
                             {
                                 int _playerEntId = Event.Players[i];
@@ -413,6 +443,8 @@ namespace ServerTools
                                 }
                                 if (Event.PlayersReturn.Count == 0)
                                 {
+                                    string _sql = string.Format("UPDATE Events SET eventAdmin = null, eventActive = 'false' WHERE eventAdmin = '{0}'", Event.Admin);
+                                    SQL.FastQuery(_sql);
                                     Event.Return = false;
                                     Event.Open = false;
                                     Event.PlayersTeam.Clear();
@@ -422,14 +454,6 @@ namespace ServerTools
                                     Event.Spawning.Clear();
                                     Event.Respawning.Clear();
                                     Event.Admin = null;
-                                    PersistentContainer.Instance.EventName = null;
-                                    PersistentContainer.Instance.EventInvite = null;
-                                    PersistentContainer.Instance.EventPlayerCount = 0;
-                                    PersistentContainer.Instance.EventTeams = 0;
-                                    PersistentContainer.Instance.EventTime = 0;
-                                    PersistentContainer.Instance.EventSpawn = null;
-                                    PersistentContainer.Instance.EventRespawn = null;
-                                    PersistentContainer.Instance.Save();
                                     SdtdConsole.Instance.Output("The current event has been cancelled and event players have been sent back to their return points.");
                                     return;
                                 }
@@ -459,14 +483,8 @@ namespace ServerTools
                             Event.SpawnList.Clear();
                             Event.Spawning.Clear();
                             Event.Respawning.Clear();
-                            PersistentContainer.Instance.EventName = null;
-                            PersistentContainer.Instance.EventInvite = null;
-                            PersistentContainer.Instance.EventPlayerCount = 0;
-                            PersistentContainer.Instance.EventTeams = 0;
-                            PersistentContainer.Instance.EventTime = 0;
-                            PersistentContainer.Instance.EventSpawn = null;
-                            PersistentContainer.Instance.EventRespawn = null;
-                            PersistentContainer.Instance.Save();
+                            string _sql = string.Format("UPDATE Events SET eventAdmin = null, eventActive = 'false' WHERE eventAdmin = '{0}'", Event.Admin);
+                            SQL.FastQuery(_sql);
                             SdtdConsole.Instance.Output("The current setup has been cancelled.");
                             return;
                         }
@@ -529,14 +547,8 @@ namespace ServerTools
                                 Event.Players.Clear();
                                 Event.SpawnList.Clear();
                                 Event.Admin = null;
-                                PersistentContainer.Instance.EventName = null;
-                                PersistentContainer.Instance.EventInvite = null;
-                                PersistentContainer.Instance.EventPlayerCount = 0;
-                                PersistentContainer.Instance.EventTeams = 0;
-                                PersistentContainer.Instance.EventTime = 0;
-                                PersistentContainer.Instance.EventSpawn = null;
-                                PersistentContainer.Instance.EventRespawn = null;
-                                PersistentContainer.Instance.Save();
+                                string _sql = string.Format("UPDATE Events SET eventAdmin = null, eventActive = 'false' WHERE eventAdmin = '{0}'", Event.Admin);
+                                SQL.FastQuery(_sql);
                                 SdtdConsole.Instance.Output("All players have been sent to their return point and the event has been cleaned up.");
                                 return;
                             }
@@ -553,53 +565,31 @@ namespace ServerTools
                         }
                     }
                 }
-                if (_params[0] == ("last"))
+                if (_params[0] == ("list"))
                 {
                     if (!Event.Open)
                     {
                         if (!Event.Setup)
                         {
-                            if (PersistentContainer.Instance.EventNameOld != null)
+                            string _sql = "SELECT eventid, eventName, eventInvite, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventActive = 'false'";
+                            DataTable _result = SQL.TQuery(_sql);
+                            if (_result.Rows.Count > 0)
                             {
-                                Event.Admin = _senderInfo.RemoteClientInfo.playerName;
-                                Event.Name = true;
-                                Event.Invite = true;
-                                Event.Info = true;
-                                Event.Spawn = true;
-                                Event.Respawn = true;
-                                Event.Complete = true;
-                                Event.Setup = true;
-                                Event.Spawning = PersistentContainer.Instance.EventSpawnOld;
-                                Event.Respawning = PersistentContainer.Instance.EventRespawnOld;
-                                PersistentContainer.Instance.EventName = PersistentContainer.Instance.EventNameOld;
-                                PersistentContainer.Instance.EventInvite = PersistentContainer.Instance.EventInviteOld;
-                                PersistentContainer.Instance.EventPlayerCount = PersistentContainer.Instance.EventPlayerCountOld;
-                                PersistentContainer.Instance.EventTeams = PersistentContainer.Instance.EventTeamsOld;
-                                PersistentContainer.Instance.EventTime = PersistentContainer.Instance.EventTimeOld;
-                                PersistentContainer.Instance.EventSpawn = PersistentContainer.Instance.EventSpawnOld;
-                                PersistentContainer.Instance.EventRespawn = PersistentContainer.Instance.EventRespawnOld;
-                                SdtdConsole.Instance.Output(string.Format("Last event: {0}.", PersistentContainer.Instance.EventNameOld));
-                                SdtdConsole.Instance.Output(string.Format("Invitation: {0}.", PersistentContainer.Instance.EventInviteOld));
-                                SdtdConsole.Instance.Output(string.Format("Info: Teams {0}, Players {1}, Time {2} minutes.", PersistentContainer.Instance.EventTeamsOld, PersistentContainer.Instance.EventPlayerCountOld, PersistentContainer.Instance.EventTimeOld));
-                                for (int i = 0; i < PersistentContainer.Instance.EventSpawnOld.Count; i++)
+                                foreach (DataRow row in _result.Rows)
                                 {
-                                    string _teamSpawn = PersistentContainer.Instance.EventSpawnOld[i];
-                                    SdtdConsole.Instance.Output(string.Format("Spawn Point: {0} for team {1}.", _teamSpawn, i));
+                                    SdtdConsole.Instance.Output(string.Format("Event Id = {0} Event Name = {1}", row[0].ToString(), row[1].ToString()));
+                                    SdtdConsole.Instance.Output(string.Format("Event Invite = {0}", row[2].ToString()));
+                                    SdtdConsole.Instance.Output(string.Format("Team Count = {0} Allowed Players = {1} Allowed Time = {2}", row[3].ToString(), row[4].ToString(), row[5].ToString()));
+                                    SdtdConsole.Instance.Output("-----------------------------------------------------------------------");
+                                    SdtdConsole.Instance.Output("-----------------------------------------------------------------------");
                                 }
-                                for (int i = 0; i < PersistentContainer.Instance.EventRespawnOld.Count; i++)
-                                {
-                                    string _teamRespawn = PersistentContainer.Instance.EventRespawnOld[i];
-                                    SdtdConsole.Instance.Output(string.Format("Respawn Point: {0} for team {1}.", _teamRespawn, i));
-                                }
-                                SdtdConsole.Instance.Output("The event setup has been set to these settings.");
-                                SdtdConsole.Instance.Output("Type event start to send the invitation to players or start a new setup by typing event cancel and then event new.");
-                                return;
+                                SdtdConsole.Instance.Output("Type event start <eventid> to send the invitation to players or start a new setup by typing event new.");
                             }
                             else
                             {
                                 SdtdConsole.Instance.Output("There is no saved event data.");
-                                return;
                             }
+                            _result.Dispose();
                         }
                         else
                         {

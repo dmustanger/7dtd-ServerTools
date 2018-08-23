@@ -12,12 +12,12 @@ namespace ServerTools
         private Players players;
         //private DateTime pollTime;
         //private bool pollOpen;
-        private int eventTime;
-        private int eventPlayerCount;
-        private int eventTeams;
-        private int eventTimeOld;
-        private int eventPlayerCountOld;
-        private int eventTeamsOld;
+        //private int eventTime;
+        //private int eventPlayerCount;
+        //private int eventTeams;
+        //private int eventTimeOld;
+        //private int eventPlayerCountOld;
+        //private int eventTeamsOld;
         //private int pollHours;
         //private int pollYes;
         //private int pollNo;
@@ -26,16 +26,16 @@ namespace ServerTools
         //private int lastPollNo;
         //private List<int> polledYes;
         //private List<int> polledNo;
-        private List<string> eventSpawn;
-        private List<string> eventRespawn;
-        private List<string> eventSpawnOld;
-        private List<string> eventRespawnOld;
+        //private List<string> eventSpawn;
+        //private List<string> eventRespawn;
+        //private List<string> eventSpawnOld;
+        //private List<string> eventRespawnOld;
         //private string pollMessage;
         //private string lastPollMessage;
-        private string eventName;
-        private string eventInvite;
-        private string eventNameOld;
-        private string eventInviteOld;
+        //private string eventName;
+        //private string eventInvite;
+        //private string eventNameOld;
+        //private string eventInviteOld;
         private static PersistentContainer instance;
 
         public Players Players
@@ -120,77 +120,77 @@ namespace ServerTools
             //}
         //}
 
-        public int EventTime
-        {
-            get
-            {
-                return eventTime;
-            }
-            set
-            {
-                eventTime = value;
-            }
-        }
+        //public int EventTime
+        //{
+            //get
+            //{
+                //return eventTime;
+            //}
+            //set
+            //{
+                //eventTime = value;
+            //}
+        //}
 
-        public int EventPlayerCount
-        {
-            get
-            {
-                return eventPlayerCount;
-            }
-            set
-            {
-                eventPlayerCount = value;
-            }
-        }
+        //public int EventPlayerCount
+        //{
+            //get
+            //{
+                //return eventPlayerCount;
+            //}
+            //set
+            //{
+                //eventPlayerCount = value;
+            //}
+        //}
 
-        public int EventTeams
-        {
-            get
-            {
-                return eventTeams;
-            }
-            set
-            {
-                eventTeams = value;
-            }
-        }
+        //public int EventTeams
+        //{
+            //get
+            //{
+                //return eventTeams;
+            //}
+            //set
+            //{
+                //eventTeams = value;
+            //}
+        //}
 
-        public int EventTimeOld
-        {
-            get
-            {
-                return eventTimeOld;
-            }
-            set
-            {
-                eventTimeOld = value;
-            }
-        }
+        //public int EventTimeOld
+        //{
+            //get
+            //{
+                //return eventTimeOld;
+            //}
+            //set
+            //{
+                //eventTimeOld = value;
+            //}
+        //}
 
-        public int EventPlayerCountOld
-        {
-            get
-            {
-                return eventPlayerCountOld;
-            }
-            set
-            {
-                eventPlayerCountOld = value;
-            }
-        }
+        //public int EventPlayerCountOld
+        //{
+            //get
+            //{
+                //return eventPlayerCountOld;
+            //}
+            //set
+            //{
+                //eventPlayerCountOld = value;
+            //}
+        //}
 
-        public int EventTeamsOld
-        {
-            get
-            {
-                return eventTeamsOld;
-            }
-            set
-            {
-                eventTeamsOld = value;
-            }
-        }
+        //public int EventTeamsOld
+        //{
+            //get
+            //{
+                //return eventTeamsOld;
+            //}
+            //set
+            //{
+                //eventTeamsOld = value;
+            //}
+        //}
 
         //public int PollHours
         //{
@@ -288,53 +288,53 @@ namespace ServerTools
             //}
         //}
 
-        public List<string> EventSpawn
-        {
-            get
-            {
-                return eventSpawn;
-            }
-            set
-            {
-                eventSpawn = value;
-            }
-        }
+        //public List<string> EventSpawn
+        //{
+            //get
+            //{
+                //return eventSpawn;
+            //}
+            //set
+            //{
+                //eventSpawn = value;
+            //}
+        //}
 
-        public List<string> EventRespawn
-        {
-            get
-            {
-                return eventRespawn;
-            }
-            set
-            {
-                eventRespawn = value;
-            }
-        }
+        //public List<string> EventRespawn
+        //{
+            //get
+            //{
+                //return eventRespawn;
+            //}
+            //set
+            //{
+                //eventRespawn = value;
+            //}
+        //}
 
-        public List<string> EventSpawnOld
-        {
-            get
-            {
-                return eventSpawnOld;
-            }
-            set
-            {
-                eventSpawnOld = value;
-            }
-        }
+        //public List<string> EventSpawnOld
+        //{
+            //get
+            //{
+                //return eventSpawnOld;
+            //}
+            //set
+            //{
+                //eventSpawnOld = value;
+            //}
+        //}
 
-        public List<string> EventRespawnOld
-        {
-            get
-            {
-                return eventRespawnOld;
-            }
-            set
-            {
-                eventRespawnOld = value;
-            }
-        }
+        //public List<string> EventRespawnOld
+        //{
+            //get
+            //{
+                //return eventRespawnOld;
+            //}
+            //set
+            //{
+                //eventRespawnOld = value;
+            //}
+        //}
 
         //public string PollMessage
         //{
@@ -360,52 +360,52 @@ namespace ServerTools
             //}
         //}
 
-        public string EventName
-        {
-            get
-            {
-                return eventName;
-            }
-            set
-            {
-                eventName = value;
-            }
-        }
+        //public string EventName
+        //{
+            //get
+            //{
+                //return eventName;
+            //}
+            //set
+            //{
+                //eventName = value;
+            //}
+        //}
 
-        public string EventInvite
-        {
-            get
-            {
-                return eventInvite;
-            }
-            set
-            {
-                eventInvite = value;
-            }
-        }
+        //public string EventInvite
+        //{
+            //get
+            //{
+                //return eventInvite;
+            //}
+            //set
+            //{
+                //eventInvite = value;
+            //}
+        //}
 
-        public string EventNameOld
-        {
-            get
-            {
-                return eventNameOld;
-            }
-            set
-            {
-                eventNameOld = value;
-            }
-        }
+        //public string EventNameOld
+        //{
+            //get
+            //{
+                //return eventNameOld;
+            //}
+            //set
+            //{
+                //eventNameOld = value;
+            //}
+        //}
 
-        public string EventInviteOld
-        {
-            get
-            {
-                return eventInviteOld;
-            }
-            set
-            {
-                eventInviteOld = value;
-            }
-        }
+        //public string EventInviteOld
+        //{
+            //get
+            //{
+                //return eventInviteOld;
+            //}
+            //set
+            //{
+                //eventInviteOld = value;
+            //}
+        //}
     }
 }

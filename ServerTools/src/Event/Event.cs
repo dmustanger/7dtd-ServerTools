@@ -34,14 +34,8 @@ namespace ServerTools
                 SpawnList.Clear();
                 Spawning.Clear();
                 Respawning.Clear();
-                PersistentContainer.Instance.EventName = null;
-                PersistentContainer.Instance.EventInvite = null;
-                PersistentContainer.Instance.EventPlayerCount = 0;
-                PersistentContainer.Instance.EventTeams = 0;
-                PersistentContainer.Instance.EventTime = 0;
-                PersistentContainer.Instance.EventSpawn = null;
-                PersistentContainer.Instance.EventRespawn = null;
-                PersistentContainer.Instance.Save();
+                string _sql = "UPDATE Events SET eventAdmin = null, eventActive = 'false' WHERE eventActive = 'true'";
+                SQL.FastQuery(_sql);
                 ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(Admin);
                 if (_cInfo != null)
                 {
@@ -69,14 +63,8 @@ namespace ServerTools
                 SpawnList.Clear();
                 Spawning.Clear();
                 Respawning.Clear();
-                PersistentContainer.Instance.EventName = null;
-                PersistentContainer.Instance.EventInvite = null;
-                PersistentContainer.Instance.EventPlayerCount = 0;
-                PersistentContainer.Instance.EventTeams = 0;
-                PersistentContainer.Instance.EventTime = 0;
-                PersistentContainer.Instance.EventSpawn = null;
-                PersistentContainer.Instance.EventRespawn = null;
-                PersistentContainer.Instance.Save();
+                string _sql = "UPDATE Events SET eventAdmin = null, eventActive = 'false' WHERE eventActive = 'true'";
+                SQL.FastQuery(_sql);
                 ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(Admin);
                 if (_cInfo != null)
                 {
@@ -98,7 +86,17 @@ namespace ServerTools
                 string _sposition = x + "," + y + "," + z;
                 PlayersReturn.Add(_cInfo.entityId, _sposition);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have signed up for the event and your current location has been saved.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                int _playerCount = PersistentContainer.Instance.EventPlayerCount;
+                string _sql = string.Format("SELECT eventName, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventAdmin = '{0}' AND eventActive = 'true '", Admin);
+                DataTable _result = SQL.TQuery(_sql);
+                string _eventName = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                int _eventTeams;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _eventTeams);
+                int _eventPlayerCount;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _eventPlayerCount);
+                int _time;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _time);
+                _result.Dispose();
+                int _playerCount = _eventPlayerCount;
                 if (Players.Count == _playerCount)
                 {
                     Setup = false;
@@ -109,7 +107,7 @@ namespace ServerTools
                     Respawn = false;
                     Complete = false;
                     Invited = false;
-                    int _teamCount = PersistentContainer.Instance.EventTeams;
+                    int _teamCount = _eventTeams;
                     for (int i = 0; i < Players.Count; i++)
                     {
                         int _playerEntId = Players[i];
@@ -130,26 +128,18 @@ namespace ServerTools
                         }
                         if (_teamCount == 0)
                         {
-                            _teamCount = PersistentContainer.Instance.EventTeams;
+                            _teamCount = _eventTeams;
                         }
                     }
-                    int _eventTime = PersistentContainer.Instance.EventTime * 60;
+                    int _eventTime = _time * 60;
                     Timers._eventTime = _eventTime;
-                    PersistentContainer.Instance.EventNameOld = PersistentContainer.Instance.EventName;
-                    PersistentContainer.Instance.EventInviteOld = PersistentContainer.Instance.EventInvite;
-                    PersistentContainer.Instance.EventPlayerCountOld = PersistentContainer.Instance.EventPlayerCount;
-                    PersistentContainer.Instance.EventTeamsOld = PersistentContainer.Instance.EventTeams;
-                    PersistentContainer.Instance.EventTimeOld = PersistentContainer.Instance.EventTime;
-                    PersistentContainer.Instance.EventSpawnOld = PersistentContainer.Instance.EventSpawn;
-                    PersistentContainer.Instance.EventRespawnOld = PersistentContainer.Instance.EventRespawn;
-                    PersistentContainer.Instance.Save();
                     Open = true;
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} is full and has now started.", Config.Chat_Response_Color, PersistentContainer.Instance.EventName), Config.Server_Response_Name, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} is full and has now started.", Config.Chat_Response_Color, _eventName), Config.Server_Response_Name, false, "ServerTools", true);
                 }
                 else
                 {
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} still has space for more players. Type /event.", Config.Chat_Response_Color, PersistentContainer.Instance.EventName), Config.Server_Response_Name, false, "ServerTools", true);
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} of {2} have signed up.", Config.Chat_Response_Color, Players.Count, PersistentContainer.Instance.EventPlayerCount), Config.Server_Response_Name, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} still has space for more players. Type /event.", Config.Chat_Response_Color, _eventName), Config.Server_Response_Name, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} of {2} have signed up.", Config.Chat_Response_Color, Players.Count, _eventPlayerCount), Config.Server_Response_Name, false, "ServerTools", true);
                 }
             }
             else
@@ -262,19 +252,13 @@ namespace ServerTools
                 {
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the current event has ended and event players have been sent back to their return points.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                 }
+                string _sql = string.Format("UPDATE Events SET eventAdmin = null, eventActive = 'false' WHERE eventAdmin = '{0}'", Admin);
+                SQL.FastQuery(_sql);
                 Admin = null;
                 PlayersReturn.Clear();
                 PlayersTeam.Clear();
                 Players.Clear();
                 SpawnList.Clear();
-                PersistentContainer.Instance.EventName = null;
-                PersistentContainer.Instance.EventInvite = null;
-                PersistentContainer.Instance.EventPlayerCount = 0;
-                PersistentContainer.Instance.EventTeams = 0;
-                PersistentContainer.Instance.EventTime = 0;
-                PersistentContainer.Instance.EventSpawn = null;
-                PersistentContainer.Instance.EventRespawn = null;
-                PersistentContainer.Instance.Save();
             }
             else
             {

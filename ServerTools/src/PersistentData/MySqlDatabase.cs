@@ -135,13 +135,30 @@ namespace ServerTools
                "position VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
                "PRIMARY KEY (wayPointid)) ENGINE = InnoDB;");
             FastQuery("CREATE TABLE IF NOT EXISTS Polls (" +
+               "pollid INT NOT NULL AUTO_INCREMENT, " +
                "pollOpen VARCHAR(10) DEFAULT 'false', " +
                "pollTime VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
                "pollHours INT NOT NULL, " +
                "pollMessage VARCHAR(255) NOT NULL, " +
                "pollYes INT DEFAULT 0, " +
                "pollNo INT DEFAULT 0, " +
-               "PRIMARY KEY (wayPointid)) ENGINE = InnoDB;");
+               "PRIMARY KEY (pollid)) ENGINE = InnoDB;");
+            FastQuery("CREATE TABLE IF NOT EXISTS Events (" +
+               "eventid INT NOT NULL AUTO_INCREMENT, " +
+               "eventAdmin VARCHAR(50), " +
+               "eventName VARCHAR(255), " +
+               "eventInvite VARCHAR(255), " +
+               "eventTeams INT, " +
+               "eventPlayerCount INT, " +
+               "eventTime INT, " +
+               "eventActive VARCHAR(10), " +
+               "PRIMARY KEY (eventid)) ENGINE = InnoDB;");
+            FastQuery("CREATE TABLE IF NOT EXISTS EventSpawns (" +
+               "eventid INT NOT NULL, " +
+               "eventTeam INT NOT NULL, " +
+               "eventSpawn VARCHAR(50) NOT NULL, " +
+               "eventRespawn VARCHAR(50) NOT NULL, " +
+               "FOREIGN KEY (eventid) REFERENCES Events(eventid)) ENGINE = InnoDB;");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER) ENGINE = InnoDB;");
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");
             if (_result.Rows.Count == 0)
