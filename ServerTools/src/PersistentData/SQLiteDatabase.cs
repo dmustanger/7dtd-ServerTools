@@ -27,6 +27,7 @@ namespace ServerTools
             string _binpath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
             if (File.Exists(_binpath))
             {
+                StateManager.Awake();
                 UpdateToSqlFromBin.Exec();
             }
             //----------------------------------------------------------------------------------------

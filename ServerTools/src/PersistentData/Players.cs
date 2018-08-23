@@ -12,6 +12,7 @@ namespace ServerTools
     {
         public static int Bonus = 0;
         public Dictionary<string, Player> players = new Dictionary<string, Player>();
+        public Dictionary<string, string> clans = new Dictionary<string, string>();
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
         public static Dictionary<int, DateTime> DeathTime = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> LastDeathPos = new Dictionary<int, string>();

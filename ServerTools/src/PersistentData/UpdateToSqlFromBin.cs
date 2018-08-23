@@ -389,6 +389,7 @@ namespace ServerTools
                 }
                 _result.Dispose();
             }
+            PersistentContainer.Instance.Save();
             string _binpath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
             File.Delete(_binpath);
         }

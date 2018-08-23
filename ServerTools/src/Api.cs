@@ -16,7 +16,6 @@ namespace ServerTools
             {
                 Directory.CreateDirectory(ConfigPath);
             }
-            StateManager.Awake();
             Config.Load();
             HowToSetup.Load();
             Timers.LogAlert();
