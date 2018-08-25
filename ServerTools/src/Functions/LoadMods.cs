@@ -11,6 +11,10 @@ namespace ServerTools
             {
                 TeleportCheck.DetectionLogsDir();
             }
+            if (CountryBan.IsEnabled)
+            {
+                CountryBan.Load();
+            }
             if (FlightCheck.IsEnabled)
             {
                 FlightCheck.DetectionLogsDir();
