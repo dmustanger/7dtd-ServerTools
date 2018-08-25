@@ -1,9 +1,0 @@
-﻿
-
-namespace ServerTools
-{
-    class CountryCheck
-    {
-
-    }
-}

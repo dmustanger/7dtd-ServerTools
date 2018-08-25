@@ -132,7 +132,7 @@
     <Compile Include="src\ConsoleCommands\Poll.cs" />
     <Compile Include="src\ConsoleCommands\Underground.cs" />
     <Compile Include="src\ConsoleCommands\WalletCoins.cs" />
-    <Compile Include="src\CountryCheck\CountryCheck.cs" />
+    <Compile Include="src\CountryBan\CountryBan.cs" />
     <Compile Include="src\EntityCleanup\EntityCleanup.cs" />
     <Compile Include="src\Functions\LoadConfig.cs" />
     <Compile Include="src\Functions\LoadMods.cs" />
@@ -195,6 +195,10 @@
       <HintPath>..\7dtd-binaries\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="GeotargetingControl">
+      <HintPath>..\7dtd-binaries\GeotargetingControl.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="LogLibrary">
       <HintPath>..\7dtd-binaries\LogLibrary.dll</HintPath>
       <Private>False</Private>
@@ -223,6 +227,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="GeoLiteCity.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

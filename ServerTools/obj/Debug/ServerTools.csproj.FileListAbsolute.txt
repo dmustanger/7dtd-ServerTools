@@ -99,3 +99,4 @@ C:\Users\xring\OneDrive\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\C
 C:\Users\xring\OneDrive\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\ModInfo.xml
 C:\Users\xring\OneDrive\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\Changelog.txt
 C:\Users\xring\OneDrive\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\ServerTools.dll
+C:\Users\dmust\Documents\GitHub\7dtd-ServerTools\bin\Mods\ServerTools\GeoLiteCity.dat

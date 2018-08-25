@@ -50,6 +50,13 @@ namespace ServerTools
         {
             if (_cInfo != null)
             {
+                if (_cInfo.ip != "127.0.0.1")
+                {
+                    if (CountryBan.IsCountryBanned(_cInfo))
+                    {
+                        return;
+                    }
+                }
                 string _sql = string.Format("SELECT steamid FROM Players WHERE steamid = '{0}'", _cInfo.playerId); ;
                 DataTable _result = SQL.TQuery(_sql);
                 string _name = SQL.EscapeString(_cInfo.playerName);
@@ -173,7 +180,7 @@ namespace ServerTools
                             StartingItems.Que.Add(_cInfo.playerId);
                         }
                     }
-                    string _sql = "SELECT pollOpen WHERE pollOpen = 'true'";
+                    string _sql = "SELECT pollOpen FROM Polls WHERE pollOpen = 'true'";
                     DataTable _result = SQL.TQuery(_sql);
                     if (_result.Rows.Count > 0 && !Poll.PolledYes.Contains(_cInfo.playerId) && !Poll.PolledNo.Contains(_cInfo.playerId))
                     {
@@ -194,7 +201,7 @@ namespace ServerTools
                     int _deathCount = XUiM_Player.GetDeaths(_player);
                     int _killCount = XUiM_Player.GetPlayerKills(_player);
                     Players.FriendList(_cInfo);
-                    string _sql = "SELECT pollOpen WHERE pollOpen = 'true'";
+                    string _sql = "SELECT pollOpen FROM Polls WHERE pollOpen = 'true'";
                     DataTable _result = SQL.TQuery(_sql);
                     if (_result.Rows.Count > 0 && !Poll.PolledYes.Contains(_cInfo.playerId) && !Poll.PolledNo.Contains(_cInfo.playerId))
                     {
