@@ -119,6 +119,7 @@ namespace ServerTools
                 "customCommand8 VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
                 "customCommand9 VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
                 "customCommand10 VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', " +
+                "countryban VARCHAR(10) DEFAULT 'false', " +
                 "PRIMARY KEY (steamid)) ENGINE = InnoDB;");
             FastQuery("CREATE TABLE IF NOT EXISTS Auction (" +
                 "auctionid INT NOT NULL AUTO_INCREMENT, " +

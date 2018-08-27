@@ -48,6 +48,7 @@
     <Compile Include="src\Chat\ChatCommands\Mogul.cs" />
     <Compile Include="src\Chat\ChatCommands\Session.cs" />
     <Compile Include="src\ConsoleCommands\BikeList.cs" />
+    <Compile Include="src\ConsoleCommands\CountryBanImmunity.cs" />
     <Compile Include="src\ConsoleCommands\EventCommands.cs" />
     <Compile Include="src\ConsoleCommands\TraderList.cs" />
     <Compile Include="src\ConsoleCommands\ZoneSetup.cs" />
