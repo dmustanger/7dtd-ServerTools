@@ -166,7 +166,7 @@ namespace ServerTools
             if (_result.Rows.Count == 0)
             {
                 string _sql = string.Format("INSERT INTO Config (sql_version) VALUES ({0})", SQL.Sql_version);
-                SQL.FastQuery(_sql);
+                FastQuery(_sql);
             }
             else
             {

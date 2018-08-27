@@ -32,6 +32,7 @@ namespace ServerTools
                 sw.WriteLine("Adminstrators can choose to enable MySql for a remote database. ONLY ENABLE THIS IF YOU HAVE A MySql DATABASE HOSTED!!!");
                 sw.WriteLine("If EnableMySql is set to false ServerTools will use sqlite by default and you do not need to change anything else on this line.");
                 sw.WriteLine("If EnableMySql is set to true you will need to set the ServerHost ip, UserName, Password and DatabaseName to match your MySql setup.");
+                sw.WriteLine("NOTE: MySql will not create a database, it must be made before you attemp to connect to it.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -239,6 +240,14 @@ namespace ServerTools
                 sw.WriteLine("Enables the clan manager. Players can control it via chat.");
                 sw.WriteLine("Commands available are: /clancommands, /clanadd, /clandel, /claninvite, /clanaccept, /clandecline, /clanremove, /clanpromote, /clandemote, /clan, if it starts with /c.");
                 sw.WriteLine("Players can create and manage a clan with these various commands.");
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine();
+                sw.WriteLine("<Tool Name=\"Country_Ban\" Enable=\"True\" Countries_Not_Allowed=\"CN,RU\" />");
+                sw.WriteLine();
+                sw.WriteLine("Set True or False for Enable");
+                sw.WriteLine("Add what countries you do not want to allow to join the server seperated with a comma");
+                sw.WriteLine("You must specify the country using the 2 digit iso code. You can get the 2 digit iso code here at countrycode.org");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
@@ -964,6 +973,12 @@ namespace ServerTools
                 sw.WriteLine("Example: bikelist");
                 sw.WriteLine("Shows a list of bike ids, locations and players riding them.");
                 sw.WriteLine();
+                sw.WriteLine("CountryBanImmunity");
+                sw.WriteLine("Example: cbi add 76561191234567891");
+                sw.WriteLine("Example: cbi remove 76561191234567891");
+                sw.WriteLine("Example: cbi list");
+                sw.WriteLine("Adds the player to the CountryBanImmunity.");
+                sw.WriteLine();
                 sw.WriteLine("EntityRemove");
                 sw.WriteLine("Example: entityremove 12345");
                 sw.WriteLine("Removes an existing entity based on its entity id.");
@@ -1031,6 +1046,7 @@ namespace ServerTools
                 sw.WriteLine("PingImmunity");
                 sw.WriteLine("Example: pingimmunity add 76561191234567891");
                 sw.WriteLine("Example: pingimmunity remove 76561191234567891");
+                sw.WriteLine("Example: pingimmunity list");
                 sw.WriteLine("Adds the player to the PingImmunity.xml file. Players on this list are not booted for having too high a ping result.");
                 sw.WriteLine();
                 sw.WriteLine("Poll");

@@ -168,12 +168,6 @@
     <Compile Include="src\Waypoints\Waypoints.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ChatCommandExamples.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ConsoleCommandExamples.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="ModInfo.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>

@@ -53,7 +53,7 @@ namespace ServerTools
 
         public static void UpdateSQL(int _version)
         {
-            //MySql update string
+            //Sql update string
         }
     }
 }
