@@ -316,7 +316,7 @@ namespace ServerTools
                     double _newLimit = Limit + (Limit * 0.05);
                     if (_bank + _coinAmount <= (int)_newLimit)
                     {
-                        _sql = string.Format("UPDATE Players SET SET bank = {0}, playerSpentCoins = {1} WHERE steamid = '{2}'", _bank + _newCoin, _playerSpentCoins - _coinAmount, _cInfo.playerId);
+                        _sql = string.Format("UPDATE Players SET bank = {0}, playerSpentCoins = {1} WHERE steamid = '{2}'", _bank + _newCoin, _playerSpentCoins - _coinAmount, _cInfo.playerId);
                         SQL.FastQuery(_sql);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} deposited {2} {3} from your wallet to your bank account. 5% fee was applied.[-]", Config.Chat_Response_Color, _cInfo.playerName, _coinAmount, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                         using (StreamWriter sw = new StreamWriter(filepath, true))
