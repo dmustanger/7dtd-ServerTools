@@ -59,12 +59,12 @@ namespace ServerTools
             {
                 DupeLog.CreateFolder();
             }
-            Poll.CreateFolder();
+            PollConsole.CreateFolder();
             string _sql = "SELECT pollOpen FROM Polls WHERE pollOpen = 'true'";
             DataTable _result = SQL.TQuery(_sql);
             if (_result.Rows.Count > 0)
             {
-                Poll.Check();
+                PollConsole.Check();
             }
             _result.Dispose();
             if (ChatHook.Special_Player_Name_Coloring)

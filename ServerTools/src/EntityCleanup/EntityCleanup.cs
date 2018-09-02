@@ -6,7 +6,7 @@ namespace ServerTools
 {
     class EntityCleanup
     {
-        public static bool BlockIsEnabled = false, FallingTreeEnabled = false, Underground = false, Bikes = false;
+        public static bool IsEnabled = false, BlockIsEnabled = false, FallingTreeEnabled = false, Underground = false, Bikes = false;
         private static List<Entity> Entities = new List<Entity>();
         private static List<int> FallingTree = new List<int>();
         private static int _xMinCheck, _yMinCheck, _zMinCheck, _xMaxCheck, _yMaxCheck, _zMaxCheck;

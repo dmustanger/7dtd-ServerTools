@@ -182,9 +182,9 @@ namespace ServerTools
                     }
                     string _sql = "SELECT pollOpen FROM Polls WHERE pollOpen = 'true'";
                     DataTable _result = SQL.TQuery(_sql);
-                    if (_result.Rows.Count > 0 && !Poll.PolledYes.Contains(_cInfo.playerId) && !Poll.PolledNo.Contains(_cInfo.playerId))
+                    if (_result.Rows.Count > 0 && !PollConsole.PolledYes.Contains(_cInfo.playerId) && !PollConsole.PolledNo.Contains(_cInfo.playerId))
                     {
-                        Poll.Message(_cInfo);
+                        PollConsole.Message(_cInfo);
                     }
                     _result.Dispose();
                     if (Hardcore.IsEnabled)
@@ -203,9 +203,9 @@ namespace ServerTools
                     Players.FriendList(_cInfo);
                     string _sql = "SELECT pollOpen FROM Polls WHERE pollOpen = 'true'";
                     DataTable _result = SQL.TQuery(_sql);
-                    if (_result.Rows.Count > 0 && !Poll.PolledYes.Contains(_cInfo.playerId) && !Poll.PolledNo.Contains(_cInfo.playerId))
+                    if (_result.Rows.Count > 0 && !PollConsole.PolledYes.Contains(_cInfo.playerId) && !PollConsole.PolledNo.Contains(_cInfo.playerId))
                     {
-                        Poll.Message(_cInfo);
+                        PollConsole.Message(_cInfo);
                     }
                     _result.Dispose();
                     if (Hardcore.IsEnabled)

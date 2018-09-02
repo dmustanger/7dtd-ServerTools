@@ -473,7 +473,7 @@ namespace ServerTools
             {
                 _h = 0;
             }
-            if (EntityCleanup.BlockIsEnabled || EntityCleanup.FallingTreeEnabled || EntityCleanup.Underground)
+            if (EntityCleanup.IsEnabled && (EntityCleanup.BlockIsEnabled || EntityCleanup.FallingTreeEnabled || EntityCleanup.Underground || EntityCleanup.Bikes))
             {
                 _eC++;
                 if (_eC >= 15)

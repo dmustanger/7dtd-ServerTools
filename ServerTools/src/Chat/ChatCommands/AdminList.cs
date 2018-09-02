@@ -17,7 +17,7 @@ namespace ServerTools
             for (int i = 0; i < _cInfoList.Count; i++)
             {
                 ClientInfo _cInfoAdmins = _cInfoList[i];
-                if (!AdminChatColor.AdminColorOff.Contains(_cInfoAdmins.playerId))
+                if (!AdminChatColorConsole.AdminColorOff.Contains(_cInfoAdmins.playerId))
                 {
                     GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins.playerId);
                     AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfoAdmins.playerId);

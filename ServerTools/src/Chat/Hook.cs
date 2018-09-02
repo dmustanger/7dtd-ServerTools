@@ -66,7 +66,7 @@ namespace ServerTools
                 }
                 if (!Jail.Jailed.Contains(_cInfo.playerId))
                 {
-                    if (Admin_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && _secondaryName != "Coppis" && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && !AdminChatColor.AdminColorOff.Contains(_cInfo.playerId))
+                    if (Admin_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && _secondaryName != "Coppis" && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && !AdminChatColorConsole.AdminColorOff.Contains(_cInfo.playerId))
                     {
                         AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                         if (Admin.PermissionLevel <= Admin_Level)
@@ -1640,12 +1640,12 @@ namespace ServerTools
                         }
                         if (_message.ToLower() == "pollyes")
                         {
-                            Poll.VoteYes(_cInfo);
+                            PollConsole.VoteYes(_cInfo);
                             return false;
                         }
                         if (_message.ToLower() == "pollno")
                         {
-                            Poll.VoteNo(_cInfo);
+                            PollConsole.VoteNo(_cInfo);
                             return false;
                         }
                         if (_message.ToLower() == "poll")
