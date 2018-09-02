@@ -28,6 +28,7 @@ Added Kill_Notice weapon list. Set what the weapon is announced as. Set custom w
 Added internal code to allow all commands be made of lower, upper case, or a mix and still trigger a chat command
 Added options to multiple tools called Zombie_Check and PvP Check. These will look for zombie or players too close if they are teleporting with that tools commands
 Added tool Country_Ban. Ban players from entering who match the country locations you set
+Added console commands to turn on and off each tool while in game
 Changed phrase system to build the dictionary from the id & phrase instead of just the number which will allow phrases to be changed in a live server
 Changed prefix system so clan tags do not take over other prefixes
 Changed Custom commands so that responses using the say command do not require &quot; anymore
