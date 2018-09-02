@@ -78,7 +78,7 @@ namespace ServerTools
 
         public static void FriendList(ClientInfo _cInfo)
         {
-            if (!Friends.ContainsKey(_cInfo.entityId))
+            if (!Friends.ContainsKey(_cInfo.entityId) && GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
             {
                 EntityPlayer ent1 = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 string _friends = "";
