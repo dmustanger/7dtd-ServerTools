@@ -299,7 +299,11 @@ namespace ServerTools
         {
             if (_cInfo != null)
             {
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                EntityPlayer _player = null;
+                if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
+                {
+                    _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                }
                 if (_player != null)
                 {
                     if (_player.IsAlive())
@@ -315,7 +319,6 @@ namespace ServerTools
                                 SQL.FastQuery(_sql);
                             }
                         }
-                        PersistentContainer.Instance.Save();
                     }
                 }
                 if (HatchElevator.LastPositionY.ContainsKey(_cInfo.entityId))
