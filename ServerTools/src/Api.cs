@@ -191,7 +191,8 @@ namespace ServerTools
                     {
                         Hardcore.Announce(_cInfo);
                     }
-                    _sql = string.Format("UPDATE Players playername = '{0}' wallet = 0, playerSpentCoins = 0, sessionTime = 0, zkills = 0, kills = 0, deaths = 0 WHERE steamid = '{1}'", _cInfo.playerName, _cInfo.playerId);
+                    string _name = SQL.EscapeString(_cInfo.playerName);
+                    _sql = string.Format("UPDATE Players SET playername = '{0}' wallet = 0, playerSpentCoins = 0, sessionTime = 0, zkills = 0, kills = 0, deaths = 0 WHERE steamid = '{1}'", _name, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 if (_respawnReason == RespawnType.JoinMultiplayer)
@@ -298,7 +299,11 @@ namespace ServerTools
         {
             if (_cInfo != null)
             {
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                EntityPlayer _player = null;
+                if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
+                {
+                    _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                }
                 if (_player != null)
                 {
                     if (_player.IsAlive())
@@ -314,7 +319,6 @@ namespace ServerTools
                                 SQL.FastQuery(_sql);
                             }
                         }
-                        PersistentContainer.Instance.Save();
                     }
                 }
                 if (HatchElevator.LastPositionY.ContainsKey(_cInfo.entityId))
