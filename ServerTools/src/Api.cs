@@ -191,7 +191,8 @@ namespace ServerTools
                     {
                         Hardcore.Announce(_cInfo);
                     }
-                    _sql = string.Format("UPDATE Players playername = '{0}' wallet = 0, playerSpentCoins = 0, sessionTime = 0, zkills = 0, kills = 0, deaths = 0 WHERE steamid = '{1}'", _cInfo.playerName, _cInfo.playerId);
+                    string _name = SQL.EscapeString(_cInfo.playerName);
+                    _sql = string.Format("UPDATE Players SET playername = '{0}' wallet = 0, playerSpentCoins = 0, sessionTime = 0, zkills = 0, kills = 0, deaths = 0 WHERE steamid = '{1}'", _name, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 if (_respawnReason == RespawnType.JoinMultiplayer)
