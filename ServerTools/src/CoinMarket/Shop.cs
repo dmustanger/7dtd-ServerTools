@@ -14,6 +14,7 @@ namespace ServerTools
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<int, string[]> dict = new SortedDictionary<int, string[]>();
         private static SortedDictionary<int, int[]> dict1 = new SortedDictionary<int, int[]>();
+        private static List<string> categories = new List<string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
 
@@ -32,6 +33,9 @@ namespace ServerTools
             {
                 fileWatcher.Dispose();
                 IsRunning = false;
+                dict.Clear();
+                dict1.Clear();
+                categories.Clear();
             }
         }
 
@@ -58,6 +62,7 @@ namespace ServerTools
                 {
                     dict.Clear();
                     dict1.Clear();
+                    categories.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -97,6 +102,11 @@ namespace ServerTools
                         if (!_line.HasAttribute("price"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry because of missing price attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        if (!_line.HasAttribute("category"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry because of missing category attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         int _item = 1;
@@ -139,9 +149,14 @@ namespace ServerTools
                             Log.Out(string.Format("[SERVERTOOLS] Market item not found: {0}", _name));
                             continue;
                         }
+                        string _category = _line.GetAttribute("category");
+                        if (!categories.Contains(_category))
+                        {
+                            categories.Add(_category);
+                        }
                         if (!dict.ContainsKey(_item))
                         {
-                            string[] _n = new string[] { _name, _secondaryname };
+                            string[] _n = new string[] { _name, _secondaryname, _category };
                             dict.Add(_item, _n);
                         }
                         if (!dict1.ContainsKey(_item))
@@ -174,25 +189,25 @@ namespace ServerTools
                         int[] _values;
                         if (dict1.TryGetValue(kvp.Key, out _values))
                         {
-                            sw.WriteLine(string.Format("        <market item=\"{0}\" name=\"{1}\" secondaryname=\"{2}\" count=\"{3}\" quality=\"{4}\" price=\"{5}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], _values[0], _values[1], _values[2]));
+                            sw.WriteLine(string.Format("        <market item=\"{0}\" name=\"{1}\" secondaryname=\"{2}\" count=\"{3}\" quality=\"{4}\" price=\"{5}\" category=\"{6}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], _values[0], _values[1], _values[2], kvp.Value[2]));
                         }
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <market item=\"1\" name=\"bottledWater\" secondaryName=\"Bottled Water\" count=\"1\" quality=\"1\" price=\"20\" />");
-                    sw.WriteLine("        <market item=\"2\" name=\"beer\" secondaryName=\"Beer\" count=\"1\" quality=\"1\" price=\"50\" />");
-                    sw.WriteLine("        <market item=\"3\" name=\"wood\" secondaryName=\"Wood\" count=\"10\" quality=\"1\" price=\"30\" />");
-                    sw.WriteLine("        <market item=\"4\" name=\"woodFrameBlock\" secondaryName=\"Wood Frame Block\" count=\"1\" quality=\"1\" price=\"20\" />");
-                    sw.WriteLine("        <market item=\"5\" name=\"keystoneBlock\" secondaryName=\"Land Claim Block\" count=\"1\" quality=\"1\" price=\"2500\" />");
-                    sw.WriteLine("        <market item=\"6\" name=\"canChicken\" secondaryName=\"Can of Chicken\" count=\"1\" quality=\"1\" price=\"50\" />");
-                    sw.WriteLine("        <market item=\"7\" name=\"canChili\" secondaryName=\"Can of Chilli\" count=\"1\" quality=\"1\" price=\"50\" />");
-                    sw.WriteLine("        <market item=\"8\" name=\"corn\" secondaryName=\"Corn\" count=\"5\" quality=\"1\" price=\"50\" />");
-                    sw.WriteLine("        <market item=\"9\" name=\"potato\" secondaryName=\"Potato\" count=\"5\" quality=\"1\" price=\"50\" />");
-                    sw.WriteLine("        <market item=\"10\" name=\"firstAidBandage\" secondaryName=\"First Aid Bandage\" count=\"1\" quality=\"1\" price=\"50\" />");
-                    sw.WriteLine("        <market item=\"11\" name=\"painkillers\" secondaryName=\"Pain Killers\" count=\"5\" quality=\"1\" price=\"150\" />");
-                    sw.WriteLine("        <market item=\"12\" name=\"gunPistol\" secondaryName=\"Pistol\" count=\"1\" quality=\"100\" price=\"500\" />");
-                    sw.WriteLine("        <market item=\"13\" name=\"casinoCoin\" secondaryName=\"casinoCoin\" count=\"1\" quality=\"1\" price=\"1\" />");
+                    sw.WriteLine("        <market item=\"1\" name=\"bottledWater\" secondaryName=\"Bottled Water\" count=\"1\" quality=\"1\" price=\"20\" category=\"food\" />");
+                    sw.WriteLine("        <market item=\"2\" name=\"beer\" secondaryName=\"Beer\" count=\"1\" quality=\"1\" price=\"50\" category=\"food\" />");
+                    sw.WriteLine("        <market item=\"3\" name=\"wood\" secondaryName=\"Wood\" count=\"10\" quality=\"1\" price=\"30\" category=\"mats\" />");
+                    sw.WriteLine("        <market item=\"4\" name=\"woodFrameBlock\" secondaryName=\"Wood Frame Block\" count=\"1\" quality=\"1\" price=\"20\" category=\"mats\" />");
+                    sw.WriteLine("        <market item=\"5\" name=\"keystoneBlock\" secondaryName=\"Land Claim Block\" count=\"1\" quality=\"1\" price=\"2500\" category=\"extra\" />");
+                    sw.WriteLine("        <market item=\"6\" name=\"canChicken\" secondaryName=\"Can of Chicken\" count=\"1\" quality=\"1\" price=\"50\" category=\"food\" />");
+                    sw.WriteLine("        <market item=\"7\" name=\"canChili\" secondaryName=\"Can of Chilli\" count=\"1\" quality=\"1\" price=\"50\" category=\"food\" />");
+                    sw.WriteLine("        <market item=\"8\" name=\"corn\" secondaryName=\"Corn\" count=\"5\" quality=\"1\" price=\"50\" category=\"food\" />");
+                    sw.WriteLine("        <market item=\"9\" name=\"potato\" secondaryName=\"Potato\" count=\"5\" quality=\"1\" price=\"50\" category=\"food\" />");
+                    sw.WriteLine("        <market item=\"10\" name=\"firstAidBandage\" secondaryName=\"First Aid Bandage\" count=\"1\" quality=\"1\" price=\"50\" category=\"meds\" />");
+                    sw.WriteLine("        <market item=\"11\" name=\"painkillers\" secondaryName=\"Pain Killers\" count=\"5\" quality=\"1\" price=\"150\" category=\"meds\" />");
+                    sw.WriteLine("        <market item=\"12\" name=\"gunPistol\" secondaryName=\"Pistol\" count=\"1\" quality=\"100\" price=\"500\" category=\"weapon\" />");
+                    sw.WriteLine("        <market item=\"13\" name=\"casinoCoin\" secondaryName=\"casinoCoin\" count=\"1\" quality=\"1\" price=\"1\" category=\"extra\" />");
                 }
                 sw.WriteLine("    </items>");
                 sw.WriteLine("</Market>");
@@ -220,105 +235,135 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void Check(ClientInfo _cInfo, string _playerName)
+        public static void PosCheck(ClientInfo _cInfo, string _playerName, string _categoryOrItem, int _form)
         {
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (!Anywhere)
+            if (dict.Count > 0)
             {
-                World world = GameManager.Instance.World;
-                int x = (int)_player.position.x;
-                int y = (int)_player.position.y;
-                int z = (int)_player.position.z;
-                Vector3i playerPos = new Vector3i(x, y, z);
-                if (world.IsWithinTraderArea(playerPos))
+                if (!Anywhere)
                 {
-                    Exec(_cInfo, _playerName, _player);
-                }
-                else
-                {
-                    string _phrase619;
-                    if (!Phrases.Dict.TryGetValue(619, out _phrase619))
+                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                    World world = GameManager.Instance.World;
+                    Vector3i playerPos = new Vector3i((int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
+                    if (world.IsWithinTraderArea(playerPos))
                     {
-                        _phrase619 = "{PlayerName} you are not inside a trader area. Find a trader and use this command again.";
-                    }
-                    _phrase619 = _phrase619.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase619), Config.Server_Response_Name, false, "ServerTools", false));
-                }
-            }
-            else
-            {
-                Exec(_cInfo, _playerName, _player);
-            }
-        }
-
-        public static void Exec(ClientInfo _cInfo, string _playerName, EntityPlayer _player)
-        {
-            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _currentCoins, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
-            string _phrase617;
-            if (!Phrases.Dict.TryGetValue(617, out _phrase617))
-            {
-                _phrase617 = "The shop contains the following:";
-            }
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase617), Config.Server_Response_Name, false, "ServerTools", false));
-            foreach (var _sellable in dict)
-            {
-                int[] _values;
-                if (dict1.TryGetValue(_sellable.Key, out _values))
-                {
-                    if (_values[1] > 1)
-                    {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                        if (_form == 1)
+                        {
+                            ListCategories(_cInfo, _playerName, _player);
+                        }
+                        else if (_form == 2)
+                        {
+                            ShowCategory(_cInfo, _playerName, _categoryOrItem);
+                        }
+                        else
+                        {
+                            Walletcheck(_cInfo, _playerName, _categoryOrItem);
+                        }
                     }
                     else
                     {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, _sellable.Key, _values[0], _sellable.Value[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                        string _phrase619;
+                        if (!Phrases.Dict.TryGetValue(619, out _phrase619))
+                        {
+                            _phrase619 = "{PlayerName} you are not inside a trader area. Find a trader and use this command again.";
+                        }
+                        _phrase619 = _phrase619.Replace("{PlayerName}", _playerName);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase619), Config.Server_Response_Name, false, "ServerTools", false));
                     }
-                }
-            }
-            string _phrase618;
-            if (!Phrases.Dict.TryGetValue(618, out _phrase618))
-            {
-                _phrase618 = "Type /buy # to purchase the corresponding value from the shop list. Add how many to buy multiple";
-            }
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase618), Config.Server_Response_Name, false, "ServerTools", false));
-
-
-
-        }
-
-        public static void BuyCheck(ClientInfo _cInfo, string _item, string _playerName)
-        {
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (!Anywhere)
-            {
-                World world = GameManager.Instance.World;
-                int x = (int)_player.position.x;
-                int y = (int)_player.position.y;
-                int z = (int)_player.position.z;
-                Vector3i playerPos = new Vector3i(x, y, z);
-                if (world.IsWithinTraderArea(playerPos))
-                {
-                    Walletcheck(_cInfo, _item, _playerName);
                 }
                 else
                 {
-                    string _phrase619;
-                    if (!Phrases.Dict.TryGetValue(619, out _phrase619))
+                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                    if (_form == 1)
                     {
-                        _phrase619 = "{PlayerName} you are not inside a trader area. Find a trader and use this command again.";
+                        ListCategories(_cInfo, _playerName, _player);
                     }
-                    _phrase619 = _phrase619.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase619), Config.Server_Response_Name, false, "ServerTools", false));
+                    else if (_form == 2)
+                    {
+                        ShowCategory(_cInfo, _playerName, _categoryOrItem);
+                    }
+                    else
+                    {
+                        Walletcheck(_cInfo, _playerName, _categoryOrItem);
+                    }
                 }
             }
             else
             {
-                Walletcheck(_cInfo, _item, _playerName);
+                string _phrase624;
+                if (!Phrases.Dict.TryGetValue(624, out _phrase624))
+                {
+                    _phrase624 = "The shop does not contain any items. Contact an administrator";
+                }
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase624), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
-        public static void Walletcheck(ClientInfo _cInfo, string _item, string _playerName)
+        public static void ListCategories(ClientInfo _cInfo, string _playerName, EntityPlayer _player)
+        {
+            string _phrase617;
+            if (!Phrases.Dict.TryGetValue(617, out _phrase617))
+            {
+                _phrase617 = "The shop categories are:";
+            }
+            string _categories = string.Format("{0}", _phrase617);
+            for (int i = 0; i < categories.Count; i++)
+            {
+                string _category = categories[i];
+                _categories = string.Format("{0} _category", _categories);
+            }
+            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _playerName, _currentCoins, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _categories), Config.Server_Response_Name, false, "ServerTools", false));
+            string _phrase821;
+            if (!Phrases.Dict.TryGetValue(821, out _phrase821))
+            {
+                _phrase821 = "Type /shop \"category\" to view that list.";
+            }
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}{2}[-]", Config.Chat_Response_Color, _playerName, _phrase821), Config.Server_Response_Name, false, "ServerTools", false));
+        }
+
+        public static void ShowCategory(ClientInfo _cInfo, string _playerName, string _category)
+        {
+            if (categories.Contains(_category))
+            {
+                for (int i = 0; i < dict.Count; i++)
+                {
+                    string[] _item = dict[i];
+                    if (_item[2] == _category)
+                    {
+                        int[] _values;
+                        if (dict1.TryGetValue(i, out _values))
+                        {
+                            if (_values[1] > 1)
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, i, _values[0], _item[1], _values[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                            else
+                            {
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, i, _values[0], _item[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                            }
+                            string _phrase823;
+                            if (!Phrases.Dict.TryGetValue(823, out _phrase823))
+                            {
+                                _phrase823 = "type /buy # to purchase the shop item. You can add how many times you want to buy it with /buy # #";
+                            }
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}[-]", Config.Chat_Response_Color, _playerName, _phrase823), Config.Server_Response_Name, false, "ServerTools", false));
+                        }
+                    }
+                }
+            }
+            else
+            {
+                string _phrase822;
+                if (!Phrases.Dict.TryGetValue(822, out _phrase822))
+                {
+                    _phrase822 = "this category is missing. Check /shop.";
+                }
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}[-]", Config.Chat_Response_Color, _playerName, _phrase822), Config.Server_Response_Name, false, "ServerTools", false));
+            }
+        }
+
+        public static void Walletcheck(ClientInfo _cInfo, string _playerName, string _item)
         {
             int _id;
             if (_item.Contains(" "))
@@ -420,7 +465,7 @@ namespace ServerTools
                     string _phrase622;
                     if (!Phrases.Dict.TryGetValue(622, out _phrase622))
                     {
-                        _phrase622 = "{PlayerName} there was no item # matching the shop goods. Type /shop to review the list.";
+                        _phrase622 = "{PlayerName} there was no item # matching the shop. Check the shop category again.";
                     }
                     _phrase622 = _phrase622.Replace("{PlayerName}", _playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase622), Config.Server_Response_Name, false, "ServerTools", false));

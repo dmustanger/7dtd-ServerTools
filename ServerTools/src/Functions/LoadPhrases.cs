@@ -998,13 +998,13 @@ namespace ServerTools
                 string _phrase617;
                 if (!Dict.TryGetValue(617, out _phrase617))
                 {
-                    _phrase617 = "The shop contains the following:";
+                    _phrase617 = "The shop categories are:";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"617\" Phrase=\"{0}\" />", _phrase617));
                 string _phrase618;
                 if (!Dict.TryGetValue(618, out _phrase618))
                 {
-                    _phrase618 = "Type /buy # to purchase the corresponding value from the shop list.";
+                    _phrase618 = "Type /shop \"category\" to view that list";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"618\" Phrase=\"{0}\" />", _phrase618));
                 string _phrase619;
@@ -1028,7 +1028,7 @@ namespace ServerTools
                 string _phrase622;
                 if (!Dict.TryGetValue(622, out _phrase622))
                 {
-                    _phrase622 = "{PlayerName} there was no item # matching the shop goods. Type /shop to review the list.";
+                    _phrase622 = "{PlayerName} there was no item # matching the shop. Check the shop category again.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"622\" Phrase=\"{0}\" />", _phrase622));
                 string _phrase623;
@@ -1037,6 +1037,12 @@ namespace ServerTools
                     _phrase623 = "{PlayerName} there was an error in the shop list. Unable to buy this item. Please alert an administrator.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"623\" Phrase=\"{0}\" />", _phrase623));
+                string _phrase624;
+                if (!Dict.TryGetValue(624, out _phrase624))
+                {
+                    _phrase624 = "The shop does not contain any items. Contact an administrator.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"624\" Phrase=\"{0}\" />", _phrase624));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ******************** Friend_Teleport ******************* -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1532,6 +1538,24 @@ namespace ServerTools
                     _phrase820 = "{PlayerName} you are too close to a zombie. Command unavailable.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"820\" Phrase=\"{0}\" />", _phrase820));
+                string _phrase821;
+                if (!Dict.TryGetValue(821, out _phrase821))
+                {
+                    _phrase821 = "Type /shop \"category\" to view that list.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"821\" Phrase=\"{0}\" />", _phrase821));
+                string _phrase822;
+                if (!Dict.TryGetValue(822, out _phrase822))
+                {
+                    _phrase822 = "this category is missing. Check /shop.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"822\" Phrase=\"{0}\" />", _phrase822));
+                string _phrase823;
+                if (!Dict.TryGetValue(823, out _phrase823))
+                {
+                    _phrase823 = "type /buy # to purchase the shop item. You can add how many times you want to buy it with /buy # #";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"823\" Phrase=\"{0}\" />", _phrase823));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- *********************** Auction ************************ -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");

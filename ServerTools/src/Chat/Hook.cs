@@ -1193,9 +1193,17 @@ namespace ServerTools
                             Wallet.WalletValue(_cInfo, _playerName);
                             return false;
                         }
-                        if (Shop.IsEnabled && _message.ToLower() == "shop")
+                        if (Shop.IsEnabled && _message.StartsWith("shop"))
                         {
-                            Shop.Check(_cInfo, _playerName);
+                            if (_message == "shop")
+                            {
+                                Shop.PosCheck(_cInfo, _playerName, _message, 1);
+                            }
+                            else
+                            {
+                                _message = _message.ToLower().Replace("shop ", "");
+                                Shop.PosCheck(_cInfo, _playerName, _message, 2);
+                            }
                             return false;
                         }
                         if (Shop.IsEnabled && _message.ToLower().StartsWith("buy"))
@@ -1207,7 +1215,7 @@ namespace ServerTools
                             else
                             {
                                 _message = _message.ToLower().Replace("buy ", "");
-                                Shop.BuyCheck(_cInfo, _message, _playerName);
+                                Shop.PosCheck(_cInfo, _playerName, _message, 3);
                             }
                             return false;
                         }
