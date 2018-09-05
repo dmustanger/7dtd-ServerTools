@@ -33,6 +33,7 @@ Added Shop categories. /shop will show the categories available. /shop "category
 Added internal timer stop to trigger system prior to final shutdown
 Added option Alert_Count to Stop_Server. This controls how many times the shutdown message shows each minute prior to the final ten seconds
 Added console commands to add or remove a donor. This will add or remove them from the reserved slots list and chat color prefix list
+Added circular zones to Zones tool. Added option to xml called circle, set true for the zone to be a circle and corner2 to the radius desired
 Changed tool Stopserver to Stop_Server in the config file to keep consistency
 Changed phrase system to build the dictionary from the id & phrase instead of just the number which will allow phrases to be changed in a live server
 Changed prefix system so clan tags do not take over other prefixes

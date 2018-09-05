@@ -334,19 +334,10 @@ namespace ServerTools
                                     int _playerSpentCoins;
                                     int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
                                     _result.Dispose();
-                                    int currentCoins = 0;
-                                    int gameMode = world.GetGameMode();
-                                    if (gameMode == 7)
+                                    int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                                    if (_currentCoins >= 1)
                                     {
-                                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) + (_player.KilledPlayers * Wallet.Player_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                                    }
-                                    else
-                                    {
-                                        currentCoins = (_player.KilledZombies * Wallet.Zombie_Kills) - (XUiM_Player.GetDeaths(_player) * Wallet.Deaths) + _playerSpentCoins;
-                                    }
-                                    if (currentCoins >= 1)
-                                    {
-                                        _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - currentCoins, _cInfo.playerId);
+                                        _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _currentCoins, _cInfo.playerId);
                                         SQL.FastQuery(_sql);
                                     }
                                 }
@@ -403,7 +394,7 @@ namespace ServerTools
                 for (int i = 0; i < Box.Count; i++)
                 {
                     string[] _box = Box[i];
-                    if (Zones.A(_box, _X, _Y, _Z))
+                    if (Zones.Box(_box, _X, _Y, _Z))
                     {
                         if (!ZoneExit.ContainsKey(_player.entityId))
                         {
@@ -411,10 +402,10 @@ namespace ServerTools
                             for (int j = 0; j < Box.Count; j++)
                             {
                                 string[] _box2 = Box[j];
-                                if (Zones.A(_box2, _X, _Y, _Z))
+                                if (Zones.Box(_box2, _X, _Y, _Z))
                                 {
-                                    ZoneExit.Add(_player.entityId, _box2[3]);
-                                    if (bool.TryParse(_box2[5], out _result))
+                                    ZoneExit.Add(_player.entityId, _box2[4]);
+                                    if (bool.TryParse(_box2[6], out _result))
                                     {
                                         if (_result)
                                         {
@@ -423,14 +414,14 @@ namespace ServerTools
                                     }
                                     if (Zones.Zone_Message)
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _box2[2]), Config.Server_Response_Name, false, "ServerTools", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _box2[3]), Config.Server_Response_Name, false, "ServerTools", false));
                                     }
-                                    if (_box2[4] != "")
+                                    if (_box2[5] != "")
                                     {
-                                        Zones.Response(_cInfo, _box2[4]);
+                                        Zones.Response(_cInfo, _box2[5]);
                                     }
                                     Zones.reminder.Add(_player.entityId, DateTime.Now);
-                                    Zones.reminderMsg.Add(_player.entityId, _box2[7]);
+                                    Zones.reminderMsg.Add(_player.entityId, _box2[8]);
                                     return;
                                 }
                             }
@@ -440,16 +431,16 @@ namespace ServerTools
                             string _exitMsg;
                             if (ZoneExit.TryGetValue(_player.entityId, out _exitMsg))
                             {
-                                if (_exitMsg != _box[3])
+                                if (_exitMsg != _box[4])
                                 {
                                     bool _result;
                                     for (int j = 0; j < Box.Count; j++)
                                     {
                                         string[] _box2 = Box[j];
-                                        if (Zones.A(_box2, _X, _Y, _Z))
+                                        if (Zones.Box(_box2, _X, _Y, _Z))
                                         {
-                                            ZoneExit[_player.entityId] = _box2[3];
-                                            if (bool.TryParse(_box2[5], out _result))
+                                            ZoneExit[_player.entityId] = _box2[4];
+                                            if (bool.TryParse(_box2[6], out _result))
                                             {
                                                 if (_result)
                                                 {
@@ -465,14 +456,14 @@ namespace ServerTools
                                             }
                                             if (Zones.Zone_Message)
                                             {
-                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _box2[2]), Config.Server_Response_Name, false, "ServerTools", false));
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _box2[3]), Config.Server_Response_Name, false, "ServerTools", false));
                                             }
-                                            if (_box2[4] != "")
+                                            if (_box2[5] != "")
                                             {
-                                                Zones.Response(_cInfo, _box2[4]);
+                                                Zones.Response(_cInfo, _box2[5]);
                                             }
                                             Zones.reminder[_player.entityId] = DateTime.Now;
-                                            Zones.reminderMsg[_player.entityId] = _box2[7];
+                                            Zones.reminderMsg[_player.entityId] = _box2[8];
                                             return;
                                         }
                                     }

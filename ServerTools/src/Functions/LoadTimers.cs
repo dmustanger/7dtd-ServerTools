@@ -802,7 +802,7 @@ namespace ServerTools
                 if (_zR >= 300)
                 {
                     _zR = 0;
-                    PlayerLogs.Exec();
+                    Zones.Reminder();
                 }
             }
             else

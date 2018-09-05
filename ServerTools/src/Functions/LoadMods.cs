@@ -39,6 +39,10 @@ namespace ServerTools
             {
                 UndergroundCheck.DetectionLogsDir();
             }
+            if (Zones.IsEnabled)
+            {
+                Zones.DetectionLogsDir();
+            }
             if (Bank.IsEnabled)
             {
                 Bank.CreateFolder();
