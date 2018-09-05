@@ -118,7 +118,7 @@ namespace ServerTools
             }
         }
 
-        private static void UpdateXml()
+        public static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath))
