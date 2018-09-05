@@ -47,7 +47,9 @@
     <Compile Include="src\Chat\ChatCommands\MarketChat.cs" />
     <Compile Include="src\Chat\ChatCommands\Mogul.cs" />
     <Compile Include="src\Chat\ChatCommands\Session.cs" />
+    <Compile Include="src\Chat\ChatColorPrefix\ChatColorPrefix.cs" />
     <Compile Include="src\ConsoleCommands\AdminChatCommandConsole.cs" />
+    <Compile Include="src\ConsoleCommands\ChatColorPrefixConsole.cs" />
     <Compile Include="src\ConsoleCommands\WorldRadiusConsole.cs" />
     <Compile Include="src\ConsoleCommands\WeatherVoteConsole.cs" />
     <Compile Include="src\ConsoleCommands\WalletConsole.cs" />

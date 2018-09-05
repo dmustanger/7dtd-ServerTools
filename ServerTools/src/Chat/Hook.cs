@@ -66,22 +66,22 @@ namespace ServerTools
                 }
                 if (!Jail.Jailed.Contains(_cInfo.playerId))
                 {
-                    if (Admin_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && _secondaryName != "Coppis" && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId) && !AdminChatColorConsole.AdminColorOff.Contains(_cInfo.playerId))
+                    if (ChatColorPrefix.IsEnabled && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && _secondaryName != "Coppis" && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && ChatColorPrefix.dict.ContainsKey(_cInfo.playerId))
                     {
-                        AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                        if (Admin.PermissionLevel <= Admin_Level)
+                        string[] _colorPrefix;
+                        if (ChatColorPrefix.dict.TryGetValue(_cInfo.playerId, out _colorPrefix))
                         {
                             if (!ClanManager.ClanMember.Contains(_cInfo.playerId))
                             {
-                                if (Admin_Prefix != "")
+                                if (_colorPrefix[1] != "")
                                 {
-                                    _playerName = string.Format("{0}{1} {2}[-]", Admin_Color, Admin_Prefix, _playerName);
+                                    _playerName = string.Format("{0}{1} {2}[-]", _colorPrefix[2], _colorPrefix[1], _playerName);
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                     return false;
                                 }
                                 else
                                 {
-                                    _playerName = string.Format("{0}{1}[-]", Admin_Color, _playerName);
+                                    _playerName = string.Format("{0}{1}[-]", _colorPrefix[2], _playerName);
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                     return false;
                                 }
@@ -92,231 +92,18 @@ namespace ServerTools
                                 DataTable _result = SQL.TQuery(_sql);
                                 string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
                                 _result.Dispose();
-                                if (Admin_Prefix != "")
+                                if (_colorPrefix[1] != "")
                                 {
-                                    _playerName = string.Format("{0}({1}){2} {3}[-]", Admin_Color, _clanname, Admin_Prefix, _playerName);
+                                    _playerName = string.Format("{0}({1}){2} {3}[-]", _colorPrefix[2], _clanname, _colorPrefix[1], _playerName);
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                     return false;
                                 }
                                 else
                                 {
-                                    _playerName = string.Format("{0}({1}) {2}[-]", Admin_Color, _clanname, _playerName);
+                                    _playerName = string.Format("{0}({1}) {2}[-]", _colorPrefix[2], _clanname, _playerName);
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                     return false;
                                 }
-                            }
-                        }
-                        if (Admin.PermissionLevel > Admin_Level & Admin.PermissionLevel <= Mod_Level)
-                        {
-                            if (!ClanManager.ClanMember.Contains(_cInfo.playerId))
-                            {
-                                if (Mod_Prefix != "")
-                                {
-                                    _playerName = string.Format("{0}{1} {2}[-]", Mod_Color, Mod_Prefix, _playerName);
-                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                    return false;
-                                }
-                                else
-                                {
-                                    _playerName = string.Format("{0}{1}[-]", Mod_Color, _playerName);
-                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                    return false;
-                                }
-                            }
-                            else
-                            {
-                                string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                DataTable _result = SQL.TQuery(_sql);
-                                string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
-                                _result.Dispose();
-                                if (Mod_Prefix != "")
-                                {
-                                    _playerName = string.Format("{0}({1}){2} {3}[-]", Mod_Color, _clanname, Mod_Prefix, _playerName);
-                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                    return false;
-                                }
-                                else
-                                {
-                                    _playerName = string.Format("{0}({1}) {2}[-]", Mod_Color, _clanname, _playerName);
-                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                    if (Donator_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && _secondaryName != "Coppis" && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public))
-                    {
-                        AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                        if (Admin.PermissionLevel == Don_Level1)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
-                                {
-                                    if (!ClanManager.ClanMember.Contains(_cInfo.playerId))
-                                    {
-                                        if (Don_Prefix1 != "")
-                                        {
-                                            _playerName = string.Format("{0}{1} {2}[-]", Don_Color1, Don_Prefix1, _playerName);
-                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                            return false;
-                                        }
-                                        else
-                                        {
-                                            _playerName = string.Format("{0}{1}[-]", Don_Color1, _playerName);
-                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                            return false;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                        DataTable _result = SQL.TQuery(_sql);
-                                        string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
-                                        _result.Dispose();
-                                        if (Don_Prefix1 != "")
-                                        {
-                                            _playerName = string.Format("{0}({1}){2} {3}[-]", Don_Color1, _clanname, Don_Prefix1, _playerName);
-                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                            return false;
-                                        }
-                                        else
-                                        {
-                                            _playerName = string.Format("{0}({1}) {2}[-]", Don_Color1, _clanname, _playerName);
-                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                            return false;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (Admin.PermissionLevel == Don_Level2)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
-                                {
-                                    if (!ClanManager.ClanMember.Contains(_cInfo.playerId))
-                                    {
-                                        if (Don_Prefix2 != "")
-                                        {
-                                            _playerName = string.Format("{0}{1} {2}[-]", Don_Color2, Don_Prefix2, _playerName);
-                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                            return false;
-                                        }
-                                        else
-                                        {
-                                            _playerName = string.Format("{0}{1}[-]", Don_Color2, _playerName);
-                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                            return false;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                        DataTable _result = SQL.TQuery(_sql);
-                                        string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
-                                        _result.Dispose();
-                                        if (Don_Prefix2 != "")
-                                        {
-                                            _playerName = string.Format("{0}({1}){2} {3}[-]", Don_Color2, _clanname, Don_Prefix2, _playerName);
-                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                            return false;
-                                        }
-                                        else
-                                        {
-                                            _playerName = string.Format("{0}({1}) {2}[-]", Don_Color2, _clanname, _playerName);
-                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                            return false;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (Admin.PermissionLevel == Don_Level3)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
-                                {
-                                    if (!ClanManager.ClanMember.Contains(_cInfo.playerId))
-                                    {
-                                        if (Don_Prefix3 != "")
-                                        {
-                                            _playerName = string.Format("{0}{1} {2}[-]", Don_Color3, Don_Prefix3, _playerName);
-                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                            return false;
-                                        }
-                                        else
-                                        {
-                                            _playerName = string.Format("{0}{1}[-]", Don_Color3, _playerName);
-                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                            return false;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                        DataTable _result = SQL.TQuery(_sql);
-                                        string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
-                                        _result.Dispose();
-                                        if (Don_Prefix3 != "")
-                                        {
-                                            _playerName = string.Format("{0}({1}){2} {3}[-]", Don_Color3, _clanname, Don_Prefix3, _playerName);
-                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                            return false;
-                                        }
-                                        else
-                                        {
-                                            _playerName = string.Format("{0}({1}) {2}[-]", Don_Color3, _clanname, _playerName);
-                                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                            return false;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (Special_Player_Name_Coloring && !_message.StartsWith("@") && _secondaryName != "ServerTools1" && _secondaryName != "Coppis" && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && SpecialPlayers.Contains(_cInfo.playerId) && !SpecialPlayersColorOff.Contains(_cInfo.playerId))
-                    {
-                        if (!ClanManager.ClanMember.Contains(_cInfo.playerId))
-                        {
-                            if (Special_Player_Prefix != "")
-                            {
-                                _playerName = string.Format("{0}{1} {2}[-]", Special_Player_Color, Special_Player_Prefix, _playerName);
-                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                return false;
-                            }
-                            else
-                            {
-                                _playerName = string.Format("{0}{1}[-]", Special_Player_Color, _playerName);
-                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                return false;
-                            }
-                        }
-                        else
-                        {
-                            string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                            DataTable _result = SQL.TQuery(_sql);
-                            string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
-                            _result.Dispose();
-                            if (Special_Player_Prefix != "")
-                            {
-                                _playerName = string.Format("{0}({1}){2} {3}[-]", Special_Player_Color, _clanname, Special_Player_Prefix, _playerName);
-                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                return false;
-                            }
-                            else
-                            {
-                                _playerName = string.Format("{0}({1}) {2}[-]", Special_Player_Color, _clanname, _playerName);
-                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
-                                return false;
                             }
                         }
                     }
@@ -1031,78 +818,6 @@ namespace ServerTools
                                 {
                                     _message = _message.Replace("clanrename ", "");
                                     ClanManager.ClanRename(_cInfo, _message);
-                                }
-                            }
-                            return false;
-                        }
-                        if (Donator_Name_Coloring && _message.ToLower() == "doncolor")
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
-                                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                                if (Admin.PermissionLevel <= Mod_Level)
-                                {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Sorry {1}, your chat color can not be changed as a moderator or administrator.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
-                                    else
-                                    {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Moderators and Admins can not change their chat color.[-]", Config.Chat_Response_Color, _playerName, _dt), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
-                                }
-                                else
-                                {
-                                    if (Admin.PermissionLevel == Don_Level1)
-                                    {
-                                        DateTime _dt;
-                                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                        if (DateTime.Now < _dt)
-                                        {
-                                            SdtdConsole.Instance.ExecuteSync(string.Format("admin add {0} {1}", _cInfo.entityId, Don_Level2), null);
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been switched.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                        }
-                                        else
-                                        {
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Command is unavailable.[-]", Config.Chat_Response_Color, _playerName, _dt), Config.Server_Response_Name, false, "ServerTools", false));
-                                        }
-                                    }
-                                    else if (Admin.PermissionLevel == Don_Level2)
-                                    {
-                                        DateTime _dt;
-                                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                        if (DateTime.Now < _dt)
-                                        {
-                                            SdtdConsole.Instance.ExecuteSync(string.Format("admin add {0} {1}", _cInfo.entityId, Don_Level3), null);
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been switched.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                        }
-                                        else
-                                        {
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Command is unavailable.[-]", Config.Chat_Response_Color, _playerName, _dt), Config.Server_Response_Name, false, "ServerTools", false));
-                                        }
-                                    }
-                                    else if (Admin.PermissionLevel == Don_Level3)
-                                    {
-                                        DateTime _dt;
-                                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                        if (DateTime.Now < _dt)
-                                        {
-                                            SdtdConsole.Instance.ExecuteSync(string.Format("admin remove {0}", _cInfo.entityId), _cInfo);
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned off.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                        }
-                                        else
-                                        {
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your reserved status expired on {2}. Command is unavailable.[-]", Config.Chat_Response_Color, _playerName, _dt), Config.Server_Response_Name, false, "ServerTools", false));
-                                        }
-                                    }
-                                    else
-                                    {
-                                        SdtdConsole.Instance.ExecuteSync(string.Format("admin add {0} {1}", _cInfo.entityId, Don_Level1), null);
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned on.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
                                 }
                             }
                             return false;

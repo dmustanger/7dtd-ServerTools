@@ -63,34 +63,30 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Can not add Id: Invalid Id {0}", _params[1]));
                         return;
                     }
-                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                    if (_cInfo != null)
+                    if (ReservedSlots.Dict.ContainsKey(_params[1]))
                     {
-                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} is already in the Reserved Slots list.", _params[1]));
-                            return;
-                        }
-                        double _daysToExpire;
-                        if (!double.TryParse(_params[3], out _daysToExpire))
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Invalid days to expire: {0}", _params[3]));
-                            return;
-                        }
-                        DateTime _expireDate;
-                        if (_daysToExpire > 0d)
-                        {
-                            _expireDate = DateTime.Now.AddDays(_daysToExpire);
-                        }
-                        else
-                        {
-                            _expireDate = DateTime.Now.AddDays(18250d);
-                        }
-                        ReservedSlots.Dict.Add(_cInfo.playerId, _expireDate);
-                        ReservedSlots.Dict1.Add(_cInfo.playerId, _params[2]);
-                        SdtdConsole.Instance.Output(string.Format("Added Id {0} with the name of {1} that expires on {2} to the Reserved Slots list.", _params[1], _params[2], _expireDate.ToString()));
-                        ReservedSlots.UpdateXml();
+                        SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} is already in the Reserved Slots list.", _params[1]));
+                        return;
                     }
+                    double _daysToExpire;
+                    if (!double.TryParse(_params[3], out _daysToExpire))
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Invalid days to expire: {0}", _params[3]));
+                        return;
+                    }
+                    DateTime _expireDate;
+                    if (_daysToExpire > 0d)
+                    {
+                        _expireDate = DateTime.Now.AddDays(_daysToExpire);
+                    }
+                    else
+                    {
+                        _expireDate = DateTime.Now.AddDays(18250d);
+                    }
+                    ReservedSlots.Dict.Add(_params[1], _expireDate);
+                    ReservedSlots.Dict1.Add(_params[1], _params[2]);
+                    SdtdConsole.Instance.Output(string.Format("Added Id {0} with the name of bob smith that expires on {1} to the Reserved Slots list.", _params[1], _params[2], _expireDate.ToString()));
+                    ReservedSlots.UpdateXml();
                 }
                 else if (_params[0].ToLower().Equals("remove"))
                 {

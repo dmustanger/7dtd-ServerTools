@@ -186,62 +186,6 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
-                            case "Admin_Name_Coloring":
-                                if (!_line.HasAttribute("Enable"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_Name_Coloring entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatHook.Admin_Name_Coloring))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_Name_Coloring entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Admin_Level"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_Name_Coloring entry because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("Admin_Level"), out ChatHook.Admin_Level))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_Name_Coloring entry because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Admin_Prefix"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_Name_Coloring entry because of missing 'Admin_Prefix' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Admin_Color"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_Name_Coloring entry because of missing 'Admin_Color' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Moderator_Level"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_Name_Coloring entry because of missing 'Moderator_Level' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("Moderator_Level"), out ChatHook.Mod_Level))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_Name_Coloring entry because of invalid (non-numeric) value for 'Moderator_Level' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Moderator_Prefix"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_Name_Coloring entry because of missing 'Moderator_Prefix' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Moderator_Color"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Admin_Name_Coloring entry because of missing 'Moderator_Color' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }                              
-                                ChatHook.Admin_Prefix = _line.GetAttribute("Admin_Prefix");
-                                ChatHook.Admin_Color = _line.GetAttribute("Admin_Color");
-                                ChatHook.Mod_Prefix = _line.GetAttribute("Moderator_Prefix");
-                                ChatHook.Mod_Color = _line.GetAttribute("Moderator_Color");
-                                break;
                             case "Animal_Tracking":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -870,73 +814,6 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Death_Spot entry because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                break;
-                            case "Donator_Name_Coloring":
-                                if (!_line.HasAttribute("Enable"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Donator_Name_Coloring entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatHook.Donator_Name_Coloring))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Donator_Name_Coloring entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ReservedSlots.Donator_Name_Coloring))
-                                {
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("Donator_Level1"), out ChatHook.Don_Level1))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Donator_Name_Coloring entry because of invalid (non-numeric) value for 'Donator_Level1' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Donator_Prefix1"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Donator_Name_Coloring entry because of missing 'Donator_Prefix1' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Donator_Color1"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Donator_Name_Coloring entry because of missing 'Donator_Color1' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("Donator_Level2"), out ChatHook.Don_Level2))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Donator_Name_Coloring entry because of invalid (non-numeric) value for 'Donator_Level2' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Donator_Prefix2"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Donator_Name_Coloring entry because of missing 'Donator_Prefix2' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Donator_Color2"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Donator_Name_Coloring entry because of missing 'Donator_Color2' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("Donator_Level3"), out ChatHook.Don_Level3))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Donator_Name_Coloring entry because of invalid (non-numeric) value for 'Donator_Level3' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Donator_Prefix3"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Donator_Name_Coloring entry because of missing 'Donator_Prefix3' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Donator_Color3"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Donator_Name_Coloring entry because of missing 'Donator_Color3' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                ChatHook.Don_Prefix1 = _line.GetAttribute("Donator_Prefix1");
-                                ChatHook.Don_Prefix2 = _line.GetAttribute("Donator_Prefix2");
-                                ChatHook.Don_Prefix3 = _line.GetAttribute("Donator_Prefix3");
-                                ChatHook.Don_Color1 = _line.GetAttribute("Donator_Color1");
-                                ChatHook.Don_Color2 = _line.GetAttribute("Donator_Color2");
-                                ChatHook.Don_Color3 = _line.GetAttribute("Donator_Color3");
                                 break;
                             case "Dupe_Log":
                                 if (!_line.HasAttribute("Enable"))
@@ -2203,36 +2080,6 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
-                            case "Special_Player_Name_Coloring":
-                                if (!_line.HasAttribute("Enable"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Special_Player_Name_Coloring entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatHook.Special_Player_Name_Coloring))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Special_Player_Name_Coloring entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Special_Player_Prefix"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Special_Player_Name_Coloring entry because of missing 'Special_Player_Prefix' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                ChatHook.Special_Player_Prefix = _line.GetAttribute("Special_Player_Prefix");
-                                if (!_line.HasAttribute("Special_Player_Color"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Special_Player_Name_Coloring entry because of missing 'Special_Player_Color' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                ChatHook.Special_Player_Color = _line.GetAttribute("Special_Player_Color");
-                                if (!_line.HasAttribute("Special_Player_Steam_Id"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Special_Player_Name_Coloring entry because of missing 'Special_Player_SteamId' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                ChatHook.Special_Players_List = _line.GetAttribute("Special_Player_Steam_Id");
-                                break;
                             case "Starting_Items":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -2264,6 +2111,16 @@ namespace ServerTools
                                 if (!bool.TryParse(_line.GetAttribute("Kick_30_Seconds"), out StopServer.Kick_30_Seconds))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Stopserver entry because of invalid (true/false) value for 'Kick_30_Seconds' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Alert_Count"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Stopserver entry because of missing 'Alert_Count' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Alert_Count"), out StopServer.Alert_Count))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Stopserver entry because of invalid (true/false) value for 'Alert_Count' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -2803,7 +2660,6 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"DataBase\" EnableMySql=\"{0}\" ServerHost=\"{1}\" Port=\"{2}\" DatabaseName=\"{3}\" UserName=\"{4}\" Password=\"{5}\" />", SQL.IsMySql, MySqlDatabase.Server, MySqlDatabase.Port, MySqlDatabase.Database, MySqlDatabase.UserName, MySqlDatabase.Password));
                 sw.WriteLine(string.Format("        <Tool Name=\"Admin_Chat_Commands\" Enable=\"{0}\" />", AdminChat.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Admin_List\" Enable=\"{0}\" Admin_Level=\"{1}\" Moderator_Level=\"{2}\" />", AdminList.IsEnabled, AdminList.Admin_Level, AdminList.Mod_Level));
-                sw.WriteLine(string.Format("        <Tool Name=\"Admin_Name_Coloring\" Enable=\"{0}\" Admin_Level=\"{1}\" Admin_Prefix=\"{2}\" Admin_Color=\"{3}\" Moderator_Level=\"{4}\" Moderator_Prefix=\"{5}\" Moderator_Color=\"{6}\" />", ChatHook.Admin_Name_Coloring, ChatHook.Admin_Level, ChatHook.Admin_Prefix, ChatHook.Admin_Color, ChatHook.Mod_Level, ChatHook.Mod_Prefix, ChatHook.Mod_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Animal_Tracking\" Enable=\"{0}\" Always_Show_Response=\"{1}\" Delay_Between_Uses=\"{2}\" Minimum_Spawn_Radius=\"{3}\" Maximum_Spawn_Radius=\"{4}\" Entity_Id=\"{5}\" Command_Cost=\"{6}\" />", Animals.IsEnabled, Animals.Always_Show_Response, Animals.Delay_Between_Uses, Animals.Minimum_Spawn_Radius, Animals.Maximum_Spawn_Radius, Animals.Animal_List, Animals.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Announce_Invalid_Item_Stack\" Enable=\"{0}\" />", InventoryCheck.Anounce_Invalid_Stack));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auction\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" No_Admins=\"{2}\" Admin_Level=\"{3}\" />", AuctionBox.IsEnabled, AuctionBox.Delay_Between_Uses, AuctionBox.No_Admins, AuctionBox.Admin_Level));
@@ -2823,7 +2679,6 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Custom_Commands\" Enable=\"{0}\" />", CustomCommands.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Day7\" Enable=\"{0}\" Days_Until_Horde=\"{1}\" />", Day7.IsEnabled, Day7.Days_Until_Horde));
                 sw.WriteLine(string.Format("        <Tool Name=\"Death_Spot\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", DeathSpot.IsEnabled, DeathSpot.Delay_Between_Uses, DeathSpot.Command_Cost));
-                sw.WriteLine(string.Format("        <Tool Name=\"Donator_Name_Coloring\" Enable=\"{0}\" Donator_Level1=\"{1}\" Donator_Level2=\"{2}\" Donator_Level3=\"{3}\" Donator_Prefix1=\"{4}\" Donator_Prefix2=\"{5}\" Donator_Prefix3=\"{6}\" Donator_Color1=\"{7}\" Donator_Color2=\"{8}\" Donator_Color3=\"{9}\" />", ChatHook.Donator_Name_Coloring && ReservedSlots.Donator_Name_Coloring, ChatHook.Don_Level1, ChatHook.Don_Level2, ChatHook.Don_Level3, ChatHook.Don_Prefix1, ChatHook.Don_Prefix2, ChatHook.Don_Prefix3, ChatHook.Don_Color1, ChatHook.Don_Color2, ChatHook.Don_Color3));
                 sw.WriteLine(string.Format("        <Tool Name=\"Dupe_Log\" Enable=\"{0}\" />", DupeLog.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Entity_Cleanup\" Enable=\"{0}\" Falling_Blocks=\"{1}\" Falling_Tree=\"{2}\" Entity_Underground=\"{3}\" Delete_Bikes=\"{4}\" />", EntityCleanup.IsEnabled, EntityCleanup.BlockIsEnabled, EntityCleanup.FallingTreeEnabled, EntityCleanup.Underground, EntityCleanup.Bikes));
                 sw.WriteLine(string.Format("        <Tool Name=\"First_Claim_Block\" Enable=\"{0}\" />", FirstClaimBlock.IsEnabled));
@@ -2862,9 +2717,8 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Session\" Enable=\"{0}\" />", Shop.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Set_Home\" Enable=\"{0}\" Set_Home2_Enabled=\"{1}\" Set_Home2_Donor_Only=\"{2}\" Delay_Between_Uses=\"{3}\" Command_Cost=\"{4}\" PvP_Check=\"{5}\" Zombie_Check=\"{6}\" />", TeleportHome.IsEnabled, TeleportHome.Set_Home2_Enabled, TeleportHome.Set_Home2_Donor_Only, TeleportHome.Delay_Between_Uses, TeleportHome.Command_Cost, TeleportHome.PvP_Check, TeleportHome.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Shop\" Enable=\"{0}\" Shop_Anywhere=\"{1}\" />", Shop.IsEnabled, Shop.Anywhere));
-                sw.WriteLine(string.Format("        <Tool Name=\"Special_Player_Name_Coloring\" Enable=\"{0}\" Special_Player_Steam_Id=\"{1}\" Special_Player_Prefix=\"{2}\" Special_Player_Color=\"{3}\" />", ChatHook.Special_Player_Name_Coloring, ChatHook.Special_Players_List, ChatHook.Special_Player_Prefix, ChatHook.Special_Player_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Starting_Items\" Enable=\"{0}\" />", StartingItems.IsEnabled));                
-                sw.WriteLine(string.Format("        <Tool Name=\"Stopserver\" Ten_Second_Countdown=\"{0}\" Kick_30_Seconds=\"{1}\" />", StopServer.Ten_Second_Countdown, StopServer.Kick_30_Seconds));
+                sw.WriteLine(string.Format("        <Tool Name=\"Stopserver\" Ten_Second_Countdown=\"{0}\" Kick_30_Seconds=\"{1}\" Alert_Count=\"{2}\" />", StopServer.Ten_Second_Countdown, StopServer.Kick_30_Seconds, StopServer.Alert_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Stuck\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" />", Stuck.IsEnabled, Stuck.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Suicide\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" PvP_Check=\"{2}\" Zombie_Check=\"{3}\" />", Suicide.IsEnabled, Suicide.Delay_Between_Uses, Suicide.PvP_Check, Suicide.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Travel\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" PvP_Check=\"{3}\" Zombie_Check=\"{4}\" />", Travel.IsEnabled, Travel.Delay_Between_Uses, Travel.Command_Cost, Travel.PvP_Check, Travel.Zombie_Check));

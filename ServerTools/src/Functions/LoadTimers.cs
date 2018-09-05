@@ -25,6 +25,15 @@ namespace ServerTools
             }
         }
 
+        public static void TimerStop()
+        {
+            if (timer1Running)
+            {
+                timer1Running = false;
+                t1.Stop();
+            }
+        }
+
         public static void LogAlert()
         {
             Log.Out("-------------------------------");
