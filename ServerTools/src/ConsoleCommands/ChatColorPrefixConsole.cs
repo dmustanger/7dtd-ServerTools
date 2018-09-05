@@ -23,8 +23,8 @@ namespace ServerTools
                 "  6. ChatColorPrefix list\n" +
                 "1. Turn off chat color prefix\n" +
                 "2. Turn on chat color prefix\n" +
-                "3. Adds a steam Id on to the chat color prefix list. Set true to require being a reserved player\n" +
-                "3. Adds a steam Id to an existing group on the chat color prefix list\n" +
+                "3. Adds a steam Id on to the chat color prefix list\n" +
+                "4. Adds a steam Id to an existing group on the chat color prefix list\n" +
                 "5. Removes a steam Id or an entire group in the chat color prefix list\n" +
                 "6. Lists all steam Id in the chat color prefix list" +
                 "*Note the color must be entered as a 6 digit HTML color code*" +
@@ -77,26 +77,24 @@ namespace ServerTools
                     }
                     if (_params.Count == 4)
                     {
-                        double _daysToExpire;
-                        if (!double.TryParse(_params[7], out _daysToExpire))
+                        foreach (var a in ChatColorPrefix.dict)
                         {
-                            SdtdConsole.Instance.Output(string.Format("Invalid days to expire: {0}", _params[7]));
-                            return;
+                            if (a.Value[1] == _params[3])
+                            {
+                                string[] _c = new string[] { _params[2], _params[3], a.Value[2], a.Value[3] };
+                                DateTime _dt;
+                                if (ChatColorPrefix.dict1.TryGetValue(a.Key, out _dt))
+                                {
+                                    ChatColorPrefix.dict.Add(_params[1], _c);
+                                    ChatColorPrefix.dict1.Add(_params[1], _dt);
+                                    SdtdConsole.Instance.Output(string.Format("Added Id {0} with the name of {1} to the group {2} with prefix {3} and color {4} that expires {5} to the chat color prefix list.", _params[1], _params[2], _params[4], _params[5], _params[6], _dt.ToString()));
+                                    ReservedSlots.UpdateXml();
+                                    return;
+                                }
+                            }
                         }
-                        DateTime _expireDate;
-                        if (_daysToExpire > 0d)
-                        {
-                            _expireDate = DateTime.Now.AddDays(_daysToExpire);
-                        }
-                        else
-                        {
-                            _expireDate = DateTime.Now.AddDays(18250d);
-                        }
-                        string[] _c = new string[] { _params[4], _params[5], _params[6] };
-                        ChatColorPrefix.dict.Add(_params[1], _c);
-                        ChatColorPrefix.dict1.Add(_params[1], _expireDate);
-                        SdtdConsole.Instance.Output(string.Format("Added Id {0} with the name of {1} to the group {2} with prefix {3} and color {4} that expires {5} to the chat color prefix list.", _params[1], _params[2], _params[4], _params[5], _params[6], _expireDate.ToString()));
-                        ReservedSlots.UpdateXml();
+                        SdtdConsole.Instance.Output(string.Format("Can not add Id {0} to {1}. This group does not exist on the list. Create a new entry", _params[1], _params[3]));
+                        return;
                     }
                     else
                     {

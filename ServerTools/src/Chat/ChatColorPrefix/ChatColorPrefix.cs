@@ -97,6 +97,7 @@ namespace ServerTools
                             continue;
                         }
                         string _steamId = _line.GetAttribute("steamId");
+                        string _name = _line.GetAttribute("name");
                         string _group = _line.GetAttribute("group");
                         string _prefix = _line.GetAttribute("prefix");
                         string _color = _line.GetAttribute("color");
@@ -109,7 +110,7 @@ namespace ServerTools
                         else if (!dict1.ContainsKey(_steamId))
                         {
                             dict1.Add(_steamId, _dt);
-                            string[] _c = new string[] { _group, _prefix, _color };
+                            string[] _c = new string[] { _name, _group, _prefix, _color };
                             dict.Add(_steamId, _c);
                         }
                     }
@@ -136,14 +137,14 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine("        <player steamId=\"12345678901\" name=\"bob\" group=\"admin1\" prefix=\"Captain\" color=\"[FF0000]\" expires=\"0\" />");
-                    sw.WriteLine("        <player steamId=\"10987654321\" name=\"beth\" group=\"admin2\" prefix=\"Admiral\" color=\"[008000]\" expires=\"0\" />");
-                    sw.WriteLine("        <player steamId=\"10987654321\" name=\"bev\" group=\"mod1\" prefix=\"Marine\" color=\"[FF9933]\" expires=\"0\" />");
-                    sw.WriteLine("        <player steamId=\"12345609876\" name=\"betty\" group=\"donor1\" prefix=\"Don\" color=\"[009000]\" expires=\"0\" />");
-                    sw.WriteLine("        <player steamId=\"22345999928\" name=\"bart\" group=\"donor2\" prefix=\"Don\" color=\"[FF66CC]\" expires=\"0\" />");
-                    sw.WriteLine("        <player steamId=\"68472016531\" name=\"ben\" group=\"donor3\" prefix=\"Don\" color=\"[E9C918]\" expires=\"0\" />");
-                    sw.WriteLine("        <player steamId=\"78432901212\" name=\"billy\" group=\"special\" prefix=\"Pimp\" color=\"[ADAD85]\" expires=\"0\" />");
-                    sw.WriteLine("        <player steamId=\"78432901212\" name=\"bernard\" group=\"user1\" prefix=\"OG\" color=\"[993366]\" expires=\"10/29/2050 12:00:00 AM\" />");
+                    sw.WriteLine("        <player steamId=\"12345678901\" name=\"bob\" group=\"admin1\" prefix=\"Captain\" color=\"[FF0000]\" expires=\"10/29/2050 7:30:00 AM\" />");
+                    sw.WriteLine("        <player steamId=\"10987654321\" name=\"beth\" group=\"admin2\" prefix=\"Admiral\" color=\"[008000]\" expires=\"10/29/3000 7:30:00 AM\" />");
+                    sw.WriteLine("        <player steamId=\"10987654321\" name=\"bev\" group=\"mod1\" prefix=\"Marine\" color=\"[FF9933]\" expires=\"10/29/2150 7:30:00 AM\" />");
+                    sw.WriteLine("        <player steamId=\"12345609876\" name=\"betty\" group=\"donor1\" prefix=\"Don\" color=\"[009000]\" expires=\"04/24/2021 7:30:00 AM\" />");
+                    sw.WriteLine("        <player steamId=\"22345999928\" name=\"bart\" group=\"donor2\" prefix=\"Don\" color=\"[FF66CC]\" expires=\"11/22/2018 7:30:00 AM\" />");
+                    sw.WriteLine("        <player steamId=\"68472016531\" name=\"ben\" group=\"donor3\" prefix=\"Don\" color=\"[E9C918]\" expires=\"02/03/2020 7:30:00 AM\" />");
+                    sw.WriteLine("        <player steamId=\"78432901212\" name=\"billy\" group=\"user1\" prefix=\"Pimp\" color=\"[ADAD85]\" expires=\"10/29/2050 7:30:00 AM\" />");
+                    sw.WriteLine("        <player steamId=\"78362673412\" name=\"bernard\" group=\"user2\" prefix=\"OG\" color=\"[993366]\" expires=\"12/05/2019 7:30:00 AM\" />");
                 }
                 sw.WriteLine("    </ColorPrefix>");
                 sw.WriteLine("</Chat>");
