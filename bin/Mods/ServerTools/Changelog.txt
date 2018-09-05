@@ -29,12 +29,18 @@ Added internal code to allow all commands be made of lower, upper case, or a mix
 Added options to multiple tools called Zombie_Check and PvP Check. These will look for zombie or players too close if they are teleporting with that tools commands
 Added tool Country_Ban. Ban players from entering who match the country locations you set
 Added console commands to turn on and off each tool while in game
+Added Shop categories. /shop will show the categories available. /shop "category" shows the items in the category. Set any category name you want
+Added internal timer stop to trigger system prior to final shutdown
+Added option Alert_Count to Stop_Server. This controls how many times the shutdown message shows each minute prior to the final ten seconds
+Changed tool Stopserver to Stop_Server in the config file to keep consistency
 Changed phrase system to build the dictionary from the id & phrase instead of just the number which will allow phrases to be changed in a live server
 Changed prefix system so clan tags do not take over other prefixes
 Changed Custom commands so that responses using the say command do not require &quot; anymore
 Changed Event system so players can no longer use Home commands while signed up for or inside an event
 Changed chat command /commands so that it does not require Custom_Commands to be set to true
 Changed how player data is saved. Using a sql database system (sqlite for a default local database and mysql for a remote database if enabled)
+Changed chat color system. A ChatColorPrefix.xml will be created upon enabling any of the chat color and prefix tools. Check HowTo.xml for more info
+Changed Reserved_Slots console commands to allow adding an id while the player is offline
 Fixed /sethome and /sethome2 repeating the response based on how many claims you have placed
 Fixed /commands creating large spaces and skipping some lines when not necessary
 Fixed /mogul to work off the wallet, bank or both
@@ -52,6 +58,11 @@ Fixed one timer for a vote process not clearing
 Fixed internal code for claim checks
 Fixed gimme command cost not working
 Removed teleport delay now that tools have optional zombie and player checks on teleportation
+Removed tool Special_Player_Name_Coloring. The new chat color and prefix system covers this
+Removed tool Admin_Name_Coloring. The new chat color and prefix system covers this
+Removed tool Donator_Name_Coloring. The new chat color and prefix system covers this
+Removed the need for players to be on the admin list for chat and prefix system. It is recommended that your remove them
+Removed chat command /doncolor
 Updated HowTo.xml
 
 10.7

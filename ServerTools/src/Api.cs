@@ -151,6 +151,7 @@ namespace ServerTools
         {
             if (_cInfo != null)
             {
+                string _name = SQL.EscapeString(_cInfo.playerName);
                 if (Motd.IsEnabled & Motd.Show_On_Respawn)
                 {
                     Motd.Send(_cInfo);
@@ -191,8 +192,7 @@ namespace ServerTools
                     {
                         Hardcore.Announce(_cInfo);
                     }
-                    string _name = SQL.EscapeString(_cInfo.playerName);
-                    _sql = string.Format("UPDATE Players SET playername = '{0}' wallet = 0, playerSpentCoins = 0, sessionTime = 0, zkills = 0, kills = 0, deaths = 0 WHERE steamid = '{1}'", _name, _cInfo.playerId);
+                    _sql = string.Format("UPDATE Players SET playername = '{0}', wallet = 0, playerSpentCoins = 0, sessionTime = 0, zkills = 0, kills = 0, deaths = 0 WHERE steamid = '{1}'", _name, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
                 if (_respawnReason == RespawnType.JoinMultiplayer)
@@ -221,7 +221,7 @@ namespace ServerTools
                     {
                         Event.OfflineReturn(_cInfo);
                     }
-                    _sql = string.Format("UPDATE Players SET playername = '{0}', zkills = {1}, kills = {2}, deaths = {3} WHERE steamid = '{4}'", _cInfo.playerName, _zCount, _killCount, _deathCount, _cInfo.playerId);
+                    _sql = string.Format("UPDATE Players SET playername = '{0}', zkills = {1}, kills = {2}, deaths = {3} WHERE steamid = '{4}'", _name, _zCount, _killCount, _deathCount, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                     if (Mogul.IsEnabled)
                     {
