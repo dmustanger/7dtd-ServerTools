@@ -370,7 +370,9 @@ namespace ServerTools
                 }
                 if (Wallet.IsEnabled)
                 {
-                    if (PersistentContainer.Instance.Players[_cInfo.playerId, false] != null)
+                    string _sql2 = string.Format("SELECT steamid FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    DataTable _result2 = SQL.TQuery(_sql2);
+                    if (_result2.Rows.Count > 0)
                     {
                         DateTime _time;
                         if (Players.Session.TryGetValue(_cInfo.playerId, out _time))
@@ -392,6 +394,7 @@ namespace ServerTools
                             SQL.FastQuery(_sql1);
                         }
                     }
+                    _result2.Dispose();
                 }
                 if (Players.Session.ContainsKey(_cInfo.playerId))
                 {
