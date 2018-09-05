@@ -13,7 +13,6 @@ namespace ServerTools
         public static Dictionary<string, string[]> dict = new Dictionary<string, string[]>();
         public static Dictionary<string, DateTime> dict1 = new Dictionary<string, DateTime>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static bool update = false;
 
         public static void Load()
         {

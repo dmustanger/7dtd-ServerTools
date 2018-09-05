@@ -58,7 +58,6 @@
     <Compile Include="src\ConsoleCommands\SuicideConsole.cs" />
     <Compile Include="src\ConsoleCommands\StuckConsole.cs" />
     <Compile Include="src\ConsoleCommands\StartingItemsConsole.cs" />
-    <Compile Include="src\ConsoleCommands\SpecialPlayerNameColoringConsole.cs" />
     <Compile Include="src\ConsoleCommands\ShopConsole.cs" />
     <Compile Include="src\ConsoleCommands\SetHomeConsole.cs" />
     <Compile Include="src\ConsoleCommands\SessionConsole.cs" />
@@ -93,7 +92,6 @@
     <Compile Include="src\ConsoleCommands\FirstClaimBlockConsole.cs" />
     <Compile Include="src\ConsoleCommands\EntityCleanupConsole.cs" />
     <Compile Include="src\ConsoleCommands\DupeLogConsole.cs" />
-    <Compile Include="src\ConsoleCommands\DonatorNameColoringConsole.cs" />
     <Compile Include="src\ConsoleCommands\DeathSpotConsole.cs" />
     <Compile Include="src\ConsoleCommands\Day7Console.cs" />
     <Compile Include="src\ConsoleCommands\CustomCommandsConsole.cs" />
@@ -110,7 +108,6 @@
     <Compile Include="src\ConsoleCommands\AutoSaveWorldConsole.cs" />
     <Compile Include="src\ConsoleCommands\AuctionConsole.cs" />
     <Compile Include="src\ConsoleCommands\AnimalTrackingConsole.cs" />
-    <Compile Include="src\ConsoleCommands\AdminNameColoringConsole.cs" />
     <Compile Include="src\ConsoleCommands\AdminListConsole.cs" />
     <Compile Include="src\ConsoleCommands\BikeListConsole.cs" />
     <Compile Include="src\ConsoleCommands\CountryBanImmunityConsole.cs" />
