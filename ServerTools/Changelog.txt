@@ -41,7 +41,7 @@ Changed Custom commands so that responses using the say command do not require &
 Changed Event system so players can no longer use Home commands while signed up for or inside an event
 Changed chat command /commands so that it does not require Custom_Commands to be set to true
 Changed how player data is saved. Using a sql database system (sqlite for a default local database and mysql for a remote database if enabled)
-Changed chat color system. A ChatColorPrefix.xml will be created upon enabling any of the chat color and prefix tools. Check HowTo.xml for more info
+Changed chat color system. A ChatColorPrefix.xml will be created upon enabling the chat color prefix tool. Check HowTo.xml for more info
 Changed Reserved_Slots console commands to allow adding an id while the player is offline
 Fixed /sethome and /sethome2 repeating the response based on how many claims you have placed
 Fixed /commands creating large spaces and skipping some lines when not necessary
@@ -63,7 +63,7 @@ Removed teleport delay now that tools have optional zombie and player checks on 
 Removed tool Special_Player_Name_Coloring. The new chat color and prefix system covers this
 Removed tool Admin_Name_Coloring. The new chat color and prefix system covers this
 Removed tool Donator_Name_Coloring. The new chat color and prefix system covers this
-Removed the need for players to be on the admin list for chat and prefix system. It is recommended that your remove them
+Removed the need for players to be on the admin list for chat and prefix system. It is recommended that you remove them
 Removed chat command /doncolor
 Updated HowTo.xml
 
