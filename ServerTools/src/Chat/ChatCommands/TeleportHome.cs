@@ -784,12 +784,6 @@ namespace ServerTools
         private static void FHome(ClientInfo _cInfo, string _pos, bool _announce)
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            FriendInvite(_cInfo, _player.position, _pos);
-            int x, y, z;
-            string[] _cords = _pos.Split(',');
-            int.TryParse(_cords[0], out x);
-            int.TryParse(_cords[1], out y);
-            int.TryParse(_cords[2], out z);
             if (PvP_Check)
             {
                 if (Teleportation.PCheck(_cInfo, _player))
@@ -804,6 +798,12 @@ namespace ServerTools
                     return;
                 }
             }
+            FriendInvite(_cInfo, _player.position, _pos);
+            int x, y, z;
+            string[] _cords = _pos.Split(',');
+            int.TryParse(_cords[0], out x);
+            int.TryParse(_cords[1], out y);
+            int.TryParse(_cords[2], out z);
             Players.NoFlight.Add(_cInfo.entityId);
             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
@@ -1088,7 +1088,7 @@ namespace ServerTools
                 {
                     Invite.Remove(_cInfo.entityId);
                     FriendPosition.Remove(_cInfo.entityId);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have run out of time to accept your friend's invitation.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have run out of time to accept your friend's home invitation.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
         }

@@ -554,6 +554,14 @@ namespace ServerTools
                                 return false;
                             }
                         }
+                        if (Waypoint.IsEnabled && _message.ToLower() == "go")
+                        {
+                            if (Waypoint.Invite.ContainsKey(_cInfo.entityId))
+                            {
+                                Waypoint.FriendWaypoint(_cInfo);
+                                return false;
+                            }
+                        }
                         if (Hardcore.IsEnabled && _message.ToLower() == "top3")
                         {
                             Hardcore.TopThree(_cInfo, _announce);
@@ -1493,23 +1501,32 @@ namespace ServerTools
                             Session.Exec(_cInfo);
                             return false;
                         }
-                        if (Waypoint.IsEnabled && (_message.ToLower() == "waypoint" || _message.ToLower() == "wp"))
+                        if (Waypoint.IsEnabled && (_message.ToLower() == "waypoint" || _message.ToLower() == "way"))
                         {
                             Waypoint.List(_cInfo);
                             return false;
                         }
-                        else if (Waypoint.IsEnabled && (_message.StartsWith("waypoint") || _message.StartsWith("wp")))
+                        else if (Waypoint.IsEnabled && (_message.StartsWith("waypoint") || _message.StartsWith("way")))
                         {
                             if (_message.ToLower().StartsWith("waypoint"))
                             {
-                                _message = _message.ToLower().Replace("waypoint ", "");
+                                _message = _message.ToLower().Replace("waypoint", "");
                             }
                             else
                             {
-                                _message = _message.ToLower().Replace("wp ", "");
+                                _message = _message.ToLower().Replace("way", "");
                             }
                             Waypoint.Delay(_cInfo, _message);
                             return false;
+                        }
+                        if (Waypoint.IsEnabled && _message.StartsWith("fway"))
+                        {
+                            string _waypointNumber = _message.ToLower().Replace("fway", "");
+                            if (_waypointNumber != " " || _waypointNumber != "")
+                            {
+                                Waypoint.FDelay(_cInfo, _waypointNumber);
+                                return false;
+                            }
                         }
                         if (Waypoint.IsEnabled && (_message.ToLower().StartsWith("savepoint") || _message.ToLower().StartsWith("sp")))
                         {

@@ -6,7 +6,7 @@ Added option for clan owners to change their clan name
 Added 5 minute wait period for players kicked after reaching their full session time in the Reserved Slots system
 Added option to Reserved Slots tool named Admin_Slots. Set how many slots you would like for Admins. These slots can not be filled by normal players
 Added Waypoint tool. Players can save points to travel to. They can name the points and delete them. Set the maximum amount of waypoints for regular and
-donating players. Must be set outside of a claimed space. Delay and command cost available
+donating players. Must be set outside of a claimed space. Delay, command cost, PvP_Check and Zombie_Check available
 Added Waypoint check to guarantee the waypoint still exists inside a non claimed space before sending the player
 Added chat notice to a player that is awaiting teleport in the que
 Added tool New_Player. This will announce a new player joining with a custom chat response
@@ -34,6 +34,7 @@ Added internal timer stop to trigger system prior to final shutdown
 Added option Alert_Count to Stop_Server. This controls how many times the shutdown message shows each minute prior to the final ten seconds
 Added console commands to add or remove a donor. This will add or remove them from the reserved slots list and chat color prefix list
 Added circular zones to Zones tool. Added option to xml called circle, set true for the zone to be a circle and corner2 to the radius desired
+Added group waypoint similar to /fhome and /fhome2. Use chat command /fway1 or whichever waypoint number they are traveling to
 Changed tool Stopserver to Stop_Server in the config file to keep consistency
 Changed phrase system to build the dictionary from the id & phrase instead of just the number which will allow phrases to be changed in a live server
 Changed prefix system so clan tags do not take over other prefixes

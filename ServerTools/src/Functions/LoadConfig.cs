@@ -2486,6 +2486,38 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
+                            case "Waypoints":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Waypoint.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("PvP_Check"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of missing 'PvP_Check' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("PvP_Check"), out Waypoint.PvP_Check))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of invalid (non-numeric) value for 'PvP_Check' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Zombie_Check"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of missing 'Zombie_Check' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Zombie_Check"), out Waypoint.Zombie_Check))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of invalid (non-numeric) value for 'Zombie_Check' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                             case "Weather_Vote":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -2726,6 +2758,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" Your_Voting_Site=\"{1}\" API_Key=\"{2}\" Delay_Between_Uses=\"{3}\" Reward_Count=\"{4}\" Reward_Entity=\"{5}\" Entity_Id=\"{6}\" />", VoteReward.IsEnabled, VoteReward.Your_Voting_Site, VoteReward.API_Key, VoteReward.Delay_Between_Uses, VoteReward.Reward_Count, VoteReward.Reward_Entity, VoteReward.Entity_Id));
                 sw.WriteLine(string.Format("        <Tool Name=\"Wallet\" Enable=\"{0}\" Coin_Name=\"{1}\" Zombie_Kill_Value=\"{2}\" Player_Kill_Value=\"{3}\" Death_Penalty_Value=\"{4}\" />", Wallet.IsEnabled, Wallet.Coin_Name, Wallet.Zombie_Kills, Wallet.Player_Kills, Wallet.Deaths));
                 sw.WriteLine(string.Format("        <Tool Name=\"Watchlist\" Enable=\"{0}\" Admin_Level=\"{1}\" Alert_Delay=\"{2}\" />", Watchlist.IsEnabled, Watchlist.Admin_Level, Timers.Alert_Delay));
+                sw.WriteLine(string.Format("        <Tool Name=\"Waypoints\" Enable=\"{0}\" PvP_Check =\"{1}\" Zombie_Check=\"{2}\" />", Waypoint.IsEnabled, Waypoint.PvP_Check, Waypoint.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Weather_Vote\" Enable=\"{0}\" Vote_Delay=\"{1}\" />", WeatherVote.IsEnabled, Timers.Weather_Vote_Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"World_Radius\" Enable=\"{0}\" Normal_Player=\"{1}\" Donator=\"{2}\" Admin_Level=\"{3}\" />", WorldRadius.IsEnabled, WorldRadius.Normal_Player, WorldRadius.Donator, WorldRadius.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Zones\" Enable=\"{0}\" Kill_Enabled=\"{1}\" Jail_Enabled=\"{2}\" Kick_Enabled=\"{3}\" Ban_Enabled=\"{4}\" Zone_Message=\"{5}\" Set_Home=\"{6}\" Days_Before_Log_Delete=\"{7}\" />", Zones.IsEnabled, Zones.Kill_Enabled, Zones.Jail_Enabled, Zones.Kick_Enabled, Zones.Ban_Enabled, Zones.Zone_Message, Zones.Set_Home, Zones.Days_Before_Log_Delete));
