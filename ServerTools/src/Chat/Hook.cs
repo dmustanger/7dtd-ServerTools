@@ -725,7 +725,7 @@ namespace ServerTools
                             if (_message.ToLower() == "clancommands")
                             {
                                 string _clanCommands = ClanManager.GetChatCommands(_cInfo);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, _clanCommands, Config.Server_Response_Name, false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _clanCommands), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                             if (_message.ToLower().StartsWith("clanadd"))
                             {

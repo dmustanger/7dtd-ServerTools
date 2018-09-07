@@ -226,7 +226,13 @@ namespace ServerTools
                 }
                 else
                 {
-                    //already a clan named _clanName
+                    string _phrase102;
+                    if (!Phrases.Dict.TryGetValue(102, out _phrase102))
+                    {
+                        _phrase102 = "{PlayerName} can not add the clan {ClanName} because it already exist.";
+                    }
+                    _phrase102 = _phrase102.Replace("{PlayerName}", _cInfo.playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", _phrase102, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             else
