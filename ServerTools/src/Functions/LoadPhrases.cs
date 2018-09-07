@@ -1541,7 +1541,7 @@ namespace ServerTools
                 string _phrase821;
                 if (!Dict.TryGetValue(821, out _phrase821))
                 {
-                    _phrase821 = "Type /shop \"category\" to view that list.";
+                    _phrase821 = "";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"821\" Phrase=\"{0}\" />", _phrase821));
                 string _phrase822;

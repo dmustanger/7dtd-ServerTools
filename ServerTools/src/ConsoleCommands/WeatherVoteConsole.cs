@@ -7,15 +7,17 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Weather Vote.";
+            return "[ServerTools]- Enable, Disable, Reset Weather Vote.";
         }
         public override string GetHelp()
         {
             return "Usage:\n" +
                    "  1. WeatherVote off\n" +
                    "  2. WeatherVote on\n" +
+                   "  3. WeatherVote reset\n" +
                    "1. Turn off weather vote\n" +
-                   "2. Turn on weather vote\n";
+                   "2. Turn on weather vote\n" +
+                   "3. Resets the delay between weather votes\n";
         }
         public override string[] GetCommands()
         {
@@ -41,6 +43,11 @@ namespace ServerTools
                     WeatherVote.IsEnabled = true;
                     SdtdConsole.Instance.Output(string.Format("Weather vote has been set to on"));
                     return;
+                }
+                else if (_params[0].ToLower().Equals("reset"))
+                {
+                    WeatherVote.VoteNew = true;
+                    SdtdConsole.Instance.Output("Weather vote delay reset.");
                 }
                 else
                 {

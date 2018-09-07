@@ -15,7 +15,6 @@ namespace ServerTools
         private static Dictionary<int, int> playerflag = new Dictionary<int, int>();
         private static List<int> dropCheck = new List<int>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static bool updateConfig = false;
         private static string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
 
@@ -99,11 +98,6 @@ namespace ServerTools
                         }
                     }
                 }
-            }
-            if (updateConfig)
-            {
-                updateConfig = false;
-                UpdateXml();
             }
         }
 

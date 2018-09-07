@@ -17,7 +17,6 @@ namespace ServerTools
         public static Dictionary<int, int[]> uLastPositionXZ = new Dictionary<int, int[]>();
         public static List<string> dict = new List<string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static bool updateConfig = false;
 
 
         public static void DetectionLogsDir()
@@ -269,11 +268,6 @@ namespace ServerTools
                         }
                     }
                 }
-            }
-            if (updateConfig)
-            {
-                updateConfig = false;
-                UpdateXml();
             }
         }
 

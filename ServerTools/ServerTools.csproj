@@ -54,7 +54,7 @@
     <Compile Include="src\ConsoleCommands\WorldRadiusConsole.cs" />
     <Compile Include="src\ConsoleCommands\WeatherVoteConsole.cs" />
     <Compile Include="src\ConsoleCommands\WalletConsole.cs" />
-    <Compile Include="src\ConsoleCommands\VotingConsole.cs" />
+    <Compile Include="src\ConsoleCommands\VoteConsole.cs" />
     <Compile Include="src\ConsoleCommands\TravelConsole.cs" />
     <Compile Include="src\ConsoleCommands\SuicideConsole.cs" />
     <Compile Include="src\ConsoleCommands\StuckConsole.cs" />
@@ -181,12 +181,6 @@
     <Compile Include="src\ConsoleCommands\GiveStartingItemsConsole.cs" />
     <Compile Include="src\ConsoleCommands\LobbyConsole.cs" />
     <Compile Include="src\ConsoleCommands\NextShutdownConsole.cs" />
-    <Compile Include="src\ConsoleCommands\ResetAnimalTrackingConsole.cs" />
-    <Compile Include="src\ConsoleCommands\ResetFirstClaimBlockConsole.cs" />
-    <Compile Include="src\ConsoleCommands\ResetGimmeConsole.cs" />
-    <Compile Include="src\ConsoleCommands\ResetHomeConsole.cs" />
-    <Compile Include="src\ConsoleCommands\ResetVoteRewardConsole.cs" />
-    <Compile Include="src\ConsoleCommands\ResetWeatherVoteConsole.cs" />
     <Compile Include="src\ConsoleCommands\SpawnEntityInRadiusConsole.cs" />
     <Compile Include="src\ConsoleCommands\JailConsole.cs" />
     <Compile Include="src\ConsoleCommands\MutePlayerConsole.cs" />
@@ -195,7 +189,6 @@
     <Compile Include="src\ConsoleCommands\TempBanConsole.cs" />
     <Compile Include="src\ConsoleCommands\PollConsole.cs" />
     <Compile Include="src\ConsoleCommands\UndergroundCheckConsole.cs" />
-    <Compile Include="src\ConsoleCommands\WalletCoinsConsole.cs" />
     <Compile Include="src\CountryBan\CountryBan.cs" />
     <Compile Include="src\EntityCleanup\EntityCleanup.cs" />
     <Compile Include="src\Functions\LoadConfig.cs" />

@@ -27,6 +27,10 @@ namespace ServerTools
             {
                 PlayerLogs.PlayerLogsDir();
             }
+            if (InventoryCheck.IsEnabled)
+            {
+                InventoryCheck.PlayerLogsDir();
+            }
             if (Report.IsEnabled)
             {
                 Report.ReportLogsDir();

@@ -4,35 +4,48 @@ using System.Data;
 
 namespace ServerTools
 {
-    public class ResetVoteRewardConsole : ConsoleCmdAbstract
+    class VoteConsole : ConsoleCmdAbstract
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Reset a player's vote reward status so they can receive another reward.";
+            return "[ServerTools]- Enable, Disable, Reset Vote.";
         }
-
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. votereward reset <steamId/entityId/playerName>\n" +
-                   "1. Reset the vote reward delay status of a player Id\n";
+                   "  1. Vote off\n" +
+                   "  2. Vote on\n" +
+                   "  3. Vote reset <steamId/entityId/playerName>\n" +
+                   "1. Turn off voting\n" +
+                   "2. Turn on voting\n" +
+                   "3. Reset the vote reward delay of a player Id\n";
         }
-
         public override string[] GetCommands()
         {
-            return new string[] { "st-VoteReward", "votereward", "vr" };
+            return new string[] { "st-Vote", "vote" };
         }
-
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
             try
             {
-                if (_params.Count != 2)
+                if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
-                if (_params[0].ToLower().Equals("reset"))
+                if (_params[0].ToLower().Equals("off"))
+                {
+                    VoteReward.IsEnabled = false;
+                    SdtdConsole.Instance.Output(string.Format("Underground check has been set to off"));
+                    return;
+                }
+                else if (_params[0].ToLower().Equals("on"))
+                {
+                    VoteReward.IsEnabled = true;
+                    SdtdConsole.Instance.Output(string.Format("Underground check has been set to on"));
+                    return;
+                }
+                else if (_params[0].ToLower().Equals("reset"))
                 {
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                     if (_cInfo != null)
@@ -95,7 +108,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ResetVoteRewardConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in VotingConsole.Run: {0}.", e));
             }
         }
     }
