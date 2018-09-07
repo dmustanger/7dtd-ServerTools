@@ -926,6 +926,7 @@ namespace ServerTools
                             {
                                 _message = _message.ToLower().Replace("shop ", "");
                                 Shop.PosCheck(_cInfo, _playerName, _message, 2);
+                                Log.Out(string.Format("chat hook category equals {0}", _message));
                             }
                             return false;
                         }

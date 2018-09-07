@@ -248,7 +248,7 @@ namespace ServerTools
                     {
                         if (_form == 1)
                         {
-                            ListCategories(_cInfo, _playerName, _player);
+                            ListCategories(_cInfo, _playerName);
                         }
                         else if (_form == 2)
                         {
@@ -272,10 +272,9 @@ namespace ServerTools
                 }
                 else
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                     if (_form == 1)
                     {
-                        ListCategories(_cInfo, _playerName, _player);
+                        ListCategories(_cInfo, _playerName);
                     }
                     else if (_form == 2)
                     {
@@ -298,21 +297,15 @@ namespace ServerTools
             }
         }
 
-        public static void ListCategories(ClientInfo _cInfo, string _playerName, EntityPlayer _player)
+        public static void ListCategories(ClientInfo _cInfo, string _playerName)
         {
             string _phrase617;
             if (!Phrases.Dict.TryGetValue(617, out _phrase617))
             {
                 _phrase617 = "The shop categories are:";
             }
-            string _categories = string.Format("{0}", _phrase617);
-            for (int i = 0; i < categories.Count; i++)
-            {
-                string _category = categories[i];
-                _categories = string.Format("{0} _category", _categories);
-            }
-            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _playerName, _currentCoins, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+            string _categories = string.Join(", ", categories.ToArray());
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase617), Config.Server_Response_Name, false, "ServerTools", false));
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _categories), Config.Server_Response_Name, false, "ServerTools", false));
             string _phrase618;
             if (!Phrases.Dict.TryGetValue(618, out _phrase618))
@@ -328,36 +321,39 @@ namespace ServerTools
             {
                 for (int i = 0; i < dict.Count; i++)
                 {
-                    string[] _item = dict[i];
-                    if (_item[2] == _category)
+                    string[] _dictValues;
+                    if (dict.TryGetValue(i, out _dictValues))
                     {
-                        int[] _values;
-                        if (dict1.TryGetValue(i, out _values))
+                        if (_dictValues[2] == _category)
                         {
-                            if (_values[1] > 1)
+                            int[] _dict1Values;
+                            if (dict1.TryGetValue(i, out _dict1Values))
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, i, _values[0], _item[1], _values[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                                if (_dict1Values[1] > 1)
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, i, _dict1Values[0], _dictValues[0], _dict1Values[1], _dict1Values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, i, _dict1Values[0], _dictValues[0], _dict1Values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
                             }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, i, _values[0], _item[1], _values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            string _phrase823;
-                            if (!Phrases.Dict.TryGetValue(823, out _phrase823))
-                            {
-                                _phrase823 = "type /buy # to purchase the shop item. You can add how many times you want to buy it with /buy # #";
-                            }
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}[-]", Config.Chat_Response_Color, _playerName, _phrase823), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                 }
+                string _phrase823;
+                if (!Phrases.Dict.TryGetValue(823, out _phrase823))
+                {
+                    _phrase823 = "Type /buy # to purchase the shop item. You can add how many times you want to buy it. /buy # #";
+                }
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}[-]", Config.Chat_Response_Color, _playerName, _phrase823), Config.Server_Response_Name, false, "ServerTools", false));
             }
             else
             {
                 string _phrase822;
                 if (!Phrases.Dict.TryGetValue(822, out _phrase822))
                 {
-                    _phrase822 = "this category is missing. Check /shop.";
+                    _phrase822 = "This category is missing. Check /shop.";
                 }
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}[-]", Config.Chat_Response_Color, _playerName, _phrase822), Config.Server_Response_Name, false, "ServerTools", false));
             }

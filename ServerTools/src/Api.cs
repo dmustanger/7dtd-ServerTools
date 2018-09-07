@@ -50,7 +50,7 @@ namespace ServerTools
         {
             if (_cInfo != null)
             {
-                if (CountryBan.IsEnabled && _cInfo.ip != "127.0.0.1")
+                if (CountryBan.IsEnabled && _cInfo.ip != "127.0.0.1" && !_cInfo.ip.StartsWith("192.168"))
                 {
                     if (CountryBan.IsCountryBanned(_cInfo))
                     {

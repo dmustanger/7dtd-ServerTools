@@ -154,7 +154,7 @@ namespace ServerTools
                                 SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using a family share account. Purchase the game or contact an administrator for permission to join this server\"", _cInfo.playerId), (ClientInfo)null);
                                 using (StreamWriter sw = new StreamWriter(_filepath, true))
                                 {
-                                    sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with a family share account", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, AllocsFixes.PersistentData.PersistentContainer.Instance.Players[_cInfo.playerId, false].IP));
+                                    sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with a family share account", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
                                     sw.WriteLine();
                                     sw.Flush();
                                     sw.Close();
@@ -169,7 +169,7 @@ namespace ServerTools
                             SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using an invalid Id\"", _cInfo.playerId), (ClientInfo)null);
                             using (StreamWriter sw = new StreamWriter(_filepath, true))
                             {
-                                sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with an invalid Id", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, AllocsFixes.PersistentData.PersistentContainer.Instance.Players[_cInfo.playerId, false].IP));
+                                sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with an invalid Id", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
                                 sw.WriteLine();
                                 sw.Flush();
                                 sw.Close();
@@ -178,14 +178,13 @@ namespace ServerTools
                     }
                     if (No_Internal)
                     {
-                        string IP = AllocsFixes.PersistentData.PersistentContainer.Instance.Players[_cInfo.playerId, false].IP;
-                        string[] _ipSplit = IP.Split('.').ToArray();
-                        if (_ipSplit[0] == "192" && _ipSplit[1] == "168" && _ipSplit[2] == "1")
+                        string IP = _cInfo.ip;
+                        if (IP.StartsWith("192.168"))
                         {
                             SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using an invalid IP\"", _cInfo.playerId), (ClientInfo)null);
                             using (StreamWriter sw = new StreamWriter(_filepath, true))
                             {
-                                sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with an invalid IP", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, AllocsFixes.PersistentData.PersistentContainer.Instance.Players[_cInfo.playerId, false].IP));
+                                sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with an invalid IP", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
                                 sw.WriteLine();
                                 sw.Flush();
                                 sw.Close();

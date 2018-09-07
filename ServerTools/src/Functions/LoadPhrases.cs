@@ -1547,13 +1547,13 @@ namespace ServerTools
                 string _phrase822;
                 if (!Dict.TryGetValue(822, out _phrase822))
                 {
-                    _phrase822 = "this category is missing. Check /shop.";
+                    _phrase822 = "This category is missing. Check /shop.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"822\" Phrase=\"{0}\" />", _phrase822));
                 string _phrase823;
                 if (!Dict.TryGetValue(823, out _phrase823))
                 {
-                    _phrase823 = "type /buy # to purchase the shop item. You can add how many times you want to buy it with /buy # #";
+                    _phrase823 = "Type /buy # to purchase the shop item. You can add how many times you want to buy it. /buy # #";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"823\" Phrase=\"{0}\" />", _phrase823));
                 sw.WriteLine("        <!-- ******************************************************** -->");

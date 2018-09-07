@@ -49,7 +49,7 @@ namespace ServerTools
                                 var x = (int)_player.position.x;
                                 var y = (int)_player.position.y;
                                 var z = (int)_player.position.z;
-                                string _ip = AllocsFixes.PersistentData.PersistentContainer.Instance.Players[_cInfo.playerId, false].IP;
+                                string _ip = _cInfo.ip;
                                 using (StreamWriter sw = new StreamWriter(_filepath, true))
                                 {
                                     sw.WriteLine(string.Format("{0}  {1} steamId {2} IP Address {3} at Position: {4} X {5} Y {6} Z", DateTime.Now, _cInfo.playerName, _cInfo.playerId, _ip, x, y, z));
