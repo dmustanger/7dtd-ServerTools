@@ -314,12 +314,12 @@ namespace ServerTools
             int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _playerName, _currentCoins, Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _categories), Config.Server_Response_Name, false, "ServerTools", false));
-            string _phrase821;
-            if (!Phrases.Dict.TryGetValue(821, out _phrase821))
+            string _phrase618;
+            if (!Phrases.Dict.TryGetValue(618, out _phrase618))
             {
-                _phrase821 = "Type /shop \"category\" to view that list.";
+                _phrase618 = "Type /shop {category} to view that list.";
             }
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}{2}[-]", Config.Chat_Response_Color, _playerName, _phrase821), Config.Server_Response_Name, false, "ServerTools", false));
+            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}[-]", Config.Chat_Response_Color, _playerName, _phrase618), Config.Server_Response_Name, false, "ServerTools", false));
         }
 
         public static void ShowCategory(ClientInfo _cInfo, string _playerName, string _category)

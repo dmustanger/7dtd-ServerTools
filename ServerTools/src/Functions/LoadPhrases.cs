@@ -1004,7 +1004,7 @@ namespace ServerTools
                 string _phrase618;
                 if (!Dict.TryGetValue(618, out _phrase618))
                 {
-                    _phrase618 = "Type /shop \"category\" to view that list";
+                    _phrase618 = "Type /shop {category} to view that list";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"618\" Phrase=\"{0}\" />", _phrase618));
                 string _phrase619;
