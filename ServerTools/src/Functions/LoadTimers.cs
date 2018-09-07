@@ -564,7 +564,7 @@ namespace ServerTools
             {
                 _rS = 0;
             }
-            if (Bloodmoon.IsEnabled & Bloodmoon.Auto_Enabled)
+            if (Bloodmoon.IsEnabled & Bloodmoon.Auto_Show)
             {
                 if (Auto_Show_Bloodmoon_Delay > 0)
                 {

@@ -4,7 +4,7 @@ namespace ServerTools
 {
     public class Bloodmoon
     {
-        public static bool IsEnabled = false, Show_On_Login = false, Show_On_Respawn = false, Auto_Enabled = false;
+        public static bool IsEnabled = false, Show_On_Login = false, Show_On_Respawn = false, Auto_Show = false;
         public static int Days_Until_Horde = 7;
 
         public static void GetBloodmoon(ClientInfo _cInfo, bool _announce)
