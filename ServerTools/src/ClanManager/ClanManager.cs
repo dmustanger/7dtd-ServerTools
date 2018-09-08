@@ -729,39 +729,41 @@ namespace ServerTools
             DataTable _result = SQL.TQuery(_sql);
             string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
             string _invitedtoclan = _result.Rows[0].ItemArray.GetValue(1).ToString();
+            string _commands = ("Available clan commands are:");
             bool _isclanowner;
-            bool.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _isclanowner);
-            bool _isclanofficer;
-            bool.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _isclanofficer);
-            _result.Dispose();
-            string _commands = string.Format("{0}Clan commands are:", Config.Chat_Response_Color);
-            if (!_isclanowner && !_isclanofficer && _clanname == "Unknown" && _invitedtoclan == "Unknown")
+            if (bool.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _isclanowner))
             {
-                _commands = string.Format("{0} /clanadd {ClanName}", _commands);
-            }
-            if (_isclanowner && !_isclanofficer && _clanname != "Unknown")
-            {
-                _commands = string.Format("{0} /clanrename {ClanName}", _commands);
-            }
-            if (_isclanowner)
-            {
-                _commands = string.Format("{0} /clanpromote", _commands);
-                _commands = string.Format("{0} /clandemote", _commands);
-                _commands = string.Format("{0} /clandel", _commands);
-            }
-            if (_isclanowner || _isclanofficer)
-            {
-                _commands = string.Format("{0} /claninvite", _commands);
-                _commands = string.Format("{0} /clanremove", _commands);
-            }
-            if (_invitedtoclan != "Unknown")
-            {
-                _commands = string.Format("{0} /clanaccept", _commands);
-                _commands = string.Format("{0} /clandecline", _commands);
-            }
-            if (!_isclanowner && _clanname != "Unknown")
-            {
-                _commands = string.Format("{0} /clanleave", _commands);
+                bool _isclanofficer;
+                if (bool.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _isclanofficer))
+                {
+                    _result.Dispose();
+                    
+                    if (!_isclanowner && !_isclanofficer && _clanname == "Unknown" && _invitedtoclan == "Unknown")
+                    {
+                        _commands = string.Format("{0} /clanadd ClanName", _commands);
+                    }
+                    if (_isclanowner)
+                    {
+                        _commands = string.Format("{0} /clanpromote", _commands);
+                        _commands = string.Format("{0} /clandemote", _commands);
+                        _commands = string.Format("{0} /clandel", _commands);
+                        _commands = string.Format("{0} /clanrename ClanName", _commands);
+                    }
+                    if (_isclanowner || _isclanofficer)
+                    {
+                        _commands = string.Format("{0} /claninvite", _commands);
+                        _commands = string.Format("{0} /clanremove", _commands);
+                    }
+                    if (_invitedtoclan != "Unknown")
+                    {
+                        _commands = string.Format("{0} /clanaccept", _commands);
+                        _commands = string.Format("{0} /clandecline", _commands);
+                    }
+                    if (!_isclanowner && _clanname != "Unknown")
+                    {
+                        _commands = string.Format("{0} /clanleave", _commands);
+                    }
+                }
             }
             return _commands;
         }
