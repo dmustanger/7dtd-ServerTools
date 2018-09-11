@@ -174,12 +174,12 @@ namespace ServerTools
                 SQLiteDataReader _reader = cmd.ExecuteReader();
                 dt.Load(_reader);
                 _reader.Close();
-                connection.Close();
             }
             catch (SQLiteException e)
             {
                 Log.Out(string.Format("[ServerTools] SQLiteException in SQLiteDatabase.TQuery: {0}", e));
             }
+            connection.Close();
             return dt;
         }
 
@@ -190,12 +190,12 @@ namespace ServerTools
                 connection.Open();
                 cmd = new SQLiteCommand(_sql, connection);
                 cmd.ExecuteNonQuery();
-                connection.Close();
             }
             catch (SQLiteException e)
             {
                 Log.Out(string.Format("[ServerTools] SQLiteException in SQLiteDatabase.FastQuery: {0}", e));
             }
+            connection.Close();
         }
     }
 }

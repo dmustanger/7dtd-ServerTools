@@ -186,12 +186,12 @@ namespace ServerTools
                 connection.Open();
                 cmd = new MySqlCommand(_sql, connection);
                 cmd.ExecuteNonQuery();
-                connection.Close();
             }
             catch (MySqlException e)
             {
                 Log.Out(string.Format("[ServerTools] MySqlException in MySqlException.FastQuery: {0}", e));
             }
+            connection.Close();
         }
 
         public static DataTable TQuery(string _sql)
@@ -204,12 +204,12 @@ namespace ServerTools
                 MySqlDataReader _reader = cmd.ExecuteReader();
                 dt.Load(_reader);
                 _reader.Close();
-                connection.Close();
             }
             catch (MySqlException e)
             {
                 Log.Out(string.Format("[ServerTools] MySqlException in MySqlException.TQuery: {0}", e));
             }
+            connection.Close();
             return dt;
         }
 
