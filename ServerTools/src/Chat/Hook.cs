@@ -1508,7 +1508,7 @@ namespace ServerTools
                             Waypoint.List(_cInfo);
                             return false;
                         }
-                        else if (Waypoint.IsEnabled && (_message.StartsWith("waypoint") || _message.StartsWith("way") || _message.StartsWith("wp")))
+                        else if (Waypoint.IsEnabled && (_message.StartsWith("waypoint ") || _message.StartsWith("way ") || _message.StartsWith("wp ")))
                         {
                             if (_message.ToLower().StartsWith("waypoint"))
                             {
