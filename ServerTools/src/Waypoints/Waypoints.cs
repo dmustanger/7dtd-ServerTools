@@ -212,7 +212,6 @@ namespace ServerTools
         {
             string _sql = string.Format("SELECT position FROM Waypoints WHERE steamid = '{0}' AND wayPointName = '{1}'", _cInfo.playerId, _waypoint);
             DataTable _result = SQL.TQuery(_sql);
-            string _position = _result.Rows[0].ItemArray.GetValue(0).ToString();
             if (_result.Rows.Count > 0)
             {
                 if (PvP_Check)
@@ -230,6 +229,7 @@ namespace ServerTools
                     }
                 }
                 int x, y, z;
+                string _position = _result.Rows[0].ItemArray.GetValue(0).ToString();
                 string[] _cordsplit = _position.Split(',');
                 int.TryParse(_cordsplit[0], out x);
                 int.TryParse(_cordsplit[1], out y);
