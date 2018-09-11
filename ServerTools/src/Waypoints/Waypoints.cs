@@ -215,7 +215,6 @@ namespace ServerTools
             string _position = _result.Rows[0].ItemArray.GetValue(0).ToString();
             if (_result.Rows.Count > 0)
             {
-
                 if (PvP_Check)
                 {
                     if (Teleportation.PCheck(_cInfo, _player))
@@ -320,7 +319,7 @@ namespace ServerTools
                             _waypoint = SQL.EscapeString(_waypoint);
                             _sql = string.Format("INSERT INTO Waypoints (steamid, wayPointName, position) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _waypoint, _wposition);
                             SQL.FastQuery(_sql);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, enter a name for this point in chat.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, saved waypoint name as {2} to {3} {4} {5}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _waypoint, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                         else
                         {

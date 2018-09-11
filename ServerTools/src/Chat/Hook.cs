@@ -1503,55 +1503,63 @@ namespace ServerTools
                             Session.Exec(_cInfo);
                             return false;
                         }
-                        if (Waypoint.IsEnabled && (_message.ToLower() == "waypoint" || _message.ToLower() == "way"))
+                        if (Waypoint.IsEnabled && (_message.ToLower() == "waypoint" || _message.ToLower() == "way" || _message.ToLower() == "wp"))
                         {
                             Waypoint.List(_cInfo);
                             return false;
                         }
-                        else if (Waypoint.IsEnabled && (_message.StartsWith("waypoint") || _message.StartsWith("way")))
+                        else if (Waypoint.IsEnabled && (_message.StartsWith("waypoint") || _message.StartsWith("way") || _message.StartsWith("wp")))
                         {
                             if (_message.ToLower().StartsWith("waypoint"))
                             {
-                                _message = _message.ToLower().Replace("waypoint", "");
+                                _message = _message.ToLower().Replace("waypoint ", "");
+                            }
+                            else if (_message.ToLower().StartsWith("way"))
+                            {
+                                _message = _message.ToLower().Replace("way ", "");
                             }
                             else
                             {
-                                _message = _message.ToLower().Replace("way", "");
+                                _message = _message.ToLower().Replace("wp ", "");
                             }
                             Waypoint.Delay(_cInfo, _message);
                             return false;
                         }
-                        if (Waypoint.IsEnabled && _message.StartsWith("fway"))
+                        if (Waypoint.IsEnabled && _message.StartsWith("fway "))
                         {
-                            string _waypointNumber = _message.ToLower().Replace("fway", "");
+                            string _waypointNumber = _message.ToLower().Replace("fway ", "");
                             if (_waypointNumber != " " || _waypointNumber != "")
                             {
                                 Waypoint.FDelay(_cInfo, _waypointNumber);
                                 return false;
                             }
                         }
-                        if (Waypoint.IsEnabled && (_message.ToLower().StartsWith("savepoint") || _message.ToLower().StartsWith("sp")))
+                        if (Waypoint.IsEnabled && (_message.ToLower().StartsWith("waysave") || _message.ToLower().StartsWith("ws")))
                         {
-                            if (_message.ToLower().StartsWith("savepoint"))
+                            if (_message.ToLower().StartsWith("waysave"))
                             {
-                                _message = _message.ToLower().Replace("savepoint ", "");
+                                _message = _message.ToLower().Replace("waysave ", "");
                             }
                             else
                             {
-                                _message = _message.ToLower().Replace("sp ", "");
+                                _message = _message.ToLower().Replace("ws ", "");
                             }
                             Waypoint.SaveClaimCheck(_cInfo, _message);
                             return false;
                         }
-                        if (Waypoint.IsEnabled && (_message.ToLower().StartsWith("delpoint") || _message.ToLower().StartsWith("dp")))
+                        if (Waypoint.IsEnabled && (_message.ToLower().StartsWith("waypointdel") || _message.ToLower().StartsWith("waydel") || _message.ToLower().StartsWith("wd")))
                         {
-                            if (_message.ToLower().StartsWith("delpoint"))
+                            if (_message.ToLower().StartsWith("waypointdel"))
                             {
-                                _message = _message.ToLower().Replace("delpoint ", "");
+                                _message = _message.ToLower().Replace("waypointdel ", "");
+                            }
+                            else if (_message.ToLower().StartsWith("waydel"))
+                            {
+                                _message = _message.ToLower().Replace("waydel ", "");
                             }
                             else
                             {
-                                _message = _message.ToLower().Replace("dp ", "");
+                                _message = _message.ToLower().Replace("wd ", "");
                             }
                             Waypoint.DelPoint(_cInfo, _message);
                             return false;
