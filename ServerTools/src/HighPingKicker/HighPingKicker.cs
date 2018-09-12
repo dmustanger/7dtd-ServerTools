@@ -75,11 +75,11 @@ namespace ServerTools
                             DataTable _result = SQL.TQuery(_sql);
                             if (_result.Rows.Count > 0)
                             {
-                                _sql = string.Format("UPDATE Players SET pingimmunity = 1 WHERE steamid = '{0}'", _id);
+                                _sql = string.Format("UPDATE Players SET pingimmunity = 'true' WHERE steamid = '{0}'", _id);
                             }
                             else
                             {
-                                _sql = string.Format("INSERT INTO Players (steamid, pingimmunity) VALUES ('{0}', 1)", _id);
+                                _sql = string.Format("INSERT INTO Players (steamid, pingimmunity) VALUES ('{0}', 'true')", _id);
                             }
                             _result.Dispose();
                             SQL.FastQuery(_sql);
