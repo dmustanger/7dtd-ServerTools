@@ -152,7 +152,7 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo, string _playerName)
         {
-            if (SetLobby.Lobby_Position != "0,0,0")
+            if (SetLobby.Lobby_Position != "0,0,0" || SetLobby.Lobby_Position != "0 0 0" || SetLobby.Lobby_Position != "")
             {
                 int x, y, z;
                 string _sql;
@@ -189,7 +189,15 @@ namespace ServerTools
                     _phrase552 = _phrase552.Replace("{PlayerName}", _playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase552), Config.Server_Response_Name, false, "ServerTools", false));
                 }
-                string[] _cords = SetLobby.Lobby_Position.Split(',');
+                string[] _cords = { };
+                if (SetLobby.Lobby_Position.Contains(","))
+                {
+                    _cords = SetLobby.Lobby_Position.Split(',');
+                }
+                else
+                {
+                    _cords = SetLobby.Lobby_Position.Split(' ');
+                }
                 int.TryParse(_cords[0], out x);
                 int.TryParse(_cords[1], out y);
                 int.TryParse(_cords[2], out z);

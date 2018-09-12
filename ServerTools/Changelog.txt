@@ -22,7 +22,8 @@ Added chat command /infoticker to turn on and off infoticker messages for each i
 Added console commands to setup zones while in game or see a list of existing zones
 Added option to Wallet called Lose_On_Death. If a player has not put their wallet coins into the bank, they will lose them when they die
 Added option to Real_World_Time called Adjustment. This is the number of hours to adjust the time plus or minus to match the time zone of your choice
-Added option to Zones.xml called 15MinuteNotice. If a player remains in the same zone for over 15 minutes the 15MinuteNotice will execute. It sends a message only
+Added option to Zones.xml called reminderMessage that works with the Reminder_Delay option. If a player remains in the same zone for longer than the Reminder_Delay,
+it sends the reminder message to them. Leave it blank if you do not want anything sent to them
 Added Kill_Notice weapon list. Set what the weapon is announced as. Set custom weapon names or fun notices. Add item names from mods. Creates a KillNotice.xml
 Added internal code to allow all commands be made of lower, upper case, or a mix and still trigger a chat command
 Added options to multiple tools called Zombie_Check and PvP Check. These will look for zombie or players too close if they are teleporting with that tools commands
@@ -34,6 +35,7 @@ Added option Alert_Count to Stop_Server. This controls how many times the shutdo
 Added console commands to add or remove a donor. This will add or remove them from the reserved slots list and chat color prefix list
 Added circular zones to Zones tool. Added option to xml called circle, set true for the zone to be a circle and corner2 to the radius desired
 Added group waypoint similar to /fhome and /fhome2. Use chat command /fway 'waypoint name'
+Added option to enter some options into the xml files with spaces instead of comma such as the jail, market, zone and lobby positions
 Changed tool Stopserver to Stop_Server in the config file to keep consistency
 Changed phrase system to build the dictionary from the id & phrase instead of just the number which will allow phrases to be changed in a live server
 Changed prefix system so clan tags do not take over other prefixes

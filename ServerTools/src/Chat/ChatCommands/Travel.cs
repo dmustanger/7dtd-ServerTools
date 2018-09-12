@@ -303,18 +303,42 @@ namespace ServerTools
             {
                 foreach (KeyValuePair<string, string[]> kvpCorners in Box)
                 {
+                    string[] _xyzCorner1 = { };
+                    if (kvpCorners.Value[0].Contains(","))
+                    {
+                        _xyzCorner1 = kvpCorners.Value[0].Split(',');
+                    }
+                    else
+                    {
+                        _xyzCorner1 = kvpCorners.Value[0].Split(' ');
+                    }
                     int xMin, yMin, zMin;
-                    string[] _xyzCorner1 = kvpCorners.Value[0].Split(',');
                     int.TryParse(_xyzCorner1[0], out xMin);
                     int.TryParse(_xyzCorner1[1], out yMin);
                     int.TryParse(_xyzCorner1[2], out zMin);
+                    string[] _xyzCorner2 = { };
+                    if (kvpCorners.Value[1].Contains(","))
+                    {
+                        _xyzCorner2 = kvpCorners.Value[1].Split(',');
+                    }
+                    else
+                    {
+                        _xyzCorner2 = kvpCorners.Value[1].Split(' ');
+                    }
                     int xMax, yMax, zMax;
-                    string[] _xyzCorner2 = kvpCorners.Value[1].Split(',');
                     int.TryParse(_xyzCorner2[0], out xMax);
                     int.TryParse(_xyzCorner2[1], out yMax);
                     int.TryParse(_xyzCorner2[2], out zMax);
+                    string[] _xyzDestCords = { };
+                    if (kvpCorners.Value[2].Contains(","))
+                    {
+                        _xyzDestCords = kvpCorners.Value[2].Split(',');
+                    }
+                    else
+                    {
+                        _xyzDestCords = kvpCorners.Value[2].Split(' ');
+                    }
                     int xDest, yDest, zDest;
-                    string[] _xyzDestCords = kvpCorners.Value[2].Split(',');
                     int.TryParse(_xyzDestCords[0], out xDest);
                     int.TryParse(_xyzDestCords[1], out yDest);
                     int.TryParse(_xyzDestCords[2], out zDest);

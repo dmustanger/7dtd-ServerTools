@@ -461,14 +461,30 @@ namespace ServerTools
 
         public static bool BoxCheck(string[] _box, int _X, int _Y, int _Z, bool[] _box2)
         {
-            int xMin, yMin, zMin, xMax, yMax, zMax;
-            string[] _corner1 = _box[0].Split(',');
+            string[] _corner1 = { };
+            if (_box[0].Contains(","))
+            {
+                _corner1 = _box[0].Split(',');
+            }
+            else
+            {
+                _corner1 = _box[0].Split(' ');
+            }
+            int xMin, yMin, zMin, xMax, yMax, zMax;;
             int.TryParse(_corner1[0], out xMin);
             int.TryParse(_corner1[1], out yMin);
             int.TryParse(_corner1[2], out zMin);
             if (!_box2[0])
             {
-                string[] _corner2 = _box[1].Split(',');
+                string[] _corner2 = { };
+                if (_box[1].Contains(","))
+                {
+                    _corner2 = _box[1].Split(',');
+                }
+                else
+                {
+                    _corner2 = _box[1].Split(' ');
+                }
                 int.TryParse(_corner2[0], out xMax);
                 int.TryParse(_corner2[1], out yMax);
                 int.TryParse(_corner2[2], out zMax);

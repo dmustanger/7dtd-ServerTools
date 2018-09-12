@@ -189,7 +189,15 @@ namespace ServerTools
                     _phrase561 = _phrase561.Replace("{PlayerName}", _playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase561), Config.Server_Response_Name, false, "ServerTools", false));
                 }
-                string[] _cords = SetMarket.Market_Position.Split(',');
+                string[] _cords = { };
+                if (SetMarket.Market_Position.Contains(","))
+                {
+                    _cords = SetMarket.Market_Position.Split(',');
+                }
+                else
+                {
+                    _cords = SetMarket.Market_Position.Split(' ');
+                }
                 int.TryParse(_cords[0], out x);
                 int.TryParse(_cords[1], out y);
                 int.TryParse(_cords[2], out z);

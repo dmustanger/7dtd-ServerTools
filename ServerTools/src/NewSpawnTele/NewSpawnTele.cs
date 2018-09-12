@@ -60,8 +60,16 @@ namespace ServerTools
                 string _sql = string.Format("UPDATE Players SET newTeleSpawn = '{0}' WHERE steamid = '{1}'", _position, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }
+            string[] _cords = { };
+            if (New_Spawn_Tele_Position.Contains(","))
+            {
+                _cords = New_Spawn_Tele_Position.Split(',');
+            }
+            else
+            {
+                _cords = New_Spawn_Tele_Position.Split(' ');
+            }
             int x, y, z;
-            string[] _cords = New_Spawn_Tele_Position.Split(',');
             int.TryParse(_cords[0], out x);
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
@@ -97,8 +105,16 @@ namespace ServerTools
             _result.Dispose();
             if (_pos != ("Unknown"))
             {
+                string[] _cords = { };
+                if (New_Spawn_Tele_Position.Contains(","))
+                {
+                    _cords = New_Spawn_Tele_Position.Split(',');
+                }
+                else
+                {
+                    _cords = New_Spawn_Tele_Position.Split(' ');
+                }
                 int x, y, z;
-                string[] _cords = New_Spawn_Tele_Position.Split(',');
                 int.TryParse(_cords[0], out x);
                 int.TryParse(_cords[2], out z);
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];

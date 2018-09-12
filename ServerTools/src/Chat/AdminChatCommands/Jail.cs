@@ -61,7 +61,7 @@ namespace ServerTools
             }
             else
             {
-                if (Jail_Position == "0,0,0")
+                if (Jail_Position == "0,0,0" || Jail_Position == "0 0 0" || Jail_Position == "")
                 {
                     string _phrase503;
                     if (!Phrases.Dict.TryGetValue(503, out _phrase503))
@@ -110,8 +110,16 @@ namespace ServerTools
 
         private static void PutPlayerInJail(ClientInfo _cInfo, ClientInfo _PlayertoJail)
         {
+            string[] _cords = { };
+            if (Jail_Position.Contains(","))
+            {
+                _cords = Jail_Position.Split(',');
+            }
+            else
+            {
+                _cords = Jail_Position.Split(' ');
+            }
             int x, y, z;
-            string[] _cords = Jail_Position.Split(',');
             int.TryParse(_cords[0], out x);
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);

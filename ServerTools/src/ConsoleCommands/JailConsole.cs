@@ -75,7 +75,7 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Jail time is not valid: {0}", _params[2]));
                         return;
                     }
-                    if (Jail.Jail_Position == "0,0,0")
+                    if (Jail.Jail_Position == "0,0,0" || Jail.Jail_Position == "0 0 0" || Jail.Jail_Position == "")
                     {
                         SdtdConsole.Instance.Output(string.Format("Can not put a player in jail: Jail position has not been set."));
                         return;

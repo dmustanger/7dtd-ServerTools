@@ -130,11 +130,25 @@ namespace ServerTools
 
         public static void AnimalList()
         {
-            string[] _animalList = Animal_List.Split(',').ToArray();
-            for (int i = 0; i < _animalList.Length; i++)
+            entities.Clear();
+            string[] _animalList = { };
+            if (Animal_List.Contains(","))
             {
-                string _ent = _animalList[i];
-                entities.Add(_ent);
+                _animalList = Animal_List.Split(',').ToArray();
+                for (int i = 0; i < _animalList.Length; i++)
+                {
+                    string _ent = _animalList[i];
+                    entities.Add(_ent);
+                }
+            }
+            else
+            {
+                _animalList = Animal_List.Split(' ').ToArray();
+                for (int i = 0; i < _animalList.Length; i++)
+                {
+                    string _ent = _animalList[i];
+                    entities.Add(_ent);
+                }
             }
         }
 
