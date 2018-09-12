@@ -229,6 +229,14 @@ namespace ServerTools
             {
                 DupeLog.Load();
             }
+            if (ChatColorPrefix.IsRunning && !ChatColorPrefix.IsEnabled)
+            {
+                ChatColorPrefix.Unload();
+            }
+            if (!ChatColorPrefix.IsRunning && ChatColorPrefix.IsEnabled)
+            {
+                ChatColorPrefix.Load();
+            }
             if (MutePlayer.IsEnabled)
             {
                 MutePlayer.MuteList();

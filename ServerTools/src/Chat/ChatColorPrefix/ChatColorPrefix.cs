@@ -95,22 +95,22 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of missing expires attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        string _steamId = _line.GetAttribute("steamId");
-                        string _name = _line.GetAttribute("name");
-                        string _group = _line.GetAttribute("group");
-                        string _prefix = _line.GetAttribute("prefix");
-                        string _color = _line.GetAttribute("color");
                         DateTime _dt;
                         if (!DateTime.TryParse(_line.GetAttribute("expires"), out _dt))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of invalid (date) value for 'expires' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        else if (!dict1.ContainsKey(_steamId))
+                        string _steamId = _line.GetAttribute("steamId");
+                        string _name = _line.GetAttribute("name");
+                        string _group = _line.GetAttribute("group");
+                        string _prefix = _line.GetAttribute("prefix");
+                        string _color = _line.GetAttribute("color");
+                        if (!dict.ContainsKey(_steamId))
                         {
-                            dict1.Add(_steamId, _dt);
                             string[] _c = new string[] { _name, _group, _prefix, _color };
                             dict.Add(_steamId, _c);
+                            dict1.Add(_steamId, _dt);
                         }
                     }
                 }

@@ -407,7 +407,6 @@ namespace ServerTools
                 if (Zones.reminder.ContainsKey(_cInfo.entityId))
                 {
                     Zones.reminder.Remove(_cInfo.entityId);
-                    Zones.reminderMsg.Remove(_cInfo.entityId);
                 }
             }
         }

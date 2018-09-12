@@ -20,7 +20,6 @@ namespace ServerTools
         public static Dictionary<int, string> Victim = new Dictionary<int, string>();
         public static Dictionary<int, int> Forgive = new Dictionary<int, int>();
         public static Dictionary<int, string> ZoneExit = new Dictionary<int, string>();
-        public static List<string[]> Box = new List<string[]>();
         public static List<int> ZonePvE = new List<int>();
         public static List<int> Dead = new List<int>();
         public static List<int> NoFlight = new List<int>();
@@ -385,43 +384,41 @@ namespace ServerTools
 
         public static void ZoneCheck(ClientInfo _cInfo, EntityPlayer _player)
         {
-            if (_cInfo != null && Box.Count > 0)
+            if (_cInfo != null && Zones.Box1.Count > 0)
             {
                 int _flagCount = 0;
                 int _X = (int)_player.position.x;
                 int _Y = (int)_player.position.y;
                 int _Z = (int)_player.position.z;
-                for (int i = 0; i < Box.Count; i++)
+                for (int i = 0; i < Zones.Box1.Count; i++)
                 {
-                    string[] _box = Box[i];
-                    if (Zones.Box(_box, _X, _Y, _Z))
+                    string[] _box = Zones.Box1[i];
+                    bool[] _box2 = Zones.Box2[i];
+                    if (Zones.BoxCheck(_box, _X, _Y, _Z, _box2))
                     {
                         if (!ZoneExit.ContainsKey(_player.entityId))
                         {
-                            bool _result;
-                            for (int j = 0; j < Box.Count; j++)
+                            for (int j = 0; j < Zones.Box1.Count; j++)
                             {
-                                string[] _box2 = Box[j];
-                                if (Zones.Box(_box2, _X, _Y, _Z))
+                                string[] _box3 = Zones.Box1[j];
+                                bool[] _box4 = Zones.Box2[j];
+                                if (Zones.BoxCheck(_box3, _X, _Y, _Z, _box4))
                                 {
-                                    ZoneExit.Add(_player.entityId, _box2[4]);
-                                    if (bool.TryParse(_box2[6], out _result))
+                                    ZoneExit.Add(_player.entityId, _box3[3]);
+                                    if (_box4[1])
                                     {
-                                        if (_result)
-                                        {
-                                            ZonePvE.Add(_player.entityId);
-                                        }
+                                       ZonePvE.Add(_player.entityId);
                                     }
                                     if (Zones.Zone_Message)
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _box2[3]), Config.Server_Response_Name, false, "ServerTools", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _box3[2]), Config.Server_Response_Name, false, "ServerTools", false));
                                     }
-                                    if (_box2[5] != "")
+                                    if (_box3[4] != "")
                                     {
-                                        Zones.Response(_cInfo, _box2[5]);
+                                        Zones.Response(_cInfo, _box3[4]);
                                     }
                                     Zones.reminder.Add(_player.entityId, DateTime.Now);
-                                    Zones.reminderMsg.Add(_player.entityId, _box2[8]);
+                                    Zones.reminderMsg.Add(_player.entityId, _box3[5]);
                                     return;
                                 }
                             }
@@ -431,39 +428,39 @@ namespace ServerTools
                             string _exitMsg;
                             if (ZoneExit.TryGetValue(_player.entityId, out _exitMsg))
                             {
-                                if (_exitMsg != _box[4])
+                                if (_exitMsg != _box[3])
                                 {
-                                    bool _result;
-                                    for (int j = 0; j < Box.Count; j++)
+                                    for (int j = 0; j < Zones.Box1.Count; j++)
                                     {
-                                        string[] _box2 = Box[j];
-                                        if (Zones.Box(_box2, _X, _Y, _Z))
+                                        string[] _box3 = Zones.Box1[j];
+                                        bool[] _box4 = Zones.Box2[j];
+                                        if (Zones.BoxCheck(_box3, _X, _Y, _Z, _box4))
                                         {
-                                            ZoneExit[_player.entityId] = _box2[4];
-                                            if (bool.TryParse(_box2[6], out _result))
+                                            ZoneExit[_player.entityId] = _box3[3];
+                                            if (_box4[1])
                                             {
-                                                if (_result)
+                                                if (!ZonePvE.Contains(_player.entityId))
                                                 {
-                                                    if (!ZonePvE.Contains(_player.entityId))
-                                                    {
-                                                        ZonePvE.Add(_player.entityId);
-                                                    }
+                                                    ZonePvE.Add(_player.entityId);
                                                 }
-                                                else if (ZonePvE.Contains(_player.entityId))
+                                            }
+                                            else
+                                            {
+                                                if (ZonePvE.Contains(_player.entityId))
                                                 {
                                                     ZonePvE.Remove(_player.entityId);
                                                 }
                                             }
                                             if (Zones.Zone_Message)
                                             {
-                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _box2[3]), Config.Server_Response_Name, false, "ServerTools", false));
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _box3[2]), Config.Server_Response_Name, false, "ServerTools", false));
                                             }
-                                            if (_box2[5] != "")
+                                            if (_box3[4] != "")
                                             {
-                                                Zones.Response(_cInfo, _box2[5]);
+                                                Zones.Response(_cInfo, _box3[4]);
                                             }
                                             Zones.reminder[_player.entityId] = DateTime.Now;
-                                            Zones.reminderMsg[_player.entityId] = _box2[8];
+                                            Zones.reminderMsg[_player.entityId] = _box3[5];
                                             return;
                                         }
                                     }
@@ -478,7 +475,7 @@ namespace ServerTools
                     else
                     {
                         _flagCount++;
-                        if (_flagCount == Box.Count && ZoneExit.ContainsKey(_player.entityId))
+                        if (_flagCount == Zones.Box1.Count && ZoneExit.ContainsKey(_player.entityId))
                         {
                             if (Zones.Zone_Message)
                             {

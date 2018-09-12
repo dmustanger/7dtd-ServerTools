@@ -41,7 +41,7 @@ namespace ServerTools
             Log.Out("-------------------------------");
             if (CredentialCheck.IsEnabled)
             {
-                Log.Out("Credential started");
+                Log.Out("Credential enabled");
             }
             if (DupeLog.IsEnabled)
             {
@@ -49,62 +49,54 @@ namespace ServerTools
             }
             if (FlightCheck.IsEnabled)
             {
-                Log.Out("Flight started");
+                Log.Out("Flight enabled");
             }
             if (HatchElevator.IsEnabled)
             {
-                Log.Out("Hatch elevator started");
+                Log.Out("Hatch elevator enabled");
             }
             if (InventoryCheck.IsEnabled)
             {
-                Log.Out("Invalid item kicker started");
+                Log.Out("Invalid item kicker enabled");
             }
             if (UndergroundCheck.IsEnabled)
             {
-                Log.Out("Underground flight started");
+                Log.Out("Underground flight enabled");
             }            
             if (Jail.IsEnabled)
             {
-                Log.Out("Jail started");
+                Log.Out("Jail enabled");
             }
             if (PlayerStatCheck.IsEnabled)
             {
-                Log.Out("Player stat started");
+                Log.Out("Player stat enabled");
             }
             if (PlayerLogs.IsEnabled)
             {
-                Log.Out("Player logs started");
+                Log.Out("Player logs enabled");
             }
             if (TeleportCheck.IsEnabled)
             {
-                Log.Out("Teleport started");
+                Log.Out("Teleport enabled");
             }
             if (Watchlist.IsEnabled)
             {
-                Log.Out("Watchlist started");
+                Log.Out("Watchlist enabled");
             }
             if (WorldRadius.IsEnabled)
             {
-                Log.Out("World radius started");
+                Log.Out("World radius enabled");
             }
             Log.Out("--------------------------------------");
             Log.Out("[SERVERTOOLS] Chat prefix-color tools:");
             Log.Out("--------------------------------------");
-            if (ChatHook.Admin_Name_Coloring)
+            if (ChatColorPrefix.IsEnabled)
             {
-                Log.Out("Admin and moderator chat prefix-color enabled");
-            }
-            if (ChatHook.Donator_Name_Coloring)
-            {
-                Log.Out("Donator chat prefix-color enabled");
+                Log.Out("Chat color and prefix enabled");
             }
             if (ChatHook.Normal_Player_Name_Coloring)
             {
-                Log.Out("Normal Player chat prefix-color enabled");
-            }
-            if (ChatHook.Special_Player_Name_Coloring)
-            {
-                Log.Out("Special player chat prefix-color enabled");
+                Log.Out("Normal Player chat color and prefix enabled");
             }
             Log.Out("--------------------------");
             Log.Out("[SERVERTOOLS] Other tools:");
@@ -796,10 +788,10 @@ namespace ServerTools
             {
                 _rVS = 0;
             }
-            if (Zones.IsEnabled & Players.Box.Count > 0)
+            if (Zones.IsEnabled & Zones.reminder.Count > 0)
             {
                 _zR++;
-                if (_zR >= 300)
+                if (_zR >= Zones.Reminder_Delay)
                 {
                     _zR = 0;
                     Zones.Reminder();

@@ -11,16 +11,15 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Kill_Enabled = false, Jail_Enabled = false, Kick_Enabled = false,
             Ban_Enabled = false, Zone_Message = false, Set_Home = false, No_Zombie = false;
-        public static int Days_Before_Log_Delete = 5;
-        public static Dictionary<int, string> corner1 = new Dictionary<int, string>();
-        public static Dictionary<int, string> corner2 = new Dictionary<int, string>();
-        public static Dictionary<int, string> entry = new Dictionary<int, string>();
-        public static Dictionary<int, string> exit = new Dictionary<int, string>();
-        public static Dictionary<int, string> response = new Dictionary<int, string>();
-        public static Dictionary<int, bool> pve = new Dictionary<int, bool>();
-        public static Dictionary<int, bool> nozombie = new Dictionary<int, bool>();
+        public static int Days_Before_Log_Delete = 5, Reminder_Delay = 20;
+        
         public static Dictionary<int, DateTime> reminder = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> reminderMsg = new Dictionary<int, string>();
+        public static Dictionary<int, string[]> zoneSetup1 = new Dictionary<int, string[]>();
+        public static Dictionary<int, bool[]> zoneSetup2 = new Dictionary<int, bool[]>();
+        public static List<string[]> Box1 = new List<string[]>();
+        public static List<bool[]> Box2 = new List<bool[]>();
+
         private static int _xMinCheck = 0, _yMinCheck = 0, _zMinCheck = 0, _xMaxCheck = 0, _yMaxCheck = 0, _zMaxCheck = 0;
         private const string file = "Zones.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -37,7 +36,8 @@ namespace ServerTools
 
         public static void Unload()
         {
-            Players.Box.Clear();
+            Box1.Clear();
+            Box2.Clear();
             fileWatcher.Dispose();
             IsRunning = false;
         }
@@ -63,7 +63,8 @@ namespace ServerTools
             {
                 if (childNode.Name == "Zone")
                 {
-                    Players.Box.Clear();
+                    Box1.Clear();
+                    Box2.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -76,11 +77,6 @@ namespace ServerTools
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("circle"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing sphere attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
                         if (!_line.HasAttribute("corner1"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing corner1 attribute: {0}", subChild.OuterXml));
@@ -106,6 +102,16 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing response attribute: {0}", subChild.OuterXml));
                             continue;
                         }
+                        if (!_line.HasAttribute("reminderNotice"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing reminderNotice attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        if (!_line.HasAttribute("circle"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing circle attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
                         if (!_line.HasAttribute("PvE"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing PvE attribute: {0}", subChild.OuterXml));
@@ -116,18 +122,13 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing noZombie attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("reminderNotice"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing reminderNotice attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
                         else
                         {
                             string _circle = _line.GetAttribute("circle");
                             bool _result1, _result2, _result3; ;
                             if (!bool.TryParse(_circle, out _result1))
                             {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper true/false for _circle attribute: {0}.", subChild.OuterXml));
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper true/false for circle attribute: {0}.", subChild.OuterXml));
                                 continue;
                             }
                             string _pve = _line.GetAttribute("PvE");
@@ -142,11 +143,14 @@ namespace ServerTools
                                 Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper true/false for noZombie attribute: {0}.", subChild.OuterXml));
                                 continue;
                             }
-                            string[] box = { _circle, _line.GetAttribute("corner1"), _line.GetAttribute("corner2"), _line.GetAttribute("entryMessage"), _line.GetAttribute("exitMessage"),
-                            _line.GetAttribute("response"), _pve, _noZ, _line.GetAttribute("reminderNotice") };
-                            if (!Players.Box.Contains(box))
+
+                            string[] box1 = { _line.GetAttribute("corner1"), _line.GetAttribute("corner2"), _line.GetAttribute("entryMessage"), _line.GetAttribute("exitMessage"),
+                            _line.GetAttribute("response"), _line.GetAttribute("reminderNotice") };
+                            bool[] box2 = { _result1, _result2, _result3 };
+                            if (!Box1.Contains(box1))
                             {
-                                Players.Box.Add(box);
+                                Box1.Add(box1);
+                                Box2.Add(box2);
                             }
                         }
                     }
@@ -162,20 +166,21 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Zones>");
                 sw.WriteLine("    <Zone>");
-                if (Players.Box.Count > 0)
+                if (Box1.Count > 0)
                 {
-                    for (int i = 0; i < Players.Box.Count; i++)
+                    for (int i = 0; i < Box1.Count; i++)
                     {
-                        string[] _box = Players.Box[i];
-                        sw.WriteLine(string.Format("        <zone circle=\"{0}\" corner1=\"{1}\" corner2=\"{2}\" entryMessage=\"{3}\" exitMessage=\"{4}\" response=\"{5}\" PvE=\"{6}\" noZombie=\"{7}\" reminderNotice=\"{8}\" />", _box[0], _box[1], _box[2], _box[3], _box[4], _box[5], _box[6], _box[7], _box[8]));
+                        string[] _box1 = Box1[i];
+                        bool[] _box2 = Box2[i];
+                        sw.WriteLine(string.Format("        <zone corner1=\"{0}\" corner2=\"{1}\" entryMessage=\"{2}\" exitMessage=\"{3}\" response=\"{4}\" reminderNotice=\"{5}\" circle=\"{6}\" PvE=\"{7}\" noZombie=\"{8}\" />", _box1[0], _box1[1], _box1[2], _box1[3], _box1[4], _box1[5], _box2[0], _box2[1], _box2[2]));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <zone circle=\"false\" corner1=\"-8000,-56,8000\" corner2=\"8000,200,0\" entryMessage=\"You are entering the Northern side\" exitMessage=\"You have exited the Northern Side\" response=\"\" PvE=\"false\" noZombie=\"false\" reminderNotice=\"You are still in the North\" />");
-                    sw.WriteLine("        <zone circle=\"false\" corner1=\"-8000,-56,-1\" corner2=\"8000,200,-8000\" entryMessage=\"You are entering the Southern side\" exitMessage=\"You have exited the Southern Side\" response=\"\" PvE=\"false\" noZombie=\"false\" reminderNotice=\"You are still in the South\" />");
-                    sw.WriteLine("        <zone circle=\"true\" corner1=\"-100,60,-90\" corner2=\"40\" entryMessage=\"You have entered the Market\" exitMessage=\"You have exited the Market\" response=\"say {PlayerName} has entered the market\" PvE=\"true\" noZombie=\"true\" reminderNotice=\"\" />");
-                    sw.WriteLine("        <zone circle=\"false\" corner1=\"0,100,0\" corner2=\"25,105,25\" entryMessage=\"You have entered the Lobby\" exitMessage=\"You have exited the Lobby\" response=\"say {PlayerName} has entered the lobby\" PvE=\"true\" noZombie=\"true\" reminderNotice=\"You have been in the lobby for a long time...\" />");
+                    sw.WriteLine("        <zone corner1=\"-8000,-56,8000\" corner2=\"8000,200,0\" entryMessage=\"You are entering the Northern side\" exitMessage=\"You have exited the Northern Side\" response=\"\" reminderNotice=\"You are still in the North\" circle=\"false\" PvE=\"false\" noZombie=\"false\" />");
+                    sw.WriteLine("        <zone corner1=\"-8000,-56,-1\" corner2=\"8000,200,-8000\" entryMessage=\"You are entering the Southern side\" exitMessage=\"You have exited the Southern Side\" response=\"\" reminderNotice=\"You are still in the South\" circle=\"false\" PvE=\"false\" noZombie=\"false\" />");
+                    sw.WriteLine("        <zone corner1=\"-100,60,-90\" corner2=\"40\" entryMessage=\"You have entered the Market\" exitMessage=\"You have exited the Market\" response=\"say {PlayerName} has entered the market\" reminderNotice=\"\" circle=\"true\" PvE=\"true\" noZombie=\"true\" />");
+                    sw.WriteLine("        <zone corner1=\"0,100,0\" corner2=\"25,105,25\" entryMessage=\"You have entered the Lobby\" exitMessage=\"You have exited the Lobby\" response=\"say {PlayerName} has entered the lobby\" reminderNotice=\"You have been in the lobby for a long time...\" circle=\"false\" PvE=\"true\" noZombie=\"true\" />");
                 }
                 sw.WriteLine("    </Zone>");
                 sw.WriteLine("</Zones>");
@@ -454,16 +459,16 @@ namespace ServerTools
             }
         }
 
-        public static bool Box(string[] _box, int _X, int _Y, int _Z)
+        public static bool BoxCheck(string[] _box, int _X, int _Y, int _Z, bool[] _box2)
         {
             int xMin, yMin, zMin, xMax, yMax, zMax;
-            string[] _corner1 = _box[1].Split(',');
+            string[] _corner1 = _box[0].Split(',');
             int.TryParse(_corner1[0], out xMin);
             int.TryParse(_corner1[1], out yMin);
             int.TryParse(_corner1[2], out zMin);
-            if (_box[0] == "false")
+            if (!_box2[0])
             {
-                string[] _corner2 = _box[2].Split(',');
+                string[] _corner2 = _box[1].Split(',');
                 int.TryParse(_corner2[0], out xMax);
                 int.TryParse(_corner2[1], out yMax);
                 int.TryParse(_corner2[2], out zMax);
@@ -838,7 +843,7 @@ namespace ServerTools
             else
             {
                 int _radius;
-                if (int.TryParse(_box[2], out _radius))
+                if (int.TryParse(_box[1], out _radius))
                 {
                     if ((xMin - _X) * (xMin - _X) + (zMin - _Z) * (zMin - _Z) <= _radius * _radius)
                     {

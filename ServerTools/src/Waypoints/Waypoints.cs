@@ -8,7 +8,7 @@ namespace ServerTools
     class Waypoint
     {
         public static bool IsEnabled = false, PvP_Check, Zombie_Check = false;
-        public static int Delay_Between_Uses = 0, Waypoints = 2, Donator_Waypoints = 4, Command_Cost = 0;
+        public static int Delay_Between_Uses = 0, Max_Waypoints = 2, Donator_Max_Waypoints = 4, Command_Cost = 0;
         public static Dictionary<int, DateTime> Invite = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> FriendPosition = new Dictionary<int, string>();
 
@@ -24,7 +24,7 @@ namespace ServerTools
                     ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                     if (DateTime.Now < _dt)
                     {
-                        _sql = string.Format("SELECT steamid, wayPointName, position FROM Waypoints WHERE steamid = '{0}' LIMIT {1}", _cInfo.playerId, Donator_Waypoints);
+                        _sql = string.Format("SELECT steamid, wayPointName, position FROM Waypoints WHERE steamid = '{0}' LIMIT {1}", _cInfo.playerId, Donator_Max_Waypoints);
                         DataTable _result1 = SQL.TQuery(_sql);
                         foreach (DataRow row in _result1.Rows)
                         {
@@ -40,7 +40,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        _sql = string.Format("SELECT steamid, wayPointName, position FROM Waypoints WHERE steamid = '{0}' LIMIT {1}", _cInfo.playerId, Waypoints);
+                        _sql = string.Format("SELECT steamid, wayPointName, position FROM Waypoints WHERE steamid = '{0}' LIMIT {1}", _cInfo.playerId, Max_Waypoints);
                         DataTable _result1 = SQL.TQuery(_sql);
                         foreach (DataRow row in _result1.Rows)
                         {
@@ -57,7 +57,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    _sql = string.Format("SELECT steamid, wayPointName, position FROM Waypoints WHERE steamid = '{0}' LIMIT {1}", _cInfo.playerId, Waypoints);
+                    _sql = string.Format("SELECT steamid, wayPointName, position FROM Waypoints WHERE steamid = '{0}' LIMIT {1}", _cInfo.playerId, Max_Waypoints);
                     DataTable _result1 = SQL.TQuery(_sql);
                     foreach (DataRow row in _result1.Rows)
                     {
@@ -308,7 +308,7 @@ namespace ServerTools
                     ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                     if (DateTime.Now < _dt)
                     {
-                        if (_result.Rows.Count <= Donator_Waypoints)
+                        if (_result.Rows.Count <= Donator_Max_Waypoints)
                         {
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                             Vector3 _position = _player.GetPosition();
@@ -329,11 +329,11 @@ namespace ServerTools
                                 _phrase581 = "{PlayerName}, You have a maximum {DonatorCount} waypoints.";
                             }
                             _phrase581 = _phrase581.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase581 = _phrase581.Replace("{DonatorCount}", Donator_Waypoints.ToString());
+                            _phrase581 = _phrase581.Replace("{DonatorCount}", Donator_Max_Waypoints.ToString());
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase581), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
-                    if (_result.Rows.Count <= Waypoints)
+                    if (_result.Rows.Count <= Max_Waypoints)
                     {
                         EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                         Vector3 _position = _player.GetPosition();
@@ -354,11 +354,11 @@ namespace ServerTools
                             _phrase581 = "{PlayerName}, You have a maximum {DonatorCount} waypoints.";
                         }
                         _phrase581 = _phrase581.Replace("{PlayerName}", _cInfo.playerName);
-                        _phrase581 = _phrase581.Replace("{DonatorCount}", Donator_Waypoints.ToString());
+                        _phrase581 = _phrase581.Replace("{DonatorCount}", Donator_Max_Waypoints.ToString());
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase581), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
-                if (_result.Rows.Count <= Waypoints)
+                if (_result.Rows.Count <= Max_Waypoints)
                 {
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                     Vector3 _position = _player.GetPosition();
@@ -379,7 +379,7 @@ namespace ServerTools
                         _phrase581 = "{PlayerName}, You have a maximum {DonatorCount} waypoints.";
                     }
                     _phrase581 = _phrase581.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase581 = _phrase581.Replace("{DonatorCount}", Donator_Waypoints.ToString());
+                    _phrase581 = _phrase581.Replace("{DonatorCount}", Donator_Max_Waypoints.ToString());
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase581), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }

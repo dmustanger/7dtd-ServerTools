@@ -590,6 +590,18 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
+                            case "Chat_Color_Prefix":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color_Prefix entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatColorPrefix.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color_Prefix entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                             case "Chat_Command_Response":
                                 if (!_line.HasAttribute("Server_Response_Name"))
                                 {
@@ -2497,6 +2509,26 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("Max_Waypoints"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of missing 'Max_Waypoints' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Max_Waypoints"), out Waypoint.Max_Waypoints))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of invalid (non-numeric) value for 'Max_Waypoints' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Donator_Max_Waypoints"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of missing 'Donator_Max_Waypoints' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Donator_Max_Waypoints"), out Waypoint.Donator_Max_Waypoints))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of invalid (non-numeric) value for 'Donator_Max_Waypoints' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 if (!_line.HasAttribute("PvP_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of missing 'PvP_Check' attribute: {0}", subChild.OuterXml));
@@ -2643,6 +2675,16 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of invalid (true/false) value for 'Zone_Message' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("Reminder_Notice_Delay"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing 'Reminder_Notice_Delay' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Reminder_Notice_Delay"), out Zones.Reminder_Delay))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of invalid (non-numeric) value for 'Reminder_Notice_Delay' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 if (!_line.HasAttribute("Set_Home"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing 'Set_Home' attribute: {0}", subChild.OuterXml));
@@ -2663,6 +2705,8 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of invalid (non-numeric) value for 'Days_Before_Log_Delete' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+
+                                
                                 break;
                         }
                     }
@@ -2702,6 +2746,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"BikeReturn\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", BikeReturn.IsEnabled, BikeReturn.Delay_Between_Uses, BikeReturn.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Show_On_Login=\"{1}\" Show_On_Respawn=\"{2}\" Auto_Show=\"{3}\" Auto_Show_Delay=\"{4}\" Days_Until_Horde=\"{5}\" />", Bloodmoon.IsEnabled, Bloodmoon.Show_On_Login, Bloodmoon.Show_On_Respawn, Bloodmoon.Auto_Show, Timers.Auto_Show_Bloodmoon_Delay, Bloodmoon.Days_Until_Horde));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bounties\" Enable=\"{0}\" Bounty=\"{1}\" Kill_Streak=\"{2}\" Bonus=\"{3}\" />", Bounties.IsEnabled, Bounties.Bounty, Bounties.Kill_Streak, Players.Bonus));
+                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Color_Prefix\" Enable=\"{0}\" />", ChatColorPrefix.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response\" Server_Response_Name=\"{0}\" Color=\"{1}\" Chat_Command_Private=\"{2}\" Chat_Command_Public=\"{3}\" Mute_Commands=\"{4}\" />", Server_Response_Name, Chat_Response_Color, ChatHook.Command_Private, ChatHook.Command_Public, MutePlayer.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Flood_Protection\" Enable=\"{0}\" />", ChatHook.ChatFlood));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Logger\" Enable=\"{0}\" />", ChatLog.IsEnabled));
@@ -2758,10 +2803,10 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" Your_Voting_Site=\"{1}\" API_Key=\"{2}\" Delay_Between_Uses=\"{3}\" Reward_Count=\"{4}\" Reward_Entity=\"{5}\" Entity_Id=\"{6}\" />", VoteReward.IsEnabled, VoteReward.Your_Voting_Site, VoteReward.API_Key, VoteReward.Delay_Between_Uses, VoteReward.Reward_Count, VoteReward.Reward_Entity, VoteReward.Entity_Id));
                 sw.WriteLine(string.Format("        <Tool Name=\"Wallet\" Enable=\"{0}\" Coin_Name=\"{1}\" Zombie_Kill_Value=\"{2}\" Player_Kill_Value=\"{3}\" Death_Penalty_Value=\"{4}\" />", Wallet.IsEnabled, Wallet.Coin_Name, Wallet.Zombie_Kills, Wallet.Player_Kills, Wallet.Deaths));
                 sw.WriteLine(string.Format("        <Tool Name=\"Watchlist\" Enable=\"{0}\" Admin_Level=\"{1}\" Alert_Delay=\"{2}\" />", Watchlist.IsEnabled, Watchlist.Admin_Level, Timers.Alert_Delay));
-                sw.WriteLine(string.Format("        <Tool Name=\"Waypoints\" Enable=\"{0}\" PvP_Check =\"{1}\" Zombie_Check=\"{2}\" />", Waypoint.IsEnabled, Waypoint.PvP_Check, Waypoint.Zombie_Check));
+                sw.WriteLine(string.Format("        <Tool Name=\"Waypoints\" Enable=\"{0}\" Max_Waypoints =\"{1}\" Donator_Max_Waypoints=\"{2}\" PvP_Check =\"{3}\" Zombie_Check=\"{4}\" />", Waypoint.IsEnabled, Waypoint.Max_Waypoints, Waypoint.Donator_Max_Waypoints, Waypoint.PvP_Check, Waypoint.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Weather_Vote\" Enable=\"{0}\" Vote_Delay=\"{1}\" />", WeatherVote.IsEnabled, Timers.Weather_Vote_Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"World_Radius\" Enable=\"{0}\" Normal_Player=\"{1}\" Donator=\"{2}\" Admin_Level=\"{3}\" />", WorldRadius.IsEnabled, WorldRadius.Normal_Player, WorldRadius.Donator, WorldRadius.Admin_Level));
-                sw.WriteLine(string.Format("        <Tool Name=\"Zones\" Enable=\"{0}\" Kill_Enabled=\"{1}\" Jail_Enabled=\"{2}\" Kick_Enabled=\"{3}\" Ban_Enabled=\"{4}\" Zone_Message=\"{5}\" Set_Home=\"{6}\" Days_Before_Log_Delete=\"{7}\" />", Zones.IsEnabled, Zones.Kill_Enabled, Zones.Jail_Enabled, Zones.Kick_Enabled, Zones.Ban_Enabled, Zones.Zone_Message, Zones.Set_Home, Zones.Days_Before_Log_Delete));
+                sw.WriteLine(string.Format("        <Tool Name=\"Zones\" Enable=\"{0}\" Kill_Enabled=\"{1}\" Jail_Enabled=\"{2}\" Kick_Enabled=\"{3}\" Ban_Enabled=\"{4}\" Zone_Message=\"{5}\" Reminder_Notice_Delay=\"{6}\" Set_Home=\"{7}\" Days_Before_Log_Delete=\"{8}\" />", Zones.IsEnabled, Zones.Kill_Enabled, Zones.Jail_Enabled, Zones.Kick_Enabled, Zones.Ban_Enabled, Zones.Zone_Message, Zones.Reminder_Delay, Zones.Set_Home, Zones.Days_Before_Log_Delete));
                 sw.WriteLine("    </Tools>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();
