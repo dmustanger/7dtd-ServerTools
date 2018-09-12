@@ -29,6 +29,8 @@ namespace ServerTools
         {
             if (IsRunning && !IsEnabled)
             {
+                Dict.Clear();
+                Dict1.Clear();
                 fileWatcher.Dispose();
                 IsRunning = false;
             }

@@ -27,6 +27,8 @@ namespace ServerTools
         {
             if (!IsEnabled && IsRunning)
             {
+                dict.Clear();
+                dict1.Clear();
                 fileWatcher.Dispose();
                 IsRunning = false;
             }
@@ -53,6 +55,8 @@ namespace ServerTools
             {
                 if (childNode.Name == "ColorPrefix")
                 {
+                    dict.Clear();
+                    dict1.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)

@@ -442,35 +442,35 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
-                            case "BikeReturn":
+                            case "Bike_Return":
                                 if (!_line.HasAttribute("Enable"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring BikeReturn entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bike_Return entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!bool.TryParse(_line.GetAttribute("Enable"), out BikeReturn.IsEnabled))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring BikeReturn entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bike_Return entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Delay_Between_Uses"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring BikeReturn entry because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bike_Return entry because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out BikeReturn.Delay_Between_Uses))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring BikeReturn entry because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bike_Return entry because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Command_Cost"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring BikeReturn entry because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bike_Return entry because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!int.TryParse(_line.GetAttribute("Command_Cost"), out BikeReturn.Command_Cost))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring BikeReturn entry because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bike_Return entry because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -2081,14 +2081,24 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Shop_Anywhere"))
+                                if (!_line.HasAttribute("Inside_Market"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing 'Shop_Anywhere' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing 'Inside_Market' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Shop_Anywhere"), out Shop.Anywhere))
+                                if (!bool.TryParse(_line.GetAttribute("Inside_Market"), out Shop.Inside_Market))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (true/false) value for 'Shop_Anywhere' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (true/false) value for 'Inside_Market' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Inside_Traders"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing 'Inside_Traders' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Inside_Traders"), out Shop.Inside_Traders))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (true/false) value for 'Inside_Traders' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -2705,8 +2715,6 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of invalid (non-numeric) value for 'Days_Before_Log_Delete' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-
-                                
                                 break;
                         }
                     }
@@ -2743,7 +2751,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Shutdown\" Enable=\"{0}\" Countdown_Timer=\"{1}\" Time_Before_Shutdown=\"{2}\" Alert_On_Login=\"{3}\" Days_Until_Horde=\"{4}\" Kick_During_Countdown=\"{5}\" />", AutoShutdown.IsEnabled, AutoShutdown.Countdown_Timer, Timers.Shutdown_Delay, AutoShutdown.Alert_On_Login, AutoShutdown.Days_Until_Horde, AutoShutdown.Kick_Login));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bad_Word_Filter\" Enable=\"{0}\" Invalid_Name=\"{1}\" />", Badwords.IsEnabled, Badwords.Invalid_Name));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bank\" Enable=\"{0}\" Ingame_Coin=\"{1}\" Limit=\"{2}\" />", Bank.IsEnabled, Bank.Ingame_Coin, Bank.Limit));
-                sw.WriteLine(string.Format("        <Tool Name=\"BikeReturn\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", BikeReturn.IsEnabled, BikeReturn.Delay_Between_Uses, BikeReturn.Command_Cost));
+                sw.WriteLine(string.Format("        <Tool Name=\"Bike_Return\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", BikeReturn.IsEnabled, BikeReturn.Delay_Between_Uses, BikeReturn.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Show_On_Login=\"{1}\" Show_On_Respawn=\"{2}\" Auto_Show=\"{3}\" Auto_Show_Delay=\"{4}\" Days_Until_Horde=\"{5}\" />", Bloodmoon.IsEnabled, Bloodmoon.Show_On_Login, Bloodmoon.Show_On_Respawn, Bloodmoon.Auto_Show, Timers.Auto_Show_Bloodmoon_Delay, Bloodmoon.Days_Until_Horde));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bounties\" Enable=\"{0}\" Bounty=\"{1}\" Kill_Streak=\"{2}\" Bonus=\"{3}\" />", Bounties.IsEnabled, Bounties.Bounty, Bounties.Kill_Streak, Players.Bonus));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Color_Prefix\" Enable=\"{0}\" />", ChatColorPrefix.IsEnabled));
@@ -2793,8 +2801,8 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Restart_Vote\" Enable=\"{0}\" Restart_Delay=\"{1}\" Minimum_Players=\"{2}\" Admin_Level=\"{3}\" />", RestartVote.IsEnabled, Timers.Restart_Vote_Delay, RestartVote.Minimum_Players, RestartVote.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Session\" Enable=\"{0}\" />", Shop.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Set_Home\" Enable=\"{0}\" Set_Home2_Enabled=\"{1}\" Set_Home2_Donor_Only=\"{2}\" Delay_Between_Uses=\"{3}\" Command_Cost=\"{4}\" PvP_Check=\"{5}\" Zombie_Check=\"{6}\" />", TeleportHome.IsEnabled, TeleportHome.Set_Home2_Enabled, TeleportHome.Set_Home2_Donor_Only, TeleportHome.Delay_Between_Uses, TeleportHome.Command_Cost, TeleportHome.PvP_Check, TeleportHome.Zombie_Check));
-                sw.WriteLine(string.Format("        <Tool Name=\"Shop\" Enable=\"{0}\" Shop_Anywhere=\"{1}\" />", Shop.IsEnabled, Shop.Anywhere));
-                sw.WriteLine(string.Format("        <Tool Name=\"Starting_Items\" Enable=\"{0}\" />", StartingItems.IsEnabled));                
+                sw.WriteLine(string.Format("        <Tool Name=\"Shop\" Enable=\"{0}\" Inside_Market=\"{1}\" Inside_Traders=\"{2}\" />", Shop.IsEnabled, Shop.Inside_Market, Shop.Inside_Traders));
+                sw.WriteLine(string.Format("        <Tool Name=\"Starting_Items\" Enable=\"{0}\" />", StartingItems.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Stopserver\" Ten_Second_Countdown=\"{0}\" Kick_30_Seconds=\"{1}\" Alert_Count=\"{2}\" />", StopServer.Ten_Second_Countdown, StopServer.Kick_30_Seconds, StopServer.Alert_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Stuck\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" />", Stuck.IsEnabled, Stuck.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Suicide\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" PvP_Check=\"{2}\" Zombie_Check=\"{3}\" />", Suicide.IsEnabled, Suicide.Delay_Between_Uses, Suicide.PvP_Check, Suicide.Zombie_Check));

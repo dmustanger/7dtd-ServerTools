@@ -8,7 +8,7 @@ namespace ServerTools
 {
     class Shop
     {
-        public static bool IsEnabled = false, IsRunning = false, Anywhere = false, Inside_Market = false;
+        public static bool IsEnabled = false, IsRunning = false, Inside_Market = false, Inside_Traders = false;
         public static int Delay_Between_Uses = 60;
         private const string file = "Market.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -239,25 +239,65 @@ namespace ServerTools
         {
             if (dict.Count > 0)
             {
-                if (!Anywhere)
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                if (Inside_Market && Inside_Traders)
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                    int x, y, z;
+                    string[] _cords = SetMarket.Market_Position.Split(',');
+                    int.TryParse(_cords[0], out x);
+                    int.TryParse(_cords[1], out y);
+                    int.TryParse(_cords[2], out z);
+                    if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= MarketChat.Market_Size * MarketChat.Market_Size)
+                    {
+                        PosCheck2(_cInfo, _playerName, _categoryOrItem, _form);
+                        return;
+                    }
                     World world = GameManager.Instance.World;
                     Vector3i playerPos = new Vector3i((int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
                     if (world.IsWithinTraderArea(playerPos))
                     {
-                        if (_form == 1)
+                        PosCheck2(_cInfo, _playerName, _categoryOrItem, _form);
+                    }
+                    else
+                    {
+                        string _phrase821;
+                        if (!Phrases.Dict.TryGetValue(821, out _phrase821))
                         {
-                            ListCategories(_cInfo, _playerName);
+                            _phrase821 = "{PlayerName} you are not inside a market or trader area. Find one and use this command again.";
                         }
-                        else if (_form == 2)
+                        _phrase821 = _phrase821.Replace("{PlayerName}", _playerName);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase821), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
+                }
+                else if (Inside_Market && !Inside_Traders)
+                {
+                    int x, y, z;
+                    string[] _cords = SetMarket.Market_Position.Split(',');
+                    int.TryParse(_cords[0], out x);
+                    int.TryParse(_cords[1], out y);
+                    int.TryParse(_cords[2], out z);
+                    if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= MarketChat.Market_Size * MarketChat.Market_Size)
+                    {
+                        PosCheck2(_cInfo, _playerName, _categoryOrItem, _form);
+                    }
+                    else
+                    {
+                        string _phrase564;
+                        if (!Phrases.Dict.TryGetValue(564, out _phrase564))
                         {
-                            ShowCategory(_cInfo, _playerName, _categoryOrItem);
+                            _phrase564 = "{PlayerName} you are outside the market. Get inside it and try again.";
                         }
-                        else
-                        {
-                            Walletcheck(_cInfo, _playerName, _categoryOrItem);
-                        }
+                        _phrase564 = _phrase564.Replace("{PlayerName}", _playerName);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase564), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
+                }
+                else if (!Inside_Market && Inside_Traders)
+                {
+                    World world = GameManager.Instance.World;
+                    Vector3i playerPos = new Vector3i((int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
+                    if (world.IsWithinTraderArea(playerPos))
+                    {
+                        PosCheck2(_cInfo, _playerName, _categoryOrItem, _form);
                     }
                     else
                     {
@@ -272,18 +312,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    if (_form == 1)
-                    {
-                        ListCategories(_cInfo, _playerName);
-                    }
-                    else if (_form == 2)
-                    {
-                        ShowCategory(_cInfo, _playerName, _categoryOrItem);
-                    }
-                    else
-                    {
-                        Walletcheck(_cInfo, _playerName, _categoryOrItem);
-                    }
+                    PosCheck2(_cInfo, _playerName, _categoryOrItem, _form);
                 }
             }
             else
@@ -294,6 +323,22 @@ namespace ServerTools
                     _phrase624 = "The shop does not contain any items. Contact an administrator";
                 }
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase624), Config.Server_Response_Name, false, "ServerTools", false));
+            }
+        }
+
+        public static void PosCheck2(ClientInfo _cInfo, string _playerName, string _categoryOrItem, int _form)
+        {
+            if (_form == 1)
+            {
+                ListCategories(_cInfo, _playerName);
+            }
+            else if (_form == 2)
+            {
+                ShowCategory(_cInfo, _playerName, _categoryOrItem);
+            }
+            else
+            {
+                Walletcheck(_cInfo, _playerName, _categoryOrItem);
             }
         }
 

@@ -53,37 +53,40 @@ namespace ServerTools
                         XmlElement _line = (XmlElement)subChild;
                         if (!_line.HasAttribute("id"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Phrase entry because of missing 'id' attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Phrases entry because of missing 'id' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("Phrase"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Phrase entry because of missing 'Phrase' attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Phrases entry because of missing 'Phrase' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         string _phrase = _line.GetAttribute("Phrase");
                         int _id;
                         if (!int.TryParse(_line.GetAttribute("id"), out _id))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Phrase entry because of invalid (non-numeric) value for 'id' attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Phrases entry because of invalid (non-numeric) value for 'id' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!Dict.ContainsKey(_id) && !Dict.ContainsValue(_phrase))
                         {
                             Dict.Add(_id, _phrase);
                         }
+                        else if (Dict.ContainsKey(_id) && !Dict.ContainsValue(_phrase))
+                        {
+                            string _value;
+                            Dict.TryGetValue(_id, out _value);
+                            Log.Warning(string.Format("[SERVERTOOLS] Replaced Phrases entry {0}: {1}. New Phrase is {2}", _id, _value, _phrase));
+                            Dict.Remove(_id);
+                            Dict.Add(_id, _phrase);
+                        }
                         else
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Phrase entry because it already exists in the list: id {0}", _id));
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Phrase entry because it already exists in the list: Phrase {0}", _phrase));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Phrases entry because it already exists in the list. id {0}: phrase: {1}", _id, _phrase));
                             continue;
                         }
                     }
                 }
-            }
-            if (Config.UpdateConfigs)
-            {
-                UpdateXml();
             }
         }
 
@@ -854,7 +857,7 @@ namespace ServerTools
                 string _phrase582;
                 if (!Dict.TryGetValue(582, out _phrase582))
                 {
-                    _phrase582 = "{PlayerName}, enter a name for this point in chat.";
+                    _phrase582 = "{PlayerName}, You have a maximum {NormalCount} waypoints.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"582\" Phrase=\"{0}\" />", _phrase582));
                 string _phrase583;
@@ -1541,7 +1544,7 @@ namespace ServerTools
                 string _phrase821;
                 if (!Dict.TryGetValue(821, out _phrase821))
                 {
-                    _phrase821 = "";
+                    _phrase821 = "{PlayerName} you are not inside a market or trader area. Find one and use this command again.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"821\" Phrase=\"{0}\" />", _phrase821));
                 string _phrase822;
@@ -1556,6 +1559,12 @@ namespace ServerTools
                     _phrase823 = "Type /buy # to purchase the shop item. You can add how many times you want to buy it. /buy # #";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"823\" Phrase=\"{0}\" />", _phrase823));
+                string _phrase824;
+                if (!Dict.TryGetValue(824, out _phrase824))
+                {
+                    _phrase824 = "Type /buy # to purchase the shop item. You can add how many times you want to buy it. /buy # #";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"824\" Phrase=\"{0}\" />", _phrase824));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- *********************** Auction ************************ -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");

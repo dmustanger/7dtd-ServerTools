@@ -152,7 +152,7 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo, string _playerName)
         {
-            if (SetLobby.Lobby_Position != "0,0,0")
+            if (SetMarket.Market_Position != "0,0,0")
             {
                 int x, y, z;
                 string _sql;
@@ -189,7 +189,7 @@ namespace ServerTools
                     _phrase561 = _phrase561.Replace("{PlayerName}", _playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase561), Config.Server_Response_Name, false, "ServerTools", false));
                 }
-                string[] _cords = SetLobby.Lobby_Position.Split(',');
+                string[] _cords = SetMarket.Market_Position.Split(',');
                 int.TryParse(_cords[0], out x);
                 int.TryParse(_cords[1], out y);
                 int.TryParse(_cords[2], out z);
@@ -223,7 +223,7 @@ namespace ServerTools
 
         public static void SendBack(ClientInfo _cInfo, string _playerName)
         {
-            string _sql = string.Format("SELECT lobbyReturn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            string _sql = string.Format("SELECT marketReturn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
             string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
             _result.Dispose();
@@ -231,7 +231,7 @@ namespace ServerTools
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 int x, y, z;
-                string[] _cords = SetLobby.Lobby_Position.Split(',');
+                string[] _cords = SetMarket.Market_Position.Split(',');
                 int.TryParse(_cords[0], out x);
                 int.TryParse(_cords[1], out y);
                 int.TryParse(_cords[2], out z);
