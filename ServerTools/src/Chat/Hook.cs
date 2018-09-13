@@ -894,12 +894,22 @@ namespace ServerTools
                             Travel.Check(_cInfo, _announce, _playerName);
                             return false;
                         }
-                        if (Zones.IsEnabled && _message.ToLower() == "return")
+                        if ((Zones.IsEnabled || MarketChat.IsEnabled || LobbyChat.IsEnabled) && _message.ToLower() == "return")
                         {
                             if (Players.Victim.ContainsKey(_cInfo.entityId))
                             {
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Sending you to your death point.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                                 Zones.ReturnToPosition(_cInfo);
+                                return false;
+                            }
+                            else if (MarketChat.MarketPlayers.Contains(_cInfo.entityId))
+                            {
+                                MarketChat.SendBack(_cInfo, _playerName);
+                                return false;
+                            }
+                            else if (LobbyChat.LobbyPlayers.Contains(_cInfo.entityId))
+                            {
+                                LobbyChat.SendBack(_cInfo, _playerName);
                                 return false;
                             }
                         }
@@ -1353,14 +1363,6 @@ namespace ServerTools
                             LobbyChat.Delay(_cInfo, _playerName, _announce);
                             return false;
                         }
-                        if (LobbyChat.IsEnabled && LobbyChat.Return && _message.ToLower() == "return")
-                        {
-                            if (LobbyChat.LobbyPlayers.Contains(_cInfo.entityId))
-                            {
-                                LobbyChat.SendBack(_cInfo, _playerName);
-                                return false;
-                            }
-                        }
                         if (PlayerList.IsEnabled && _message.ToLower() == "list")
                         {
                             PlayerList.Exec(_cInfo, _playerName);
@@ -1475,14 +1477,6 @@ namespace ServerTools
                         {
                             MarketChat.Delay(_cInfo, _playerName, _announce);
                             return false;
-                        }
-                        if (MarketChat.IsEnabled && MarketChat.Return && _message.ToLower() == "return")
-                        {
-                            if (MarketChat.MarketPlayers.Contains(_cInfo.entityId))
-                            {
-                                MarketChat.SendBack(_cInfo, _playerName);
-                                return false;
-                            }
                         }
                         if (InfoTicker.IsEnabled && _message.ToLower() == "infoticker")
                         {

@@ -17,18 +17,15 @@ namespace ServerTools
             for (int i = 0; i < _cInfoList.Count; i++)
             {
                 ClientInfo _cInfoAdmins = _cInfoList[i];
-                if (!AdminChatColorConsole.AdminColorOff.Contains(_cInfoAdmins.playerId))
+                GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins.playerId);
+                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfoAdmins.playerId);
+                if (Admin.PermissionLevel <= Admin_Level)
                 {
-                    GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins.playerId);
-                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfoAdmins.playerId);
-                    if (Admin.PermissionLevel <= Admin_Level)
-                    {
-                        Admins.Add(_cInfoAdmins.playerName);
-                    }
-                    if (Admin.PermissionLevel > Admin_Level & Admin.PermissionLevel <= Mod_Level)
-                    {
-                        Mods.Add(_cInfoAdmins.playerName);
-                    }
+                    Admins.Add(_cInfoAdmins.playerName);
+                }
+                if (Admin.PermissionLevel > Admin_Level & Admin.PermissionLevel <= Mod_Level)
+                {
+                    Mods.Add(_cInfoAdmins.playerName);
                 }
             }
             Response(_cInfo, _announce, _playerName);
