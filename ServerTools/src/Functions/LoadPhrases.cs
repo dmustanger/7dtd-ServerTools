@@ -1559,12 +1559,6 @@ namespace ServerTools
                     _phrase823 = "Type /buy # to purchase the shop item. You can add how many times you want to buy it. /buy # #";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"823\" Phrase=\"{0}\" />", _phrase823));
-                string _phrase824;
-                if (!Dict.TryGetValue(824, out _phrase824))
-                {
-                    _phrase824 = "Type /buy # to purchase the shop item. You can add how many times you want to buy it. /buy # #";
-                }
-                sw.WriteLine(string.Format("        <Phrase id=\"824\" Phrase=\"{0}\" />", _phrase824));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- *********************** Auction ************************ -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
