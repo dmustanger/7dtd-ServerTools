@@ -24,21 +24,6 @@ namespace ServerTools
         private static string filepath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
         private static SortedDictionary<string, DateTime> Dict = new SortedDictionary<string, DateTime>();
         private static SortedDictionary<string, string> Dict1 = new SortedDictionary<string, string>();
-        public static List<string> SpecialPlayers = new List<string>();
-        private static List<string> SpecialPlayersColorOff = new List<string>();
-
-        public static void SpecialIdCheck()
-        {
-            if (Special_Player_Name_Coloring)
-            {
-                SpecialPlayers.Clear();
-                var s_Id = Special_Players_List.Split(',');
-                foreach (var specialId in s_Id)
-                {
-                    SpecialPlayers.Add(specialId.ToString());
-                }
-            }
-        }
 
         public static bool Hook(ClientInfo _cInfo, string _message, string _playerName, string _secondaryName, bool _localizeSecondary)
         {
@@ -73,15 +58,15 @@ namespace ServerTools
                         {
                             if (!ClanManager.ClanMember.Contains(_cInfo.playerId))
                             {
-                                if (_colorPrefix[1] != "")
+                                if (_colorPrefix[2] != "")
                                 {
-                                    _playerName = string.Format("{0}{1} {2}[-]", _colorPrefix[2], _colorPrefix[1], _playerName);
+                                    _playerName = string.Format("{0}{1} {2}[-]", _colorPrefix[3], _colorPrefix[2], _playerName);
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                     return false;
                                 }
                                 else
                                 {
-                                    _playerName = string.Format("{0}{1}[-]", _colorPrefix[2], _playerName);
+                                    _playerName = string.Format("{0}{1}[-]", _colorPrefix[3], _playerName);
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                     return false;
                                 }
@@ -92,15 +77,15 @@ namespace ServerTools
                                 DataTable _result = SQL.TQuery(_sql);
                                 string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
                                 _result.Dispose();
-                                if (_colorPrefix[1] != "")
+                                if (_colorPrefix[2] != "")
                                 {
-                                    _playerName = string.Format("{0}({1}){2} {3}[-]", _colorPrefix[2], _clanname, _colorPrefix[1], _playerName);
+                                    _playerName = string.Format("{0}({1}){2} {3}[-]", _colorPrefix[3], _clanname, _colorPrefix[2], _playerName);
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                     return false;
                                 }
                                 else
                                 {
-                                    _playerName = string.Format("{0}({1}) {2}[-]", _colorPrefix[2], _clanname, _playerName);
+                                    _playerName = string.Format("{0}({1}) {2}[-]", _colorPrefix[3], _clanname, _playerName);
                                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, _message, _playerName, false, "ServerTools1", false);
                                     return false;
                                 }
@@ -851,23 +836,6 @@ namespace ServerTools
                             else
                             {
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have not donated {1}. Expiration date unavailable.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            return false;
-                        }
-                        if (Special_Player_Name_Coloring && _message.ToLower() == "spcolor")
-                        {
-                            if (SpecialPlayers.Contains(_cInfo.playerId))
-                            {
-                                if (!SpecialPlayersColorOff.Contains(_cInfo.playerId))
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned off.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                    SpecialPlayersColorOff.Add(_cInfo.playerId);
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, your chat color has been turned on.[-]", Config.Chat_Response_Color, _playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                    SpecialPlayersColorOff.Remove(_cInfo.playerId);
-                                }
                             }
                             return false;
                         }

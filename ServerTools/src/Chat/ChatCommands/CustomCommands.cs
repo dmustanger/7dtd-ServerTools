@@ -283,10 +283,6 @@ namespace ServerTools
             {
                 _commands_2 = string.Format("{0} /travel", _commands_2);
             }
-            if (ChatHook.Special_Player_Name_Coloring && ChatHook.SpecialPlayers.Contains(_cInfo.playerId))
-            {
-                _commands_2 = string.Format("{0} /spcolor", _commands_2);
-            }
             if (TeleportHome.IsEnabled & TeleportHome.Set_Home2_Enabled)
             {
                 _commands_2 = string.Format("{0} /sethome2", _commands_2);

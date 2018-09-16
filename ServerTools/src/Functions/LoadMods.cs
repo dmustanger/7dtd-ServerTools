@@ -75,10 +75,6 @@ namespace ServerTools
                 PollConsole.Check();
             }
             _result.Dispose();
-            if (ChatHook.Special_Player_Name_Coloring)
-            {
-                ChatHook.SpecialIdCheck();
-            }
             if (ClanManager.IsEnabled)
             {
                 ClanManager.GetClans();

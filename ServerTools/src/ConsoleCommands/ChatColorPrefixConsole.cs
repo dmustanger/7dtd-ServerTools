@@ -37,9 +37,9 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count < 1 || _params.Count > 6)
+                if (_params.Count < 1 || _params.Count > 7)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 to 6, found {0}.", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 to 7, found {0}.", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -56,9 +56,9 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("add"))
                 {
-                    if (_params.Count < 3 || _params.Count > 6)
+                    if (_params.Count < 4 || _params.Count > 7)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 3 to 6, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 4 to 7, found {0}.", _params.Count));
                         return;
                     }
                     string _steamId = "";
@@ -84,7 +84,7 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Can not add Id. {0} is already in the chat color prefix list. Remove them first.", _params[1]));
                         return;
                     }
-                    if (_params.Count == 6)
+                    if (_params.Count == 7)
                     {
                         foreach (var group in ChatColorPrefix.dict)
                         {
@@ -125,7 +125,7 @@ namespace ServerTools
                         ChatColorPrefix.UpdateXml();
                         return;
                     }
-                    else if (_params.Count == 4)
+                    else if (_params.Count == 5)
                     {
                         foreach (var group in ChatColorPrefix.dict)
                         {
@@ -157,7 +157,7 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("No group with the name {0} was found.", _params[3]));
                         return;
                     }
-                    else if (_params.Count == 3)
+                    else if (_params.Count == 4)
                     {
                         foreach (var group in ChatColorPrefix.dict)
                         {
