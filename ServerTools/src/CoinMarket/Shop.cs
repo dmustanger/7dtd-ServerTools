@@ -354,7 +354,7 @@ namespace ServerTools
             string _phrase618;
             if (!Phrases.Dict.TryGetValue(618, out _phrase618))
             {
-                _phrase618 = "Type /shop category to view that list.";
+                _phrase618 = "Type /shop 'category' to view that list.";
             }
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}[-]", Config.Chat_Response_Color, _playerName, _phrase618), Config.Server_Response_Name, false, "ServerTools", false));
         }
