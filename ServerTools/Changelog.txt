@@ -1,5 +1,6 @@
 ﻿CHANGELOG
 11.*
+Fixed Waypoint tool not responding
 Fixed chat color and prefix system
 Fixed chat commands and responses for the Lobby and Market tools
 Fixed API disconnect null reference

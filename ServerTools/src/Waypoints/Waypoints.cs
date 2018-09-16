@@ -72,6 +72,16 @@ namespace ServerTools
                     _result1.Dispose();
                 }
             }
+            else
+            {
+                string _phrase585;
+                if (!Phrases.Dict.TryGetValue(585, out _phrase585))
+                {
+                    _phrase585 = "{PlayerName} you have no waypoints saved to list.";
+                }
+                _phrase585 = _phrase585.Replace("{PlayerName}", _cInfo.playerName);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase585), Config.Server_Response_Name, false, "ServerTools", false));
+            }
             _result.Dispose();
         }
 
@@ -308,7 +318,7 @@ namespace ServerTools
                     ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                     if (DateTime.Now < _dt)
                     {
-                        if (_result.Rows.Count <= Donator_Max_Waypoints)
+                        if (_result.Rows.Count < Donator_Max_Waypoints && Donator_Max_Waypoints > 0)
                         {
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                             Vector3 _position = _player.GetPosition();
@@ -336,7 +346,80 @@ namespace ServerTools
                 }
                 else
                 {
-                    if (_result.Rows.Count <= Max_Waypoints)
+                    if (_result.Rows.Count < Max_Waypoints && Max_Waypoints > 0)
+                    {
+                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                        Vector3 _position = _player.GetPosition();
+                        int x = (int)_position.x;
+                        int y = (int)_position.y;
+                        int z = (int)_position.z;
+                        string _wposition = x + "," + y + "," + z;
+                        _waypoint = SQL.EscapeString(_waypoint);
+                        _sql = string.Format("INSERT INTO Waypoints (steamid, wayPointName, position) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _waypoint, _wposition);
+                        SQL.FastQuery(_sql);
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, saved waypoint name as {2} to {3} {4} {5}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _waypoint, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
+                    else
+                    {
+                        string _phrase582;
+                        if (!Phrases.Dict.TryGetValue(582, out _phrase582))
+                        {
+                            _phrase582 = "{PlayerName}, You have a maximum {NormalCount} waypoints.";
+                        }
+                        _phrase582 = _phrase582.Replace("{PlayerName}", _cInfo.playerName);
+                        _phrase582 = _phrase582.Replace("{NormalCount}", Max_Waypoints.ToString());
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase582), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
+                }
+            }
+            else
+            {
+                if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                {
+                    DateTime _dt;
+                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                    if (DateTime.Now < _dt)
+                    {
+                        if (Donator_Max_Waypoints > 0)
+                        {
+                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                            Vector3 _position = _player.GetPosition();
+                            int x = (int)_position.x;
+                            int y = (int)_position.y;
+                            int z = (int)_position.z;
+                            string _wposition = x + "," + y + "," + z;
+                            _waypoint = SQL.EscapeString(_waypoint);
+                            _sql = string.Format("INSERT INTO Waypoints (steamid, wayPointName, position) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _waypoint, _wposition);
+                            SQL.FastQuery(_sql);
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, saved waypoint name as {2} to {3} {4} {5}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _waypoint, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
+                        }
+                        else
+                        {
+                            string _phrase581;
+                            if (!Phrases.Dict.TryGetValue(581, out _phrase581))
+                            {
+                                _phrase581 = "{PlayerName}, You have a maximum {DonatorCount} waypoints.";
+                            }
+                            _phrase581 = _phrase581.Replace("{PlayerName}", _cInfo.playerName);
+                            _phrase581 = _phrase581.Replace("{DonatorCount}", Donator_Max_Waypoints.ToString());
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase581), Config.Server_Response_Name, false, "ServerTools", false));
+                        }
+                    }
+                    else
+                    {
+                        string _phrase582;
+                        if (!Phrases.Dict.TryGetValue(582, out _phrase582))
+                        {
+                            _phrase582 = "{PlayerName}, You have a maximum {NormalCount} waypoints.";
+                        }
+                        _phrase582 = _phrase582.Replace("{PlayerName}", _cInfo.playerName);
+                        _phrase582 = _phrase582.Replace("{NormalCount}", Max_Waypoints.ToString());
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase582), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
+                }
+                else
+                {
+                    if (Max_Waypoints > 0)
                     {
                         EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                         Vector3 _position = _player.GetPosition();

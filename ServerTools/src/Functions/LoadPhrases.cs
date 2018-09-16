@@ -875,7 +875,7 @@ namespace ServerTools
                 string _phrase585;
                 if (!Dict.TryGetValue(585, out _phrase585))
                 {
-                    _phrase585 = "{PlayerName}, you have waited too long to set a waypoint name.";
+                    _phrase585 = "{PlayerName}, you have no waypoints saved to list.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"585\" Phrase=\"{0}\" />", _phrase585));
                 string _phrase586;
