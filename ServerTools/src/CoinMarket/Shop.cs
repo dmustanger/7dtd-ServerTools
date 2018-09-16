@@ -354,7 +354,7 @@ namespace ServerTools
             string _phrase618;
             if (!Phrases.Dict.TryGetValue(618, out _phrase618))
             {
-                _phrase618 = "Type /shop {category} to view that list.";
+                _phrase618 = "Type /shop category to view that list.";
             }
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}[-]", Config.Chat_Response_Color, _playerName, _phrase618), Config.Server_Response_Name, false, "ServerTools", false));
         }
@@ -363,6 +363,7 @@ namespace ServerTools
         {
             if (categories.Contains(_category))
             {
+                int _count = 0;
                 for (int i = 0; i < dict.Count; i++)
                 {
                     string[] _dictValues;
@@ -375,22 +376,27 @@ namespace ServerTools
                             {
                                 if (_dict1Values[1] > 1)
                                 {
+                                    _count++;
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, i, _dict1Values[0], _dictValues[0], _dict1Values[1], _dict1Values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                                 else
                                 {
+                                    _count++;
                                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, i, _dict1Values[0], _dictValues[0], _dict1Values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                             }
                         }
                     }
                 }
-                string _phrase823;
-                if (!Phrases.Dict.TryGetValue(823, out _phrase823))
+                if (_count != 0)
                 {
-                    _phrase823 = "Type /buy # to purchase the shop item. You can add how many times you want to buy it. /buy # #";
+                    string _phrase823;
+                    if (!Phrases.Dict.TryGetValue(823, out _phrase823))
+                    {
+                        _phrase823 = "Type /buy # to purchase the shop item. You can add how many times you want to buy it. /buy # #";
+                    }
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}[-]", Config.Chat_Response_Color, _playerName, _phrase823), Config.Server_Response_Name, false, "ServerTools", false));
                 }
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}[-]", Config.Chat_Response_Color, _playerName, _phrase823), Config.Server_Response_Name, false, "ServerTools", false));
             }
             else
             {
