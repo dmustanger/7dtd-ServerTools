@@ -1,5 +1,7 @@
 ﻿CHANGELOG
-11.*
+11.1
+Fixed Shop tool not displaying the last item from the list
+Fixed /shop 'category' not showing category listings
 Fixed Waypoint tool not responding
 Fixed chat color and prefix system
 Fixed chat commands and responses for the Lobby and Market tools

@@ -901,31 +901,26 @@ namespace ServerTools
                             Wallet.WalletValue(_cInfo, _playerName);
                             return false;
                         }
-                        if (Shop.IsEnabled && _message.StartsWith("shop"))
+                        if (Shop.IsEnabled && _message.ToLower() == "shop")
                         {
-                            if (_message == "shop")
-                            {
-                                Shop.PosCheck(_cInfo, _playerName, _message, 1);
-                            }
-                            else
-                            {
-                                _message = _message.ToLower().Replace("shop ", "");
-                                Shop.PosCheck(_cInfo, _playerName, _message, 2);
-                                Log.Out(string.Format("chat hook category equals {0}", _message));
-                            }
+                            Shop.PosCheck(_cInfo, _playerName, _message, 1);
                             return false;
                         }
-                        if (Shop.IsEnabled && _message.ToLower().StartsWith("buy"))
+                        if (Shop.IsEnabled && _message.ToLower().StartsWith("shop "))
                         {
-                            if (_message == "buy")
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /buy #[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            else
-                            {
-                                _message = _message.ToLower().Replace("buy ", "");
-                                Shop.PosCheck(_cInfo, _playerName, _message, 3);
-                            }
+                            _message = _message.ToLower().Replace("shop ", "");
+                            Shop.PosCheck(_cInfo, _playerName, _message, 2);
+                            return false;
+                        }
+                        if (Shop.IsEnabled && _message.ToLower() == "buy")
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Usage: /buy # or /buy # #[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                            return false;
+                        }
+                        if (Shop.IsEnabled && _message.ToLower().StartsWith("buy "))
+                        {
+                            _message = _message.ToLower().Replace("buy ", "");
+                            Shop.PosCheck(_cInfo, _playerName, _message, 3);
                             return false;
                         }
                         if (FriendTeleport.IsEnabled && _message.ToLower().StartsWith("friend"))

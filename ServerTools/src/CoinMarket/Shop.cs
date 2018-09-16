@@ -124,7 +124,7 @@ namespace ServerTools
                         }
                         if (!int.TryParse(_line.GetAttribute("quality"), out _quality))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Market entry because of invalid (non-numeric) value for 'qualityMin' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Market entry because of invalid (non-numeric) value for 'quality' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!int.TryParse(_line.GetAttribute("price"), out _price))
@@ -149,6 +149,7 @@ namespace ServerTools
                             continue;
                         }
                         string _category = _line.GetAttribute("category");
+                        _category = _category.ToLower();
                         if (!categories.Contains(_category))
                         {
                             categories.Add(_category);
@@ -157,9 +158,6 @@ namespace ServerTools
                         {
                             string[] _n = new string[] { _name, _secondaryname, _category };
                             dict.Add(_item, _n);
-                        }
-                        if (!dict1.ContainsKey(_item))
-                        {
                             int[] _c = new int[] { _count, _quality, _price };
                             dict1.Add(_item, _c);
                         }
@@ -364,7 +362,7 @@ namespace ServerTools
             if (categories.Contains(_category))
             {
                 int _count = 0;
-                for (int i = 0; i < dict.Count; i++)
+                for (int i = 0; i <= dict.Count; i++)
                 {
                     string[] _dictValues;
                     if (dict.TryGetValue(i, out _dictValues))
