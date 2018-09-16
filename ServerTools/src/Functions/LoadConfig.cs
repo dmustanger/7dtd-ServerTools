@@ -1516,7 +1516,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry because of missing 'Market_Position' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                SetLobby.Lobby_Position = _line.GetAttribute("Market_Position");
+                                SetMarket.Market_Position = _line.GetAttribute("Market_Position");
                                 if (!_line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));

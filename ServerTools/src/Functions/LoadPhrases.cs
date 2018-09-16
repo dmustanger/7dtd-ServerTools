@@ -734,7 +734,7 @@ namespace ServerTools
                 string _phrase552;
                 if (!Dict.TryGetValue(552, out _phrase552))
                 {
-                    _phrase552 = "{PlayerName} you can go back by typing /return when you are ready to leave the lobby.";
+                    _phrase552 = "{PlayerName} you can go back by typing /lobbyback when you are ready to leave the lobby.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"552\" Phrase=\"{0}\" />", _phrase552));
                 string _phrase553;
@@ -752,7 +752,7 @@ namespace ServerTools
                 string _phrase555;
                 if (!Dict.TryGetValue(555, out _phrase555))
                 {
-                    _phrase555 = "{PlayerName} sending you back to your saved location.";
+                    _phrase555 = "{PlayerName} sent you back to your saved location.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"555\" Phrase=\"{0}\" />", _phrase555));
                 string _phrase556;
@@ -773,13 +773,13 @@ namespace ServerTools
                 string _phrase561;
                 if (!Dict.TryGetValue(561, out _phrase561))
                 {
-                    _phrase561 = "{PlayerName} you can go back by typing /return when you are ready to leave the market.";
+                    _phrase561 = "{PlayerName} you can go back by typing /marketback when you are ready to leave the market.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"561\" Phrase=\"{0}\" />", _phrase561));
                 string _phrase562;
                 if (!Dict.TryGetValue(562, out _phrase562))
                 {
-                    _phrase562 = "{PlayerName} sending you to the market.";
+                    _phrase562 = "{PlayerName} sent you to the market.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"562\" Phrase=\"{0}\" />", _phrase562));
                 string _phrase563;

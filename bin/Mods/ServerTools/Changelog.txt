@@ -1,6 +1,10 @@
 ﻿CHANGELOG
 11.*
+Fixed chat commands and responses for the Lobby and Market tools
+Fixed API disconnect null reference
 Fixed country ban not banning correctly
+Changed Market and Lobby chat commands for returning to their position. They are now /marketback and /lobbyback
+Removed option to set cordinates with spaces instead of comma. It created a strange error resulting in no cordinates
 Removed phrase id 824 as it is not used and is a duplicate
 
 11.0

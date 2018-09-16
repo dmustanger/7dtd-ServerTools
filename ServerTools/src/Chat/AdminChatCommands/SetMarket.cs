@@ -5,7 +5,7 @@ namespace ServerTools
     class SetMarket
     {
         public static string Market_Position = "0,0,0";
-        private static string[] _cmd = { "market" };
+        private static string[] _cmd = { "Market", "market" };
 
         public static void Set(ClientInfo _cInfo)
         {

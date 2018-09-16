@@ -355,7 +355,7 @@ namespace ServerTools
                 _commands_4 = string.Format("{0} /lobby", _commands_4);
                 if (LobbyChat.Return)
                 {
-                    _commands_4 = string.Format("{0} /return", _commands_4);
+                    _commands_4 = string.Format("{0} /lobby return", _commands_4);
                 }
             }
             if (Bounties.IsEnabled)
@@ -404,7 +404,7 @@ namespace ServerTools
                 _commands_5 = string.Format("{0} /market", _commands_5);
                 if (MarketChat.Return)
                 {
-                    _commands_5 = string.Format("{0} /return", _commands_5);
+                    _commands_5 = string.Format("{0} /market return", _commands_5);
                 }
             }
             if (InfoTicker.IsEnabled)

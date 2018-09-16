@@ -894,7 +894,7 @@ namespace ServerTools
                             Travel.Check(_cInfo, _announce, _playerName);
                             return false;
                         }
-                        if ((Zones.IsEnabled || MarketChat.IsEnabled || LobbyChat.IsEnabled) && _message.ToLower() == "return")
+                        if (Zones.IsEnabled && _message.ToLower() == "return")
                         {
                             if (Players.Victim.ContainsKey(_cInfo.entityId))
                             {
@@ -902,12 +902,18 @@ namespace ServerTools
                                 Zones.ReturnToPosition(_cInfo);
                                 return false;
                             }
-                            else if (MarketChat.MarketPlayers.Contains(_cInfo.entityId))
+                        }
+                        if (MarketChat.IsEnabled && _message.ToLower() == "marketback")
+                        {
+                            if (MarketChat.MarketPlayers.Contains(_cInfo.entityId))
                             {
                                 MarketChat.SendBack(_cInfo, _playerName);
                                 return false;
                             }
-                            else if (LobbyChat.LobbyPlayers.Contains(_cInfo.entityId))
+                        }
+                        if (LobbyChat.IsEnabled && _message.ToLower() == "lobbyback")
+                        {
+                            if (LobbyChat.LobbyPlayers.Contains(_cInfo.entityId))
                             {
                                 LobbyChat.SendBack(_cInfo, _playerName);
                                 return false;
@@ -1470,7 +1476,7 @@ namespace ServerTools
                         }
                         if (MarketChat.IsEnabled && _message.ToLower() == "setmarket")
                         {
-                            SetLobby.Set(_cInfo);
+                            SetMarket.Set(_cInfo);
                             return false;
                         }
                         if (MarketChat.IsEnabled && _message.ToLower() == "market")

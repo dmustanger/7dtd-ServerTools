@@ -184,20 +184,12 @@ namespace ServerTools
                     string _phrase552;
                     if (!Phrases.Dict.TryGetValue(552, out _phrase552))
                     {
-                        _phrase552 = "{PlayerName} you can go back by typing /return when you are ready to leave the lobby.";
+                        _phrase552 = "{PlayerName} you can go back by typing /lobbyback when you are ready to leave the lobby.";
                     }
                     _phrase552 = _phrase552.Replace("{PlayerName}", _playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase552), Config.Server_Response_Name, false, "ServerTools", false));
                 }
-                string[] _cords = { };
-                if (SetLobby.Lobby_Position.Contains(","))
-                {
-                    _cords = SetLobby.Lobby_Position.Split(',');
-                }
-                else
-                {
-                    _cords = SetLobby.Lobby_Position.Split(' ');
-                }
+                string[] _cords = SetLobby.Lobby_Position.Split(',');
                 int.TryParse(_cords[0], out x);
                 int.TryParse(_cords[1], out y);
                 int.TryParse(_cords[2], out z);
@@ -255,7 +247,7 @@ namespace ServerTools
                     string _phrase555;
                     if (!Phrases.Dict.TryGetValue(555, out _phrase555))
                     {
-                        _phrase555 = "{PlayerName} sending you back to your saved location.";
+                        _phrase555 = "{PlayerName} sent you back to your saved location.";
                     }
                     _phrase555 = _phrase555.Replace("{PlayerName}", _playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase555), Config.Server_Response_Name, false, "ServerTools", false));
