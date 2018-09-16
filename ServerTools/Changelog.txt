@@ -1,4 +1,6 @@
 ﻿CHANGELOG
+11.*
+Fixed country ban not banning correctly
 
 11.0
 Added option to Bank tool called Limit. This is the total value allowed to be deposited in to a bank account. Default is 50,000
