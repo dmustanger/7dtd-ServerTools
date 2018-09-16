@@ -30,7 +30,7 @@ namespace ServerTools
             Location _location = reader.getLocation(_cInfo.ip);
             if (BannedCountries.Contains(_location.countryCode))
             {
-                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} \"Players from {1} are not allowed\"", _cInfo.playerId, _location.countryCode), (ClientInfo)null);
+                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Players from {1} are not allowed\"", _cInfo.playerId, _location.countryCode), (ClientInfo)null);
                 return true;
             }
             return false;
