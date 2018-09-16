@@ -299,25 +299,18 @@ namespace ServerTools
         {
             if (_cInfo != null)
             {
-                EntityPlayer _player = null;
                 if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
                 {
-                    _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                }
-                if (_player != null)
-                {
-                    if (_player.IsAlive())
+                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                    if (_player != null)
                     {
                         string _sql = string.Format("UPDATE Players SET zkills = {0}, kills = {1}, deaths = {2} WHERE steamid = '{3}'", XUiM_Player.GetZombieKills(_player), XUiM_Player.GetPlayerKills(_player), XUiM_Player.GetDeaths(_player), _cInfo.playerId);
                         SQL.FastQuery(_sql);
-                        if (Mogul.IsEnabled)
+                        if (Wallet.IsEnabled)
                         {
-                            if (Wallet.IsEnabled)
-                            {
-                                int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
-                                _sql = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", _currentCoins, _cInfo.playerId);
-                                SQL.FastQuery(_sql);
-                            }
+                            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                            _sql = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", _currentCoins, _cInfo.playerId);
+                            SQL.FastQuery(_sql);
                         }
                     }
                 }
