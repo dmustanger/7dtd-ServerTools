@@ -99,7 +99,7 @@ namespace ServerTools
                 sw.WriteLine("<ServerTools>");
                 sw.WriteLine("    <Phrases>");
                 sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- *********************** V.11.1 ************************** -->");
+                sw.WriteLine("        <!-- *********************** V.11.3 ************************** -->");
                 sw.WriteLine("        <!-- ******* If your version is incorrect, shutdown, ******** -->");
                 sw.WriteLine("        <!-- ************* delete this file, restart **************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");

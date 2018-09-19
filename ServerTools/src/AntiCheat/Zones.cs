@@ -19,7 +19,6 @@ namespace ServerTools
         public static Dictionary<int, bool[]> zoneSetup2 = new Dictionary<int, bool[]>();
         public static List<string[]> Box1 = new List<string[]>();
         public static List<bool[]> Box2 = new List<bool[]>();
-
         private static int _xMinCheck = 0, _yMinCheck = 0, _zMinCheck = 0, _xMaxCheck = 0, _yMaxCheck = 0, _zMaxCheck = 0;
         private const string file = "Zones.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -150,6 +149,9 @@ namespace ServerTools
                             if (!Box1.Contains(box1))
                             {
                                 Box1.Add(box1);
+                            }
+                            if (!Box2.Contains(box2))
+                            {
                                 Box2.Add(box2);
                             }
                         }
@@ -461,30 +463,15 @@ namespace ServerTools
 
         public static bool BoxCheck(string[] _box, int _X, int _Y, int _Z, bool[] _box2)
         {
-            string[] _corner1 = { };
-            if (_box[0].Contains(","))
-            {
-                _corner1 = _box[0].Split(',');
-            }
-            else
-            {
-                _corner1 = _box[0].Split(' ');
-            }
+            Log.Out(string.Format("Testing box vs player loc"));
+            string[] _corner1 = _box[0].Split(',');
             int xMin, yMin, zMin, xMax, yMax, zMax;;
             int.TryParse(_corner1[0], out xMin);
             int.TryParse(_corner1[1], out yMin);
             int.TryParse(_corner1[2], out zMin);
             if (!_box2[0])
             {
-                string[] _corner2 = { };
-                if (_box[1].Contains(","))
-                {
-                    _corner2 = _box[1].Split(',');
-                }
-                else
-                {
-                    _corner2 = _box[1].Split(' ');
-                }
+                string[] _corner2 = _box[1].Split(',');
                 int.TryParse(_corner2[0], out xMax);
                 int.TryParse(_corner2[1], out yMax);
                 int.TryParse(_corner2[2], out zMax);
@@ -852,6 +839,7 @@ namespace ServerTools
                 }
                 if (_xMinCheck == 1 && _yMinCheck == 1 && _zMinCheck == 1 && _xMaxCheck == 1 && _yMaxCheck == 1 && _zMaxCheck == 1)
                 {
+                    Log.Out(string.Format("Inside zone box"));
                     return true;
                 }
                 return false;
@@ -863,6 +851,7 @@ namespace ServerTools
                 {
                     if ((xMin - _X) * (xMin - _X) + (zMin - _Z) * (zMin - _Z) <= _radius * _radius)
                     {
+                        Log.Out(string.Format("Inside zone circle"));
                         return true;
                     }
                 }

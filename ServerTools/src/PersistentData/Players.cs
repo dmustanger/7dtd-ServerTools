@@ -384,7 +384,7 @@ namespace ServerTools
 
         public static void ZoneCheck(ClientInfo _cInfo, EntityPlayer _player)
         {
-            if (_cInfo != null && Zones.Box1.Count > 0)
+            if (Zones.Box1.Count > 0)
             {
                 int _flagCount = 0;
                 int _X = (int)_player.position.x;
@@ -407,7 +407,7 @@ namespace ServerTools
                                     ZoneExit.Add(_player.entityId, _box3[3]);
                                     if (_box4[1])
                                     {
-                                       ZonePvE.Add(_player.entityId);
+                                        ZonePvE.Add(_player.entityId);
                                     }
                                     if (Zones.Zone_Message)
                                     {

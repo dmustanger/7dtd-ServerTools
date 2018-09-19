@@ -1,4 +1,9 @@
 ﻿CHANGELOG
+
+11.3
+Fixed console commands for Zones setup
+Fixed Zones not displaying the entry or exit message
+
 11.2
 Fixed Zones.xml option No_Zombie
 Fixed Custom_Commands showing &quot; when say was used

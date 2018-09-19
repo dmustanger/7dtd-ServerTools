@@ -60,7 +60,11 @@ namespace ServerTools
                     {
                         if (newZone.ContainsKey(_cInfo.entityId))
                         {
-                            newZone.Remove(_cInfo.entityId);
+                            newZone[_cInfo.entityId] = 1;
+                        }
+                        else
+                        {
+                            newZone.Add(_cInfo.entityId, 1);
                         }
                         if (Zones.zoneSetup1.ContainsKey(_cInfo.entityId))
                         {
@@ -70,12 +74,12 @@ namespace ServerTools
                         {
                             Zones.zoneSetup2.Remove(_cInfo.entityId);
                         }
-                        string[] _blank = { };
-                        bool[] _blank2 = { };
-                        newZone.Add(_cInfo.entityId, 0);
-                        Zones.zoneSetup1.Add(_cInfo.entityId, _blank);
-                        Zones.zoneSetup2.Add(_cInfo.entityId, _blank2);
-                        SdtdConsole.Instance.Output(string.Format("Would you like the zone to be a circle? Type zone circle. If not, stand at the first corner and type zone save."));
+                        string[] _strings = { "", "", "", "", "", "" };
+                        bool[] _bools = { false, false, false };
+                        Zones.zoneSetup1.Add(_cInfo.entityId, _strings);
+                        Zones.zoneSetup2.Add(_cInfo.entityId, _bools);
+                        SdtdConsole.Instance.Output(string.Format("Stand at the first corner of the zone and type zone save."));
+                        SdtdConsole.Instance.Output(string.Format("If you would like a circle, stand in the middle of the circle and type zone circle."));
                     }
                     else if (_params[0].ToLower().Equals("list"))
                     {
@@ -134,17 +138,56 @@ namespace ServerTools
                         {
                             int _stage;
                             newZone.TryGetValue(_cInfo.entityId, out _stage);
-                            if (_stage == 0)
+                            if (_stage == 1)
                             {
                                 bool[] _bools;
                                 Zones.zoneSetup2.TryGetValue(_cInfo.entityId, out _bools);
                                 _bools[0] = true;
                                 Zones.zoneSetup2[_cInfo.entityId] = _bools;
-                                newZone[_cInfo.entityId] = 1;
+                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                Vector3 _position = _player.GetPosition();
+                                int x = (int)_position.x;
+                                int y = (int)_position.y;
+                                int z = (int)_position.z;
+                                string _sposition = x + "," + y + "," + z;
+                                string[] _strings;
+                                Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
+                                _strings[0] = _sposition;
+                                Zones.zoneSetup1[_cInfo.entityId] = _strings;
+                                newZone[_cInfo.entityId] = 2;
+                                SdtdConsole.Instance.Output(string.Format("Saved the zone as a circle. Circle center point = {0} {1} {2}", x, y, z));
+                                SdtdConsole.Instance.Output(string.Format("Type zone circle <number> to set the amount of blocks from center the zone will reach."));
+                            }
+                            else if (_stage == 2)
+                            {
+                                bool[] _bools;
+                                Zones.zoneSetup2.TryGetValue(_cInfo.entityId, out _bools);
+                                if (_bools[0])
+                                {
+                                    int _result;
+                                    if (int.TryParse(_params[1], out _result))
+                                    {
+                                        string[] _strings;
+                                        Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
+                                        _strings[1] = _result.ToString();
+                                        Zones.zoneSetup1[_cInfo.entityId] = _strings;
+                                        newZone[_cInfo.entityId] = 3;
+                                        SdtdConsole.Instance.Output(string.Format("Saved the circle radius to {0}.", _result));
+                                        SdtdConsole.Instance.Output(string.Format("Type zone save 'entry message'. This is the message players receive upon entering the zone."));
+                                    }
+                                    else
+                                    {
+                                        SdtdConsole.Instance.Output(string.Format("This zone is not setup as a circle, go back by typing zone back."));
+                                    }
+                                }
+                                else
+                                {
+                                    SdtdConsole.Instance.Output(string.Format("This zone is not setup as a circle, go back by typing zone back."));
+                                }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("Go back to step one or start a new zone if you want to make it a circle."));
+                                SdtdConsole.Instance.Output(string.Format("Start a new zone setup or go back to the circle setup if you need to change it by typing zone back."));
                             }
                         }
                     }
@@ -154,7 +197,7 @@ namespace ServerTools
                         {
                             int _stage;
                             newZone.TryGetValue(_cInfo.entityId, out _stage);
-                            if (_stage == 0)
+                            if (_stage == 1)
                             {
                                 bool[] _bools;
                                 Zones.zoneSetup2.TryGetValue(_cInfo.entityId, out _bools);
@@ -166,27 +209,15 @@ namespace ServerTools
                                 int y = (int)_position.y;
                                 int z = (int)_position.z;
                                 string _sposition = x + "," + y + "," + z;
-                                string[] _box1 = { _sposition };
-                                Zones.zoneSetup1.Add(_cInfo.entityId, _box1);
+                                string[] _strings;
+                                Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
+                                _strings[0] = _sposition;
+                                Zones.zoneSetup1[_cInfo.entityId] = _strings;
                                 newZone[_cInfo.entityId] = 2;
                                 SdtdConsole.Instance.Output(string.Format("Corner 1 = {0} {1} {2}", x, y, z));
                                 SdtdConsole.Instance.Output(string.Format("Corner 1 saved. Stand in the opposite corner of the zone and type zone save."));
                             }
-                            if (_stage == 1)
-                            {
-                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                Vector3 _position = _player.GetPosition();
-                                int x = (int)_position.x;
-                                int y = (int)_position.y;
-                                int z = (int)_position.z;
-                                string _sposition = x + "," + y + "," + z;
-                                string[] _box1 = { _sposition };
-                                Zones.zoneSetup1.Add(_cInfo.entityId, _box1);
-                                newZone[_cInfo.entityId] = 2;
-                                SdtdConsole.Instance.Output(string.Format("Corner 1 = {0} {1} {2}", x, y, z));
-                                SdtdConsole.Instance.Output(string.Format("Corner 1 saved. Stand in the opposite corner of the zone and type zone save."));
-                            }
-                            else if (_stage == 2)
+                            if (_stage == 2)
                             {
                                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                                 Vector3 _position = _player.GetPosition();
@@ -216,7 +247,7 @@ namespace ServerTools
                                         _entry = _entry + " " + _params[i];
                                     }
                                 }
-                                _entry = _entry.Replace("zone save ", "");
+                                _entry = _entry.Replace("zone save save ", "");
                                 string[] _strings;
                                 Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
                                 _strings[2] = _entry;
@@ -239,7 +270,7 @@ namespace ServerTools
                                         _exit = _exit + " " + _params[i];
                                     }
                                 }
-                                _exit = _exit.Replace("zone save ", "");
+                                _exit = _exit.Replace("zone save save ", "");
                                 string[] _strings;
                                 Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
                                 _strings[3] = _exit;
@@ -255,14 +286,14 @@ namespace ServerTools
                                 {
                                     if (_response == "")
                                     {
-                                        _response = _params[i];
+                                        _response = _response + _params[i];
                                     }
                                     else
                                     {
                                         _response = _response + " " + _params[i];
                                     }
                                 }
-                                _response = _response.Replace("zone save ", "");
+                                _response = _response.Replace("zone save save ", "");
                                 string[] _strings;
                                 Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
                                 _strings[4] = _response;
@@ -285,29 +316,29 @@ namespace ServerTools
                                         _response = _response + " " + _params[i];
                                     }
                                 }
-                                _response = _response.Replace("zone save ", "");
+                                _response = _response.Replace("zone save save ", "");
                                 string[] _strings;
                                 Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
                                 _strings[5] = _response;
                                 Zones.zoneSetup1[_cInfo.entityId] = _strings;
                                 newZone[_cInfo.entityId] = 7;
                                 SdtdConsole.Instance.Output(string.Format("Zone reminder message = \"{0}\"", _response));
-                                SdtdConsole.Instance.Output(string.Format("Zone reminder message saved. Type zone save 'true or false'. This will set the zone as a PvE zone or not."));
+                                SdtdConsole.Instance.Output(string.Format("Zone reminder message saved. Type zone save 'true or false'. This will set PvE to true or false."));
                             }
                             else if (_stage == 7)
                             {
-                                bool _true;
-                                if (bool.TryParse(_params[3], out _true))
+                                bool _result;
+                                if (bool.TryParse(_params[1], out _result))
                                 {
-                                    if (_true)
+                                    if (_result)
                                     {
                                         bool[] _bools;
                                         Zones.zoneSetup2.TryGetValue(_cInfo.entityId, out _bools);
                                         _bools[1] = true;
                                         Zones.zoneSetup2[_cInfo.entityId] = _bools;
                                         newZone[_cInfo.entityId] = 8;
-                                        SdtdConsole.Instance.Output(string.Format("Zone PvE = {0}", _true));
-                                        SdtdConsole.Instance.Output(string.Format("Zone PvE saved. Type zone save 'true or false'. This will set the zone as a PvE zone or not."));
+                                        SdtdConsole.Instance.Output(string.Format("Zone PvE = {0}", _result));
+                                        SdtdConsole.Instance.Output(string.Format("Zone PvE saved. Type zone save 'true or false'. This will set No_Zombie to true or false."));
                                     }
                                     else
                                     {
@@ -316,21 +347,21 @@ namespace ServerTools
                                         _bools[1] = false;
                                         Zones.zoneSetup2[_cInfo.entityId] = _bools;
                                         newZone[_cInfo.entityId] = 8;
-                                        SdtdConsole.Instance.Output(string.Format("Zone PvE = {0}", _true));
-                                        SdtdConsole.Instance.Output(string.Format("Zone PvE saved. Type zone save 'true or false'. This will set if zombies are removed from this zone."));
+                                        SdtdConsole.Instance.Output(string.Format("Zone PvE = {0}", _result));
+                                        SdtdConsole.Instance.Output(string.Format("Zone PvE saved. Type zone save 'true or false'. This will set No_Zombie to true or false."));
                                     }
                                 }
                                 else
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("Incorrect format. Type zone save true or zone save false."));
+                                    SdtdConsole.Instance.Output(string.Format("Incorrect format. Type zone save 'true or false'."));
                                 }
                             }
                             else if (_stage == 8)
                             {
-                                bool _true;
-                                if (bool.TryParse(_params[3], out _true))
+                                bool _result;
+                                if (bool.TryParse(_params[1], out _result))
                                 {
-                                    if (_true)
+                                    if (_result)
                                     {
                                         string[] _strings;
                                         Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
@@ -339,7 +370,7 @@ namespace ServerTools
                                         _bools[2] = true;
                                         Zones.zoneSetup2[_cInfo.entityId] = _bools;
                                         newZone[_cInfo.entityId] = 9;
-                                        SdtdConsole.Instance.Output(string.Format("No zombie = {0}", _true));
+                                        SdtdConsole.Instance.Output(string.Format("No zombie = {0}", _result));
                                         SdtdConsole.Instance.Output(string.Format("No zombie saved"));
                                         SdtdConsole.Instance.Output("");
                                         SdtdConsole.Instance.Output(string.Format("Zone Review:"));
@@ -363,7 +394,7 @@ namespace ServerTools
                                         _bools[2] = false;
                                         Zones.zoneSetup2[_cInfo.entityId] = _bools;
                                         newZone[_cInfo.entityId] = 9;
-                                        SdtdConsole.Instance.Output(string.Format("No zombie = {0}", _true));
+                                        SdtdConsole.Instance.Output(string.Format("No zombie = {0}", _result));
                                         SdtdConsole.Instance.Output(string.Format("No zombie saved"));
                                         SdtdConsole.Instance.Output("");
                                         SdtdConsole.Instance.Output(string.Format("Zone Review:"));
@@ -414,88 +445,130 @@ namespace ServerTools
                             {
                                 int _stage;
                                 newZone.TryGetValue(_cInfo.entityId, out _stage);
-                                if (_stage == 0)
+                                if (_stage == 1)
                                 {
                                     SdtdConsole.Instance.Output(string.Format("You can not go any further back in the setup process."));
-                                    SdtdConsole.Instance.Output(string.Format("Would you like the zone to be a circle? Type zone circle. If not, stand at the first corner and type zone save."));
-                                }
-                                else if (_stage == 1)
-                                {
-                                    newZone[_cInfo.entityId] = 0;
-                                    SdtdConsole.Instance.Output(string.Format("Zone setup has gone back one step."));
-                                    SdtdConsole.Instance.Output(string.Format("Would you like the zone to be a circle? Type zone circle. If not, stand at the first corner and type zone save."));
+                                    SdtdConsole.Instance.Output(string.Format("Stand at the first corner of the zone and type zone save."));
+                                    SdtdConsole.Instance.Output(string.Format("If you would like a circle, stand in the middle of the circle and type zone circle."));
                                 }
                                 else if (_stage == 2)
                                 {
                                     newZone[_cInfo.entityId] = 1;
                                     SdtdConsole.Instance.Output(string.Format("Zone setup has gone back one step."));
-                                    SdtdConsole.Instance.Output(string.Format("Stand at the first corner and type zone save."));
+                                    string[] _strings;
+                                    Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
+                                    string[] _corner1 = _strings[0].Split(',');
+                                    int x, y, z;
+                                    int.TryParse(_corner1[0], out x);
+                                    int.TryParse(_corner1[1], out y);
+                                    int.TryParse(_corner1[2], out z);
+                                    bool[] _bools;
+                                    Zones.zoneSetup2.TryGetValue(_cInfo.entityId, out _bools);
+                                    if (_bools[0])
+                                    {
+                                        SdtdConsole.Instance.Output(string.Format("Saved the zone as a circle. Circle center point = {0} {1} {2}", x, y, z));
+                                        SdtdConsole.Instance.Output(string.Format("Stand at the furthest point from the center and type zone circle."));
+                                    }
+                                    else
+                                    {
+                                        SdtdConsole.Instance.Output(string.Format("Corner 1 = {0} {1} {2}", x, y, z));
+                                        SdtdConsole.Instance.Output(string.Format("Corner 1 saved. Stand in the opposite corner of the zone and type zone save."));
+                                    }
                                 }
                                 else if (_stage == 3)
                                 {
                                     newZone[_cInfo.entityId] = 2;
+                                    SdtdConsole.Instance.Output(string.Format("Zone setup has gone back one step."));
                                     string[] _strings;
                                     Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
-                                    SdtdConsole.Instance.Output(string.Format("Zone setup has gone back one step."));
-                                    SdtdConsole.Instance.Output(string.Format("Corner 1 = {0}", _strings[0]));
-                                    SdtdConsole.Instance.Output(string.Format("Corner 1 saved. Stand in the opposite corner of the zone and type zone save. Consider the height too."));
-
+                                    bool[] _bools;
+                                    Zones.zoneSetup2.TryGetValue(_cInfo.entityId, out _bools);
+                                    if (_bools[0])
+                                    {
+                                        string _distance = _strings[1];
+                                        SdtdConsole.Instance.Output(string.Format("Saved the circle radius to {0}.", _distance));
+                                        SdtdConsole.Instance.Output(string.Format("Type zone save 'entry message'. This is the message players receive upon entering the zone."));
+                                    }
+                                    else
+                                    {
+                                        string[] _corner2 = _strings[1].Split(',');
+                                        int x, y, z;
+                                        int.TryParse(_corner2[0], out x);
+                                        int.TryParse(_corner2[1], out y);
+                                        int.TryParse(_corner2[2], out z);
+                                        SdtdConsole.Instance.Output(string.Format("Corner 2 = {0} {1} {2}", x, y, z));
+                                        SdtdConsole.Instance.Output(string.Format("Corner 2 saved. Type zone save 'entry message'. This is the message players receive upon entering the zone."));
+                                    }
                                 }
                                 else if (_stage == 4)
                                 {
                                     newZone[_cInfo.entityId] = 3;
+                                    SdtdConsole.Instance.Output(string.Format("Zone setup has gone back one step."));
                                     string[] _strings;
                                     Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
-                                    SdtdConsole.Instance.Output(string.Format("Zone setup has gone back one step."));
-                                    SdtdConsole.Instance.Output(string.Format("Corner 2 = {0}", _strings[1]));
-                                    SdtdConsole.Instance.Output(string.Format("Corner 2 saved. Type zone save <message>. This is the message players receive upon entering the zone."));
+                                    SdtdConsole.Instance.Output(string.Format("Zone entry message = \"{0}\"", _strings[2]));
+                                    SdtdConsole.Instance.Output(string.Format("Zone entry message saved. Type zone save 'exit message'. This is the message players receive upon exiting the zone."));
 
                                 }
                                 else if (_stage == 5)
                                 {
                                     newZone[_cInfo.entityId] = 4;
+                                    SdtdConsole.Instance.Output(string.Format("Zone setup has gone back one step."));
                                     string[] _strings;
                                     Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
-                                    SdtdConsole.Instance.Output(string.Format("Zone setup has gone back one step."));
-                                    SdtdConsole.Instance.Output(string.Format("Zone entry message = \"{0}\"", _strings[2]));
-                                    SdtdConsole.Instance.Output(string.Format("Zone entry message saved. Type zone save <message>'. This is the message players receive upon exiting the zone."));
+                                    SdtdConsole.Instance.Output(string.Format("Zone exit message = \"{0}\"", _strings[3]));
+                                    SdtdConsole.Instance.Output(string.Format("Zone exit message saved. Type zone save 'response'. This is the console command that will occur when a player enters this zone."));
 
                                 }
                                 else if (_stage == 6)
                                 {
                                     newZone[_cInfo.entityId] = 5;
+                                    SdtdConsole.Instance.Output(string.Format("Zone setup has gone back one step."));
                                     string[] _strings;
                                     Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
-                                    SdtdConsole.Instance.Output(string.Format("Zone setup has gone back one step."));
-                                    SdtdConsole.Instance.Output(string.Format("Zone exit message = \"{0}\"", _strings[3]));
-                                    SdtdConsole.Instance.Output(string.Format("Zone exit message saved. Type zone save <response>. This is the console command that will occur when a player enters this zone."));
+                                    SdtdConsole.Instance.Output(string.Format("Zone response = \"{0}\"", _strings[4]));
+                                    SdtdConsole.Instance.Output(string.Format("Zone response saved. Type zone save 'reminder message'. This will set the message players receive if they stay in this zone long enough."));
 
                                 }
                                 else if (_stage == 7)
                                 {
                                     newZone[_cInfo.entityId] = 6;
+                                    SdtdConsole.Instance.Output(string.Format("Zone setup has gone back one step."));
                                     string[] _strings;
                                     Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
-                                    SdtdConsole.Instance.Output(string.Format("Zone setup has gone back one step."));
-                                    SdtdConsole.Instance.Output(string.Format("Zone response = \"{0}\"", _strings[4]));
-                                    SdtdConsole.Instance.Output(string.Format("Zone response saved. Type zone save <true or false>. This will set the zone as a PvE zone or not."));
+                                    SdtdConsole.Instance.Output(string.Format("Zone reminder message = \"{0}\"", _strings[5]));
+                                    SdtdConsole.Instance.Output(string.Format("Zone reminder message saved. Type zone save 'true or false'. This will set the zone as a PvE zone or not."));
 
                                 }
                                 else if (_stage == 8)
                                 {
                                     newZone[_cInfo.entityId] = 7;
+                                    SdtdConsole.Instance.Output(string.Format("Zone setup has gone back one step."));
                                     bool[] _bools;
                                     Zones.zoneSetup2.TryGetValue(_cInfo.entityId, out _bools);
                                     SdtdConsole.Instance.Output(string.Format("Zone PvE = {0}", _bools[1]));
-                                    SdtdConsole.Instance.Output(string.Format("Zone PvE saved. Type zone save 'true or false'. This will set if zombies are removed from this zone."));
+                                    SdtdConsole.Instance.Output(string.Format("Zone PvE saved. Type zone save 'true or false'. This will set the zone as a PvE zone or not."));
+
                                 }
                                 else if (_stage == 9)
                                 {
-                                    newZone[_cInfo.entityId] = 7;
+                                    newZone[_cInfo.entityId] = 8;
+                                    SdtdConsole.Instance.Output(string.Format("Zone setup has gone back one step."));
+                                    string[] _strings;
+                                    Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
                                     bool[] _bools;
                                     Zones.zoneSetup2.TryGetValue(_cInfo.entityId, out _bools);
-                                    SdtdConsole.Instance.Output(string.Format("Zone PvE = {0}", _bools[1]));
-                                    SdtdConsole.Instance.Output(string.Format("Zone PvE saved. Type zone save 'true or false'. This will set if zombies are removed from this zone."));
+                                    SdtdConsole.Instance.Output(string.Format("Zone Review:"));
+                                    SdtdConsole.Instance.Output(string.Format("Corner 1 = {0}", _strings[0]));
+                                    SdtdConsole.Instance.Output(string.Format("Corner 2 = {0}", _strings[1]));
+                                    SdtdConsole.Instance.Output(string.Format("Entry message = {0}", _strings[2]));
+                                    SdtdConsole.Instance.Output(string.Format("Exit message = {0}", _strings[3]));
+                                    SdtdConsole.Instance.Output(string.Format("Response = {0}", _strings[4]));
+                                    SdtdConsole.Instance.Output(string.Format("Reminder notice = {0}", _strings[5]));
+                                    SdtdConsole.Instance.Output(string.Format("Circle = {0}", _bools[0]));
+                                    SdtdConsole.Instance.Output(string.Format("PvE = {0}", _bools[1]));
+                                    SdtdConsole.Instance.Output(string.Format("No zombie = {0}", _bools[2]));
+                                    SdtdConsole.Instance.Output(string.Format("Type zone save. This will complete the setup."));
                                 }
                             }
                             else
