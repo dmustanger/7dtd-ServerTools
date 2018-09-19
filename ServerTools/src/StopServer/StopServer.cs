@@ -29,7 +29,7 @@ namespace ServerTools
                 _phrase450 = "Server Shutdown In {Minutes} Minutes.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", Timers.Stop_Server_Time.ToString());
-            string _message = _phrase450 + "[-]";
+            string _message = _phrase450;
             Alert(_message, Alert_Count);
         }
 
@@ -41,7 +41,7 @@ namespace ServerTools
                 _phrase450 = "Server Shutdown In {Minutes} Minutes.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", _newCount.ToString());
-            string _message = _phrase450 + "[-]";
+            string _message = _phrase450;
             Alert(_message, Alert_Count);
         }
 
@@ -58,8 +58,8 @@ namespace ServerTools
                 _phrase450 = "Server Shutdown In {Minutes} Minutes.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", "1");
-            string _message = _phrase451 + "[-]";
-            string _message2 = _phrase450 + "[-]";
+            string _message = _phrase451;
+            string _message2 = _phrase450;
             Alert(_message, 1);
             Alert(_message, 1);
             SdtdConsole.Instance.ExecuteSync("saveworld", (ClientInfo)null);
