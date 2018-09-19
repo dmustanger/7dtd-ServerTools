@@ -150,22 +150,22 @@ namespace ServerTools
                         int[] _value;
                         if (Dict1.TryGetValue(kvp.Key, out _value))
                         {
-                            sw.WriteLine(string.Format("        <Command Number=\"{0}\" Trigger=\"{1}\" Response=\"{2}\" Response2=\"{3}\" DelayBetweenUses=\"{4}\" Hidden=\"{5}\" Cost=\"{6}\" />", _value[0], kvp.Key, kvp.Value[0], kvp.Value[1], _value[1], kvp.Value[2]));
+                            sw.WriteLine(string.Format("        <Command Number=\"{0}\" Trigger=\"{1}\" Response=\"{2}\" Response2=\"{3}\" DelayBetweenUses=\"{4}\" Hidden=\"{5}\" Cost=\"{6}\" />", _value[0], kvp.Key, kvp.Value[0], kvp.Value[1], _value[1], kvp.Value[2], _value[2]));
                         }
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <Command Number=\"1\" Trigger=\"help\" Response=\"say &quot;Type /commands for a list of chat commands.&quot;\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"2\" Trigger=\"info\" Response=\"say &quot;Type /commands for a list of chat commands.&quot;\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"3\" Trigger=\"rules\" Response=\"say &quot;Visit YourSiteHere to see the rules.&quot;\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"say &quot;Visit YourSiteHere.&quot;\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"say &quot;The Teamspeak3 info is YourInfoHere.&quot;\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"6\" Trigger=\"market\" Response=\"tele {EntityId} 0 -1 0\" Response2=\"pm {EntityId} &quot;{PlayerName} you have been sent to the market.&quot;\" DelayBetweenUses=\"60\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"7\" Trigger=\"spawnZ\" Response=\"ser {EntityId} 20 @ 4 9 11\" Response2=\"pm {EntityId} &quot;Spawned zombies on you.&quot;\" DelayBetweenUses=\"60\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"8\" Trigger=\"test3\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"20\" Hidden=\"true\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"9\" Trigger=\"test4\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"30\" Hidden=\"true\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"10\" Trigger=\"test5\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"40\" Hidden=\"true\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"1\" Trigger=\"help\" Response=\"say Type /commands for a list of chat commands.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"2\" Trigger=\"info\" Response=\"say Server Info: \" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"3\" Trigger=\"rules\" Response=\"pm Visit YourSiteHere to see the rules.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"pm Visit YourSiteHere.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"pm The Teamspeak3 info is YourInfoHere.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"6\" Trigger=\"market\" Response=\"tele {EntityId} 0 -1 0\" Response2=\"pm {PlayerName} you have been sent to the market.\" DelayBetweenUses=\"60\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"7\" Trigger=\"spawnZ\" Response=\"ser {EntityId} 20 @ 4 9 11\" Response2=\"pm {PlayerName}, spawned zombies around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"8\" Trigger=\"discord\" Response=\"pm The discord channel is .\" Response2=\"\" DelayBetweenUses=\"20\" Hidden=\"true\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"9\" Trigger=\"test1\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"30\" Hidden=\"true\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"10\" Trigger=\"test2\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"40\" Hidden=\"true\" Cost=\"0\" />");
                 }
                 sw.WriteLine("    </Commands>");
                 sw.WriteLine("</CustomCommands>");
@@ -1006,29 +1006,47 @@ namespace ServerTools
                         _response = _response.Replace("{PlayerName}", _playerName);
                         if (_response.StartsWith("say "))
                         {
-                            _response = _response.Replace("say ", "&quot; ");
-                            _response += " &quot;";
-                            if (_announce)
+                            _response = _response.Replace("say ", "");
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false);
+                        }
+                        else if (_response.StartsWith("pm ") || _response.StartsWith("personalmessage "))
+                        {
+                            if (_response.StartsWith("pm "))
                             {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false);
+                                _response = _response.Replace("pm ", "");
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false));
+                                _response = _response.Replace("personalmessage ", "");
                             }
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false));
                         }
-                        if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
+                        else if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
                         {
                             Players.NoFlight.Add(_cInfo.entityId);
                             if (Players.ZoneExit.ContainsKey(_cInfo.entityId))
                             {
                                 Players.ZoneExit.Remove(_cInfo.entityId);
                             }
-                            SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                            try
+                            {
+                                SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.Run: {0}.", e));
+                            }
                         }
                         else
                         {
-                            SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                            try
+                            {
+                                SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.Run: {0}.", e));
+                            }
                         }
                     }
                     string _response2 = _r[1];
@@ -1040,7 +1058,7 @@ namespace ServerTools
                         if (_response2.StartsWith("say "))
                         {
                             _response2 = _response2.Replace("say ", "&quot; ");
-                            _response2 += " &quot;";
+                            _response2 = _response2 + " &quot;";
                             if (_announce)
                             {
                                 GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false);
@@ -1050,7 +1068,13 @@ namespace ServerTools
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                         }
-                        if (_response2.StartsWith("tele ") || _response2.StartsWith("tp ") || _response2.StartsWith("teleportplayer "))
+                        else if (_response2.StartsWith("pm "))
+                        {
+                            _response2 = _response2.Replace("pm ", "{EntityId} &quot; ");
+                            _response2 = _response2 + " &quot;";
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false));
+                        }
+                        else if (_response2.StartsWith("tele ") || _response2.StartsWith("tp ") || _response2.StartsWith("teleportplayer "))
                         {
                             Players.NoFlight.Add(_cInfo.entityId);
                             SdtdConsole.Instance.ExecuteSync(_response2, _cInfo);

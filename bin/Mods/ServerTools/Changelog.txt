@@ -1,4 +1,10 @@
 ﻿CHANGELOG
+11.2
+Fixed Zones.xml option No_Zombie
+Fixed Custom_Commands showing &quot; when say was used
+Fixed Custom_Commands xml rebuild
+Changed Custom_Commands to not need &quot; or {EnitityId} when using pm or personalmessage
+
 11.1
 Fixed Shop tool not displaying the last item from the list
 Fixed /shop 'category' not showing category listings

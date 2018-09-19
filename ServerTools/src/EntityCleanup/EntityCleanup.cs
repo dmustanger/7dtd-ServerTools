@@ -116,7 +116,7 @@ namespace ServerTools
                     {
                         string[] _box1 = Zones.Box1[i];
                         bool[] _box2 = Zones.Box2[i];
-                        if (_box2[1])
+                        if (_box2[2])
                         {
                             Entities = GameManager.Instance.World.Entities.list;
                             for (int j = 0; j < Entities.Count; j++)
