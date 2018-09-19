@@ -1,6 +1,7 @@
 ﻿CHANGELOG
 
 11.3
+Fixed response when removing a player from a clan
 Fixed messages during auto shutdown process
 Fixed console commands for Zones setup
 Fixed Zones not displaying the entry or exit message

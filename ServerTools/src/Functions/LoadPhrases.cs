@@ -99,7 +99,7 @@ namespace ServerTools
                 sw.WriteLine("<ServerTools>");
                 sw.WriteLine("    <Phrases>");
                 sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- *********************** V.11.3 ************************** -->");
+                sw.WriteLine(string.Format("        <!-- *********************** V.{0} ************************* -->", Config.version));
                 sw.WriteLine("        <!-- ******* If your version is incorrect, shutdown, ******** -->");
                 sw.WriteLine("        <!-- ************* delete this file, restart **************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -413,7 +413,7 @@ namespace ServerTools
                 string _phrase129;
                 if (!Dict.TryGetValue(129, out _phrase129))
                 {
-                    _phrase129 = "{PlayerName} the clanName must be longer the 3 characters.";
+                    _phrase129 = "{PlayerName} the clanName must be longer than 2 characters.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"129\" Phrase=\"{0}\" />", _phrase129));
                 string _phrase130;

@@ -95,7 +95,7 @@ namespace ServerTools
                             string _phrase129;
                             if (!Phrases.Dict.TryGetValue(129, out _phrase129))
                             {
-                                _phrase129 = "{PlayerName} the clanName must be longer the 3 characters";
+                                _phrase129 = "{PlayerName} the clanName must be longer than 2 characters.";
                                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase129), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                             _phrase129 = _phrase129.Replace("{PlayerName}", _cInfo.playerName);
@@ -495,6 +495,9 @@ namespace ServerTools
                         {
                             _phrase120 = "{PlayerName} you have removed {PlayertoRemove} from clan {ClanName}.";
                         }
+                        _phrase120 = _phrase120.Replace("{PlayerName}", _cInfo.playerName);
+                        _phrase120 = _phrase120.Replace("{PlayertoRemove}", _playerName);
+                        _phrase120 = _phrase120.Replace("{ClanName}", _clanname);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase120, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                         if (_PlayertoRemove != null)
                         {
@@ -502,9 +505,6 @@ namespace ServerTools
                             {
                                 _phrase121 = "{PlayerName} you have been removed from the clan {ClanName}.";
                             }
-                            _phrase120 = _phrase120.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase120 = _phrase120.Replace("{PlayertoRemove}", _playerName);
-                            _phrase120 = _phrase120.Replace("{ClanName}", _clanname);
                             _phrase121 = _phrase121.Replace("{PlayerName}", _playerName);
                             _phrase121 = _phrase121.Replace("{ClanName}", _clanname);
                             _PlayertoRemove.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase121, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
