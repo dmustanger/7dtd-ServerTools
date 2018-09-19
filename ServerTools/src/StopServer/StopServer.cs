@@ -29,7 +29,7 @@ namespace ServerTools
                 _phrase450 = "Server Shutdown In {Minutes} Minutes.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", Timers.Stop_Server_Time.ToString());
-            string _message = Config.Server_Response_Name + _phrase450 + "[-]";
+            string _message = _phrase450 + "[-]";
             Alert(_message, Alert_Count);
         }
 
@@ -41,7 +41,7 @@ namespace ServerTools
                 _phrase450 = "Server Shutdown In {Minutes} Minutes.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", _newCount.ToString());
-            string _message = Config.Server_Response_Name + _phrase450 + "[-]";
+            string _message = _phrase450 + "[-]";
             Alert(_message, Alert_Count);
         }
 
@@ -58,8 +58,8 @@ namespace ServerTools
                 _phrase450 = "Server Shutdown In {Minutes} Minutes.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", "1");
-            string _message = Config.Server_Response_Name + _phrase451 + "[-]";
-            string _message2 = Config.Server_Response_Name + _phrase450 + "[-]";
+            string _message = _phrase451 + "[-]";
+            string _message2 = _phrase450 + "[-]";
             Alert(_message, 1);
             Alert(_message, 1);
             SdtdConsole.Instance.ExecuteSync("saveworld", (ClientInfo)null);
@@ -67,37 +67,37 @@ namespace ServerTools
 
         public static void StartShutdown4()
         {
-            string _message = Config.Server_Response_Name + "10 seconds until shutdown" + "[-]";
+            string _message = "10 seconds until shutdown";
             Alert(_message, 1);
         }
 
         public static void StartShutdown5()
         {
-            string _message = Config.Server_Response_Name + "5" + "[-]";
+            string _message = "5";
             Alert(_message, 1);
         }
 
         public static void StartShutdown6()
         {
-            string _message = Config.Server_Response_Name + "4" + "[-]";
+            string _message = "4";
             Alert(_message, 1);
         }
 
         public static void StartShutdown7()
         {
-            string _message = Config.Server_Response_Name + "3" + "[-]";
+            string _message = "3";
             Alert(_message, 1);
         }
 
         public static void StartShutdown8()
         {
-            string _message = Config.Server_Response_Name + "2" + "[-]";
+            string _message = "2";
             Alert(_message, 1);
         }
 
         public static void StartShutdown9()
         {
-            string _message = Config.Server_Response_Name + "1" + "[-]";
+            string _message = "1";
             Alert(_message, 1);
         }
 
@@ -121,7 +121,7 @@ namespace ServerTools
 
         public static void Alert(string _message, int _count)
         {
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}", _message), Config.Server_Response_Name, false, "", false);
+            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "", false);
             if (_count > 1)
             {
                 int _newCount = _count - 1;
