@@ -463,7 +463,6 @@ namespace ServerTools
 
         public static bool BoxCheck(string[] _box, int _X, int _Y, int _Z, bool[] _box2)
         {
-            Log.Out(string.Format("Testing box vs player loc"));
             string[] _corner1 = _box[0].Split(',');
             int xMin, yMin, zMin, xMax, yMax, zMax;;
             int.TryParse(_corner1[0], out xMin);
@@ -839,7 +838,6 @@ namespace ServerTools
                 }
                 if (_xMinCheck == 1 && _yMinCheck == 1 && _zMinCheck == 1 && _xMaxCheck == 1 && _yMaxCheck == 1 && _zMaxCheck == 1)
                 {
-                    Log.Out(string.Format("Inside zone box"));
                     return true;
                 }
                 return false;
@@ -851,7 +849,6 @@ namespace ServerTools
                 {
                     if ((xMin - _X) * (xMin - _X) + (zMin - _Z) * (zMin - _Z) <= _radius * _radius)
                     {
-                        Log.Out(string.Format("Inside zone circle"));
                         return true;
                     }
                 }
