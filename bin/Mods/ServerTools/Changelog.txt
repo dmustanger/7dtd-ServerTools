@@ -1,5 +1,8 @@
 ﻿CHANGELOG
 
+11.4
+Fixed New_Player message setting itself to the first new player's name and repeating it for others
+
 11.3
 Fixed Zones.xml option No_Zombie responding with an error if the zombie was inside a circular zone
 Fixed response when removing a player from a clan

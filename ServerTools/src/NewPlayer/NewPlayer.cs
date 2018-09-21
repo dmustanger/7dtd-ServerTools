@@ -8,8 +8,9 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            Entry_Message = Entry_Message.Replace("{PlayerName}", _cInfo.playerName);
-            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, Entry_Message), Config.Server_Response_Name, false, "ServerTools", true);
+            string Entry_Message2 = Entry_Message;
+            Entry_Message2 = Entry_Message2.Replace("{PlayerName}", _cInfo.playerName);
+            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, Entry_Message2), Config.Server_Response_Name, false, "ServerTools", true);
         }
     }
 }

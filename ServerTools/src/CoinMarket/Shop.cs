@@ -307,7 +307,7 @@ namespace ServerTools
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase619), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
-                else
+                else if (!Inside_Market && !Inside_Traders)
                 {
                     PosCheck2(_cInfo, _playerName, _categoryOrItem, _form);
                 }
@@ -319,6 +319,7 @@ namespace ServerTools
                 {
                     _phrase624 = "The shop does not contain any items. Contact an administrator";
                 }
+                _phrase624 = _phrase624.Replace("{PlayerName}", _playerName);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase624), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }

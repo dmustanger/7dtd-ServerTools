@@ -1019,6 +1019,7 @@ namespace ServerTools
                             {
                                 _response = _response.Replace("personalmessage ", "");
                             }
+
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                         else if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
