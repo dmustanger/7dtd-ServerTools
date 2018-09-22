@@ -127,7 +127,7 @@ namespace ServerTools
                                 string _phrase804;
                                 if (!Phrases.Dict.TryGetValue(804, out _phrase804))
                                 {
-                                    _phrase804 = "{Count} {ItemName} was sent to your inventory by an admin. If your bag is full, check the ground.";
+                                    _phrase804 = "{Count} {ItemName} was sent to your inventory. If your bag is full, check the ground.";
                                 }
                                 _phrase804 = _phrase804.Replace("{Count}", count.ToString());
                                 _phrase804 = _phrase804.Replace("{ItemName}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name);
@@ -210,7 +210,7 @@ namespace ServerTools
                                 string _phrase804;
                                 if (!Phrases.Dict.TryGetValue(804, out _phrase804))
                                 {
-                                    _phrase804 = "{Count} {ItemName} was sent to your inventory by an admin. If your bag is full, check the ground.";
+                                    _phrase804 = "{Count} {ItemName} was sent to your inventory. If your bag is full, check the ground.";
                                 }
                                 _phrase804 = _phrase804.Replace("{Count}", count.ToString());
                                 _phrase804 = _phrase804.Replace("{ItemName}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name);

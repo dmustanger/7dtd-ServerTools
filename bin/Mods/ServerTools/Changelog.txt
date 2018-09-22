@@ -1,9 +1,16 @@
 ﻿CHANGELOG
 
 11.4
-Fixed CustomCommands denying command use when the cost is set to 0
-Fixed console command response for GiveItem
+Added options to tool Night_Vote called Players_Online and Votes_Needed. Controls how many must be online and how many must vote yes
+Added options to tool Weather_Vote called Players_Online and Votes_Needed. Controls how many must be online and how many must vote yes
+Added options to tool Kick_Vote called Players_Online and Votes_Needed. Controls how many must be online and how many must vote yes
+Added options to tool Restart_Vote called Players_Online and Votes_Needed. Controls how many must be online and how many must vote yes
+Fixed some internal operations for Night_Vote, Weather_Vote, Kick_Vote, and Restart_Vote
+Fixed Custom_Commands denying command player use when the cost is set to 0
 Fixed New_Player message setting itself to the first new player's name and repeating it for others
+Fixed chat response for console command give item or give block to use the phrases
+Changed Phrase 959, 933, 824, 805, 804, 743
+Updated HowToSetup.xml
 
 11.3
 Fixed Zones.xml option No_Zombie responding with an error if the zombie was inside a circular zone

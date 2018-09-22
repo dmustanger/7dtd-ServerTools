@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        public const double version = 11.3;
+        public const double version = 11.4;
         public static bool UpdateConfigs = false;
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
@@ -1333,6 +1333,26 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("Players_Online"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry because of missing 'Players_Online' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Players_Online"), out KickVote.Players_Online))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry because of invalid (non-numeric) value for 'Players_Online' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Votes_Needed"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry because of missing 'Votes_Needed' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Votes_Needed"), out KickVote.Votes_Needed))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry because of invalid (non-numeric) value for 'Votes_Needed' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                             case "Kill_Notice":
                                 if (!_line.HasAttribute("Enable"))
@@ -1581,6 +1601,26 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Mute_Vote entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("Players_Online"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Night_Vote entry because of missing 'Players_Online' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Players_Online"), out MuteVote.Players_Online))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Night_Vote entry because of invalid (non-numeric) value for 'Players_Online' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Votes_Needed"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Night_Vote entry because of missing 'Votes_Needed' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Votes_Needed"), out MuteVote.Votes_Needed))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Night_Vote entry because of invalid (non-numeric) value for 'Votes_Needed' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                             case "New_Player":
                                 if (!_line.HasAttribute("Enable"))
@@ -1659,6 +1699,26 @@ namespace ServerTools
                                 if (!bool.TryParse(_line.GetAttribute("Enable"), out NightVote.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Night_Vote entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Players_Online"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Night_Vote entry because of missing 'Players_Online' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Players_Online"), out NightVote.Players_Online))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Night_Vote entry because of invalid (non-numeric) value for 'Players_Online' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Votes_Needed"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Night_Vote entry because of missing 'Votes_Needed' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Votes_Needed"), out NightVote.Votes_Needed))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Night_Vote entry because of invalid (non-numeric) value for 'Votes_Needed' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -1955,26 +2015,29 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Restart_Delay"))
+
+                                if (!_line.HasAttribute("Players_Online"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry because of missing 'Restart_Delay' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry because of missing 'Players_Online' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Restart_Delay"), out Timers.Restart_Vote_Delay))
+                                if (!int.TryParse(_line.GetAttribute("Players_Online"), out RestartVote.Players_Online))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry because of invalid (non-numeric) value for 'Restart_Delay' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry because of invalid (non-numeric) value for 'Players_Online' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Minimum_Players"))
+                                if (!_line.HasAttribute("Votes_Needed"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry because of missing 'Minimum_Players' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry because of missing 'Votes_Needed' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Minimum_Players"), out RestartVote.Minimum_Players))
+
+                                if (!int.TryParse(_line.GetAttribute("Votes_Needed"), out RestartVote.Votes_Needed))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry because of invalid (non-numeric) value for 'Minimum_Players' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry because of invalid (non-numeric) value for 'Votes_Needed' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+
                                 if (!_line.HasAttribute("Admin_Level"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
@@ -1984,7 +2047,7 @@ namespace ServerTools
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Restart_Vote entry because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
-                                }                               
+                                }
                                 break;
                             case "Session":
                                 if (!_line.HasAttribute("Enable"))
@@ -2581,14 +2644,24 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Weather_Vote entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue; 
                                 }
-                                if (!_line.HasAttribute("Vote_Delay"))
+                                if (!_line.HasAttribute("Players_Online"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Weather_Vote entry because of missing 'Vote_Delay' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry because of missing 'Players_Online' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Vote_Delay"), out Timers.Weather_Vote_Delay))
+                                if (!int.TryParse(_line.GetAttribute("Players_Online"), out KickVote.Players_Online))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Weather_Vote entry because of invalid (non-numeric) value for 'Vote_Delay' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry because of invalid (non-numeric) value for 'Players_Online' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Votes_Needed"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry because of missing 'Votes_Needed' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Votes_Needed"), out KickVote.Votes_Needed))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kick_Vote entry because of invalid (non-numeric) value for 'Votes_Needed' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -2788,7 +2861,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Info_Ticker\" Enable=\"{0}\" Delay_Between_Messages=\"{1}\" Random=\"{2}\" />", InfoTicker.IsEnabled, Timers.Infoticker_Delay, InfoTicker.Random));
                 sw.WriteLine(string.Format("        <Tool Name=\"Invalid_Item_Kicker\" Enable=\"{0}\" Ban=\"{1}\" Admin_Level=\"{2}\" Days_Before_Log_Delete=\"{3}\" />", InventoryCheck.IsEnabled, InventoryCheck.Ban_Player, InventoryCheck.Admin_Level, InventoryCheck.Days_Before_Log_Delete));               
                 sw.WriteLine(string.Format("        <Tool Name=\"Jail\" Enable=\"{0}\" Jail_Size=\"{1}\" Jail_Position=\"{2}\" Jail_Shock=\"{3}\" />", Jail.IsEnabled, Jail.Jail_Size, Jail.Jail_Position, Jail.Jail_Shock));
-                sw.WriteLine(string.Format("        <Tool Name=\"Kick_Vote\" Enable=\"{0}\" />", KickVote.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Kick_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", KickVote.IsEnabled, KickVote.Players_Online, KickVote.Votes_Needed));
                 sw.WriteLine(string.Format("        <Tool Name=\"Kill_Notice\" Enable=\"{0}\" />", KillNotice.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Lobby\" Enable=\"{0}\" Return=\"{1}\" Delay_Between_Uses=\"{2}\" Lobby_Size=\"{3}\" Lobby_Position=\"{4}\" Command_Cost=\"{5}\" PvP_Check=\"{6}\" Zombie_Check=\"{7}\" />", LobbyChat.IsEnabled, LobbyChat.Return, LobbyChat.Delay_Between_Uses, LobbyChat.Lobby_Size, SetLobby.Lobby_Position, LobbyChat.Command_Cost, LobbyChat.PvP_Check, LobbyChat.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Location\" Enable=\"{0}\" />", Loc.IsEnabled));
@@ -2796,11 +2869,11 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Lottery\" Enable=\"{0}\" Bonus=\"{1}\" />", Lottery.IsEnabled, Lottery.Bonus));
                 sw.WriteLine(string.Format("        <Tool Name=\"Market\" Enable=\"{0}\" Return=\"{1}\" Delay_Between_Uses=\"{2}\" Market_Size=\"{3}\" Market_Position=\"{4}\" Command_Cost=\"{5}\" PvP_Check=\"{6}\" Zombie_Check=\"{7}\" />", MarketChat.IsEnabled, MarketChat.Return, MarketChat.Delay_Between_Uses, MarketChat.Market_Size, SetMarket.Market_Position, MarketChat.Command_Cost, LobbyChat.PvP_Check, LobbyChat.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Motd\" Enable=\"{0}\" Show_On_Respawn=\"{1}\" />", Motd.IsEnabled, Motd.Show_On_Respawn));
-                sw.WriteLine(string.Format("        <Tool Name=\"Mute_Vote\" Enable=\"{0}\" />", MuteVote.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Mute_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", MuteVote.IsEnabled, MuteVote.Players_Online, MuteVote.Votes_Needed));
                 sw.WriteLine(string.Format("        <Tool Name=\"New_Player\" Enable=\"{0}\" Entry_Message=\"{1}\" />", NewPlayer.IsEnabled, NewPlayer.Entry_Message));
                 sw.WriteLine(string.Format("        <Tool Name=\"New_Spawn_Tele\" Enable=\"{0}\" New_Spawn_Tele_Position=\"{1}\" Return=\"{2}\" />", NewSpawnTele.IsEnabled, NewSpawnTele.New_Spawn_Tele_Position, NewSpawnTele.Return));
                 sw.WriteLine(string.Format("        <Tool Name=\"Night_Alert\" Enable=\"{0}\" Delay=\"{1}\" />", NightAlert.IsEnabled, Timers.Night_Time_Delay));
-                sw.WriteLine(string.Format("        <Tool Name=\"Night_Vote\" Enable=\"{0}\" />", NightVote.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Night_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", NightVote.IsEnabled, NightVote.Players_Online, NightVote.Votes_Needed));
                 sw.WriteLine(string.Format("        <Tool Name=\"Normal_Player_Name_Coloring\" Enable=\"{0}\" Normal_Player_Prefix=\"{1}\" Normal_Player_Color=\"{2}\" />", ChatHook.Normal_Player_Name_Coloring, ChatHook.Normal_Player_Prefix, ChatHook.Normal_Player_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_List\" Enable=\"{0}\" />", PlayerList.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_Logs\" Enable=\"{0}\" Interval=\"{1}\" Position=\"{2}\" Inventory=\"{3}\" Extra=\"{4}\" Days_Before_Log_Delete=\"{5}\" />", PlayerLogs.IsEnabled, Timers.Player_Log_Interval, PlayerLogs.Position, PlayerLogs.Inventory, PlayerLogs.P_Data, PlayerLogs.Days_Before_Log_Delete));
@@ -2808,7 +2881,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Real_World_Time\" Enable=\"{0}\" Delay=\"{1}\" Time_Zone=\"{2}\" Adjustment=\"{3}\" />", RealWorldTime.IsEnabled, Timers.Real_Time_Delay, RealWorldTime.Time_Zone, RealWorldTime.Adjustment));
                 sw.WriteLine(string.Format("        <Tool Name=\"Report\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Admin_Level=\"{2}\" Days_Before_Log_Delete=\"{3}\" />", Report.IsEnabled, Report.Delay, Report.Admin_Level, Report.Days_Before_Log_Delete));
                 sw.WriteLine(string.Format("        <Tool Name=\"Reserved_Slots\" Enable=\"{0}\" Reserved_Check=\"{1}\" Session_Time=\"{2}\" Admin_Level=\"{3}\" Admin_Slots=\"{4}\" Reduced_Delay=\"{5}\" />", ReservedSlots.IsEnabled, ChatHook.Reserved_Check, ReservedSlots.Session_Time, ReservedSlots.Admin_Level, ReservedSlots.Admin_Slots, ReservedSlots.Reduced_Delay));
-                sw.WriteLine(string.Format("        <Tool Name=\"Restart_Vote\" Enable=\"{0}\" Restart_Delay=\"{1}\" Minimum_Players=\"{2}\" Admin_Level=\"{3}\" />", RestartVote.IsEnabled, Timers.Restart_Vote_Delay, RestartVote.Minimum_Players, RestartVote.Admin_Level));
+                sw.WriteLine(string.Format("        <Tool Name=\"Restart_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" Admin_Level=\"{3}\" />", RestartVote.IsEnabled, RestartVote.Players_Online, RestartVote.Votes_Needed, RestartVote.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Session\" Enable=\"{0}\" />", Shop.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Set_Home\" Enable=\"{0}\" Set_Home2_Enabled=\"{1}\" Set_Home2_Donor_Only=\"{2}\" Delay_Between_Uses=\"{3}\" Command_Cost=\"{4}\" PvP_Check=\"{5}\" Zombie_Check=\"{6}\" />", TeleportHome.IsEnabled, TeleportHome.Set_Home2_Enabled, TeleportHome.Set_Home2_Donor_Only, TeleportHome.Delay_Between_Uses, TeleportHome.Command_Cost, TeleportHome.PvP_Check, TeleportHome.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Shop\" Enable=\"{0}\" Inside_Market=\"{1}\" Inside_Traders=\"{2}\" />", Shop.IsEnabled, Shop.Inside_Market, Shop.Inside_Traders));
@@ -2822,7 +2895,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Wallet\" Enable=\"{0}\" Coin_Name=\"{1}\" Zombie_Kill_Value=\"{2}\" Player_Kill_Value=\"{3}\" Death_Penalty_Value=\"{4}\" />", Wallet.IsEnabled, Wallet.Coin_Name, Wallet.Zombie_Kills, Wallet.Player_Kills, Wallet.Deaths));
                 sw.WriteLine(string.Format("        <Tool Name=\"Watchlist\" Enable=\"{0}\" Admin_Level=\"{1}\" Alert_Delay=\"{2}\" />", Watchlist.IsEnabled, Watchlist.Admin_Level, Timers.Alert_Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Waypoints\" Enable=\"{0}\" Max_Waypoints =\"{1}\" Donator_Max_Waypoints=\"{2}\" Command_Cost =\"{3}\" PvP_Check =\"{4}\" Zombie_Check=\"{5}\" />", Waypoint.IsEnabled, Waypoint.Max_Waypoints, Waypoint.Donator_Max_Waypoints, Waypoint.Command_Cost, Waypoint.PvP_Check, Waypoint.Zombie_Check));
-                sw.WriteLine(string.Format("        <Tool Name=\"Weather_Vote\" Enable=\"{0}\" Vote_Delay=\"{1}\" />", WeatherVote.IsEnabled, Timers.Weather_Vote_Delay));
+                sw.WriteLine(string.Format("        <Tool Name=\"Weather_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", WeatherVote.IsEnabled, WeatherVote.Players_Online, WeatherVote.Votes_Needed));
                 sw.WriteLine(string.Format("        <Tool Name=\"World_Radius\" Enable=\"{0}\" Normal_Player=\"{1}\" Donator=\"{2}\" Admin_Level=\"{3}\" />", WorldRadius.IsEnabled, WorldRadius.Normal_Player, WorldRadius.Donator, WorldRadius.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Zone\" Enable=\"{0}\" Kill_Enabled=\"{1}\" Jail_Enabled=\"{2}\" Kick_Enabled=\"{3}\" Ban_Enabled=\"{4}\" Zone_Message=\"{5}\" Reminder_Notice_Delay=\"{6}\" Set_Home=\"{7}\" Days_Before_Log_Delete=\"{8}\" />", Zones.IsEnabled, Zones.Kill_Enabled, Zones.Jail_Enabled, Zones.Kick_Enabled, Zones.Ban_Enabled, Zones.Zone_Message, Zones.Reminder_Delay, Zones.Set_Home, Zones.Days_Before_Log_Delete));
                 sw.WriteLine("    </Tools>");

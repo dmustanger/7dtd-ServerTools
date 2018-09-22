@@ -6,23 +6,28 @@ namespace ServerTools
     class NightVote
     {
         public static bool IsEnabled = false, VoteOpen = false;
+        public static int Players_Online = 5, Votes_Needed = 3;
         public static List<int> Night = new List<int>();
-        public static List<int> StartedVote = new List<int>();
 
         public static void Vote(ClientInfo _cInfo)
         {
-            int _playerCount = ConnectionManager.Instance.ClientCount();
-            if (_playerCount > 9)
+            if (!VoteOpen)
             {
-                if (!StartedVote.Contains(_cInfo.entityId))
+                int _playerCount = ConnectionManager.Instance.ClientCount();
+                if (_playerCount >= Players_Online)
                 {
                     if (!GameManager.Instance.World.IsDaytime())
                     {
                         if (!SkyManager.BloodMoon())
                         {
-                            StartedVote.Clear();
-                            StartedVote.Add(_cInfo.entityId);
                             VoteOpen = true;
+                            string _phrase932;
+                            if (!Phrases.Dict.TryGetValue(932, out _phrase932))
+                            {
+                                _phrase932 = "A vote to skip the night has begun. You have 30 seconds to type /yes.";
+                            }
+                            _phrase932 = _phrase932.Replace("{PlayerName}", _cInfo.playerName);
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase932), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                         else
                         {
@@ -45,34 +50,25 @@ namespace ServerTools
                         _phrase931 = _phrase931.Replace("{PlayerName}", _cInfo.playerName);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase931), Config.Server_Response_Name, false, "ServerTools", false));
                     }
+
                 }
                 else
                 {
-                    string _phrase932;
-                    if (!Phrases.Dict.TryGetValue(932, out _phrase932))
+                    string _phrase933;
+                    if (!Phrases.Dict.TryGetValue(933, out _phrase933))
                     {
-                        _phrase932 = "{PlayerName} you started the last vote. Someone else must start the vote.";
+                        _phrase933 = "{PlayerName} you can only start this vote if at least {Count} players are online.";
                     }
-                    _phrase932 = _phrase932.Replace("{PlayerName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase932), Config.Server_Response_Name, false, "ServerTools", false));
+                    _phrase933 = _phrase933.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase933 = _phrase933.Replace("{Count}", Players_Online.ToString());
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase933), Config.Server_Response_Name, false, "ServerTools", false));
                 }
-            }
-            else
-            {
-                string _phrase933;
-                if (!Phrases.Dict.TryGetValue(933, out _phrase933))
-                {
-                    _phrase933 = "{PlayerName} you can only start this vote if at least 10 players are online.";
-                }
-                _phrase933 = _phrase933.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase933), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
         public static void VoteCount()
         {
-            VoteOpen = false;
-            if (Night.Count > 7)
+            if (Night.Count >= Votes_Needed)
             {
                 int _dawn = (int)SkyManager.GetDawnTime();
                 ulong _worldTime = GameManager.Instance.World.worldTime;
@@ -88,6 +84,7 @@ namespace ServerTools
                 GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase934), Config.Server_Response_Name, false, "", false);
             }
             Night.Clear();
+            VoteOpen = false;
         }
     }
 }

@@ -83,8 +83,7 @@ namespace ServerTools
                         {
                             Event.Name = true;
                             string _name = string.Join(" ", _params.ToArray());
-                            _name = _name.Replace("event ", "");
-                            _name = _name.Replace("name ", "");
+                            _name = _name.Replace("event name ", "");
                             string _sql = string.Format("UPDATE Events SET eventName = '{0}' WHERE eventAdmin = '{1}'", _name, Event.Admin);
                             SQL.FastQuery(_sql);
                             SdtdConsole.Instance.Output(string.Format("The event name has been set to {0}.", _name));
@@ -111,15 +110,14 @@ namespace ServerTools
                         {
                             Event.Invite = true;
                             string _invite = string.Join(" ", _params.ToArray());
-                            _invite = _invite.Replace("event ", "");
-                            _invite = _invite.Replace("invite ", "");
+                            _invite = _invite.Replace("event invite ", "");
                             string _sql = string.Format("UPDATE Events SET eventInvite = '{0}' WHERE eventAdmin = '{1}'", _invite, Event.Admin);
                             SQL.FastQuery(_sql);
                             SdtdConsole.Instance.Output(string.Format("The event invitation has been set to {0}.", _invite));
                             SdtdConsole.Instance.Output("How many teams, total players, and time in minutes will the event last? Type event info <TeamCount> <TotalPlayers> <TimeInMin>.");
                             return;
                         }
-                        else
+                        else if (Event.Invite)
                         {
                             SdtdConsole.Instance.Output("You have already set the invitation. If you have made a mistake, type event cancel and start again.");
                             return;
@@ -176,7 +174,7 @@ namespace ServerTools
                                 }
                             }
                         }
-                        else
+                        else if (Event.Info)
                         {
                             SdtdConsole.Instance.Output("You have already setup the team count, total players and event time. If you have made a mistake, type event cancel and start again.");
                             return;
@@ -226,7 +224,7 @@ namespace ServerTools
                                 return;
                             }
                         }
-                        else
+                        else if (Event.Spawn)
                         {
                             SdtdConsole.Instance.Output("You have already setup the spawn points. If you have made a mistake, type event cancel and start again.");
                             return;
@@ -277,7 +275,7 @@ namespace ServerTools
                                 return;
                             }
                         }
-                        else
+                        else if (Event.Respawn)
                         {
                             SdtdConsole.Instance.Output("You have already setup the respawn points. If you have made a mistake, type event cancel and start again.");
                             return;
@@ -612,14 +610,18 @@ namespace ServerTools
                             if (Event.Extend)
                             {
                                 Event.Extend = false;
-                                int _addTime = Timers._eventTime + 1800;
-                                Timers._eventTime = _addTime;
-                                SdtdConsole.Instance.Output("The event time was extended thirty minutes.");
-                                return;
+                                int _time;
+                                if (int.TryParse(_params[1], out _time))
+                                {
+                                    int _addTime = Timers._eventTime + (_time * 60);
+                                    Timers._eventTime = _addTime;
+                                    SdtdConsole.Instance.Output(string.Format("The event time was extended {0} minutes.", _time));
+                                    return;
+                                }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output("The event can only be extended while five minutes remain in the event. Wait for an alert before using the command.");
+                                SdtdConsole.Instance.Output(string.Format("The event can only be extended while five minutes remain in the event. Wait for an alert before using the command."));
                                 return;
                             }
                         }

@@ -971,7 +971,7 @@ namespace ServerTools
                 string _phrase613;
                 if (!Dict.TryGetValue(613, out _phrase613))
                 {
-                    _phrase613 = "Weather vote complete. Most votes went to {weather}. The next weather vote can be started in {VoteDelay} minutes.";
+                    _phrase613 = "Weather vote complete. Most votes went to {weather}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"613\" Phrase=\"{0}\" />", _phrase613));
                 string _phrase614;
@@ -1229,7 +1229,7 @@ namespace ServerTools
                 string _phrase743;
                 if (!Dict.TryGetValue(743, out _phrase743))
                 {
-                    _phrase743 = "Players voted yes but not enough votes cast to restart. A new vote can open in {RestartDelay} minutes.";
+                    _phrase743 = "Players voted yes but not enough votes were cast to restart.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"743\" Phrase=\"{0}\" />", _phrase743));
                 string _phrase744;
@@ -1454,13 +1454,13 @@ namespace ServerTools
                 string _phrase804;
                 if (!Dict.TryGetValue(804, out _phrase804))
                 {
-                    _phrase804 = "{Count} {ItemName} was sent to your inventory by an admin. If your bag is full, check the ground.";
+                    _phrase804 = "{Count} {ItemName} was sent to your inventory. If your bag is full, check the ground.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"804\" Phrase=\"{0}\" />", _phrase804));
                 string _phrase805;
                 if (!Dict.TryGetValue(805, out _phrase805))
                 {
-                    _phrase805 = "";
+                    _phrase805 = "Not enough votes were cast in the weather vote. No changes were made.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"805\" Phrase=\"{0}\" />", _phrase805));
                 string _phrase806;
@@ -1565,6 +1565,18 @@ namespace ServerTools
                     _phrase823 = "Type /buy # to purchase the shop item. You can add how many times you want to buy it. /buy # #";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"823\" Phrase=\"{0}\" />", _phrase823));
+                string _phrase824;
+                if (!Dict.TryGetValue(824, out _phrase824))
+                {
+                    _phrase824 = "{PlayerName} there is a vote already open.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"824\" Phrase=\"{0}\" />", _phrase824));
+                string _phrase825;
+                if (!Dict.TryGetValue(825, out _phrase825))
+                {
+                    _phrase825 = "There are now {VoteCount} of {VotesNeeded} votes.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"825\" Phrase=\"{0}\" />", _phrase825));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- *********************** Auction ************************ -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1689,13 +1701,13 @@ namespace ServerTools
                 string _phrase932;
                 if (!Dict.TryGetValue(932, out _phrase932))
                 {
-                    _phrase932 = "{PlayerName} you started the last vote. Someone else must start the vote.";
+                    _phrase932 = "A vote to skip the night has begun. You have 30 seconds to type /yes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"932\" Phrase=\"{0}\" />", _phrase932));
                 string _phrase933;
                 if (!Dict.TryGetValue(933, out _phrase933))
                 {
-                    _phrase933 = "{PlayerName} you can only start this vote if at least 10 players are online.";
+                    _phrase933 = "{PlayerName} you can only start this vote if at least {Count} players are online.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"933\" Phrase=\"{0}\" />", _phrase933));
                 string _phrase934;
@@ -1788,7 +1800,7 @@ namespace ServerTools
                 string _phrase959;
                 if (!Dict.TryGetValue(959, out _phrase959))
                 {
-                    _phrase959 = "Type /kick # to start a vote to kick that player.";
+                    _phrase959 = "Type /kickvote # to start a vote to kick that player.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"959\" Phrase=\"{0}\" />", _phrase959));
                 sw.WriteLine("        <!-- ******************************************************** -->");

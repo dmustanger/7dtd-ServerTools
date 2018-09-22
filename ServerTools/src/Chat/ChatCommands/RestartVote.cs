@@ -4,50 +4,49 @@ namespace ServerTools
 {
     class RestartVote
     {
-        public static bool IsEnabled = false, VoteOpen = false, VoteNew = true, Startup = false;
-        public static int Minimum_Players = 10, Admin_Level = 0;
+        public static bool IsEnabled = false, VoteOpen = false, Startup = false;
+        public static int Players_Online = 5, Votes_Needed = 3, Admin_Level = 0;
         public static List<int> Restart = new List<int>();
-        public static List<int> StartedVote = new List<int>();
+        private static bool StartedVote = false;
 
         public static void CallForVote1(ClientInfo _cInfo)
         {
             if (!Startup)
             {
-                bool adminOnline = false;
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                for (int i = 0; i < _cInfoList.Count; i++)
+                if (!StartedVote)
                 {
-                    ClientInfo _cInfoAdmins = _cInfoList[i];
-                    GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins.playerId);
-                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfoAdmins.playerId);
-                    if (Admin.PermissionLevel <= Admin_Level)
+                    bool adminOnline = false;
+                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                    for (int i = 0; i < _cInfoList.Count; i++)
                     {
-                        adminOnline = true;
-                        string _phrase748;
-                        if (!Phrases.Dict.TryGetValue(748, out _phrase748))
+                        ClientInfo _cInfoAdmins = _cInfoList[i];
+                        GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins.playerId);
+                        AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfoAdmins.playerId);
+                        if (Admin.PermissionLevel <= Admin_Level)
                         {
-                            _phrase748 = "{Player} has requested a restart vote.";
+                            adminOnline = true;
+                            string _phrase748;
+                            if (!Phrases.Dict.TryGetValue(748, out _phrase748))
+                            {
+                                _phrase748 = "{Player} has requested a restart vote.";
+                            }
+                            _phrase748 = _phrase748.Replace("{Player}", _cInfo.playerName);
+                            _cInfoAdmins.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase748), Config.Server_Response_Name, false, "ServerTools", false));
                         }
-                        _phrase748 = _phrase748.Replace("{Player}", _cInfo.playerName);
-                        _cInfoAdmins.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase748), Config.Server_Response_Name, false, "ServerTools", false));
                     }
-                }
-                if (!adminOnline)
-                {
-                    if (!StartedVote.Contains(_cInfo.entityId))
+                    if (!adminOnline)
                     {
+
                         int _playerCount = ConnectionManager.Instance.ClientCount();
-                        if (_playerCount >= Minimum_Players)
+                        if (_playerCount >= Players_Online)
                         {
-                            StartedVote.Clear();
-                            StartedVote.Add(_cInfo.entityId);
+                            StartedVote = true;
                             string _phrase740;
                             if (!Phrases.Dict.TryGetValue(740, out _phrase740))
                             {
                                 _phrase740 = "A vote to restart the server has opened and will close in 30 seconds. Type /yes to cast your vote.";
                             }
                             GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase740), Config.Server_Response_Name, false, "", false);
-                            VoteOpen = true;
                         }
                         else
                         {
@@ -61,22 +60,23 @@ namespace ServerTools
                     }
                     else
                     {
-                        string _phrase747;
-                        if (!Phrases.Dict.TryGetValue(747, out _phrase747))
+                        string _phrase749;
+                        if (!Phrases.Dict.TryGetValue(749, out _phrase749))
                         {
-                            _phrase747 = "You started the last restart vote. Another player must initiate the next vote.";
+                            _phrase749 = "A administrator is currently online. They have been alerted.";
                         }
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase747), Config.Server_Response_Name, false, "ServerTools", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase749), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
                 else
                 {
-                    string _phrase749;
-                    if (!Phrases.Dict.TryGetValue(749, out _phrase749))
+                    string _phrase824;
+                    if (!Phrases.Dict.TryGetValue(824, out _phrase824))
                     {
-                        _phrase749 = "A administrator is currently online. They have been alerted.";
+                        _phrase824 = "{PlayerName} there is a vote already open.";
                     }
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase749), Config.Server_Response_Name, false, "ServerTools", false));
+                    _phrase824 = _phrase824.Replace("{PlayerName}", _cInfo.playerName);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase824), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             else
@@ -92,11 +92,9 @@ namespace ServerTools
 
         public static void CallForVote2()
         {
-            VoteOpen = false;
-            VoteNew = false;
             if (Restart.Count > 0)
             {
-                if (Restart.Count >= Minimum_Players / 2 + 1)
+                if (Restart.Count >= Votes_Needed)
                 {
                     SdtdConsole.Instance.ExecuteSync(string.Format("stopserver 1"), (ClientInfo)null);
                     string _phrase742;
@@ -109,13 +107,11 @@ namespace ServerTools
                 }
                 else
                 {
-                    
                     string _phrase743;
                     if (!Phrases.Dict.TryGetValue(743, out _phrase743))
                     {
-                        _phrase743 = "Players voted yes but not enough votes cast to restart. A new vote can open in {RestartDelay} minutes.";
+                        _phrase743 = "Players voted yes but not enough votes were cast to restart.";
                     }
-                    _phrase743 = _phrase743.Replace("{RestartDelay}", Timers.Restart_Vote_Delay.ToString());
                     GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase743), Config.Server_Response_Name, false, "", false);
                 }
             }
@@ -128,6 +124,8 @@ namespace ServerTools
                 }
                 GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase746), Config.Server_Response_Name, false, "", false);
             }
+            Restart.Clear();
+            VoteOpen = false;
         }
     }
 }

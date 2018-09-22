@@ -6,11 +6,11 @@ namespace ServerTools
     {
         public static bool timer1Running = false;
         public static int Player_Log_Interval = 60, Auto_Show_Bloodmoon_Delay = 30,
-            Delay_Between_World_Saves = 15, Stop_Server_Time = 1, _newCount = 0, Weather_Vote_Delay = 30,
-            Shutdown_Delay = 60, Infoticker_Delay = 60, Restart_Vote_Delay = 30, _sSC = 0, _sSCD = 0,
+            Delay_Between_World_Saves = 15, Stop_Server_Time = 1, _newCount = 0,
+            Shutdown_Delay = 60, Infoticker_Delay = 60, _sSC = 0, _sSCD = 0,
             Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0, _eventTime = 0;
-        private static int timer1SecondInstanceCount, _wV, _wNV, _pSC, _b, _pL, _mC, _wSD, _iT, _rVS,
-            _rS, _rV, _rNV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _nV, _vR, _eS, _eI, _eO, _zR; 
+        private static int timer1SecondInstanceCount, _wV, _pSC, _b, _pL, _mC, _wSD, _iT, _rVS, _kV, _mV,
+            _rS, _rV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _nV, _vR, _eS, _eI, _eO, _zR; 
         private static System.Timers.Timer t1 = new System.Timers.Timer();
 
         public static void TimerStart()
@@ -355,25 +355,13 @@ namespace ServerTools
                     if (_wV >= 30)
                     {
                         _wV = 0;
-                        WeatherVote.VoteOpen = false;
                         WeatherVote.CallForVote2();
-                    }
-                }
-                if (!WeatherVote.VoteNew)
-                {
-                    _wNV++;
-                    if (_wNV >= Weather_Vote_Delay * 60)
-                    {
-                        _wNV = 0;
-                        WeatherVote.VoteNew = true;
-                        SdtdConsole.Instance.ExecuteSync("weather defaults", (ClientInfo)null);
                     }
                 }
             }
             else
             {
                 _wV = 0;
-                _wNV = 0;
             }
             if (MutePlayer.Mutes.Count > 0)
             {
@@ -426,24 +414,13 @@ namespace ServerTools
                     if (_rV >= 30)
                     {
                         _rV = 0;
-                        RestartVote.VoteNew = false;
                         RestartVote.CallForVote2();
-                    }
-                }
-                if (!RestartVote.VoteNew)
-                {
-                    _rNV++;
-                    if (_rNV >= Restart_Vote_Delay * 60)
-                    {
-                        _rNV = 0;
-                        RestartVote.VoteNew = true;
                     }
                 }
             }
             else
             {
                 _rV = 0;
-                _rNV = 0;
             }
             if (NightVote.IsEnabled)
             {
@@ -460,6 +437,38 @@ namespace ServerTools
             else
             {
                 _nV = 0;
+            }
+            if (MuteVote.IsEnabled)
+            {
+                if (MuteVote.VoteOpen)
+                {
+                    _mV++;
+                    if (_mV >= 30)
+                    {
+                        _mV = 0;
+                        MuteVote.VoteCount();
+                    }
+                }
+            }
+            else
+            {
+                _mV = 0;
+            }
+            if (KickVote.IsEnabled)
+            {
+                if (KickVote.VoteOpen)
+                {
+                    _kV++;
+                    if (_kV >= 30)
+                    {
+                        _kV = 0;
+                        KickVote.VoteCount();
+                    }
+                }
+            }
+            else
+            {
+                _kV = 0;
             }
             if (Hordes.IsEnabled)
             {

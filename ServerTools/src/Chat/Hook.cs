@@ -980,20 +980,13 @@ namespace ServerTools
                         }
                         if (WeatherVote.IsEnabled && _message.ToLower() == "weathervote")
                         {
-                            if (WeatherVote.VoteNew)
+                            if (!WeatherVote.VoteOpen)
                             {
-                                if (!WeatherVote.VoteOpen)
-                                {
-                                    WeatherVote.CallForVote1();
-                                }
-                                else
-                                {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote has already begun.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                }
+                                WeatherVote.CallForVote1(_cInfo);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote can only begin every {1} minutes.[-]", Config.Chat_Response_Color, Timers.Weather_Vote_Delay), Config.Server_Response_Name, false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A weather vote has already begun.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                             return false;
                         }
@@ -1061,14 +1054,17 @@ namespace ServerTools
                         {
                             if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
                             {
-                                if (RestartVote.VoteNew)
-                                {
-                                    RestartVote.CallForVote1(_cInfo);
-                                }
+                                RestartVote.CallForVote1(_cInfo);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A vote is open. Wait for it to finish and try again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                string _phrase824;
+                                if (!Phrases.Dict.TryGetValue(824, out _phrase824))
+                                {
+                                    _phrase824 = "{PlayerName} there is a vote already open.";
+                                }
+                                _phrase824 = _phrase824.Replace("{PlayerName}", _cInfo.playerName);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase824), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                             return false;
                         }
@@ -1076,14 +1072,27 @@ namespace ServerTools
                         {
                             if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
                             {
-                                _message = _message.ToLower().Replace("mutevote ", "");
+                                if (_message.ToLower() == ("mutevote"))
                                 {
-                                    MuteVote.Vote(_cInfo, _message);
+                                    MuteVote.List(_cInfo);
+                                }
+                                else if (_message.ToLower().StartsWith("mutevote "))
+                                {
+                                    _message = _message.ToLower().Replace("mutevote ", "");
+                                    {
+                                        MuteVote.Vote(_cInfo, _message);
+                                    }
                                 }
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A vote is open. Wait for it to finish and try again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                string _phrase824;
+                                if (!Phrases.Dict.TryGetValue(824, out _phrase824))
+                                {
+                                    _phrase824 = "{PlayerName} there is a vote already open.";
+                                }
+                                _phrase824 = _phrase824.Replace("{PlayerName}", _cInfo.playerName);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase824), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                             return false;
                         }
@@ -1091,14 +1100,27 @@ namespace ServerTools
                         {
                             if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen && !NightVote.VoteOpen)
                             {
-                                _message = _message.ToLower().Replace("kickvote ", "");
+                                if (_message.ToLower() == ("kickvote"))
                                 {
-                                    KickVote.Vote(_cInfo, _message);
+                                    KickVote.List(_cInfo);
+                                }
+                                else if (_message.ToLower().StartsWith("kickvote "))
+                                {
+                                    _message = _message.ToLower().Replace("kickvote ", "");
+                                    {
+                                        KickVote.Vote(_cInfo, _message);
+                                    }
                                 }
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A vote is open. Wait for it to finish and try again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                string _phrase824;
+                                if (!Phrases.Dict.TryGetValue(824, out _phrase824))
+                                {
+                                    _phrase824 = "{PlayerName} there is a vote already open.";
+                                }
+                                _phrase824 = _phrase824.Replace("{PlayerName}", _cInfo.playerName);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase824), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                             return false;
                         }
@@ -1110,61 +1132,99 @@ namespace ServerTools
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}A vote is open. Wait for it to finish and try again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                string _phrase824;
+                                if (!Phrases.Dict.TryGetValue(824, out _phrase824))
+                                {
+                                    _phrase824 = "{PlayerName} there is a vote already open.";
+                                }
+                                _phrase824 = _phrase824.Replace("{PlayerName}", _cInfo.playerName);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase824), Config.Server_Response_Name, false, "ServerTools", false));
                             }
                             return false;
                         }
                         if (_message.ToLower() == "yes")
                         {
-                            if (KickVote.VoteOpen || RestartVote.VoteOpen || MuteVote.VoteOpen || NightVote.VoteOpen)
+                            if (KickVote.IsEnabled && KickVote.VoteOpen)
                             {
-                                if (KickVote.IsEnabled)
+                                if (!KickVote.Kick.Contains(_cInfo.entityId))
                                 {
-                                    if (!KickVote.Kick.Contains(_cInfo.entityId))
+                                    KickVote.Kick.Add(_cInfo.entityId);
+                                    string _phrase825;
+                                    if (!Phrases.Dict.TryGetValue(825, out _phrase825))
                                     {
-                                        KickVote.Kick.Add(_cInfo.entityId);
-                                        GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} of 8 votes to kick", Config.Chat_Response_Color, KickVote.Kick.Count), Config.Server_Response_Name, false, "ServerTools", true);
+                                        _phrase825 = "There are now {VoteCount} of {VotesNeeded} votes.";
                                     }
-                                    else
-                                    {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
+                                    _phrase825 = _phrase825.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase825 = _phrase825.Replace("{VoteCount}", KickVote.Kick.Count.ToString());
+                                    _phrase825 = _phrase825.Replace("{VotesNeeded}", KickVote.Votes_Needed.ToString());
+                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase825), Config.Server_Response_Name, false, "ServerTools", false);
                                 }
-                                if (RestartVote.IsEnabled)
+                                else
                                 {
-                                    if (!RestartVote.Restart.Contains(_cInfo.entityId))
-                                    {
-                                        RestartVote.Restart.Add(_cInfo.entityId);
-                                        GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} of {2} votes to restart[-]", Config.Chat_Response_Color, RestartVote.Restart.Count, RestartVote.Minimum_Players / 2 + 1), Config.Server_Response_Name, false, "ServerTools", true);
-                                    }
-                                    else
-                                    {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
-                                if (MuteVote.IsEnabled)
+                                return false;
+                            }
+                            if (RestartVote.IsEnabled && RestartVote.VoteOpen)
+                            {
+                                if (!RestartVote.Restart.Contains(_cInfo.entityId))
                                 {
-                                    if (!MuteVote.Mute.Contains(_cInfo.entityId))
+                                    RestartVote.Restart.Add(_cInfo.entityId);
+                                    string _phrase825;
+                                    if (!Phrases.Dict.TryGetValue(825, out _phrase825))
                                     {
-                                        MuteVote.Mute.Add(_cInfo.entityId);
-                                        GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} of 8 votes to mute", Config.Chat_Response_Color, MuteVote.Mute.Count), Config.Server_Response_Name, false, "ServerTools", true);
+                                        _phrase825 = "There are now {VoteCount} of {VotesNeeded} votes.";
                                     }
-                                    else
-                                    {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                                    }
+                                    _phrase825 = _phrase825.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase825 = _phrase825.Replace("{VoteCount}", RestartVote.Restart.Count.ToString());
+                                    _phrase825 = _phrase825.Replace("{VotesNeeded}", RestartVote.Votes_Needed.ToString());
+                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase825), Config.Server_Response_Name, false, "ServerTools", false);
                                 }
-                                if (NightVote.IsEnabled)
+                                else
                                 {
-                                    if (!NightVote.Night.Contains(_cInfo.entityId))
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                                return false;
+                            }
+                            if (MuteVote.IsEnabled && MuteVote.VoteOpen)
+                            {
+                                if (!MuteVote.Mute.Contains(_cInfo.entityId))
+                                {
+                                    MuteVote.Mute.Add(_cInfo.entityId);
+                                    string _phrase825;
+                                    if (!Phrases.Dict.TryGetValue(825, out _phrase825))
                                     {
-                                        NightVote.Night.Add(_cInfo.entityId);
-                                        GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} of 8 votes to skip the night", Config.Chat_Response_Color, NightVote.Night.Count), Config.Server_Response_Name, false, "ServerTools", true);
+                                        _phrase825 = "There are now {VoteCount} of {VotesNeeded} votes.";
                                     }
-                                    else
+                                    _phrase825 = _phrase825.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase825 = _phrase825.Replace("{VoteCount}", MuteVote.Mute.Count.ToString());
+                                    _phrase825 = _phrase825.Replace("{VotesNeeded}", MuteVote.Votes_Needed.ToString());
+                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase825), Config.Server_Response_Name, false, "ServerTools", false);
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                }
+                                return false;
+                            }
+                            if (NightVote.IsEnabled && NightVote.VoteOpen)
+                            {
+                                if (!NightVote.Night.Contains(_cInfo.entityId))
+                                {
+                                    NightVote.Night.Add(_cInfo.entityId);
+                                    string _phrase825;
+                                    if (!Phrases.Dict.TryGetValue(825, out _phrase825))
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                        _phrase825 = "There are now {VoteCount} of {VotesNeeded} votes.";
                                     }
+                                    _phrase825 = _phrase825.Replace("{PlayerName}", _cInfo.playerName);
+                                    _phrase825 = _phrase825.Replace("{VoteCount}", NightVote.Night.Count.ToString());
+                                    _phrase825 = _phrase825.Replace("{VotesNeeded}", NightVote.Votes_Needed.ToString());
+                                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase825), Config.Server_Response_Name, false, "ServerTools", false);
+                                }
+                                else
+                                {
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have already voted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                                 return false;
                             }
@@ -1179,7 +1239,7 @@ namespace ServerTools
                             AuctionBox.CancelAuction(_cInfo);
                             return false;
                         }
-                        if (AuctionBox.IsEnabled && _message.ToLower().StartsWith("auction buy"))
+                        if (AuctionBox.IsEnabled && _message.ToLower().StartsWith("auction buy "))
                         {
                             if (AuctionBox.No_Admins)
                             {
