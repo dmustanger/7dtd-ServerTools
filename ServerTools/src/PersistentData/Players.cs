@@ -408,6 +408,11 @@ namespace ServerTools
                                     if (_box4[1])
                                     {
                                         ZonePvE.Add(_player.entityId);
+                                        if (_box4[2])
+                                        {
+                                            EntityAlive entityAlive = GameManager.Instance.World.GetEntity(_player.entityId) as EntityAlive;
+                                            entityAlive.IsGodMode.Value = true;
+                                        }
                                     }
                                     if (Zones.Zone_Message)
                                     {
@@ -437,11 +442,16 @@ namespace ServerTools
                                         if (Zones.BoxCheck(_box3, _X, _Y, _Z, _box4))
                                         {
                                             ZoneExit[_player.entityId] = _box3[3];
+                                            EntityAlive entityAlive = GameManager.Instance.World.GetEntity(_player.entityId) as EntityAlive;
                                             if (_box4[1])
                                             {
                                                 if (!ZonePvE.Contains(_player.entityId))
                                                 {
                                                     ZonePvE.Add(_player.entityId);
+                                                }
+                                                if (_box4[2])
+                                                {
+                                                    entityAlive.IsGodMode.Value = true;
                                                 }
                                             }
                                             else
@@ -450,6 +460,7 @@ namespace ServerTools
                                                 {
                                                     ZonePvE.Remove(_player.entityId);
                                                 }
+                                                entityAlive.IsGodMode.Value = false;
                                             }
                                             if (Zones.Zone_Message)
                                             {

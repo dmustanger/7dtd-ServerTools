@@ -1457,6 +1457,12 @@ namespace ServerTools
                     _phrase804 = "{Count} {ItemName} was sent to your inventory by an admin. If your bag is full, check the ground.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"804\" Phrase=\"{0}\" />", _phrase804));
+                string _phrase805;
+                if (!Dict.TryGetValue(805, out _phrase805))
+                {
+                    _phrase805 = "";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"805\" Phrase=\"{0}\" />", _phrase805));
                 string _phrase806;
                 if (!Dict.TryGetValue(806, out _phrase806))
                 {

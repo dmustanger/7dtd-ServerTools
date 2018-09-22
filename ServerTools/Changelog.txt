@@ -1,6 +1,8 @@
 ﻿CHANGELOG
 
 11.4
+Fixed CustomCommands denying command use when the cost is set to 0
+Fixed console command response for GiveItem
 Fixed New_Player message setting itself to the first new player's name and repeating it for others
 
 11.3

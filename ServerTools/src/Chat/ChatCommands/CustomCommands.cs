@@ -8,7 +8,7 @@ namespace ServerTools
 {
     public class CustomCommands
     {
-        public static bool IsEnabled = false, IsRunning = false;     
+        public static bool IsEnabled = false, IsRunning = false;
         public static Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
         public static Dictionary<string, int[]> Dict1 = new Dictionary<string, int[]>();
         public static List<int> TeleportCheckProtection = new List<int>();
@@ -481,7 +481,7 @@ namespace ServerTools
             {
                 if (_c[1] == 0)
                 {
-                    CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                    CommandCost(_cInfo, _message, _playerName, _announce, _c);
                 }
                 else
                 {
@@ -510,7 +510,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -550,7 +550,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -590,7 +590,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -630,7 +630,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -670,7 +670,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -710,7 +710,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -750,7 +750,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -790,7 +790,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -830,7 +830,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -870,7 +870,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -890,7 +890,7 @@ namespace ServerTools
                     {
                         if (_timepassed >= _c[1] || _timepassed == -1)
                         {
-                            CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
                         }
                         else
                         {
@@ -939,164 +939,176 @@ namespace ServerTools
             }
         }
 
-        public static void CommandResponse(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int[] _c)
+        public static void CommandCost(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int[] _c)
         {
-            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
-            if (_currentCoins >= _c[2])
+            if (_c[2] > 0)
             {
-                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _c[2]);
-                if (_c[0] == 1)
+                int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                if (_currentCoins >= _c[2])
                 {
-                    string _sql = string.Format("UPDATE Players SET customCommand1 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
+                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _c[2]);
+                    CommandResponse(_cInfo, _message, _playerName, _announce, _c);
                 }
-                if (_c[0] == 2)
+                else
                 {
-                    string _sql = string.Format("UPDATE Players SET customCommand2 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
-                }
-                if (_c[0] == 3)
-                {
-                    string _sql = string.Format("UPDATE Players SET customCommand3 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
-                }
-                if (_c[0] == 4)
-                {
-                    string _sql = string.Format("UPDATE Players SET customCommand4 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
-                }
-                if (_c[0] == 5)
-                {
-                    string _sql = string.Format("UPDATE Players SET customCommand5 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
-                }
-                if (_c[0] == 6)
-                {
-                    string _sql = string.Format("UPDATE Players SET customCommand6 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
-                }
-                if (_c[0] == 7)
-                {
-                    string _sql = string.Format("UPDATE Players SET customCommand7 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
-                }
-                if (_c[0] == 8)
-                {
-                    string _sql = string.Format("UPDATE Players SET customCommand8 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
-                }
-                if (_c[0] == 9)
-                {
-                    string _sql = string.Format("UPDATE Players SET customCommand9 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
-                }
-                if (_c[0] == 10)
-                {
-                    string _sql = string.Format("UPDATE Players SET customCommand10 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
-                }
-                string[] _r;
-                if (Dict.TryGetValue(_message, out _r))
-                {
-                    string _response = _r[0];
-                    if (_response != null)
+                    string _phrase814;
+                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                     {
-                        _response = _response.Replace("{EntityId}", _cInfo.entityId.ToString());
-                        _response = _response.Replace("{SteamId}", _cInfo.playerId);
-                        _response = _response.Replace("{PlayerName}", _playerName);
-                        if (_response.StartsWith("say "))
-                        {
-                            _response = _response.Replace("say ", "");
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false);
-                        }
-                        else if (_response.StartsWith("pm ") || _response.StartsWith("personalmessage "))
-                        {
-                            if (_response.StartsWith("pm "))
-                            {
-                                _response = _response.Replace("pm ", "");
-                            }
-                            else
-                            {
-                                _response = _response.Replace("personalmessage ", "");
-                            }
-
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false));
-                        }
-                        else if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
-                        {
-                            Players.NoFlight.Add(_cInfo.entityId);
-                            if (Players.ZoneExit.ContainsKey(_cInfo.entityId))
-                            {
-                                Players.ZoneExit.Remove(_cInfo.entityId);
-                            }
-                            try
-                            {
-                                SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
-                            }
-                            catch (Exception e)
-                            {
-                                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.Run: {0}.", e));
-                            }
-                        }
-                        else
-                        {
-                            try
-                            {
-                                SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
-                            }
-                            catch (Exception e)
-                            {
-                                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.Run: {0}.", e));
-                            }
-                        }
+                        _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
                     }
-                    string _response2 = _r[1];
-                    if (_response2 != null)
-                    {
-                        _response2 = _response2.Replace("{EntityId}", _cInfo.entityId.ToString());
-                        _response2 = _response2.Replace("{SteamId}", _cInfo.playerId);
-                        _response2 = _response2.Replace("{PlayerName}", _playerName);
-                        if (_response2.StartsWith("say "))
-                        {
-                            _response2 = _response2.Replace("say ", "&quot; ");
-                            _response2 = _response2 + " &quot;";
-                            if (_announce)
-                            {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false);
-                            }
-                            else
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                        }
-                        else if (_response2.StartsWith("pm "))
-                        {
-                            _response2 = _response2.Replace("pm ", "{EntityId} &quot; ");
-                            _response2 = _response2 + " &quot;";
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false));
-                        }
-                        else if (_response2.StartsWith("tele ") || _response2.StartsWith("tp ") || _response2.StartsWith("teleportplayer "))
-                        {
-                            Players.NoFlight.Add(_cInfo.entityId);
-                            SdtdConsole.Instance.ExecuteSync(_response2, _cInfo);
-                        }
-                        else
-                        {
-                            SdtdConsole.Instance.ExecuteSync(_response2, _cInfo);
-                        }
-                    }
+                    _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             else
             {
-                string _phrase814;
-                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
+                CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+            }
+        }
+
+        public static void CommandResponse(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int[] _c)
+        {
+            if (_c[0] == 1)
+            {
+                string _sql = string.Format("UPDATE Players SET customCommand1 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                SQL.FastQuery(_sql);
+            }
+            if (_c[0] == 2)
+            {
+                string _sql = string.Format("UPDATE Players SET customCommand2 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                SQL.FastQuery(_sql);
+            }
+            if (_c[0] == 3)
+            {
+                string _sql = string.Format("UPDATE Players SET customCommand3 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                SQL.FastQuery(_sql);
+            }
+            if (_c[0] == 4)
+            {
+                string _sql = string.Format("UPDATE Players SET customCommand4 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                SQL.FastQuery(_sql);
+            }
+            if (_c[0] == 5)
+            {
+                string _sql = string.Format("UPDATE Players SET customCommand5 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                SQL.FastQuery(_sql);
+            }
+            if (_c[0] == 6)
+            {
+                string _sql = string.Format("UPDATE Players SET customCommand6 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                SQL.FastQuery(_sql);
+            }
+            if (_c[0] == 7)
+            {
+                string _sql = string.Format("UPDATE Players SET customCommand7 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                SQL.FastQuery(_sql);
+            }
+            if (_c[0] == 8)
+            {
+                string _sql = string.Format("UPDATE Players SET customCommand8 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                SQL.FastQuery(_sql);
+            }
+            if (_c[0] == 9)
+            {
+                string _sql = string.Format("UPDATE Players SET customCommand9 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                SQL.FastQuery(_sql);
+            }
+            if (_c[0] == 10)
+            {
+                string _sql = string.Format("UPDATE Players SET customCommand10 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                SQL.FastQuery(_sql);
+            }
+            string[] _r;
+            if (Dict.TryGetValue(_message, out _r))
+            {
+                string _response = _r[0];
+                if (_response != null)
                 {
-                    _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    _response = _response.Replace("{EntityId}", _cInfo.entityId.ToString());
+                    _response = _response.Replace("{SteamId}", _cInfo.playerId);
+                    _response = _response.Replace("{PlayerName}", _playerName);
+                    if (_response.StartsWith("say "))
+                    {
+                        _response = _response.Replace("say ", "");
+                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false);
+                    }
+                    else if (_response.StartsWith("pm ") || _response.StartsWith("personalmessage "))
+                    {
+                        if (_response.StartsWith("pm "))
+                        {
+                            _response = _response.Replace("pm ", "");
+                        }
+                        else
+                        {
+                            _response = _response.Replace("personalmessage ", "");
+                        }
+
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
+                    else if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
+                    {
+                        Players.NoFlight.Add(_cInfo.entityId);
+                        if (Players.ZoneExit.ContainsKey(_cInfo.entityId))
+                        {
+                            Players.ZoneExit.Remove(_cInfo.entityId);
+                        }
+                        try
+                        {
+                            SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.Run: {0}.", e));
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.Run: {0}.", e));
+                        }
+                    }
                 }
-                _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
-                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
+                string _response2 = _r[1];
+                if (_response2 != null)
+                {
+                    _response2 = _response2.Replace("{EntityId}", _cInfo.entityId.ToString());
+                    _response2 = _response2.Replace("{SteamId}", _cInfo.playerId);
+                    _response2 = _response2.Replace("{PlayerName}", _playerName);
+                    if (_response2.StartsWith("say "))
+                    {
+                        _response2 = _response2.Replace("say ", "&quot; ");
+                        _response2 = _response2 + " &quot;";
+                        if (_announce)
+                        {
+                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false);
+                        }
+                        else
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false));
+                        }
+                    }
+                    else if (_response2.StartsWith("pm "))
+                    {
+                        _response2 = _response2.Replace("pm ", "{EntityId} &quot; ");
+                        _response2 = _response2 + " &quot;";
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false));
+                    }
+                    else if (_response2.StartsWith("tele ") || _response2.StartsWith("tp ") || _response2.StartsWith("teleportplayer "))
+                    {
+                        Players.NoFlight.Add(_cInfo.entityId);
+                        SdtdConsole.Instance.ExecuteSync(_response2, _cInfo);
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.ExecuteSync(_response2, _cInfo);
+                    }
+                }
             }
         }
     }
