@@ -11,8 +11,8 @@ namespace ServerTools
         public static Dictionary<int, string> PlayersReturn = new Dictionary<int, string>();
         public static List<int> Players = new List<int>();
         public static List<int> SpawnList = new List<int>();
-        public static List<string> Spawning = new List<string>();
-        public static List<string> Respawning = new List<string>();
+        public static Dictionary<int, string> Spawning = new Dictionary<int, string>();
+        public static Dictionary<int, string> Respawning = new Dictionary<int, string>();
         public static string Admin = null;
 
         public static void CheckOpen()

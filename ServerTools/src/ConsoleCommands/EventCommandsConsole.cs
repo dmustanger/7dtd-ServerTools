@@ -198,7 +198,7 @@ namespace ServerTools
                             int y = (int)_position.y;
                             int z = (int)_position.z;
                             string _sposition = x + "," + y + "," + z;
-                            Event.Spawning.Add(_sposition);
+                            Event.Spawning.Add(Event.Spawning.Count, _sposition);
                             string _sql = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}'", Event.Admin);
                             DataTable _result = SQL.TQuery(_sql);
                             int _eventid;
@@ -248,7 +248,7 @@ namespace ServerTools
                             int y = (int)_position.y;
                             int z = (int)_position.z;
                             string _sposition = x + "," + y + "," + z;
-                            Event.Respawning.Add(_sposition);
+                            Event.Respawning.Add(Event.Respawning.Count, _sposition);
                             string _sql = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}'", Event.Admin);
                             DataTable _result = SQL.TQuery(_sql);
                             int _eventid;
