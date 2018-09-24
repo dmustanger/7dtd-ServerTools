@@ -23,7 +23,6 @@ namespace ServerTools
         public static List<int> ZonePvE = new List<int>();
         public static List<int> Dead = new List<int>();
         public static List<int> NoFlight = new List<int>();
-        private static Dictionary<int, string> Friends = new Dictionary<int, string>();
         private static string file = string.Format("Bounty_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string filepath = string.Format("{0}/Bounties/{1}", API.GamePath, file);
         private static int _counter = 0;
@@ -135,38 +134,6 @@ namespace ServerTools
                                         {
                                             if (!_player.IsFriendsWith(_player2) || !_player2.IsFriendsWith(_player))
                                             {
-                                                if (Friends.ContainsKey(_player.entityId))
-                                                {
-                                                    string _friends;
-                                                    if (Friends.TryGetValue(_player.entityId, out _friends))
-                                                    {
-                                                        string[] _friendList = _friends.Split(' ').ToArray();
-                                                        for (int k = 0; k < _friendList.Length; k++)
-                                                        {
-                                                            string _friend = _friendList[k];
-                                                            if (_friend == _cInfo2.playerId)
-                                                            {
-                                                                return;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                if (Friends.ContainsKey(_player2.entityId))
-                                                {
-                                                    string _friends;
-                                                    if (Friends.TryGetValue(_player2.entityId, out _friends))
-                                                    {
-                                                        string[] _friendList = _friends.Split(' ').ToArray();
-                                                        for (int k = 0; k < _friendList.Length; k++)
-                                                        {
-                                                            string _friend = _friendList[k];
-                                                            if (_friend == _cInfo.playerId)
-                                                            {
-                                                                return;
-                                                            }
-                                                        }
-                                                    }
-                                                }
                                                 if (ClanManager.IsEnabled)
                                                 {
                                                     if (ClanManager.ClanMember.Contains(_cInfo.playerId) && ClanManager.ClanMember.Contains(_cInfo2.playerId))
