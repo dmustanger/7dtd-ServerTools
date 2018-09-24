@@ -201,7 +201,6 @@ namespace ServerTools
                     int _zCount = XUiM_Player.GetZombieKills(_player);
                     int _deathCount = XUiM_Player.GetDeaths(_player);
                     int _killCount = XUiM_Player.GetPlayerKills(_player);
-                    Players.FriendList(_cInfo);
                     string _sql = "SELECT pollOpen FROM Polls WHERE pollOpen = 'true'";
                     DataTable _result = SQL.TQuery(_sql);
                     if (_result.Rows.Count > 0 && !PollConsole.PolledYes.Contains(_cInfo.playerId) && !PollConsole.PolledNo.Contains(_cInfo.playerId))
