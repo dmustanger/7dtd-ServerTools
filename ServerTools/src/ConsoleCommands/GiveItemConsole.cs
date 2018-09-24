@@ -69,7 +69,6 @@ namespace ServerTools
                                     count = _count;
                                 }
                             }
-
                             int min = 1;
                             int max = 1;
                             int quality;
@@ -82,7 +81,6 @@ namespace ServerTools
                                     max = quality;
                                 }
                             }
-
                             ItemValue itemValue;
                             var itemId = 4096;
                             int _itemId;
@@ -120,7 +118,6 @@ namespace ServerTools
                                     belongsPlayerId = _cInfo.entityId
                                 });
                                 world.SpawnEntityInWorld(entityItem);
-                                
                                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                                 SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
@@ -154,11 +151,9 @@ namespace ServerTools
                                     count = _count;
                                 }
                             }
-
                             int min = 1;
                             int max = 1;
                             int quality;
-
                             if (int.TryParse(_params[3], out quality))
                             {
                                 if (quality > 0 & quality < 601)
@@ -167,7 +162,6 @@ namespace ServerTools
                                     max = quality;
                                 }
                             }
-
                             ItemValue itemValue;
                             var itemId = 4096;
                             int _itemId;

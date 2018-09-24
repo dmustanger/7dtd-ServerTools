@@ -5,6 +5,7 @@ Added options to tool Night_Vote called Players_Online and Votes_Needed. Control
 Added options to tool Weather_Vote called Players_Online and Votes_Needed. Controls how many must be online and how many must vote yes
 Added options to tool Kick_Vote called Players_Online and Votes_Needed. Controls how many must be online and how many must vote yes
 Added options to tool Restart_Vote called Players_Online and Votes_Needed. Controls how many must be online and how many must vote yes
+Fixed console setup for events getting stuck adding spawn and respawn points
 Fixed some internal operations for Night_Vote, Weather_Vote, Kick_Vote, and Restart_Vote
 Fixed Custom_Commands denying command player use when the cost is set to 0
 Fixed New_Player message setting itself to the first new player's name and repeating it for others

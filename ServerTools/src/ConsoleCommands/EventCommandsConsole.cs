@@ -71,7 +71,7 @@ namespace ServerTools
                         string _sql = string.Format("INSERT INTO Events (eventAdmin) VALUES ('{0}')", Event.Admin);
                         SQL.FastQuery(_sql);
                         SdtdConsole.Instance.Output("You have started to open a new event. You must complete the setup within 15 minutes.");
-                        SdtdConsole.Instance.Output("What would you like to name your new event? Type event name {Name}.");
+                        SdtdConsole.Instance.Output("What would you like to name your new event? Type event name 'Name'.");
                         return;
                     }
                 }
@@ -87,7 +87,7 @@ namespace ServerTools
                             string _sql = string.Format("UPDATE Events SET eventName = '{0}' WHERE eventAdmin = '{1}'", _name, Event.Admin);
                             SQL.FastQuery(_sql);
                             SdtdConsole.Instance.Output(string.Format("The event name has been set to {0}.", _name));
-                            SdtdConsole.Instance.Output("What would you like the invitation for players to say? Type event invite {Invitation}.");
+                            SdtdConsole.Instance.Output("What would you like the invitation for players to say? Type event invite 'Invitation'.");
                             return;
                         }
                         else
@@ -114,7 +114,7 @@ namespace ServerTools
                             string _sql = string.Format("UPDATE Events SET eventInvite = '{0}' WHERE eventAdmin = '{1}'", _invite, Event.Admin);
                             SQL.FastQuery(_sql);
                             SdtdConsole.Instance.Output(string.Format("The event invitation has been set to {0}.", _invite));
-                            SdtdConsole.Instance.Output("How many teams, total players, and time in minutes will the event last? Type event info <TeamCount> <TotalPlayers> <TimeInMin>.");
+                            SdtdConsole.Instance.Output("How many teams, total players, and time in minutes will the event last? Type event info 'TeamCount' 'TotalPlayers' 'TimeInMin'.");
                             return;
                         }
                         else if (Event.Invite)
@@ -198,7 +198,7 @@ namespace ServerTools
                             int y = (int)_position.y;
                             int z = (int)_position.z;
                             string _sposition = x + "," + y + "," + z;
-                            Event.Spawning.Add(Event.Spawning.Count, _sposition);
+                            Event.Spawning.Add(Event.Spawning.Count + 1, _sposition);
                             string _sql = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}'", Event.Admin);
                             DataTable _result = SQL.TQuery(_sql);
                             int _eventid;
@@ -206,6 +206,7 @@ namespace ServerTools
                             int _eventTeams;
                             int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _eventTeams);
                             _result.Dispose();
+                            Log.Out(string.Format("Event.Spawning.Count = {0} / _eventTeams = {1}", Event.Spawning.Count, _eventTeams));
                             if (Event.Spawning.Count == _eventTeams)
                             {
                                 Event.Spawn = true;
@@ -248,7 +249,7 @@ namespace ServerTools
                             int y = (int)_position.y;
                             int z = (int)_position.z;
                             string _sposition = x + "," + y + "," + z;
-                            Event.Respawning.Add(Event.Respawning.Count, _sposition);
+                            Event.Respawning.Add(Event.Respawning.Count + 1, _sposition);
                             string _sql = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}'", Event.Admin);
                             DataTable _result = SQL.TQuery(_sql);
                             int _eventid;
