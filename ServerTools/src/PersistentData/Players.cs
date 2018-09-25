@@ -132,7 +132,7 @@ namespace ServerTools
                                         }
                                         if (Bounties.IsEnabled)
                                         {
-                                            if (!_player.IsFriendsWith(_player2) || !_player2.IsFriendsWith(_player))
+                                            if (!_player.IsFriendsWith(_player2) && !_player2.IsFriendsWith(_player))
                                             {
                                                 if (ClanManager.IsEnabled)
                                                 {
