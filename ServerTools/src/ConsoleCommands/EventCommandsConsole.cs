@@ -83,7 +83,7 @@ namespace ServerTools
                         {
                             Event.Name = true;
                             string _name = string.Join(" ", _params.ToArray());
-                            _name = _name.Replace("event name ", "");
+                            _name = _name.Replace("name ", "");
                             string _sql = string.Format("UPDATE Events SET eventName = '{0}' WHERE eventAdmin = '{1}'", _name, Event.Admin);
                             SQL.FastQuery(_sql);
                             SdtdConsole.Instance.Output(string.Format("The event name has been set to {0}.", _name));
@@ -110,7 +110,7 @@ namespace ServerTools
                         {
                             Event.Invite = true;
                             string _invite = string.Join(" ", _params.ToArray());
-                            _invite = _invite.Replace("event invite ", "");
+                            _invite = _invite.Replace("invite ", "");
                             string _sql = string.Format("UPDATE Events SET eventInvite = '{0}' WHERE eventAdmin = '{1}'", _invite, Event.Admin);
                             SQL.FastQuery(_sql);
                             SdtdConsole.Instance.Output(string.Format("The event invitation has been set to {0}.", _invite));
@@ -157,7 +157,7 @@ namespace ServerTools
                                             _eventTime = 1;
                                         }
                                         Event.Info = true;
-                                        string _sql = string.Format("UPDATE Events SET eventTeams = {0}, eventPlayerCount = {1}, eventTime = {2} WHERE eventAdmin = '{1}'", _teamCount, _playerCount, _eventTime, Event.Admin);
+                                        string _sql = string.Format("UPDATE Events SET eventTeams = {0}, eventPlayerCount = {1}, eventTime = {2} WHERE eventAdmin = '{3}'", _teamCount, _playerCount, _eventTime, Event.Admin);
                                         SQL.FastQuery(_sql);
                                         SdtdConsole.Instance.Output(string.Format("The event info has been set: team count {0}, total players {1}, event time {2}.", _teamCount, _playerCount, _eventTime));
                                         if (_teamCount == 1)
