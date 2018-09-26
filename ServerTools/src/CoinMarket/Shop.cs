@@ -376,12 +376,12 @@ namespace ServerTools
                                 if (_dict1Values[1] > 1)
                                 {
                                     _count++;
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, i, _dict1Values[0], _dictValues[0], _dict1Values[1], _dict1Values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, i, _dict1Values[0], _dictValues[1], _dict1Values[1], _dict1Values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                                 else
                                 {
                                     _count++;
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, i, _dict1Values[0], _dictValues[0], _dict1Values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, i, _dict1Values[0], _dictValues[1], _dict1Values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                             }
                         }

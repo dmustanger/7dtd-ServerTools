@@ -141,6 +141,7 @@ namespace ServerTools
                             int.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _muteTime);
                             DateTime _muteDate;
                             DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _muteDate);
+                            _result.Dispose();
                             if (_muteTime == -1)
                             {
                                 SdtdConsole.Instance.Output(string.Format("Steam id {0}, player name {1} is muted indefinitely", _steamid, playername));
@@ -155,7 +156,6 @@ namespace ServerTools
                                 SdtdConsole.Instance.Output(string.Format("Steam id {0}, player name {1} for {2} minutes", _steamid, playername, _timeleft));
                                 return;
                             }
-                            _result.Dispose();
                         }
                         else
                         {
