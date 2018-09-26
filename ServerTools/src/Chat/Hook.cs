@@ -845,7 +845,7 @@ namespace ServerTools
                             VoteReward.Check(_cInfo);
                             return false;
                         }
-                        if (AutoShutdown.IsEnabled && _message.ToLower() == "scheck")
+                        if (AutoShutdown.IsEnabled && _message.ToLower() == "shutdown")
                         {
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Checking for the next shutdown time.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                             AutoShutdown.CheckNextShutdown(_cInfo, _announce);
@@ -1076,7 +1076,7 @@ namespace ServerTools
                                 {
                                     MuteVote.List(_cInfo);
                                 }
-                                else if (_message.ToLower().StartsWith("mutevote "))
+                                else
                                 {
                                     _message = _message.ToLower().Replace("mutevote ", "");
                                     {
