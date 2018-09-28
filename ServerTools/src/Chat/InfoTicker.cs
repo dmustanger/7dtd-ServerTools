@@ -28,6 +28,7 @@ namespace ServerTools
             if (!IsEnabled && IsRunning)
             {
                 dict.Clear();
+                msgList.Clear();
                 fileWatcher.Dispose();
                 IsRunning = false;
             }
