@@ -55,86 +55,87 @@ namespace ServerTools
                 }
                 else
                 {
-                    if (_params[0] == "all" || _params[0] == "ALL" || _params[0] == "All")
+                    World world = GameManager.Instance.World;
+                    int count = 1;
+                    int _count;
+                    if (int.TryParse(_params[2], out _count))
+                    {
+                        if (_count > 0 & _count < 10001)
+                        {
+                            count = _count;
+                        }
+                    }
+                    int min = 1;
+                    int max = 1;
+                    int quality;
+
+                    if (int.TryParse(_params[3], out quality))
+                    {
+                        if (quality > 0 & quality < 601)
+                        {
+                            min = quality;
+                            max = quality;
+                        }
+                    }
+                    ItemValue itemValue;
+                    var itemId = 4096;
+                    int _itemId;
+                    if (int.TryParse(_params[1], out _itemId))
+                    {
+                        int calc = (_itemId + 4096);
+                        itemId = calc;
+                        itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, min, max, true);
+                    }
+                    else
+                    {
+                        ItemValue _itemValue = ItemClass.GetItem(_params[1], true);
+                        if (_itemValue.type == ItemValue.None.type)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", _params[1]));
+                            return;
+                        }
+                        else
+                        {
+                            itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, min, max, true);
+                        }
+                    }
+                    if (_params[0].ToLower() == "all")
                     {
                         List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
                         foreach (var _cInfo in _cInfoList)
                         {
-                            int count = 1;
-                            int _count;
-                            if (int.TryParse(_params[2], out _count))
+                            if (_cInfo != null)
                             {
-                                if (_count > 0 & _count < 10001)
+                                if (world.Players.dict[_cInfo.entityId].IsSpawned())
                                 {
-                                    count = _count;
-                                }
-                            }
-                            int min = 1;
-                            int max = 1;
-                            int quality;
-
-                            if (int.TryParse(_params[3], out quality))
-                            {
-                                if (quality > 0 & quality < 601)
-                                {
-                                    min = quality;
-                                    max = quality;
-                                }
-                            }
-                            ItemValue itemValue;
-                            var itemId = 4096;
-                            int _itemId;
-                            if (int.TryParse(_params[1], out _itemId))
-                            {
-                                int calc = (_itemId + 4096);
-                                itemId = calc;
-                                itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, min, max, true);
-                            }
-                            else
-                            {
-                                ItemValue _itemValue = ItemClass.GetItem(_params[1], true);
-                                if (_itemValue.type == ItemValue.None.type)
-                                {
-                                    SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", _params[1]));
-                                    return;
+                                    var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                                    {
+                                        entityClass = EntityClass.FromString("item"),
+                                        id = EntityFactory.nextEntityID++,
+                                        itemStack = new ItemStack(itemValue, count),
+                                        pos = world.Players.dict[_cInfo.entityId].position,
+                                        rot = new Vector3(20f, 0f, 20f),
+                                        lifetime = 60f,
+                                        belongsPlayerId = _cInfo.entityId
+                                    });
+                                    world.SpawnEntityInWorld(entityItem);
+                                    _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
+                                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+                                    SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
+                                    string _phrase804;
+                                    if (!Phrases.Dict.TryGetValue(804, out _phrase804))
+                                    {
+                                        _phrase804 = "{Count} {ItemName} was sent to your inventory. If your bag is full, check the ground.";
+                                    }
+                                    _phrase804 = _phrase804.Replace("{Count}", count.ToString());
+                                    _phrase804 = _phrase804.Replace("{ItemName}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name);
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase804), Config.Server_Response_Name, false, "ServerTools", false));
                                 }
                                 else
                                 {
-                                    itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, min, max, true);
+                                    SdtdConsole.Instance.Output(string.Format("Player with steamdId {0} is not spawned", _params[0]));
                                 }
                             }
-
-                            World world = GameManager.Instance.World;
-                            if (world.Players.dict[_cInfo.entityId].IsSpawned())
-                            {
-                                var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                                {
-                                    entityClass = EntityClass.FromString("item"),
-                                    id = EntityFactory.nextEntityID++,
-                                    itemStack = new ItemStack(itemValue, count),
-                                    pos = world.Players.dict[_cInfo.entityId].position,
-                                    rot = new Vector3(20f, 0f, 20f),
-                                    lifetime = 60f,
-                                    belongsPlayerId = _cInfo.entityId
-                                });
-                                world.SpawnEntityInWorld(entityItem);
-                                _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
-                                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
-                                string _phrase804;
-                                if (!Phrases.Dict.TryGetValue(804, out _phrase804))
-                                {
-                                    _phrase804 = "{Count} {ItemName} was sent to your inventory. If your bag is full, check the ground.";
-                                }
-                                _phrase804 = _phrase804.Replace("{Count}", count.ToString());
-                                _phrase804 = _phrase804.Replace("{ItemName}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase804), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
-                            else
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Player with steamdId {0} is not spawned", _params[0]));
-                            }
-
                         }
                     }
                     else
@@ -142,50 +143,6 @@ namespace ServerTools
                         ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
                         if (_cInfo != null)
                         {
-                            int count = 1;
-                            int _count;
-                            if (int.TryParse(_params[2], out _count))
-                            {
-                                if (_count > 0 & _count < 10000)
-                                {
-                                    count = _count;
-                                }
-                            }
-                            int min = 1;
-                            int max = 1;
-                            int quality;
-                            if (int.TryParse(_params[3], out quality))
-                            {
-                                if (quality > 0 & quality < 601)
-                                {
-                                    min = quality;
-                                    max = quality;
-                                }
-                            }
-                            ItemValue itemValue;
-                            var itemId = 4096;
-                            int _itemId;
-                            if (int.TryParse(_params[1], out _itemId))
-                            {
-                                int calc = (_itemId + 4096);
-                                itemId = calc;
-                                itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, min, max, true);
-                            }
-                            else
-                            {
-                                ItemValue _itemValue = ItemClass.GetItem(_params[1], true);
-                                if (_itemValue.type == ItemValue.None.type)
-                                {
-                                    SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", _params[1]));
-                                    return;
-                                }
-                                else
-                                {
-                                    itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, min, max, true);
-                                }
-                            }
-
-                            World world = GameManager.Instance.World;
                             if (world.Players.dict[_cInfo.entityId].IsSpawned())
                             {
                                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData

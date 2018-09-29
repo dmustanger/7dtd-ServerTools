@@ -1030,20 +1030,22 @@ namespace ServerTools
                     _response = _response.Replace("{PlayerName}", _playerName);
                     if (_response.StartsWith("say "))
                     {
-                        _response = _response.Replace("say ", "");
+                        _response = _response.Replace("say ", "&quot; ");
+                        _response = _response + " &quot;";
                         GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false);
                     }
                     else if (_response.StartsWith("pm ") || _response.StartsWith("personalmessage "))
                     {
                         if (_response.StartsWith("pm "))
                         {
-                            _response = _response.Replace("pm ", "");
+                            _response = _response.Replace("pm ", "{EntityId} &quot; ");
+                            _response = _response + " &quot;";
                         }
                         else
                         {
-                            _response = _response.Replace("personalmessage ", "");
+                            _response = _response.Replace("personalmessage ", "{EntityId} &quot; ");
+                            _response = _response + " &quot;";
                         }
-
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                     else if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
@@ -1093,10 +1095,18 @@ namespace ServerTools
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
-                    else if (_response2.StartsWith("pm "))
+                    else if (_response2.StartsWith("pm ") || _response2.StartsWith("personalmessage "))
                     {
-                        _response2 = _response2.Replace("pm ", "{EntityId} &quot; ");
-                        _response2 = _response2 + " &quot;";
+                        if (_response2.StartsWith("pm "))
+                        {
+                            _response2 = _response2.Replace("pm ", "{EntityId} &quot; ");
+                            _response2 = _response2 + " &quot;";
+                        }
+                        else
+                        {
+                            _response2 = _response2.Replace("personalmessage ", "{EntityId} &quot; ");
+                            _response2 = _response2 + " &quot;";
+                        }
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                     else if (_response2.StartsWith("tele ") || _response2.StartsWith("tp ") || _response2.StartsWith("teleportplayer "))
