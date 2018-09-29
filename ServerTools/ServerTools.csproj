@@ -116,6 +116,7 @@
     <Compile Include="src\ConsoleCommands\TraderListConsole.cs" />
     <Compile Include="src\ConsoleCommands\ZoneSetupConsole.cs" />
     <Compile Include="src\Event\Event.cs" />
+    <Compile Include="src\PersistentData\UpdateSQL.cs" />
     <Compile Include="src\PersistentData\UpdateToSqlFromBin.cs" />
     <Compile Include="src\Hardcore\Hardcore.cs" />
     <Compile Include="src\AntiCheat\CredentialCheck.cs" />

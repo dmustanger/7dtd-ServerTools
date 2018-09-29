@@ -4,7 +4,7 @@ namespace ServerTools
 {
     public class SQL
     {
-        public static int Sql_version = 1;
+        public static int Sql_version = 2;
         public static bool IsMySql = false;
 
         public static void Connect()
@@ -49,11 +49,6 @@ namespace ServerTools
         {
             string _str = MySqlDatabase.EscapeString(_string);
             return _str;
-        }
-
-        public static void UpdateSQL(int _version)
-        {
-            //Sql update string
         }
     }
 }

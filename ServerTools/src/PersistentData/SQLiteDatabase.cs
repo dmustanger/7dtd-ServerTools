@@ -142,25 +142,25 @@ namespace ServerTools
             FastQuery("CREATE TABLE IF NOT EXISTS EventSpawns (" +
                 "eventid INTEGER NOT NULL, " +
                 "eventTeam INTEGER NOT NULL, " +
-                "eventSpawn TEXT NOT NULL, " +
+                "eventSpawn TEXT, " +
                 "eventRespawn TEXT, " +
                 "FOREIGN KEY(eventid) REFERENCES Events(eventid) " +
                 ");");
             FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER);");
+            int _version = 1;
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");
             if (_result.Rows.Count == 0)
             {
-                string _sql = string.Format("INSERT INTO Config (sql_version) VALUES ({0})", SQL.Sql_version);
-                SQL.FastQuery(_sql);
+                FastQuery("INSERT INTO Config (sql_version) VALUES (1)");
             }
             else
             {
-                int _version;
                 int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _version);
-                if (_version != SQL.Sql_version)
-                {
-                    SQL.UpdateSQL(_version);
-                }
+            }
+            _result.Dispose();
+            if (_version != SQL.Sql_version)
+            {
+                UpdateSQL.Exec(_version);
             }
         }
 

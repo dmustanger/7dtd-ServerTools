@@ -15,7 +15,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. event new" +
+                "  1. event new \"<eventname>\"" +
                 "  2. event check" +
                 "  3. event cancel" +
                 "  4. event list" +
@@ -36,16 +36,13 @@ namespace ServerTools
         {
             try
             {
-                if (!Event.Setup)
-                {
-                    if (_params.Count != 1)
-                    {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
-                        return;
-                    }
-                }
                 if (_params[0] == ("new"))
                 {
+                    if (_params.Count != 2)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
+                        return;
+                    }
                     if (Event.Open || Event.Setup)
                     {
                         SdtdConsole.Instance.Output(string.Format("There is an event open or being setup already. It is being run by {0}.", Event.Admin));
@@ -53,7 +50,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        Event.Name = false;
+                        Event.Name = true;
                         Event.Invite = false;
                         Event.Info = false;
                         Event.Spawn = false;
@@ -67,54 +64,44 @@ namespace ServerTools
                         Event.SpawnList.Clear();
                         Event.Spawning.Clear();
                         Event.Respawning.Clear();
-                        Event.Admin = _senderInfo.RemoteClientInfo.playerName;
-                        string _sql = string.Format("INSERT INTO Events (eventAdmin) VALUES ('{0}')", Event.Admin);
+                        Event.Admin = _senderInfo.RemoteClientInfo.playerId;
+                        string _name = _params[1];
+                        _name = SQL.EscapeString(_name);
+                        string _sql = string.Format("INSERT INTO Events (eventAdmin, eventName) VALUES ('{0}', '{1}'')", Event.Admin, _name);
                         SQL.FastQuery(_sql);
                         SdtdConsole.Instance.Output("You have started to open a new event. You must complete the setup within 15 minutes.");
-                        SdtdConsole.Instance.Output("What would you like to name your new event? Type event name 'Name'.");
+                        SdtdConsole.Instance.Output(string.Format("The event name has been set to {0}.", _name));
+                        SdtdConsole.Instance.Output("What would you like the invitation for players to say? Type event \"<eventname>\" invite \"<Invitation>\".");
                         return;
                     }
                 }
-                if (_params[0] == ("name"))
+                if (_params[1] == ("invite"))
                 {
-                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerName)
+                    if (_params.Count != 3)
                     {
-                        if (!Event.Name && !Event.Invite && !Event.Info && !Event.Spawn && !Event.Respawn)
-                        {
-                            Event.Name = true;
-                            string _name = string.Join(" ", _params.ToArray());
-                            _name = _name.Replace("name ", "");
-                            string _sql = string.Format("UPDATE Events SET eventName = '{0}' WHERE eventAdmin = '{1}'", _name, Event.Admin);
-                            SQL.FastQuery(_sql);
-                            SdtdConsole.Instance.Output(string.Format("The event name has been set to {0}.", _name));
-                            SdtdConsole.Instance.Output("What would you like the invitation for players to say? Type event invite 'Invitation'.");
-                            return;
-                        }
-                        else
-                        {
-                            SdtdConsole.Instance.Output("You have already set the event name. If you have made a mistake, type event cancel and start again.");
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        SdtdConsole.Instance.Output(string.Format("You are not the organizer for this event. Contact {0}.", Event.Admin));
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 3, found {0}.", _params.Count));
                         return;
                     }
-                }
-                if (_params[0] == ("invite"))
-                {
-                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerName)
+                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerId)
                     {
+                        string _name = SQL.EscapeString(_params[0]);
+                        string _sql = string.Format("SELECT eventName FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", Event.Admin, _name);
+                        DataTable _result = SQL.TQuery(_sql);
+                        if (_result.Rows.Count == 0)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("The event \"{0}\" was not found.", _name));
+                            _result.Dispose();
+                            return;
+                        }
+                        _result.Dispose();
                         if (Event.Name && !Event.Invite && !Event.Info && !Event.Spawn && !Event.Respawn)
                         {
                             Event.Invite = true;
-                            string _invite = string.Join(" ", _params.ToArray());
-                            _invite = _invite.Replace("invite ", "");
-                            string _sql = string.Format("UPDATE Events SET eventInvite = '{0}' WHERE eventAdmin = '{1}'", _invite, Event.Admin);
+                            string _invite = SQL.EscapeString(_params[2]);
+                            _sql = string.Format("UPDATE Events SET eventInvite = '{0}' WHERE eventAdmin = '{1}' AND eventName = '{2}'", _invite, Event.Admin);
                             SQL.FastQuery(_sql);
                             SdtdConsole.Instance.Output(string.Format("The event invitation has been set to {0}.", _invite));
-                            SdtdConsole.Instance.Output("How many teams, total players, and time in minutes will the event last? Type event info 'TeamCount' 'TotalPlayers' 'TimeInMin'.");
+                            SdtdConsole.Instance.Output("How many teams, total players, and time in minutes will the event last? Type event \"<eventname>\" info <TeamCount> <TotalPlayers> <TimeInMin>.");
                             return;
                         }
                         else if (Event.Invite)
@@ -129,45 +116,55 @@ namespace ServerTools
                         return;
                     }
                 }
-                if (_params[0] == ("info"))
+                if (_params[1] == ("info"))
                 {
-                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerName)
+                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerId)
                     {
+                        string _name = SQL.EscapeString(_params[0]);
+                        string _sql = string.Format("SELECT eventName FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", Event.Admin, _name);
+                        DataTable _result = SQL.TQuery(_sql);
+                        if (_result.Rows.Count == 0)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("The event \"{0}\" was not found.", _name));
+                            _result.Dispose();
+                            return;
+                        }
+                        _result.Dispose();
                         if (Event.Name && Event.Invite && !Event.Info && !Event.Spawn && !Event.Respawn)
                         {
                             int _teamCount;
-                            if (int.TryParse(_params[1], out _teamCount))
+                            if (int.TryParse(_params[2], out _teamCount))
                             {
                                 if (_teamCount < 1)
                                 {
                                     _teamCount = 1;
                                 }
                                 int _playerCount;
-                                if (int.TryParse(_params[2], out _playerCount))
+                                if (int.TryParse(_params[3], out _playerCount))
                                 {
                                     if (_playerCount < 1)
                                     {
                                         _playerCount = 1;
                                     }
                                     int _eventTime;
-                                    if (int.TryParse(_params[3], out _eventTime))
+                                    if (int.TryParse(_params[4], out _eventTime))
                                     {
                                         if (_eventTime < 1)
                                         {
                                             _eventTime = 1;
                                         }
                                         Event.Info = true;
-                                        string _sql = string.Format("UPDATE Events SET eventTeams = {0}, eventPlayerCount = {1}, eventTime = {2} WHERE eventAdmin = '{3}'", _teamCount, _playerCount, _eventTime, Event.Admin);
+                                        _sql = string.Format("UPDATE Events SET eventTeams = {0}, eventPlayerCount = {1}, eventTime = {2} WHERE eventAdmin = '{3}' AND eventName = '{4}'", _teamCount, _playerCount, _eventTime, Event.Admin, _name);
                                         SQL.FastQuery(_sql);
                                         SdtdConsole.Instance.Output(string.Format("The event info has been set: team count {0}, total players {1}, event time {2}.", _teamCount, _playerCount, _eventTime));
                                         if (_teamCount == 1)
                                         {
-                                            SdtdConsole.Instance.Output("Stand where you would like players to spawn when the event starts and type event spawn.");
+                                            SdtdConsole.Instance.Output("Stand where you would like players to spawn when the event starts and type event \"<eventname>\" spawn.");
                                             return;
                                         }
                                         else
                                         {
-                                            SdtdConsole.Instance.Output("Stand where you would like the first team to spawn when the event starts and type event spawn.");
+                                            SdtdConsole.Instance.Output("Stand where you would like the first team to spawn when the event starts and type event \"<eventname>\" spawn.");
                                             return;
                                         }
                                     }
@@ -186,10 +183,24 @@ namespace ServerTools
                         return;
                     }
                 }
-                if (_params[0] == ("spawn"))
+                if (_params[1] == ("spawn"))
                 {
-                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerName)
+                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerId)
                     {
+                        string _name = SQL.EscapeString(_params[0]);
+                        string _sql = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", Event.Admin, _name);
+                        DataTable _result = SQL.TQuery(_sql);
+                        if (_result.Rows.Count == 0)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("The event \"{0}\" was not found.", _name));
+                            _result.Dispose();
+                            return;
+                        }
+                        int _eventid;
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
+                        int _eventTeams;
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _eventTeams);
+                        _result.Dispose();
                         if (Event.Name && Event.Invite && Event.Info && !Event.Spawn && !Event.Respawn)
                         {
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_senderInfo.RemoteClientInfo.entityId];
@@ -199,13 +210,6 @@ namespace ServerTools
                             int z = (int)_position.z;
                             string _sposition = x + "," + y + "," + z;
                             Event.Spawning.Add(Event.Spawning.Count + 1, _sposition);
-                            string _sql = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}'", Event.Admin);
-                            DataTable _result = SQL.TQuery(_sql);
-                            int _eventid;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
-                            int _eventTeams;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _eventTeams);
-                            _result.Dispose();
                             Log.Out(string.Format("Event.Spawning.Count = {0} / _eventTeams = {1}", Event.Spawning.Count, _eventTeams));
                             if (Event.Spawning.Count == _eventTeams)
                             {
@@ -213,7 +217,7 @@ namespace ServerTools
                                 _sql = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventSpawn) VALUES ({0}, {1}, '{2}')", _eventid, Event.Spawning.Count, _sposition);
                                 SQL.FastQuery(_sql);
                                 SdtdConsole.Instance.Output(string.Format("The spawn position for team {0} has been set to {1} {2} {3}.", Event.Spawning.Count, x, y, z));
-                                SdtdConsole.Instance.Output("Stand where you would like the respawn for team 1 if they die during the event, then type event respawn.");
+                                SdtdConsole.Instance.Output("Stand where you would like the respawn for team 1 if they die during the event, then type event \"<eventName>\" respawn.");
                                 return;
                             }
                             else
@@ -221,7 +225,7 @@ namespace ServerTools
                                 _sql = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventSpawn) VALUES ({0}, {1}, '{2}')", _eventid, Event.Spawning.Count, _sposition);
                                 SQL.FastQuery(_sql);
                                 SdtdConsole.Instance.Output(string.Format("The spawn position for team {0} has been set to {1} {2} {3}.", Event.Spawning.Count, x, y, z));
-                                SdtdConsole.Instance.Output(string.Format("Stand where you would like the spawn for team {0} when the event starts and type event spawn.", Event.Spawning.Count + 1));
+                                SdtdConsole.Instance.Output(string.Format("Stand where you would like the spawn for team {0} when the event starts and type event \"<eventName>\" spawn.", Event.Spawning.Count + 1));
                                 return;
                             }
                         }
@@ -237,10 +241,24 @@ namespace ServerTools
                         return;
                     }
                 }
-                if (_params[0] == ("respawn"))
+                if (_params[1] == ("respawn"))
                 {
-                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerName)
+                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerId)
                     {
+                        string _name = SQL.EscapeString(_params[0]);
+                        string _sql = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", Event.Admin, _name);
+                        DataTable _result = SQL.TQuery(_sql);
+                        if (_result.Rows.Count == 0)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("The event \"{0}\" was not found.", _name));
+                            _result.Dispose();
+                            return;
+                        }
+                        int _eventid;
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
+                        int _eventTeams;
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _eventTeams);
+                        _result.Dispose();
                         if (Event.Name && Event.Invite && Event.Info && Event.Spawn && !Event.Respawn)
                         {
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_senderInfo.RemoteClientInfo.entityId];
@@ -250,13 +268,6 @@ namespace ServerTools
                             int z = (int)_position.z;
                             string _sposition = x + "," + y + "," + z;
                             Event.Respawning.Add(Event.Respawning.Count + 1, _sposition);
-                            string _sql = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}'", Event.Admin);
-                            DataTable _result = SQL.TQuery(_sql);
-                            int _eventid;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
-                            int _eventTeams;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _eventTeams);
-                            _result.Dispose();
                             if (Event.Respawning.Count == _eventTeams)
                             {
                                 Event.Respawn = true;
@@ -264,7 +275,7 @@ namespace ServerTools
                                 _sql = string.Format("UPDATE EventSpawns SET eventRespawn = '{0}' WHERE eventid = {1} AND eventTeam = {2}", _sposition, _eventid, Event.Respawning.Count);
                                 SQL.FastQuery(_sql);
                                 SdtdConsole.Instance.Output(string.Format("The respawn position for team {0} has been set to {1} {2} {3}.", Event.Respawning.Count, x, y, z));
-                                SdtdConsole.Instance.Output("Setup is complete. Type event start to send out the invitation.");
+                                SdtdConsole.Instance.Output("Setup is complete. Type event \"<eventName>\" start to send out the invitation.");
                                 return;
                             }
                             else
@@ -272,7 +283,7 @@ namespace ServerTools
                                 _sql = string.Format("UPDATE EventSpawns SET eventRespawn = '{0}' WHERE eventid = {1} AND eventTeam = {2}", _sposition, _eventid, Event.Respawning.Count);
                                 SQL.FastQuery(_sql);
                                 SdtdConsole.Instance.Output(string.Format("The respawn position for team {0} has been set to {1} {2} {3}.", Event.Respawning.Count, x, y, z));
-                                SdtdConsole.Instance.Output(string.Format("Stand where you would like the respawn for team {0} if they die during the event and type event respawn.", Event.Respawning.Count + 1));
+                                SdtdConsole.Instance.Output(string.Format("Stand where you would like the respawn for team {0} if they die during the event and type event \"<eventName>\" respawn.", Event.Respawning.Count + 1));
                                 return;
                             }
                         }
@@ -288,9 +299,9 @@ namespace ServerTools
                         return;
                     }
                 }
-                if (_params[0] == ("start"))
+                if (_params[1] == ("start"))
                 {
-                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerName)
+                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerId)
                     {
                         if (Event.Complete)
                         {
@@ -298,7 +309,8 @@ namespace ServerTools
                             {
                                 Event.Setup = false;
                                 Event.Invited = true;
-                                string _sql = string.Format("SELECT eventid, eventName, eventInvite FROM Events WHERE eventAdmin = '{0}'", Event.Admin);
+                                string _name = SQL.EscapeString(_params[0]);
+                                string _sql = string.Format("SELECT eventid, eventName, eventInvite FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", Event.Admin, _name);
                                 DataTable _result = SQL.TQuery(_sql);
                                 int _eventid;
                                 int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
@@ -341,7 +353,7 @@ namespace ServerTools
                 {
                     if (Event.Open)
                     {
-                        if (Event.Admin == _senderInfo.RemoteClientInfo.playerName)
+                        if (Event.Admin == _senderInfo.RemoteClientInfo.playerId)
                         {
                             string _sql = string.Format("SELECT eventName, eventInvite, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventAdmin = '{0}' AND eventActive = 'true'", Event.Admin);
                             DataTable _result = SQL.TQuery(_sql);
@@ -390,7 +402,7 @@ namespace ServerTools
                 }
                 if (_params[0] == ("cancel"))
                 {
-                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerName)
+                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerId)
                     {
                         if (Event.Open)
                         {
@@ -496,7 +508,7 @@ namespace ServerTools
                 }
                 if (_params[0] == ("return"))
                 {
-                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerName)
+                    if (Event.Admin == _senderInfo.RemoteClientInfo.playerId)
                     {
                         if (Event.Return)
                         {
