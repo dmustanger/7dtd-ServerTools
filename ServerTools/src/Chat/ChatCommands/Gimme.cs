@@ -247,9 +247,9 @@ namespace ServerTools
                 TimeSpan varTime = DateTime.Now - _lastgimme;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int _timepassed = (int)fractionalMinutes;
-                if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                if (ReservedSlots.IsEnabled)
                 {
-                    if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                    if (ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                     {
                         DateTime _dt;
                         ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
