@@ -11,10 +11,12 @@ namespace ServerTools
                 if (SQL.IsMySql)
                 {
                     MySqlDatabase.FastQuery("ALTER TABLE EventSpawns MODIFY eventSpawn VARCHAR(50) DEFAULT NULL; ALTER TABLE EventSpawns MODIFY eventRespawn VARCHAR(50) DEFAULT NULL");
+                    MySqlDatabase.FastQuery("ALTER TABLE Players ADD return VARCHAR(50) DEFAULT 'false';");
                 }
                 else
                 {
                     SQLiteDatabase.FastQuery("ALTER TABLE EventSpawns MODIFY eventSpawn TEXT DEFAULT NULL; ALTER TABLE EventSpawns MODIFY eventRespawn TEXT DEFAULT NULL");
+                    SQLiteDatabase.FastQuery("ALTER TABLE Players ADD return TEXT DEFAULT 'false';");
                 }
                 SQL.FastQuery("UPDATE Config SET sql_version = 2 WHERE sql_version = 1");
             }
