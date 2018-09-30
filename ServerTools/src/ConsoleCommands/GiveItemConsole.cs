@@ -38,9 +38,9 @@ namespace ServerTools
                     SdtdConsole.Instance.Output(string.Format("Can not give item to SteamId: Invalid SteamId {0}", _params[0]));
                     return;
                 }
-                if (_params[1].Length < 1 || _params[1].Length > 6)
+                if (_params[1].Length < 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Can not give item: Invalid itemId {0}", _params[1]));
+                    SdtdConsole.Instance.Output(string.Format("Can not give item: Invalid itemId or name {0}", _params[1]));
                     return;
                 }
                 if (_params[2].Length < 1 || _params[2].Length > 4)

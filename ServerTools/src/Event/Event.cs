@@ -6,63 +6,20 @@ namespace ServerTools
 {
     class Event
     {
-        public static bool Setup = false, Open = false, Name = false, Invite = false, Info = false, Spawn = false, Respawn = false, Complete = false, Invited = false, Cancel = false, Extend = false, Return = false;
-        public static Dictionary<int, int> PlayersTeam = new Dictionary<int, int>();
-        public static Dictionary<int, string> PlayersReturn = new Dictionary<int, string>();
-        public static List<int> Players = new List<int>();
+        public static bool Open = false, Invited = false, Cancel = false, Extend = false, Return = false;
         public static List<int> SpawnList = new List<int>();
-        public static Dictionary<int, string> Spawning = new Dictionary<int, string>();
-        public static Dictionary<int, string> Respawning = new Dictionary<int, string>();
+        public static Dictionary<int, int> SetupStage = new Dictionary<int, int>();
+        public static Dictionary<int, string> SetupName = new Dictionary<int, string>();
+        public static Dictionary<int, int> PlayersTeam = new Dictionary<int, int>();
         public static string Admin = null;
-
-        public static void CheckOpen()
-        {
-            if (!Invited)
-            {
-                Setup = false;
-                Name = false;
-                Invite = false;
-                Info = false;
-                Spawn = false;
-                Respawn = false;
-                Complete = false;
-                Invited = false;
-                Admin = null;
-                PlayersTeam.Clear();
-                Players.Clear();
-                PlayersReturn.Clear();
-                SpawnList.Clear();
-                Spawning.Clear();
-                Respawning.Clear();
-                string _sql = "UPDATE Events SET eventAdmin = null, eventActive = 'false' WHERE eventActive = 'true'";
-                SQL.FastQuery(_sql);
-                ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(Admin);
-                if (_cInfo != null)
-                {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have taken too long to setup the event. The setup has been cleared.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                }
-            }
-        }
 
         public static void CheckOpen2()
         {
             if (!Open)
             {
-                Setup = false;
-                Name = false;
-                Invite = false;
-                Info = false;
-                Spawn = false;
-                Respawn = false;
-                Complete = false;
                 Invited = false;
                 Admin = null;
                 PlayersTeam.Clear();
-                Players.Clear();
-                PlayersReturn.Clear();
-                SpawnList.Clear();
-                Spawning.Clear();
-                Respawning.Clear();
                 string _sql = "UPDATE Events SET eventAdmin = null, eventActive = 'false' WHERE eventActive = 'true'";
                 SQL.FastQuery(_sql);
                 ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(Admin);
@@ -75,17 +32,15 @@ namespace ServerTools
 
         public static void AddPlayer(ClientInfo _cInfo)
         {
-            if (!Players.Contains(_cInfo.entityId))
+            if (!PlayersTeam.ContainsKey(_cInfo.entityId))
             {
-                Players.Add(_cInfo.entityId);
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 Vector3 _position = _player.GetPosition();
                 int x = (int)_position.x;
                 int y = (int)_position.y;
                 int z = (int)_position.z;
                 string _sposition = x + "," + y + "," + z;
-                PlayersReturn.Add(_cInfo.entityId, _sposition);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have signed up for the event and your current location has been saved.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have signed up for the event and your current location has been saved for return.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                 string _sql = string.Format("SELECT eventName, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventAdmin = '{0}' AND eventActive = 'true '", Admin);
                 DataTable _result = SQL.TQuery(_sql);
                 string _eventName = _result.Rows[0].ItemArray.GetValue(0).ToString();
@@ -96,19 +51,11 @@ namespace ServerTools
                 int _time;
                 int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _time);
                 _result.Dispose();
-                int _playerCount = _eventPlayerCount;
-                if (Players.Count == _playerCount)
+                if (PlayersTeam.Count == _eventPlayerCount)
                 {
-                    Setup = false;
-                    Name = false;
-                    Invite = false;
-                    Info = false;
-                    Spawn = false;
-                    Respawn = false;
-                    Complete = false;
                     Invited = false;
                     int _teamCount = _eventTeams;
-                    for (int i = 0; i < Players.Count; i++)
+                    for (int i = 0; i < PlayersTeam.Count; i++)
                     {
                         int _playerEntId = Players[i];
                         ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForEntityId(_playerEntId);

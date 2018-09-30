@@ -180,6 +180,10 @@ namespace ServerTools
                         {
                             StartingItems.Que.Add(_cInfo.playerId);
                         }
+                        else if (NewSpawnTele.IsEnabled && NewSpawnTele.New_Spawn_Tele_Position == "0,0,0")
+                        {
+                            StartingItems.StartingItemCheck(_cInfo);
+                        }
                     }
                     string _sql = "SELECT pollOpen FROM Polls WHERE pollOpen = 'true'";
                     DataTable _result = SQL.TQuery(_sql);

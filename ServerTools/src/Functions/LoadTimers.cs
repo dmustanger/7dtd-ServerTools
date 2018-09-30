@@ -10,7 +10,7 @@ namespace ServerTools
             Shutdown_Delay = 60, Infoticker_Delay = 60, _sSC = 0, _sSCD = 0,
             Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0, _eventTime = 0;
         private static int timer1SecondInstanceCount, _wV, _pSC, _b, _pL, _mC, _wSD, _iT, _rVS, _kV, _mV,
-            _rS, _rV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _nV, _vR, _eS, _eI, _eO, _zR; 
+            _rS, _rV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _nV, _vR, _eI, _eO, _zR; 
         private static System.Timers.Timer t1 = new System.Timers.Timer();
 
         public static void TimerStart()
@@ -735,20 +735,6 @@ namespace ServerTools
             else
             {
                 _vR = 0;
-            }
-            if (Event.Setup)
-            {
-                _eS++;
-                if (_eS >= 900)
-                {
-                    _eS = 0;
-                    Event.Setup = false;
-                    Event.CheckOpen();
-                }
-            }
-            else
-            {
-                _eS = 0;
             }
             if (Event.Invited)
             {

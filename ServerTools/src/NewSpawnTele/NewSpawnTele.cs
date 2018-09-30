@@ -60,15 +60,7 @@ namespace ServerTools
                 string _sql = string.Format("UPDATE Players SET newTeleSpawn = '{0}' WHERE steamid = '{1}'", _position, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }
-            string[] _cords = { };
-            if (New_Spawn_Tele_Position.Contains(","))
-            {
-                _cords = New_Spawn_Tele_Position.Split(',');
-            }
-            else
-            {
-                _cords = New_Spawn_Tele_Position.Split(' ');
-            }
+            string[] _cords = New_Spawn_Tele_Position.Split(',');
             int x, y, z;
             int.TryParse(_cords[0], out x);
             int.TryParse(_cords[1], out y);

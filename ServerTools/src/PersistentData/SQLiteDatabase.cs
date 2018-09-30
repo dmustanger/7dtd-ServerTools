@@ -66,6 +66,7 @@ namespace ServerTools
                 "zkills INTEGER DEFAULT 0, " +
                 "kills INTEGER DEFAULT 0, " +
                 "deaths INTEGER DEFAULT 0, " +
+                "return TEXT DEFAULT 'false', " +
                 "eventReturn TEXT DEFAULT 'Unknown', " +
                 "marketReturn TEXT DEFAULT 'Unknown', " +
                 "lobbyReturn TEXT DEFAULT 'Unknown', " +
