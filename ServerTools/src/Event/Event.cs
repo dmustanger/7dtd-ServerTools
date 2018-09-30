@@ -7,13 +7,12 @@ namespace ServerTools
     class Event
     {
         public static bool Open = false, Invited = false, Cancel = false, Extend = false, Return = false;
-        public static List<int> SpawnList = new List<int>();
-        public static Dictionary<int, int> SetupStage = new Dictionary<int, int>();
-        public static Dictionary<int, string> SetupName = new Dictionary<int, string>();
-        public static Dictionary<int, int> PlayersTeam = new Dictionary<int, int>();
+        public static Dictionary<string, int> SetupStage = new Dictionary<string, int>();
+        public static Dictionary<string, string> SetupName = new Dictionary<string, string>();
+        public static Dictionary<string, int> PlayersTeam = new Dictionary<string, int>();
         public static string Admin = null;
 
-        public static void CheckOpen2()
+        public static void CheckOpen()
         {
             if (!Open)
             {
@@ -32,7 +31,7 @@ namespace ServerTools
 
         public static void AddPlayer(ClientInfo _cInfo)
         {
-            if (!PlayersTeam.ContainsKey(_cInfo.entityId))
+            if (!PlayersTeam.ContainsKey(_cInfo.playerId))
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 Vector3 _position = _player.GetPosition();
@@ -40,9 +39,12 @@ namespace ServerTools
                 int y = (int)_position.y;
                 int z = (int)_position.z;
                 string _sposition = x + "," + y + "," + z;
+                string _eventReturn = SQL.EscapeString(_sposition);
+                string _sql1 = string.Format("UPDATE Players SET eventReturn = '{0}' WHERE steamid = {1}", _eventReturn, _cInfo.playerId);
+                SQL.FastQuery(_sql1);
                 _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have signed up for the event and your current location has been saved for return.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                string _sql = string.Format("SELECT eventName, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventAdmin = '{0}' AND eventActive = 'true '", Admin);
-                DataTable _result = SQL.TQuery(_sql);
+                string _sql2 = string.Format("SELECT eventName, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventAdmin = '{0}' AND eventActive = 'true '", Admin);
+                DataTable _result = SQL.TQuery(_sql2);
                 string _eventName = _result.Rows[0].ItemArray.GetValue(0).ToString();
                 int _eventTeams;
                 int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _eventTeams);
@@ -51,7 +53,7 @@ namespace ServerTools
                 int _time;
                 int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _time);
                 _result.Dispose();
-                if (PlayersTeam.Count == _eventPlayerCount)
+                if (PlayersTeam.Count == _eventPlayerCount - 1)
                 {
                     Invited = false;
                     int _teamCount = _eventTeams;
@@ -86,7 +88,7 @@ namespace ServerTools
                 else
                 {
                     GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} still has space for more players. Type /event.", Config.Chat_Response_Color, _eventName), Config.Server_Response_Name, false, "ServerTools", true);
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} of {2} have signed up.", Config.Chat_Response_Color, Players.Count, _eventPlayerCount), Config.Server_Response_Name, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} of {2} have signed up.", Config.Chat_Response_Color, PlayersTeam.Count, _eventPlayerCount), Config.Server_Response_Name, false, "ServerTools", true);
                 }
             }
             else
@@ -99,26 +101,34 @@ namespace ServerTools
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             int _team;
-            PlayersTeam.TryGetValue(_player.entityId, out _team);
-            string _spawnPos = Respawning[_team - 1];
-            int _x, _y, _z;
-            string[] _cords = _spawnPos.Split(',');
-            int.TryParse(_cords[0], out _x);
-            int.TryParse(_cords[1], out _y);
-            int.TryParse(_cords[2], out _z);
-            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_x, _y, _z), false));
-            SpawnList.Remove(_cInfo.entityId);
+            if (PlayersTeam.TryGetValue(_cInfo.playerId, out _team))
+            {
+                string _sql1 = string.Format("SELECT eventid FROM Events WHERE eventActive = 'true'");
+                DataTable _result1 = SQL.TQuery(_sql1);
+                int _eventid;
+                int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
+                _result1.Dispose();
+                string _sql2 = string.Format("SELECT eventRespawn FROM EventSpawns WHERE eventid = {0} AND eventTeam = {1}", _eventid, _team);
+                DataTable _result2 = SQL.TQuery(_sql2);
+                string _respawnPos = _result2.Rows[0].ItemArray.GetValue(0).ToString();
+                _result2.Dispose();
+                int _x, _y, _z;
+                string[] _cords = _respawnPos.Split(',');
+                int.TryParse(_cords[0], out _x);
+                int.TryParse(_cords[1], out _y);
+                int.TryParse(_cords[2], out _z);
+                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_x, _y, _z), false));
+            }
         }
 
         public static void HalfTime()
         {
-            for (int i = 0; i < Players.Count; i++)
+            foreach (var _player in PlayersTeam)
             {
-                int _playerEntId = Players[i];
-                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_playerEntId);
-                if (_cInfo != null)
+                ClientInfo _cInfo1 = ConnectionManager.Instance.GetClientInfoForPlayerId(_player.Key);
+                if (_cInfo1 != null)
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event is at half time.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                    _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event is at half time.[-]", Config.Chat_Response_Color, _cInfo1.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForPlayerName(Admin);
@@ -131,92 +141,61 @@ namespace ServerTools
         public static void FiveMin()
         {
             Extend = true;
-            for (int i = 0; i < Players.Count; i++)
+            foreach (var _player in PlayersTeam)
             {
-                int _playerEntId = Players[i];
-                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_playerEntId);
-                if (_cInfo != null)
+                ClientInfo _cInfo1 = ConnectionManager.Instance.GetClientInfoForPlayerId(_player.Key);
+                if (_cInfo1 != null)
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event has five minutes remaining.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                    _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event has five minutes remaining.[-]", Config.Chat_Response_Color, _cInfo1.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                 }
             }
             ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForPlayerName(Admin);
             if (_cInfo2 != null)
             {
-                _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event has five minutes remaining. If you need to extend the time remaining, type event extend. It will add 30 more minutes.[-]", Config.Chat_Response_Color, _cInfo2.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event has five minutes remaining. If you need to extend the time remaining, in the console type event extend <time>. The time is in minutes.[-]", Config.Chat_Response_Color, _cInfo2.playerName), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
         public static void EndEvent()
         {
-            for (int i = 0; i < Players.Count; i++)
+            foreach (var _player1 in PlayersTeam)
             {
-                int _playerEntId = Players[i];
-                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_playerEntId);
-                if (_cInfo != null)
+                ClientInfo _cInfo1 = ConnectionManager.Instance.GetClientInfoForPlayerId(_player1.Key);
+                if (_cInfo1 != null)
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    if (_player.IsSpawned())
+                    EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
+                    if (_player2.IsSpawned())
                     {
-                        string _position;
-                        PlayersReturn.TryGetValue(_playerEntId, out _position);
+                        string _sql1 = string.Format("SELECT eventReturn FROM Players WHERE steamid = '{0}'", _cInfo1.playerId);
+                        DataTable _result = SQL.TQuery(_sql1);
+                        string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                        _result.Dispose();
                         int x, y, z;
-                        string[] _cords = _position.Split(',');
+                        string[] _cords = _pos.Split(',');
                         int.TryParse(_cords[0], out x);
                         int.TryParse(_cords[1], out y);
                         int.TryParse(_cords[2], out z);
-                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
-                        PlayersReturn.Remove(_playerEntId);
-                        PlayersTeam.Remove(_playerEntId);
-                        Players.Remove(_playerEntId);
-                        SpawnList.Remove(_playerEntId);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event has ended. Thank you for playing.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                        _cInfo1.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                        PlayersTeam.Remove(_player1.Key);
+                        _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event has ended. Thank you for playing.[-]", Config.Chat_Response_Color, _cInfo1.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                 }
                 else
                 {
-                    PersistentPlayerData _persistentPlayerData = GameManager.Instance.GetPersistentPlayerList().GetPlayerDataFromEntityID(_playerEntId);
-                    string _steamId = _persistentPlayerData.PlayerId;
-                    string _pos;
-                    PlayersReturn.TryGetValue(_playerEntId, out _pos);
-                    string _sql = string.Format("UPDATE Players SET eventReturn = '{0}' WHERE steamid = '{1}'", _pos, _steamId);
-                    SQL.FastQuery(_sql);
-                    PlayersReturn.Remove(_playerEntId);
-                    PlayersTeam.Remove(_playerEntId);
-                    Players.Remove(_playerEntId);
-                    SpawnList.Remove(_playerEntId);
+                    string _sql1 = string.Format("UPDATE Players SET return = 'true' WHERE steamid = '{0}'", _player1.Key);
+                    SQL.FastQuery(_sql1);
+                    PlayersTeam.Remove(_player1.Key);
                 }
             }
-            if (Players.Count == 0)
+            string _sql2 = string.Format("UPDATE Events SET eventAdmin = null, eventActive = 'false' WHERE eventAdmin = '{0}'", Admin);
+            SQL.FastQuery(_sql2);
+            ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForPlayerName(Admin);
+            if (_cInfo2 != null)
             {
-                Open = false;
-                Players = null;
-                SpawnList = null;
-                Spawning = null;
-                Respawning = null;
-                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerName(Admin);
-                if (_cInfo != null)
-                {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the current event has ended and event players have been sent back to their return points.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                }
-                string _sql = string.Format("UPDATE Events SET eventAdmin = null, eventActive = 'false' WHERE eventAdmin = '{0}'", Admin);
-                SQL.FastQuery(_sql);
-                Admin = null;
-                PlayersReturn.Clear();
-                PlayersTeam.Clear();
-                Players.Clear();
-                SpawnList.Clear();
+                _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the current event has ended and event players have been sent back to their return points.[-]", Config.Chat_Response_Color, _cInfo2.playerName), Config.Server_Response_Name, false, "ServerTools", false));
             }
-            else
-            {
-                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerName(Admin);
-                if (_cInfo != null)
-                {
-                    Return = true;
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the current event has ended and event players have been sent back to their return points.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} not all players were spawned. Let them respawn and type event return in console.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                }
-            }
+            Open = false;
+            Admin = null;
         }
 
         public static void OfflineReturn(ClientInfo _cInfo)
@@ -231,7 +210,7 @@ namespace ServerTools
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
-            _sql = string.Format("UPDATE Players SET eventReturn = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
+            _sql = string.Format("UPDATE Players SET eventReturn = 'Unknown', return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
             SQL.FastQuery(_sql);
             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event ended while you were offline. You have been sent to your return point.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
         }

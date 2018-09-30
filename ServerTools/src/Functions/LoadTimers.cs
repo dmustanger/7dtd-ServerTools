@@ -743,7 +743,7 @@ namespace ServerTools
                 {
                     _eI = 0;
                     Event.Invited = false;
-                    Event.CheckOpen2();
+                    Event.CheckOpen();
                 }
             }
             else

@@ -85,187 +85,187 @@ namespace ServerTools
                     if (_player.IsDead())
                     {
                         DP = true;
-                        if (!Dead.Contains(_player.entityId))
+                        ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
+                        if (_cInfo != null)
                         {
-                            Dead.Add(_player.entityId);
-                            if (!DeathTime.ContainsKey(_player.entityId))
+
+                            if (!Dead.Contains(_player.entityId))
                             {
-                                Vector3 _position = _player.GetPosition();
-                                int x = (int)_position.x;
-                                int y = (int)_position.y;
-                                int z = (int)_position.z;
-                                string _dposition = x + "," + y + "," + z;
-                                DeathTime.Add(_player.entityId, DateTime.Now);
-                                LastDeathPos.Add(_player.entityId, _dposition);
-                            }
-                            else
-                            {
-                                Vector3 _position = _player.GetPosition();
-                                int x = (int)_position.x;
-                                int y = (int)_position.y;
-                                int z = (int)_position.z;
-                                string _dposition = x + "," + y + "," + z;
-                                DeathTime[_player.entityId] = DateTime.Now;
-                                LastDeathPos[_player.entityId] = _dposition;
-                            }
-                            for (int j = 0; j < _playerList.Count; j++)
-                            {
-                                EntityPlayer _player2 = _playerList[j];
-                                Entity _target = _player2.GetDamagedTarget();
-                                if (_target == _player && _player != _player2)
+                                Dead.Add(_player.entityId);
+                                if (!DeathTime.ContainsKey(_player.entityId))
                                 {
-                                    _player2.ClearDamagedTarget();
-                                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
-                                    ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForEntityId(_player2.entityId);
-                                    if (_cInfo != null && _cInfo2 != null)
+                                    Vector3 _position = _player.GetPosition();
+                                    int x = (int)_position.x;
+                                    int y = (int)_position.y;
+                                    int z = (int)_position.z;
+                                    string _dposition = x + "," + y + "," + z;
+                                    DeathTime.Add(_player.entityId, DateTime.Now);
+                                    LastDeathPos.Add(_player.entityId, _dposition);
+                                }
+                                else
+                                {
+                                    Vector3 _position = _player.GetPosition();
+                                    int x = (int)_position.x;
+                                    int y = (int)_position.y;
+                                    int z = (int)_position.z;
+                                    string _dposition = x + "," + y + "," + z;
+                                    DeathTime[_player.entityId] = DateTime.Now;
+                                    LastDeathPos[_player.entityId] = _dposition;
+                                }
+                                for (int j = 0; j < _playerList.Count; j++)
+                                {
+                                    EntityPlayer _player2 = _playerList[j];
+                                    Entity _target = _player2.GetDamagedTarget();
+                                    if (_target == _player && _player != _player2)
                                     {
-                                        if (KillNotice.IsEnabled)
+                                        _player2.ClearDamagedTarget();
+                                        ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForEntityId(_player2.entityId);
+                                        if (_cInfo != null && _cInfo2 != null)
                                         {
-                                            string _holdingItem = _player2.inventory.holdingItem.Name;
-                                            ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
-                                            if (_itemValue.type != ItemValue.None.type)
+                                            if (KillNotice.IsEnabled)
                                             {
-                                                _holdingItem = _itemValue.ItemClass.localizedName ?? _itemValue.ItemClass.Name;
-                                            }
-                                            KillNotice.Notice(_cInfo, _cInfo2, _holdingItem);
-                                        }
-                                        if (Bounties.IsEnabled)
-                                        {
-                                            if (!_player.IsFriendsWith(_player2) && !_player2.IsFriendsWith(_player))
-                                            {
-                                                if (ClanManager.IsEnabled)
+                                                string _holdingItem = _player2.inventory.holdingItem.Name;
+                                                ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
+                                                if (_itemValue.type != ItemValue.None.type)
                                                 {
-                                                    if (ClanManager.ClanMember.Contains(_cInfo.playerId) && ClanManager.ClanMember.Contains(_cInfo2.playerId))
+                                                    _holdingItem = _itemValue.ItemClass.localizedName ?? _itemValue.ItemClass.Name;
+                                                }
+                                                KillNotice.Notice(_cInfo, _cInfo2, _holdingItem);
+                                            }
+                                            if (Bounties.IsEnabled)
+                                            {
+                                                if (!_player.IsFriendsWith(_player2) && !_player2.IsFriendsWith(_player))
+                                                {
+                                                    if (ClanManager.IsEnabled)
                                                     {
-                                                        string _sql1 = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                                        DataTable _result1 = SQL.TQuery(_sql1);
-                                                        string _clanName = _result1.Rows[0].ItemArray.GetValue(0).ToString();
-                                                        _result1.Dispose();
-                                                        _sql1 = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo2.playerId);
-                                                        DataTable _result2 = SQL.TQuery(_sql1);
-                                                        string _clanName2 = _result2.Rows[0].ItemArray.GetValue(0).ToString();
-                                                        _result2.Dispose();
-                                                        Player p2 = PersistentContainer.Instance.Players[_cInfo2.playerId, false];
-                                                        if (_clanName != "Unknown" && _clanName2 != "Unknown")
+                                                        if (ClanManager.ClanMember.Contains(_cInfo.playerId) && ClanManager.ClanMember.Contains(_cInfo2.playerId))
                                                         {
-                                                            if (_clanName == _clanName2)
+                                                            string _sql1 = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                                            DataTable _result1 = SQL.TQuery(_sql1);
+                                                            string _clanName = _result1.Rows[0].ItemArray.GetValue(0).ToString();
+                                                            _result1.Dispose();
+                                                            _sql1 = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo2.playerId);
+                                                            DataTable _result2 = SQL.TQuery(_sql1);
+                                                            string _clanName2 = _result2.Rows[0].ItemArray.GetValue(0).ToString();
+                                                            _result2.Dispose();
+                                                            Player p2 = PersistentContainer.Instance.Players[_cInfo2.playerId, false];
+                                                            if (_clanName != "Unknown" && _clanName2 != "Unknown")
                                                             {
-                                                                return;
+                                                                if (_clanName == _clanName2)
+                                                                {
+                                                                    return;
+                                                                }
                                                             }
                                                         }
                                                     }
-                                                }
-                                                string _sql = string.Format("SELECT bounty, bountyHunter FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                                DataTable _result = SQL.TQuery(_sql);
-                                                int _bounty;
-                                                int _hunterCountVictim;
-                                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bounty);
-                                                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _hunterCountVictim);
-                                                _result.Dispose();
-                                                if (_bounty > 0)
-                                                {
-                                                    _sql = string.Format("SELECT playerSpentCoins, bountyHunter FROM Players WHERE steamid = '{0}'", _cInfo2.playerId);
-                                                    DataTable _result2 = SQL.TQuery(_sql);
-                                                    int _playerSpentCoins;
-                                                    int _hunterCountKiller;
-                                                    int.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
-                                                    int.TryParse(_result2.Rows[0].ItemArray.GetValue(1).ToString(), out _hunterCountKiller);
-                                                    _result2.Dispose();
-                                                    if (Bonus > 0 && _hunterCountVictim >= Bonus)
+                                                    string _sql = string.Format("SELECT bounty, bountyHunter FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                                    DataTable _result = SQL.TQuery(_sql);
+                                                    int _bounty;
+                                                    int _hunterCountVictim;
+                                                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bounty);
+                                                    int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _hunterCountVictim);
+                                                    _result.Dispose();
+                                                    if (_bounty > 0)
                                                     {
-                                                        _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, bountyHunter = {1} WHERE steamid = '{2}'", _playerSpentCoins + _bounty + Bonus, _hunterCountKiller + 1, _cInfo2.playerId);
+                                                        _sql = string.Format("SELECT playerSpentCoins, bountyHunter FROM Players WHERE steamid = '{0}'", _cInfo2.playerId);
+                                                        DataTable _result2 = SQL.TQuery(_sql);
+                                                        int _playerSpentCoins;
+                                                        int _hunterCountKiller;
+                                                        int.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+                                                        int.TryParse(_result2.Rows[0].ItemArray.GetValue(1).ToString(), out _hunterCountKiller);
+                                                        _result2.Dispose();
+                                                        if (Bonus > 0 && _hunterCountVictim >= Bonus)
+                                                        {
+                                                            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, bountyHunter = {1} WHERE steamid = '{2}'", _playerSpentCoins + _bounty + Bonus, _hunterCountKiller + 1, _cInfo2.playerId);
+                                                            SQL.FastQuery(_sql);
+                                                        }
+                                                        else
+                                                        {
+                                                            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, bountyHunter = {1} WHERE steamid = '{2}'", _playerSpentCoins + _bounty, _hunterCountKiller + 1, _cInfo2.playerId);
+                                                            SQL.FastQuery(_sql);
+                                                        }
+                                                        _sql = string.Format("UPDATE Players SET bounty = 0, bountyHunter = 0 WHERE steamid = '{0}'", _cInfo.playerId);
                                                         SQL.FastQuery(_sql);
-                                                    }
-                                                    else
-                                                    {
-                                                        _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, bountyHunter = {1} WHERE steamid = '{2}'", _playerSpentCoins + _bounty, _hunterCountKiller + 1, _cInfo2.playerId);
-                                                        SQL.FastQuery(_sql);
-                                                    }
-                                                    _sql = string.Format("UPDATE Players SET bounty = 0, bountyHunter = 0 WHERE steamid = '{0}'", _cInfo.playerId);
-                                                    SQL.FastQuery(_sql);
-                                                    string _phrase912;
-                                                    if (!Phrases.Dict.TryGetValue(912, out _phrase912))
-                                                    {
-                                                        _phrase912 = "{PlayerName} is a bounty hunter! {Victim} was snuffed out.";
-                                                    }
-                                                    _phrase912 = _phrase912.Replace("{PlayerName}", _cInfo2.playerName);
-                                                    _phrase912 = _phrase912.Replace("{Victim}", _cInfo.playerName);
-                                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase912), Config.Server_Response_Name, false, "ServerTools", false);
-                                                    using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                    {
-                                                        sw.WriteLine(string.Format("{0}: {1} is a bounty hunter! {2} was snuffed out. Bounty was worth {3}", DateTime.Now, _cInfo2.playerName, _cInfo.playerName, _bounty));
-                                                        sw.WriteLine();
-                                                        sw.Flush();
-                                                        sw.Close();
-                                                    }
-                                                }
-                                                if (Bounties.Kill_Streak > 0)
-                                                {
-                                                    if (KillStreak.ContainsKey(_cInfo.entityId))
-                                                    {
-                                                        KillStreak.Remove(_cInfo.entityId);
+                                                        string _phrase912;
+                                                        if (!Phrases.Dict.TryGetValue(912, out _phrase912))
+                                                        {
+                                                            _phrase912 = "{PlayerName} is a bounty hunter! {Victim} was snuffed out.";
+                                                        }
+                                                        _phrase912 = _phrase912.Replace("{PlayerName}", _cInfo2.playerName);
+                                                        _phrase912 = _phrase912.Replace("{Victim}", _cInfo.playerName);
+                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase912), Config.Server_Response_Name, false, "ServerTools", false);
                                                         using (StreamWriter sw = new StreamWriter(filepath, true))
                                                         {
-                                                            sw.WriteLine(string.Format("{0}: Player {1} kill streak has come to an end by {2}.", DateTime.Now, _cInfo.playerName, _cInfo2.playerName));
+                                                            sw.WriteLine(string.Format("{0}: {1} is a bounty hunter! {2} was snuffed out. Bounty was worth {3}", DateTime.Now, _cInfo2.playerName, _cInfo.playerName, _bounty));
                                                             sw.WriteLine();
                                                             sw.Flush();
                                                             sw.Close();
                                                         }
                                                     }
-                                                    if (KillStreak.ContainsKey(_cInfo2.entityId))
+                                                    if (Bounties.Kill_Streak > 0)
                                                     {
-                                                        int _value;
-                                                        if (KillStreak.TryGetValue(_cInfo2.entityId, out _value))
+                                                        if (KillStreak.ContainsKey(_cInfo.entityId))
                                                         {
-                                                            int _newValue = _value + 1;
-                                                            KillStreak[_cInfo2.entityId] = _newValue;
-                                                            if (_newValue == Bounties.Kill_Streak)
+                                                            KillStreak.Remove(_cInfo.entityId);
+                                                            using (StreamWriter sw = new StreamWriter(filepath, true))
                                                             {
-                                                                string _phrase913;
-                                                                if (!Phrases.Dict.TryGetValue(913, out _phrase913))
-                                                                {
-                                                                    _phrase913 = "{PlayerName} is on a kill streak! Their bounty has increased.";
-                                                                }
-                                                                _phrase913 = _phrase913.Replace("{PlayerName}", _cInfo2.playerName);
-                                                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase913), Config.Server_Response_Name, false, "ServerTools", false);
+                                                                sw.WriteLine(string.Format("{0}: Player {1} kill streak has come to an end by {2}.", DateTime.Now, _cInfo.playerName, _cInfo2.playerName));
+                                                                sw.WriteLine();
+                                                                sw.Flush();
+                                                                sw.Close();
                                                             }
-                                                            if (_newValue >= Bounties.Kill_Streak)
+                                                        }
+                                                        if (KillStreak.ContainsKey(_cInfo2.entityId))
+                                                        {
+                                                            int _value;
+                                                            if (KillStreak.TryGetValue(_cInfo2.entityId, out _value))
                                                             {
-                                                                _sql = string.Format("SELECT bounty FROM Players WHERE steamid = '{0}'", _cInfo2.playerId);
-                                                                DataTable _result3 = SQL.TQuery(_sql);
-                                                                int _oldBounty;
-                                                                int.TryParse(_result3.Rows[0].ItemArray.GetValue(0).ToString(), out _oldBounty);
-                                                                _result3.Dispose();
-                                                                _sql = string.Format("UPDATE Players SET bounty = {0} WHERE steamid = '{1}'", _oldBounty + (_player2.Level * Bounties.Bounty), _cInfo.playerId);
-                                                                SQL.FastQuery(_sql);
-                                                                using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                                int _newValue = _value + 1;
+                                                                KillStreak[_cInfo2.entityId] = _newValue;
+                                                                if (_newValue == Bounties.Kill_Streak)
                                                                 {
-                                                                    sw.WriteLine(string.Format("{0}: {1} is on a kill streak of {2}. Their bounty has increased.", DateTime.Now, _cInfo2.playerName, _newValue));
-                                                                    sw.WriteLine();
-                                                                    sw.Flush();
-                                                                    sw.Close();
+                                                                    string _phrase913;
+                                                                    if (!Phrases.Dict.TryGetValue(913, out _phrase913))
+                                                                    {
+                                                                        _phrase913 = "{PlayerName} is on a kill streak! Their bounty has increased.";
+                                                                    }
+                                                                    _phrase913 = _phrase913.Replace("{PlayerName}", _cInfo2.playerName);
+                                                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase913), Config.Server_Response_Name, false, "ServerTools", false);
+                                                                }
+                                                                if (_newValue >= Bounties.Kill_Streak)
+                                                                {
+                                                                    _sql = string.Format("SELECT bounty FROM Players WHERE steamid = '{0}'", _cInfo2.playerId);
+                                                                    DataTable _result3 = SQL.TQuery(_sql);
+                                                                    int _oldBounty;
+                                                                    int.TryParse(_result3.Rows[0].ItemArray.GetValue(0).ToString(), out _oldBounty);
+                                                                    _result3.Dispose();
+                                                                    _sql = string.Format("UPDATE Players SET bounty = {0} WHERE steamid = '{1}'", _oldBounty + (_player2.Level * Bounties.Bounty), _cInfo.playerId);
+                                                                    SQL.FastQuery(_sql);
+                                                                    using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                                    {
+                                                                        sw.WriteLine(string.Format("{0}: {1} is on a kill streak of {2}. Their bounty has increased.", DateTime.Now, _cInfo2.playerName, _newValue));
+                                                                        sw.WriteLine();
+                                                                        sw.Flush();
+                                                                        sw.Close();
+                                                                    }
                                                                 }
                                                             }
                                                         }
-                                                    }
-                                                    else
-                                                    {
-                                                        KillStreak.Add(_cInfo2.entityId, 1);
+                                                        else
+                                                        {
+                                                            KillStreak.Add(_cInfo2.entityId, 1);
+                                                        }
                                                     }
                                                 }
                                             }
-                                        }
-                                        if (Zones.IsEnabled)
-                                        {
-                                            Zones.Check(_cInfo2, _cInfo);
+                                            if (Zones.IsEnabled)
+                                            {
+                                                Zones.Check(_cInfo2, _cInfo);
+                                            }
                                         }
                                     }
                                 }
-                            }
-                            if (Wallet.IsEnabled && Wallet.Lose_On_Death)
-                            {
-                                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
-                                if (_cInfo != null)
+                                if (Wallet.IsEnabled && Wallet.Lose_On_Death)
                                 {
                                     World world = GameManager.Instance.World;
                                     string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
@@ -280,19 +280,16 @@ namespace ServerTools
                                         SQL.FastQuery(_sql);
                                     }
                                 }
-                            }
-                            if (Event.Open && Event.Players.Contains(_player.entityId) && !Event.SpawnList.Contains(_player.entityId))
-                            {
-                                Event.SpawnList.Add(_player.entityId);
+                                if (Event.Open && Event.PlayersTeam.ContainsKey(_cInfo.playerId))
+                                {
+                                    string _sql = string.Format("UPDATE Players SET eventReturn = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
+                                    SQL.FastQuery(_sql);
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        if (Zones.IsEnabled)
+                        else
                         {
-                            ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
-                            if (_cInfo != null)
+                            if (Zones.IsEnabled)
                             {
                                 ZoneCheck(_cInfo, _player);
                             }

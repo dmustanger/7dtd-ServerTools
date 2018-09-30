@@ -14,7 +14,7 @@ namespace ServerTools
 
         public static void SetHome(ClientInfo _cInfo, string _playerName, bool _announce)
         {
-            if (!Event.Players.Contains(_cInfo.entityId))
+            if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
                 World world = GameManager.Instance.World;
                 EntityPlayer _player = world.Players.dict[_cInfo.entityId];
@@ -72,7 +72,7 @@ namespace ServerTools
 
         public static void Check(ClientInfo _cInfo, string _playerName, bool _announce)
         {
-            if (!Event.Players.Contains(_cInfo.entityId))
+            if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
                 string _sql = string.Format("SELECT homeposition, lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
@@ -304,7 +304,7 @@ namespace ServerTools
 
         public static void SetHome2(ClientInfo _cInfo, string _playerName, bool _announce)
         {
-            if (!Event.Players.Contains(_cInfo.entityId))
+            if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
                 World world = GameManager.Instance.World;
                 EntityPlayer _player = world.Players.dict[_cInfo.entityId];
@@ -362,7 +362,7 @@ namespace ServerTools
 
         public static void Check2(ClientInfo _cInfo, string _playerName, bool _announce)
         {
-            if (!Event.Players.Contains(_cInfo.entityId))
+            if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
                 string _sql = string.Format("SELECT homeposition2, lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                 DataTable _result = SQL.TQuery(_sql);
@@ -614,7 +614,7 @@ namespace ServerTools
 
         public static void FCheck(ClientInfo _cInfo, string _playerName, bool _announce)
         {
-            if (!Event.Players.Contains(_cInfo.entityId))
+            if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
                 World world = GameManager.Instance.World;
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
@@ -821,7 +821,7 @@ namespace ServerTools
 
         public static void FCheck2(ClientInfo _cInfo, string _playerName, bool _announce)
         {
-            if (!Event.Players.Contains(_cInfo.entityId))
+            if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
                 World world = GameManager.Instance.World;
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];

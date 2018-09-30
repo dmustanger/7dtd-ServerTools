@@ -216,11 +216,12 @@ namespace ServerTools
                     {
                         Hardcore.Check(_cInfo);
                     }
-                    _sql = string.Format("SELECT eventReturn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    _sql = string.Format("SELECT return FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                     DataTable _result1 = SQL.TQuery(_sql);
-                    string _eventReturn = _result1.Rows[0].ItemArray.GetValue(0).ToString();
+                    bool _return;
+                    bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return);
                     _result1.Dispose();
-                    if (_eventReturn != "Unknown")
+                    if (_return)
                     {
                         Event.OfflineReturn(_cInfo);
                     }
@@ -245,9 +246,17 @@ namespace ServerTools
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                     string _sql = string.Format("UPDATE Players SET deaths = {0} WHERE steamid = '{1}'", XUiM_Player.GetDeaths(_player), _cInfo.playerId);
                     SQL.FastQuery(_sql);
-                    if (Event.Open && Event.SpawnList.Contains(_cInfo.entityId))
+                    if (Event.Open)
                     {
-                        Event.Died(_cInfo);
+                        _sql = string.Format("SELECT eventRespawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        bool _eventRespawn;
+                        bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventRespawn);
+                        _result.Dispose();
+                        if (_eventRespawn)
+                        {
+                            Event.Died(_cInfo);
+                        }
                     }
                     if (Zones.IsEnabled && Players.Victim.ContainsKey(_cInfo.entityId))
                     {

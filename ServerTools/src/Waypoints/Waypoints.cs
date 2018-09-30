@@ -87,7 +87,7 @@ namespace ServerTools
 
         public static void Delay(ClientInfo _cInfo, string _waypoint)
         {
-            if (!Event.Players.Contains(_cInfo.entityId))
+            if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
                 bool _donator = false;
                 if (Delay_Between_Uses < 1)
@@ -273,7 +273,7 @@ namespace ServerTools
 
         public static void SaveClaimCheck(ClientInfo _cInfo, string _waypoint)
         {
-            if (!Event.Players.Contains(_cInfo.entityId))
+            if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
                 World world = GameManager.Instance.World;
                 EntityPlayer _player = world.Players.dict[_cInfo.entityId];
@@ -480,7 +480,7 @@ namespace ServerTools
 
         public static void FDelay(ClientInfo _cInfo, string _waypoint)
         {
-            if (!Event.Players.Contains(_cInfo.entityId))
+            if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
                 bool _donator = false;
                 if (Delay_Between_Uses < 1)
