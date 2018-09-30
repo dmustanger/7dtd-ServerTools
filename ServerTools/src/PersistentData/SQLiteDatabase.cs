@@ -103,8 +103,7 @@ namespace ServerTools
                 "customCommand8 TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
                 "customCommand9 TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
                 "customCommand10 TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
-                "countryban TEXT DEFAULT 'false', " +
-                "return TEXT DEFAULT 'false' " +
+                "countryban TEXT DEFAULT 'false' " +
                 ");");
             FastQuery("CREATE TABLE IF NOT EXISTS Auction (" +
                 "auctionid INTEGER PRIMARY KEY, " +
