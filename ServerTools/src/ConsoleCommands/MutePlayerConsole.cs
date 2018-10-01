@@ -16,12 +16,12 @@ namespace ServerTools
             return "Usage:\n" +
                 "  1. mute add <steamId/entityId>\n" +
                 "  2. mute add <steamId/entityId> <time>\n" +
-                "  3. mute remove <steamId>" +
+                "  3. mute remove <steamId>\n" +
                 "  4. mute list\n" +
                 "1. Adds a steam Id to the mute list for 60 minutes\n" +
                 "2. Adds a steam Id to the mute list for a specific time\n" +
                 "3. Removes a steam Id from the mute list\n" +
-                "4. Lists all steam Id in the mute list" +
+                "4. Lists all steam Id in the mute list\n" +
                 "*Note Use -1 for time to mute indefinitely*";
         }
         public override string[] GetCommands()

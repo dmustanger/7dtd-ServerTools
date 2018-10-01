@@ -106,3 +106,11 @@ C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 
 C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 11\7dtd-ST-master-V11 Shared\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
 C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 11\7dtd-ST-master-V11 Shared\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.Cache
 C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 11\7dtd-ST-master-V11 Shared\7dtd-ServerTools\ServerTools\obj\Debug\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 11\7dtd-ST-master-V11 Shared\7dtd-ServerTools-Dev\bin\Mods\ServerTools\ModInfo.xml
+C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 11\7dtd-ST-master-V11 Shared\7dtd-ServerTools-Dev\bin\Mods\ServerTools\Changelog.txt
+C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 11\7dtd-ST-master-V11 Shared\7dtd-ServerTools-Dev\bin\Mods\ServerTools\GeoLiteCity.dat
+C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 11\7dtd-ST-master-V11 Shared\7dtd-ServerTools-Dev\bin\Mods\ServerTools\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 11\7dtd-ST-master-V11 Shared\7dtd-ServerTools-Dev\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
+C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 11\7dtd-ST-master-V11 Shared\7dtd-ServerTools-Dev\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.Cache
+C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 11\7dtd-ST-master-V11 Shared\7dtd-ServerTools-Dev\ServerTools\obj\Debug\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 11\7dtd-ST-master-V11 Shared\7dtd-ServerTools-Dev\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache

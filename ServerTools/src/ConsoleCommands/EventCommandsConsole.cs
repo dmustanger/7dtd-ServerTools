@@ -19,12 +19,16 @@ namespace ServerTools
                 "  2. event check\n" +
                 "  3. event cancel\n" +
                 "  4. event list\n" +
-                "  5. event remove \"SteamId\"\n" +
-                "1. Starts a new event with this event name.\n" +
+                "  5. event remove <steamId>\n" +
+                "  6. event restart <id>\n" +
+                "  7. event delete \"event name\"\n" +
+                "1. Starts a new event setup with this event name.\n" +
                 "2. Shows the settings and player list of the running event.\n" +
                 "3. Stops the current event and sends players back to their return points.\n" +
                 "4. Shows a list of past event settings and starts a setup with them.\n" +
-                "5. Remove a single player from a running event, sending them back to their return point.\n";
+                "5. Remove a single player from a running event, sending them back to their return point.\n" +
+                "6. Sets an event to an one from your list of saved events and sends the invitation to players.\n" +
+                "7. Delete an event from your event list.\n";
         }
 
         public override string[] GetCommands()
@@ -45,10 +49,6 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2 or more, found {0}.", _params.Count));
                         return;
                     }
-                    if (Event.Open)
-                    {
-                        SdtdConsole.Instance.Output(string.Format("There is an event being run by {0}.", Event.Admin));
-                    }
                     string _sql1 = string.Format("SELECT eventName FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", _steamId, _params[1]);
                     DataTable _result = SQL.TQuery(_sql1);
                     if (_result.Rows.Count == 0)
@@ -59,13 +59,19 @@ namespace ServerTools
                         SQL.FastQuery(_sql2);
                         if (Event.SetupStage.ContainsKey(_steamId))
                         {
+                            Event.SetupName[_steamId] = _params[1];
                             Event.SetupStage[_steamId] = 1;
                         }
                         else
                         {
+                            Event.SetupName.Add(_steamId, _params[1]);
                             Event.SetupStage.Add(_steamId, 1);
                         }
-                        SdtdConsole.Instance.Output("You have started to open a new event.");
+                        if (Event.Open)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("There is an event being run by {0}.", Event.Admin));
+                        }
+                        SdtdConsole.Instance.Output("You have started to open a new event setup.");
                         SdtdConsole.Instance.Output(string.Format("The event name has been set to {0}.", _params[1]));
                         SdtdConsole.Instance.Output("What would you like the invitation for players to say? Type event \"invitation\".");
                         return;
@@ -82,190 +88,93 @@ namespace ServerTools
                     if (Event.SetupStage.ContainsKey(_steamId))
                     {
                         int _stage;
-                        if (Event.SetupStage.TryGetValue(_steamId, out _stage))
+                        Event.SetupStage.TryGetValue(_steamId, out _stage);
+                        string _eventName;
+                        Event.SetupName.TryGetValue(_steamId, out _eventName);
+                        if (_stage == 3)
                         {
-                            string _eventName;
-                            Event.SetupName.TryGetValue(_steamId, out _eventName);
-                            if (_stage == 3)
+                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_entityId];
+                            Vector3 _position = _player.GetPosition();
+                            int x = (int)_position.x;
+                            int y = (int)_position.y;
+                            int z = (int)_position.z;
+                            string _sposition = x + "," + y + "," + z;
+                            string _sql1 = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", _steamId, _eventName);
+                            DataTable _result1 = SQL.TQuery(_sql1);
+                            int _eventid;
+                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
+                            int _eventTeams;
+                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _eventTeams);
+                            _result1.Dispose();
+                            _sql1 = string.Format("SELECT eventSpawn FROM EventSpawns WHERE eventid = {0}", _eventid);
+                            DataTable _result2 = SQL.TQuery(_sql1);
+                            int _count = _result2.Rows.Count + 1;
+                            _result2.Dispose();
+                            string _pos = SQL.EscapeString(_sposition);
+                            if (_count == _eventTeams)
                             {
-                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_entityId];
-                                Vector3 _position = _player.GetPosition();
-                                int x = (int)_position.x;
-                                int y = (int)_position.y;
-                                int z = (int)_position.z;
-                                string _sposition = x + "," + y + "," + z;
-                                string _sql1 = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", _steamId, _eventName);
-                                DataTable _result = SQL.TQuery(_sql1);
-                                int _eventid;
-                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
-                                int _eventTeams;
-                                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _eventTeams);
-                                int _team = _result.Rows.Count + 1;
-                                string _pos = SQL.EscapeString(_sposition);
-                                if (_result.Rows.Count == _eventTeams - 1)
-                                {
-                                    _result.Dispose();
-                                    string _sql2 = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventSpawn) VALUES ({0}, {1}, '{2}')", _eventid, _team, _pos);
-                                    SQL.FastQuery(_sql2);
-                                    Event.SetupStage[_steamId] = 4;
-                                    SdtdConsole.Instance.Output(string.Format("The spawn position for team {0} has been set to {1} {2} {3}.", _team, x, y, z));
-                                    SdtdConsole.Instance.Output("Stand where you would like the respawn for team 1 if they die during the event, then type event save.");
-                                    return;
-                                }
-                                else
-                                {
-                                    _result.Dispose();
-                                    string _sql2 = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventSpawn) VALUES ({0}, {1}, '{2}')", _eventid, _team, _pos);
-                                    SQL.FastQuery(_sql2);
-                                    SdtdConsole.Instance.Output(string.Format("The spawn position for team {0} has been set to {1} {2} {3}.", _team, x, y, z));
-                                    SdtdConsole.Instance.Output(string.Format("Stand where you would like the spawn for team {0} when the event starts and type event save.", _team));
-                                    return;
-                                }
-                            }
-                            else if (_stage == 4)
-                            {
-                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_entityId];
-                                Vector3 _position = _player.GetPosition();
-                                int x = (int)_position.x;
-                                int y = (int)_position.y;
-                                int z = (int)_position.z;
-                                string _sposition = x + "," + y + "," + z;
-                                string _sql1 = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", _steamId, _eventName);
-                                DataTable _result = SQL.TQuery(_sql1);
-                                int _eventid;
-                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
-                                int _eventTeams;
-                                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _eventTeams);
-                                int _team = _result.Rows.Count + 1;
-                                string _pos = SQL.EscapeString(_sposition);
-                                if (_result.Rows.Count == _eventTeams - 1)
-                                {
-                                    _result.Dispose();
-                                    string _sql2 = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventRespawn) VALUES ({0}, {1}, '{2}')", _eventid, _team, _pos);
-                                    SQL.FastQuery(_sql2);
-                                    Event.SetupStage[_steamId] = 5;
-                                    SdtdConsole.Instance.Output(string.Format("The respawn position for team {0} has been set to {1} {2} {3}.", _team, x, y, z));
-                                    SdtdConsole.Instance.Output("Setup is complete. Type event start to send out the invitation to players.");
-                                    return;
-                                }
-                                else
-                                {
-                                    _result.Dispose();
-                                    string _sql2 = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventRespawn) VALUES ({0}, {1}, '{2}')", _eventid, _team, _pos);
-                                    SQL.FastQuery(_sql2);
-                                    SdtdConsole.Instance.Output(string.Format("The respawn position for team {0} has been set to {1} {2} {3}.", _team, x, y, z));
-                                    SdtdConsole.Instance.Output(string.Format("Stand where you would like the respawn for team {0} when the event starts and type event save.", _team));
-                                    return;
-                                }
+                                string _sql2 = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventSpawn) VALUES ({0}, {1}, '{2}')", _eventid, _count, _pos);
+                                SQL.FastQuery(_sql2);
+                                Event.SetupStage[_steamId] = 4;
+                                SdtdConsole.Instance.Output(string.Format("The spawn position for team {0} has been set to {1} {2} {3}.", _count, x, y, z));
+                                SdtdConsole.Instance.Output("Stand where you would like the respawn for team 1 if they die during the event, then type event save.");
+                                return;
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output("This command is invalid at this stage of setup.");
+                                string _sql2 = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventSpawn) VALUES ({0}, {1}, '{2}')", _eventid, _count, _pos);
+                                SQL.FastQuery(_sql2);
+                                SdtdConsole.Instance.Output(string.Format("The spawn position for team {0} has been set to {1} {2} {3}.", _count, x, y, z));
+                                SdtdConsole.Instance.Output(string.Format("Stand where you would like the spawn for team {0} when the event starts and type event save.", _count + 1));
                                 return;
                             }
                         }
-                    }
-                }
-                else
-                {
-                    if (Event.SetupStage.ContainsKey(_steamId))
-                    {
-                        int _stage;
-                        if (Event.SetupStage.TryGetValue(_steamId, out _stage))
+                        else if (_stage == 4)
                         {
-                            string _eventName;
-                            Event.SetupName.TryGetValue(_steamId, out _eventName);
-                            if (_stage == 1)
+                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_entityId];
+                            Vector3 _position = _player.GetPosition();
+                            int x = (int)_position.x;
+                            int y = (int)_position.y;
+                            int z = (int)_position.z;
+                            string _sposition = x + "," + y + "," + z;
+                            string _sql1 = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", _steamId, _eventName);
+                            DataTable _result1 = SQL.TQuery(_sql1);
+                            int _eventid;
+                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
+                            int _eventTeams;
+                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _eventTeams);
+                            _result1.Dispose();
+                            _sql1 = string.Format("SELECT eventRespawn FROM EventSpawns WHERE eventid = {0} AND eventRespawn != null", _eventid);
+                            DataTable _result2 = SQL.TQuery(_sql1);
+                            int _count = _result2.Rows.Count + 1;
+                            _result2.Dispose();
+                            string _pos = SQL.EscapeString(_sposition);
+                            if (_count == _eventTeams)
                             {
-                                string _invite = SQL.EscapeString(_params[1]);
-                                string _sql = string.Format("UPDATE Events SET eventInvite = '{0}' WHERE eventAdmin = '{1}' AND eventName = '{2}'", _invite, _steamId, _eventName);
-                                SQL.FastQuery(_sql);
-                                Event.SetupStage[_steamId] = 2;
-                                SdtdConsole.Instance.Output(string.Format("The event invitation has been set to {0}.", _params[1]));
-                                SdtdConsole.Instance.Output("How many teams, total players, and time in minutes will the event last? Type event <TeamCount> <TotalPlayers> <TimeInMin>.");
+                                string _sql2 = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventRespawn) VALUES ({0}, {1}, '{2}')", _eventid, _count, _pos);
+                                SQL.FastQuery(_sql2);
+                                Event.SetupStage[_steamId] = 5;
+                                SdtdConsole.Instance.Output(string.Format("The respawn position for team {0} has been set to {1} {2} {3}.", _count, x, y, z));
+                                SdtdConsole.Instance.Output("Setup is complete. Type event start to send out the invitation to players.");
                                 return;
                             }
-                            else if (_stage == 2)
+                            else
                             {
-                                int _teamCount;
-                                if (int.TryParse(_params[0], out _teamCount))
-                                {
-                                    if (_teamCount < 1)
-                                    {
-                                        _teamCount = 1;
-                                    }
-                                    int _playerCount;
-                                    if (int.TryParse(_params[1], out _playerCount))
-                                    {
-                                        if (_playerCount < 1)
-                                        {
-                                            _playerCount = 1;
-                                        }
-                                        int _eventTime;
-                                        if (int.TryParse(_params[2], out _eventTime))
-                                        {
-                                            if (_eventTime < 1)
-                                            {
-                                                _eventTime = 1;
-                                            }
-                                            string _sql = string.Format("UPDATE Events SET eventTeams = {0}, eventPlayerCount = {1}, eventTime = {2} WHERE eventAdmin = '{3}' AND eventName = '{4}'", _teamCount, _playerCount, _eventTime, _steamId, _eventName);
-                                            SQL.FastQuery(_sql);
-                                            Event.SetupStage[_steamId] = 3;
-                                            SdtdConsole.Instance.Output(string.Format("The event info has been set: team count {0}, total players {1}, event time {2}.", _teamCount, _playerCount, _eventTime));
-                                            if (_teamCount == 1)
-                                            {
-                                                SdtdConsole.Instance.Output("Stand where you would like players to spawn when the event starts and type event save.");
-                                                return;
-                                            }
-                                            else
-                                            {
-                                                SdtdConsole.Instance.Output("Stand where you would like the first team to spawn when the event starts and type event save.");
-                                                return;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            else if (_stage == 5)
-                            {
-                                if (!Event.Open)
-                                {
-                                    Event.Invited = true;
-                                    string _sql = string.Format("SELECT eventid, eventInvite FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", _steamId, _eventName);
-                                    DataTable _result = SQL.TQuery(_sql);
-                                    int _eventid;
-                                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
-                                    string _eventInvite = _result.Rows[0].ItemArray.GetValue(1).ToString();
-                                    _result.Dispose();
-                                    _sql = string.Format("UPDATE Events SET eventActive = 'true' WHERE eventid = {0} AND eventAdmin = '{1}'", _eventid, _steamId);
-                                    SQL.FastQuery(_sql);
-                                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                                    for (int i = 0; i < _cInfoList.Count; i++)
-                                    {
-                                        ClientInfo _cInfo = _cInfoList[i];
-                                        if (_cInfo != null)
-                                        {
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Event: {1}[-]", Config.Chat_Response_Color, _eventName), Config.Server_Response_Name, false, "ServerTools", false));
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _eventInvite), Config.Server_Response_Name, false, "ServerTools", false));
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} type /event if you want to join the event. You will return to where you are when it ends.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    SdtdConsole.Instance.Output("The event has already started.");
-                                    return;
-                                }
+                                string _sql2 = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventRespawn) VALUES ({0}, {1}, '{2}')", _eventid, _count, _pos);
+                                SQL.FastQuery(_sql2);
+                                SdtdConsole.Instance.Output(string.Format("The respawn position for team {0} has been set to {1} {2} {3}.", _count, x, y, z));
+                                SdtdConsole.Instance.Output(string.Format("Stand where you would like the respawn for team {0} when the event starts and type event save.", _count + 1));
+                                return;
                             }
                         }
-                    }
-                    else
-                    {
-                        SdtdConsole.Instance.Output("You have no event being setup. Setup a new one by typing event new <EventName>.");
-                        return;
+                        else
+                        {
+                            SdtdConsole.Instance.Output("This command is invalid at this stage of setup.");
+                            return;
+                        }
                     }
                 }
-                if (_params[0] == ("check"))
+                else if (_params[0] == ("check"))
                 {
                     if (Event.Open)
                     {
@@ -315,7 +224,7 @@ namespace ServerTools
                         return;
                     }
                 }
-                if (_params[0] == ("cancel"))
+                else if (_params[0] == ("cancel"))
                 {
                     if (Event.Admin == _steamId)
                     {
@@ -399,37 +308,36 @@ namespace ServerTools
                         return;
                     }
                 }
-                if (_params[0] == ("list"))
+                else if (_params[0] == ("list"))
                 {
-                    if (!Event.Open)
+                    string _sql = string.Format("SELECT eventid, eventName, eventInvite, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventAdmin = '{0}'", _steamId);
+                    DataTable _result = SQL.TQuery(_sql);
+                    if (_result.Rows.Count > 0)
                     {
-                        string _sql = "SELECT eventid, eventName, eventInvite, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventActive = 'false'";
-                        DataTable _result = SQL.TQuery(_sql);
-                        if (_result.Rows.Count > 0)
+                        foreach (DataRow row in _result.Rows)
                         {
-                            foreach (DataRow row in _result.Rows)
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Event Id = {0} Event Name = {1}", row[0].ToString(), row[1].ToString()));
-                                SdtdConsole.Instance.Output(string.Format("Event Invite = {0}", row[2].ToString()));
-                                SdtdConsole.Instance.Output(string.Format("Team Count = {0} Allowed Players = {1} Allowed Time = {2}", row[3].ToString(), row[4].ToString(), row[5].ToString()));
-                                SdtdConsole.Instance.Output("-----------------------------------------------------------------------");
-                                SdtdConsole.Instance.Output("-----------------------------------------------------------------------");
-                            }
-                            SdtdConsole.Instance.Output("Type event start <eventid> to send the invitation to players or start a new setup by typing event new.");
+                            SdtdConsole.Instance.Output(string.Format("Event Id = {0} Event Name = {1}", row[0].ToString(), row[1].ToString()));
+                            SdtdConsole.Instance.Output(string.Format("Event Invite = {0}", row[2].ToString()));
+                            SdtdConsole.Instance.Output(string.Format("Team Count = {0} Allowed Players = {1} Allowed Time = {2}", row[3].ToString(), row[4].ToString(), row[5].ToString()));
+                            SdtdConsole.Instance.Output("-----------------------------------------------------------------------");
+                            SdtdConsole.Instance.Output("-----------------------------------------------------------------------");
                         }
-                        else
-                        {
-                            SdtdConsole.Instance.Output("There is no saved event data.");
-                        }
-                        _result.Dispose();
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("There is an event running already.");
-                        return;
+                        SdtdConsole.Instance.Output("You have no saved event data.");
+                    }
+                    _result.Dispose();
+                    if (Event.Open || Event.Invited)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("An event is running by admin {0}", Event.Admin));
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output("Type event restart <eventid> to start that event. The invitation will go out to players or start a new event setup by typing event new \"event name\".");
                     }
                 }
-                if (_params[0] == ("extend"))
+                else if (_params[0] == ("extend"))
                 {
                     if (Event.Admin == _steamId)
                     {
@@ -465,7 +373,7 @@ namespace ServerTools
                         return;
                     }
                 }
-                if (_params[0] == ("remove"))
+                else if (_params[0] == ("remove"))
                 {
                     if (Event.Admin == _steamId)
                     {
@@ -522,9 +430,146 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Invalid integer: {0}.", _params[1]));
+                            SdtdConsole.Instance.Output("There is no event open.");
                             return;
                         }
+                    }
+                }
+                else if (_params[0] == ("delete") || _params[0] == ("del"))
+                {
+                    int _id;
+                    if (int.TryParse(_params[1], out _id))
+                    {
+                        string _sql = string.Format("SELECT eventid FROM Events WHERE eventAdmin = '{0}'", _steamId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        if (_result.Rows.Count > 0)
+                        {
+                            _sql = string.Format("Delete FROM Events WHERE eventid = {0}", _id);
+                            SQL.FastQuery(_sql);
+                            _sql = string.Format("Delete FROM EventSpawns WHERE eventid = {0}", _id);
+                            SQL.FastQuery(_sql);
+                            SdtdConsole.Instance.Output(string.Format("Deleted the event with id: {0}.", _id));
+                            return;
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Invalid integer: {0}. This id is not attached to you. Can not delete it.", _params[1]));
+                        }
+                        _result.Dispose();
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Invalid integer: {0}.", _params[1]));
+                        return;
+                    }
+                }
+                else
+                {
+                    if (Event.SetupStage.ContainsKey(_steamId))
+                    {
+                        int _stage;
+                        if (Event.SetupStage.TryGetValue(_steamId, out _stage))
+                        {
+                            string _eventName;
+                            if (Event.SetupName.TryGetValue(_steamId, out _eventName))
+                            {
+                                if (_stage == 1)
+                                {
+                                    string _invite = SQL.EscapeString(_params[0]);
+                                    string _sql = string.Format("UPDATE Events SET eventInvite = '{0}' WHERE eventAdmin = '{1}' AND eventName = '{2}'", _invite, _steamId, _eventName);
+                                    SQL.FastQuery(_sql);
+                                    Event.SetupStage[_steamId] = 2;
+                                    SdtdConsole.Instance.Output(string.Format("The event invitation has been set to {0}.", _params[0]));
+                                    SdtdConsole.Instance.Output("How many teams, total players, and time in minutes will the event last? Type event <TeamCount> <TotalPlayers> <TimeInMin>.");
+                                    return;
+                                }
+                                else if (_stage == 2)
+                                {
+                                    if (_params.Count == 3)
+                                    {
+                                        int _teamCount;
+                                        if (int.TryParse(_params[0], out _teamCount))
+                                        {
+                                            if (_teamCount < 1)
+                                            {
+                                                _teamCount = 1;
+                                            }
+                                            int _playerCount;
+                                            if (int.TryParse(_params[1], out _playerCount))
+                                            {
+                                                if (_playerCount < 1)
+                                                {
+                                                    _playerCount = 1;
+                                                }
+                                                int _eventTime;
+                                                if (int.TryParse(_params[2], out _eventTime))
+                                                {
+                                                    if (_eventTime < 1)
+                                                    {
+                                                        _eventTime = 1;
+                                                    }
+                                                    string _sql = string.Format("UPDATE Events SET eventTeams = {0}, eventPlayerCount = {1}, eventTime = {2} WHERE eventAdmin = '{3}' AND eventName = '{4}'", _teamCount, _playerCount, _eventTime, _steamId, _eventName);
+                                                    SQL.FastQuery(_sql);
+                                                    Event.SetupStage[_steamId] = 3;
+                                                    SdtdConsole.Instance.Output(string.Format("The event info has been set: team count {0}, total players {1}, event time {2}.", _teamCount, _playerCount, _eventTime));
+                                                    if (_teamCount == 1)
+                                                    {
+                                                        SdtdConsole.Instance.Output("Stand where you would like players to spawn when the event starts and type event save.");
+                                                        return;
+                                                    }
+                                                    else
+                                                    {
+                                                        SdtdConsole.Instance.Output("Stand where you would like the team 1 to spawn when the event starts and type event save.");
+                                                        return;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 3, found {0}.", _params.Count));
+                                        return;
+                                    }
+                                }
+                                else if (_stage == 5)
+                                {
+                                    if (!Event.Open)
+                                    {
+                                        Event.Invited = true;
+                                        string _sql = string.Format("SELECT eventid, eventInvite FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", _steamId, _eventName);
+                                        DataTable _result = SQL.TQuery(_sql);
+                                        int _eventid;
+                                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
+                                        string _eventInvite = _result.Rows[0].ItemArray.GetValue(1).ToString();
+                                        _result.Dispose();
+                                        _sql = string.Format("UPDATE Events SET eventActive = 'true' WHERE eventid = {0} AND eventAdmin = '{1}'", _eventid, _steamId);
+                                        SQL.FastQuery(_sql);
+                                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                                        for (int i = 0; i < _cInfoList.Count; i++)
+                                        {
+                                            ClientInfo _cInfo = _cInfoList[i];
+                                            if (_cInfo != null)
+                                            {
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Event: {1}[-]", Config.Chat_Response_Color, _eventName), Config.Server_Response_Name, false, "ServerTools", false));
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _eventInvite), Config.Server_Response_Name, false, "ServerTools", false));
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} type /event if you want to join the event. You will return to where you are when it ends.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        SdtdConsole.Instance.Output("The event has already started.");
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output("You have no event being setup. Setup a new one by typing event new <EventName>.");
+                        return;
                     }
                 }
             }
