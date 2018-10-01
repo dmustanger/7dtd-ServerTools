@@ -22,3 +22,5 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
+
+UPLOAD A COMPLETE LOG FILE WITH YOUR BUG REPORT! IF THERE IS NO LOGFILE WE WILL CLOSE THE REPORT!
