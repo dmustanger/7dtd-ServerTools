@@ -971,7 +971,7 @@ namespace ServerTools
                 string _phrase613;
                 if (!Dict.TryGetValue(613, out _phrase613))
                 {
-                    _phrase613 = "Weather vote complete. Most votes went to {weather}.";
+                    _phrase613 = "Weather vote complete. Most votes went to {Weather}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"613\" Phrase=\"{0}\" />", _phrase613));
                 string _phrase614;

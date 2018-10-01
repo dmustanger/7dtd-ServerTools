@@ -139,9 +139,9 @@ namespace ServerTools
                         string _phrase613;
                         if (!Phrases.Dict.TryGetValue(613, out _phrase613))
                         {
-                            _phrase613 = "Weather vote complete. Most votes went to {weather}.";
+                            _phrase613 = "Weather vote complete. Most votes went to {Weather}.";
                         }
-                        _phrase613 = _phrase613.Replace("{weather}", _weather.ToString());
+                        _phrase613 = _phrase613.Replace("{Weather}", _weather.ToString());
                         GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase613), Config.Server_Response_Name, false, "", false);
                         clear.Clear(); rain.Clear(); snow.Clear();
                     }

@@ -80,7 +80,6 @@ namespace ServerTools
             int x = (int)ep.position.x;
             int y = (int)ep.position.y;
             int z = (int)ep.position.z;
-
             int height = 0;
             for (int k = y; k > 0; k--)
             {
@@ -136,13 +135,12 @@ namespace ServerTools
             int z = (int)ep.position.z;
             int Id = ep.entityId;
             int[] xz = { x, z };
-
             if (fLastPositionY.ContainsKey(Id))
             {
                 int last_y_pos;
                 fLastPositionY.TryGetValue(Id, out last_y_pos);
                 int y_change = (last_y_pos - y);
-                if (y_change >= 6)
+                if (y_change >= 4)
                 {
                     fLastPositionXZ.Remove(Id);
                 }
@@ -152,7 +150,6 @@ namespace ServerTools
             {
                 fLastPositionY.Add(Id, y);
             }
-
             if (fLastPositionXZ.ContainsKey(Id))
             {
                 int[] last_xz_pos;

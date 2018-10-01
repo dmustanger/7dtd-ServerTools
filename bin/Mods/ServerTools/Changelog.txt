@@ -1,5 +1,12 @@
 ﻿CHANGELOG
 
+11.5
+Added console command event load <id> to reload a saved event from your list
+Fixed a bug on player signup to an event
+Fixed SQL error on startup
+Fixed Custom_Commands showing &quot; when they should not
+Changed weathervote response to start with a capital phrase 613
+
 11.4
 Added options to tool Night_Vote called Players_Online and Votes_Needed. Controls how many must be online and how many must vote yes
 Added options to tool Weather_Vote called Players_Online and Votes_Needed. Controls how many must be online and how many must vote yes

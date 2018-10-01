@@ -18,15 +18,16 @@ namespace ServerTools
             if (!Open)
             {
                 Invited = false;
-                Admin = null;
                 PlayersTeam.Clear();
                 string _sql = "UPDATE Events SET eventAdmin = null, eventActive = 'false' WHERE eventActive = 'true'";
                 SQL.FastQuery(_sql);
                 ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(Admin);
+                Admin = null;
                 if (_cInfo != null)
                 {
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} not enough players signed up for the event. The setup has been cleared.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                 }
+                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}The event did not get enough players signed up to begin and has been cancelled.", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false);
             }
         }
 
@@ -56,13 +57,15 @@ namespace ServerTools
                 int _time;
                 int.TryParse(_result1.Rows[0].ItemArray.GetValue(4).ToString(), out _time);
                 _result1.Dispose();
-                int _teamCount = _eventTeams;
-                if (PlayersTeam.Count == _eventPlayerCount - 1)
+                PlayersTeam.Add(_cInfo.playerId, TeamCount);
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you are on team {2}.[-]", Config.Chat_Response_Color, _cInfo.playerName, TeamCount), Config.Server_Response_Name, false, "ServerTools", false));
+                if (TeamCount == _eventTeams)
+                {
+                    TeamCount = 1;
+                }
+                if (PlayersTeam.Count == _eventPlayerCount)
                 {
                     Invited = false;
-                    PlayersTeam.Add(_cInfo.playerId, TeamCount);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you are on team {2}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _teamCount), Config.Server_Response_Name, false, "ServerTools", false));
-                    TeamCount = 1;
                     foreach (var _eventPlayer in PlayersTeam)
                     {
                         ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForPlayerId(_eventPlayer.Key);
@@ -100,19 +103,12 @@ namespace ServerTools
                     int _eventTime = _time * 60;
                     Timers._eventTime = _eventTime;
                     Open = true;
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} is full and has now started.", Config.Chat_Response_Color, _eventName), Config.Server_Response_Name, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} is full and has now started.", Config.Chat_Response_Color, _eventName), Config.Server_Response_Name, false, "ServerTools", false);
                 }
                 else
                 {
-                    PlayersTeam.Add(_cInfo.playerId, TeamCount);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you are on team {2}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _teamCount), Config.Server_Response_Name, false, "ServerTools", false));
-                    TeamCount++;
-                    if (TeamCount == _eventTeams)
-                    {
-                        TeamCount = 1;
-                    }
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} still has space for more players. Type /event.", Config.Chat_Response_Color, _eventName), Config.Server_Response_Name, false, "ServerTools", true);
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} of {2} have signed up.", Config.Chat_Response_Color, PlayersTeam.Count, _eventPlayerCount), Config.Server_Response_Name, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} still has space for more players. Type /event.", Config.Chat_Response_Color, _eventName), Config.Server_Response_Name, false, "ServerTools", false);
+                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1} of {2} have signed up.", Config.Chat_Response_Color, PlayersTeam.Count, _eventPlayerCount), Config.Server_Response_Name, false, "ServerTools", false);
                 }
             }
             else
@@ -272,7 +268,7 @@ namespace ServerTools
             {
                 string _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                 SQL.FastQuery(_sql);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event ended while you were offline or not spawned. You have been sent to your spawn point.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event ended while you were offline or not spawned.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
     }

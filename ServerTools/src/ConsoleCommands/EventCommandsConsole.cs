@@ -19,16 +19,16 @@ namespace ServerTools
                 "  2. event check\n" +
                 "  3. event cancel\n" +
                 "  4. event list\n" +
-                "  5. event remove <steamId>\n" +
-                "  6. event restart <id>\n" +
-                "  7. event delete \"event name\"\n" +
+                "  5. event load <id>\n" +
+                "  6. event delete \"event name\"\n" +
+                "  7. event remove <steamId>\n" +
                 "1. Starts a new event setup with this event name.\n" +
                 "2. Shows the settings and player list of the running event.\n" +
-                "3. Stops the current event and sends players back to their return points.\n" +
-                "4. Shows a list of past event settings and starts a setup with them.\n" +
-                "5. Remove a single player from a running event, sending them back to their return point.\n" +
-                "6. Sets an event to an one from your list of saved events and sends the invitation to players.\n" +
-                "7. Delete an event from your event list.\n";
+                "3. Stops the current event and sends players back to their return point or stop an open invitation.\n" +
+                "4. Shows a list of saved events. Unique to each admin.\n" +
+                "5. Loads an event from your saved list. After loading, type event start to begin the event.\n" +
+                "6. Delete an event from your event list.\n" +
+                "7. Remove a single player from a running event, sending them back to their return point.\n";
         }
 
         public override string[] GetCommands()
@@ -174,7 +174,7 @@ namespace ServerTools
                         }
                     }
                 }
-                else if (_params[0] == ("check"))
+                else if (_params[0].ToLower() == ("check"))
                 {
                     if (Event.Open)
                     {
@@ -224,7 +224,7 @@ namespace ServerTools
                         return;
                     }
                 }
-                else if (_params[0] == ("cancel"))
+                else if (_params[0].ToLower() == ("cancel"))
                 {
                     if (Event.Admin == _steamId)
                     {
@@ -238,6 +238,8 @@ namespace ServerTools
                             }
                             else
                             {
+                                Event.SetupStage.Remove(_steamId);
+                                Event.SetupName.Remove(_steamId);
                                 foreach (var _player in Event.PlayersTeam)
                                 {
                                     ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_player.Key);
@@ -277,29 +279,34 @@ namespace ServerTools
                                 }
                                 string _sql2 = string.Format("UPDATE Events SET eventAdmin = null, eventActive = 'false' WHERE eventAdmin = '{0}'", Event.Admin);
                                 SQL.FastQuery(_sql2);
+                                Event.Cancel = false;
                                 Event.Open = false;
                                 Event.Admin = null;
                                 SdtdConsole.Instance.Output("The current event has been cancelled and event players have been sent back to their return points.");
+
                             }
                         }
                         else
                         {
-                            Event.Invited = false;
-                            Event.Admin = null;
-                            if (Event.PlayersTeam.Count > 0)
+                            if (Event.Invited)
                             {
-                                foreach (var _player in Event.PlayersTeam)
+                                Event.Invited = false;
+                                Event.Admin = null;
+                                if (Event.PlayersTeam.Count > 0)
                                 {
-                                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_player.Key);
-                                    if (_cInfo != null)
+                                    foreach (var _player in Event.PlayersTeam)
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the current event has been cancelled.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                        ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_player.Key);
+                                        if (_cInfo != null)
+                                        {
+                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the current event has been cancelled.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                        }
+                                        Event.PlayersTeam.Remove(_player.Key);
                                     }
-                                    Event.PlayersTeam.Remove(_player.Key);
                                 }
+                                SdtdConsole.Instance.Output("The current setup has been cancelled and all signed up players were removed.");
+                                return;
                             }
-                            SdtdConsole.Instance.Output("The current setup has been cancelled and all signed up players were removed.");
-                            return;
                         }
                     }
                     else
@@ -308,7 +315,7 @@ namespace ServerTools
                         return;
                     }
                 }
-                else if (_params[0] == ("list"))
+                else if (_params[0].ToLower() == ("list"))
                 {
                     string _sql = string.Format("SELECT eventid, eventName, eventInvite, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventAdmin = '{0}'", _steamId);
                     DataTable _result = SQL.TQuery(_sql);
@@ -334,10 +341,61 @@ namespace ServerTools
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("Type event restart <eventid> to start that event. The invitation will go out to players or start a new event setup by typing event new \"event name\".");
+                        SdtdConsole.Instance.Output("Type event load <eventid> to load that event. After loading, type event start to send the invitation to players.");
                     }
                 }
-                else if (_params[0] == ("extend"))
+                else if (_params[0].ToLower() == ("load"))
+                {
+                    if (_params.Count != 2)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
+                        return;
+                    }
+                    int _id;
+                    if (int.TryParse(_params[1], out _id))
+                    {
+                        string _sql = string.Format("SELECT eventName, eventInvite, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventAdmin = '{0}' AND eventid = {1}", _steamId, _id);
+                        DataTable _result = SQL.TQuery(_sql);
+                        if (_result.Rows.Count > 0)
+                        {
+                            string _eventName = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                            string _eventInvite = _result.Rows[0].ItemArray.GetValue(1).ToString();
+                            int _eventTeams;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _eventTeams);
+                            int _eventPlayerCount;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _eventPlayerCount);
+                            int _eventTime;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(4).ToString(), out _eventTime);
+                            _result.Dispose();
+                            SdtdConsole.Instance.Output(string.Format("Event: {0}", _eventName));
+                            SdtdConsole.Instance.Output(string.Format("Invitation: {0}", _eventInvite));
+                            SdtdConsole.Instance.Output(string.Format("Info: Teams {0}, Players {1}, Time {2} minutes.", _eventTeams, _eventPlayerCount, _eventTime));
+                            if (Event.SetupStage.ContainsKey(_steamId))
+                            {
+                                Event.SetupStage[_steamId] = 5;
+                                Event.SetupName[_steamId] = _eventName;
+                            }
+                            else
+                            {
+                                Event.SetupStage.Add(_steamId, 5);
+                                Event.SetupName.Add(_steamId, _eventName);
+                            }
+                            SdtdConsole.Instance.Output(string.Format("Event id: {0} has been loaded. Type event start to send the invitation out to players.", _id));
+                            return;
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Could not find this event id: {0}", _id));
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Invalid integer: {0}.", _params[1]));
+                        return;
+                    }
+                }
+                else if (_params[0].ToLower() == ("extend"))
                 {
                     if (Event.Admin == _steamId)
                     {
@@ -373,7 +431,7 @@ namespace ServerTools
                         return;
                     }
                 }
-                else if (_params[0] == ("remove"))
+                else if (_params[0].ToLower() == ("remove"))
                 {
                     if (Event.Admin == _steamId)
                     {
@@ -397,8 +455,7 @@ namespace ServerTools
                                         int.TryParse(_cords[1], out y);
                                         int.TryParse(_cords[2], out z);
                                         _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
-
-                                        string _sql2 = string.Format("UPDATE Players SET eventReturn = '{0}' WHERE steamid = '{1}'", "Unknown", _cInfo.playerId);
+                                        string _sql2 = string.Format("UPDATE Players SET eventReturn = 'Unknown', eventSpawn = 'false', eventRespawn = 'false' WHERE steamid = '{1}'", _cInfo.playerId);
                                         SQL.FastQuery(_sql2);
                                         Event.PlayersTeam.Remove(_params[1]);
                                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have been removed from the event and sent to your return point.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
@@ -407,7 +464,7 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        string _sql1 = string.Format("UPDATE Players SET return = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
+                                        string _sql1 = string.Format("UPDATE Players SET return = 'true', eventSpawn = 'false', eventRespawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                                         SQL.FastQuery(_sql1);
                                         Event.PlayersTeam.Remove(_params[1]);
                                         SdtdConsole.Instance.Output(string.Format("Player with Id {0} was not spawned but they were removed from the event and set to return to their return point.", _params[1]));
@@ -415,7 +472,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    string _sql1 = string.Format("UPDATE Players SET return = 'true' WHERE steamid = '{0}'", _params[1]);
+                                    string _sql1 = string.Format("UPDATE Players SET return = 'true', eventSpawn = 'false', eventRespawn = 'false' WHERE steamid = '{0}'", _params[1]);
                                     SQL.FastQuery(_sql1);
                                     Event.PlayersTeam.Remove(_params[1]);
                                     SdtdConsole.Instance.Output(string.Format("Player with Id {0} was offline but they have been removed from the event and set to return to their return point.", _params[1]));
@@ -435,7 +492,68 @@ namespace ServerTools
                         }
                     }
                 }
-                else if (_params[0] == ("delete") || _params[0] == ("del"))
+                else if (_params[0].ToLower() == ("start"))
+                {
+                    if (!Event.Invited)
+                    {
+                        if (Event.SetupStage.ContainsKey(_steamId))
+                        {
+                            int _stage;
+                            if (Event.SetupStage.TryGetValue(_steamId, out _stage))
+                            {
+                                string _eventName;
+                                if (Event.SetupName.TryGetValue(_steamId, out _eventName))
+                                {
+                                    if (_stage == 5)
+                                    {
+                                        if (!Event.Open)
+                                        {
+                                            Event.Invited = true;
+                                            Event.Admin = _steamId;
+                                            Event.SetupStage.Remove(_steamId);
+                                            Event.SetupName.Remove(_steamId);
+                                            string _sql = string.Format("SELECT eventid, eventInvite FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", _steamId, _eventName);
+                                            DataTable _result = SQL.TQuery(_sql);
+                                            int _eventid;
+                                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
+                                            string _eventInvite = _result.Rows[0].ItemArray.GetValue(1).ToString();
+                                            _result.Dispose();
+                                            _sql = string.Format("UPDATE Events SET eventActive = 'true' WHERE eventid = {0} AND eventAdmin = '{1}'", _eventid, _steamId);
+                                            SQL.FastQuery(_sql);
+                                            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                                            for (int i = 0; i < _cInfoList.Count; i++)
+                                            {
+                                                ClientInfo _cInfo = _cInfoList[i];
+                                                if (_cInfo != null)
+                                                {
+                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Event: {1}[-]", Config.Chat_Response_Color, _eventName), Config.Server_Response_Name, false, "ServerTools", false));
+                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _eventInvite), Config.Server_Response_Name, false, "ServerTools", false));
+                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} type /event if you want to join the event. You will return to where you are when it ends.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            SdtdConsole.Instance.Output("The event has already started.");
+                                            return;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        SdtdConsole.Instance.Output("This command is invalid at this stage of setup.");
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output("There is an event invitation open already.");
+                        return;
+                    }
+                }
+                else if (_params[0].ToLower() == ("delete") || _params[0].ToLower() == ("del"))
                 {
                     int _id;
                     if (int.TryParse(_params[1], out _id))
@@ -529,37 +647,6 @@ namespace ServerTools
                                     else
                                     {
                                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 3, found {0}.", _params.Count));
-                                        return;
-                                    }
-                                }
-                                else if (_stage == 5)
-                                {
-                                    if (!Event.Open)
-                                    {
-                                        Event.Invited = true;
-                                        string _sql = string.Format("SELECT eventid, eventInvite FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", _steamId, _eventName);
-                                        DataTable _result = SQL.TQuery(_sql);
-                                        int _eventid;
-                                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
-                                        string _eventInvite = _result.Rows[0].ItemArray.GetValue(1).ToString();
-                                        _result.Dispose();
-                                        _sql = string.Format("UPDATE Events SET eventActive = 'true' WHERE eventid = {0} AND eventAdmin = '{1}'", _eventid, _steamId);
-                                        SQL.FastQuery(_sql);
-                                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                                        for (int i = 0; i < _cInfoList.Count; i++)
-                                        {
-                                            ClientInfo _cInfo = _cInfoList[i];
-                                            if (_cInfo != null)
-                                            {
-                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Event: {1}[-]", Config.Chat_Response_Color, _eventName), Config.Server_Response_Name, false, "ServerTools", false));
-                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _eventInvite), Config.Server_Response_Name, false, "ServerTools", false));
-                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} type /event if you want to join the event. You will return to where you are when it ends.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        SdtdConsole.Instance.Output("The event has already started.");
                                         return;
                                     }
                                 }

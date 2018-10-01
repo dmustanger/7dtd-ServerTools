@@ -285,44 +285,41 @@ namespace ServerTools
                 ClientInfo _cInfoKiller = ConnectionManager.Instance.GetClientInfoForEntityId(_killId);
                 if (_cInfoKiller != null)
                 {
-                    Player p = PersistentContainer.Instance.Players[_cInfoKiller.playerId, false];
-                    if (p == null)
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this player is not online and so can not be forgiven or removed from jail.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                }
+                else
+                {
+                    if (!Jailed.Contains(_cInfoKiller.playerId))
                     {
                         Players.Forgive.Remove(_cInfo.entityId);
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this player is not in jail.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                     }
                     else
                     {
-                        if (!Jailed.Contains(_cInfoKiller.playerId))
+                        Players.Forgive.Remove(_cInfo.entityId);
+                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoKiller.entityId];
+                        if (_player.IsSpawned())
                         {
-                            Players.Forgive.Remove(_cInfo.entityId);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this player is not in jail.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                        }
-                        else
-                        {
-                            Players.Forgive.Remove(_cInfo.entityId);
-                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoKiller.entityId];
-                            if (_player.IsSpawned())
+                            Jailed.Remove(_cInfoKiller.playerId);
+                            Players.NoFlight.Add(_cInfoKiller.entityId);
+                            EntityBedrollPositionList _position = _player.SpawnPoints;
+                            if (_position.Count > 0)
                             {
-                                Jailed.Remove(_cInfoKiller.playerId);
-                                Players.NoFlight.Add(_cInfoKiller.entityId);
-                                EntityBedrollPositionList _position = _player.SpawnPoints;
-                                if (_position.Count > 0)
-                                {
-                                    _cInfoKiller.SendPackage(new NetPackageTeleportPlayer(new Vector3(_position[0].x, _position[0].y + 1, _position[0].z), false));
-                                }
-                                else
-                                {
-                                    Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                    _cInfoKiller.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), false));
-                                }
+                                _cInfoKiller.SendPackage(new NetPackageTeleportPlayer(new Vector3(_position[0].x, _position[0].y + 1, _position[0].z), false));
                             }
                             else
                             {
-                                _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have been forgiven and released from jail by {2}.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                string _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _cInfoKiller.playerId);
-                                SQL.FastQuery(_sql);
+                                Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
+                                _cInfoKiller.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), false));
                             }
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have forgiven {2} and released them from jail.[-]", Config.Chat_Response_Color, _cInfo.playerName, _cInfoKiller.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                            _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have been forgiven and released from jail by {2}.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                            string _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _cInfoKiller.playerId);
+                            SQL.FastQuery(_sql);
+                        }
+                        else
+                        {
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this player is not spawned and so can not be forgiven or removed from jail.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                 }

@@ -1030,21 +1030,18 @@ namespace ServerTools
                     _response = _response.Replace("{PlayerName}", _playerName);
                     if (_response.StartsWith("say "))
                     {
-                        _response = _response.Replace("say ", "&quot; ");
-                        _response = _response + " &quot;";
+                        _response = _response.Replace("say ", "");
                         GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false);
                     }
                     else if (_response.StartsWith("pm ") || _response.StartsWith("personalmessage "))
                     {
                         if (_response.StartsWith("pm "))
                         {
-                            _response = _response.Replace("pm ", "{EntityId} &quot; ");
-                            _response = _response + " &quot;";
+                            _response = _response.Replace("pm ", "");
                         }
                         else
                         {
-                            _response = _response.Replace("personalmessage ", "{EntityId} &quot; ");
-                            _response = _response + " &quot;";
+                            _response = _response.Replace("personalmessage ", "");
                         }
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false));
                     }

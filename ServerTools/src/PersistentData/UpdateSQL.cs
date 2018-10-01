@@ -10,15 +10,27 @@ namespace ServerTools
             {
                 if (SQL.IsMySql)
                 {
-                    MySqlDatabase.FastQuery("ALTER TABLE EventSpawns MODIFY eventSpawn VARCHAR(50) DEFAULT NULL; ALTER TABLE EventSpawns MODIFY eventRespawn VARCHAR(50) DEFAULT NULL");
                     MySqlDatabase.FastQuery("ALTER TABLE Players ADD return VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD eventRespawn VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD eventSpawn VARCHAR(50) DEFAULT 'false';");
                 }
                 else
                 {
-                    SQLiteDatabase.FastQuery("ALTER TABLE EventSpawns MODIFY eventSpawn TEXT DEFAULT NULL; ALTER TABLE EventSpawns MODIFY eventRespawn TEXT DEFAULT NULL");
                     SQLiteDatabase.FastQuery("ALTER TABLE Players ADD return TEXT DEFAULT 'false'; ALTER TABLE Players ADD eventRespawn TEXT DEFAULT 'false'; ALTER TABLE Players ADD eventSpawn TEXT DEFAULT 'false';");
                 }
                 SQL.FastQuery("UPDATE Config SET sql_version = 2 WHERE sql_version = 1");
+            }
+            if (_version == 2)
+            {
+                if (SQL.IsMySql)
+                {
+                    MySqlDatabase.FastQuery("ALTER TABLE EventSpawns DROP eventSpawn; ALTER TABLE EventSpawns DROP eventRespawn;");
+                    MySqlDatabase.FastQuery("ALTER TABLE EventSpawns ADD eventSpawn VARCHAR(50); ALTER TABLE EventSpawns ADD eventRespawn VARCHAR(50);");
+                }
+                else
+                {
+                    SQLiteDatabase.FastQuery("DROP TABLE EventSpawns");
+                    SQLiteDatabase.FastQuery("CREATE TABLE IF NOT EXISTS EventSpawns (eventid INTEGER NOT NULL, eventTeam INTEGER NOT NULL, eventSpawn TEXT, eventRespawn TEXT, FOREIGN KEY(eventid) REFERENCES Events(eventid))");
+                }
+                SQL.FastQuery("UPDATE Config SET sql_version = 3 WHERE sql_version = 2");
             }
             CheckVersion();
         }
