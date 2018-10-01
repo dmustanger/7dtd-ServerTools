@@ -18,7 +18,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. Windows Server 2016]
- - Version [e.g. 11.3]
+ - ServerTools Version [e.g. 11.3]
 
 **Additional context**
 Add any other context about the problem here.
