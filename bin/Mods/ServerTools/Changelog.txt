@@ -1,5 +1,11 @@
 ﻿CHANGELOG
 
+11.6
+Fixed Zones not responding
+Fixed console command ccp list
+Fixed adding a player to the ccp list when the prefix or color is set blank. To set the field blank, type ** during setup
+Changed internal code on reward claim to utilize the players steam id instead of their name when contacting the website
+
 11.5
 Added console command event load <id> to reload a saved event from your list
 Fixed a bug on player signup to an event
