@@ -84,16 +84,6 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of missing group attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("prefix"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of missing prefix attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("color"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of missing color attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
                         if (!_line.HasAttribute("expires"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of missing expires attribute: {0}", subChild.OuterXml));
@@ -110,6 +100,14 @@ namespace ServerTools
                         string _group = _line.GetAttribute("group");
                         string _prefix = _line.GetAttribute("prefix");
                         string _color = _line.GetAttribute("color");
+                        if (_prefix == "**")
+                        {
+                            _prefix = "";
+                        }
+                        if (_color == "**")
+                        {
+                            _color = "";
+                        }
                         if (!dict.ContainsKey(_steamId))
                         {
                             string[] _c = new string[] { _name, _group, _prefix, _color };
@@ -148,6 +146,7 @@ namespace ServerTools
                     sw.WriteLine("        <player steamId=\"68472016531\" name=\"ben\" group=\"donor3\" prefix=\"Don\" color=\"[E9C918]\" expires=\"02/03/2020 7:30:00 AM\" />");
                     sw.WriteLine("        <player steamId=\"78432901212\" name=\"billy\" group=\"user1\" prefix=\"Pimp\" color=\"[ADAD85]\" expires=\"10/29/2050 7:30:00 AM\" />");
                     sw.WriteLine("        <player steamId=\"78362673412\" name=\"bernard\" group=\"user2\" prefix=\"OG\" color=\"[993366]\" expires=\"12/05/2019 7:30:00 AM\" />");
+                    sw.WriteLine("        <player steamId=\"15935748620\" name=\"bee man\" group=\"user3\" prefix=\"\" color=\"\" expires=\"05/11/2020 7:30:00 AM\" />");
                 }
                 sw.WriteLine("    </ColorPrefix>");
                 sw.WriteLine("</Chat>");

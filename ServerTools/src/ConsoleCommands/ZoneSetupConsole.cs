@@ -173,7 +173,7 @@ namespace ServerTools
                                         Zones.zoneSetup1[_cInfo.entityId] = _strings;
                                         newZone[_cInfo.entityId] = 3;
                                         SdtdConsole.Instance.Output(string.Format("Saved the circle radius to {0}.", _result));
-                                        SdtdConsole.Instance.Output(string.Format("Type zone save 'entry message'. This is the message players receive upon entering the zone."));
+                                        SdtdConsole.Instance.Output(string.Format("Type zone save \"entry message\". This is the message players receive upon entering the zone."));
                                     }
                                     else
                                     {
@@ -231,92 +231,44 @@ namespace ServerTools
                                 Zones.zoneSetup1[_cInfo.entityId] = _strings;
                                 newZone[_cInfo.entityId] = 3;
                                 SdtdConsole.Instance.Output(string.Format("Corner 2 = {0} {1} {2}", x, y, z));
-                                SdtdConsole.Instance.Output(string.Format("Corner 2 saved. Type zone save 'entry message'. This is the message players receive upon entering the zone."));
+                                SdtdConsole.Instance.Output(string.Format("Corner 2 saved. Type zone save \"entry message\". This is the message players receive upon entering the zone."));
                             }
                             else if (_stage == 3)
                             {
-                                string _entry = "";
-                                for (int i = 0; i < _params.Count; i++)
-                                {
-                                    if (_entry == "")
-                                    {
-                                        _entry = _entry + _params[i];
-                                    }
-                                    else
-                                    {
-                                        _entry = _entry + " " + _params[i];
-                                    }
-                                }
-                                _entry = _entry.Replace("zone save save ", "");
+                                string _entry = _params[1];
                                 string[] _strings;
                                 Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
                                 _strings[2] = _entry;
                                 Zones.zoneSetup1[_cInfo.entityId] = _strings;
                                 newZone[_cInfo.entityId] = 4;
                                 SdtdConsole.Instance.Output(string.Format("Zone entry message = \"{0}\"", _entry));
-                                SdtdConsole.Instance.Output(string.Format("Zone entry message saved. Type zone save 'exit message'. This is the message players receive upon exiting the zone."));
+                                SdtdConsole.Instance.Output(string.Format("Zone entry message saved. Type zone save \"exit message\". This is the message players receive upon exiting the zone."));
                             }
                             else if (_stage == 4)
                             {
-                                string _exit = "";
-                                for (int i = 0; i < _params.Count; i++)
-                                {
-                                    if (_exit == "")
-                                    {
-                                        _exit = _exit + _params[i];
-                                    }
-                                    else
-                                    {
-                                        _exit = _exit + " " + _params[i];
-                                    }
-                                }
-                                _exit = _exit.Replace("zone save save ", "");
+                                string _exit = _params[1];
                                 string[] _strings;
                                 Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
                                 _strings[3] = _exit;
                                 Zones.zoneSetup1[_cInfo.entityId] = _strings;
                                 newZone[_cInfo.entityId] = 5;
                                 SdtdConsole.Instance.Output(string.Format("Zone exit message = \"{0}\"", _exit));
-                                SdtdConsole.Instance.Output(string.Format("Zone exit message saved. Type zone save 'response'. This is the console command that will occur when a player enters this zone."));
+                                SdtdConsole.Instance.Output(string.Format("Zone exit message saved. Type zone save \"response\". This is the console command that will occur when a player enters this zone."));
                             }
                             else if (_stage == 5)
                             {
-                                string _response = "";
-                                for (int i = 0; i < _params.Count; i++)
-                                {
-                                    if (_response == "")
-                                    {
-                                        _response = _response + _params[i];
-                                    }
-                                    else
-                                    {
-                                        _response = _response + " " + _params[i];
-                                    }
-                                }
-                                _response = _response.Replace("zone save save ", "");
+                                string _response = _params[1];
                                 string[] _strings;
                                 Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
                                 _strings[4] = _response;
                                 Zones.zoneSetup1[_cInfo.entityId] = _strings;
                                 newZone[_cInfo.entityId] = 6;
                                 SdtdConsole.Instance.Output(string.Format("Zone response = \"{0}\"", _response));
-                                SdtdConsole.Instance.Output(string.Format("Zone response saved. Type zone save 'reminder message'. This will set the message players receive if they stay in this zone long enough."));
+                                SdtdConsole.Instance.Output(string.Format("Zone response saved. Type zone save \"reminder message\". This will set the message players receive if they stay in this zone long enough."));
                             }
                             else if (_stage == 6)
                             {
-                                string _response = "";
-                                for (int i = 0; i < _params.Count; i++)
-                                {
-                                    if (_response == "")
-                                    {
-                                        _response = _params[i];
-                                    }
-                                    else
-                                    {
-                                        _response = _response + " " + _params[i];
-                                    }
-                                }
-                                _response = _response.Replace("zone save save ", "");
+                                string _response = _params[1];
                                 string[] _strings;
                                 Zones.zoneSetup1.TryGetValue(_cInfo.entityId, out _strings);
                                 _strings[5] = _response;

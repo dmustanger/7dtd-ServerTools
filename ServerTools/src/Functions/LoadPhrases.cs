@@ -116,7 +116,7 @@ namespace ServerTools
                 string _phrase2;
                 if (!Dict.TryGetValue(2, out _phrase2))
                 {
-                    _phrase2 = "Auto Kicked: Ping To High. ({PlayerPing}) Max Ping is {MaxPing}.";
+                    _phrase2 = "Auto Kicked: Ping too high. ({PlayerPing}) Max ping is {MaxPing}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"2\" Phrase=\"{0}\" />", _phrase2));
                 sw.WriteLine("        <!-- ******************************************************** -->");

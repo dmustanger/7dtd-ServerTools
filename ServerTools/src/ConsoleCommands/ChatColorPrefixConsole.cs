@@ -18,16 +18,17 @@ namespace ServerTools
                 "  3. ChatColorPrefix add <steamId/entityId/playerName> <name> <group> <prefix> <color> <days to expire>\n" +
                 "  4. ChatColorPrefix add <steamId/entityId/playerName> <name> <group> <days to expire>\n" +
                 "  5. ChatColorPrefix add <steamId/entityId/playerName> <name> <group>\n" +
-                "  6. ChatColorPrefix remove <steamId/entityId/playerName/group>\n" +
+                "  6. ChatColorPrefix remove <steamId/playerName/group>\n" +
                 "  7. ChatColorPrefix list\n" +
                 "1. Turn off chat color prefix\n" +
                 "2. Turn on chat color prefix\n" +
-                "3. Adds a steam Id to a new group on the chat color prefix list\n" +
-                "4. Adds a steam Id to an existing group with the specified expiry date on the chat color prefix list\n" +
-                "5. Adds a steam Id to an existing group with their expiry date on the chat color prefix list\n" +
+                "3. Adds a steam Id to a new group with custom prefix and color on the chat color prefix list\n" +
+                "4. Adds a steam Id to an existing group with the prefix, color of that group but a custom expiry date\n" +
+                "5. Adds a steam Id to an existing group with their prefix, color and expiry date\n" +
                 "6. Removes a steam Id or entire group from the chat color prefix list\n" +
                 "7. Lists all steam Id in the chat color prefix list\n" +
-                "*Note the color must be entered as a 6 digit HTML color code*";
+                "Note if you want a blank prefix or color enter **" +
+                "Note the color must be entered as a 6 digit HTML color code";
         }
         public override string[] GetCommands()
         {
@@ -110,7 +111,7 @@ namespace ServerTools
                             _expireDate = DateTime.Now.AddDays(18250d);
                         }
                         string _color = "";
-                        if (!_params[5].StartsWith("["))
+                        if (!_params[5].StartsWith("[") && !_params[5].StartsWith("**"))
                         {
                             _color = "[" + _params[5] + "]";
                         }
@@ -177,7 +178,7 @@ namespace ServerTools
                         return;
                     }
                 }
-                else if (_params[0].ToLower().Equals("remove"))
+                else if (_params[0].ToLower().Equals("remove") || _params[0].ToLower().Equals("delete") || _params[0].ToLower().Equals("del"))
                 {
                     if (_params.Count != 2)
                     {
@@ -188,12 +189,23 @@ namespace ServerTools
                     {
                         if (group.Value[1] == _params[1])
                         {
+                            ChatColorPrefix.dict.Remove(group.Key);
+                            ChatColorPrefix.dict1.Remove(group.Key);
                             SdtdConsole.Instance.Output(string.Format("Removed {0} named {1} with group {2} from the chat color prefix list.", group.Key, group.Value[0], _params[1]));
                         }
                         if (group.Key == _params[1])
                         {
+                            ChatColorPrefix.dict.Remove(group.Key);
+                            ChatColorPrefix.dict1.Remove(group.Key);
                             SdtdConsole.Instance.Output(string.Format("Removed {0} named {1} with group {2} from the chat color prefix list.", _params[1], group.Value[0], group.Value[1]));
                         }
+                        if (group.Value[0] == _params[1])
+                        {
+                            ChatColorPrefix.dict.Remove(group.Key);
+                            ChatColorPrefix.dict1.Remove(group.Key);
+                            SdtdConsole.Instance.Output(string.Format("Removed {0} named {1} with group {2} from the chat color prefix list.", group.Key, _params[1], group.Value[1]));
+                        }
+                        ChatColorPrefix.UpdateXml();
                     }
                     SdtdConsole.Instance.Output(string.Format("Completed removing id and groups matching {0} from the chat color prefix list.", _params[1]));
                 }
@@ -201,7 +213,17 @@ namespace ServerTools
                 {
                     foreach (var group in ChatColorPrefix.dict)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Id {0} named {1} with group {2} prefix {3} color {4} expires {5}.", group.Key, group.Value[0], group.Value[1], group.Value[2], group.Value[3], group.Value[4]));
+                        if (group.Value[2] == "")
+                        {
+                            group.Value[2] = "**";
+                        }
+                        if (group.Value[3] == "")
+                        {
+                            group.Value[3] = "**";
+                        }
+                        DateTime _dt;
+                        ChatColorPrefix.dict1.TryGetValue(group.Key, out _dt);
+                        SdtdConsole.Instance.Output(string.Format("Id {0} named {1} with group {2} prefix {3} color {4} expires {5}.", group.Key, group.Value[0], group.Value[1], group.Value[2], group.Value[3], _dt));
                     }
                 }
                 else

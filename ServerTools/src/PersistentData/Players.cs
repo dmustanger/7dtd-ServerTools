@@ -82,13 +82,12 @@ namespace ServerTools
                 EntityPlayer _player = _playerList[i];
                 if (_player != null)
                 {
-                    if (_player.IsDead())
+                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
+                    if (_cInfo != null)
                     {
-                        DP = true;
-                        ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
-                        if (_cInfo != null)
+                        if (_player.IsDead())
                         {
-
+                            DP = true;
                             if (!Dead.Contains(_player.entityId))
                             {
                                 Dead.Add(_player.entityId);
