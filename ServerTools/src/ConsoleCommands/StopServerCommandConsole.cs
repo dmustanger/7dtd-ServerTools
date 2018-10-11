@@ -64,11 +64,6 @@ namespace ServerTools
                         }
                         else
                         {
-                            if (Lottery.OpenLotto)
-                            {
-                                Lottery.StartLotto();
-                            }
-                            Lottery.ShuttingDown = true;
                             StopServer.StartShutdown();
                         }
                     }                   

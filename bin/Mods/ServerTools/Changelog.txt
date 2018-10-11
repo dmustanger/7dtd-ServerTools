@@ -1,5 +1,12 @@
 ﻿CHANGELOG
 
+11.7
+Fixed console command vote reward reset responding with invalid argument count
+Fixed entity cleanup for blocks sometimes locking cpu usage to 100%. Please report if this is still occurring for you, tests come back clean so far
+Fixed Auto shutdown not triggering the lottery if open
+Fixed Custom_Commands showing &quot; when they should not AGAIN....
+Changed entity cleanup for blocks. It will not log the closest player to reduce cpu load
+
 11.6
 Fixed Zones not responding
 Fixed console command ccp list

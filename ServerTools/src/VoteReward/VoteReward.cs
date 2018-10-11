@@ -279,25 +279,34 @@ namespace ServerTools
                 {
                     if (!Reward_Entity)
                     {
-                        if (dict.Count > 0 && Reward_Count > 0)
+                        if (dict.Count > 0)
                         {
-                            if (Reward_Count > dict.Count)
+                            if (Reward_Count > 0)
                             {
-                                Reward_Count = dict.Count;
+                                if (Reward_Count > dict.Count)
+                                {
+                                    Reward_Count = dict.Count;
+                                }
+                                string _phrase701;
+                                if (!Phrases.Dict.TryGetValue(701, out _phrase701))
+                                {
+                                    _phrase701 = "Thank you for your vote {PlayerName}. You can vote and receive another reward in {VoteDelay} hours.";
+                                }
+                                _phrase701 = _phrase701.Replace("{PlayerName}", _cInfo.playerName);
+                                _phrase701 = _phrase701.Replace("{VoteDelay}", Delay_Between_Uses.ToString());
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase701), Config.Server_Response_Name, false, "ServerTools", false));
+                                ItemOrBlock(_cInfo);
                             }
-                            string _phrase701;
-                            if (!Phrases.Dict.TryGetValue(701, out _phrase701))
+                            else
                             {
-                                _phrase701 = "Thank you for your vote {PlayerName}. You can vote and receive another reward in {VoteDelay} hours.";
+                                Que();
+                                Log.Out("[SERVERTOOLS] Vote reward: reward count is set to zero.");
                             }
-                            _phrase701 = _phrase701.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase701 = _phrase701.Replace("{VoteDelay}", Delay_Between_Uses.ToString());
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase701), Config.Server_Response_Name, false, "ServerTools", false));
-                            ItemOrBlock(_cInfo);
                         }
                         else
                         {
-                            Log.Out("[SERVERTOOLS] Vote reward: dictionary empty or reward count is set to zero.");
+                            Que();
+                            Log.Out("[SERVERTOOLS] Vote reward: dictionary empty, check the reward list in the xml for errors.");
                         }
                     }
                     else
@@ -506,11 +515,12 @@ namespace ServerTools
             if (que.Count > 0)
             {
                 ClientInfo _cInfo = que[0];
-                Execute(_cInfo);
                 que.Remove(_cInfo);
+                Execute(_cInfo);
             }
             else
             {
+                QueOpen = false;
                 RewardOpen = true;
             }
         }

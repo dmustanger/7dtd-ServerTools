@@ -1081,28 +1081,18 @@ namespace ServerTools
                     _response2 = _response2.Replace("{PlayerName}", _playerName);
                     if (_response2.StartsWith("say "))
                     {
-                        _response2 = _response2.Replace("say ", "&quot; ");
-                        _response2 = _response2 + " &quot;";
-                        if (_announce)
-                        {
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false);
-                        }
-                        else
-                        {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false));
-                        }
+                        _response2 = _response2.Replace("say ", "");
+                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false);
                     }
                     else if (_response2.StartsWith("pm ") || _response2.StartsWith("personalmessage "))
                     {
                         if (_response2.StartsWith("pm "))
                         {
-                            _response2 = _response2.Replace("pm ", "{EntityId} &quot; ");
-                            _response2 = _response2 + " &quot;";
+                            _response2 = _response.Replace("pm ", "");
                         }
                         else
                         {
-                            _response2 = _response2.Replace("personalmessage ", "{EntityId} &quot; ");
-                            _response2 = _response2 + " &quot;";
+                            _response2 = _response.Replace("personalmessage ", "");
                         }
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false));
                     }

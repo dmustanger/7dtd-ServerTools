@@ -26,11 +26,6 @@ namespace ServerTools
             }
             else
             {
-                if (Lottery.OpenLotto)
-                {
-                    Lottery.StartLotto();
-                }
-                Lottery.ShuttingDown = true;
                 Bloodmoon = false;
                 Auto_Shutdown();
             }
