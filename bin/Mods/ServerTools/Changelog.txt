@@ -1,5 +1,14 @@
 ﻿CHANGELOG
 
+11.8
+Added option to Bank called Inside_Claim. Requires players be inside their claim or a friend's to send money in to or out of the bank
+Added option to Bike_Return called Inside_Claim. Requires players be inside their claim or a friend's to save a bike
+Fixed Bike_Return bike save requiring wallet coins to match the command cost even though it costs nothing to save the bike, only retrieve it
+Fixed Wallet option Lose_On_Death missing. This wipes out a player's wallet value on death, encouraging them to bank it if enabled
+Fixed event respawn for players that have died during an open event
+Fixed releasing a player from jail with the /forgive command responding twice and not actually releasing the player
+*Possible fix added for linux users, let us know*
+
 11.7
 Fixed console command vote reward reset responding with invalid argument count
 Fixed entity cleanup for blocks sometimes locking cpu usage to 100%. Please report if this is still occurring for you, tests come back clean so far

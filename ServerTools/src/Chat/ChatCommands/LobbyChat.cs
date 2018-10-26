@@ -244,6 +244,8 @@ namespace ServerTools
                     Players.NoFlight.Add(_cInfo.entityId);
                     _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
                     LobbyPlayers.Remove(_cInfo.entityId);
+                    _sql = string.Format("UPDATE Players SET lobbyReturn = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
+                    SQL.FastQuery(_sql);
                     string _phrase555;
                     if (!Phrases.Dict.TryGetValue(555, out _phrase555))
                     {
@@ -262,6 +264,10 @@ namespace ServerTools
                     _phrase556 = _phrase556.Replace("{PlayerName}", _playerName);
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase556), Config.Server_Response_Name, false, "ServerTools", false));
                 }
+            }
+            else
+            {
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have no saved return point[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
     }

@@ -871,7 +871,7 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (MarketChat.IsEnabled && _message.ToLower() == "marketback")
+                        if (MarketChat.IsEnabled && (_message.ToLower() == "marketback" || _message.ToLower() == "mback"))
                         {
                             if (MarketChat.MarketPlayers.Contains(_cInfo.entityId))
                             {
@@ -879,7 +879,7 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (LobbyChat.IsEnabled && _message.ToLower() == "lobbyback")
+                        if (LobbyChat.IsEnabled && (_message.ToLower() == "lobbyback" || _message.ToLower() == "lback"))
                         {
                             if (LobbyChat.LobbyPlayers.Contains(_cInfo.entityId))
                             {
@@ -891,7 +891,6 @@ namespace ServerTools
                         {
                             if (Players.Forgive.ContainsKey(_cInfo.entityId))
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Your killer has been forgiven.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
                                 Jail.Forgive(_cInfo);
                                 return false;
                             }

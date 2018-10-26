@@ -123,14 +123,14 @@ namespace ServerTools
             int _team;
             if (PlayersTeam.TryGetValue(_cInfo.playerId, out _team))
             {
-                string _sql1 = string.Format("SELECT eventid FROM Events WHERE eventActive = 'true'");
-                DataTable _result1 = SQL.TQuery(_sql1);
+                string _sql = string.Format("SELECT eventid FROM Events WHERE eventActive = 'true'");
+                DataTable _result1 = SQL.TQuery(_sql);
                 int _eventid;
                 int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
                 _result1.Dispose();
-                string _sql2 = string.Format("SELECT eventRespawn FROM EventSpawns WHERE eventid = {0} AND eventTeam = {1}", _eventid, _team);
-                DataTable _result2 = SQL.TQuery(_sql2);
-                string _respawnPos = _result2.Rows[0].ItemArray.GetValue(0).ToString();
+                _sql = string.Format("SELECT eventRespawn FROM EventSpawns WHERE eventid = {0} AND eventTeam = {1}", _eventid, _team);
+                DataTable _result2 = SQL.TQuery(_sql);
+                string _respawnPos = _result2.Rows[1].ItemArray.GetValue(0).ToString();
                 _result2.Dispose();
                 int _x, _y, _z;
                 string[] _cords = _respawnPos.Split(',');
@@ -186,12 +186,12 @@ namespace ServerTools
                     EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
                     if (_player2.IsSpawned())
                     {
-                        string _sql1 = string.Format("SELECT eventReturn FROM Players WHERE steamid = '{0}'", _cInfo1.playerId);
-                        DataTable _result = SQL.TQuery(_sql1);
+                        string _sql = string.Format("SELECT eventReturn FROM Players WHERE steamid = '{0}'", _cInfo1.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
                         string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
                         _result.Dispose();
-                        _sql1 = string.Format("UPDATE Players SET eventReturn = 'Unknown' WHERE steamid = '{0}'", _player1.Key);
-                        SQL.FastQuery(_sql1);
+                        _sql = string.Format("UPDATE Players SET eventReturn = 'Unknown' WHERE steamid = '{0}'", _player1.Key);
+                        SQL.FastQuery(_sql);
                         int x, y, z;
                         string[] _cords = _pos.Split(',');
                         int.TryParse(_cords[0], out x);
@@ -204,12 +204,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    string _sql1 = string.Format("UPDATE Players SET return = 'true' WHERE steamid = '{0}'", _player1.Key);
-                    SQL.FastQuery(_sql1);
+                    string _sql = string.Format("UPDATE Players SET return = 'true' WHERE steamid = '{0}'", _player1.Key);
+                    SQL.FastQuery(_sql);
                     PlayersTeam.Remove(_player1.Key);
                 }
             }
-            string _sql2 = string.Format("UPDATE Events SET eventAdmin = null, eventActive = 'false' WHERE eventAdmin = '{0}'", Admin);
+            string _sql2 = string.Format("UPDATE Events SET eventActive = 'false' WHERE eventAdmin = '{0}'", Admin);
             SQL.FastQuery(_sql2);
             ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForPlayerName(Admin);
             if (_cInfo2 != null)

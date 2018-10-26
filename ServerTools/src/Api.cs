@@ -212,29 +212,58 @@ namespace ServerTools
                         PollConsole.Message(_cInfo);
                     }
                     _result.Dispose();
-                    if (Hardcore.IsEnabled)
+                    if (Event.Open)
                     {
-                        Hardcore.Check(_cInfo);
-                    }
-                    _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                    DataTable _result1 = SQL.TQuery(_sql);
-                    bool _return1 = false, _return2 = false;
-                    bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
-                    bool.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
-                    _result1.Dispose();
-                    if (_return1)
-                    {
-                        if (_return2)
+                        if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
                         {
-                            _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                            SQL.FastQuery(_sql);
+                            if (Hardcore.IsEnabled)
+                            {
+                                Hardcore.Check(_cInfo);
+                            }
                         }
-                        _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                        Event.EventReturn(_cInfo);
+                        else
+                        {
+                            _sql = string.Format("SELECT eventRespawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result1 = SQL.TQuery(_sql);
+                            bool _eventRespawn;
+                            bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _eventRespawn);
+                            _result1.Dispose();
+                            if (_eventRespawn)
+                            {
+                                Event.Died(_cInfo);
+                            }
+                            else
+                            {
+                                _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                DataTable _result2 = SQL.TQuery(_sql);
+                                bool _return1 = false, _return2 = false;
+                                bool.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
+                                bool.TryParse(_result2.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                                _result2.Dispose();
+                                if (_return1)
+                                {
+                                    if (_return2)
+                                    {
+                                        _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                        SQL.FastQuery(_sql);
+                                    }
+                                    _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                    SQL.FastQuery(_sql);
+                                    Event.EventReturn(_cInfo);
+                                }
+                                else if (_return2)
+                                {
+                                    Event.EventSpawn(_cInfo);
+                                }
+                            }
+                        }
                     }
-                    else if (_return2)
+                    else
                     {
-                        Event.EventSpawn(_cInfo);
+                        if (Hardcore.IsEnabled)
+                        {
+                            Hardcore.Check(_cInfo);
+                        }
                     }
                     _sql = string.Format("UPDATE Players SET playername = '{0}', zkills = {1}, kills = {2}, deaths = {3} WHERE steamid = '{4}'", _name, _zCount, _killCount, _deathCount, _cInfo.playerId);
                     SQL.FastQuery(_sql);
@@ -250,51 +279,109 @@ namespace ServerTools
                 }
                 if (_respawnReason == RespawnType.Died)
                 {
-                    if (Hardcore.IsEnabled)
-                    {
-                        Hardcore.Check(_cInfo);
-                    }
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    string _sql = string.Format("UPDATE Players SET deaths = {0} WHERE steamid = '{1}'", XUiM_Player.GetDeaths(_player), _cInfo.playerId);
-                    SQL.FastQuery(_sql);
-                    if (Event.Open && Event.PlayersTeam.ContainsKey(_cInfo.playerId))
+                    if (Event.Open)
                     {
-                        _sql = string.Format("SELECT eventRespawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        bool _eventRespawn;
-                        bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventRespawn);
-                        _result.Dispose();
-                        if (_eventRespawn)
+                        if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
                         {
-                            Event.Died(_cInfo);
+                            if (Wallet.Lose_On_Death)
+                            {
+                                Wallet.ClearWallet(_cInfo);
+                            }
+                            if (Hardcore.IsEnabled)
+                            {
+                                Hardcore.Check(_cInfo);
+                            }
+                            string _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result1 = SQL.TQuery(_sql);
+                            bool _return1 = false, _return2 = false;
+                            bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
+                            bool.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                            _result1.Dispose();
+                            if (_return1)
+                            {
+                                if (_return2)
+                                {
+                                    _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                    SQL.FastQuery(_sql);
+                                }
+                                _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                SQL.FastQuery(_sql);
+                                Event.EventReturn(_cInfo);
+                            }
+                        }
+                        else
+                        {
+                            string _sql = string.Format("SELECT eventRespawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result = SQL.TQuery(_sql);
+                            bool _eventRespawn;
+                            bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventRespawn);
+                            _result.Dispose();
+                            if (_eventRespawn)
+                            {
+                                Event.Died(_cInfo);
+                            }
+                            else
+                            {
+                                _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                DataTable _result1 = SQL.TQuery(_sql);
+                                bool _return1 = false, _return2 = false;
+                                bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
+                                bool.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                                _result1.Dispose();
+                                if (_return1)
+                                {
+                                    if (_return2)
+                                    {
+                                        _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                        SQL.FastQuery(_sql);
+                                    }
+                                    _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                    SQL.FastQuery(_sql);
+                                    Event.EventReturn(_cInfo);
+                                }
+                                else if (_return2)
+                                {
+                                    Event.EventSpawn(_cInfo);
+                                }
+                            }
                         }
                     }
-                    _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                    DataTable _result1 = SQL.TQuery(_sql);
-                    bool _return1 = false, _return2 = false;
-                    bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
-                    bool.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
-                    _result1.Dispose();
-                    if (_return1)
+                    else
                     {
-                        if (_return2)
+                        if (Wallet.Lose_On_Death)
                         {
-                            _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                            Wallet.ClearWallet(_cInfo);
+                        }
+                        if (Hardcore.IsEnabled)
+                        {
+                            Hardcore.Check(_cInfo);
+                        }
+                        string _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result1 = SQL.TQuery(_sql);
+                        bool _return1 = false, _return2 = false;
+                        bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
+                        bool.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                        _result1.Dispose();
+                        if (_return1)
+                        {
+                            if (_return2)
+                            {
+                                _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                SQL.FastQuery(_sql);
+                            }
+                            _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                             SQL.FastQuery(_sql);
+                            Event.EventReturn(_cInfo);
                         }
-                        _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                        SQL.FastQuery(_sql);
-                        Event.EventReturn(_cInfo);
                     }
-                    else if (_return2)
-                    {
-                        Event.EventSpawn(_cInfo);
-                    }
+                    string _sql2 = string.Format("UPDATE Players SET deaths = {0} WHERE steamid = '{1}'", XUiM_Player.GetDeaths(_player), _cInfo.playerId);
+                    SQL.FastQuery(_sql2);
                     if (Zones.IsEnabled && Players.Victim.ContainsKey(_cInfo.entityId))
                     {
                         _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /return to teleport back to your death position. There is a time limit.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
-                        _sql = string.Format("UPDATE Players SET respawnTime = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                        SQL.FastQuery(_sql);
+                        _sql2 = string.Format("UPDATE Players SET respawnTime = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                        SQL.FastQuery(_sql2);
                         if (Players.Forgive.ContainsKey(_cInfo.entityId))
                         {
                             _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /forgive to release your killer from jail.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
@@ -305,8 +392,8 @@ namespace ServerTools
                         if (Wallet.IsEnabled)
                         {
                             int currentCoins = Wallet.GetcurrentCoins(_cInfo);
-                            _sql = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
-                            SQL.FastQuery(_sql);
+                            _sql2 = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
+                            SQL.FastQuery(_sql2);
                         }
                     }
                     PersistentContainer.Instance.Save();

@@ -283,7 +283,7 @@ namespace ServerTools
             if (Players.Forgive.TryGetValue(_cInfo.entityId, out _killId))
             {
                 ClientInfo _cInfoKiller = ConnectionManager.Instance.GetClientInfoForEntityId(_killId);
-                if (_cInfoKiller != null)
+                if (_cInfoKiller == null)
                 {
                     _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} this player is not online and so can not be forgiven or removed from jail.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
                 }
@@ -296,10 +296,10 @@ namespace ServerTools
                     }
                     else
                     {
-                        Players.Forgive.Remove(_cInfo.entityId);
                         EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoKiller.entityId];
                         if (_player.IsSpawned())
                         {
+                            Players.Forgive.Remove(_cInfo.entityId);
                             Jailed.Remove(_cInfoKiller.playerId);
                             Players.NoFlight.Add(_cInfoKiller.entityId);
                             EntityBedrollPositionList _position = _player.SpawnPoints;

@@ -91,6 +91,11 @@ namespace ServerTools
                             if (!Dead.Contains(_player.entityId))
                             {
                                 Dead.Add(_player.entityId);
+                                if (Event.Open && Event.PlayersTeam.ContainsKey(_cInfo.playerId))
+                                {
+                                    string _sql = string.Format("UPDATE Players SET eventRespawn = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
+                                    SQL.FastQuery(_sql);
+                                }
                                 if (!DeathTime.ContainsKey(_player.entityId))
                                 {
                                     Vector3 _position = _player.GetPosition();

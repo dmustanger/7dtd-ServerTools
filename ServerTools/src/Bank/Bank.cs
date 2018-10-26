@@ -9,7 +9,7 @@ namespace ServerTools
 {
     class Bank
     {
-        public static bool IsEnabled = false;
+        public static bool IsEnabled = false, Inside_Claim = true;
         public static string Ingame_Coin = "casinoCoin";
         public static int Limit = 50000;
         public static Dictionary<string, int> TransferId = new Dictionary<string, int>();
@@ -60,17 +60,43 @@ namespace ServerTools
 
         public static void CheckLocation(ClientInfo _cInfo, string _amount, int _exec)
         {
-            World world = GameManager.Instance.World;
-            EntityPlayer _player = world.Players.dict[_cInfo.entityId];
-            Vector3 _position = _player.GetPosition();
-            int x = (int)_position.x;
-            int y = (int)_position.y;
-            int z = (int)_position.z;
-            Vector3i _vec3i = new Vector3i(x, y, z);
-            PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
-            PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_player.entityId);
-            EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
-            if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+            if (Inside_Claim)
+            {
+                World world = GameManager.Instance.World;
+                EntityPlayer _player = world.Players.dict[_cInfo.entityId];
+                Vector3 _position = _player.GetPosition();
+                int x = (int)_position.x;
+                int y = (int)_position.y;
+                int z = (int)_position.z;
+                Vector3i _vec3i = new Vector3i(x, y, z);
+                PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
+                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_player.entityId);
+                EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
+                if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+                {
+                    if (_exec == 1)
+                    {
+                        Deposit(_cInfo, _amount);
+                    }
+                    if (_exec == 2)
+                    {
+                        Withdraw(_cInfo, _amount);
+                    }
+                    if (_exec == 3)
+                    {
+                        WalletDeposit(_cInfo, _amount);
+                    }
+                    if (_exec == 4)
+                    {
+                        WalletWithdraw(_cInfo, _amount);
+                    }
+                }
+                else
+                {
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You can not use this command here. Stand in your own or a friend's claimed space.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                }
+            }
+            else
             {
                 if (_exec == 1)
                 {
@@ -88,11 +114,6 @@ namespace ServerTools
                 {
                     WalletWithdraw(_cInfo, _amount);
                 }
-
-            }
-            else
-            {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You can not use this command here. Stand in your own or a friend's claimed space.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
@@ -113,98 +134,97 @@ namespace ServerTools
                         tiles = _c.GetTileEntities();
                         foreach (TileEntity tile in tiles.dict.Values)
                         {
-                            TileEntityType type = tile.GetTileEntityType();
-                            if (type.ToString().Equals("SecureLoot"))
+                            if (!Found)
                             {
-                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
-                                Vector3i vec3i = SecureLoot.ToWorldPos();
-                                if ((vec3i.x - _player.position.x) * (vec3i.x - _player.position.x) + (vec3i.z - _player.position.z) * (vec3i.z - _player.position.z) <= 1.5 * 1.5)
+                                TileEntityType type = tile.GetTileEntityType();
+                                if (type.ToString().Equals("SecureLoot"))
                                 {
-                                    int _playerCount = ConnectionManager.Instance.ClientCount();
-                                    if (_playerCount > 1)
+                                    TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
+                                    if (SecureLoot.IsUserAllowed(_cInfo.playerId))
                                     {
-                                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
-                                        for (int k = 0; k < _cInfoList.Count; k++)
+                                        Vector3i vec3i = SecureLoot.ToWorldPos();
+                                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                        if ((vec3i.x - _player.position.x) * (vec3i.x - _player.position.x) + (vec3i.z - _player.position.z) * (vec3i.z - _player.position.z) <= 1.5 * 1.5)
                                         {
-                                            ClientInfo _cInfo2 = _cInfoList[k];
-                                            if (_cInfo != _cInfo2)
+                                            int _playerCount = ConnectionManager.Instance.ClientCount();
+                                            if (_playerCount > 1)
                                             {
-                                                EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
-                                                if ((vec3i.x - _player2.position.x) * (vec3i.x - _player2.position.x) + (vec3i.z - _player2.position.z) * (vec3i.z - _player2.position.z) <= 8 * 8)
+                                                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                                                for (int k = 0; k < _cInfoList.Count; k++)
                                                 {
-                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you are too close to another player to deposit from your chest in to the bank.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                                    return;
+                                                    ClientInfo _cInfo2 = _cInfoList[k];
+                                                    if (_cInfo != _cInfo2)
+                                                    {
+                                                        EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
+                                                        if ((vec3i.x - _player2.position.x) * (vec3i.x - _player2.position.x) + (vec3i.z - _player2.position.z) * (vec3i.z - _player2.position.z) <= 8 * 8)
+                                                        {
+                                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you are too close to another player to deposit from your chest in to the bank.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                                            return;
+                                                        }
+                                                    }
                                                 }
                                             }
-                                        }
-                                    }
-                                    List<string> boxUsers = SecureLoot.GetUsers();
-                                    if (!boxUsers.Contains(_cInfo.playerId) && !SecureLoot.GetOwner().Equals(_cInfo.playerId))
-                                    {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the local secure loot is not owned by you. You can only deposit to the bank through a secure loot you own.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                        return;
-                                    }
-                                    ItemStack[] items = SecureLoot.items;
-                                    int slotNumber = 0;
-                                    foreach (ItemStack item in items)
-                                    {
-                                        if (!item.IsEmpty())
-                                        {
-                                            ItemClass _itemClass = ItemClass.list[item.itemValue.type];
-                                            string _itemName = _itemClass.GetItemName();
-                                            if (_itemName == Ingame_Coin)
+                                            ItemStack[] items = SecureLoot.items;
+                                            int slotNumber = 0;
+                                            foreach (ItemStack item in items)
                                             {
-                                                if (item.count >= _coinAmount)
+                                                if (!item.IsEmpty())
                                                 {
-                                                    string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                                    DataTable _result = SQL.TQuery(_sql);
-                                                    int _bank;
-                                                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
-                                                    _result.Dispose();
-                                                    double _percent = _coinAmount * 0.05;
-                                                    int _newCoin = _coinAmount - (int)_percent;
-                                                    double _newLimit = Limit + (Limit * 0.05);
-                                                    if (_bank + _coinAmount <= (int)_newLimit)
+                                                    ItemClass _itemClass = ItemClass.list[item.itemValue.type];
+                                                    string _itemName = _itemClass.GetItemName();
+                                                    if (_itemName == Ingame_Coin)
                                                     {
-                                                        Found = true;
-                                                        int _newCount = item.count - _coinAmount;
-                                                        ItemValue _itemValue = ItemClass.GetItem(Ingame_Coin, true);
-                                                        if (_itemValue.type == ItemValue.None.type)
+                                                        if (item.count >= _coinAmount)
                                                         {
-                                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the bank coin is not setup correctly, contact the server Admin.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                                                            Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0}", Ingame_Coin));
-                                                            return;
+                                                            string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                                            DataTable _result = SQL.TQuery(_sql);
+                                                            int _bank;
+                                                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
+                                                            _result.Dispose();
+                                                            double _percent = _coinAmount * 0.05;
+                                                            int _newCoin = _coinAmount - (int)_percent;
+                                                            double _newLimit = Limit + (Limit * 0.05);
+                                                            if (_bank + _coinAmount <= (int)_newLimit)
+                                                            {
+                                                                Found = true;
+                                                                int _newCount = item.count - _coinAmount;
+                                                                ItemValue _itemValue = ItemClass.GetItem(Ingame_Coin, true);
+                                                                if (_itemValue.type == ItemValue.None.type)
+                                                                {
+                                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the bank coin is not setup correctly, contact the server Admin.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                                                    Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0}", Ingame_Coin));
+                                                                    return;
+                                                                }
+                                                                else
+                                                                {
+                                                                    _itemValue = new ItemValue(ItemClass.GetItem(Ingame_Coin).type, 1, 1, true);
+                                                                }
+                                                                ItemStack itemStack = new ItemStack(_itemValue, _newCount);
+                                                                SecureLoot.UpdateSlot(slotNumber, itemStack);
+                                                                _sql = string.Format("UPDATE Players SET bank = {0} WHERE steamid = '{1}'", _bank + _newCoin, _cInfo.playerId);
+                                                                SQL.FastQuery(_sql);
+                                                                using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                                {
+                                                                    sw.WriteLine(string.Format("{0}: {1} has added {2} to their bank account.", DateTime.Now, _cInfo.playerName, _newCoin));
+                                                                    sw.WriteLine();
+                                                                    sw.Flush();
+                                                                    sw.Close();
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank can not hold this much. The bank can hold {2} total. You currently have {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, Limit, _bank), Config.Server_Response_Name, false, "ServerTools", false));
+                                                            }
                                                         }
                                                         else
                                                         {
-                                                            _itemValue = new ItemValue(ItemClass.GetItem(Ingame_Coin).type, 1, 1, true);
+                                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} there is not enough {2} in the secure loot to deposit this value.[-]", Config.Chat_Response_Color, _cInfo.playerName, Ingame_Coin), Config.Server_Response_Name, false, "ServerTools", false));
                                                         }
-                                                        ItemStack itemStack = new ItemStack(_itemValue, _newCount);
-                                                        SecureLoot.UpdateSlot(slotNumber, itemStack);
-                                                        _sql = string.Format("UPDATE Players SET bank = {0} WHERE steamid = '{1}'", _bank + _newCoin, _cInfo.playerId);
-                                                        SQL.FastQuery(_sql);
-                                                        using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                        {
-                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} to their bank account.", DateTime.Now, _cInfo.playerName, _newCoin));
-                                                            sw.WriteLine();
-                                                            sw.Flush();
-                                                            sw.Close();
-                                                        }
-                                                        continue;
-                                                    }
-                                                    else
-                                                    {
-                                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your bank can not hold this much. The bank can hold {2} total. You currently have {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, Limit, _bank), Config.Server_Response_Name, false, "ServerTools", false));
                                                     }
                                                 }
-                                                else
-                                                {
-                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} there is not enough {2} in the secure loot to deposit this value.[-]", Config.Chat_Response_Color, _cInfo.playerName, Ingame_Coin), Config.Server_Response_Name, false, "ServerTools", false));
-                                                }
+                                                slotNumber++;
                                             }
                                         }
-                                        slotNumber++;
                                     }
                                 }
                             }
