@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ServerTools
 {
@@ -11,7 +12,7 @@ namespace ServerTools
             int _playerCount = ConnectionManager.Instance.ClientCount();
             if (_playerCount > 0)
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
                 for (int i = 0; i < _cInfoList.Count; i++)
                 {
                     ClientInfo _cInfo = _cInfoList[i];

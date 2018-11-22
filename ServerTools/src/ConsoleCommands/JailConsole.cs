@@ -100,7 +100,7 @@ namespace ServerTools
                                     int.TryParse(_cords[0], out x);
                                     int.TryParse(_cords[1], out y);
                                     int.TryParse(_cords[2], out z);
-                                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                                 }
                                 Jail.Jailed.Add(_cInfo.playerId);
                                 if (_jailTime >= 0)
@@ -112,7 +112,7 @@ namespace ServerTools
                                     }
                                     _phrase500 = _phrase500.Replace("{PlayerName}", _cInfo.playerName);
                                     _phrase500 = _phrase500.Replace("{Minutes}", _jailTime.ToString());
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase500), Config.Server_Response_Name, false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase500), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                                     SdtdConsole.Instance.Output(string.Format("You have put {0} in jail for {1} minutes.", _cInfo.playerName, _jailTime));
                                 }
                                 if (_jailTime == -1)
@@ -123,7 +123,7 @@ namespace ServerTools
                                         _phrase500 = "{PlayerName} you have been sent to jail.";
                                     }
                                     _phrase500 = _phrase500.Replace("{PlayerName}", _cInfo.playerName);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase500), Config.Server_Response_Name, false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase500), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                                     SdtdConsole.Instance.Output(string.Format("You have put {0} in jail for life.", _cInfo.playerName));
                                 }
                                 string _sql = string.Format("UPDATE Players SET jailTime = {0}, jailName = '{1}', jailDate = '{2}' WHERE steamid = '{3}'", _jailTime, _cInfo.playerName, DateTime.Now, _cInfo.playerId);
@@ -161,7 +161,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_params[1]);
+                            ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_params[1]);
                             if (_cInfo != null)
                             {
                                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
@@ -169,12 +169,12 @@ namespace ServerTools
                                 Jail.Jailed.Remove(_cInfo.playerId);
                                 if (_position.Count > 0)
                                 {
-                                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_position[0].x, -1, _position[0].z), false));
+                                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_position[0].x, -1, _position[0].z), null, false));
                                 }
                                 else
                                 {
                                     Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, -1, _pos[0].z), false));
+                                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, -1, _pos[0].z), null, false));
                                 }
                                 string _phrase501;
                                 if (!Phrases.Dict.TryGetValue(501, out _phrase501))
@@ -182,7 +182,7 @@ namespace ServerTools
                                     _phrase501 = "{PlayerName} you have been released from jail.";
                                 }
                                 _phrase501 = _phrase501.Replace("{PlayerName}", _cInfo.playerName);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase501), Config.Server_Response_Name, false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase501), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                                 string _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _cInfo.playerId);
                                 SQL.FastQuery(_sql);
                                 SdtdConsole.Instance.Output(string.Format("You have released a player with steam id {0} from jail. ", _params[1]));

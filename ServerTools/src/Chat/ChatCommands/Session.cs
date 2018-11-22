@@ -24,12 +24,11 @@ namespace ServerTools
                 string _phrase570;
                 if (!Phrases.Dict.TryGetValue(570, out _phrase570))
                 {
-                    _phrase570 = "{PlayerName} your current session is at {TimePassed} minutes. Your total session time is at {TotalTimePassed} minutes.";
+                    _phrase570 = "your current session is at {TimePassed} minutes. Your total session time is at {TotalTimePassed} minutes.";
                 }
-                _phrase570 = _phrase570.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase570 = _phrase570.Replace("{TimePassed}", _timepassed.ToString());
                 _phrase570 = _phrase570.Replace("{TotalTimePassed}", _sessionTime.ToString());
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase570), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase570 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
     }

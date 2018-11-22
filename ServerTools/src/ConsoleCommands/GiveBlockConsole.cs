@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -52,7 +53,7 @@ namespace ServerTools
                 {
                     if (_params[0] == "all" || _params[0] == "ALL" || _params[0] == "All")
                     {
-                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
                         foreach (var _cInfo in _cInfoList)
                         {
                             int count = 1;
@@ -99,15 +100,15 @@ namespace ServerTools
                                 world.SpawnEntityInWorld(entityItem);
                                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
+                                SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name, _cInfo.playerName));
                                 string _phrase804;
                                 if (!Phrases.Dict.TryGetValue(804, out _phrase804))
                                 {
                                     _phrase804 = "{Count} {ItemName} was sent to your inventory. If your bag is full, check the ground.";
                                 }
                                 _phrase804 = _phrase804.Replace("{Count}", count.ToString());
-                                _phrase804 = _phrase804.Replace("{ItemName}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase804), Config.Server_Response_Name, false, "ServerTools", false));
+                                _phrase804 = _phrase804.Replace("{ItemName}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase804), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                             }
                             else
                             {
@@ -176,8 +177,8 @@ namespace ServerTools
                                     _phrase804 = "{Count} {ItemName} was sent to your inventory. If your bag is full, check the ground.";
                                 }
                                 _phrase804 = _phrase804.Replace("{Count}", count.ToString());
-                                _phrase804 = _phrase804.Replace("{ItemName}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase804), Config.Server_Response_Name, false, "ServerTools", false));
+                                _phrase804 = _phrase804.Replace("{ItemName}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase804), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                             }
                             else
                             {

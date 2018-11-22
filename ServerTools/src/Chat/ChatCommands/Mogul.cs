@@ -78,13 +78,13 @@ namespace ServerTools
             _phrase966 = _phrase966.Replace("{Top3}", _topScore3.ToString());
             if (_announce)
             {
-                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase965), Config.Server_Response_Name, false, "ServerTools", false);
-                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase966), Config.Server_Response_Name, false, "ServerTools", false);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase965 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase966 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase965), Config.Server_Response_Name, false, "ServerTools", false));
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase966), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase965 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase966 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
     }

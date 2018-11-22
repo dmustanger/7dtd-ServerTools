@@ -57,7 +57,7 @@ namespace ServerTools
             }
             if (Bounties.IsEnabled)
             {
-                Players.CreateFolder();
+                Bounties.CreateFolder();
             }
             if (CredentialCheck.IsEnabled)
             {

@@ -26,18 +26,16 @@ namespace ServerTools
                             {
                                 _phrase932 = "A vote to skip the night has begun. You have 30 seconds to type /yes.";
                             }
-                            _phrase932 = _phrase932.Replace("{PlayerName}", _cInfo.playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase932), Config.Server_Response_Name, false, "ServerTools", false));
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase932 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                         }
                         else
                         {
                             string _phrase930;
                             if (!Phrases.Dict.TryGetValue(930, out _phrase930))
                             {
-                                _phrase930 = "{PlayerName} you can not start a vote during a bloodmoon.";
+                                _phrase930 = "you can not start a vote during a bloodmoon.";
                             }
-                            _phrase930 = _phrase930.Replace("{PlayerName}", _cInfo.playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase930), Config.Server_Response_Name, false, "ServerTools", false));
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase930 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                         }
                     }
                     else
@@ -45,10 +43,9 @@ namespace ServerTools
                         string _phrase931;
                         if (!Phrases.Dict.TryGetValue(931, out _phrase931))
                         {
-                            _phrase931 = "{PlayerName} you can not start a vote during the day.";
+                            _phrase931 = "you can not start a vote during the day.";
                         }
-                        _phrase931 = _phrase931.Replace("{PlayerName}", _cInfo.playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase931), Config.Server_Response_Name, false, "ServerTools", false));
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase931 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     }
 
                 }
@@ -57,11 +54,10 @@ namespace ServerTools
                     string _phrase933;
                     if (!Phrases.Dict.TryGetValue(933, out _phrase933))
                     {
-                        _phrase933 = "{PlayerName} you can only start this vote if at least {Count} players are online.";
+                        _phrase933 = "you can only start this vote if at least {Count} players are online.";
                     }
-                    _phrase933 = _phrase933.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase933 = _phrase933.Replace("{Count}", Players_Online.ToString());
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase933), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase933 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
         }
@@ -81,7 +77,7 @@ namespace ServerTools
                 {
                     _phrase934 = "Players voted yes to skip this night. Good morning.";
                 }
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase934), Config.Server_Response_Name, false, "", false);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase934 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
             }
             Night.Clear();
             VoteOpen = false;

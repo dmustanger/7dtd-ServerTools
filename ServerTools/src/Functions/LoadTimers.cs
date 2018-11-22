@@ -363,7 +363,7 @@ namespace ServerTools
             {
                 _wV = 0;
             }
-            if (MutePlayer.Mutes.Count > 0)
+            if (MutePlayer.IsEnabled && MutePlayer.Mutes.Count > 0)
             {
                 _mC++;
                 if (_mC >= 60)

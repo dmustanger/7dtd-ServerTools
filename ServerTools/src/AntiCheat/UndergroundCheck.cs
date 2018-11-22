@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using UnityEngine;
 
@@ -42,7 +43,7 @@ namespace ServerTools
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
                 World world = GameManager.Instance.World;
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
                 for (int i = 0; i < _cInfoList.Count; i++)
                 {
                     ClientInfo _cInfo = _cInfoList[i];
@@ -75,7 +76,7 @@ namespace ServerTools
                                                 int x = (int)ep.position.x;
                                                 int y = (int)ep.position.y;
                                                 int z = (int)ep.position.z;
-                                                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, -1, z), false));
+                                                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, -1, z), null, false));
                                                 Penalty(_cInfo);
                                                 Log.Warning(string.Format("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z));
                                                 string _file1 = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
@@ -102,7 +103,7 @@ namespace ServerTools
                                                         _phrase710 = _phrase710.Replace("{X}", x.ToString());
                                                         _phrase710 = _phrase710.Replace("{Y}", y.ToString());
                                                         _phrase710 = _phrase710.Replace("{Z}", z.ToString());
-                                                        _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase710), Config.Server_Response_Name, false, "ServerTools", false));
+                                                        ChatHook.ChatMessage(_cInfo1, "[FF0000]" + _phrase710 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                                     }
                                                 }
                                                 if (Announce)
@@ -113,7 +114,7 @@ namespace ServerTools
                                                         _phrase711 = "{PlayerName} has been detected flying underground.";
                                                     }
                                                     _phrase711 = _phrase711.Replace("{PlayerName}", _cInfo.playerName);
-                                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase711), Config.Server_Response_Name, false, "", false);
+                                                    ChatHook.ChatMessage(null, "[FF0000]" + _phrase711 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
                                                 }
                                             }
                                         }
@@ -183,22 +184,30 @@ namespace ServerTools
             Flag.Remove(_cInfo.entityId);
             if (Jail_Enabled && Jail.IsEnabled && Jail.Jail_Position != "0,0,0")
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0} has been jailed for flying underground[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                string _message = "[FF0000]{PlayerName} has been jailed for flying underground.";
+                _message = _message.Replace("{PlayerName}", _cInfo.playerName);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
                 SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0}", _cInfo.playerId), (ClientInfo)null);
             }
             if (Kill_Player)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0} has been killed for flying underground[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                string _message = "[FF0000]{PlayerName} has been killed for flying underground.";
+                _message = _message.Replace("{PlayerName}", _cInfo.playerName);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
                 SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), (ClientInfo)null);
             }
             if (Kick_Enabled)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0} has been kicked for flying underground[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                string _message = "[FF0000]{PlayerName} has been kicked for flying underground.";
+                _message = _message.Replace("{PlayerName}", _cInfo.playerName);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
                 SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for flying\"", _cInfo.playerId), (ClientInfo)null);
             }
             if (Ban_Enabled)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0} has been banned for flying underground[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                string _message = "[FF0000]{PlayerName} has been banned for flying underground.";
+                _message = _message.Replace("{PlayerName}", _cInfo.playerName);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
                 SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for flying\"", _cInfo.playerId), (ClientInfo)null);
             }
         }

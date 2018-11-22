@@ -141,7 +141,7 @@ namespace ServerTools
                     _motd = _motd.Replace("{EntityId}", _cInfo.entityId.ToString());
                     _motd = _motd.Replace("{SteamId}", _cInfo.playerId);
                     _motd = _motd.Replace("{PlayerName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _motd), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _motd + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
         }

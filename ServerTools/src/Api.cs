@@ -1,22 +1,34 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 
 namespace ServerTools
 {
-    public class API : ModApiAbstract
+    public class API : IModApi
     {
         public static string GamePath = GamePrefs.GetString(EnumGamePrefs.SaveGameFolder);
         public static string ConfigPath = string.Format("{0}/ServerTools", GamePath);
         public static int MaxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
 
-        public override void GameAwake()
+        public void InitMod()
+        {
+            ModEvents.GameAwake.RegisterHandler(GameAwake);
+            ModEvents.GameShutdown.RegisterHandler(GameShutdown);
+            ModEvents.SavePlayerData.RegisterHandler(SavePlayerData);
+            ModEvents.PlayerSpawning.RegisterHandler(PlayerSpawning);
+            ModEvents.PlayerSpawnedInWorld.RegisterHandler(PlayerSpawnedInWorld);
+            ModEvents.PlayerDisconnected.RegisterHandler(PlayerDisconnected);
+            ModEvents.ChatMessage.RegisterHandler(ChatMessage);
+        }
+
+        public void GameAwake()
         {
             if (!Directory.Exists(ConfigPath))
             {
                 Directory.CreateDirectory(ConfigPath);
             }
-            Config.Load();
+            LoadConfig.Load();
             HowToSetup.Load();
             Timers.LogAlert();
             if (Fps.IsEnabled)
@@ -27,7 +39,7 @@ namespace ServerTools
             RestartVote.Startup = true;
         }
 
-        public override void SavePlayerData(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
+        public void SavePlayerData(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
         {
             if (_cInfo != null)
             {
@@ -46,7 +58,7 @@ namespace ServerTools
             }
         }
 
-        public override void PlayerLogin(ClientInfo _cInfo, string _compatibilityVersion)
+        public void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)
         {
             if (_cInfo != null)
             {
@@ -113,13 +125,6 @@ namespace ServerTools
                         ReservedSlots.CheckReservedSlot(_cInfo);
                     }
                 }
-            }
-        }
-
-        public override void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)
-        {
-            if (_cInfo != null)
-            {
                 if (CredentialCheck.IsEnabled)
                 {
                     CredentialCheck.AccCheck(_cInfo);
@@ -147,7 +152,7 @@ namespace ServerTools
             }
         }
 
-        public override void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
+        public void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
         {
             if (_cInfo != null)
             {
@@ -379,12 +384,12 @@ namespace ServerTools
                     SQL.FastQuery(_sql2);
                     if (Zones.IsEnabled && Players.Victim.ContainsKey(_cInfo.entityId))
                     {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /return to teleport back to your death position. There is a time limit.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /return to teleport back to your death position. There is a time limit.[-]", LoadConfig.Chat_Response_Color), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                         _sql2 = string.Format("UPDATE Players SET respawnTime = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                         SQL.FastQuery(_sql2);
                         if (Players.Forgive.ContainsKey(_cInfo.entityId))
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /forgive to release your killer from jail.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /forgive to release your killer from jail.[-]", LoadConfig.Chat_Response_Color), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                         }
                     }
                     if (Mogul.IsEnabled)
@@ -421,12 +426,12 @@ namespace ServerTools
             }
         }
 
-        public override bool ChatMessage(ClientInfo _cInfo, EnumGameMessages _type, string _message, string _playerName, bool _localizeMain, string _secondaryName, bool _localizeSecondary)
+        public bool ChatMessage(ClientInfo _cInfo, EChatType _type, int _senderId, string _msg, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
         {
-            return ChatHook.Hook(_cInfo, _message, _playerName, _secondaryName, _localizeSecondary);
+            return ChatHook.Hook(_cInfo, _type, _senderId, _msg, _mainName, _localizeMain, _recipientEntityIds);
         }
 
-        public override void PlayerDisconnected(ClientInfo _cInfo, bool _bShutdown)
+        public void PlayerDisconnected(ClientInfo _cInfo, bool _bShutdown)
         {
             if (_cInfo != null)
             {
@@ -533,6 +538,11 @@ namespace ServerTools
                     Zones.reminder.Remove(_cInfo.entityId);
                 }
             }
+        }
+
+        public void GameShutdown()
+        {
+            StateManager.Shutdown();
         }
     }
 }

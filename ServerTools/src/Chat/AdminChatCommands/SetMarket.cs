@@ -14,10 +14,9 @@ namespace ServerTools
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    _phrase107 = "{PlayerName} you do not have permissions to use this command.";
+                    _phrase107 = "you do not have permissions to use this command.";
                 }
-                _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase107), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
             else
             {
@@ -31,12 +30,11 @@ namespace ServerTools
                 string _phrase565;
                 if (!Phrases.Dict.TryGetValue(565, out _phrase565))
                 {
-                    _phrase565 = "{PlayerName} you have set the market position as {MarketPosition}.";
+                    _phrase565 = "you have set the market position as {MarketPosition}.";
                 }
-                _phrase565 = _phrase565.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase565 = _phrase565.Replace("{MarketPosition}", Market_Position);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase565), Config.Server_Response_Name, false, "ServerTools", false));
-                Config.UpdateXml();
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase565 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                LoadConfig.UpdateXml();
             }
         }
     }

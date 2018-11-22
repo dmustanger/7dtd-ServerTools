@@ -142,10 +142,11 @@ namespace ServerTools
                         {
                             _secondaryname = _name;
                         }
+
                         ItemValue _itemValue = ItemClass.GetItem(_name, true);
-                        if (_itemValue.type == ItemValue.None.type)
+                        if (_itemValue == null)
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Market item not found: {0}", _name));
+                            Log.Out(string.Format("[SERVERTOOLS] Market entry skipped. Item not found: {0}", _name));
                             continue;
                         }
                         string _category = _line.GetAttribute("category");
@@ -192,19 +193,18 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine("        <market item=\"1\" name=\"bottledWater\" secondaryName=\"Bottled Water\" count=\"1\" quality=\"1\" price=\"20\" category=\"food\" />");
-                    sw.WriteLine("        <market item=\"2\" name=\"beer\" secondaryName=\"Beer\" count=\"1\" quality=\"1\" price=\"50\" category=\"food\" />");
-                    sw.WriteLine("        <market item=\"3\" name=\"wood\" secondaryName=\"Wood\" count=\"10\" quality=\"1\" price=\"30\" category=\"mats\" />");
+                    sw.WriteLine("        <market item=\"1\" name=\"drinkJarBoiledWater\" secondaryName=\"Bottled Water\" count=\"1\" quality=\"1\" price=\"20\" category=\"food\" />");
+                    sw.WriteLine("        <market item=\"2\" name=\"drinkJarBeer\" secondaryName=\"Beer\" count=\"1\" quality=\"1\" price=\"50\" category=\"food\" />");
+                    sw.WriteLine("        <market item=\"3\" name=\"brickBlock\" secondaryName=\"Wood\" count=\"1\" quality=\"1\" price=\"50\" category=\"mats\" />");
                     sw.WriteLine("        <market item=\"4\" name=\"woodFrameBlock\" secondaryName=\"Wood Frame Block\" count=\"1\" quality=\"1\" price=\"20\" category=\"mats\" />");
-                    sw.WriteLine("        <market item=\"5\" name=\"keystoneBlock\" secondaryName=\"Land Claim Block\" count=\"1\" quality=\"1\" price=\"2500\" category=\"extra\" />");
-                    sw.WriteLine("        <market item=\"6\" name=\"canChicken\" secondaryName=\"Can of Chicken\" count=\"1\" quality=\"1\" price=\"50\" category=\"food\" />");
-                    sw.WriteLine("        <market item=\"7\" name=\"canChili\" secondaryName=\"Can of Chilli\" count=\"1\" quality=\"1\" price=\"50\" category=\"food\" />");
-                    sw.WriteLine("        <market item=\"8\" name=\"corn\" secondaryName=\"Corn\" count=\"5\" quality=\"1\" price=\"50\" category=\"food\" />");
-                    sw.WriteLine("        <market item=\"9\" name=\"potato\" secondaryName=\"Potato\" count=\"5\" quality=\"1\" price=\"50\" category=\"food\" />");
-                    sw.WriteLine("        <market item=\"10\" name=\"firstAidBandage\" secondaryName=\"First Aid Bandage\" count=\"1\" quality=\"1\" price=\"50\" category=\"meds\" />");
-                    sw.WriteLine("        <market item=\"11\" name=\"painkillers\" secondaryName=\"Pain Killers\" count=\"5\" quality=\"1\" price=\"150\" category=\"meds\" />");
-                    sw.WriteLine("        <market item=\"12\" name=\"gunPistol\" secondaryName=\"Pistol\" count=\"1\" quality=\"100\" price=\"500\" category=\"weapon\" />");
-                    sw.WriteLine("        <market item=\"13\" name=\"casinoCoin\" secondaryName=\"casinoCoin\" count=\"1\" quality=\"1\" price=\"1\" category=\"extra\" />");
+                    sw.WriteLine("        <market item=\"5\" name=\"foodCanChicken\" secondaryName=\"Can of Chicken\" count=\"1\" quality=\"1\" price=\"50\" category=\"food\" />");
+                    sw.WriteLine("        <market item=\"6\" name=\"foodCanChili\" secondaryName=\"Can of Chilli\" count=\"1\" quality=\"1\" price=\"50\" category=\"food\" />");
+                    sw.WriteLine("        <market item=\"7\" name=\"foodCropCorn\" secondaryName=\"Corn\" count=\"5\" quality=\"1\" price=\"50\" category=\"food\" />");
+                    sw.WriteLine("        <market item=\"8\" name=\"foodCropPotato\" secondaryName=\"Potato\" count=\"5\" quality=\"1\" price=\"50\" category=\"food\" />");
+                    sw.WriteLine("        <market item=\"9\" name=\"medicalBandage\" secondaryName=\"First Aid Bandage\" count=\"1\" quality=\"1\" price=\"50\" category=\"meds\" />");
+                    sw.WriteLine("        <market item=\"10\" name=\"drugPainkillers\" secondaryName=\"Pain Killers\" count=\"5\" quality=\"1\" price=\"150\" category=\"meds\" />");
+                    sw.WriteLine("        <market item=\"11\" name=\"gunPistol\" secondaryName=\"Pistol\" count=\"1\" quality=\"100\" price=\"500\" category=\"weapon\" />");
+                    sw.WriteLine("        <market item=\"12\" name=\"casinoCoin\" secondaryName=\"casinoCoin\" count=\"1\" quality=\"1\" price=\"1\" category=\"extra\" />");
                 }
                 sw.WriteLine("    </items>");
                 sw.WriteLine("</Market>");
@@ -260,10 +260,9 @@ namespace ServerTools
                         string _phrase821;
                         if (!Phrases.Dict.TryGetValue(821, out _phrase821))
                         {
-                            _phrase821 = "{PlayerName} you are not inside a market or trader area. Find one and use this command again.";
+                            _phrase821 = "you are not inside a market or trader area. Find one and use this command again.";
                         }
-                        _phrase821 = _phrase821.Replace("{PlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase821), Config.Server_Response_Name, false, "ServerTools", false));
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase821 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     }
                 }
                 else if (Inside_Market && !Inside_Traders)
@@ -282,10 +281,9 @@ namespace ServerTools
                         string _phrase564;
                         if (!Phrases.Dict.TryGetValue(564, out _phrase564))
                         {
-                            _phrase564 = "{PlayerName} you are outside the market. Get inside it and try again.";
+                            _phrase564 = "you are outside the market. Get inside it and try again.";
                         }
-                        _phrase564 = _phrase564.Replace("{PlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase564), Config.Server_Response_Name, false, "ServerTools", false));
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase564 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     }
                 }
                 else if (!Inside_Market && Inside_Traders)
@@ -301,10 +299,9 @@ namespace ServerTools
                         string _phrase619;
                         if (!Phrases.Dict.TryGetValue(619, out _phrase619))
                         {
-                            _phrase619 = "{PlayerName} you are not inside a trader area. Find a trader and use this command again.";
+                            _phrase619 = "you are not inside a trader area. Find a trader and use this command again.";
                         }
-                        _phrase619 = _phrase619.Replace("{PlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase619), Config.Server_Response_Name, false, "ServerTools", false));
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase619 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     }
                 }
                 else if (!Inside_Market && !Inside_Traders)
@@ -317,10 +314,9 @@ namespace ServerTools
                 string _phrase624;
                 if (!Phrases.Dict.TryGetValue(624, out _phrase624))
                 {
-                    _phrase624 = "The shop does not contain any items. Contact an administrator";
+                    _phrase624 = "the shop does not contain any items. Contact an administrator";
                 }
-                _phrase624 = _phrase624.Replace("{PlayerName}", _playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase624), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase624 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
 
@@ -348,14 +344,14 @@ namespace ServerTools
                 _phrase617 = "The shop categories are:";
             }
             string _categories = string.Join(", ", categories.ToArray());
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase617), Config.Server_Response_Name, false, "ServerTools", false));
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _categories), Config.Server_Response_Name, false, "ServerTools", false));
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase617 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _categories + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             string _phrase618;
             if (!Phrases.Dict.TryGetValue(618, out _phrase618))
             {
                 _phrase618 = "Type /shop 'category' to view that list.";
             }
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}[-]", Config.Chat_Response_Color, _playerName, _phrase618), Config.Server_Response_Name, false, "ServerTools", false));
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase618 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
         }
 
         public static void ShowCategory(ClientInfo _cInfo, string _playerName, string _category)
@@ -376,12 +372,25 @@ namespace ServerTools
                                 if (_dict1Values[1] > 1)
                                 {
                                     _count++;
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} {4} quality for {5} {6}[-]", Config.Chat_Response_Color, i, _dict1Values[0], _dictValues[1], _dict1Values[1], _dict1Values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                                    string _message = "# {Id}: {Count} {Item} {Quality} quality for {Price} {Name}[-]";
+                                    _message = _message.Replace("{Id}", i.ToString());
+                                    _message = _message.Replace("{Count}", _dict1Values[0].ToString());
+                                    _message = _message.Replace("{Item}", _dictValues[1]);
+                                    _message = _message.Replace("{Quality}", _dict1Values[1].ToString());
+                                    _message = _message.Replace("{Price}", _dict1Values[2].ToString());
+                                    _message = _message.Replace("{Name}", Wallet.Coin_Name);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                 }
                                 else
                                 {
                                     _count++;
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}# {1}: {2} {3} for {4} {5}[-]", Config.Chat_Response_Color, i, _dict1Values[0], _dictValues[1], _dict1Values[2], Wallet.Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+                                    string _message = "# {Id}: {Count} {Item} for {Price} {Name}[-]";
+                                    _message = _message.Replace("{Id}", i.ToString());
+                                    _message = _message.Replace("{Count}", _dict1Values[0].ToString());
+                                    _message = _message.Replace("{Item}", _dictValues[1]);
+                                    _message = _message.Replace("{Price}", _dict1Values[2].ToString());
+                                    _message = _message.Replace("{Name}", Wallet.Coin_Name);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                 }
                             }
                         }
@@ -392,9 +401,9 @@ namespace ServerTools
                     string _phrase823;
                     if (!Phrases.Dict.TryGetValue(823, out _phrase823))
                     {
-                        _phrase823 = "Type /buy # to purchase the shop item. You can add how many times you want to buy it. /buy # #";
+                        _phrase823 = "type /buy # to purchase the shop item. You can add how many times you want to buy it. /buy # #";
                     }
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}[-]", Config.Chat_Response_Color, _playerName, _phrase823), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase823 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
             else
@@ -402,9 +411,9 @@ namespace ServerTools
                 string _phrase822;
                 if (!Phrases.Dict.TryGetValue(822, out _phrase822))
                 {
-                    _phrase822 = "This category is missing. Check /shop.";
+                    _phrase822 = "this category is missing. Check /shop.";
                 }
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2}[-]", Config.Chat_Response_Color, _playerName, _phrase822), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase822 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
 
@@ -419,10 +428,9 @@ namespace ServerTools
                     string _phrase620;
                     if (!Phrases.Dict.TryGetValue(620, out _phrase620))
                     {
-                        _phrase620 = "{PlayerName} the item or amount # you are trying to buy is not an integer. Please input /buy 1 2 for example.";
+                        _phrase620 = "the item or amount # you are trying to buy is not an integer. Please input /buy 1 2 for example.";
                     }
-                    _phrase620 = _phrase620.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase620), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase620 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
                 else
                 {
@@ -432,10 +440,9 @@ namespace ServerTools
                         string _phrase620;
                         if (!Phrases.Dict.TryGetValue(620, out _phrase620))
                         {
-                            _phrase620 = "{PlayerName} the item or amount # you are trying to buy is not an integer. Please input /buy 1 2 for example.";
+                            _phrase620 = "the item or amount # you are trying to buy is not an integer. Please input /buy 1 2 for example.";
                         }
-                        _phrase620 = _phrase620.Replace("{PlayerName}", _playerName);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase620), Config.Server_Response_Name, false, "ServerTools", false));
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase620 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     }
                     else
                     {
@@ -459,12 +466,11 @@ namespace ServerTools
                                         string _phrase621;
                                         if (!Phrases.Dict.TryGetValue(621, out _phrase621))
                                         {
-                                            _phrase621 = "{PlayerName} you do not have enough {CoinName}. Your wallet balance is {WalletBalance}.";
+                                            _phrase621 = "you do not have enough {Name}. Your wallet balance is {Value}.";
                                         }
-                                        _phrase621 = _phrase621.Replace("{PlayerName}", _playerName);
-                                        _phrase621 = _phrase621.Replace("{CoinName}", Wallet.Coin_Name);
-                                        _phrase621 = _phrase621.Replace("{WalletBalance}", _currentCoins.ToString());
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase621), Config.Server_Response_Name, false, "ServerTools", false));
+                                        _phrase621 = _phrase621.Replace("{Name}", Wallet.Coin_Name);
+                                        _phrase621 = _phrase621.Replace("{Value}", _currentCoins.ToString());
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase621 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                     }
                                 }
                             }
@@ -494,12 +500,11 @@ namespace ServerTools
                                     string _phrase621;
                                     if (!Phrases.Dict.TryGetValue(621, out _phrase621))
                                     {
-                                        _phrase621 = "{PlayerName} you do not have enough {CoinName}. Your wallet balance is {WalletBalance}.";
+                                        _phrase621 = "you do not have enough {Name}. Your wallet balance is {Value}.";
                                     }
-                                    _phrase621 = _phrase621.Replace("{PlayerName}", _playerName);
-                                    _phrase621 = _phrase621.Replace("{CoinName}", Wallet.Coin_Name);
-                                    _phrase621 = _phrase621.Replace("{WalletBalance}", _currentCoins.ToString());
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase621), Config.Server_Response_Name, false, "ServerTools", false));
+                                    _phrase621 = _phrase621.Replace("{Name}", Wallet.Coin_Name);
+                                    _phrase621 = _phrase621.Replace("{Value}", _currentCoins.ToString());
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase621 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                 }
                             }
                         }
@@ -510,10 +515,9 @@ namespace ServerTools
                     string _phrase622;
                     if (!Phrases.Dict.TryGetValue(622, out _phrase622))
                     {
-                        _phrase622 = "{PlayerName} there was no item # matching the shop. Check the shop category again.";
+                        _phrase622 = "there was no item # matching the shop. Check the shop category again.";
                     }
-                    _phrase622 = _phrase622.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase622), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase622 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
         }
@@ -538,8 +542,11 @@ namespace ServerTools
                 world.SpawnEntityInWorld(entityItem);
                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                SdtdConsole.Instance.Output(string.Format("Sold {0} to {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} {2} was purchased through the shop. If your bag is full, check the ground.[-]", Config.Chat_Response_Color, _count, itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name), Config.Server_Response_Name, false, "ServerTools", false));
+                SdtdConsole.Instance.Output(string.Format("Sold {0} to {1}.", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name, _cInfo.playerName));
+                string _message = "{Count} {Item} was purchased through the shop. If your bag is full, check the ground.";
+                _message = _message.Replace("{Count}", _count.ToString());
+                _message = _message.Replace("{Item}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _price);
             }
             else
@@ -547,11 +554,10 @@ namespace ServerTools
                 string _phrase623;
                 if (!Phrases.Dict.TryGetValue(623, out _phrase623))
                 {
-                    _phrase623 = "{PlayerName} there was an error in the shop list. Unable to buy this item. Please alert an administrator.";
+                    _phrase623 = "there was an error in the shop list. Unable to buy this item. Please alert an administrator.";
                     Log.Out(string.Format("Player {0} tried to buy item {1} from the shop. The item name in the Market.xml does not match an existing item. Check your Item.xml for the correct item name. It is case sensitive.", _cInfo.playerName, _itemName));
                 }
-                _phrase623 = _phrase623.Replace("{PlayerName}", _playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase623), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase623 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
     }

@@ -75,18 +75,17 @@ namespace ServerTools
                                     string _phrase550;
                                     if (!Phrases.Dict.TryGetValue(550, out _phrase550))
                                     {
-                                        _phrase550 = "{PlayerName} you can only use /lobby once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                        _phrase550 = "you can only use /lobby once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                     }
-                                    _phrase550 = _phrase550.Replace("{PlayerName}", _playerName);
                                     _phrase550 = _phrase550.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                     _phrase550 = _phrase550.Replace("{TimeRemaining}", _timeleft.ToString());
                                     if (_announce)
                                     {
-                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase550), Config.Server_Response_Name, false, "", false);
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase550 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                     }
                                     else
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase550), Config.Server_Response_Name, false, "ServerTools", false));
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase550 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                     }
                                 }
                             }
@@ -111,18 +110,17 @@ namespace ServerTools
                             string _phrase550;
                             if (!Phrases.Dict.TryGetValue(550, out _phrase550))
                             {
-                                _phrase550 = "{PlayerName} you can only use /lobby once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                _phrase550 = "you can only use /lobby once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
-                            _phrase550 = _phrase550.Replace("{PlayerName}", _playerName);
                             _phrase550 = _phrase550.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                             _phrase550 = _phrase550.Replace("{TimeRemaining}", _timeleft.ToString());
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase550), Config.Server_Response_Name, false, "", false);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase550 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase550), Config.Server_Response_Name, false, "ServerTools", false));
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase550 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                             }
                         }
                     }
@@ -142,11 +140,10 @@ namespace ServerTools
                 string _phrase814;
                 if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    _phrase814 = "you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
-                _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
 
@@ -184,24 +181,22 @@ namespace ServerTools
                     string _phrase552;
                     if (!Phrases.Dict.TryGetValue(552, out _phrase552))
                     {
-                        _phrase552 = "{PlayerName} you can go back by typing /lobbyback when you are ready to leave the lobby.";
+                        _phrase552 = "you can go back by typing /lobbyback when you are ready to leave the lobby.";
                     }
-                    _phrase552 = _phrase552.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase552), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase552 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
                 string[] _cords = SetLobby.Lobby_Position.Split(',');
                 int.TryParse(_cords[0], out x);
                 int.TryParse(_cords[1], out y);
                 int.TryParse(_cords[2], out z);
                 Players.NoFlight.Add(_cInfo.entityId);
-                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                 string _phrase553;
                 if (!Phrases.Dict.TryGetValue(553, out _phrase553))
                 {
-                    _phrase553 = "{PlayerName} sending you to the lobby.";
+                    _phrase553 = "sending you to the lobby.";
                 }
-                _phrase553 = _phrase553.Replace("{PlayerName}", _playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase553), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase553 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
@@ -214,10 +209,9 @@ namespace ServerTools
                 string _phrase554;
                 if (!Phrases.Dict.TryGetValue(554, out _phrase554))
                 {
-                    _phrase554 = "{PlayerName} the lobby position is not set.";
+                    _phrase554 = "the lobby position is not set.";
                 }
-                _phrase554 = _phrase554.Replace("{PlayerName}", _playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase554), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase554 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
 
@@ -242,32 +236,30 @@ namespace ServerTools
                     int.TryParse(_returnCoords[1], out y);
                     int.TryParse(_returnCoords[2], out z);
                     Players.NoFlight.Add(_cInfo.entityId);
-                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                     LobbyPlayers.Remove(_cInfo.entityId);
                     _sql = string.Format("UPDATE Players SET lobbyReturn = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
                     SQL.FastQuery(_sql);
                     string _phrase555;
                     if (!Phrases.Dict.TryGetValue(555, out _phrase555))
                     {
-                        _phrase555 = "{PlayerName} sent you back to your saved location.";
+                        _phrase555 = "sent you back to your saved location.";
                     }
-                    _phrase555 = _phrase555.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase555), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase555 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
                 else
                 {
                     string _phrase556;
                     if (!Phrases.Dict.TryGetValue(556, out _phrase556))
                     {
-                        _phrase556 = "{PlayerName} you are outside the lobby. Get inside it and try again.";
+                        _phrase556 = "you are outside the lobby. Get inside it and try again.";
                     }
-                    _phrase556 = _phrase556.Replace("{PlayerName}", _playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase556), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase556 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have no saved return point[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", you have no saved return point[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
     }

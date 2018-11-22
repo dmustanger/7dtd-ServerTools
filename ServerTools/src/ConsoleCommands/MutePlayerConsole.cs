@@ -106,10 +106,10 @@ namespace ServerTools
                         string _id = _params[1];
                         if (MutePlayer.Mutes.Contains(_id))
                         {
-                            ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_id);
+                            ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_id);
                             if (_cInfo != null)
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have been unmuted.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}You have been unmuted.[-]", LoadConfig.Chat_Response_Color), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                             }
                             MutePlayer.Mutes.Remove(_id);
                             string _sql = string.Format("UPDATE Players SET muteTime = 0 WHERE steamid = '{0}'", _id);

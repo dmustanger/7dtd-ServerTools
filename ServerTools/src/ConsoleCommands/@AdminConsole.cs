@@ -27,13 +27,13 @@ public class @AdminsConsole : ConsoleCmdAbstract
         try
         {
             string _message = string.Join(" ", _params.ToArray());
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();           
+            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
             for (int i = 0; i < _cInfoList.Count; i++)
             {
                 ClientInfo _player = _cInfoList[i];
                 if (GameManager.Instance.adminTools.IsAdmin(_player.playerId))
                 {
-                    _player.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), _player.playerName, false, "", false));
+                    _player.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _message), _player.playerName, false, "", false));
                     SdtdConsole.Instance.Output(string.Format("Message sent to {0}.", _player.playerName));
                 }
             }

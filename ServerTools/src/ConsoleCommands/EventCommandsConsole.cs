@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -196,7 +197,7 @@ namespace ServerTools
                             SdtdConsole.Instance.Output(string.Format("Info: Teams {0}, Players {1}, Time {2} minutes.", _eventTeams, _eventPlayerCount, _eventTime));
                             foreach (var _player in Event.PlayersTeam)
                             {
-                                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_player.Key);
+                                ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_player.Key);
                                 if (_cInfo != null)
                                 {
                                     int _team;
@@ -242,7 +243,7 @@ namespace ServerTools
                                 Event.SetupName.Remove(_steamId);
                                 foreach (var _player in Event.PlayersTeam)
                                 {
-                                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_player.Key);
+                                    ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_player.Key);
                                     if (_cInfo != null)
                                     {
                                         EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo.entityId];
@@ -257,9 +258,9 @@ namespace ServerTools
                                             int.TryParse(_cords[0], out x);
                                             int.TryParse(_cords[1], out y);
                                             int.TryParse(_cords[2], out z);
-                                            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                                            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                                             Event.PlayersTeam.Remove(_player.Key);
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event has ended. Thank you for playing.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event has ended. Thank you for playing.[-]", LoadConfig.Chat_Response_Color, _cInfo.playerName), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                                         }
                                         else
                                         {
@@ -296,10 +297,10 @@ namespace ServerTools
                                 {
                                     foreach (var _player in Event.PlayersTeam)
                                     {
-                                        ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_player.Key);
+                                        ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_player.Key);
                                         if (_cInfo != null)
                                         {
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the current event has been cancelled.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the current event has been cancelled.[-]", LoadConfig.Chat_Response_Color, _cInfo.playerName), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                                         }
                                         Event.PlayersTeam.Remove(_player.Key);
                                     }
@@ -439,7 +440,7 @@ namespace ServerTools
                         {
                             if (Event.PlayersTeam.ContainsKey(_params[1]))
                             {
-                                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_params[1]);
+                                ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_params[1]);
                                 if (_cInfo != null)
                                 {
                                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
@@ -454,11 +455,11 @@ namespace ServerTools
                                         int.TryParse(_cords[0], out x);
                                         int.TryParse(_cords[1], out y);
                                         int.TryParse(_cords[2], out z);
-                                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                                         _sql = string.Format("UPDATE Players SET eventReturn = 'Unknown', eventSpawn = 'false', eventRespawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                                         SQL.FastQuery(_sql);
                                         Event.PlayersTeam.Remove(_params[1]);
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have been removed from the event and sent to your return point.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have been removed from the event and sent to your return point.[-]", LoadConfig.Chat_Response_Color, _cInfo.playerName), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                                         SdtdConsole.Instance.Output(string.Format("Player with Id {0} was removed from the event and sent to their return point.", _params[1]));
                                         return;
                                     }
@@ -520,15 +521,15 @@ namespace ServerTools
                                             _result.Dispose();
                                             _sql = string.Format("UPDATE Events SET eventActive = 'true' WHERE eventid = {0} AND eventAdmin = '{1}'", _eventid, _steamId);
                                             SQL.FastQuery(_sql);
-                                            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                                            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
                                             for (int i = 0; i < _cInfoList.Count; i++)
                                             {
                                                 ClientInfo _cInfo = _cInfoList[i];
                                                 if (_cInfo != null)
                                                 {
-                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Event: {1}[-]", Config.Chat_Response_Color, _eventName), Config.Server_Response_Name, false, "ServerTools", false));
-                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _eventInvite), Config.Server_Response_Name, false, "ServerTools", false));
-                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} type /event if you want to join the event. You will return to where you are when it ends.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Event: {1}[-]", LoadConfig.Chat_Response_Color, _eventName), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _eventInvite), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} type /event if you want to join the event. You will return to where you are when it ends.[-]", LoadConfig.Chat_Response_Color, _cInfo.playerName), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                                                 }
                                             }
                                         }

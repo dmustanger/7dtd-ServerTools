@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -47,18 +48,17 @@ namespace ServerTools
                                 string _phrase8;
                                 if (!Phrases.Dict.TryGetValue(8, out _phrase8))
                                 {
-                                    _phrase8 = "{PlayerName} you can only use /killme, /wrist, /hang, or /suicide once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                    _phrase8 = "you can only use /killme, /wrist, /hang, or /suicide once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                 }
-                                _phrase8 = _phrase8.Replace("{PlayerName}", _cInfo.playerName);
                                 _phrase8 = _phrase8.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                 _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeleft.ToString());
                                 if (_announce)
                                 {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), Config.Server_Response_Name, false, "", false);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase8 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                 }
                                 else
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), Config.Server_Response_Name, false, "ServerTools", false));
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase8 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                 }
                             }
                         }
@@ -76,18 +76,17 @@ namespace ServerTools
                         string _phrase8;
                         if (!Phrases.Dict.TryGetValue(8, out _phrase8))
                         {
-                            _phrase8 = "{PlayerName} you can only use /killme, /wrist, /hang, or /suicide once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                            _phrase8 = "you can only use /killme, /wrist, /hang, or /suicide once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                         }
-                        _phrase8 = _phrase8.Replace("{PlayerName}", _cInfo.playerName);
                         _phrase8 = _phrase8.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                         _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeleft.ToString());
                         if (_announce)
                         {
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), Config.Server_Response_Name, false, "", false);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase8 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                         }
                         else
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase8), Config.Server_Response_Name, false, "ServerTools", false));
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase8 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                         }
                     }
                 }
@@ -99,7 +98,7 @@ namespace ServerTools
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             if (PvP_Check)
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
                 for (int i = 0; i < _cInfoList.Count; i++)
                 {
                     ClientInfo _cInfo2 = _cInfoList[i];
@@ -116,10 +115,9 @@ namespace ServerTools
                                     string _phrase819;
                                     if (!Phrases.Dict.TryGetValue(819, out _phrase819))
                                     {
-                                        _phrase819 = "{PlayerName} you are too close to a player that is not a friend. Command unavailable.";
+                                        _phrase819 = "you are too close to a player that is not a friend. Command unavailable.";
                                     }
-                                    _phrase819 = _phrase819.Replace("{PlayerName}", _cInfo.playerName);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase819), Config.Server_Response_Name, false, "ServerTools", false));
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase819 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                     return;
                                 }
                             }
@@ -145,17 +143,16 @@ namespace ServerTools
                                 string _phrase820;
                                 if (!Phrases.Dict.TryGetValue(820, out _phrase820))
                                 {
-                                    _phrase820 = "{PlayerName} you are too close to a zombie. Command unavailable.";
+                                    _phrase820 = "you are too close to a zombie. Command unavailable.";
                                 }
-                                _phrase820 = _phrase820.Replace("{PlayerName}", _cInfo.playerName);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase820), Config.Server_Response_Name, false, "ServerTools", false));
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase820 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                 return;
                             }
                         }
                     }
                 }
             }
-            _player.DamageEntity(new DamageSource(EnumDamageSourceType.Bullet), 99999, false, 1f);
+            SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), (ClientInfo)null);
             string _sql = string.Format("UPDATE Players SET lastkillme = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
             SQL.FastQuery(_sql);
         }

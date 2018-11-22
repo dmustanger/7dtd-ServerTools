@@ -195,7 +195,7 @@ namespace ServerTools
 
         public static string GetChatCommands1(ClientInfo _cInfo)
         {
-            string _commands_1 = string.Format("{0}Commands are:", Config.Chat_Response_Color);
+            string _commands_1 = string.Format("{0}Commands are:", LoadConfig.Chat_Response_Color);
             if (FriendTeleport.IsEnabled)
             {
                 _commands_1 = string.Format("{0} /friend", _commands_1);
@@ -240,7 +240,7 @@ namespace ServerTools
 
         public static string GetChatCommands2(ClientInfo _cInfo)
         {
-            string _commands_2 = string.Format("{0}More Commands:", Config.Chat_Response_Color);
+            string _commands_2 = string.Format("{0}More Commands:", LoadConfig.Chat_Response_Color);
             if (FirstClaimBlock.IsEnabled)
             {
                 _commands_2 = string.Format("{0} /claim", _commands_2);
@@ -295,7 +295,7 @@ namespace ServerTools
 
         public static string GetChatCommands3(ClientInfo _cInfo)
         {
-            string _commands_3 = string.Format("{0}More Commands:", Config.Chat_Response_Color);
+            string _commands_3 = string.Format("{0}More Commands:", LoadConfig.Chat_Response_Color);
             if (WeatherVote.IsEnabled)
             {
                 _commands_3 = string.Format("{0} /weathervote", _commands_3);
@@ -345,7 +345,7 @@ namespace ServerTools
 
         public static string GetChatCommands4(ClientInfo _cInfo)
         {
-            string _commands_4 = string.Format("{0}More Commands:", Config.Chat_Response_Color);
+            string _commands_4 = string.Format("{0}More Commands:", LoadConfig.Chat_Response_Color);
             if (LobbyChat.IsEnabled)
             {
                 _commands_4 = string.Format("{0} /lobby", _commands_4);
@@ -394,7 +394,7 @@ namespace ServerTools
 
         public static string GetChatCommands5(ClientInfo _cInfo)
         {
-            string _commands_5 = string.Format("{0}More Commands:", Config.Chat_Response_Color);
+            string _commands_5 = string.Format("{0}More Commands:", LoadConfig.Chat_Response_Color);
             if (MarketChat.IsEnabled)
             {
                 _commands_5 = string.Format("{0} /market", _commands_5);
@@ -412,7 +412,7 @@ namespace ServerTools
 
         public static string GetChatCommandsCustom(ClientInfo _cInfo)
         {
-            string _commandsCustom = string.Format("{0}Custom commands are:", Config.Chat_Response_Color);
+            string _commandsCustom = string.Format("{0}Custom commands are:", LoadConfig.Chat_Response_Color);
             if (Dict.Count > 0)
             {
                 foreach (KeyValuePair<string, string[]> kvp in Dict)
@@ -431,7 +431,7 @@ namespace ServerTools
             }
             if (_commandsCustom.EndsWith("Custom commands are:"))
             {
-                _commandsCustom = string.Format("{0}Sorry, there are no custom chat commands.", Config.Chat_Response_Color);
+                _commandsCustom = string.Format("{0}Sorry, there are no custom chat commands.", LoadConfig.Chat_Response_Color);
             }
             _commandsCustom = string.Format("{0}[-]", _commandsCustom);
             return _commandsCustom;
@@ -439,7 +439,7 @@ namespace ServerTools
 
         public static string GetChatCommandsAdmin(ClientInfo _cInfo)
         {
-            string _commandsAdmin = string.Format("{0}Admin commands are:", Config.Chat_Response_Color);
+            string _commandsAdmin = string.Format("{0}Admin commands are:", LoadConfig.Chat_Response_Color);
             if (AdminChat.IsEnabled && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
             {
                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
@@ -466,7 +466,7 @@ namespace ServerTools
                     }
                     if (_commandsAdmin.EndsWith("Admin commands are:"))
                     {
-                        _commandsAdmin = string.Format("{0}Sorry, there are no admin chat commands.", Config.Chat_Response_Color);
+                        _commandsAdmin = string.Format("{0}Sorry, there are no admin chat commands.", LoadConfig.Chat_Response_Color);
                     }
                 }
             }
@@ -874,8 +874,8 @@ namespace ServerTools
                                         }
                                         else
                                         {
-                                            int _timeleft = _newDelay - _timepassed;
-                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
+                                            int _timeleft1 = _newDelay - _timepassed;
+                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft1, _newDelay);
                                         }
                                     }
                                 }
@@ -895,22 +895,13 @@ namespace ServerTools
                         else
                         {
                             int _timeleft = _c[1] - _timepassed;
-                            string _phrase616;
-                            if (!Phrases.Dict.TryGetValue(616, out _phrase616))
-                            {
-                                _phrase616 = "{PlayerName} you can only use {Command} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                            }
-                            _phrase616 = _phrase616.Replace("{Command}", _message);
-                            _phrase616 = _phrase616.Replace("{PlayerName}", _playerName);
-                            _phrase616 = _phrase616.Replace("{DelayBetweenUses}", _c[1].ToString());
-                            _phrase616 = _phrase616.Replace("{TimeRemaining}", _timeleft.ToString());
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase616), Config.Server_Response_Name, false, "ServerTools", false);
+                                DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _c[1]);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase616), Config.Server_Response_Name, false, "ServerTools", false));
+                                DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _c[1]);
                             }
                         }
                     }
@@ -926,16 +917,15 @@ namespace ServerTools
                 _phrase616 = "{PlayerName} you can only use {Command} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
             }
             _phrase616 = _phrase616.Replace("{Command}", _message);
-            _phrase616 = _phrase616.Replace("{PlayerName}", _playerName);
             _phrase616 = _phrase616.Replace("{DelayBetweenUses}", _newDelay.ToString());
             _phrase616 = _phrase616.Replace("{TimeRemaining}", _timeleft.ToString());
             if (_announce)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase616), Config.Server_Response_Name, false, "ServerTools", false);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase616 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase616), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase616 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
 
@@ -954,11 +944,10 @@ namespace ServerTools
                     string _phrase814;
                     if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                     {
-                        _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
+                        _phrase814 = "you do not have enough {WalletCoinName} in your wallet to run this command.";
                     }
-                    _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
             else
@@ -1031,7 +1020,7 @@ namespace ServerTools
                     if (_response.StartsWith("say "))
                     {
                         _response = _response.Replace("say ", "");
-                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                     }
                     else if (_response.StartsWith("pm ") || _response.StartsWith("personalmessage "))
                     {
@@ -1043,7 +1032,11 @@ namespace ServerTools
                         {
                             _response = _response.Replace("personalmessage ", "");
                         }
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false));
+                        ClientInfo _cInfo2 = ConsoleHelper.ParseParamIdOrName(_response);
+                        if (_cInfo2 != null)
+                        {
+                            ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _response + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                        }
                     }
                     else if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
                     {
@@ -1082,7 +1075,7 @@ namespace ServerTools
                     if (_response2.StartsWith("say "))
                     {
                         _response2 = _response2.Replace("say ", "");
-                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response2 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                     }
                     else if (_response2.StartsWith("pm ") || _response2.StartsWith("personalmessage "))
                     {
@@ -1094,7 +1087,11 @@ namespace ServerTools
                         {
                             _response2 = _response.Replace("personalmessage ", "");
                         }
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response2), Config.Server_Response_Name, false, "ServerTools", false));
+                        ClientInfo _cInfo2 = ConsoleHelper.ParseParamIdOrName(_response);
+                        if (_cInfo2 != null)
+                        {
+                            ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _response + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                        }
                     }
                     else if (_response2.StartsWith("tele ") || _response2.StartsWith("tp ") || _response2.StartsWith("teleportplayer "))
                     {

@@ -150,11 +150,11 @@ namespace ServerTools
         {
             if (dict.ContainsKey(_cInfo.playerId))
             {
-                string _value;
-                if (dict.TryGetValue(_cInfo.playerId, out _value))
+                string _message;
+                if (dict.TryGetValue(_cInfo.playerId, out _message))
                 {
-                    _value = _value.Replace("{PlayerName}", _cInfo.playerName);
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _value), Config.Server_Response_Name, false, "", false);
+                    _message = _message.Replace("{PlayerName}", _cInfo.playerName);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                 }
             }
         }

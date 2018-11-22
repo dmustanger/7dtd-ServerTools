@@ -41,7 +41,7 @@ namespace ServerTools
                     EntityPlayer _player = PlayerList[i];
                     if (_player != null)
                     {
-                        ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
+                        ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_player.entityId);
                         if (_cInfo != null)
                         {
                             if (Position)
@@ -108,8 +108,8 @@ namespace ServerTools
                                 {
                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                     {
-                                        sw.WriteLine(string.Format("{0}: " + "SteamId {1}. {2} stats: Health= {3} Stamina= {4} Level= {5} SkillPoints= {6} ZombieKills= {7} PlayerKills= {8}", DateTime.Now,
-                                            _cInfo.playerId, _cInfo.playerName, _player.Stats.Health.Value, _player.Stats.Stamina.Value, _player.Level, _player.SkillPoints, _player.KilledZombies, _player.KilledPlayers));
+                                        sw.WriteLine(string.Format("{0}: " + "SteamId {1}. {2} stats: Health= {3} Stamina= {4} ZombieKills= {5} PlayerKills= {6}", DateTime.Now,
+                                            _cInfo.playerId, _cInfo.playerName, _player.Stats.Health.Value, _player.Stats.Stamina.Value, _player.KilledZombies, _player.KilledPlayers));
                                         sw.WriteLine();
                                         sw.Flush();
                                         sw.Close();

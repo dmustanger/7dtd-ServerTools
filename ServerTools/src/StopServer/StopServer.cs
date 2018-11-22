@@ -121,7 +121,7 @@ namespace ServerTools
 
         public static void Alert(string _message, int _count)
         {
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "", false);
+            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
             if (_count > 1)
             {
                 int _newCount = _count - 1;

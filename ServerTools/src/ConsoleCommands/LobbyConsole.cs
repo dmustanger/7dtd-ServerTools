@@ -66,7 +66,7 @@ namespace ServerTools
                     _phrase551 = _phrase551.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase551 = _phrase551.Replace("{LobbyPosition}", _lposition);
                     SdtdConsole.Instance.Output(string.Format("{0}", _phrase551));
-                    Config.UpdateXml();
+                    LoadConfig.UpdateXml();
                 }
                 else
                 {

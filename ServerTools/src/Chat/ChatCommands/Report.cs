@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -54,12 +55,11 @@ namespace ServerTools
                     string _phrase795;
                     if (!Phrases.Dict.TryGetValue(795, out _phrase795))
                     {
-                        _phrase795 = "{PlayerName} you can only use /report once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                        _phrase795 = "you can only use /report once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                     }
-                    _phrase795 = _phrase795.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase795 = _phrase795.Replace("{DelayBetweenUses}", Delay.ToString());
                     _phrase795 = _phrase795.Replace("{TimeRemaining}", _timeleft.ToString());
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase795), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase795 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
             else
@@ -73,7 +73,7 @@ namespace ServerTools
             _message = _message.Replace("report ", "");
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             Vector3 _pos = _player.position;
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
             for (int i = 0; i < _cInfoList.Count; i++)
             {
                 ClientInfo _cInfoAdmins = _cInfoList[i];
@@ -87,7 +87,7 @@ namespace ServerTools
                     }
                     _phrase796 = _phrase796.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase796 = _phrase796.Replace("{Message}", _message);
-                    _cInfoAdmins.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase796), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfoAdmins, LoadConfig.Chat_Response_Color + _cInfoAdmins.playerName + ", " + _phrase796 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
             using (StreamWriter sw = new StreamWriter(_filepath, true))
@@ -100,10 +100,9 @@ namespace ServerTools
             string _phrase797;
             if (!Phrases.Dict.TryGetValue(797, out _phrase797))
             {
-                _phrase797 = "{PlayerName} your report has been sent to online administrators and logged.";
+                _phrase797 = "your report has been sent to online administrators and logged.";
             }
-            _phrase797 = _phrase797.Replace("{PlayerName}", _cInfo.playerName);
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase797), Config.Server_Response_Name, false, "ServerTools", false));
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase797 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             string _sql = string.Format("UPDATE Players SET lastLog = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
             SQL.FastQuery(_sql);
             Log.Out(string.Format("[SERVERTOOLS] Report sent by player name {0}", _cInfo.playerName));

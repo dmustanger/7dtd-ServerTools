@@ -1,5 +1,22 @@
 ﻿CHANGELOG
 
+12.0
+Updated compatibility to A17 - Experimental. This version will not work with prior versions.
+Fixed console command donor remove
+Fixed Kick_Vote response repeating improperly
+Fixed Mute_Vote not adding a player correctly
+Fixed Bank deposit from a chest repeating the operation if more coins were available in a stack
+Fixed Jail response if shock is enabled
+Changed Mute_Vote to mute for 60 minutes
+
+11.9
+Fixed Kick_Vote response repeating improperly
+Fixed Mute_Vote not adding a player correctly
+Fixed Bank deposit from a chest repeating the operation if more coins were available in a stack
+Fixed Jail response if shock is enabled
+Changed Mute_Vote to mute for 60 minutes
+Updated HowToSetup.xml
+
 11.8
 Added option to Bank called Inside_Claim. Requires players be inside their claim or a friend's to send money in to or out of the bank
 Added option to Bike_Return called Inside_Claim. Requires players be inside their claim or a friend's to save a bike

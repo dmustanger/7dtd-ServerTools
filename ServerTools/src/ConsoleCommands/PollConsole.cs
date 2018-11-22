@@ -102,8 +102,8 @@ namespace ServerTools
                             {
                                 _phrase927 = "Type /pollyes or /pollno to vote.";
                             }
-                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase926), Config.Server_Response_Name, false, "ServerTools", true);
-                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase927), Config.Server_Response_Name, false, "ServerTools", true);
+                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase926), LoadConfig.Server_Response_Name, false, "ServerTools", true);
+                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase927), LoadConfig.Server_Response_Name, false, "ServerTools", true);
                             SdtdConsole.Instance.Output(string.Format("Opened a new poll for {0} hours.", _hours));
                             using (StreamWriter sw = new StreamWriter(_filepath, true))
                             {
@@ -148,7 +148,7 @@ namespace ServerTools
                                 }
                                 _phrase925 = _phrase925.Replace("{YesVote}", _pollYes.ToString());
                                 _phrase925 = _phrase925.Replace("{NoVote}", _pollNo.ToString());
-                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}", _phrase925), Config.Server_Response_Name, false, "ServerTools", true);
+                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}", _phrase925), LoadConfig.Server_Response_Name, false, "ServerTools", true);
                             }
                             using (StreamWriter sw = new StreamWriter(_filepath, true))
                             {
@@ -329,8 +329,8 @@ namespace ServerTools
                     {
                         _phrase927 = "Type /pollyes or /pollno to vote.";
                     }
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase926), Config.Server_Response_Name, false, "ServerTools", false));
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase927), Config.Server_Response_Name, false, "ServerTools", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase926), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase927), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                 }
                 else
                 {
@@ -341,7 +341,7 @@ namespace ServerTools
                     }
                     _phrase925 = _phrase925.Replace("{YesVote}", _pollYes.ToString());
                     _phrase925 = _phrase925.Replace("{NoVote}", _pollNo.ToString());
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase925), Config.Server_Response_Name, false, "ServerTools", true);
+                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase925), LoadConfig.Server_Response_Name, false, "ServerTools", true);
                 }
             }
             _result.Dispose();
@@ -361,7 +361,7 @@ namespace ServerTools
                         _phrase812 = "{PlayerName} you have already voted on the poll.";
                     }
                     _phrase812 = _phrase812.Replace("{PlayerName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase812), Config.Server_Response_Name, false, "ServerTools", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase812), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                 }
                 else
                 {
@@ -381,7 +381,7 @@ namespace ServerTools
                     _phrase928 = _phrase928.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase928 = _phrase928.Replace("{Yes}", _pollYes.ToString());
                     _phrase928 = _phrase928.Replace("{No}", _pollNo.ToString());
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase928), Config.Server_Response_Name, false, "ServerTools", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase928), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                     {
                         sw.WriteLine(string.Format("{0}  Player name {1} has voted yes in the poll. Yes {2} / no {3}", DateTime.Now, _cInfo.playerName, _pollYes, _pollNo));
@@ -408,7 +408,7 @@ namespace ServerTools
                         _phrase812 = "{PlayerName} you have already voted on the poll";
                     }
                     _phrase812 = _phrase812.Replace("{PlayerName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase812), Config.Server_Response_Name, false, "ServerTools", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase812), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                 }
                 else
                 {
@@ -428,7 +428,7 @@ namespace ServerTools
                     _phrase929 = _phrase929.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase929 = _phrase929.Replace("{Yes}", _pollYes.ToString());
                     _phrase929 = _phrase929.Replace("{No}", _pollNo.ToString());
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase929), Config.Server_Response_Name, false, "ServerTools", false));
+                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase929), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                     {
                         sw.WriteLine(string.Format("{0}  Player name {1} has voted no in the poll. Yes {2} / no {3}", DateTime.Now, _cInfo.playerName, _pollYes, _pollNo));

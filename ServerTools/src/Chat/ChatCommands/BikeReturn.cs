@@ -13,7 +13,7 @@ namespace ServerTools
         public static void BikeDelay(ClientInfo _cInfo, string _playerName)
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (_player.AttachedToEntity == null)
+            if (_player.AttachedMainEntity == null)
             {
                 bool _donator = false;
                 if (Delay_Between_Uses < 1)
@@ -64,12 +64,11 @@ namespace ServerTools
                                     string _phrase786;
                                     if (!Phrases.Dict.TryGetValue(786, out _phrase786))
                                     {
-                                        _phrase786 = "{PlayerName} you can only use /bike once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                        _phrase786 = "you can only use /bike once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                     }
-                                    _phrase786 = _phrase786.Replace("{PlayerName}", _playerName);
                                     _phrase786 = _phrase786.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                     _phrase786 = _phrase786.Replace("{TimeRemaining}", _timeleft.ToString());
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase786), Config.Server_Response_Name, false, "ServerTools", false));
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase786 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                 }
                             }
                         }
@@ -95,10 +94,9 @@ namespace ServerTools
                             {
                                 _phrase786 = "{PlayerName} you can only use /bike once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
-                            _phrase786 = _phrase786.Replace("{PlayerName}", _playerName);
                             _phrase786 = _phrase786.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                             _phrase786 = _phrase786.Replace("{TimeRemaining}", _timeleft.ToString());
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase786), Config.Server_Response_Name, false, "ServerTools", false));
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase786 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                         }
                     }
                 }
@@ -121,11 +119,10 @@ namespace ServerTools
                 string _phrase814;
                 if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    _phrase814 = "you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
-                _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
 
@@ -147,10 +144,9 @@ namespace ServerTools
                     string _phrase781;
                     if (!Phrases.Dict.TryGetValue(781, out _phrase781))
                     {
-                        _phrase781 = "{PlayerName} saved your current bike for retrieval.";
+                        _phrase781 = "saved your current bike for retrieval.";
                     }
-                    _phrase781 = _phrase781.Replace("{PlayerName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase781), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase781 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     string _sql = string.Format("UPDATE Players SET bikeId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
                     SQL.FastQuery(_sql);
                 }
@@ -159,10 +155,9 @@ namespace ServerTools
                     string _phrase780;
                     if (!Phrases.Dict.TryGetValue(780, out _phrase780))
                     {
-                        _phrase780 = "{PlayerName} you have not claimed this space or a friend. You can only save your bike inside a claimed space.";
+                        _phrase780 = "you have not claimed this space or a friend. You can only save your bike inside a claimed space.";
                     }
-                    _phrase780 = _phrase780.Replace("{PlayerName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase780), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase780 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
             else
@@ -170,10 +165,9 @@ namespace ServerTools
                 string _phrase781;
                 if (!Phrases.Dict.TryGetValue(781, out _phrase781))
                 {
-                    _phrase781 = "{PlayerName} saved your current bike for retrieval.";
+                    _phrase781 = "saved your current bike for retrieval.";
                 }
-                _phrase781 = _phrase781.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase781), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase781 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 string _sql = string.Format("UPDATE Players SET bikeId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
                 SQL.FastQuery(_sql);
             }
@@ -193,6 +187,8 @@ namespace ServerTools
                 {
                     Entity _entity = Entities[i];
                     string _name = EntityClass.list[_entity.entityClass].entityClassName;
+                    Type _class = EntityClass.list[_entity.entityClass].classname.BaseType;
+                    Log.Out(string.Format("entity name = {0}/ class base type = {1}", _name, _class));
                     if (_name == "minibike")
                     {
                         if ((_player.position.x - _entity.position.x) * (_player.position.x - _entity.position.x) + (_player.position.z - _entity.position.z) * (_player.position.z - _entity.position.z) <= 50 * 50)
@@ -205,10 +201,9 @@ namespace ServerTools
                                     string _phrase782;
                                     if (!Phrases.Dict.TryGetValue(782, out _phrase782))
                                     {
-                                        _phrase782 = "{PlayerName} found your bike and sent it to you.";
+                                        _phrase782 = "found your bike and sent it to you.";
                                     }
-                                    _phrase782 = _phrase782.Replace("{PlayerName}", _cInfo.playerName);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase782), Config.Server_Response_Name, false, "ServerTools", false));
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase782 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                     if (Wallet.IsEnabled && Command_Cost >= 1)
                                     {
                                         Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
@@ -222,10 +217,9 @@ namespace ServerTools
                                     string _phrase785;
                                     if (!Phrases.Dict.TryGetValue(785, out _phrase785))
                                     {
-                                        _phrase785 = "{PlayerName} found your bike but someone else is on it.";
+                                        _phrase785 = "found your bike but someone else is on it.";
                                     }
-                                    _phrase785 = _phrase785.Replace("{PlayerName}", _cInfo.playerName);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase785), Config.Server_Response_Name, false, "ServerTools", false));
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase785 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                     return;
                                 }
                             }
@@ -235,20 +229,18 @@ namespace ServerTools
                 string _phrase784;
                 if (!Phrases.Dict.TryGetValue(784, out _phrase784))
                 {
-                    _phrase784 = "{PlayerName} could not find your bike near by.";
+                    _phrase784 = "could not find your bike near by.";
                 }
-                _phrase784 = _phrase784.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase784), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase784 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
             else
             {
                 string _phrase783;
                 if (!Phrases.Dict.TryGetValue(783, out _phrase783))
                 {
-                    _phrase783 = "{PlayerName} you do not have a bike saved.";
+                    _phrase783 = "you do not have a bike saved.";
                 }
-                _phrase783 = _phrase783.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase783), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase783 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
     }

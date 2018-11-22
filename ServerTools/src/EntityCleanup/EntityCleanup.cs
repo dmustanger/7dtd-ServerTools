@@ -70,7 +70,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_douche.entityId);
+                                    ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_douche.entityId);
                                     if (_cInfo != null)
                                     {
                                         Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed minibike id {0}. Closest player is {1}", _entity.entityId, _cInfo.playerName));

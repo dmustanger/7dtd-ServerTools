@@ -219,17 +219,17 @@ namespace ServerTools
                     string _phrase801;
                     if (!Phrases.Dict.TryGetValue(801, out _phrase801))
                     {
-                        _phrase801 = "{Killer} has murdered you while you were in a protected zone.";
+                        _phrase801 = "{PlayerName} has murdered you while you were in a protected zone.";
                     }
-                    _phrase801 = _phrase801.Replace("{Killer}", _cInfoKiller.playerName);
-                    _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase801), Config.Server_Response_Name, false, "ServerTools", false));
+                    _phrase801 = _phrase801.Replace("{PlayerName}", _cInfoKiller.playerName);
+                    ChatHook.ChatMessage(_cInfoVictim, LoadConfig.Chat_Response_Color + _phrase801 + "[-]", _cInfoKiller.entityId, _cInfoKiller.playerName, EChatType.Whisper);
                     string _phrase802;
                     if (!Phrases.Dict.TryGetValue(802, out _phrase802))
                     {
-                        _phrase802 = "You have murdered a player inside a protected zone. Their name was {Victim}";
+                        _phrase802 = "You have murdered a player inside a protected zone. Their name was {PlayerName}";
                     }
-                    _phrase802 = _phrase802.Replace("{Victim}", _cInfoVictim.playerName);
-                    _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase802), Config.Server_Response_Name, false, "ServerTools", false));
+                    _phrase802 = _phrase802.Replace("{PlayerName}", _cInfoVictim.playerName);
+                    ChatHook.ChatMessage(_cInfoKiller, LoadConfig.Chat_Response_Color + _phrase802 + "[-]", _cInfoVictim.entityId, _cInfoVictim.playerName, EChatType.Whisper);
                     Penalty(_cInfoKiller, _cInfoVictim);
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoVictim.entityId];
                     int x = (int)_player.position.x;
@@ -250,17 +250,17 @@ namespace ServerTools
                     string _phrase801;
                     if (!Phrases.Dict.TryGetValue(801, out _phrase801))
                     {
-                        _phrase801 = "{Killer} has murdered you while you were in a protected zone.";
+                        _phrase801 = "{PlayerName} has murdered you while you were in a protected zone.";
                     }
-                    _phrase801 = _phrase801.Replace("{Killer}", _cInfoKiller.playerName);
-                    _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase801), Config.Server_Response_Name, false, "ServerTools", false));
+                    _phrase801 = _phrase801.Replace("{PlayerName}", _cInfoKiller.playerName);
+                    ChatHook.ChatMessage(_cInfoVictim, LoadConfig.Chat_Response_Color + _phrase801 + "[-]", _cInfoKiller.entityId, _cInfoKiller.playerName, EChatType.Whisper);
                     string _phrase802;
                     if (!Phrases.Dict.TryGetValue(802, out _phrase802))
                     {
-                        _phrase802 = "You have murdered a player inside a protected zone. Their name was {Victim}";
+                        _phrase802 = "You have murdered a player inside a protected zone. Their name was {PlayerName}";
                     }
-                    _phrase802 = _phrase802.Replace("{Victim}", _cInfoVictim.playerName);
-                    _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase802), Config.Server_Response_Name, false, "ServerTools", false));
+                    _phrase802 = _phrase802.Replace("{PlayerName}", _cInfoVictim.playerName);
+                    ChatHook.ChatMessage(_cInfoKiller, LoadConfig.Chat_Response_Color + _phrase802 + "[-]", _cInfoVictim.entityId, _cInfoVictim.playerName, EChatType.Whisper);
                     Penalty(_cInfoKiller, _cInfoVictim);
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoVictim.entityId];
                     int x = (int)_player.position.x;
@@ -281,17 +281,17 @@ namespace ServerTools
                     string _phrase803;
                     if (!Phrases.Dict.TryGetValue(801, out _phrase803))
                     {
-                        _phrase803 = "{Killer} has murdered you while they were in a protected zone.";
+                        _phrase803 = "{PlayerName} has murdered you while they were in a protected zone.";
                     }
-                    _phrase803 = _phrase803.Replace("{Killer}", _cInfoKiller.playerName);
-                    _cInfoVictim.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase803), Config.Server_Response_Name, false, "ServerTools", false));
+                    _phrase803 = _phrase803.Replace("{PlayerName}", _cInfoKiller.playerName);
+                    ChatHook.ChatMessage(_cInfoVictim, LoadConfig.Chat_Response_Color + _phrase803 + "[-]", _cInfoKiller.entityId, _cInfoKiller.playerName, EChatType.Whisper);
                     string _phrase802;
                     if (!Phrases.Dict.TryGetValue(802, out _phrase802))
                     {
-                        _phrase802 = "You have murdered a player inside a protected zone. Their name was {Victim}";
+                        _phrase802 = "You have murdered a player inside a protected zone. Their name was {PlayerName}";
                     }
-                    _phrase802 = _phrase802.Replace("{Victim}", _cInfoVictim.playerName);
-                    _cInfoKiller.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase802), Config.Server_Response_Name, false, "ServerTools", false));
+                    _phrase802 = _phrase802.Replace("{PlayerName}", _cInfoVictim.playerName);
+                    ChatHook.ChatMessage(_cInfoKiller, LoadConfig.Chat_Response_Color + _phrase802 + "[-]", _cInfoVictim.entityId, _cInfoVictim.playerName, EChatType.Whisper);
                     Penalty(_cInfoKiller, _cInfoVictim);
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoVictim.entityId];
                     int x = (int)_player.position.x;
@@ -369,7 +369,7 @@ namespace ServerTools
                                 int.TryParse(_cords[0], out x);
                                 int.TryParse(_cords[1], out y);
                                 int.TryParse(_cords[2], out z);
-                                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                                 Players.Victim.Remove(_cInfo.entityId);
                             }
                         }
@@ -378,9 +378,10 @@ namespace ServerTools
                             string _phrase811;
                             if (!Phrases.Dict.TryGetValue(606, out _phrase811))
                             {
-                                _phrase811 = "{PlayerName} you can only use /return for four minutes after respawning. Time has expired.";
+                                _phrase811 = "you can only use /return for four minutes after respawning. Time has expired.";
                             }
                             _phrase811 = _phrase811.Replace("{PlayerName}", _cInfo.playerName);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase811 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                             Players.Victim.Remove(_cInfo.entityId);
                         }
                     }
@@ -398,7 +399,7 @@ namespace ServerTools
                         int.TryParse(_cords[0], out x);
                         int.TryParse(_cords[1], out y);
                         int.TryParse(_cords[2], out z);
-                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                         Players.Victim.Remove(_cInfo.entityId);
                     }
                 }
@@ -407,9 +408,10 @@ namespace ServerTools
                     string _phrase606;
                     if (!Phrases.Dict.TryGetValue(606, out _phrase606))
                     {
-                        _phrase606 = "{PlayerName} you can only use /return for two minutes after respawning. Time has expired.";
+                        _phrase606 = "you can only use /return for two minutes after respawning. Time has expired.";
                     }
                     _phrase606 = _phrase606.Replace("{PlayerName}", _cInfo.playerName);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase606 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     Players.Victim.Remove(_cInfo.entityId);
                 }
             }
@@ -419,23 +421,31 @@ namespace ServerTools
         {
             if (Jail_Enabled)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been jailed for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), Config.Server_Response_Name, false, "", false);
+                string _message = "[FF0000]{PlayerName} has been jailed for murder in a protected zone.";
+                _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
                 SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0} 120", _cInfoKiller.playerId), (ClientInfo)null);
                 Players.Forgive[_cInfoVictim.entityId] = _cInfoKiller.entityId;
             }
             if (Kill_Enabled)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been executed for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), Config.Server_Response_Name, false, "", false);
+                string _message = "[FF0000]{PlayerName} has been executed for murder in a protected zone.";
+                _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
                 SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfoKiller.playerId), (ClientInfo)null);
             }
             if (Kick_Enabled)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been kicked for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), Config.Server_Response_Name, false, "", false);
+                string _message = "[FF0000]{PlayerName} has been kicked for murder in a protected zone.";
+                _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
                 SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for murder in a protected zone\"", _cInfoKiller.playerId), (ClientInfo)null);
             }
             if (Ban_Enabled)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1} has been banned for murder in a protected zone.[-]", Config.Chat_Response_Color, _cInfoKiller.playerName), Config.Server_Response_Name, false, "", false);
+                string _message = "[FF0000]{PlayerName} has been banned for murder in a protected zone.";
+                _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
                 SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for murder in a protected zone\"", _cInfoKiller.playerId), (ClientInfo)null);
             }
         }
@@ -448,7 +458,7 @@ namespace ServerTools
             if (_response.StartsWith("say "))
             {
                 _response = _response.Replace("say ", "");
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _response), Config.Server_Response_Name, false, "ServerTools", false);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
             }
             if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
             {
@@ -860,7 +870,7 @@ namespace ServerTools
         {
             foreach (KeyValuePair<int,DateTime> time in reminder)
             {
-                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(time.Key);
+                ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(time.Key);
                 if (_cInfo != null)
                 {
                     DateTime _dt = time.Value;
@@ -873,7 +883,7 @@ namespace ServerTools
                         reminderMsg.TryGetValue(_cInfo.entityId, out _msg);
                         if (_msg != "")
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _msg), Config.Server_Response_Name, false, "ServerTools", false));
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _msg + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                             reminder[_cInfo.entityId] = DateTime.Now;
                         }
                     }

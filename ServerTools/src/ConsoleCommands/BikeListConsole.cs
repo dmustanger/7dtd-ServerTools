@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -40,10 +41,10 @@ namespace ServerTools
                         int x = (int)_pos.x;
                         int y = (int)_pos.y;
                         int z = (int)_pos.z;
-                        Entity _attachedPlayer = _entity.AttachedEntities;
+                        Entity _attachedPlayer = _entity.AttachedMainEntity;
                         if (_attachedPlayer != null)
                         {
-                            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
                             for (int j = 0; j < _cInfoList.Count; j++)
                             {
                                 ClientInfo _cInfo = _cInfoList[j];

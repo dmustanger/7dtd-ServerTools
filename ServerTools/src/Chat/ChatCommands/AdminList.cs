@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ServerTools
 {
@@ -13,7 +14,7 @@ namespace ServerTools
         {
             Admins.Clear();
             Mods.Clear();
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
             for (int i = 0; i < _cInfoList.Count; i++)
             {
                 ClientInfo _cInfoAdmins = _cInfoList[i];
@@ -47,8 +48,8 @@ namespace ServerTools
                 {
                     _phrase726 = "Server moderators in game: [FF8000]";
                 }
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase725, _adminList), Config.Server_Response_Name, false, "", false);
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase726, _modList), Config.Server_Response_Name, false, "", false);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase725 + _adminList + ".[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase726 + _modList + ".[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
             }
             else
             {
@@ -62,8 +63,8 @@ namespace ServerTools
                 {
                     _phrase726 = "Server moderators in game: [FF8000]";
                 }
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase725, _adminList), Config.Server_Response_Name, false, "ServerTools", false));
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}{2}.[-]", Config.Chat_Response_Color, _phrase726, _modList), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase725 + _adminList + ".[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase726 + _modList + ".[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
     }

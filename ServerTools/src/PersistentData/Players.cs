@@ -9,7 +9,6 @@ namespace ServerTools
     [Serializable]
     public class Players
     {
-        public static int Bonus = 0;
         public Dictionary<string, Player> players = new Dictionary<string, Player>();
         public Dictionary<string, string> clans = new Dictionary<string, string>();
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
@@ -23,17 +22,10 @@ namespace ServerTools
         public static List<int> Dead = new List<int>();
         public static List<int> NoFlight = new List<int>();
         private static string file = string.Format("Bounty_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string filepath = string.Format("{0}/Bounties/{1}", API.GamePath, file);
+        private static string filepath = string.Format("{0}/BountyLogs/{1}", API.GamePath, file);
         private static int _counter = 0;
         private static bool DP = false;
 
-        public static void CreateFolder()
-        {
-            if (!Directory.Exists(API.GamePath + "/Bounties"))
-            {
-                Directory.CreateDirectory(API.GamePath + "/Bounties");
-            }
-        }
 
         public List<string> SteamIDs
         {
@@ -82,7 +74,7 @@ namespace ServerTools
                 EntityPlayer _player = _playerList[i];
                 if (_player != null)
                 {
-                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
+                    ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_player.entityId);
                     if (_cInfo != null)
                     {
                         if (_player.IsDead())
@@ -123,7 +115,7 @@ namespace ServerTools
                                     if (_target == _player && _player != _player2)
                                     {
                                         _player2.ClearDamagedTarget();
-                                        ClientInfo _cInfo2 = ConnectionManager.Instance.GetClientInfoForEntityId(_player2.entityId);
+                                        ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_player2.entityId);
                                         if (_cInfo != null && _cInfo2 != null)
                                         {
                                             if (KillNotice.IsEnabled)
@@ -132,7 +124,7 @@ namespace ServerTools
                                                 ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
                                                 if (_itemValue.type != ItemValue.None.type)
                                                 {
-                                                    _holdingItem = _itemValue.ItemClass.localizedName ?? _itemValue.ItemClass.Name;
+                                                    _holdingItem = _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name;
                                                 }
                                                 KillNotice.Notice(_cInfo, _cInfo2, _holdingItem);
                                             }
@@ -178,9 +170,9 @@ namespace ServerTools
                                                         int.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
                                                         int.TryParse(_result2.Rows[0].ItemArray.GetValue(1).ToString(), out _hunterCountKiller);
                                                         _result2.Dispose();
-                                                        if (Bonus > 0 && _hunterCountVictim >= Bonus)
+                                                        if (Bounties.Bonus > 0 && _hunterCountVictim >= Bounties.Bonus)
                                                         {
-                                                            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, bountyHunter = {1} WHERE steamid = '{2}'", _playerSpentCoins + _bounty + Bonus, _hunterCountKiller + 1, _cInfo2.playerId);
+                                                            _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, bountyHunter = {1} WHERE steamid = '{2}'", _playerSpentCoins + _bounty + Bounties.Bonus, _hunterCountKiller + 1, _cInfo2.playerId);
                                                             SQL.FastQuery(_sql);
                                                         }
                                                         else
@@ -197,7 +189,7 @@ namespace ServerTools
                                                         }
                                                         _phrase912 = _phrase912.Replace("{PlayerName}", _cInfo2.playerName);
                                                         _phrase912 = _phrase912.Replace("{Victim}", _cInfo.playerName);
-                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase912), Config.Server_Response_Name, false, "ServerTools", false);
+                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase912), LoadConfig.Server_Response_Name, false, "ServerTools", false);
                                                         using (StreamWriter sw = new StreamWriter(filepath, true))
                                                         {
                                                             sw.WriteLine(string.Format("{0}: {1} is a bounty hunter! {2} was snuffed out. Bounty was worth {3}", DateTime.Now, _cInfo2.playerName, _cInfo.playerName, _bounty));
@@ -234,7 +226,7 @@ namespace ServerTools
                                                                         _phrase913 = "{PlayerName} is on a kill streak! Their bounty has increased.";
                                                                     }
                                                                     _phrase913 = _phrase913.Replace("{PlayerName}", _cInfo2.playerName);
-                                                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase913), Config.Server_Response_Name, false, "ServerTools", false);
+                                                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase913), LoadConfig.Server_Response_Name, false, "ServerTools", false);
                                                                 }
                                                                 if (_newValue >= Bounties.Kill_Streak)
                                                                 {
@@ -243,7 +235,7 @@ namespace ServerTools
                                                                     int _oldBounty;
                                                                     int.TryParse(_result3.Rows[0].ItemArray.GetValue(0).ToString(), out _oldBounty);
                                                                     _result3.Dispose();
-                                                                    _sql = string.Format("UPDATE Players SET bounty = {0} WHERE steamid = '{1}'", _oldBounty + (_player2.Level * Bounties.Bounty), _cInfo.playerId);
+                                                                    _sql = string.Format("UPDATE Players SET bounty = {0} WHERE steamid = '{1}'", _oldBounty + Bounties.Bonus, _cInfo.playerId);
                                                                     SQL.FastQuery(_sql);
                                                                     using (StreamWriter sw = new StreamWriter(filepath, true))
                                                                     {
@@ -352,7 +344,7 @@ namespace ServerTools
                                     }
                                     if (Zones.Zone_Message)
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _box3[2]), Config.Server_Response_Name, false, "ServerTools", false));
+                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _box3[2]), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                                     }
                                     if (_box3[4] != "")
                                     {
@@ -394,7 +386,7 @@ namespace ServerTools
                                             }
                                             if (Zones.Zone_Message)
                                             {
-                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _box3[2]), Config.Server_Response_Name, false, "ServerTools", false));
+                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _box3[2]), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                                             }
                                             if (_box3[4] != "")
                                             {
@@ -423,7 +415,7 @@ namespace ServerTools
                                 string _msg;
                                 if (ZoneExit.TryGetValue(_player.entityId, out _msg))
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _msg), Config.Server_Response_Name, false, "ServerTools", false));
+                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _msg), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                                 }
                             }
                             ZoneExit.Remove(_player.entityId);

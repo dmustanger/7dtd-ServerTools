@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ServerTools
 {
@@ -13,14 +14,13 @@ namespace ServerTools
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    _phrase107 = "{PlayerName} you do not have permissions to use this command.";
+                    _phrase107 = "you do not have permissions to use this command.";
                 }
-                _phrase107 = _phrase107.Replace("{PlayerName}", _sender.playerName);
-                _sender.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase107), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_sender, LoadConfig.Chat_Response_Color + _sender.playerName + ", " + _phrase107 + "[-]", _sender.entityId, _sender.playerName, EChatType.Whisper);
             }
             else
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
                 foreach (ClientInfo _cInfo in _cInfoList)
                 {
                     if (GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
@@ -30,7 +30,7 @@ namespace ServerTools
                         {
                             _message = _message.Replace("@ADMINS ", "");
                             _message = _message.Replace("@admins ", "");
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), _sender.playerName, false, "", false));
+                            ChatHook.ChatMessage(_sender, LoadConfig.Chat_Response_Color + _sender.playerName + ": " + _message + "[-]", _sender.entityId, _sender.playerName, EChatType.Whisper);
                         }
                     }
                 }
@@ -45,16 +45,15 @@ namespace ServerTools
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    _phrase107 = "{PlayerName} you do not have permissions to use this command.";
+                    _phrase107 = "you do not have permissions to use this command.";
                 }
-                _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase107), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
             else
             {
                 _message = _message.Replace("@ALL ", "");
                 _message = _message.Replace("@all ", "");
-                SdtdConsole.Instance.ExecuteSync(string.Format("say \"{0}{1}[-]\"", Config.Chat_Response_Color, _message), (ClientInfo)null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
             }
         }
     }

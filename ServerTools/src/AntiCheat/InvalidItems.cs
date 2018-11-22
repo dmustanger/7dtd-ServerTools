@@ -1264,14 +1264,13 @@ namespace ServerTools
                                 string _phrase3;
                                 if (!Phrases.Dict.TryGetValue(3, out _phrase3))
                                 {
-                                    _phrase3 = "{PlayerName} you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
+                                    _phrase3 = "you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
                                 }
-                                _phrase3 = _phrase3.Replace("{PlayerName}", _cInfo.playerName);
                                 _phrase3 = _phrase3.Replace("{ItemName}", _name);
                                 _phrase3 = _phrase3.Replace("{ItemCount}", _count.ToString());
                                 _phrase3 = _phrase3.Replace("{MaxPerStack}", _maxAllowed.ToString());
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase3), Config.Server_Response_Name, false, "ServerTools", false));
-                                ChatLog.Log(_phrase3, Config.Server_Response_Name);
+                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + ", " + _phrase3 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                                ChatLog.Log(_phrase3, LoadConfig.Server_Response_Name);
                             }
                             if (IsEnabled && dict.ContainsKey(_name))
                             {
@@ -1284,7 +1283,7 @@ namespace ServerTools
                                     }
                                     _phrase4 = _phrase4.Replace("{PlayerName}", _cInfo.playerName);
                                     _phrase4 = _phrase4.Replace("{ItemName}", _name);
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase4), Config.Server_Response_Name, false, "", false);
+                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + ", " + _phrase4 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Invalid Item {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                     {
@@ -1311,7 +1310,7 @@ namespace ServerTools
                                                 }
                                                 _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
                                                 _phrase5 = _phrase5.Replace("{ItemName}", _name);
-                                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase5), Config.Server_Response_Name, false, "", false);                                                
+                                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + ", " + _phrase5 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);                                                
                                                 using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                 {
                                                     sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, with invalid item: {2}. Kicked the player.", _cInfo.playerName, _cInfo.playerId, _name));
@@ -1332,7 +1331,7 @@ namespace ServerTools
                                                 }
                                                 _phrase799 = _phrase799.Replace("{PlayerName}", _cInfo.playerName);
                                                 _phrase799 = _phrase799.Replace("{ItemName}", _name);
-                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase799), Config.Server_Response_Name, false, "ServerTools", false));
+                                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + ", " + _phrase799 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                             }
                                         }
                                     }
@@ -1346,7 +1345,7 @@ namespace ServerTools
                                         }
                                         _phrase800 = _phrase800.Replace("{PlayerName}", _cInfo.playerName);
                                         _phrase800 = _phrase800.Replace("{ItemName}", _name);
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase800), Config.Server_Response_Name, false, "ServerTools", false));
+                                        ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + ", " + _phrase800 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                     }
                                 }
                             }
@@ -1377,16 +1376,13 @@ namespace ServerTools
                                 string _phrase3;
                                 if (!Phrases.Dict.TryGetValue(3, out _phrase3))
                                 {
-                                    _phrase3 = "{PlayerName} you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
+                                    _phrase3 = "you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
                                 }
-                                _phrase3 = _phrase3.Replace("{PlayerName}", _cInfo.playerName);
                                 _phrase3 = _phrase3.Replace("{ItemName}", _name);
                                 _phrase3 = _phrase3.Replace("{ItemCount}", _count.ToString());
                                 _phrase3 = _phrase3.Replace("{MaxPerStack}", _maxAllowed.ToString());
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase3), Config.Server_Response_Name, false, "ServerTools", false));
-                                ChatLog.Log(_phrase3, Config.Server_Response_Name);
-
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase3), Config.Server_Response_Name, false, "ServerTools", false));
+                                ChatLog.Log(_phrase3, LoadConfig.Server_Response_Name);
+                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + ", " + _phrase3 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                             }
                             if (IsEnabled && dict.ContainsKey(_name))
                             {
@@ -1400,7 +1396,7 @@ namespace ServerTools
                                     }
                                     _phrase4 = _phrase4.Replace("{PlayerName}", _cInfo.playerName);
                                     _phrase4 = _phrase4.Replace("{ItemName}", _name);
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase4), Config.Server_Response_Name, false, "", false);
+                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + ", " + _phrase4 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                 }
                                 else
                                 {
@@ -1418,7 +1414,7 @@ namespace ServerTools
                                                 }
                                                 _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
                                                 _phrase5 = _phrase5.Replace("{ItemName}", _name);
-                                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase5), Config.Server_Response_Name, false, "", false);
+                                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + ", " + _phrase5 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                                 SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
                                                 using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                 {
@@ -1440,7 +1436,7 @@ namespace ServerTools
                                                 }
                                                 _phrase799 = _phrase799.Replace("{PlayerName}", _cInfo.playerName);
                                                 _phrase799 = _phrase799.Replace("{ItemName}", _name);
-                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase799), Config.Server_Response_Name, false, "ServerTools", false));
+                                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + ", " + _phrase799 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                             }
                                         }
                                     }
@@ -1454,7 +1450,7 @@ namespace ServerTools
                                         }
                                         _phrase800 = _phrase800.Replace("{PlayerName}", _cInfo.playerName);
                                         _phrase800 = _phrase800.Replace("{ItemName}", _name);
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF0000]{0}[-]", _phrase800), Config.Server_Response_Name, false, "ServerTools", false));
+                                        ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + ", " + _phrase800 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                     }
                                 }
                             }

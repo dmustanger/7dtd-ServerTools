@@ -22,7 +22,7 @@ namespace ServerTools
             }
             _phrase765 = _phrase765.Replace("{Time}", _time.ToShortTimeString());
             _phrase765 = _phrase765.Replace("{TimeZone}", Time_Zone);
-            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase765), Config.Server_Response_Name, false, "", false);
+            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase765 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
         }
     }
 }

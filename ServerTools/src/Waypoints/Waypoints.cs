@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -34,7 +35,12 @@ namespace ServerTools
                             int.TryParse(_cords[0], out x);
                             int.TryParse(_cords[1], out y);
                             int.TryParse(_cords[2], out z);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Waypoint {1} @ {2} {3} {4}[-]", Config.Chat_Response_Color, _name, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
+                            string _message = "Waypoint {Name} @ {X} {Y} {Z}";
+                            _message = _message.Replace("{Name}", _name);
+                            _message = _message.Replace("{X}", x.ToString());
+                            _message = _message.Replace("{Y}", y.ToString());
+                            _message = _message.Replace("{Z}", z.ToString());
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                         }
                         _result1.Dispose();
                     }
@@ -50,7 +56,12 @@ namespace ServerTools
                             int.TryParse(_cords[0], out x);
                             int.TryParse(_cords[1], out y);
                             int.TryParse(_cords[2], out z);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Waypoint {1} @ {2} {3} {4}[-]", Config.Chat_Response_Color, _name, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
+                            string _message = "Waypoint {Name} @ {X} {Y} {Z}";
+                            _message = _message.Replace("{Name}", _name);
+                            _message = _message.Replace("{X}", x.ToString());
+                            _message = _message.Replace("{Y}", y.ToString());
+                            _message = _message.Replace("{Z}", z.ToString());
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                         }
                         _result1.Dispose();
                     }
@@ -67,7 +78,12 @@ namespace ServerTools
                         int.TryParse(_cords[0], out x);
                         int.TryParse(_cords[1], out y);
                         int.TryParse(_cords[2], out z);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Waypoint {1} @ {2} {3} {4}[-]", Config.Chat_Response_Color, _name, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
+                        string _message = "Waypoint {Name} @ {X} {Y} {Z}";
+                        _message = _message.Replace("{Name}", _name);
+                        _message = _message.Replace("{X}", x.ToString());
+                        _message = _message.Replace("{Y}", y.ToString());
+                        _message = _message.Replace("{Z}", z.ToString());
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     }
                     _result1.Dispose();
                 }
@@ -77,10 +93,9 @@ namespace ServerTools
                 string _phrase585;
                 if (!Phrases.Dict.TryGetValue(585, out _phrase585))
                 {
-                    _phrase585 = "{PlayerName} you have no waypoints saved to list.";
+                    _phrase585 = "you have no waypoints saved to list.";
                 }
-                _phrase585 = _phrase585.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase585), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase585 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
             _result.Dispose();
         }
@@ -131,12 +146,11 @@ namespace ServerTools
                                         string _phrase575;
                                         if (!Phrases.Dict.TryGetValue(575, out _phrase575))
                                         {
-                                            _phrase575 = "{PlayerName} you can only use waypoints once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                            _phrase575 = "you can only use waypoints once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                         }
-                                        _phrase575 = _phrase575.Replace("{PlayerName}", _cInfo.playerName);
                                         _phrase575 = _phrase575.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                         _phrase575 = _phrase575.Replace("{TimeRemaining}", _timeleft.ToString());
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase575), Config.Server_Response_Name, false, "ServerTools", false));
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase575 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                     }
                                 }
                             }
@@ -153,12 +167,11 @@ namespace ServerTools
                                 string _phrase575;
                                 if (!Phrases.Dict.TryGetValue(575, out _phrase575))
                                 {
-                                    _phrase575 = "{PlayerName} you can only use waypoints once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                    _phrase575 = "you can only use waypoints once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                 }
-                                _phrase575 = _phrase575.Replace("{PlayerName}", _cInfo.playerName);
                                 _phrase575 = _phrase575.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                                 _phrase575 = _phrase575.Replace("{TimeRemaining}", _timeleft.ToString());
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase575), Config.Server_Response_Name, false, "ServerTools", false));
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase575 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                             }
                         }
                     }
@@ -166,7 +179,7 @@ namespace ServerTools
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, you can not use waypoint commands while signed up for or in an event.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", you can not use waypoint commands while signed up for or in an event.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
 
@@ -191,10 +204,9 @@ namespace ServerTools
                 string _phrase576;
                 if (!Phrases.Dict.TryGetValue(576, out _phrase576))
                 {
-                    _phrase576 = "{PlayerName} you can only use a waypoint that is outside of a claimed space.";
+                    _phrase576 = "you can only use a waypoint that is outside of a claimed space.";
                 }
-                _phrase576 = _phrase576.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase576), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase576 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
 
@@ -210,11 +222,10 @@ namespace ServerTools
                 string _phrase814;
                 if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    _phrase814 = "you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
-                _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
 
@@ -245,28 +256,26 @@ namespace ServerTools
                 int.TryParse(_cordsplit[1], out y);
                 int.TryParse(_cordsplit[2], out z);
                 Players.NoFlight.Add(_cInfo.entityId);
-                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 _sql = string.Format("UPDATE Players SET lastWaypoint = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                 SQL.FastQuery(_sql);
                 string _phrase577;
                 if (!Phrases.Dict.TryGetValue(577, out _phrase577))
                 {
-                    _phrase577 = "{PlayerName}, traveling to waypoint {Waypoint}.";
+                    _phrase577 = "traveling to waypoint {Waypoint}.";
                 }
-                _phrase577 = _phrase577.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase577 = _phrase577.Replace("{Waypoint}", _waypoint);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase577), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase577 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
             else
             {
                 string _phrase578;
                 if (!Phrases.Dict.TryGetValue(578, out _phrase578))
                 {
-                    _phrase578 = "{PlayerName}, you have not saved this waypoint.";
+                    _phrase578 = "you have not saved this waypoint.";
                 }
-                _phrase578 = _phrase578.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase578), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase578 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
             _result.Dispose();
         }
@@ -294,15 +303,14 @@ namespace ServerTools
                     string _phrase586;
                     if (!Phrases.Dict.TryGetValue(586, out _phrase586))
                     {
-                        _phrase586 = "{PlayerName} you can only save a waypoint that is outside of a claimed space.";
+                        _phrase586 = "you can only save a waypoint that is outside of a claimed space.";
                     }
-                    _phrase586 = _phrase586.Replace("{PlayerName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase586), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase586 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, you can not use waypoint commands while signed up for or in an event.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", you can not use waypoint commands while signed up for or in an event.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
 
@@ -329,18 +337,22 @@ namespace ServerTools
                             _waypoint = SQL.EscapeString(_waypoint);
                             _sql = string.Format("INSERT INTO Waypoints (steamid, wayPointName, position) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _waypoint, _wposition);
                             SQL.FastQuery(_sql);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, saved waypoint name as {2} to {3} {4} {5}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _waypoint, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
+                            string _message = "saved waypoint name as {Name} to {X} {Y} {Z}.";
+                            _message = _message.Replace("{Name}", _waypoint);
+                            _message = _message.Replace("{X}", x.ToString());
+                            _message = _message.Replace("{Y}", y.ToString());
+                            _message = _message.Replace("{Z}", z.ToString());
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                         }
                         else
                         {
                             string _phrase581;
                             if (!Phrases.Dict.TryGetValue(581, out _phrase581))
                             {
-                                _phrase581 = "{PlayerName}, You have a maximum {DonatorCount} waypoints.";
+                                _phrase581 = "you have a maximum {Count} waypoints.";
                             }
-                            _phrase581 = _phrase581.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase581 = _phrase581.Replace("{DonatorCount}", Donator_Max_Waypoints.ToString());
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase581), Config.Server_Response_Name, false, "ServerTools", false));
+                            _phrase581 = _phrase581.Replace("{Count}", Donator_Max_Waypoints.ToString());
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase581 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                         }
                     }
                 }
@@ -357,18 +369,22 @@ namespace ServerTools
                         _waypoint = SQL.EscapeString(_waypoint);
                         _sql = string.Format("INSERT INTO Waypoints (steamid, wayPointName, position) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _waypoint, _wposition);
                         SQL.FastQuery(_sql);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, saved waypoint name as {2} to {3} {4} {5}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _waypoint, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
+                        string _message = "saved waypoint name as {Name} to {X} {Y} {Z}.";
+                        _message = _message.Replace("{Name}", _waypoint);
+                        _message = _message.Replace("{X}", x.ToString());
+                        _message = _message.Replace("{Y}", y.ToString());
+                        _message = _message.Replace("{Z}", z.ToString());
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     }
                     else
                     {
                         string _phrase582;
                         if (!Phrases.Dict.TryGetValue(582, out _phrase582))
                         {
-                            _phrase582 = "{PlayerName}, You have a maximum {NormalCount} waypoints.";
+                            _phrase582 = "you have a maximum {Count} waypoints.";
                         }
-                        _phrase582 = _phrase582.Replace("{PlayerName}", _cInfo.playerName);
-                        _phrase582 = _phrase582.Replace("{NormalCount}", Max_Waypoints.ToString());
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase582), Config.Server_Response_Name, false, "ServerTools", false));
+                        _phrase582 = _phrase582.Replace("{Count}", Max_Waypoints.ToString());
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase582 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     }
                 }
             }
@@ -391,18 +407,22 @@ namespace ServerTools
                             _waypoint = SQL.EscapeString(_waypoint);
                             _sql = string.Format("INSERT INTO Waypoints (steamid, wayPointName, position) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _waypoint, _wposition);
                             SQL.FastQuery(_sql);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, saved waypoint name as {2} to {3} {4} {5}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _waypoint, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
+                            string _message = "saved waypoint name as {Name} to {X} {Y} {Z}.";
+                            _message = _message.Replace("{Name}", _waypoint);
+                            _message = _message.Replace("{X}", x.ToString());
+                            _message = _message.Replace("{Y}", y.ToString());
+                            _message = _message.Replace("{Z}", z.ToString());
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                         }
                         else
                         {
                             string _phrase581;
                             if (!Phrases.Dict.TryGetValue(581, out _phrase581))
                             {
-                                _phrase581 = "{PlayerName}, You have a maximum {DonatorCount} waypoints.";
+                                _phrase581 = "you have a maximum {Count} waypoints.";
                             }
-                            _phrase581 = _phrase581.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase581 = _phrase581.Replace("{DonatorCount}", Donator_Max_Waypoints.ToString());
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase581), Config.Server_Response_Name, false, "ServerTools", false));
+                            _phrase581 = _phrase581.Replace("{Count}", Donator_Max_Waypoints.ToString());
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase581 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                         }
                     }
                     else
@@ -410,11 +430,10 @@ namespace ServerTools
                         string _phrase582;
                         if (!Phrases.Dict.TryGetValue(582, out _phrase582))
                         {
-                            _phrase582 = "{PlayerName}, You have a maximum {NormalCount} waypoints.";
+                            _phrase582 = "you have a maximum {Count} waypoints.";
                         }
-                        _phrase582 = _phrase582.Replace("{PlayerName}", _cInfo.playerName);
-                        _phrase582 = _phrase582.Replace("{NormalCount}", Max_Waypoints.ToString());
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase582), Config.Server_Response_Name, false, "ServerTools", false));
+                        _phrase582 = _phrase582.Replace("{Count}", Max_Waypoints.ToString());
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase582 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     }
                 }
                 else
@@ -430,18 +449,22 @@ namespace ServerTools
                         _waypoint = SQL.EscapeString(_waypoint);
                         _sql = string.Format("INSERT INTO Waypoints (steamid, wayPointName, position) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _waypoint, _wposition);
                         SQL.FastQuery(_sql);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, saved waypoint name as {2} to {3} {4} {5}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _waypoint, x, y, z), Config.Server_Response_Name, false, "ServerTools", false));
+                        string _message = "saved waypoint name as {Name} to {X} {Y} {Z}.";
+                        _message = _message.Replace("{Name}", _waypoint);
+                        _message = _message.Replace("{X}", x.ToString());
+                        _message = _message.Replace("{Y}", y.ToString());
+                        _message = _message.Replace("{Z}", z.ToString());
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     }
                     else
                     {
                         string _phrase582;
                         if (!Phrases.Dict.TryGetValue(582, out _phrase582))
                         {
-                            _phrase582 = "{PlayerName}, You have a maximum {NormalCount} waypoints.";
+                            _phrase582 = "you have a maximum {Count} waypoints.";
                         }
-                        _phrase582 = _phrase582.Replace("{PlayerName}", _cInfo.playerName);
-                        _phrase582 = _phrase582.Replace("{NormalCount}", Max_Waypoints.ToString());
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase582), Config.Server_Response_Name, false, "ServerTools", false));
+                        _phrase582 = _phrase582.Replace("{Count}", Max_Waypoints.ToString());
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase582 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     }
                 }
             }
@@ -459,21 +482,20 @@ namespace ServerTools
                 string _phrase583;
                 if (!Phrases.Dict.TryGetValue(583, out _phrase583))
                 {
-                    _phrase583 = "{PlayerName}, waypoint {Waypoint} has been deleted.";
+                    _phrase583 = "waypoint {Name} has been deleted.";
                 }
-                _phrase583 = _phrase583.Replace("{PlayerName}", _cInfo.playerName);
-                _phrase583 = _phrase583.Replace("{Waypoint}", _waypoint);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase583), Config.Server_Response_Name, false, "ServerTools", false));
+                _phrase583 = _phrase583.Replace("{Name}", _waypoint);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase583 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
             else
             {
                 string _phrase578;
                 if (!Phrases.Dict.TryGetValue(578, out _phrase578))
                 {
-                    _phrase578 = "{PlayerName}, you have not saved this waypoint.";
+                    _phrase578 = "you have not saved this waypoint.";
                 }
                 _phrase578 = _phrase578.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase578), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase578 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
             _result.Dispose(); 
         }
@@ -524,12 +546,11 @@ namespace ServerTools
                                         string _phrase575;
                                         if (!Phrases.Dict.TryGetValue(575, out _phrase575))
                                         {
-                                            _phrase575 = "{PlayerName} you can only use waypoints once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                            _phrase575 = "you can only use waypoints once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                         }
-                                        _phrase575 = _phrase575.Replace("{PlayerName}", _cInfo.playerName);
                                         _phrase575 = _phrase575.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                         _phrase575 = _phrase575.Replace("{TimeRemaining}", _timeleft.ToString());
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase575), Config.Server_Response_Name, false, "ServerTools", false));
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase575 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                     }
                                 }
                             }
@@ -546,12 +567,11 @@ namespace ServerTools
                                 string _phrase575;
                                 if (!Phrases.Dict.TryGetValue(575, out _phrase575))
                                 {
-                                    _phrase575 = "{PlayerName} you can only use waypoints once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                    _phrase575 = "you can only use waypoints once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                 }
-                                _phrase575 = _phrase575.Replace("{PlayerName}", _cInfo.playerName);
                                 _phrase575 = _phrase575.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                                 _phrase575 = _phrase575.Replace("{TimeRemaining}", _timeleft.ToString());
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase575), Config.Server_Response_Name, false, "ServerTools", false));
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase575 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                             }
                         }
                     }
@@ -559,7 +579,7 @@ namespace ServerTools
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}, you can not use waypoint commands while signed up for or in an event.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", you can not use waypoint commands while signed up for or in an event.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
 
@@ -584,10 +604,9 @@ namespace ServerTools
                 string _phrase576;
                 if (!Phrases.Dict.TryGetValue(576, out _phrase576))
                 {
-                    _phrase576 = "{PlayerName} you can only use a waypoint that is outside of a claimed space.";
+                    _phrase576 = "you can only use a waypoint that is outside of a claimed space.";
                 }
-                _phrase576 = _phrase576.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase576), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase576 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
 
@@ -603,11 +622,10 @@ namespace ServerTools
                 string _phrase814;
                 if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    _phrase814 = "{PlayerName} you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    _phrase814 = "you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
-                _phrase814 = _phrase814.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase814), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
 
@@ -639,28 +657,26 @@ namespace ServerTools
                 int.TryParse(_cordsplit[1], out y);
                 int.TryParse(_cordsplit[2], out z);
                 Players.NoFlight.Add(_cInfo.entityId);
-                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 _sql = string.Format("UPDATE Players SET lastWaypoint = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                 SQL.FastQuery(_sql);
                 string _phrase577;
                 if (!Phrases.Dict.TryGetValue(577, out _phrase577))
                 {
-                    _phrase577 = "{PlayerName}, traveling to waypoint {Waypoint}.";
+                    _phrase577 = "traveling to waypoint {Waypoint}.";
                 }
-                _phrase577 = _phrase577.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase577 = _phrase577.Replace("{Waypoint}", _waypoint);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase577), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase577 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
             else
             {
                 string _phrase578;
                 if (!Phrases.Dict.TryGetValue(578, out _phrase578))
                 {
-                    _phrase578 = "{PlayerName}, you have not saved this waypoint.";
+                    _phrase578 = "you have not saved this waypoint.";
                 }
-                _phrase578 = _phrase578.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase578), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase578 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
             _result.Dispose();
         }
@@ -672,7 +688,7 @@ namespace ServerTools
             int z = (int)_position.z;
             World world = GameManager.Instance.World;
             EntityPlayer _player = world.Players.dict[_cInfo.entityId];
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
             for (int i = 0; i < _cInfoList.Count; i++)
             {
                 ClientInfo _cInfo2 = _cInfoList[i];
@@ -683,8 +699,12 @@ namespace ServerTools
                     {
                         if ((x - (int)_player2.position.x) * (x - (int)_player2.position.x) + (z - (int)_player2.position.z) * (z - (int)_player2.position.z) <= 10 * 10)
                         {
-                            _cInfo2.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your friend {2} has invited you to their saved waypoint. Type /go to accept the request.[-]", Config.Chat_Response_Color, _cInfo2.playerName, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Invited your friend {1} to your saved waypoint.[-]", Config.Chat_Response_Color, _cInfo2.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                            string _message = "your friend {PlayerName} has invited you to their saved waypoint. Type /go to accept the request.";
+                            _message = _message.Replace("{PlayerName}", _cInfo.playerName);
+                            ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                            _message = "invited your friend {PlayerName} to your saved waypoint.";
+                            _message = _message.Replace("{PlayerName}", _cInfo.playerName);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                             if (Invite.ContainsKey(_cInfo2.entityId))
                             {
                                 Invite.Remove(_cInfo2.entityId);
@@ -717,17 +737,17 @@ namespace ServerTools
                         int.TryParse(_cords[1], out y);
                         int.TryParse(_cords[2], out z);
                         Players.NoFlight.Add(_cInfo.entityId);
-                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), false));
+                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                         Invite.Remove(_cInfo.entityId);
                         FriendPosition.Remove(_cInfo.entityId);
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} sending you to your friend's waypoint.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", sending you to your friend's waypoint.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     }
                 }
                 else
                 {
                     Invite.Remove(_cInfo.entityId);
                     FriendPosition.Remove(_cInfo.entityId);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have run out of time to accept your friend's waypoint invitation.[-]", Config.Chat_Response_Color, _cInfo.playerName), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", you have run out of time to accept your friend's waypoint invitation.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
         }

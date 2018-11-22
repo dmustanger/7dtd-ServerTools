@@ -13,7 +13,7 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("ServerTools - How to setup ServerTools");
-                sw.WriteLine(string.Format("This was drafted for version {0}", Config.version));
+                sw.WriteLine(string.Format("This was drafted for version {0}", LoadConfig.version));
                 sw.WriteLine();
                 sw.WriteLine("ServerTools was coded and tested under a Windows operating system. It should operate on other major O.S. but if you find bugs, report them to");
                 sw.WriteLine("https://github.com/dmustanger/7dtd-ServerTools/issues");
@@ -474,7 +474,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("<Tool Name=\"Jail_Commands\" Enable=\"False\" Jail_Size=\"4\" Jail_Position=\" - 14, 106, -2\" Jail_Shock=\"false\" />");
+                sw.WriteLine("<Tool Name=\"Jail\" Enable=\"False\" Jail_Size=\"4\" Jail_Position=\" - 14, 106, -2\" Jail_Shock=\"false\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set a numeric value for Jail_Size");

@@ -24,22 +24,21 @@ namespace ServerTools
             }
             string[] _strings = _message.Split(new char[] { ' ' }, 2);
             _strings[1] = _strings[1].TrimStart();
-            ClientInfo _targetInfo = ConsoleHelper.ParseParamIdOrName(_strings[0]);
-            if (_targetInfo == null)
+            ClientInfo _cInfo1 = ConsoleHelper.ParseParamIdOrName(_strings[0]);
+            if (_cInfo1 == null)
             {
                 string _phrase14;
                 if (!Phrases.Dict.TryGetValue(14, out _phrase14))
                 {
-                    _phrase14 = "{SenderName} player {TargetName} was not found.";
+                    _phrase14 = "player {TargetName} was not found.";
                 }
-                _phrase14 = _phrase14.Replace("{SenderName}", _cInfo.playerName);
                 _phrase14 = _phrase14.Replace("{TargetName}", _strings[0]);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase14, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase14 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
             else
             {
-                _targetInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("(PM) {0}", _strings[1]), _cInfo.playerName, false, "", false));
-                string _sql = string.Format("UPDATE Players SET lastwhisper = '{0}' WHERE steamid = '{1}'", _cInfo.playerId, _targetInfo.playerId);
+                ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _strings[1] + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                string _sql = string.Format("UPDATE Players SET lastwhisper = '{0}' WHERE steamid = '{1}'", _cInfo.playerId, _cInfo1.playerId);
                 SQL.FastQuery(_sql);
             }
         }
@@ -71,28 +70,26 @@ namespace ServerTools
                 string _phrase15;
                 if (!Phrases.Dict.TryGetValue(15, out _phrase15))
                 {
-                    _phrase15 = "{SenderName} no one has pm'd you.";
+                    _phrase15 = "no one has pm'd you.";
                 }
-                _phrase15 = _phrase15.Replace("{SenderName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase15, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase15 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
             else
             {
 
-                ClientInfo _cInfo1 = ConnectionManager.Instance.GetClientInfoForPlayerId(_lastwhisper);
+                ClientInfo _cInfo1 = ConnectionManager.Instance.Clients.ForPlayerId(_lastwhisper);
                 if (_cInfo1 == null)
                 {
                     string _phrase16;
                     if (!Phrases.Dict.TryGetValue(16, out _phrase16))
                     {
-                        _phrase16 = "{SenderName} the player is not online.";
+                        _phrase16 = "the player is not online.";
                     }
-                    _phrase16 = _phrase16.Replace("{SenderName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase16, Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase16 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
                 else
                 {
-                    _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("(PM) {0}", _message), _cInfo.playerName, false, "", false));
+                    ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     _sql = string.Format("UPDATE Players SET lastwhisper = '{0}' WHERE steamid = '{1}'", _cInfo.playerId, _cInfo1.playerId);
                     SQL.FastQuery(_sql);
                 }

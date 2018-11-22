@@ -101,8 +101,8 @@ namespace ServerTools
                     world.SpawnEntityInWorld(entityItem);
                     _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                     world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                    SdtdConsole.Instance.Output(string.Format("Spawned starting item {0} for {1}.", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
-                    Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
+                    SdtdConsole.Instance.Output(string.Format("Spawned starting item {0} for {1}.", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name, _cInfo.playerName));
+                    Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name, _cInfo.playerName));
                 }
                 string _phrase806;
                 if (!Phrases.Dict.TryGetValue(806, out _phrase806))
@@ -110,7 +110,7 @@ namespace ServerTools
                     _phrase806 = "{PlayerName} have received the starting items. Check your inventory. If full, check the ground.";
                 }
                 _phrase806 = _phrase806.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase806), Config.Server_Response_Name, false, "ServerTools", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase806), LoadConfig.Server_Response_Name, false, "ServerTools", false));
             }
         }
     }

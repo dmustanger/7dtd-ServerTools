@@ -25,22 +25,22 @@ namespace ServerTools
             {
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase306), Config.Server_Response_Name, false, "", false);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase306 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase306), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase306 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
             else
             {
                 if (_announce)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase301), Config.Server_Response_Name, false, "", false);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase301 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase301), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase301 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
         }
@@ -63,11 +63,11 @@ namespace ServerTools
                 _phrase301 = _phrase301.Replace("{DaysUntilHorde}", _daysUntilHorde.ToString());
                 if (_daysUntilHorde == Days_Until_Horde)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase306, Config.Chat_Response_Color), Config.Server_Response_Name, false, "", false);
+                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase306 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
                 }
                 else
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{1}{0}[-]", _phrase301, Config.Chat_Response_Color), Config.Server_Response_Name, false, "", false);
+                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase301 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
                 }
             }
         }

@@ -30,7 +30,7 @@ namespace ServerTools
                 {
                     if (_params.Count == 2)
                     {
-                        if (ReservedSlots.Dict.ContainsKey(_params[1]))
+                        if (!ReservedSlots.Dict.ContainsKey(_params[1]))
                         {
                             SdtdConsole.Instance.Output(string.Format("Can not remove Id from the reserved slots list. {0} is not in the list.", _params[1]));
                         }
@@ -39,7 +39,7 @@ namespace ServerTools
                             ReservedSlots.Dict.Remove(_params[1]);
                             SdtdConsole.Instance.Output(string.Format("Remove Id {0} from the reserved slots list.", _params[1]));
                         }
-                        if (ChatColorPrefix.dict.ContainsKey(_params[1]))
+                        if (!ChatColorPrefix.dict.ContainsKey(_params[1]))
                         {
                             SdtdConsole.Instance.Output(string.Format("Can not remove Id from the chat color prefix list. {0} is not in the list.", _params[1]));
                         }

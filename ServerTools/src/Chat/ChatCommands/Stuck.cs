@@ -52,18 +52,17 @@ namespace ServerTools
                                     string _phrase920;
                                     if (!Phrases.Dict.TryGetValue(920, out _phrase920))
                                     {
-                                        _phrase920 = "{PlayerName} you can only use /stuck once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                        _phrase920 = "you can only use /stuck once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                     }
-                                    _phrase920 = _phrase920.Replace("{PlayerName}", _playerName);
                                     _phrase920 = _phrase920.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                     _phrase920 = _phrase920.Replace("{TimeRemaining}", _timeleft.ToString());
                                     if (_announce)
                                     {
-                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase920), Config.Server_Response_Name, false, "", false);
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase920 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                     }
                                     else
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase920), Config.Server_Response_Name, false, "ServerTools", false));
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase920 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                     }
                                 }
                             }
@@ -81,18 +80,17 @@ namespace ServerTools
                             string _phrase920;
                             if (!Phrases.Dict.TryGetValue(920, out _phrase920))
                             {
-                                _phrase920 = "{PlayerName} you can only use /stuck once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                _phrase920 = "you can only use /stuck once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
-                            _phrase920 = _phrase920.Replace("{PlayerName}", _playerName);
                             _phrase920 = _phrase920.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                             _phrase920 = _phrase920.Replace("{TimeRemaining}", _timeleft.ToString());
                             if (_announce)
                             {
-                                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase920), Config.Server_Response_Name, false, "", false);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase920 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                             }
                             else
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase920), Config.Server_Response_Name, false, "ServerTools", false));
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase920 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                             }
                         }
                     }
@@ -123,12 +121,9 @@ namespace ServerTools
                     string _phrase923;
                     if (!Phrases.Dict.TryGetValue(923, out _phrase923))
                     {
-                        _phrase923 = "{PlayerName} you do not seem to be stuck.";
+                        _phrase923 = "you do not seem to be stuck.";
                     }
-                    _phrase923 = _phrase923.Replace("{PlayerName}", _cInfo.playerName);
-                    {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase923), Config.Server_Response_Name, false, "ServerTools", false));
-                    }
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase923 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
             else
@@ -136,12 +131,9 @@ namespace ServerTools
                 string _phrase921;
                 if (!Phrases.Dict.TryGetValue(921, out _phrase921))
                 {
-                    _phrase921 = "{PlayerName} you are outside of your claimed space or a friends. Command is unavailable.";
+                    _phrase921 = "you are outside of your claimed space or a friends. Command is unavailable.";
                 }
-                _phrase921 = _phrase921.Replace("{PlayerName}", _cInfo.playerName);
-                {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase921), Config.Server_Response_Name, false, "ServerTools", false));
-                }
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase921 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
 
@@ -171,16 +163,13 @@ namespace ServerTools
         public static void Exec(ClientInfo _cInfo, EntityPlayer _player)
         {
             Players.NoFlight.Add(_cInfo.entityId);
-            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3((int)_player.position.x, -1, (int)_player.position.z), false));
+            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3((int)_player.position.x, -1, (int)_player.position.z), null, false));
             string _phrase922;
             if (!Phrases.Dict.TryGetValue(922, out _phrase922))
             {
-                _phrase922 = "{PlayerName} sending you to the world surface. If you are still stuck, contact an administrator.";
+                _phrase922 = "sending you to the world surface. If you are still stuck, contact an administrator.";
             }
-            _phrase922 = _phrase922.Replace("{PlayerName}", _cInfo.playerName);
-            {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase922), Config.Server_Response_Name, false, "ServerTools", false));
-            }
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase922 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             string _sql = string.Format("UPDATE Players SET lastStuck = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
             SQL.FastQuery(_sql);
         }

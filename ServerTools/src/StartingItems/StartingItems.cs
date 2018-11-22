@@ -94,10 +94,10 @@ namespace ServerTools
                         }
                         string _item = _line.GetAttribute("item");
 
-                        ItemValue _itemValue = ItemClass.GetItem(_item, true);
-                        if (_itemValue.type == ItemValue.None.type)
+                        ItemValue _itemValue = ItemClass.GetItem(_item, false);
+                        if (_itemValue == null)
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Starting item not found: {0}", _item));
+                            Log.Out(string.Format("[SERVERTOOLS] Starting item entry skipped. Item not found: {0}", _item));
                             continue;
                         }
                         if (!startItemList.ContainsKey(_item))
@@ -132,11 +132,10 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine("        <item item=\"stoneAxe\" count=\"1\" quality=\"25\" />");
-                    sw.WriteLine("        <item item=\"torch\" count=\"1\" quality=\"1\" />");
-                    sw.WriteLine("        <item item=\"canChili\" count=\"1\" quality=\"1\" />");
-                    sw.WriteLine("        <item item=\"bottledWater\" count=\"1\" quality=\"1\" />");
-                    sw.WriteLine("        <item item=\"keystoneBlock\" count=\"1\" quality=\"1\" />");
+                    sw.WriteLine("        <item item=\"meleeToolStoneAxe\" count=\"1\" quality=\"25\" />");
+                    sw.WriteLine("        <item item=\"meleeToolTorch\" count=\"1\" quality=\"1\" />");
+                    sw.WriteLine("        <item item=\"foodCanChili\" count=\"1\" quality=\"1\" />");
+                    sw.WriteLine("        <item item=\"drinkJarBoiledWater\" count=\"1\" quality=\"1\" />");
                 }
                 sw.WriteLine("    </Items>");
                 sw.WriteLine("</StartingItems>");
@@ -225,7 +224,7 @@ namespace ServerTools
                 world.SpawnEntityInWorld(entityItem);
                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", itemValue.ItemClass.localizedName ?? itemValue.ItemClass.Name, _cInfo.playerName));
+                Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name, _cInfo.playerName));
             }
             string _sql = string.Format("UPDATE Players SET startingItems = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
             SQL.FastQuery(_sql);

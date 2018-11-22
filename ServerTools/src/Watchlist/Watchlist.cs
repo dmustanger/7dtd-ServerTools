@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 
 namespace ServerTools
@@ -129,7 +130,7 @@ namespace ServerTools
 
         public static void CheckWatchlist()
         {
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
             for (int i = 0; i < _cInfoList.Count; i++)
             {
                 ClientInfo _cInfo = _cInfoList[i];
@@ -150,7 +151,7 @@ namespace ServerTools
                             {
                                 _phrase350 = _phrase350.Replace("{PlayerName}", _cInfo.playerName);
                                 _phrase350 = _phrase350.Replace("{Reason}", _reason);
-                                _cInfo1.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("[FF8000]{0}[-]", _phrase350), Config.Server_Response_Name, false, "ServerTools", false));
+                                ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _phrase350 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper);
                             }
                         }
                     }

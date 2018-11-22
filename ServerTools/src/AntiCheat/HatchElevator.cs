@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ServerTools
 {
@@ -34,7 +35,7 @@ namespace ServerTools
         {           
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
                 for (int i = 0; i < _cInfoList.Count; i++)
                 {
                     ClientInfo _cInfo = _cInfoList[i];
@@ -63,7 +64,7 @@ namespace ServerTools
                             {
                                 BlockValue Block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
                                 if (Block.Block.blockID != 788 || Block.Block.blockID != 389 || Block.Block.blockID != 949)
-                                {
+                                {List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
                                     if (Block.Block.blockID == 1251 || Block.Block.blockID == 1252 || Block.Block.blockID == 1253 ||
                                         Block.Block.blockID == 1463 || Block.Block.blockID == 1464 || Block.Block.blockID == 1465 ||
                                         Block.Block.blockID == 1469 || Block.Block.blockID == 1470 || Block.Block.blockID == 1471)
@@ -84,9 +85,9 @@ namespace ServerTools
                                                     string _phrase720;
                                                     if (!Phrases.Dict.TryGetValue(705, out _phrase720))
                                                     {
-                                                        _phrase720 = "You are stunned and have broken your leg while smashing yourself through hatches. Ouch!";
+                                                        _phrase720 = "you are stunned and have broken your leg while smashing yourself through hatches. Ouch!";
                                                     }
-                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase720), Config.Server_Response_Name, false, "ServerTools", false));
+                                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase720 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                                     string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
                                                     string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
                                                     using (StreamWriter sw = new StreamWriter(_filepath, true))

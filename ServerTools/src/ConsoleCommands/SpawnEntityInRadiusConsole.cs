@@ -108,7 +108,7 @@ namespace ServerTools
                     radius = 0;
                 }
         
-                Dictionary<int, EntityClass>.KeyCollection entityTypesCollection = EntityClass.list.Keys;
+                Dictionary<int, EntityClass>.KeyCollection entityTypesCollection = EntityClass.list.Dict.Keys;
                 for (int n = (paramType + 1); n < _params.Count; n++)
                 {
                     int _id = 0;

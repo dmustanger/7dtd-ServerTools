@@ -1,6 +1,7 @@
 ﻿
 
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -26,10 +27,9 @@ namespace ServerTools
                             string _phrase820;
                             if (!Phrases.Dict.TryGetValue(820, out _phrase820))
                             {
-                                _phrase820 = "{PlayerName} you are too close to a zombie. Command unavailable.";
+                                _phrase820 = "you are too close to a zombie. Command unavailable.";
                             }
-                            _phrase820 = _phrase820.Replace("{PlayerName}", _cInfo.playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase820), Config.Server_Response_Name, false, "ServerTools", false));
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase820 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                             return true;
                         }
                     }
@@ -40,7 +40,7 @@ namespace ServerTools
 
         public static bool PCheck(ClientInfo _cInfo, EntityPlayer _player)
         {
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
             for (int i = 0; i < _cInfoList.Count; i++)
             {
                 ClientInfo _cInfo2 = _cInfoList[i];
@@ -57,10 +57,9 @@ namespace ServerTools
                                 string _phrase819;
                                 if (!Phrases.Dict.TryGetValue(819, out _phrase819))
                                 {
-                                    _phrase819 = "{PlayerName} you are too close to a player that is not a friend. Command unavailable.";
+                                    _phrase819 = "you are too close to a player that is not a friend. Command unavailable.";
                                 }
-                                _phrase819 = _phrase819.Replace("{PlayerName}", _cInfo.playerName);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase819), Config.Server_Response_Name, false, "ServerTools", false));
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase819 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                 return true;
                             }
                         }

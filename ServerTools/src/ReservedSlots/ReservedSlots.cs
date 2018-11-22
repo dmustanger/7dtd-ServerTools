@@ -208,7 +208,7 @@ namespace ServerTools
             for (int i = 0; i < _sessionList.Count; i++)
             {
                 string _player = _sessionList[i];
-                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForPlayerId(_player);
+                ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_player);
                 if (_cInfo != null)
                 {
                     AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);

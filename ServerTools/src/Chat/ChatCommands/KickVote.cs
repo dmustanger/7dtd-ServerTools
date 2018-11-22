@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ServerTools
 {
@@ -19,7 +20,7 @@ namespace ServerTools
                     int _entityId;
                     if (int.TryParse(_player, out _entityId))
                     {
-                        ClientInfo _playerInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_entityId);
+                        ClientInfo _playerInfo = ConnectionManager.Instance.Clients.ForEntityId(_entityId);
                         if (_playerInfo != null)
                         {
                             _playerKick = _playerInfo;
@@ -29,13 +30,13 @@ namespace ServerTools
                                 _phrase955 = "A vote to kick {PlayerName} has begun and will close in 30 seconds.";
                             }
                             _phrase955 = _phrase955.Replace("{PlayerName}", _playerInfo.playerName);
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase955), Config.Server_Response_Name, false, "", false);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase955 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                             string _phrase776;
                             if (!Phrases.Dict.TryGetValue(776, out _phrase776))
                             {
                                 _phrase776 = "Type /yes to cast your vote.";
                             }
-                            GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase776), Config.Server_Response_Name, false, "", false);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase776 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                             VoteOpen = true;
                         }
                         else
@@ -43,9 +44,9 @@ namespace ServerTools
                             string _phrase956;
                             if (!Phrases.Dict.TryGetValue(956, out _phrase956))
                             {
-                                _phrase956 = "This player id was not found.";
+                                _phrase956 = "this player id was not found.";
                             }
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase956), Config.Server_Response_Name, false, "ServerTools", false));
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase956 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                         }
                     }
                 }
@@ -54,9 +55,9 @@ namespace ServerTools
                     string _phrase957;
                     if (!Phrases.Dict.TryGetValue(957, out _phrase957))
                     {
-                        _phrase957 = "Not enough players are online to start a vote to kick.";
+                        _phrase957 = "not enough players are online to start a vote to kick.";
                     }
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase957), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase957 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
         }
@@ -73,7 +74,7 @@ namespace ServerTools
 
         public static void List(ClientInfo _cInfo)
         {
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
             for (int i = 0; i < _cInfoList.Count; i++)
             {
                 ClientInfo _cInfo2 = _cInfoList[i];
@@ -86,15 +87,15 @@ namespace ServerTools
                     }
                     _phrase958 = _phrase958.Replace("{PlayerName}", _cInfo2.playerName);
                     _phrase958 = _phrase958.Replace("{Id}", _cInfo2.entityId.ToString());
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase958), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase958 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
-                string _phrase959;
-                if (!Phrases.Dict.TryGetValue(959, out _phrase959))
-                {
-                    _phrase959 = "Type /kickvote # to start a vote to kick that player.";
-                }
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase959), Config.Server_Response_Name, false, "ServerTools", false));
             }
+            string _phrase959;
+            if (!Phrases.Dict.TryGetValue(959, out _phrase959))
+            {
+                _phrase959 = "type /kickvote # to start a vote to kick that player.";
+            }
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase959 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
         }
     }
 }

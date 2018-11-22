@@ -3,12 +3,12 @@ using System.Xml;
 
 namespace ServerTools
 {
-    public class Config
+    public class LoadConfig
     {
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        public const double version = 11.8;
+        public const double version = 12.0;
         public static bool UpdateConfigs = false;
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
@@ -579,14 +579,14 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bounties entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Bounty"))
+                                if (!_line.HasAttribute("Minimum_Bounty"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bounties entry because of missing 'Bounty' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bounties entry because of missing 'Minimum_Bounty' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Bounty"), out Bounties.Bounty))
+                                if (!int.TryParse(_line.GetAttribute("Minimum_Bounty"), out Bounties.Minimum_Bounty))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bounties entry because of invalid (non-numeric) value for 'Bounty' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bounties entry because of invalid (non-numeric) value for 'Minimum_Bounty' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Kill_Streak"))
@@ -604,7 +604,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bounties entry because of missing 'Bonus' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Bonus"), out Players.Bonus))
+                                if (!int.TryParse(_line.GetAttribute("Bonus"), out Bounties.Bonus))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bounties entry because of invalid (non-numeric) value for 'Bonus' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -2866,13 +2866,13 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Bank\" Enable=\"{0}\" Inside_Claim=\"{1}\" Ingame_Coin=\"{2}\" Limit=\"{3}\" />", Bank.IsEnabled, Bank.Inside_Claim, Bank.Ingame_Coin, Bank.Limit));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bike_Return\" Enable=\"{0}\" Inside_Claim=\"{1}\" Delay_Between_Uses=\"{2}\" Command_Cost=\"{3}\" />", BikeReturn.IsEnabled, BikeReturn.Inside_Claim, BikeReturn.Delay_Between_Uses, BikeReturn.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Show_On_Login=\"{1}\" Show_On_Respawn=\"{2}\" Auto_Show=\"{3}\" Auto_Show_Delay=\"{4}\" Days_Until_Horde=\"{5}\" />", Bloodmoon.IsEnabled, Bloodmoon.Show_On_Login, Bloodmoon.Show_On_Respawn, Bloodmoon.Auto_Show, Timers.Auto_Show_Bloodmoon_Delay, Bloodmoon.Days_Until_Horde));
-                sw.WriteLine(string.Format("        <Tool Name=\"Bounties\" Enable=\"{0}\" Bounty=\"{1}\" Kill_Streak=\"{2}\" Bonus=\"{3}\" />", Bounties.IsEnabled, Bounties.Bounty, Bounties.Kill_Streak, Players.Bonus));
+                sw.WriteLine(string.Format("        <Tool Name=\"Bounties\" Enable=\"{0}\" Minimum_Bounty=\"{1}\" Kill_Streak=\"{2}\" Bonus=\"{3}\" />", Bounties.IsEnabled, Bounties.Minimum_Bounty, Bounties.Kill_Streak, Bounties.Bonus));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Color_Prefix\" Enable=\"{0}\" />", ChatColorPrefix.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response\" Server_Response_Name=\"{0}\" Color=\"{1}\" Chat_Command_Private=\"{2}\" Chat_Command_Public=\"{3}\" Mute_Commands=\"{4}\" />", Server_Response_Name, Chat_Response_Color, ChatHook.Command_Private, ChatHook.Command_Public, MutePlayer.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Flood_Protection\" Enable=\"{0}\" />", ChatHook.ChatFlood));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Logger\" Enable=\"{0}\" />", ChatLog.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Clan_Manager\" Enable=\"{0}\" Private_Chat_Color=\"{1}\" />", ClanManager.IsEnabled, ClanManager.Private_Chat_Color));
-                sw.WriteLine(string.Format("        <Tool Name=\"Country_Ban\" Enable=\"{0}\" Countries_Not_Allowed=\"CN,RU\" />", CountryBan.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Country_Ban\" Enable=\"{0}\" Countries_Not_Allowed=\"CN,IL\" />", CountryBan.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Credentials\" Enable=\"{0}\" No_Family_Share=\"{1}\" No_Bad_Id=\"{2}\" No_Internal=\"{3}\" Admin_Level=\"{4}\" />", CredentialCheck.IsEnabled, CredentialCheck.Family_Share, CredentialCheck.Bad_Id, CredentialCheck.No_Internal, CredentialCheck.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Custom_Commands\" Enable=\"{0}\" />", CustomCommands.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Day7\" Enable=\"{0}\" Days_Until_Horde=\"{1}\" />", Day7.IsEnabled, Day7.Days_Until_Horde));

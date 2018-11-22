@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 
 namespace ServerTools
@@ -169,7 +170,7 @@ namespace ServerTools
                 {
                     msgList.RandomizeList();
                     string _message = msgList[0];
-                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
                     for (int i = 0; i < _cInfoList.Count; i++)
                     {
                         ClientInfo _cInfo = _cInfoList[i];
@@ -177,7 +178,7 @@ namespace ServerTools
                         {
                             if (!exemptionList.Contains(_cInfo.playerId))
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                             }
                         }
                     }
@@ -190,7 +191,7 @@ namespace ServerTools
                 else
                 {
                     string _message = msgList[0];
-                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
                     for (int i = 0; i < _cInfoList.Count; i++)
                     {
                         ClientInfo _cInfo = _cInfoList[i];
@@ -198,7 +199,7 @@ namespace ServerTools
                         {
                             if (!exemptionList.Contains(_cInfo.playerId))
                             {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _message), Config.Server_Response_Name, false, "ServerTools", false));
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                             }
                         }
                     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ServerTools
 {
@@ -34,7 +35,7 @@ namespace ServerTools
         {
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
                 for (int i = 0; i < _cInfoList.Count; i++)
                 {
                     ClientInfo _cInfo = _cInfoList[i];
@@ -45,18 +46,11 @@ namespace ServerTools
                         EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                         if (_player.IsSpawned())
                         {
-                            int pointsPer = Progression.SkillPointsPerLevel;
-                            int maxPlayerLevel = Progression.MaxLevel;
                             var p_speedForward = _player.speedForward;
                             var p_Health = _player.Stats.Health.Value;
                             var p_Stamina = _player.Stats.Stamina.Value;
-                            var p_ExpToNextLevel = _player.ExpToNextLevel;
                             var p_jumpStrength = _player.jumpStrength;
-                            var p_Level = _player.Level;
-                            var p_SkillPoints = _player.SkillPoints;
                             var p_height = _player.height;
-                            var maxPts = (p_Level * pointsPer + 42);
-
                             if (p_Health > 250)
                             {
                                 using (StreamWriter sw = new StreamWriter(_filepath, true))
@@ -69,12 +63,13 @@ namespace ServerTools
                                 Log.Warning("Detected player {0} steamId {1} with health @ {2}. 250 is maximum", _cInfo.playerName, _cInfo.playerId, p_Health);
                                 if (Kick_Enabled)
                                 {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player stat health[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+
+                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " was detected and kicked for illegal player stat health" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                     SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat health\"", _cInfo.playerId), (ClientInfo)null);
                                 }
                                 if (Ban_Enabled)
                                 {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and banned for illegal player stat health[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " was detected and banned for illegal player stat health" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat health\"", _cInfo.playerId), (ClientInfo)null);
                                 }
                             }
@@ -90,12 +85,12 @@ namespace ServerTools
                                 Log.Warning("Detected player {0} steamId {1} with stamina @ {2}. 250 is maximum", _cInfo.playerName, _cInfo.playerId, p_Stamina);
                                 if (Kick_Enabled)
                                 {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player stat stamina[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " was detected and kicked for illegal player stat stamina" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                     SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat stamina\"", _cInfo.playerId), (ClientInfo)null);
                                 }
                                 if (Ban_Enabled)
                                 {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player stat stamina[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " was detected and banned for illegal player stat stamina" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat stamina\"", _cInfo.playerId), (ClientInfo)null);
                                 }
                             }
@@ -111,55 +106,13 @@ namespace ServerTools
                                 Log.Warning("Detected player {0} steamId {1} at jump strength {2}. 1.1 is default", _cInfo.playerName, _cInfo.playerId, p_jumpStrength);
                                 if (Kick_Enabled)
                                 {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player jump ability[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " was detected and kicked for illegal player jump ability" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                     SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat jump\"", _cInfo.playerId), (ClientInfo)null);
                                 }
                                 if (Ban_Enabled)
                                 {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player jump ability[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " was detected and banned for illegal player jump ability" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat jump\"", _cInfo.playerId), (ClientInfo)null);
-                                }
-                            }
-                            if (p_Level > maxPlayerLevel)
-                            {                               
-                                using (StreamWriter sw = new StreamWriter(_filepath, true))
-                                {
-                                    sw.WriteLine(string.Format("{0} {1} steamId {2} was detected with an illegal player level value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, maxPlayerLevel));
-                                    sw.WriteLine();
-                                    sw.Flush();
-                                    sw.Close();
-                                }
-                                Log.Warning("Detected player {0} steamId {1} at level {2}. Maximum level set is {3}", _cInfo.playerName, _cInfo.playerId, p_Level, maxPlayerLevel);
-                                if (Kick_Enabled)
-                                {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player stat level[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
-                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat level\"", _cInfo.playerId), (ClientInfo)null);
-                                }
-                                if (Ban_Enabled)
-                                {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player stat level[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
-                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat level\"", _cInfo.playerId), (ClientInfo)null);
-                                }
-                            }
-                            if (p_SkillPoints > maxPts)
-                            {
-                                using (StreamWriter sw = new StreamWriter(_filepath, true))
-                                {
-                                    sw.WriteLine(string.Format("{0} {1} steamId {2} was detected with an illegal skill point value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_SkillPoints));
-                                    sw.WriteLine();
-                                    sw.Flush();
-                                    sw.Close();
-                                }
-                                Log.Warning("Detected player {0} steamId {1} with {2} skill points available, while only level {3}. Player can only have {4} skill points at this level.", _cInfo.playerName, _cInfo.playerId, p_SkillPoints, p_Level, maxPts);
-                                if (Kick_Enabled)
-                                {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player stat skill points available[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
-                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat skill points\"", _cInfo.playerId), (ClientInfo)null);
-                                }
-                                if (Ban_Enabled)
-                                {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player stat skill points available[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
-                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat skill points\"", _cInfo.playerId), (ClientInfo)null);
                                 }
                             }
                             if (p_height > 1.8 || p_height < 1.7)
@@ -174,12 +127,12 @@ namespace ServerTools
                                 Log.Warning("Detected player {0} steamId {1} with player height @ {2}", _cInfo.playerName, _cInfo.playerId, p_height);
                                 if (Kick_Enabled)
                                 {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player height[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " was detected and kicked for illegal player height" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                     SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat height\"", _cInfo.playerId), (ClientInfo)null);
                                 }
                                 if (Ban_Enabled)
                                 {
-                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player height[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " was detected and banned for illegal player height" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat height\"", _cInfo.playerId), (ClientInfo)null);
                                 }
                             }
@@ -197,12 +150,12 @@ namespace ServerTools
                                     Log.Warning("Detected player {0} steamId {1} speed hacking", _cInfo.playerName, _cInfo.playerId);
                                     if (Kick_Enabled)
                                     {
-                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player speed[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                                        ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " was detected and kicked for illegal player speed" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                         SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat speed\"", _cInfo.playerId), (ClientInfo)null);
                                     }
                                     if (Ban_Enabled)
                                     {
-                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("[FF8000]{0} was detected and kicked for illegal player speed[-]", _cInfo.playerName), Config.Server_Response_Name, false, "", false);
+                                        ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " was detected and banned for illegal player speed" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
                                         SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat speed\"", _cInfo.playerId), (ClientInfo)null);
                                     }
                                 }

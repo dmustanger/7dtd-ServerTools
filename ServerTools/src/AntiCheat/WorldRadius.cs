@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -14,7 +15,7 @@ namespace ServerTools
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
                 World world = GameManager.Instance.World;
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.GetClients();
+                List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
                 for (int i = 0; i < _cInfoList.Count; i++)
                 {
                     ClientInfo _cInfo = _cInfoList[i];
@@ -71,15 +72,15 @@ namespace ServerTools
                 {
                     _vec3z = (int)_player.position.z + 6;
                 }
-                ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
-                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_vec3x, -1, _vec3z), false));
+                ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_player.entityId);
+                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_vec3x, -1, _vec3z), null, false));
                 string _phrase790;
                 if (!Phrases.Dict.TryGetValue(790, out _phrase790))
                 {
-                    _phrase790 = "{PlayerName} you have reached the world border.";
+                    _phrase790 = "you have reached the world border.";
                 }
                 _phrase790 = _phrase790.Replace("{PlayerName}", _cInfo.playerName);
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase790), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase790 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
 
@@ -104,15 +105,15 @@ namespace ServerTools
                 {
                     _vec3z = (int)_player.position.z + 6;
                 }
-                    ClientInfo _cInfo = ConnectionManager.Instance.GetClientInfoForEntityId(_player.entityId);
-                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_vec3x, -1, _vec3z), false));
-                    string _phrase790;
-                    if (!Phrases.Dict.TryGetValue(790, out _phrase790))
-                    {
-                    _phrase790 = "{PlayerName} you have reached the world border.";
-                    }
-                    _phrase790 = _phrase790.Replace("{PlayerName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase790), Config.Server_Response_Name, false, "ServerTools", false));
+                ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_player.entityId);
+                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_vec3x, -1, _vec3z), null, false));
+                string _phrase790;
+                if (!Phrases.Dict.TryGetValue(790, out _phrase790))
+                {
+                    _phrase790 = "you have reached the world border.";
+                }
+                _phrase790 = _phrase790.Replace("{PlayerName}", _cInfo.playerName);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase790 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
             }
         }
     }

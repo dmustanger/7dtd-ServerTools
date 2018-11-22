@@ -13,7 +13,10 @@ namespace ServerTools
         public static void WalletValue(ClientInfo _cInfo, string _playerName)
         {
             int _currentCoins = GetcurrentCoins(_cInfo);
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} your wallet contains: {2} {3}.[-]", Config.Chat_Response_Color, _cInfo.playerName, _currentCoins, Coin_Name), Config.Server_Response_Name, false, "ServerTools", false));
+            string _message = "your wallet contains: {Value} {Name}.[-]";
+            _message = _message.Replace("{Value}", _currentCoins.ToString());
+            _message = _message.Replace("{Name}", Wallet.Coin_Name);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
         }
 
         public static int GetcurrentCoins(ClientInfo _cInfo)

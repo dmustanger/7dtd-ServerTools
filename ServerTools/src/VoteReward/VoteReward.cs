@@ -224,14 +224,11 @@ namespace ServerTools
                             string _phrase602;
                             if (!Phrases.Dict.TryGetValue(602, out _phrase602))
                             {
-                                _phrase602 = "{PlayerName} you can only use /reward once every {DelayBetweenRewards} hours. Time remaining: {TimeRemaining} hour(s).";
+                                _phrase602 = "you can only use /reward once every {DelayBetweenRewards} hours. Time remaining: {TimeRemaining} hour(s).";
                             }
-                            _phrase602 = _phrase602.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase602 = _phrase602.Replace("{DelayBetweenRewards}", Delay_Between_Uses.ToString());
                             _phrase602 = _phrase602.Replace("{TimeRemaining}", _timeleft.ToString());
-                            {
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase602), Config.Server_Response_Name, false, "ServerTools", false));
-                            }
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase602 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                         }
                     }
                 }
@@ -254,11 +251,11 @@ namespace ServerTools
                 {
                     que.Add(_cInfo);
                     QueOpen = true;
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward in use. You were added to the que.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", reward in use. You were added to the que.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Reward in use and you are already in the que.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", reward in use and you are already in the que.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
         }
@@ -294,7 +291,7 @@ namespace ServerTools
                                 }
                                 _phrase701 = _phrase701.Replace("{PlayerName}", _cInfo.playerName);
                                 _phrase701 = _phrase701.Replace("{VoteDelay}", Delay_Between_Uses.ToString());
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase701), Config.Server_Response_Name, false, "ServerTools", false));
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase701 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                                 ItemOrBlock(_cInfo);
                             }
                             else
@@ -323,7 +320,7 @@ namespace ServerTools
                         _phrase702 = "Unable to get a result from the website, {PlayerName}. Please try /reward again.";
                     }
                     _phrase702 = _phrase702.Replace("{PlayerName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase702), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase702 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 }
             }
 
@@ -339,7 +336,7 @@ namespace ServerTools
             }
             _phrase700 = _phrase700.Replace("{PlayerName}", _cInfo.playerName);
             _phrase700 = _phrase700.Replace("{VoteSite}", Your_Voting_Site);
-            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase700), Config.Server_Response_Name, false, "ServerTools", false));
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase700 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
         }
 
         private static void ItemOrBlock(ClientInfo _cInfo)
@@ -423,10 +420,10 @@ namespace ServerTools
                             string _phrase703;
                             if (!Phrases.Dict.TryGetValue(703, out _phrase703))
                             {
-                                _phrase703 = "{PlayerName} reward items were sent to your inventory. If it is full, check the ground.";
+                                _phrase703 = "reward items were sent to your inventory. If it is full, check the ground.";
                             }
                             _phrase703 = _phrase703.Replace("{PlayerName}", _cInfo.playerName);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase703), Config.Server_Response_Name, false, "ServerTools", false));
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase703 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                             Que();
                         }
                     }
@@ -439,7 +436,7 @@ namespace ServerTools
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Can not give you a vote reward unless spawned. Please type /reward again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", can not give you a vote reward unless spawned. Please type /reward again.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 Que();
             }
         }
@@ -463,7 +460,7 @@ namespace ServerTools
                 if (posFound)
                 {
                     int counter = 1;
-                    Dictionary<int, EntityClass>.KeyCollection entityTypesCollection = EntityClass.list.Keys;
+                    Dictionary<int, EntityClass>.KeyCollection entityTypesCollection = EntityClass.list.Dict.Keys;
                     foreach (int i in entityTypesCollection)
                     {
                         EntityClass eClass = EntityClass.list[i];
@@ -477,7 +474,7 @@ namespace ServerTools
                             GameManager.Instance.World.SpawnEntityInWorld(entity);
                             string _sql = string.Format("UPDATE Players SET lastVoteReward = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                             SQL.FastQuery(_sql);
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Spawned a {1} near you.[-]", Config.Chat_Response_Color, eClass.entityClassName), Config.Server_Response_Name, false, "ServerTools", false));
+                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Spawned a {1} near you.[-]", LoadConfig.Chat_Response_Color, eClass.entityClassName), LoadConfig.Server_Response_Name, false, "ServerTools", false));
                             string _phrase701;
                             if (!Phrases.Dict.TryGetValue(701, out _phrase701))
                             {
@@ -485,7 +482,7 @@ namespace ServerTools
                             }
                             _phrase701 = _phrase701.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase701 = _phrase701.Replace("{VoteDelay}", Delay_Between_Uses.ToString());
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase701), Config.Server_Response_Name, false, "ServerTools", false));
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase701 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                             Log.Out(string.Format("[SERVERTOOLS] Spawned an entity reward {0} at {1} x, {2} y, {3} z for {4}", eClass.entityClassName, _x, _y, _z, _cInfo.playerName));
                             Que();
                         }
@@ -499,13 +496,13 @@ namespace ServerTools
                 }
                 else
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}No spawn point was found near you. Please move locations and try again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", no spawn point was found near you. Please move locations and try again.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                     Que();
                 }
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Can not give you a vote reward unless spawned. Please type /reward again.[-]", Config.Chat_Response_Color), Config.Server_Response_Name, false, "ServerTools", false));
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", can not give you a vote reward unless spawned. Please type /reward again.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
                 Que();
             }
         }

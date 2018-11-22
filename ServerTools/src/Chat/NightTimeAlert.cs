@@ -19,7 +19,7 @@ namespace ServerTools
                     _phrase940 = "{Time} hours until night time.";
                 }
                 _phrase940 = _phrase940.Replace("{Time}", _hours.ToString());
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase940), Config.Server_Response_Name, false, "ServerTools", false);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase940 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
             }
         }
     }

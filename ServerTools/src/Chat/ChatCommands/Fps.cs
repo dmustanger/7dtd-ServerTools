@@ -17,11 +17,11 @@ namespace ServerTools
             _phrase300 = _phrase300.Replace("{Fps}", _fps);
             if (_announce)
             {
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase300), Config.Server_Response_Name, false, "", false);
+                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase300), LoadConfig.Server_Response_Name, false, "", false);
             }
             else
             {
-                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", Config.Chat_Response_Color, _phrase300), Config.Server_Response_Name, false, "ServerTools", false));
+                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase300), LoadConfig.Server_Response_Name, false, "ServerTools", false));
             }
         }
 
