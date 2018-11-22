@@ -9,6 +9,9 @@ Fixed Bank deposit from a chest repeating the operation if more coins were avail
 Fixed Jail response if shock is enabled
 Changed Mute_Vote to mute for 60 minutes
 
+Note* ServerToolsPhrases.xml has been updated. If you have customized your file, make a backup for reference later. Delete this file, now
+start the server to rebuild this file. You can enter your custom entries again
+
 11.9
 Fixed Kick_Vote response repeating improperly
 Fixed Mute_Vote not adding a player correctly
