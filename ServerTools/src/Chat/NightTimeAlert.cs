@@ -19,7 +19,7 @@ namespace ServerTools
                     _phrase940 = "{Time} hours until night time.";
                 }
                 _phrase940 = _phrase940.Replace("{Time}", _hours.ToString());
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase940 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase940 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
     }

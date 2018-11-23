@@ -78,27 +78,15 @@ namespace ServerTools
                             max = quality;
                         }
                     }
-                    ItemValue itemValue;
-                    var itemId = 4096;
-                    int _itemId;
-                    if (int.TryParse(_params[1], out _itemId))
+                    ItemValue _itemValue = ItemClass.GetItem(_params[1], true);
+                    if (Equals(_itemValue, ItemValue.None))
                     {
-                        int calc = (_itemId + 4096);
-                        itemId = calc;
-                        itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, min, max, true);
+                        SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", _params[1]));
+                        return;
                     }
                     else
                     {
-                        ItemValue _itemValue = ItemClass.GetItem(_params[1], true);
-                        if (_itemValue.type == ItemValue.None.type)
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", _params[1]));
-                            return;
-                        }
-                        else
-                        {
-                            itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, min, max, true);
-                        }
+                        _itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, min, max, true);
                     }
                     if (_params[0].ToLower() == "all")
                     {
@@ -113,7 +101,7 @@ namespace ServerTools
                                     {
                                         entityClass = EntityClass.FromString("item"),
                                         id = EntityFactory.nextEntityID++,
-                                        itemStack = new ItemStack(itemValue, count),
+                                        itemStack = new ItemStack(_itemValue, count),
                                         pos = world.Players.dict[_cInfo.entityId].position,
                                         rot = new Vector3(20f, 0f, 20f),
                                         lifetime = 60f,
@@ -122,15 +110,15 @@ namespace ServerTools
                                     world.SpawnEntityInWorld(entityItem);
                                     _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                     world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                    SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name, _cInfo.playerName));
+                                    SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
                                     string _phrase804;
                                     if (!Phrases.Dict.TryGetValue(804, out _phrase804))
                                     {
                                         _phrase804 = "{Count} {ItemName} was sent to your inventory. If your bag is full, check the ground.";
                                     }
                                     _phrase804 = _phrase804.Replace("{Count}", count.ToString());
-                                    _phrase804 = _phrase804.Replace("{ItemName}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase804), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                                    _phrase804 = _phrase804.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase804 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 else
                                 {
@@ -150,7 +138,7 @@ namespace ServerTools
                                 {
                                     entityClass = EntityClass.FromString("item"),
                                     id = EntityFactory.nextEntityID++,
-                                    itemStack = new ItemStack(itemValue, count),
+                                    itemStack = new ItemStack(_itemValue, count),
                                     pos = world.Players.dict[_cInfo.entityId].position,
                                     rot = new Vector3(20f, 0f, 20f),
                                     lifetime = 60f,
@@ -165,8 +153,8 @@ namespace ServerTools
                                     _phrase804 = "{Count} {ItemName} was sent to your inventory. If your bag is full, check the ground.";
                                 }
                                 _phrase804 = _phrase804.Replace("{Count}", count.ToString());
-                                _phrase804 = _phrase804.Replace("{ItemName}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase804), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                                _phrase804 = _phrase804.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase804 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                             else
                             {
@@ -177,7 +165,7 @@ namespace ServerTools
                         {
                             SdtdConsole.Instance.Output(string.Format("Player with Id {0} does not exist", _params[0]));
                         }
-                    }                       
+                    }
                 }
             }
             catch (Exception e)

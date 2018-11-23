@@ -18,7 +18,7 @@ namespace ServerTools
                     string _response = "Player name {PlayerName}, Id = {EntityId}[-]";
                     _response = _response.Replace("{PlayerName}", _cInfo1.playerName);
                     _response = _response.Replace("{EntityId}", _cInfo1.playerName);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response, _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response, _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }

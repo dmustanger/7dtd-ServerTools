@@ -192,7 +192,7 @@ namespace ServerTools
                 _phrase915 = _phrase915.Replace("{PlayerName}", _cInfo2.playerName);
                 _phrase915 = _phrase915.Replace("{Victim}", _cInfo.playerName);
                 _phrase915 = _phrase915.Replace("{Item}", _newName);
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase915 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase915 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
@@ -204,7 +204,7 @@ namespace ServerTools
                 _phrase915 = _phrase915.Replace("{PlayerName}", _cInfo2.playerName);
                 _phrase915 = _phrase915.Replace("{Victim}", _cInfo.playerName);
                 _phrase915 = _phrase915.Replace("{Item}", _holdingItem);
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase915 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase915 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
     }

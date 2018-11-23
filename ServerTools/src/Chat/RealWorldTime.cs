@@ -22,7 +22,7 @@ namespace ServerTools
             }
             _phrase765 = _phrase765.Replace("{Time}", _time.ToShortTimeString());
             _phrase765 = _phrase765.Replace("{TimeZone}", Time_Zone);
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase765 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
+            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase765 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
     }
 }

@@ -485,19 +485,19 @@ namespace ServerTools
                 string _phrase303;
                 if (!Dict.TryGetValue(303, out _phrase303))
                 {
-                    _phrase303 = "Feral Zombies:{Ferals} Radiated Zombies:{Radiated} Dogs:{Dogs} Vultures:{Vultures} Screamers:{Screamers}";
+                    _phrase303 = "Bicycles:{Bicycles} Minibikes:{Minibikes} Motorcycles:{Motorcycles} 4x4:{4x4} Gyros:{Gyros}";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"303\" Phrase=\"{0}\" />", _phrase303));
                 string _phrase304;
                 if (!Dict.TryGetValue(304, out _phrase304))
                 {
-                    _phrase304 = "Bears:{Bears} Stags:{Stags} Boars:{Boars} Rabbits:{Rabbits} Chickens:{Chickens} Snakes:{Snakes} Wolves:{Wolves}";
+                    _phrase304 = "Total Supply Crates:{SupplyCrates}";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"304\" Phrase=\"{0}\" />", _phrase304));
                 string _phrase305;
                 if (!Dict.TryGetValue(305, out _phrase305))
                 {
-                    _phrase305 = "Total Supply Crates:{SupplyCrates} Total Mini Bikes:{MiniBikes}";
+                    _phrase305 = "";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"305\" Phrase=\"{0}\" />", _phrase305));
                 string _phrase306;
@@ -1445,7 +1445,7 @@ namespace ServerTools
                 string _phrase806;
                 if (!Dict.TryGetValue(806, out _phrase806))
                 {
-                    _phrase806 = "have received the starting items. Check your inventory. If full, check the ground.";
+                    _phrase806 = "you have received the starting items. Check your inventory. If full, check the ground.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"806\" Phrase=\"{0}\" />", _phrase806));
                 string _phrase807;

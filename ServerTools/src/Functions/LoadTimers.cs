@@ -296,7 +296,7 @@ namespace ServerTools
             if (Zones.IsEnabled)
             {
                 Log.Out("Zone protection enabled");
-            }            
+            }
         }
 
         public static void LoadAlert()
@@ -486,7 +486,7 @@ namespace ServerTools
             if (EntityCleanup.IsEnabled && (EntityCleanup.BlockIsEnabled || EntityCleanup.FallingTreeEnabled || EntityCleanup.Underground || EntityCleanup.Bikes))
             {
                 _eC++;
-                if (_eC >= 15)
+                if (_eC >= 10)
                 {
                     _eC = 0;
                     EntityCleanup.EntityCheck();

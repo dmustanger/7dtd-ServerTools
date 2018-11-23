@@ -260,7 +260,7 @@ namespace ServerTools
                                             int.TryParse(_cords[2], out z);
                                             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                                             Event.PlayersTeam.Remove(_player.Key);
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the event has ended. Thank you for playing.[-]", LoadConfig.Chat_Response_Color, _cInfo.playerName), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", the event has ended. Thank you for playing.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                         else
                                         {
@@ -284,7 +284,6 @@ namespace ServerTools
                                 Event.Open = false;
                                 Event.Admin = null;
                                 SdtdConsole.Instance.Output("The current event has been cancelled and event players have been sent back to their return points.");
-
                             }
                         }
                         else
@@ -300,7 +299,7 @@ namespace ServerTools
                                         ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_player.Key);
                                         if (_cInfo != null)
                                         {
-                                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} the current event has been cancelled.[-]", LoadConfig.Chat_Response_Color, _cInfo.playerName), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", the current event has been cancelled.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                         Event.PlayersTeam.Remove(_player.Key);
                                     }
@@ -459,7 +458,7 @@ namespace ServerTools
                                         _sql = string.Format("UPDATE Players SET eventReturn = 'Unknown', eventSpawn = 'false', eventRespawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                                         SQL.FastQuery(_sql);
                                         Event.PlayersTeam.Remove(_params[1]);
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} you have been removed from the event and sent to your return point.[-]", LoadConfig.Chat_Response_Color, _cInfo.playerName), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", you have been removed from the event and sent to your return point.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                         SdtdConsole.Instance.Output(string.Format("Player with Id {0} was removed from the event and sent to their return point.", _params[1]));
                                         return;
                                     }
@@ -521,17 +520,13 @@ namespace ServerTools
                                             _result.Dispose();
                                             _sql = string.Format("UPDATE Events SET eventActive = 'true' WHERE eventid = {0} AND eventAdmin = '{1}'", _eventid, _steamId);
                                             SQL.FastQuery(_sql);
-                                            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-                                            for (int i = 0; i < _cInfoList.Count; i++)
-                                            {
-                                                ClientInfo _cInfo = _cInfoList[i];
-                                                if (_cInfo != null)
-                                                {
-                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Event: {1}[-]", LoadConfig.Chat_Response_Color, _eventName), LoadConfig.Server_Response_Name, false, "ServerTools", false));
-                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _eventInvite), LoadConfig.Server_Response_Name, false, "ServerTools", false));
-                                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1} type /event if you want to join the event. You will return to where you are when it ends.[-]", LoadConfig.Chat_Response_Color, _cInfo.playerName), LoadConfig.Server_Response_Name, false, "ServerTools", false));
-                                                }
-                                            }
+                                            string _msg1 = "Event: {EventName}[-]";
+                                            string _msg2 = _eventInvite;
+                                            string _msg3 = "Type /event if you want to join the event. You will return to where you are when it ends.[-]";
+                                            _msg1 = _msg1.Replace("{EventName}", _eventName);
+                                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _msg1, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _msg2, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _msg3, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                         }
                                         else
                                         {

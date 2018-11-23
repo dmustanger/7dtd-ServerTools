@@ -24,13 +24,13 @@ namespace ServerTools
                     {
                         _phrase611 = "A vote to change the weather has begun and will close in 30 seconds.";
                     }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase611 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase611 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     string _phrase615;
                     if (!Phrases.Dict.TryGetValue(615, out _phrase615))
                     {
                         _phrase615 = "Type /clear, /rain or /snow to cast your vote.";
                     }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase615 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase615 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     VoteOpen = true;
                 }
                 else
@@ -40,7 +40,7 @@ namespace ServerTools
                     {
                         _phrase933 = "not enough players are online to start a weather vote.";
                     }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase933 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase933 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -50,7 +50,7 @@ namespace ServerTools
                 {
                     _phrase824 = "there is a vote already open.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase824 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase824 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -60,7 +60,7 @@ namespace ServerTools
             {
                 if (clear.Count > rain.Count & clear.Count > snow.Count)
                 {
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}Clear skies ahead", LoadConfig.Chat_Response_Color), LoadConfig.Server_Response_Name, false, "ServerTools", true);
+                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Clear skies ahead.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     SdtdConsole.Instance.ExecuteSync("weather rain 0", (ClientInfo)null);
                     SdtdConsole.Instance.ExecuteSync("weather rainfall 0", (ClientInfo)null);
                     SdtdConsole.Instance.ExecuteSync("weather wet 0", (ClientInfo)null);
@@ -75,18 +75,18 @@ namespace ServerTools
                     int _rndWeather = rnd.Next(1, 4);
                     if (_rndWeather == 1)
                     {
-                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Light rain has started.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
+                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Light rain has started.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         SdtdConsole.Instance.ExecuteSync("weather rain 0.2", (ClientInfo)null);
                     }
                     if (_rndWeather == 2)
                     {
-                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "A rain storm has started.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
+                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "A rain storm has started.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         SdtdConsole.Instance.ExecuteSync("weather rain 0.6", (ClientInfo)null);
                         SdtdConsole.Instance.ExecuteSync("weather wet 1", (ClientInfo)null);
                     }
                     if (_rndWeather == 3)
                     {
-                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "A heavy rain storm has started.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
+                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "A heavy rain storm has started.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         SdtdConsole.Instance.ExecuteSync("weather rain 1", (ClientInfo)null);
                         SdtdConsole.Instance.ExecuteSync("weather wet 1", (ClientInfo)null);
                     }
@@ -99,18 +99,18 @@ namespace ServerTools
                     int _rndWeather = rnd.Next(1, 4);
                     if (_rndWeather == 1)
                     {
-                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Light snow has started.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
+                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Light snow has started.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         SdtdConsole.Instance.ExecuteSync("weather snowfall 0.2", (ClientInfo)null);
                     }
                     if (_rndWeather == 2)
                     {
-                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "A snow storm has started.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
+                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "A snow storm has started.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         SdtdConsole.Instance.ExecuteSync("weather snowfall 0.6", (ClientInfo)null);
                         SdtdConsole.Instance.ExecuteSync("weather snow 0.6", (ClientInfo)null);
                     }
                     if (_rndWeather == 3)
                     {
-                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "A heavy snow storm has started.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
+                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "A heavy snow storm has started.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         SdtdConsole.Instance.ExecuteSync("weather snowfall 1", (ClientInfo)null);
                         SdtdConsole.Instance.ExecuteSync("weather snow 1", (ClientInfo)null);
                     }
@@ -124,7 +124,7 @@ namespace ServerTools
                     {
                         _phrase612 = "Weather vote complete, but no votes were cast. No changes were made.";
                     }
-                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase612), LoadConfig.Server_Response_Name, false, "", false);
+                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase612 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     clear.Clear(); rain.Clear(); snow.Clear();
                     VoteOpen = false;
                     _weather = "";
@@ -139,7 +139,7 @@ namespace ServerTools
                             _phrase613 = "Weather vote complete. Most votes went to {Weather}.";
                         }
                         _phrase613 = _phrase613.Replace("{Weather}", _weather.ToString());
-                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase613 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
+                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase613 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         clear.Clear(); rain.Clear(); snow.Clear();
                     }
                     else if (_weather != "" & clear.Count > 0 || _weather != "" & rain.Count > 0 || _weather != "" & snow.Count > 0)
@@ -149,7 +149,7 @@ namespace ServerTools
                         {
                             _phrase614 = "Weather vote was a tie. No changes were made.";
                         }
-                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase614 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
+                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase614 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         clear.Clear(); rain.Clear(); snow.Clear();
                     }
                     VoteOpen = false;
@@ -165,7 +165,7 @@ namespace ServerTools
                 {
                     _phrase805 = "Not enough votes were cast in the weather vote. No changes were made.";
                 }
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase805 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase805 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
     }

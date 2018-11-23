@@ -18,7 +18,7 @@ namespace ServerTools
                 {
                     _phrase107 = "you do not have permissions to use this command.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
@@ -35,16 +35,20 @@ namespace ServerTools
                     _phrase525 = "you have set the New Spawn position as {NewSpawnTelePosition}.";
                 }
                 _phrase525 = _phrase525.Replace("{NewSpawnTelePosition}", New_Spawn_Tele_Position);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase525 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase525 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 LoadConfig.UpdateXml();
             }
         }
 
         public static void TeleNewSpawn(ClientInfo _cInfo)
         {
+            string _sql = string.Format("SELECT newSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            bool _newSpawn;
+            bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _newSpawn);
+            _result.Dispose();
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            Entity _ent = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (_ent.lifetime <= 5f && _player.totalItemsCrafted == 0 && _player.distanceWalked <= 1 && New_Spawn_Tele_Position != "0,0,0")
+            if (_newSpawn)
             {
                 TelePlayer(_cInfo, _player);
             }
@@ -56,8 +60,8 @@ namespace ServerTools
             {
                 Vector3 Vec3 = _player.position;
                 string _position = _player.position.x + "," + _player.position.y + "," + _player.position.z;
-                string _sql = string.Format("UPDATE Players SET newTeleSpawn = '{0}' WHERE steamid = '{1}'", _position, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                string _sql1 = string.Format("UPDATE Players SET newTeleSpawn = '{0}' WHERE steamid = '{1}'", _position, _cInfo.playerId);
+                SQL.FastQuery(_sql1);
             }
             string[] _cords = New_Spawn_Tele_Position.Split(',');
             int x, y, z;
@@ -66,6 +70,8 @@ namespace ServerTools
             int.TryParse(_cords[2], out z);
             Players.NoFlight.Add(_cInfo.entityId);
             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
+            string _sql2 = string.Format("UPDATE Players SET newSpawn = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
+            SQL.FastQuery(_sql2);
             if (!Return)
             {
                 string _phrase526;
@@ -73,7 +79,7 @@ namespace ServerTools
                 {
                     _phrase526 = "you have been teleported to the new spawn location.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase526 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase526 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
@@ -82,7 +88,7 @@ namespace ServerTools
                 {
                     _phrase527 = "type /ready when you are prepared to leave. You will teleport back to your spawn location.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase527 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase527 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
 
@@ -122,7 +128,7 @@ namespace ServerTools
                     {
                         _phrase530 = "you have been sent back to your original spawn location. Good luck.";
                     }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase530 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase530 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 else
                 {
@@ -131,7 +137,7 @@ namespace ServerTools
                     {
                         _phrase529 = "you have left the new player area. Return to it before using /ready.";
                     }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase529 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase529 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
             }
             else
@@ -141,7 +147,7 @@ namespace ServerTools
                 {
                     _phrase528 = "you have no saved return point or you have used it.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase528 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase528 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
     }

@@ -30,24 +30,24 @@ namespace ServerTools
                                 _phrase775 = "A vote to mute {PlayerName} in chat has begun and will close in 60 seconds.";
                             }
                             _phrase775 = _phrase775.Replace("{PlayerName}", _playerInfo.playerName);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase775 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase775 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             string _phrase776;
                             if (!Phrases.Dict.TryGetValue(776, out _phrase776))
                             {
                                 _phrase776 = "Type /yes to cast your vote.";
                             }
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase776 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase776 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             VoteOpen = true;
                         }
                         else
                         {
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", this player id was not found.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", this player id was not found.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", not enough players are online to start a vote to mute.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", not enough players are online to start a vote to mute.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -62,8 +62,7 @@ namespace ServerTools
                 {
                     _phrase777 = "has been muted for 60 minutes.";
                 }
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase777 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
-                GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase777), LoadConfig.Server_Response_Name, false, "", false);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase777 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             VoteOpen = false;
             Mute.Clear();
@@ -77,7 +76,14 @@ namespace ServerTools
                 ClientInfo _cInfo2 = _cInfoList[i];
                 if (_cInfo2 != _cInfo)
                 {
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Player name = {1} # = {2}.[-]", LoadConfig.Chat_Response_Color, _cInfo2.playerName, _cInfo2.entityId), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                    string _phrase958;
+                    if (!Phrases.Dict.TryGetValue(958, out _phrase958))
+                    {
+                        _phrase958 = "PlayerName = {PlayerName}, # = {Id}.";
+                    }
+                    _phrase958 = _phrase958.Replace("{PlayerName}", _cInfo2.playerName);
+                    _phrase958 = _phrase958.Replace("{Id}", _cInfo2.entityId.ToString());
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase958 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             string _phrase778;
@@ -85,7 +91,7 @@ namespace ServerTools
             {
                 _phrase778 = "type /mute # to start a vote to mute that player from chat.";
             }
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase778 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase778 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
     }
 }

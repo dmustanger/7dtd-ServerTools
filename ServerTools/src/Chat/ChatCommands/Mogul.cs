@@ -78,13 +78,13 @@ namespace ServerTools
             _phrase966 = _phrase966.Replace("{Top3}", _topScore3.ToString());
             if (_announce)
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase965 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase966 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase965 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase966 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase965 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase966 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase965 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase966 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

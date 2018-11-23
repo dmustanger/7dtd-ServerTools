@@ -1,5 +1,18 @@
 ﻿CHANGELOG
 
+12.1
+Fixed internal chathook code. Chat color prefix and messages should function correctly now
+Fixed errors on entry from a new player
+Fixed many chat responses using global chat or whisper incorrectly
+Fixed New_Tele_Spawn not responding for a new player
+Fixed default reward items to match in game default names
+Fixed default market/shop items to match in game default names
+Fixed default starting items to match in game default names
+Fixed Entity_Cleanup not removing minibikes if the option was on
+Changed response to /day7. Now includes the new vehicle types
+Changed Reports folder name to PlayerReports
+Changed Phrase 303, 304, 806
+
 12.0
 Updated compatibility to A17 - Experimental. This version will not work with prior versions.
 Fixed console command donor remove

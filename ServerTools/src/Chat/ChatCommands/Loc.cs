@@ -23,7 +23,7 @@ namespace ServerTools
             _phrase760 = _phrase760.Replace("{X}", _x.ToString());
             _phrase760 = _phrase760.Replace("{Y}", _y.ToString());
             _phrase760 = _phrase760.Replace("{Z}", _z.ToString());
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase760 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase760 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
     }
 }

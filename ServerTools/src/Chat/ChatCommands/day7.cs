@@ -13,174 +13,52 @@ namespace ServerTools
             int _playerCount = ConnectionManager.Instance.ClientCount();
             int _zombies = 0;
             int _animals = 0;
-            int _RadiatedZombies = 0;
-            int _feralZombies = 0;
-            int _supplyCrates = 0;
+            int _bicycles = 0;
             int _miniBikes = 0;
-            int _stag = 0;
-            int _bear = 0;
-            int _rabbit = 0;
-            int _chicken = 0;
-            int _pig = 0;
-            int _dog = 0;
-            int _vulture = 0;
-            int _screamer = 0;
-            int _snake = 0;
-            int _wolf = 0;
+            int _motorcycles = 0;
+            int _4x4 = 0;
+            int _gyros = 0;
+            int _supplyCrates = 0;
             int _daysUntilHorde = Days_Until_Horde - GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()) % Days_Until_Horde;
             List<Entity> _entities = GameManager.Instance.World.Entities.list;
             foreach (Entity _e in _entities)
             {
-                string _name = EntityClass.list[_e.entityClass].entityClassName;
-                if (_name == "playerMale" || _name == "playerFemale" || _name == "item" || _name == "fallingBlock" || _name == "Backpack" || _name == "fallingTree" || _name == "npcTraderJimmy" || _name == "npcTraderBob" || _name == "DroppedLootContainer" || _name == "npcTraderRekt" || _name == "invisibleAnimal" || _name == "npcTraderJoel" || _name == "EvisceratedRemains" || _name == "npcTraderHugh")
+                EntityType _type = _e.entityType;
+                if (_type == EntityType.Zombie && _e.IsAlive())
                 {
-                    continue;
+                    _zombies = _zombies++;
                 }
-                else if (_name == "zombieUtilityWorker" || _name == "zombieSkateboarder" || _name == "zombieSnow" || _name == "zombieStripper" || _name == "zombieBusinessMan" || _name == "zombieBurnt" || _name == "zombieOldTimer" || _name == "zombieBiker" || _name == "zombieCheerleader" || _name == "zombieFarmer" || _name == "zombieFemaleFat" || _name == "zombieSoldier" || _name == "zombieFootballPlayer" || _name == "zombieFatHawaiian" || _name == "zombieMarlene" || _name == "zombieSteveCrawler" || _name == "zombieSteve" || _name == "zombieMoe" || _name == "zombieDarlene" || _name == "zombieYo" || _name == "zombieBoe" || _name == "zombieMaleHazmat" || _name == "zombieJoe" || _name == "zombieArlene" || _name == "zombieNurse" || _name == "zombieFatCop" || _name == "zombieSpider") 
+                else if (_type == EntityType.Animal && _e.IsAlive())
                 {
-                    if (_e.IsAlive())
-                    {
-                        _zombies = _zombies + 1;
-                    }
-                    continue;
-                }
-                else if (_name == "animalRabbit")
-                {
-                    if (_e.IsAlive())
-                    {
-                        _animals = _animals + 1;
-                        _rabbit = _rabbit + 1;
-                    }
-                    continue;
-                }
-                else if (_name == "animalChicken")
-                {
-                    if (_e.IsAlive())
-                    {
-                        _animals = _animals + 1;
-                        _chicken = _chicken + 1;
-                    }
-                    continue;
-                }
-                else if (_name == "animalStag")
-                {
-                    if (_e.IsAlive())
-                    {
-                        _animals = _animals + 1;
-                        _stag = _stag + 1;
-                    }
-                    continue;
-                }
-                else if (_name == "animalBoar")
-                {
-                    if (_e.IsAlive())
-                    {
-                        _animals = _animals + 1;
-                        _pig = _pig + 1;
-                    }
-                    continue;
-                }
-                else if (_name == "animalWolf" || _name == "animalDireWolf")
-                {
-                    if (_e.IsAlive())
-                    {
-                        _animals = _animals + 1;
-                        _wolf = _wolf + 1;
-                    }
-                    continue;
-                }
-                else if (_name == "animalZombieBear")
-                {
-                    if (_e.IsAlive())
-                    {
-                        _zombies = _zombies + 1;
-                        _bear = _bear + 1;
-                    }
-                    continue;
-                }
-                else if (_name == "animalBear")
-                {
-                    if (_e.IsAlive())
-                    {
-                        _animals = _animals + 1;
-                        _bear = _bear + 1;
-                    }
-                    continue;
-                }
-                else if (_name == "animalZombieDog")
-                {
-                    if (_e.IsAlive())
-                    {
-                        _zombies = _zombies + 1;
-                        _dog = _dog + 1;
-                    }
-                    continue;
-                }
-                else if (_name == "zombieScreamer")
-                {
-                    if (_e.IsAlive())
-                    {
-                        _zombies = _zombies + 1;
-                        _screamer = _screamer + 1;
-                    }
-                    continue;
-                }
-                else if (_name == "zombieScreamerFeral")
-                {
-                    if (_e.IsAlive())
-                    {
-                        _zombies = _zombies + 1;
-                        _feralZombies = _feralZombies + 1;
-                        _screamer = _screamer + 1;
-                    }
-                    continue;
-                }
-                else if (_name == "zombieSpiderFeral" || _name == "zombieSteveFeral" || _name == "zombieDarleneFeral" || _name == "zombieFatCopFeral" || _name == "zombieBoeFeral" || _name == "zombieYoFeral" || _name == "zombieFemaleFatFeral" || _name == "zombieMarleneFeral" || _name == "zombieSkateboarderFeral" || _name == "zombieFatHawaiianFeral" || _name == "zombieNurseFeral" || _name == "zombieBusinessManFeral" || _name == "zombieMoeFeral" || _name == "zombieWightFeral" || _name == "zombieSteveCrawlerFeral" || _name == "zombieArleneFeral" || _name == "zombieJoeFeral" || _name == "zombieFarmerFeral" || _name == "zombieUtilityWorkerFeral" || _name == "zombieSnowFeral" || _name == "zombieSoldierFeral" || _name == "zombieCheerleaderFeral" || _name == "zombieOldTimerFeral" || _name == "zombieStripperFeral")
-                {
-                    if (_e.IsAlive())
-                    {
-                        _zombies = _zombies + 1;
-                        _feralZombies = _feralZombies + 1;
-                    }
-                    continue;
-                }
-                else if (_name == "zombieFatCopFeralRadiated" || _name == "zombieWightFeralRadiated" || _name == "zombieSpiderFeralRadiated")
-                {
-                    if (_e.IsAlive())
-                    {
-                        _zombies = _zombies + 1;
-                        _RadiatedZombies = _RadiatedZombies + 1;
-                    }
-                    continue;
-                }
-                else if (_name == "animalZombieVulture")
-                {
-                    if (_e.IsAlive())
-                    {
-                        _zombies = _zombies + 1;
-                        _vulture = _vulture + 1;
-                    }
-                    continue;
-                }
-                else if (_name == "minibike")
-                {
-                    _miniBikes = _miniBikes + 1;
-                    continue;
-                }
-                else if (_name == "animalSnake")
-                {
-                    _animals = _animals + 1;
-                    _snake = _snake + 1;
-                    continue;
-                }
-                else if (_name == "sc_General")
-                {
-                    _supplyCrates = _supplyCrates + 1;
-                    continue;
+                    _animals = _animals++;
                 }
                 else
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Entity Class Name is: {0}", _name));
+                    string _name = EntityClass.list[_e.entityClass].entityClassName;
+                    if (_name == "vehicleBicycle")
+                    {
+                        _bicycles = _bicycles++;
+                    }
+                    else if (_name == "vehicleMinibike")
+                    {
+                        _miniBikes = _miniBikes++;
+                    }
+                    else if (_name == "vehicleMotorcycle")
+                    {
+                        _motorcycles = _motorcycles++;
+                    }
+                    else if (_name == "vehicle4x4Truck")
+                    {
+                        _4x4 = _4x4++;
+                    }
+                    else if (_name == "vehicleGyrocopter")
+                    {
+                        _gyros = _gyros++;
+                    }
+                    else if (_name == "sc_General")
+                    {
+                        _supplyCrates = _supplyCrates++;
+                    }
                 }  
             }
             string _phrase300;
@@ -204,15 +82,11 @@ namespace ServerTools
             }
             if (!Phrases.Dict.TryGetValue(303, out _phrase303))
             {
-                _phrase303 = "Feral Zombies:{Ferals} Radiated Zombies:{Radiated} Dogs:{Dogs} Vultures:{Vultures} Screamers:{Screamers}";
+                _phrase303 = "Bicycles:{Bicycles} Minibikes:{Minibikes} Motorcycles:{Motorcycles} 4x4:{4x4} Gyros:{Gyros}";
             }
             if (!Phrases.Dict.TryGetValue(304, out _phrase304))
             {
-                _phrase304 = "Bears:{Bears} Stags:{Stags} Boars:{Boars} Rabbits:{Rabbits} Chickens:{Chickens} Snakes:{Snakes} Wolves:{Wolves}";
-            }
-            if (!Phrases.Dict.TryGetValue(305, out _phrase305))
-            {
-                _phrase305 = "Total Supply Crates:{SupplyCrates} Total Mini Bikes:{MiniBikes}";
+                _phrase304 = "Total Supply Crates:{SupplyCrates}";
             }
             if (!Phrases.Dict.TryGetValue(306, out _phrase306))
             {
@@ -223,51 +97,43 @@ namespace ServerTools
             _phrase302 = _phrase302.Replace("{Players}", _playerCount.ToString());
             _phrase302 = _phrase302.Replace("{Zombies}", _zombies.ToString());
             _phrase302 = _phrase302.Replace("{Animals}", _animals.ToString());
-            _phrase303 = _phrase303.Replace("{Ferals}", _feralZombies.ToString());
-            _phrase303 = _phrase303.Replace("{Radiated}", _RadiatedZombies.ToString());
-            _phrase303 = _phrase303.Replace("{Dogs}", _dog.ToString());
-            _phrase303 = _phrase303.Replace("{Vultures}", _vulture.ToString());
-            _phrase303 = _phrase303.Replace("{Screamers}", _screamer.ToString());
-            _phrase304 = _phrase304.Replace("{Bears}", _bear.ToString());
-            _phrase304 = _phrase304.Replace("{Stags}", _stag.ToString());
-            _phrase304 = _phrase304.Replace("{Boars}", _pig.ToString());
-            _phrase304 = _phrase304.Replace("{Rabbits}", _rabbit.ToString());
-            _phrase304 = _phrase304.Replace("{Chickens}", _chicken.ToString());
-            _phrase304 = _phrase304.Replace("{Snakes}", _snake.ToString());
-            _phrase304 = _phrase304.Replace("{Wolves}", _wolf.ToString());
-            _phrase305 = _phrase305.Replace("{SupplyCrates}", _supplyCrates.ToString());
-            _phrase305 = _phrase305.Replace("{MiniBikes}", _miniBikes.ToString());
+            _phrase302 = _phrase302.Replace("{Bicycles}", _bicycles.ToString());
+            _phrase302 = _phrase302.Replace("{Minibikes}", _miniBikes.ToString());
+            _phrase302 = _phrase302.Replace("{Motorcycles}", _motorcycles.ToString());
+            _phrase302 = _phrase302.Replace("{4x4}", _4x4.ToString());
+            _phrase302 = _phrase302.Replace("{Gyros}", _gyros.ToString());
+            _phrase305 = _phrase304.Replace("{SupplyCrates}", _supplyCrates.ToString());
             if (_announce)
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase300 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase300 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 if (_daysUntilHorde == Days_Until_Horde)
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase306 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase306 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase301 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase301 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase302 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase303 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase304 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase302 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase303 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase304 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase300 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase300 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 if (_daysUntilHorde == Days_Until_Horde)
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase306 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase306 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase301 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase301 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase302 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase303 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase304 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase302 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase303 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase304 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

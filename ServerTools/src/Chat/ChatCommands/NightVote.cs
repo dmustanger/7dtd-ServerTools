@@ -26,7 +26,7 @@ namespace ServerTools
                             {
                                 _phrase932 = "A vote to skip the night has begun. You have 30 seconds to type /yes.";
                             }
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase932 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase932 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         }
                         else
                         {
@@ -35,7 +35,7 @@ namespace ServerTools
                             {
                                 _phrase930 = "you can not start a vote during a bloodmoon.";
                             }
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase930 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase930 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
@@ -45,7 +45,7 @@ namespace ServerTools
                         {
                             _phrase931 = "you can not start a vote during the day.";
                         }
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase931 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase931 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
 
                 }
@@ -57,7 +57,7 @@ namespace ServerTools
                         _phrase933 = "you can only start this vote if at least {Count} players are online.";
                     }
                     _phrase933 = _phrase933.Replace("{Count}", Players_Online.ToString());
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase933 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase933 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -77,7 +77,7 @@ namespace ServerTools
                 {
                     _phrase934 = "Players voted yes to skip this night. Good morning.";
                 }
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase934 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase934 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             Night.Clear();
             VoteOpen = false;

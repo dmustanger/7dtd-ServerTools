@@ -20,6 +20,7 @@ namespace ServerTools
             ModEvents.PlayerSpawnedInWorld.RegisterHandler(PlayerSpawnedInWorld);
             ModEvents.PlayerDisconnected.RegisterHandler(PlayerDisconnected);
             ModEvents.ChatMessage.RegisterHandler(ChatMessage);
+            ModEvents.GameStartDone.RegisterHandler(GameStartDone);
         }
 
         public void GameAwake()
@@ -30,13 +31,6 @@ namespace ServerTools
             }
             LoadConfig.Load();
             HowToSetup.Load();
-            Timers.LogAlert();
-            if (Fps.IsEnabled)
-            {
-                Fps.SetTarget();
-            }
-            Timers.LoadAlert();
-            RestartVote.Startup = true;
         }
 
         public void SavePlayerData(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
@@ -384,12 +378,12 @@ namespace ServerTools
                     SQL.FastQuery(_sql2);
                     if (Zones.IsEnabled && Players.Victim.ContainsKey(_cInfo.entityId))
                     {
-                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /return to teleport back to your death position. There is a time limit.[-]", LoadConfig.Chat_Response_Color), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", type /return to teleport back to your death position. There is a time limit.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         _sql2 = string.Format("UPDATE Players SET respawnTime = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                         SQL.FastQuery(_sql2);
                         if (Players.Forgive.ContainsKey(_cInfo.entityId))
                         {
-                            _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}Type /forgive to release your killer from jail.[-]", LoadConfig.Chat_Response_Color), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", type /forgive to release your killer from jail.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     if (Mogul.IsEnabled)
@@ -428,7 +422,7 @@ namespace ServerTools
 
         public bool ChatMessage(ClientInfo _cInfo, EChatType _type, int _senderId, string _msg, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
         {
-            return ChatHook.Hook(_cInfo, _type, _senderId, _msg, _mainName, _localizeMain, _recipientEntityIds);
+            return ChatHook.Hook(_cInfo, _type, _senderId, _msg, _mainName, _localizeMain, null);
         }
 
         public void PlayerDisconnected(ClientInfo _cInfo, bool _bShutdown)
@@ -538,6 +532,18 @@ namespace ServerTools
                     Zones.reminder.Remove(_cInfo.entityId);
                 }
             }
+        }
+
+        public void GameStartDone()
+        {
+            Timers.LogAlert();
+            if (Fps.IsEnabled)
+            {
+                Fps.SetTarget();
+            }
+            RestartVote.Startup = true;
+            Mods.Load();
+            Timers.LoadAlert();
         }
 
         public void GameShutdown()

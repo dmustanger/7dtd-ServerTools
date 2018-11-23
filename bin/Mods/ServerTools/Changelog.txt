@@ -1,9 +1,19 @@
 ﻿CHANGELOG
 
-12.0
-Note* ServerToolsPhrases.xml has been updated. If you have customized your file, make a backup for reference later. Delete this file, now
-start the server to rebuild this file. You can enter your custom entries again
+12.1
+Fixed internal chathook code. Chat color prefix and messages should function correctly now
+Fixed errors on entry from a new player
+Fixed many chat responses using global chat or whisper incorrectly
+Fixed New_Tele_Spawn not responding for a new player
+Fixed default reward items to match in game default names
+Fixed default market/shop items to match in game default names
+Fixed default starting items to match in game default names
+Fixed Entity_Cleanup not removing minibikes if the option was on
+Changed response to /day7. Now includes the new vehicle types
+Changed Reports folder name to PlayerReports
+Changed Phrase 303, 304, 806
 
+12.0
 Updated compatibility to A17 - Experimental. This version will not work with prior versions.
 Fixed console command donor remove
 Fixed Kick_Vote response repeating improperly
@@ -11,6 +21,9 @@ Fixed Mute_Vote not adding a player correctly
 Fixed Bank deposit from a chest repeating the operation if more coins were available in a stack
 Fixed Jail response if shock is enabled
 Changed Mute_Vote to mute for 60 minutes
+
+Note* ServerToolsPhrases.xml has been updated. If you have customized your file, make a backup for reference later. Delete this file, now
+start the server to rebuild this file. You can enter your custom entries again
 
 11.9
 Fixed Kick_Vote response repeating improperly

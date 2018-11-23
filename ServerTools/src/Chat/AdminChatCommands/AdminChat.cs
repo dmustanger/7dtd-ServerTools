@@ -16,7 +16,7 @@ namespace ServerTools
                 {
                     _phrase107 = "you do not have permissions to use this command.";
                 }
-                ChatHook.ChatMessage(_sender, LoadConfig.Chat_Response_Color + _sender.playerName + ", " + _phrase107 + "[-]", _sender.entityId, _sender.playerName, EChatType.Whisper);
+                ChatHook.ChatMessage(_sender, LoadConfig.Chat_Response_Color + _sender.playerName + ", " + _phrase107 + "[-]", _sender.entityId, _sender.playerName, EChatType.Whisper, null);
             }
             else
             {
@@ -30,7 +30,7 @@ namespace ServerTools
                         {
                             _message = _message.Replace("@ADMINS ", "");
                             _message = _message.Replace("@admins ", "");
-                            ChatHook.ChatMessage(_sender, LoadConfig.Chat_Response_Color + _sender.playerName + ": " + _message + "[-]", _sender.entityId, _sender.playerName, EChatType.Whisper);
+                            ChatHook.ChatMessage(_sender, LoadConfig.Chat_Response_Color + _sender.playerName + ": " + _message + "[-]", _sender.entityId, _sender.playerName, EChatType.Whisper, null);
                         }
                     }
                 }
@@ -47,13 +47,13 @@ namespace ServerTools
                 {
                     _phrase107 = "you do not have permissions to use this command.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
                 _message = _message.Replace("@ALL ", "");
                 _message = _message.Replace("@all ", "");
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
     }

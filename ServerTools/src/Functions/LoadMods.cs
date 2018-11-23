@@ -4,6 +4,8 @@ namespace ServerTools
 {
     public class Mods
     {
+        public static bool Startup = false;
+
         public static void Load()
         {
             Timers.TimerStart();

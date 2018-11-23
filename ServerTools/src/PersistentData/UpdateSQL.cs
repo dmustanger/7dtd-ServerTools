@@ -10,11 +10,11 @@ namespace ServerTools
             {
                 if (SQL.IsMySql)
                 {
-                    MySqlDatabase.FastQuery("ALTER TABLE Players ADD return VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD eventRespawn VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD eventSpawn VARCHAR(50) DEFAULT 'false';");
+                    MySqlDatabase.FastQuery("ALTER TABLE Players ADD return VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD eventRespawn VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD eventSpawn VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD newSpawn VARCHAR(50) DEFAULT 'false';");
                 }
                 else
                 {
-                    SQLiteDatabase.FastQuery("ALTER TABLE Players ADD return TEXT DEFAULT 'false'; ALTER TABLE Players ADD eventRespawn TEXT DEFAULT 'false'; ALTER TABLE Players ADD eventSpawn TEXT DEFAULT 'false';");
+                    SQLiteDatabase.FastQuery("ALTER TABLE Players ADD return TEXT DEFAULT 'false'; ALTER TABLE Players ADD eventRespawn TEXT DEFAULT 'false'; ALTER TABLE Players ADD eventSpawn TEXT DEFAULT 'false'; ALTER TABLE Players ADD newSpawn TEXT DEFAULT 'false';");
                 }
                 SQL.FastQuery("UPDATE Config SET sql_version = 2 WHERE sql_version = 1");
             }

@@ -151,7 +151,7 @@ namespace ServerTools
                             {
                                 _phrase350 = _phrase350.Replace("{PlayerName}", _cInfo.playerName);
                                 _phrase350 = _phrase350.Replace("{Reason}", _reason);
-                                ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _phrase350 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                                ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _phrase350 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             }
                         }
                     }

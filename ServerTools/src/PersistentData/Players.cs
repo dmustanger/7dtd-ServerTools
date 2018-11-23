@@ -344,7 +344,7 @@ namespace ServerTools
                                     }
                                     if (Zones.Zone_Message)
                                     {
-                                        _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _box3[2]), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _box3[2] + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                     if (_box3[4] != "")
                                     {
@@ -386,7 +386,7 @@ namespace ServerTools
                                             }
                                             if (Zones.Zone_Message)
                                             {
-                                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _box3[2]), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _box3[2] + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                             }
                                             if (_box3[4] != "")
                                             {
@@ -415,7 +415,7 @@ namespace ServerTools
                                 string _msg;
                                 if (ZoneExit.TryGetValue(_player.entityId, out _msg))
                                 {
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _msg), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _msg + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             ZoneExit.Remove(_player.entityId);

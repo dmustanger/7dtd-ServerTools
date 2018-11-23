@@ -30,7 +30,7 @@ namespace ServerTools
             {
                 if (Announce)
                 {
-                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " has been jailed for teleporting." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " has been jailed for teleporting." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0}", _cInfo.playerId), (ClientInfo)null);
             }
@@ -38,7 +38,7 @@ namespace ServerTools
             {
                 if (Announce)
                 {
-                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " has been executed for teleporting." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " has been executed for teleporting." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), (ClientInfo)null);
             }
@@ -46,7 +46,7 @@ namespace ServerTools
             {
                 if (Announce)
                 {
-                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " has been kicked for teleporting." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " has been kicked for teleporting." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for teleporting.\"", _cInfo.playerId), (ClientInfo)null);
             }
@@ -54,7 +54,7 @@ namespace ServerTools
             {
                 if (Announce)
                 {
-                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " has been banned for teleporting." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global);
+                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " has been banned for teleporting." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for teleporting\"", _cInfo.playerId), (ClientInfo)null);
             }

@@ -329,8 +329,8 @@ namespace ServerTools
                     {
                         _phrase927 = "Type /pollyes or /pollno to vote.";
                     }
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase926), LoadConfig.Server_Response_Name, false, "ServerTools", false));
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase927), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase926 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase927 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -341,7 +341,7 @@ namespace ServerTools
                     }
                     _phrase925 = _phrase925.Replace("{YesVote}", _pollYes.ToString());
                     _phrase925 = _phrase925.Replace("{NoVote}", _pollNo.ToString());
-                    GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase925), LoadConfig.Server_Response_Name, false, "ServerTools", true);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase925 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
             }
             _result.Dispose();
@@ -358,10 +358,9 @@ namespace ServerTools
                     string _phrase812;
                     if (!Phrases.Dict.TryGetValue(812, out _phrase812))
                     {
-                        _phrase812 = "{PlayerName} you have already voted on the poll.";
+                        _phrase812 = "you have already voted on the poll.";
                     }
-                    _phrase812 = _phrase812.Replace("{PlayerName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase812), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase812 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -376,12 +375,12 @@ namespace ServerTools
                     string _phrase928;
                     if (!Phrases.Dict.TryGetValue(928, out _phrase928))
                     {
-                        _phrase928 = "{PlayerName} you have cast a vote for yes. Currently, the pole is yes {Yes} / no {No}.";
+                        _phrase928 = "you have cast a vote for yes. Currently, the pole is yes {Yes} / no {No}.";
                     }
                     _phrase928 = _phrase928.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase928 = _phrase928.Replace("{Yes}", _pollYes.ToString());
                     _phrase928 = _phrase928.Replace("{No}", _pollNo.ToString());
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase928), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase928 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                     {
                         sw.WriteLine(string.Format("{0}  Player name {1} has voted yes in the poll. Yes {2} / no {3}", DateTime.Now, _cInfo.playerName, _pollYes, _pollNo));
@@ -405,10 +404,9 @@ namespace ServerTools
                     string _phrase812;
                     if (!Phrases.Dict.TryGetValue(812, out _phrase812))
                     {
-                        _phrase812 = "{PlayerName} you have already voted on the poll";
+                        _phrase812 = "you have already voted on the poll";
                     }
-                    _phrase812 = _phrase812.Replace("{PlayerName}", _cInfo.playerName);
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase812), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase812 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -423,12 +421,11 @@ namespace ServerTools
                     string _phrase929;
                     if (!Phrases.Dict.TryGetValue(929, out _phrase929))
                     {
-                        _phrase929 = "{PlayerName} you have cast a vote for no. Currently, the pole is yes {Yes} / no {No}.";
+                        _phrase929 = "you have cast a vote for no. Currently, the pole is yes {Yes} / no {No}.";
                     }
-                    _phrase929 = _phrase929.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase929 = _phrase929.Replace("{Yes}", _pollYes.ToString());
                     _phrase929 = _phrase929.Replace("{No}", _pollNo.ToString());
-                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase929), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase929 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                     {
                         sw.WriteLine(string.Format("{0}  Player name {1} has voted no in the poll. Yes {2} / no {3}", DateTime.Now, _cInfo.playerName, _pollYes, _pollNo));

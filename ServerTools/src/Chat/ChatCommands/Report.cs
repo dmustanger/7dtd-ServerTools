@@ -12,16 +12,16 @@ namespace ServerTools
         public static bool IsEnabled = false;
         public static int Admin_Level = 0, Delay = 60, Days_Before_Log_Delete = 5;
         private static string _file = string.Format("Report_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string _filepath = string.Format("{0}/Reports/{1}", API.GamePath, _file);
+        private static string _filepath = string.Format("{0}/PlayerReports/{1}", API.GamePath, _file);
 
         public static void ReportLogsDir()
         {
-            if (!Directory.Exists(API.GamePath + "/Reports"))
+            if (!Directory.Exists(API.GamePath + "/PlayerReports"))
             {
-                Directory.CreateDirectory(API.GamePath + "/Reports");
+                Directory.CreateDirectory(API.GamePath + "/PlayerReports");
             }
 
-            string[] files = Directory.GetFiles(API.GamePath + "/Reports");
+            string[] files = Directory.GetFiles(API.GamePath + "/PlayerReports");
             int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
             foreach (string file in files)
             {
@@ -59,7 +59,7 @@ namespace ServerTools
                     }
                     _phrase795 = _phrase795.Replace("{DelayBetweenUses}", Delay.ToString());
                     _phrase795 = _phrase795.Replace("{TimeRemaining}", _timeleft.ToString());
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase795 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase795 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -87,7 +87,7 @@ namespace ServerTools
                     }
                     _phrase796 = _phrase796.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase796 = _phrase796.Replace("{Message}", _message);
-                    ChatHook.ChatMessage(_cInfoAdmins, LoadConfig.Chat_Response_Color + _cInfoAdmins.playerName + ", " + _phrase796 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+                    ChatHook.ChatMessage(_cInfoAdmins, LoadConfig.Chat_Response_Color + _cInfoAdmins.playerName + ", " + _phrase796 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             using (StreamWriter sw = new StreamWriter(_filepath, true))
@@ -102,7 +102,7 @@ namespace ServerTools
             {
                 _phrase797 = "your report has been sent to online administrators and logged.";
             }
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase797 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase797 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             string _sql = string.Format("UPDATE Players SET lastLog = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
             SQL.FastQuery(_sql);
             Log.Out(string.Format("[SERVERTOOLS] Report sent by player name {0}", _cInfo.playerName));

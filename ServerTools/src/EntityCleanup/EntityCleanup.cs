@@ -9,7 +9,6 @@ namespace ServerTools
         public static bool IsEnabled = false, BlockIsEnabled = false, FallingTreeEnabled = false, Underground = false, Bikes = false;
         private static List<Entity> Entities = new List<Entity>();
         private static List<int> FallingTree = new List<int>();
-        private static List<int> Fallingblock = new List<int>();
         private static int _xMinCheck, _yMinCheck, _zMinCheck, _xMaxCheck, _yMaxCheck, _zMaxCheck;
 
         public static void EntityCheck()
@@ -28,12 +27,8 @@ namespace ServerTools
                             string _name = EntityClass.list[_entity.entityClass].entityClassName;
                             if (BlockIsEnabled && _name == "fallingBlock")
                             {
-                                if (!Fallingblock.Contains(_entity.entityId))
-                                {
-                                    Fallingblock.Add(_entity.entityId);
-                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed falling block id {0}", _entity.entityId));
-                                }
+                                GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
+                                Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed falling block id {0}", _entity.entityId));
                             }
                             if (FallingTreeEnabled && _name == "fallingTree")
                             {
@@ -59,7 +54,7 @@ namespace ServerTools
                                     Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Teleported entity id {0} to the surface @ {1} -1 {2}", _entity.entityId, x, z));
                                 }
                             }
-                            if (Bikes && _name == "minibike")
+                            if (Bikes && _name == "vehicleMinibike")
                             {
                                 Vector3 _vec = _entity.position;
                                 GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);

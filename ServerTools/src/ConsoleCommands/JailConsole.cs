@@ -108,11 +108,10 @@ namespace ServerTools
                                     string _phrase500;
                                     if (!Phrases.Dict.TryGetValue(500, out _phrase500))
                                     {
-                                        _phrase500 = "{PlayerName} you have been sent to jail.";
+                                        _phrase500 = "you have been sent to jail.";
                                     }
-                                    _phrase500 = _phrase500.Replace("{PlayerName}", _cInfo.playerName);
                                     _phrase500 = _phrase500.Replace("{Minutes}", _jailTime.ToString());
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase500), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase500 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     SdtdConsole.Instance.Output(string.Format("You have put {0} in jail for {1} minutes.", _cInfo.playerName, _jailTime));
                                 }
                                 if (_jailTime == -1)
@@ -120,10 +119,9 @@ namespace ServerTools
                                     string _phrase500;
                                     if (!Phrases.Dict.TryGetValue(500, out _phrase500))
                                     {
-                                        _phrase500 = "{PlayerName} you have been sent to jail.";
+                                        _phrase500 = "you have been sent to jail.";
                                     }
-                                    _phrase500 = _phrase500.Replace("{PlayerName}", _cInfo.playerName);
-                                    _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase500), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase500 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     SdtdConsole.Instance.Output(string.Format("You have put {0} in jail for life.", _cInfo.playerName));
                                 }
                                 string _sql = string.Format("UPDATE Players SET jailTime = {0}, jailName = '{1}', jailDate = '{2}' WHERE steamid = '{3}'", _jailTime, _cInfo.playerName, DateTime.Now, _cInfo.playerId);
@@ -179,10 +177,10 @@ namespace ServerTools
                                 string _phrase501;
                                 if (!Phrases.Dict.TryGetValue(501, out _phrase501))
                                 {
-                                    _phrase501 = "{PlayerName} you have been released from jail.";
+                                    _phrase501 = "you have been released from jail.";
                                 }
                                 _phrase501 = _phrase501.Replace("{PlayerName}", _cInfo.playerName);
-                                _cInfo.SendPackage(new NetPackageGameMessage(EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase501), LoadConfig.Server_Response_Name, false, "ServerTools", false));
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase501 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 string _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _cInfo.playerId);
                                 SQL.FastQuery(_sql);
                                 SdtdConsole.Instance.Output(string.Format("You have released a player with steam id {0} from jail. ", _params[1]));

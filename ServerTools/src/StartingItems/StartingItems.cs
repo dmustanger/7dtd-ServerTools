@@ -93,9 +93,9 @@ namespace ServerTools
                             continue;
                         }
                         string _item = _line.GetAttribute("item");
-
-                        ItemValue _itemValue = ItemClass.GetItem(_item, false);
-                        if (_itemValue == null)
+                        ItemClass _class = ItemClass.GetItemClass(_item, true);
+                        Block _block = Block.GetBlockByName(_item, true);
+                        if (_class == null && _block == null)
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Starting item entry skipped. Item not found: {0}", _item));
                             continue;
@@ -188,34 +188,12 @@ namespace ServerTools
             World world = GameManager.Instance.World;
             foreach (KeyValuePair<string, int[]> kvp in startItemList)
             {
-                ItemValue itemValue;
-                var itemId = 4096;
-                int _itemId;
-                if (int.TryParse(kvp.Key, out _itemId))
-                {
-                    int calc = (_itemId + 4096);
-                    itemId = calc;
-                    itemValue = ItemClass.list[itemId] == null ? ItemValue.None : new ItemValue(itemId, kvp.Value[1], kvp.Value[1], true);
-                }
-                else
-                {
-                    if (!ItemClass.ItemNames.Contains(kvp.Key))
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0} for Starting_Items", kvp.Key));
-                    }
-
-                    itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], true);
-                }
-
-                if (Equals(itemValue, ItemValue.None))
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0} for Starting_Items", kvp.Key));
-                }
+                ItemValue _itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], true);
                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                 {
                     entityClass = EntityClass.FromString("item"),
                     id = EntityFactory.nextEntityID++,
-                    itemStack = new ItemStack(itemValue, kvp.Value[0]),
+                    itemStack = new ItemStack(_itemValue, kvp.Value[0]),
                     pos = world.Players.dict[_cInfo.entityId].position,
                     rot = new Vector3(20f, 0f, 20f),
                     lifetime = 60f,
@@ -224,7 +202,7 @@ namespace ServerTools
                 world.SpawnEntityInWorld(entityItem);
                 _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name, _cInfo.playerName));
+                Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
             }
             string _sql = string.Format("UPDATE Players SET startingItems = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
             SQL.FastQuery(_sql);
