@@ -66,7 +66,6 @@ namespace ServerTools
             string _phrase302;
             string _phrase303;
             string _phrase304;
-            string _phrase305;
             string _phrase306;
             if (!Phrases.Dict.TryGetValue(300, out _phrase300))
             {
@@ -97,12 +96,12 @@ namespace ServerTools
             _phrase302 = _phrase302.Replace("{Players}", _playerCount.ToString());
             _phrase302 = _phrase302.Replace("{Zombies}", _zombies.ToString());
             _phrase302 = _phrase302.Replace("{Animals}", _animals.ToString());
-            _phrase302 = _phrase302.Replace("{Bicycles}", _bicycles.ToString());
-            _phrase302 = _phrase302.Replace("{Minibikes}", _miniBikes.ToString());
-            _phrase302 = _phrase302.Replace("{Motorcycles}", _motorcycles.ToString());
-            _phrase302 = _phrase302.Replace("{4x4}", _4x4.ToString());
-            _phrase302 = _phrase302.Replace("{Gyros}", _gyros.ToString());
-            _phrase305 = _phrase304.Replace("{SupplyCrates}", _supplyCrates.ToString());
+            _phrase303 = _phrase303.Replace("{Bicycles}", _bicycles.ToString());
+            _phrase303 = _phrase303.Replace("{Minibikes}", _miniBikes.ToString());
+            _phrase303 = _phrase303.Replace("{Motorcycles}", _motorcycles.ToString());
+            _phrase303 = _phrase303.Replace("{4x4}", _4x4.ToString());
+            _phrase303 = _phrase303.Replace("{Gyros}", _gyros.ToString());
+            _phrase304 = _phrase304.Replace("{SupplyCrates}", _supplyCrates.ToString());
             if (_announce)
             {
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase300 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
@@ -117,7 +116,6 @@ namespace ServerTools
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase302 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase303 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase304 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
@@ -133,7 +131,6 @@ namespace ServerTools
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase302 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase303 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase304 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }
