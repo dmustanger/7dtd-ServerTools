@@ -1797,6 +1797,21 @@ namespace ServerTools
                     _phrase966 = "{Name1}, valued at {Top1}. {Name2}, valued at {Top2}. {Name3}, valued at {Top3}";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"966\" Phrase=\"{0}\" />", _phrase966));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ******************* Chat Protection ******************** -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                string _phrase970;
+                if (!Dict.TryGetValue(970, out _phrase970))
+                {
+                    _phrase970 = "you have sent too many messages in one minute. Wait 60 seconds.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"970\" Phrase=\"{0}\" />", _phrase970));
+                string _phrase971;
+                if (!Dict.TryGetValue(971, out _phrase971))
+                {
+                    _phrase971 = "message is too long.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"971\" Phrase=\"{0}\" />", _phrase971));
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();

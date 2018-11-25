@@ -128,7 +128,6 @@ namespace ServerTools
                         {
                             _secondaryname = _item;
                         }
-                        
                         if (!dict.ContainsKey(_item))
                         {
                             int[] _c = new int[] { _min, _max };
@@ -380,7 +379,7 @@ namespace ServerTools
             int _quality = 1;
             if (_itemValue.HasQuality)
             {
-                _quality = random.Next(1, 601);
+                _quality = random.Next(1, 7);
                 _itemValue.Quality = _quality;
             }
             int[] _counts;

@@ -94,7 +94,7 @@ namespace ServerTools
                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat stamina\"", _cInfo.playerId), (ClientInfo)null);
                                 }
                             }
-                            if (p_jumpStrength >= 1.2)
+                            if (p_jumpStrength >= 1.5)
                             {
                                 using (StreamWriter sw = new StreamWriter(_filepath, true))
                                 {
@@ -138,7 +138,7 @@ namespace ServerTools
                             }
                             if (!Players.NoFlight.Contains(_cInfo.entityId))
                             {
-                                if (p_speedForward > 14)
+                                if (p_speedForward > 20)
                                 {
                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                     {

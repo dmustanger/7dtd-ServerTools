@@ -249,7 +249,7 @@ namespace ServerTools
             }
             if (AutoShutdown.IsEnabled)
             {
-                AutoShutdown.ShutdownList();
+                AutoShutdown.ShutdownTime();
             }
         }
     }

@@ -10,11 +10,11 @@ namespace ServerTools
             {
                 if (SQL.IsMySql)
                 {
-                    MySqlDatabase.FastQuery("ALTER TABLE Players ADD return VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD eventRespawn VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD eventSpawn VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD newSpawn VARCHAR(50) DEFAULT 'false';");
+                    MySqlDatabase.FastQuery("ALTER TABLE Players ADD return VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD eventRespawn VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD eventSpawn VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD newSpawn VARCHAR(50) DEFAULT 'false'; ALTER TABLE Auction ADD sellDate VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM'; ALTER TABLE Players ADD messageCount INT DEFAULT 0; ALTER TABLE Players ADD messageTime VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM';");
                 }
                 else
                 {
-                    SQLiteDatabase.FastQuery("ALTER TABLE Players ADD return TEXT DEFAULT 'false'; ALTER TABLE Players ADD eventRespawn TEXT DEFAULT 'false'; ALTER TABLE Players ADD eventSpawn TEXT DEFAULT 'false'; ALTER TABLE Players ADD newSpawn TEXT DEFAULT 'false';");
+                    SQLiteDatabase.FastQuery("ALTER TABLE Players ADD return TEXT DEFAULT 'false'; ALTER TABLE Players ADD eventRespawn TEXT DEFAULT 'false'; ALTER TABLE Players ADD eventSpawn TEXT DEFAULT 'false'; ALTER TABLE Players ADD newSpawn TEXT DEFAULT 'false'; ALTER TABLE Auction ADD sellDate TEXT DEFAULT '10/29/2000 7:30:00 AM'; ALTER TABLE Players ADD messageCount INTEGER DEFAULT 0; ALTER TABLE Players ADD messageTime TEXT DEFAULT '10/29/2000 7:30:00 AM';");
                 }
                 SQL.FastQuery("UPDATE Config SET sql_version = 2 WHERE sql_version = 1");
             }
@@ -31,6 +31,18 @@ namespace ServerTools
                     SQLiteDatabase.FastQuery("CREATE TABLE IF NOT EXISTS EventSpawns (eventid INTEGER NOT NULL, eventTeam INTEGER NOT NULL, eventSpawn TEXT, eventRespawn TEXT, FOREIGN KEY(eventid) REFERENCES Events(eventid))");
                 }
                 SQL.FastQuery("UPDATE Config SET sql_version = 3 WHERE sql_version = 2");
+            }
+            if (_version == 3)
+            {
+                if (SQL.IsMySql)
+                {
+                    MySqlDatabase.FastQuery("ALTER TABLE Players ADD newSpawn VARCHAR(50) DEFAULT 'false'; ALTER TABLE Auction ADD sellDate VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM'; ALTER TABLE Players ADD messageCount INT DEFAULT 0; ALTER TABLE Players ADD messageTime VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM';");
+                }
+                else
+                {
+                    SQLiteDatabase.FastQuery("ALTER TABLE Players ADD newSpawn TEXT DEFAULT 'false'; ALTER TABLE Auction ADD sellDate TEXT DEFAULT '10/29/2000 7:30:00 AM'; ALTER TABLE Players ADD messageCount INTEGER DEFAULT 0; ALTER TABLE Players ADD messageTime TEXT DEFAULT '10/29/2000 7:30:00 AM';");
+                }
+                SQL.FastQuery("UPDATE Config SET sql_version = 4 WHERE sql_version = 3");
             }
             CheckVersion();
         }

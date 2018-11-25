@@ -384,10 +384,10 @@ namespace ServerTools
             if (Bank.IsEnabled)
             {
                 _commands_4 = string.Format("{0} /bank", _commands_4);
-                _commands_4 = string.Format("{0} /deposit", _commands_4);
-                _commands_4 = string.Format("{0} /withdraw", _commands_4);
-                _commands_4 = string.Format("{0} /wallet deposit", _commands_4);
-                _commands_4 = string.Format("{0} /wallet withdraw", _commands_4);
+                _commands_4 = string.Format("{0} /deposit #", _commands_4);
+                _commands_4 = string.Format("{0} /withdraw #", _commands_4);
+                _commands_4 = string.Format("{0} /wallet deposit #", _commands_4);
+                _commands_4 = string.Format("{0} /wallet withdraw #", _commands_4);
             }
             return _commands_4;
         }

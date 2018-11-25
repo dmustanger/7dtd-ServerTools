@@ -1,5 +1,26 @@
 ﻿CHANGELOG
 
+12.2
+Added option to Chat_Flood_Protection called Message_Length. Sets the length a single message can be
+Added option to Chat_Flood_Protection called Messages_Per_Min. Sets how many messages can be sent in one minute
+Added option to the Bank tool called Deposit_Fee. Sets the fee removed on deposit to the bank. 5 would deduct 5%
+Added Prefix (Friends) and (Party) to the chat system when the filter is used
+Added response upon successful deposit from a chest in to a bank
+Fixed chat sending to all users when using a whisper
+Fixed item quality range when spawning items. Range is now 1-6
+Fixed the banking issues
+Changed the internal process for verification of item names and id
+Changed file structure. All the required files are located in a single folder now
+Changed /day7 response to reflect the new vehicles in version 12.1
+Changed Player_Stat_Check for speed to avoid false positives
+Changed some commands shown when using /commands
+Verified live edits and server changes to xml files are working
+
+*Note a lot of tools were broken with the update to A17. Servertools for A17 is experimental right now and you will find bugs. 
+Turn a tool off if you have problems and leave a note about it in discord or on github. We are working on the issues tool by tool
+and will sort out all the problems. Thank you for your patience
+
+
 12.1
 Fixed internal chathook code. Chat color prefix and messages should function correctly now
 Fixed errors on entry from a new player

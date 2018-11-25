@@ -93,8 +93,19 @@ namespace ServerTools
                             continue;
                         }
                         string _item = _line.GetAttribute("itemName");
-                        ItemClass _class = ItemClass.GetItemClass(_item, true);
-                        Block _block = Block.GetBlockByName(_item, true);
+                        ItemClass _class;
+                        Block _block;
+                        int _id;
+                        if (int.TryParse(_item, out _id))
+                        {
+                            _class = ItemClass.GetForId(_id);
+                            _block = Block.GetBlockByName(_item, true);
+                        }
+                        else
+                        {
+                            _class = ItemClass.GetItemClass(_item, true);
+                            _block = Block.GetBlockByName(_item, true);
+                        }
                         if (_class == null && _block == null)
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Invalid item entry skipped. Item or block not found: {0}", _item));

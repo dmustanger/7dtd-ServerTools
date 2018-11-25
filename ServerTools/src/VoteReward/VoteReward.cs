@@ -122,12 +122,33 @@ namespace ServerTools
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring reward entry because of invalid (non-numeric) value for 'quality' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        string item = _line.GetAttribute("itemOrBlock");
-                        if (!dict.ContainsKey(item))
+                        string _item = _line.GetAttribute("itemOrBlock");
+                        ItemClass _class;
+                        Block _block;
+                        int _id;
+                        if (int.TryParse(_item, out _id))
                         {
-                            int[] _c = new int[] { _countMin, _countMax, _qualityMin, _qualityMax };
-                            dict.Add(item, _c);
-                        }                                                                      
+                            _class = ItemClass.GetForId(_id);
+                            _block = Block.GetBlockByName(_item, true);
+                        }
+                        else
+                        {
+                            _class = ItemClass.GetItemClass(_item, true);
+                            _block = Block.GetBlockByName(_item, true);
+                        }
+                        if (_class == null && _block == null)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Unable to find item or block {0}", _item));
+                            return;
+                        }
+                        else
+                        {
+                            if (!dict.ContainsKey(_item))
+                            {
+                                int[] _c = new int[] { _countMin, _countMax, _qualityMin, _qualityMax };
+                                dict.Add(_item, _c);
+                            }
+                        }
                     }
                 }
             }

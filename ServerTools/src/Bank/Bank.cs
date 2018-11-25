@@ -11,7 +11,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Inside_Claim = true;
         public static string Ingame_Coin = "casinoCoin";
-        public static int Limit = 50000;
+        public static int Limit = 50000, Deposit_Fee = 5;
         public static Dictionary<string, int> TransferId = new Dictionary<string, int>();
         private static DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
         private static LinkedList<Chunk> chunkArray = new LinkedList<Chunk>();
@@ -33,7 +33,7 @@ namespace ServerTools
                 string _message = "your bank account is worth {Value}. Transfer Id is {Id}.";
                 _message = _message.Replace("{Value}", _bank.ToString());
                 _message = _message.Replace("{Id}", _id.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -53,7 +53,7 @@ namespace ServerTools
             string _message = "your bank account is worth {Value}. Transfer Id is {Id}.";
             _message = _message.Replace("{Value}", _bank.ToString());
             _message = _message.Replace("{Id}", _rndId.ToString());
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void CreateFolder()
@@ -99,7 +99,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + " you can not use this command here.Stand in your own or a friend's claimed space.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + " you can not use this command here.Stand in your own or a friend's claimed space.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -142,7 +142,6 @@ namespace ServerTools
                             if (!Found)
                             {
                                 TileEntityType type = tile.GetTileEntityType();
-                                Log.Out(string.Format("tile entity type = {0}", type.ToString()));
                                 if (type.ToString().Equals("SecureLoot"))
                                 {
                                     TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
@@ -187,9 +186,10 @@ namespace ServerTools
                                                             int _bank;
                                                             int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
                                                             _result.Dispose();
-                                                            double _percent = _coinAmount * 0.05;
-                                                            int _newCoin = _coinAmount - (int)_percent;
-                                                            double _newLimit = Limit + (Limit * 0.05);
+                                                            int _percent = Deposit_Fee / 100;
+                                                            double _fee = _coinAmount * _percent;
+                                                            int _newCoin = _coinAmount - (int)_fee;
+                                                            double _newLimit = Limit + (Limit * _percent);
                                                             if (_bank + _coinAmount <= (int)_newLimit)
                                                             {
                                                                 Found = true;
@@ -216,6 +216,10 @@ namespace ServerTools
                                                                     sw.Flush();
                                                                     sw.Close();
                                                                 }
+                                                                string _message = "deposited {Value} in to your bank minus the transfer fee of {Percent} percent.";
+                                                                _message = _message.Replace("{Value}", _coinAmount.ToString());
+                                                                _message = _message.Replace("{Percent}", Deposit_Fee.ToString());
+                                                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                                                 return;
                                                             }
                                                             else

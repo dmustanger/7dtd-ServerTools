@@ -179,7 +179,7 @@ namespace ServerTools
                                                         ItemClass _itemClass = ItemClass.list[item.itemValue.type];
                                                         string _itemName = _itemClass.GetItemName();
                                                         SecureLoot.UpdateSlot(slotNumber, ItemStack.Empty);
-                                                        _sql = string.Format("INSERT INTO Auction (steamid, itemName, itemCount, itemQuality, itemPrice, cancelTime) VALUES ('{0}', '{1}', {2}, {3}, {4}, '{5}')", _cInfo.playerId, _itemName, item.count, item.itemValue.Quality, _price, DateTime.Now);
+                                                        _sql = string.Format("INSERT INTO Auction (steamid, itemName, itemCount, itemQuality, itemPrice, cancelTime, sellDate) VALUES ('{0}', '{1}', {2}, {3}, {4}, '{5}', '{6}')", _cInfo.playerId, _itemName, item.count, item.itemValue.Quality, _price, DateTime.Now, DateTime.Now);
                                                         SQL.FastQuery(_sql);
                                                         string _message = "your auction item {Name} has been removed from the secure loot and added to the auction.";
                                                         _message = _message.Replace("{Name}", _itemName);

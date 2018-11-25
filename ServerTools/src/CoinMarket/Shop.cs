@@ -132,6 +132,10 @@ namespace ServerTools
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring Market Item entry because of invalid (non-numeric) value for 'price' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
+                        if (_quality > 6)
+                        {
+                            _quality = 1;
+                        }
                         string _name = _line.GetAttribute("name");
                         string _secondaryname;
                         if (_line.HasAttribute("secondaryname"))
@@ -142,8 +146,19 @@ namespace ServerTools
                         {
                             _secondaryname = _name;
                         }
-                        ItemClass _class = ItemClass.GetItemClass(_name, true);
-                        Block _block = Block.GetBlockByName(_name, true);
+                        ItemClass _class;
+                        Block _block;
+                        int _id;
+                        if (int.TryParse(_name, out _id))
+                        {
+                            _class = ItemClass.GetForId(_id);
+                            _block = Block.GetBlockByName(_name, true);
+                        }
+                        else
+                        {
+                            _class = ItemClass.GetItemClass(_name, true);
+                            _block = Block.GetBlockByName(_name, true);
+                        }
                         if (_class == null && _block == null)
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Market entry skipped. Item not found: {0}", _name));

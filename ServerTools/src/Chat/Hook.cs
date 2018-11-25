@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 
 namespace ServerTools
 {
@@ -20,6 +19,7 @@ namespace ServerTools
         public static int Admin_Level = 0, Mod_Level = 1;
         public static int Don_Level1 = 100, Don_Level2 = 101, Don_Level3 = 102;
         public static string Special_Players_List = "76561191234567891,76561191987654321";
+        public static int Max_Length = 250, Messages_Per_Min = 5;
         public static bool ChatCommandPrivateEnabled = false, ChatCommandPublicEnabled = false;
         public static string Command_Private = "/", Command_Public = "!";
         private static string filepath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
@@ -32,11 +32,58 @@ namespace ServerTools
             {
                 if (ChatFlood)
                 {
-                    if (_message.Length > 500)
+                    if (_message.Length > Max_Length)
                     {
-                        ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", message is too long.[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, _recipientEntityIds);
+                        string _phrase971;
+                        if (!Phrases.Dict.TryGetValue(971, out _phrase971))
+                        {
+                            _phrase971 = "message is too long.";
+                        }
+                        ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase971 + "[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, _recipientEntityIds);
                         return false;
                     }
+                    string _sql = string.Format("SELECT messageCount, messageTime FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    DataTable _result = SQL.TQuery(_sql);
+                    int _count;
+                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _count);
+                    DateTime _chatTime;
+                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _chatTime);
+                    TimeSpan varTime = DateTime.Now - _chatTime;
+                    double fractionalSeconds = varTime.TotalSeconds;
+                    int _timepassed = (int)fractionalSeconds;
+                    if (_count >= Messages_Per_Min)
+                    {
+                        if (_timepassed < 60)
+                        {
+                            string _phrase970;
+                            if (!Phrases.Dict.TryGetValue(970, out _phrase970))
+                            {
+                                _phrase970 = "you have sent too many messages in one minute.";
+                            }
+                            ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase970 + "[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, _recipientEntityIds);
+                            return false;
+                        }
+                        else
+                        {
+                            _sql = string.Format("UPDATE Players SET messageCount = 1, messageTime = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                            SQL.FastQuery(_sql);
+                        }
+                    }
+                    else
+                    {
+                        if (_timepassed < 60)
+                        {
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _count);
+                            _sql = string.Format("UPDATE Players SET messageCount = '{0}' WHERE steamid = '{1}'", _count + 1, _cInfo.playerId);
+                            SQL.FastQuery(_sql);
+                        }
+                        else
+                        {
+                            _sql = string.Format("UPDATE Players SET messageCount = 1, messageTime = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                            SQL.FastQuery(_sql);
+                        }
+                    }
+                    
                 }
                 if (ChatLog.IsEnabled)
                 {
@@ -46,7 +93,7 @@ namespace ServerTools
                 {
                     if (MutePlayer.Mutes.Contains(_cInfo.playerId))
                     {
-                        ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + " you are muted.[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, _recipientEntityIds);
+                        ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + " you are muted.[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         return false;
                     }
                 }
@@ -61,13 +108,34 @@ namespace ServerTools
                             {
                                 if (_colorPrefix[2] != "")
                                 {
-                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}{1} {2}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), EChatType.Global, _recipientEntityIds);
-                                    return false;
+                                    if (_type == EChatType.Friends)
+                                    {
+                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends){1} {2}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), _type, _recipientEntityIds);
+                                    }
+                                    else if (_type == EChatType.Party)
+                                    {
+                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party){1} {2}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), _type, _recipientEntityIds);
+                                    }
+                                    else
+                                    {
+                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}{1} {2}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), _type, _recipientEntityIds);
+                                    }
                                 }
                                 else
                                 {
-                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}{1}[-]", _colorPrefix[3], _mainName), EChatType.Global, _recipientEntityIds);
-                                    return false;
+                                    if (_type == EChatType.Friends)
+                                    {
+                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends){1}[-]", _colorPrefix[3], _mainName), _type, _recipientEntityIds);
+                                    }
+                                    else if (_type == EChatType.Party)
+                                    {
+                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party){1}[-]", _colorPrefix[3], _mainName), _type, _recipientEntityIds);
+                                    }
+                                    else
+                                    {
+                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}{1}[-]", _colorPrefix[3], _mainName), _type, _recipientEntityIds);
+                                    }
+                                    
                                 }
                             }
                             else
@@ -78,16 +146,37 @@ namespace ServerTools
                                 _result.Dispose();
                                 if (_colorPrefix[2] != "")
                                 {
-                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}({1}){2} {3}[-]", _colorPrefix[3], _clanname, _colorPrefix[2], _mainName), EChatType.Global, _recipientEntityIds);
-                                    return false;
+                                    if (_type == EChatType.Friends)
+                                    {
+                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends)({1}){2} {3}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), _type, _recipientEntityIds);
+                                    }
+                                    else if (_type == EChatType.Party)
+                                    {
+                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party)({1}){2} {3}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), _type, _recipientEntityIds);
+                                    }
+                                    else
+                                    {
+                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}({1}){2} {3}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), _type, _recipientEntityIds);
+                                    }
                                 }
                                 else
                                 {
-                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}({1}) {2}[-]", _colorPrefix[3], _clanname, _mainName), EChatType.Global, _recipientEntityIds);
-                                    return false;
+                                    if (_type == EChatType.Friends)
+                                    {
+                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends)({1}) {2}[-]", _colorPrefix[3], _clanname, _mainName), _type, _recipientEntityIds);
+                                    }
+                                    else if (_type == EChatType.Party)
+                                    {
+                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party)({1}) {2}[-]", _colorPrefix[3], _clanname, _mainName), _type, _recipientEntityIds);
+                                    }
+                                    else
+                                    {
+                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}({1}) {2}[-]", _colorPrefix[3], _clanname, _mainName), _type, _recipientEntityIds);
+                                    }
                                 }
                             }
                         }
+                        return false;
                     }
                     if (Normal_Player_Name_Coloring && !_message.StartsWith("@") && _mainName != LoadConfig.Server_Response_Name && _senderId != 33 && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public))
                     {
@@ -95,13 +184,33 @@ namespace ServerTools
                         {
                             if (Normal_Player_Prefix != "")
                             {
-                                ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}{1} {2}[-]", Normal_Player_Color, Normal_Player_Prefix, _mainName), EChatType.Global, _recipientEntityIds);
-                                return false;
+                                if (_type == EChatType.Friends)
+                                {
+                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends){1} {2}[-]", Normal_Player_Color, Normal_Player_Prefix, _mainName), _type, _recipientEntityIds);
+                                }
+                                else if (_type == EChatType.Party)
+                                {
+                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party){1} {2}[-]", Normal_Player_Color, Normal_Player_Prefix, _mainName), _type, _recipientEntityIds);
+                                }
+                                else
+                                {
+                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}{1} {2}[-]", Normal_Player_Color, Normal_Player_Prefix, _mainName), _type, _recipientEntityIds);
+                                }
                             }
                             else
                             {
-                                ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}{1}[-]", Normal_Player_Color, _mainName), EChatType.Global, _recipientEntityIds);
-                                return false;
+                                if (_type == EChatType.Friends)
+                                {
+                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends){1}[-]", Normal_Player_Color, _mainName), _type, _recipientEntityIds);
+                                }
+                                else if (_type == EChatType.Party)
+                                {
+                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party){1}[-]", Normal_Player_Color, _mainName), _type, _recipientEntityIds);
+                                }
+                                else
+                                {
+                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}{1}[-]", Normal_Player_Color, _mainName), _type, _recipientEntityIds);
+                                }
                             }
                         }
                         else
@@ -112,15 +221,37 @@ namespace ServerTools
                             _result.Dispose();
                             if (Normal_Player_Prefix != "")
                             {
-                                ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}({1}){2} {3}[-]", Normal_Player_Color, _clanname, Normal_Player_Prefix, _mainName), EChatType.Global, _recipientEntityIds);
-                                return false;
+                                if (_type == EChatType.Friends)
+                                {
+                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends)({1}){2} {3}[-]", Normal_Player_Color, _clanname, Normal_Player_Prefix, _mainName), _type, _recipientEntityIds);
+                                }
+                                else if (_type == EChatType.Party)
+                                {
+                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party)({1}){2} {3}[-]", Normal_Player_Color, _clanname, Normal_Player_Prefix, _mainName), _type, _recipientEntityIds);
+                                }
+                                else
+                                {
+                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}({1}){2} {3}[-]", Normal_Player_Color, _clanname, Normal_Player_Prefix, _mainName), _type, _recipientEntityIds);
+                                }
                             }
                             else
                             {
-                                ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}({1}) {2}[-]", Normal_Player_Color, _clanname, _mainName), EChatType.Global, _recipientEntityIds);
-                                return false;
+                                if (_type == EChatType.Friends)
+                                {
+                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends)({1}) {2}[-]", Normal_Player_Color, _clanname, _mainName), _type, _recipientEntityIds);
+                                }
+                                else if (_type == EChatType.Party)
+                                {
+                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party)({1}) {2}[-]", Normal_Player_Color, _clanname, _mainName), _type, _recipientEntityIds);
+                                }
+                                else
+                                {
+                                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}({1}) {2}[-]", Normal_Player_Color, _clanname, _mainName), _type, _recipientEntityIds);
+                                }
+                                
                             }
                         }
+                        return false;
                     }
                     if (ClanManager.IsEnabled && !_message.StartsWith("@") && _mainName != LoadConfig.Server_Response_Name && _senderId != 33 && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && ClanManager.ClanMember.Contains(_cInfo.playerId))
                     {
@@ -576,13 +707,13 @@ namespace ServerTools
                             string _commandsAdmin = CustomCommands.GetChatCommandsAdmin(_cInfo);
                             if (_announce)
                             {
-                                ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands1, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, _recipientEntityIds);
-                                ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands2, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, _recipientEntityIds);
-                                ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands3, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, _recipientEntityIds);
-                                ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands4, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, _recipientEntityIds);
+                                ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands1, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands2, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands3, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands4, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                 if (CustomCommands.IsEnabled)
                                 {
-                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commandsCustom, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, _recipientEntityIds);
+                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commandsCustom, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, _recipientEntityIds);
                                 }
                                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                                 if (Admin.PermissionLevel <= Admin_Level)
@@ -1603,7 +1734,7 @@ namespace ServerTools
         {
             if (_type == EChatType.Whisper)
             {
-                GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Whisper, 33, _message, _name, false, _recipientEntityIds);
+                GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Whisper, 33, _message, _name, false, null);
             }
             else if (_type == EChatType.Global)
             {

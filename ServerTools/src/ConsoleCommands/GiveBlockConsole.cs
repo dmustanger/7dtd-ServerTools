@@ -44,15 +44,28 @@ namespace ServerTools
                     SdtdConsole.Instance.Output(string.Format("Can not give block: Invalid blockId {0}", _params[1]));
                     return;
                 }
-                if (_params[2].Length < 1 || _params[2].Length > 4)
+                if (_params[2].Length < 1 || _params[2].Length > 1)
                 {
                     SdtdConsole.Instance.Output(string.Format("Can not give block: Invalid count {0}", _params[2]));
                     return;
                 }
                 else
                 {
-                    ItemValue _itemValue = ItemClass.GetItem(_params[1], true);
-                    if (Equals(_itemValue, ItemValue.None))
+                    ItemValue _itemValue;
+                    ItemClass _class;
+                    Block _block;
+                    int _id;
+                    if (int.TryParse(_params[1], out _id))
+                    {
+                        _class = ItemClass.GetForId(_id);
+                        _block = Block.GetBlockByName(_params[1], true);
+                    }
+                    else
+                    {
+                        _class = ItemClass.GetItemClass(_params[1], true);
+                        _block = Block.GetBlockByName(_params[1], true);
+                    }
+                    if (_class == null && _block == null)
                     {
                         SdtdConsole.Instance.Output(string.Format("Unable to find block {0}", _params[1]));
                         return;
@@ -70,7 +83,7 @@ namespace ServerTools
                             int _count;
                             if (int.TryParse(_params[2], out _count))
                             {
-                                if (_count > 0 & _count < 10000)
+                                if (_count > 0 & _count < 100000)
                                 {
                                     count = _count;
                                 }

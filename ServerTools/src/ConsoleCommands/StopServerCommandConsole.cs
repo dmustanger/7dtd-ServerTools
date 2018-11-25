@@ -43,7 +43,7 @@ namespace ServerTools
                         StopServer.NoEntry = false;
                         if (AutoShutdown.IsEnabled)
                         {
-                            AutoShutdown.ShutdownList();
+                            AutoShutdown.ShutdownTime();
                             Timers._sD = 0;
                         }
                         Lottery.ShuttingDown = false;

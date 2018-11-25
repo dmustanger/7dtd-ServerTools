@@ -44,12 +44,12 @@ namespace ServerTools
                     SdtdConsole.Instance.Output(string.Format("Can not give item: Invalid itemId or name {0}", _params[1]));
                     return;
                 }
-                if (_params[2].Length < 1 || _params[2].Length > 4)
+                if (_params[2].Length < 1 || _params[2].Length > 5)
                 {
                     SdtdConsole.Instance.Output(string.Format("Can not give item: Invalid count {0}", _params[2]));
                     return;
                 }
-                if (_params[3].Length < 1 || _params[3].Length > 3)
+                if (_params[3].Length < 1 || _params[3].Length > 1)
                 {
                     SdtdConsole.Instance.Output(string.Format("Can not give item: Invalid quality {0}", _params[3]));
                     return;
@@ -61,7 +61,7 @@ namespace ServerTools
                     int _count;
                     if (int.TryParse(_params[2], out _count))
                     {
-                        if (_count > 0 & _count < 10001)
+                        if (_count > 0 && _count < 100000)
                         {
                             count = _count;
                         }
@@ -69,17 +69,29 @@ namespace ServerTools
                     int min = 1;
                     int max = 1;
                     int quality;
-
                     if (int.TryParse(_params[3], out quality))
                     {
-                        if (quality > 0 & quality < 601)
+                        if (quality > 0 && quality < 7)
                         {
                             min = quality;
                             max = quality;
                         }
                     }
-                    ItemValue _itemValue = ItemClass.GetItem(_params[1], true);
-                    if (Equals(_itemValue, ItemValue.None))
+                    ItemValue _itemValue;
+                    ItemClass _class;
+                    Block _block;
+                    int _id;
+                    if (int.TryParse(_params[1], out _id))
+                    {
+                        _class = ItemClass.GetForId(_id);
+                        _block = Block.GetBlockByName(_params[1], true);
+                    }
+                    else
+                    {
+                        _class = ItemClass.GetItemClass(_params[1], true);
+                        _block = Block.GetBlockByName(_params[1], true);
+                    }
+                    if (_class == null && _block == null)
                     {
                         SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", _params[1]));
                         return;
