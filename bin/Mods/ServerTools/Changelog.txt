@@ -10,7 +10,6 @@ Fixed chat sending to all users when using a whisper
 Fixed item quality range when spawning items. Range is now 1-6
 Fixed the banking issues
 Changed the internal process for verification of item names and id
-Changed file structure. All the required files are located in a single folder now
 Changed /day7 response to reflect the new vehicles in version 12.1
 Changed Player_Stat_Check for speed to avoid false positives
 Changed some commands shown when using /commands
