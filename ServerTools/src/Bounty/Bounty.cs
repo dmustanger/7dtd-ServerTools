@@ -90,19 +90,19 @@ namespace ServerTools
                                 string _message1 = "you have added {Value} bounty to {PlayerName}.[-]";
                                 _message1 = _message1.Replace("{Value}", _cost.ToString());
                                 _message1 = _message1.Replace("{PlayerName}", _cInfo1.playerName);
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + _message1 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _message1 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                             else
                             {
                                 string _message1 = "you do not have enough in your wallet for this bounty: {Value}.[-]";
                                 _message1 = _message1.Replace("{Value}", _cost.ToString());
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message1 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _message1 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
                     else
                     {
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", to add a custom bounty type / bounty Id# Value, or minimum with /bounty Id#.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", to add a custom bounty type / bounty Id# Value, or minimum with /bounty Id#.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
@@ -128,13 +128,13 @@ namespace ServerTools
                             string _message1 = "you have added {Value} bounty to {PlayerName}.[-]";
                             _message1 = _message1.Replace("{Value}", Minimum_Bounty.ToString());
                             _message1 = _message1.Replace("{PlayerName}", _cInfo1.playerName);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + _message1 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _message1 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                         else
                         {
                             string _message1 = "you do not have enough in your wallet for this bounty: {Value}.[-]";
                             _message1 = _message1.Replace("{Value}", Minimum_Bounty.ToString());
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message1 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _message1 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }

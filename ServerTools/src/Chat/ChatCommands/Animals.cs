@@ -77,16 +77,16 @@ namespace ServerTools
                                     string _phrase601;
                                     if (!Phrases.Dict.TryGetValue(601, out _phrase601))
                                     {
-                                        _phrase601 = "you have taxed your tracking ability. Wait {TimeRemaining} minutes and try again.";
+                                        _phrase601 = " you have taxed your tracking ability. Wait {TimeRemaining} minutes and try again.";
                                     }
                                     _phrase601 = _phrase601.Replace("{TimeRemaining}", _timeleft.ToString());
                                     if (_announce)
                                     {
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase601 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase601 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                     }
                                     else
                                     {
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase601 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase601 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                             }
@@ -111,16 +111,16 @@ namespace ServerTools
                             string _phrase601;
                             if (!Phrases.Dict.TryGetValue(601, out _phrase601))
                             {
-                                _phrase601 = "you have taxed your tracking ability. Wait {TimeRemaining} minutes and try again.";
+                                _phrase601 = " you have taxed your tracking ability. Wait {TimeRemaining} minutes and try again.";
                             }
                             _phrase601 = _phrase601.Replace("{TimeRemaining}", _timeleft.ToString());
                             if (_announce)
                             {
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase601 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase601 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             }
                             else
                             {
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase601 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase601 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
@@ -164,16 +164,16 @@ namespace ServerTools
                 string _phrase814;
                 if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    _phrase814 = "you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
                 if (_announce)
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -216,16 +216,16 @@ namespace ServerTools
                 string _phrase715;
                 if (!Phrases.Dict.TryGetValue(715, out _phrase715))
                 {
-                    _phrase715 = "you have tracked down an animal to within {Radius} metres.";
+                    _phrase715 = " you have tracked down an animal to within {Radius} metres.";
                 }
                 _phrase715 = _phrase715.Replace("{Radius}", _nextRadius.ToString());
                 if (_announce)
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase715 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase715 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase715 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + LoadConfig.Chat_Response_Color + _phrase715 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 string _sql;
                 if (Wallet.IsEnabled && Command_Cost >= 1)
@@ -238,7 +238,7 @@ namespace ServerTools
             else
             {
                 AnimalList();
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", animal list was empty. Attempting to rebuild. Type /track again. If this repeats, contact an administrator.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", animal list was empty. Attempting to rebuild. Type /track again. If this repeats, contact an administrator.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

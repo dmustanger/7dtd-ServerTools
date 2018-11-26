@@ -49,10 +49,20 @@ namespace ServerTools
                                 var x = (int)_player.position.x;
                                 var y = (int)_player.position.y;
                                 var z = (int)_player.position.z;
+                                var region_x = x / 512;
+                                if (x < 0)
+                                {
+                                    region_x--;
+                                }
+                                var region_z = z / 512;
+                                if (z < 0)
+                                {
+                                    region_z--;
+                                }
                                 string _ip = _cInfo.ip;
                                 using (StreamWriter sw = new StreamWriter(_filepath, true))
                                 {
-                                    sw.WriteLine(string.Format("{0}  {1} steamId {2} IP Address {3} at Position: {4} X {5} Y {6} Z", DateTime.Now, _cInfo.playerName, _cInfo.playerId, _ip, x, y, z));
+                                    sw.WriteLine(string.Format("{0}  {1} steamId {2} IP Address {3} at Position: {4} X {5} Y {6} Z in RegionFile: r.{7}.{8}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, _ip, x, y, z, region_x, region_z));
                                     sw.WriteLine();
                                     sw.Flush();
                                     sw.Close();

@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        public const double version = 12.2;
+        public const double version = 12.3;
         public static bool UpdateConfigs = false;
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
@@ -639,12 +639,12 @@ namespace ServerTools
                                     continue;
                                 }
                                 Server_Response_Name = _line.GetAttribute("Server_Response_Name");
-                                if (!_line.HasAttribute("Color"))
+                                if (!_line.HasAttribute("Main_Color"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response entry because of missing 'Color' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response entry because of missing 'Main_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                Chat_Response_Color = _line.GetAttribute("Color");
+                                Chat_Response_Color = _line.GetAttribute("Main_Color");
                                 if (!_line.HasAttribute("Chat_Command_Private"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response entry because of missing 'Chat_Command_Private' attribute: {0}", subChild.OuterXml));
@@ -667,6 +667,26 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response entry because of invalid (true/false) value for 'Mute_Commands' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                break;
+                            case "Chat_Command_Response_Extended":
+                                if (!_line.HasAttribute("Friend_Chat_Color"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response_Extended entry because of missing 'Friend_Chat_Color' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                ChatHook.Friend_Chat_Color = _line.GetAttribute("Friend_Chat_Color");
+                                if (!_line.HasAttribute("Party_Chat_Color"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response_Extended entry because of missing 'Party_Chat_Color' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                ChatHook.Party_Chat_Color = _line.GetAttribute("Party_Chat_Color");
+                                if (!_line.HasAttribute("Player_Name_Color"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response_Extended entry because of missing 'Player_Name_Color' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                ChatHook.Player_Name_Color = _line.GetAttribute("Player_Name_Color");
                                 break;
                             case "Chat_Flood_Protection":
                                 if (!_line.HasAttribute("Enable"))
@@ -2672,6 +2692,16 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out Waypoint.Delay_Between_Uses))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 if (!_line.HasAttribute("PvP_Check"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Waypoints entry because of missing 'PvP_Check' attribute: {0}", subChild.OuterXml));
@@ -2897,7 +2927,8 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Show_On_Login=\"{1}\" Show_On_Respawn=\"{2}\" Auto_Show=\"{3}\" Auto_Show_Delay=\"{4}\" Days_Until_Horde=\"{5}\" />", Bloodmoon.IsEnabled, Bloodmoon.Show_On_Login, Bloodmoon.Show_On_Respawn, Bloodmoon.Auto_Show, Timers.Auto_Show_Bloodmoon_Delay, Bloodmoon.Days_Until_Horde));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bounties\" Enable=\"{0}\" Minimum_Bounty=\"{1}\" Kill_Streak=\"{2}\" Bonus=\"{3}\" />", Bounties.IsEnabled, Bounties.Minimum_Bounty, Bounties.Kill_Streak, Bounties.Bonus));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Color_Prefix\" Enable=\"{0}\" />", ChatColorPrefix.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response\" Server_Response_Name=\"{0}\" Color=\"{1}\" Chat_Command_Private=\"{2}\" Chat_Command_Public=\"{3}\" Mute_Commands=\"{4}\" />", Server_Response_Name, Chat_Response_Color, ChatHook.Command_Private, ChatHook.Command_Public, MutePlayer.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response\" Server_Response_Name=\"{0}\" Main_Color=\"{1}\" Chat_Command_Private=\"{2}\" Chat_Command_Public=\"{3}\" Mute_Commands=\"{4}\" />", Server_Response_Name, Chat_Response_Color, ChatHook.Command_Private, ChatHook.Command_Public, MutePlayer.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response_Extended\" Friend_Chat_Color=\"{0}\" Party_Chat_Color=\"{1}\" Player_Name_Color=\"{2}\" />", ChatHook.Friend_Chat_Color, ChatHook.Party_Chat_Color, ChatHook.Player_Name_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Flood_Protection\" Enable=\"{0}\" Max_Length=\"{1}\" Messages_Per_Min=\"{2}\" />", ChatHook.ChatFlood, ChatHook.Max_Length, ChatHook.Messages_Per_Min));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Logger\" Enable=\"{0}\" />", ChatLog.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Clan_Manager\" Enable=\"{0}\" Private_Chat_Color=\"{1}\" />", ClanManager.IsEnabled, ClanManager.Private_Chat_Color));
@@ -2953,7 +2984,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" Your_Voting_Site=\"{1}\" API_Key=\"{2}\" Delay_Between_Uses=\"{3}\" Reward_Count=\"{4}\" Reward_Entity=\"{5}\" Entity_Id=\"{6}\" />", VoteReward.IsEnabled, VoteReward.Your_Voting_Site, VoteReward.API_Key, VoteReward.Delay_Between_Uses, VoteReward.Reward_Count, VoteReward.Reward_Entity, VoteReward.Entity_Id));
                 sw.WriteLine(string.Format("        <Tool Name=\"Wallet\" Enable=\"{0}\" Coin_Name=\"{1}\" Zombie_Kill_Value=\"{2}\" Player_Kill_Value=\"{3}\" Death_Penalty_Value=\"{4}\" Lose_On_Death=\"{5}\" />", Wallet.IsEnabled, Wallet.Coin_Name, Wallet.Zombie_Kills, Wallet.Player_Kills, Wallet.Deaths, Wallet.Lose_On_Death));
                 sw.WriteLine(string.Format("        <Tool Name=\"Watchlist\" Enable=\"{0}\" Admin_Level=\"{1}\" Alert_Delay=\"{2}\" />", Watchlist.IsEnabled, Watchlist.Admin_Level, Timers.Alert_Delay));
-                sw.WriteLine(string.Format("        <Tool Name=\"Waypoints\" Enable=\"{0}\" Max_Waypoints =\"{1}\" Donator_Max_Waypoints=\"{2}\" Command_Cost =\"{3}\" PvP_Check =\"{4}\" Zombie_Check=\"{5}\" />", Waypoint.IsEnabled, Waypoint.Max_Waypoints, Waypoint.Donator_Max_Waypoints, Waypoint.Command_Cost, Waypoint.PvP_Check, Waypoint.Zombie_Check));
+                sw.WriteLine(string.Format("        <Tool Name=\"Waypoints\" Enable=\"{0}\" Max_Waypoints =\"{1}\" Donator_Max_Waypoints=\"{2}\" Command_Cost =\"{3}\" Delay_Between_Uses=\"{4}\" PvP_Check =\"{5}\" Zombie_Check=\"{6}\" />", Waypoint.IsEnabled, Waypoint.Max_Waypoints, Waypoint.Donator_Max_Waypoints, Waypoint.Command_Cost, Waypoint.Delay_Between_Uses, Waypoint.PvP_Check, Waypoint.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Weather_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", WeatherVote.IsEnabled, WeatherVote.Players_Online, WeatherVote.Votes_Needed));
                 sw.WriteLine(string.Format("        <Tool Name=\"World_Radius\" Enable=\"{0}\" Normal_Player=\"{1}\" Donator=\"{2}\" Admin_Level=\"{3}\" />", WorldRadius.IsEnabled, WorldRadius.Normal_Player, WorldRadius.Donator, WorldRadius.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Zone\" Enable=\"{0}\" Kill_Enabled=\"{1}\" Jail_Enabled=\"{2}\" Kick_Enabled=\"{3}\" Ban_Enabled=\"{4}\" Zone_Message=\"{5}\" Reminder_Notice_Delay=\"{6}\" Set_Home=\"{7}\" Days_Before_Log_Delete=\"{8}\" />", Zones.IsEnabled, Zones.Kill_Enabled, Zones.Jail_Enabled, Zones.Kick_Enabled, Zones.Ban_Enabled, Zones.Zone_Message, Zones.Reminder_Delay, Zones.Set_Home, Zones.Days_Before_Log_Delete));

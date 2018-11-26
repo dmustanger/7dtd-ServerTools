@@ -23,7 +23,7 @@ namespace ServerTools
                 _phrase536 = _phrase536.Replace("{Value}", _value.ToString());
                 _phrase536 = _phrase536.Replace("{CoinName}", Wallet.Coin_Name);
                 _phrase536 = _phrase536.Replace("{BuyIn}", LottoValue.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase536 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase536 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -32,7 +32,7 @@ namespace ServerTools
                 {
                     _phrase535 = "there is no open lottery. Type /lottery # to open a new lottery at that buy in price. You must have enough in your wallet.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase535 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase535 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -51,7 +51,7 @@ namespace ServerTools
                     _phrase536 = _phrase536.Replace("{Value}", _winnings.ToString());
                     _phrase536 = _phrase536.Replace("{CoinName}", Wallet.Coin_Name);
                     _phrase536 = _phrase536.Replace("{BuyIn}", LottoValue.ToString());
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase536 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase536 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -74,7 +74,7 @@ namespace ServerTools
                                 }
                                 _phrase538 = _phrase538.Replace("{Value}", _lottoValue.ToString());
                                 _phrase538 = _phrase538.Replace("{CoinName}", Wallet.Coin_Name);
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase538 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase538 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 string _phrase539;
                                 if (!Phrases.Dict.TryGetValue(539, out _phrase539))
                                 {
@@ -92,7 +92,7 @@ namespace ServerTools
                                     _phrase540 = "you do not have enough {CoinName}. Earn some more and enter the lottery before it ends.";
                                 }
                                 _phrase540 = _phrase540.Replace("{CoinName}", Wallet.Coin_Name);
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase540 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase540 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                         else
@@ -102,7 +102,7 @@ namespace ServerTools
                             {
                                 _phrase537 = "you must type a valid integer above zero for the lottery #.";
                             }
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase537 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase537 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
@@ -112,7 +112,7 @@ namespace ServerTools
                         {
                             _phrase537 = "you must type a valid integer above zero for the lottery #.";
                         }
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase537 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase537 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
@@ -134,7 +134,7 @@ namespace ServerTools
                         {
                             _phrase541 = "you have entered the lottery, good luck in the draw.";
                         }
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase541 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase541 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         if (LottoEntries.Count == 10)
                         {
                             StartLotto();
@@ -147,7 +147,7 @@ namespace ServerTools
                         {
                             _phrase542 = "you are already in the lottery, good luck in the draw.";
                         }
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase542 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase542 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
@@ -158,7 +158,7 @@ namespace ServerTools
                         _phrase540 = "you do not have enough {CoinName}. Earn some more and enter the lottery before it ends.";
                     }
                     _phrase540 = _phrase540.Replace("{CoinName}", Wallet.Coin_Name);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase540 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase540 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -168,7 +168,7 @@ namespace ServerTools
                 {
                     _phrase535 = "there is no open lottery. Type /lottery # to open a new lottery at that buy in price. You must have enough in your wallet.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase535 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase535 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

@@ -14,10 +14,10 @@ namespace ServerTools
             string _phrase949;
             if (!Phrases.Dict.TryGetValue(949, out _phrase949))
             {
-                _phrase949 = "hardcore mode is enabled! You have {Lives} lives remaining...";
+                _phrase949 = " hardcore mode is enabled! You have {Lives} lives remaining...";
             }
             _phrase949 = _phrase949.Replace("{Lives}", Max_Deaths.ToString());
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase949 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase949 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void Check(ClientInfo _cInfo)
@@ -267,9 +267,9 @@ namespace ServerTools
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase945 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase946 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase947 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase945 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase946 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase947 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -296,7 +296,7 @@ namespace ServerTools
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase948 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase948 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

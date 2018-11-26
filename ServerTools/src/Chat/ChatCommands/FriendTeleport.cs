@@ -100,11 +100,11 @@ namespace ServerTools
                                 _phrase630 = _phrase630.Replace("{TimeRemaining}", _timeleft.ToString());
                                 if (_announce)
                                 {
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase630 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase630 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                 }
                                 else
                                 {
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase630 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase630 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                         }
@@ -136,11 +136,11 @@ namespace ServerTools
                         _phrase630 = _phrase630.Replace("{TimeRemaining}", _timeleft.ToString());
                         if (_announce)
                         {
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase630 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase630 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         }
                         else
                         {
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase630 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase630 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
@@ -164,7 +164,7 @@ namespace ServerTools
                         _phrase814 = "you do not have enough {WalletCoinName} in your wallet to run this command.";
                     }
                     _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -199,7 +199,7 @@ namespace ServerTools
                     _phrase626 = "this {EntityId} is not valid. Only integers accepted.";
                 }
                 _phrase626 = _phrase626.Replace("{EntityId}", _Id.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase626 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase626 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 return;
             }
             ClientInfo _cInfo3 = ConnectionManager.Instance.Clients.ForEntityId(_Id);
@@ -211,14 +211,14 @@ namespace ServerTools
                     _phrase627 = "sent your friend {PlayerName} a teleport request.";
                 }
                 _phrase627 = _phrase627.Replace("{PlayerName}", _cInfo3.playerName);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase627 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase627 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 string _phrase628;
                 if (!Phrases.Dict.TryGetValue(628, out _phrase628))
                 {
                     _phrase628 = "would like to teleport to you. Type /accept in chat to accept the request.";
                 }
                 _phrase628 = _phrase628.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo3, LoadConfig.Chat_Response_Color + _cInfo3.playerName + ", " + _phrase628 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo3, LoadConfig.Chat_Response_Color + _cInfo3.playerName  + _phrase628 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 if (Dict.ContainsKey(_cInfo3.entityId))
                 {
                     Dict.Remove(_cInfo3.entityId);
@@ -240,7 +240,7 @@ namespace ServerTools
                     _phrase629 = "did not find EntityId {EntityId}. No teleport request sent.";
                 }
                 _phrase629 = _phrase629.Replace("{EntityId}", _Id.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase629 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase629 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -264,7 +264,7 @@ namespace ServerTools
                 {
                     _phrase631 = "your request was accepted. Teleporting you to your friend.";
                 }
-                ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + ", " + _phrase631 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName  + _phrase631 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

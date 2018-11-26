@@ -109,7 +109,7 @@ namespace ServerTools
                             ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_id);
                             if (_cInfo != null)
                             {
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", you have been unmuted.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you have been unmuted.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                             MutePlayer.Mutes.Remove(_id);
                             string _sql = string.Format("UPDATE Players SET muteTime = 0 WHERE steamid = '{0}'", _id);

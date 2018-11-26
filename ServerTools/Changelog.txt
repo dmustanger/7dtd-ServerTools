@@ -1,5 +1,25 @@
 ﻿CHANGELOG
 
+12.3
+Added entry to config file called Chat_Command_Response_Extended. Contains more options for Chat_Command_Response
+Added missing option to Waypoint tool called Delay_Between_Uses 
+Added waypoint commands to /commands response
+Added to Player_Logs. The region file corresponding to the player location is now logged
+Added options to Chat_Command_Response_Extended called Friend_Chat_Color and Party_Chat_Color. They control the message color when players
+use friend and party chat filters. Their player prefix and color is not effected, only the message color. Set blank for default
+Added option to Chat_Command_Response_Extended called Player_Name_Color. This controls the color of the player name when the response has
+their name added automatically. Example: Obsessive Compulsive, received 1 drinkJarBoiledWater from gimme
+Fixed /reward giving an extra response
+Fixed using @ admin in chat
+Fixed /commands sending global
+Fixed command responses repeating based on the number of players online
+Fixed friend and party chat
+Fixed database building duplicate entry
+Fixed Waypoints requiring wallet coins when the wallet was off or the cost is set to 0
+Changed phrase # 7, 15, 16, 201, 202, 203, 204, 205, 504, 505, 506, 577, 949
+Changed many phrases to have a space at the front of them. Manually adjust these or delete and rebuild the file
+Changed Chat_Command_Response option Color to Main_Color
+
 12.2
 Added option to Chat_Flood_Protection called Message_Length. Sets the length a single message can be
 Added option to Chat_Flood_Protection called Messages_Per_Min. Sets how many messages can be sent in one minute
@@ -10,7 +30,6 @@ Fixed chat sending to all users when using a whisper
 Fixed item quality range when spawning items. Range is now 1-6
 Fixed the banking issues
 Changed the internal process for verification of item names and id
-Changed file structure. All the required files are located in a single folder now
 Changed /day7 response to reflect the new vehicles in version 12.1
 Changed Player_Stat_Check for speed to avoid false positives
 Changed some commands shown when using /commands

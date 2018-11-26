@@ -260,7 +260,7 @@ namespace ServerTools
                                             int.TryParse(_cords[2], out z);
                                             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                                             Event.PlayersTeam.Remove(_player.Key);
-                                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", the event has ended. Thank you for playing.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", the event has ended. Thank you for playing.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                         else
                                         {
@@ -299,7 +299,7 @@ namespace ServerTools
                                         ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_player.Key);
                                         if (_cInfo != null)
                                         {
-                                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", the current event has been cancelled.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", the current event has been cancelled.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                         Event.PlayersTeam.Remove(_player.Key);
                                     }
@@ -458,7 +458,7 @@ namespace ServerTools
                                         _sql = string.Format("UPDATE Players SET eventReturn = 'Unknown', eventSpawn = 'false', eventRespawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                                         SQL.FastQuery(_sql);
                                         Event.PlayersTeam.Remove(_params[1]);
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", you have been removed from the event and sent to your return point.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you have been removed from the event and sent to your return point.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                         SdtdConsole.Instance.Output(string.Format("Player with Id {0} was removed from the event and sent to their return point.", _params[1]));
                                         return;
                                     }

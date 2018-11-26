@@ -28,7 +28,7 @@ namespace ServerTools
                 }
                 _phrase570 = _phrase570.Replace("{TimePassed}", _timepassed.ToString());
                 _phrase570 = _phrase570.Replace("{TotalTimePassed}", _sessionTime.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase570 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase570 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

@@ -80,7 +80,7 @@ namespace ServerTools
                     _phrase790 = "you have reached the world border.";
                 }
                 _phrase790 = _phrase790.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase790 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase790 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
 
@@ -113,7 +113,7 @@ namespace ServerTools
                     _phrase790 = "you have reached the world border.";
                 }
                 _phrase790 = _phrase790.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase790 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase790 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
     }

@@ -381,7 +381,7 @@ namespace ServerTools
                                 _phrase811 = "you can only use /return for four minutes after respawning. Time has expired.";
                             }
                             _phrase811 = _phrase811.Replace("{PlayerName}", _cInfo.playerName);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase811 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase811 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             Players.Victim.Remove(_cInfo.entityId);
                         }
                     }
@@ -411,7 +411,7 @@ namespace ServerTools
                         _phrase606 = "you can only use /return for two minutes after respawning. Time has expired.";
                     }
                     _phrase606 = _phrase606.Replace("{PlayerName}", _cInfo.playerName);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase606 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase606 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     Players.Victim.Remove(_cInfo.entityId);
                 }
             }

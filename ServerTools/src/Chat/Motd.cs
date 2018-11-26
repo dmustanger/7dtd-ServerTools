@@ -26,6 +26,7 @@ namespace ServerTools
 
         public static void Unload()
         {
+            Message.Clear();
             fileWatcher.Dispose();
             IsRunning = false;
         }

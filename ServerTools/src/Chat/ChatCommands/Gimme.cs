@@ -280,11 +280,11 @@ namespace ServerTools
                                     _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
                                     if (_announce)
                                     {
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color  + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                     }
                                     else
                                     {
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color  + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                             }
@@ -315,11 +315,11 @@ namespace ServerTools
                             _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
                             if (_announce)
                             {
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color  + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             }
                             else
                             {
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color  + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
@@ -346,7 +346,7 @@ namespace ServerTools
                     _phrase814 = "you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color  + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -406,9 +406,8 @@ namespace ServerTools
                 string _phrase7;
                 if (!Phrases.Dict.TryGetValue(7, out _phrase7))
                 {
-                    _phrase7 = "{PlayerName}, received {ItemCount} {ItemName} from gimme.";
+                    _phrase7 = "received {ItemCount} {ItemName} from gimme.";
                 }
-                _phrase7 = _phrase7.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase7 = _phrase7.Replace("{ItemCount}", _count.ToString());
                 string _name;
                 if (dict1.TryGetValue(_randomItem, out _name))
@@ -417,11 +416,11 @@ namespace ServerTools
                 }
                 if (_announce)
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase7 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase7 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase7 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase7 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 string _sql;
                 if (Wallet.IsEnabled && Command_Cost >= 1)
@@ -456,11 +455,11 @@ namespace ServerTools
             }
             if (_announce)
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase807 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase807 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase807 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase807 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             string _sql;
             if (Wallet.IsEnabled && Command_Cost >= 1)

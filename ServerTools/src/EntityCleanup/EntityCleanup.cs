@@ -8,7 +8,6 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, BlockIsEnabled = false, FallingTreeEnabled = false, Underground = false, Bikes = false;
         private static List<Entity> Entities = new List<Entity>();
-        private static List<int> FallingTree = new List<int>();
         private static int _xMinCheck, _yMinCheck, _zMinCheck, _xMaxCheck, _yMaxCheck, _zMaxCheck;
 
         public static void EntityCheck()
@@ -32,16 +31,8 @@ namespace ServerTools
                             }
                             if (FallingTreeEnabled && _name == "fallingTree")
                             {
-                                if (!FallingTree.Contains(_entity.entityId))
-                                {
-                                    FallingTree.Add(_entity.entityId);
-                                }
-                                else
-                                {
-                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                    FallingTree.Remove(_entity.entityId);
-                                    Log.Out("[SERVERTOOLS] Entity cleanup: Removed falling tree");
-                                }
+                                GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
+                                Log.Out("[SERVERTOOLS] Entity cleanup: Removed falling tree");
                             }
                             if (Underground)
                             {

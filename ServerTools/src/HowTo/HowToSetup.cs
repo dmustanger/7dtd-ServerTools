@@ -657,7 +657,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("<Tool Name=\"Normal_Player_Name_Coloring\" Enable=\"False\" Normal_Player_Prefix=\"(NOOB)\" Normal_Player_Color=\"[00B3B3]\" />");
+                sw.WriteLine("<Tool Name=\"Normal_ChatHook.Player_Name_Coloring\" Enable=\"False\" Normal_Player_Prefix=\"(NOOB)\" Normal_Player_Color=\"[00B3B3]\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine("Set a value of your choice in paranthesis for Normal_Player_Prefix");

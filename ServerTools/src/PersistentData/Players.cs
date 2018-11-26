@@ -189,7 +189,7 @@ namespace ServerTools
                                                         }
                                                         _phrase912 = _phrase912.Replace("{PlayerName}", _cInfo2.playerName);
                                                         _phrase912 = _phrase912.Replace("{Victim}", _cInfo.playerName);
-                                                        GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase912), LoadConfig.Server_Response_Name, false, "ServerTools", false);
+                                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase912, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                         using (StreamWriter sw = new StreamWriter(filepath, true))
                                                         {
                                                             sw.WriteLine(string.Format("{0}: {1} is a bounty hunter! {2} was snuffed out. Bounty was worth {3}", DateTime.Now, _cInfo2.playerName, _cInfo.playerName, _bounty));
@@ -226,7 +226,7 @@ namespace ServerTools
                                                                         _phrase913 = "{PlayerName} is on a kill streak! Their bounty has increased.";
                                                                     }
                                                                     _phrase913 = _phrase913.Replace("{PlayerName}", _cInfo2.playerName);
-                                                                    GameManager.Instance.GameMessageServer((ClientInfo)null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase913), LoadConfig.Server_Response_Name, false, "ServerTools", false);
+                                                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase913, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                                 }
                                                                 if (_newValue >= Bounties.Kill_Streak)
                                                                 {

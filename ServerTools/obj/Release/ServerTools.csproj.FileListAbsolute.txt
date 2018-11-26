@@ -337,3 +337,4 @@ C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 
 C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 12\7dtd-ST-master-V12 Shared\7dtd-ServerTools-Dev\bin\Mods\ServerTools\Changelog.txt
 C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 12\7dtd-ST-master-V12 Shared\7dtd-ServerTools-Dev\bin\Mods\ServerTools\GeoLiteCity.dat
 C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 12\7dtd-ST-master-V12 Shared\7dtd-ServerTools-Dev\bin\Mods\ServerTools\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-Shared-Development folder\Servertools 12\7dtd-ST-master-V12 Shared\7dtd-ServerTools-Dev\ServerTools\obj\Release\ServerTools.csprojResolveAssemblyReference.cache

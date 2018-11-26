@@ -102,8 +102,8 @@ namespace ServerTools
                             {
                                 _phrase927 = "Type /pollyes or /pollno to vote.";
                             }
-                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase926), LoadConfig.Server_Response_Name, false, "ServerTools", true);
-                            GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}[-]", LoadConfig.Chat_Response_Color, _phrase927), LoadConfig.Server_Response_Name, false, "ServerTools", true);
+                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase926, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase927, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             SdtdConsole.Instance.Output(string.Format("Opened a new poll for {0} hours.", _hours));
                             using (StreamWriter sw = new StreamWriter(_filepath, true))
                             {
@@ -148,7 +148,7 @@ namespace ServerTools
                                 }
                                 _phrase925 = _phrase925.Replace("{YesVote}", _pollYes.ToString());
                                 _phrase925 = _phrase925.Replace("{NoVote}", _pollNo.ToString());
-                                GameManager.Instance.GameMessageServer(null, EnumGameMessages.Chat, string.Format("{0}{1}", _phrase925), LoadConfig.Server_Response_Name, false, "ServerTools", true);
+                                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase925, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             }
                             using (StreamWriter sw = new StreamWriter(_filepath, true))
                             {
@@ -360,7 +360,7 @@ namespace ServerTools
                     {
                         _phrase812 = "you have already voted on the poll.";
                     }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase812 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase812 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -380,7 +380,7 @@ namespace ServerTools
                     _phrase928 = _phrase928.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase928 = _phrase928.Replace("{Yes}", _pollYes.ToString());
                     _phrase928 = _phrase928.Replace("{No}", _pollNo.ToString());
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase928 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase928 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                     {
                         sw.WriteLine(string.Format("{0}  Player name {1} has voted yes in the poll. Yes {2} / no {3}", DateTime.Now, _cInfo.playerName, _pollYes, _pollNo));
@@ -406,7 +406,7 @@ namespace ServerTools
                     {
                         _phrase812 = "you have already voted on the poll";
                     }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase812 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase812 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -425,7 +425,7 @@ namespace ServerTools
                     }
                     _phrase929 = _phrase929.Replace("{Yes}", _pollYes.ToString());
                     _phrase929 = _phrase929.Replace("{No}", _pollNo.ToString());
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase929 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase929 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                     {
                         sw.WriteLine(string.Format("{0}  Player name {1} has voted no in the poll. Yes {2} / no {3}", DateTime.Now, _cInfo.playerName, _pollYes, _pollNo));

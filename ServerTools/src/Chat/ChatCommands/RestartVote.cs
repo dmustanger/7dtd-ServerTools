@@ -32,7 +32,7 @@ namespace ServerTools
                                 _phrase748 = "{Player} has requested a restart vote.";
                             }
                             _phrase748 = _phrase748.Replace("{Player}", _cInfo.playerName);
-                            ChatHook.ChatMessage(_cInfoAdmins, LoadConfig.Chat_Response_Color + _cInfoAdmins.playerName + ", " + _phrase748 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfoAdmins, LoadConfig.Chat_Response_Color + _cInfoAdmins.playerName  + _phrase748 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     if (!adminOnline)
@@ -56,7 +56,7 @@ namespace ServerTools
                             {
                                 _phrase741 = "there are not enough players online to start a restart vote.";
                             }
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase741 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase741 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
@@ -66,7 +66,7 @@ namespace ServerTools
                         {
                             _phrase749 = "a administrator is currently online. They have been alerted.";
                         }
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase749 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase749 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
@@ -76,7 +76,7 @@ namespace ServerTools
                     {
                         _phrase824 = "there is a vote already open.";
                     }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase824 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase824 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -86,7 +86,7 @@ namespace ServerTools
                 {
                     _phrase816 = "you must wait thirty minutes after the server starts before opening a restart vote.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase816 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase816 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

@@ -59,7 +59,7 @@ namespace ServerTools
                     _phrase101 = "you have already created the clan {ClanName}.";
                 }
                 _phrase101 = _phrase101.Replace("{ClanName}", _clan.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase101 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase101 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
@@ -71,7 +71,7 @@ namespace ServerTools
                         _phrase103 = "you are currently a member of the clan {ClanName}.";
                     }
                     _phrase103 = _phrase103.Replace("{ClanName}", _clan.ToString());
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase103 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase103 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 else
                 {
@@ -83,7 +83,7 @@ namespace ServerTools
                             _phrase102 = "can not add the clan {ClanName} because it already exist.";
                         }
                         _phrase102 = _phrase102.Replace("{ClanName}", _clanName);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase102 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase102 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     }
                     else
                     {
@@ -93,9 +93,9 @@ namespace ServerTools
                             if (!Phrases.Dict.TryGetValue(129, out _phrase129))
                             {
                                 _phrase129 = "the clanName must be longer than 2 characters.";
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase129 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase129 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             }
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase129 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase129 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         }
                         else
                         {
@@ -109,7 +109,7 @@ namespace ServerTools
                                 _phrase104 = "you have added the clan {ClanName}.";
                             }
                             _phrase104 = _phrase104.Replace("{ClanName}", _clanName);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase104 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase104 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         } 
                     }
                 }
@@ -131,7 +131,7 @@ namespace ServerTools
                 {
                     _phrase105 = "you are not the owner of any clans.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase105 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase105 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
@@ -152,7 +152,7 @@ namespace ServerTools
                             _phrase121 = "you have been removed from the clan {ClanName}.";
                         }
                         _phrase121 = _phrase121.Replace("{ClanName}", _clanname);
-                        ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _cInfo1.playerName + ", " + _phrase121 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _cInfo1.playerName  + _phrase121 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     }
                     if (ClanMember.Contains(row[0].ToString()))
                     {
@@ -167,7 +167,7 @@ namespace ServerTools
                 }
                 _phrase106 = _phrase106.Replace("{ClanName}", _clanname);
                 clans.Remove(_clanname);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase106 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase106 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
 
@@ -196,7 +196,7 @@ namespace ServerTools
                         _phrase130 = "you have changed your clan name to {ClanName}.";
                     }
                     _phrase130 = _phrase130.Replace("{ClanName}", _clanName);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase130 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase130 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     _sql = string.Format("SELECT steamid FROM Players WHERE clanname = '{0}'", _clanName);
                     DataTable _result1 = SQL.TQuery(_sql);
                     foreach (DataRow row in _result1.Rows)
@@ -210,7 +210,7 @@ namespace ServerTools
                                 _phrase131 = "your clan name has been changed by the owner to {ClanName}.";
                             }
                             _phrase131 = _phrase131.Replace("{ClanName}", _clanName);
-                            ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _cInfo1.playerName + ", " + _phrase130 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _cInfo1.playerName  + _phrase130 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         }
                     }
                     _result1.Dispose();
@@ -223,7 +223,7 @@ namespace ServerTools
                         _phrase102 = "can not add the clan {ClanName} because it already exist.";
                     }
                     _phrase102 = _phrase102.Replace("{PlayerName}", _cInfo.playerName);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase102 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase102 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
             }
             else
@@ -234,7 +234,7 @@ namespace ServerTools
                     _phrase105 = "you are not the owner of any clans.";
                 }
                 _phrase105 = _phrase105.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase105 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase105 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
 
@@ -254,7 +254,7 @@ namespace ServerTools
                     _phrase107 = "you do not have permissions to use this command.";
                 }
                 _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
@@ -267,7 +267,7 @@ namespace ServerTools
                         _phrase108 = "the name {PlayerName} was not found.";
                     }
                     _phrase108 = _phrase108.Replace("{PlayerName}", _playerName);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase108 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase108 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 else
                 {
@@ -284,7 +284,7 @@ namespace ServerTools
                             _phrase109 = "{PlayerName} is already a member of a clan.";
                         }
                         _phrase109 = _phrase109.Replace("{PlayerName}", _playerName);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase109 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase109 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     }
                     else
                     {
@@ -296,7 +296,7 @@ namespace ServerTools
                                 _phrase110 = "{PlayerName} already has pending clan invites.";
                             }
                             _phrase110 = _phrase110.Replace("{PlayerName}", _playerName);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase110 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase110 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         }
                         else
                         {
@@ -318,8 +318,8 @@ namespace ServerTools
                             _phrase112 = _phrase112.Replace("{ClanName}", _clanName);
                             _sql = string.Format("UPDATE Players SET invitedtoclan = '{0}' WHERE steamid = '{1}'", _clanName, _newMember.playerId);
                             SQL.FastQuery(_sql);
-                            ChatHook.ChatMessage(_newMember, LoadConfig.Chat_Response_Color + _newMember.playerName + ", " + _phrase111 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase112 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_newMember, LoadConfig.Chat_Response_Color + _newMember.playerName  + _phrase111 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase112 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         }
                     }
                 }
@@ -340,7 +340,7 @@ namespace ServerTools
                     _phrase113 = "you have not been invited to any clans.";
                 }
                 _phrase113 = _phrase113.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase113 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase113 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
@@ -360,7 +360,7 @@ namespace ServerTools
                             _phrase115 = "{PlayerName} has joined the clan.";
                         }
                         _phrase115 = _phrase115.Replace("{PlayerName}", _cInfo.playerName);
-                        ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + ", " + _phrase115 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color  + _phrase115 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     }
                 }
                 _result1.Dispose(); 
@@ -380,7 +380,7 @@ namespace ServerTools
                 {
                     _phrase113 = "you have not been invited to any clans.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase113 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase113 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
@@ -391,7 +391,7 @@ namespace ServerTools
                 {
                     _phrase116 = "you have declined the invite to the clan.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase116 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase116 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
 
@@ -412,7 +412,7 @@ namespace ServerTools
                 {
                     _phrase107 = "you do not have permissions to use this command.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
@@ -436,7 +436,7 @@ namespace ServerTools
                             _phrase108 = "the name {PlayerName} was not found.";
                         }
                         _phrase108 = _phrase108.Replace("{PlayerName}", _playerName);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase108 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase108 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         return;
                     }
                 }
@@ -456,7 +456,7 @@ namespace ServerTools
                         _phrase117 = "{PlayerName} is not a member of your clan.";
                     }
                     _phrase117 = _phrase117.Replace("{PlayerName}", _playerName);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase117 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase117 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 else
                 {
@@ -467,7 +467,7 @@ namespace ServerTools
                         {
                             _phrase118 = "only the clan owner can remove officers.";
                         }
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase118 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase118 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     }
                     else
                     {
@@ -482,7 +482,7 @@ namespace ServerTools
                         }
                         _phrase120 = _phrase120.Replace("{PlayerName}", _playerName);
                         _phrase120 = _phrase120.Replace("{ClanName}", _clanname);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase120 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase120 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         if (_PlayertoRemove != null)
                         {
                             if (!Phrases.Dict.TryGetValue(121, out _phrase121))
@@ -490,7 +490,7 @@ namespace ServerTools
                                 _phrase121 = "you have been removed from the clan {ClanName}.";
                             }
                             _phrase121 = _phrase121.Replace("{ClanName}", _clanname);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase121 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase121 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         }
                     }
                 }
@@ -512,7 +512,7 @@ namespace ServerTools
                 {
                     _phrase107 = "you do not have permissions to use this command.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
@@ -525,7 +525,7 @@ namespace ServerTools
                         _phrase108 = "the name {PlayerName} was not found.";
                     }
                     _phrase108 = _phrase108.Replace("{PlayerName}", _playerName);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase108 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase108 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 else
                 {
@@ -543,7 +543,7 @@ namespace ServerTools
                             _phrase117 = "{PlayerName} is not a member of your clan.";
                         }
                         _phrase117 = _phrase117.Replace("{PlayerName}", _playerName);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase117 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase117 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     }
                     else
                     {
@@ -555,7 +555,7 @@ namespace ServerTools
                                 _phrase122 = "{PlayerName} is already a officer.";
                             }
                             _phrase122 = _phrase122.Replace("{PlayerName}", _playerName);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase122 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase122 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         }
                         else
                         {
@@ -567,7 +567,7 @@ namespace ServerTools
                                 _phrase123 = "{PlayerName} has been promoted to an officer.";
                             }
                             _phrase123 = _phrase123.Replace("{PlayerName}", _playerName);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase123 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase123 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         }
                     }
                 }
@@ -589,7 +589,7 @@ namespace ServerTools
                 {
                     _phrase107 = "you do not have permissions to use this command.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
@@ -602,7 +602,7 @@ namespace ServerTools
                         _phrase108 = "the name {PlayerName} was not found.";
                     }
                     _phrase108 = _phrase108.Replace("{PlayerName}", _playerName);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase108 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase108 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 else
                 {
@@ -620,7 +620,7 @@ namespace ServerTools
                             _phrase117 = "{PlayerName} is not a member of your clan.";
                         }
                         _phrase117 = _phrase117.Replace("{PlayerName}", _playerName);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase117 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase117 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     }
                     else
                     {
@@ -632,7 +632,7 @@ namespace ServerTools
                                 _phrase124 = "{PlayerName} is not an officer.";
                             }
                             _phrase124 = _phrase124.Replace("{PlayerName}", _playerName);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase124 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase124 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         }
                         else
                         {
@@ -644,7 +644,7 @@ namespace ServerTools
                                 _phrase125 = "{PlayerName} has been demoted.";
                             }
                             _phrase125 = _phrase125.Replace("{PlayerName}", _playerName);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase125 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase125 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         }
                     }
                 }
@@ -666,7 +666,7 @@ namespace ServerTools
                 {
                     _phrase126 = "you can not leave the clan because you are the owner. You can only delete the clan.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase126 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase126 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
@@ -677,7 +677,7 @@ namespace ServerTools
                     {
                         _phrase127 = "you do not belong to any clans.";
                     }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase127 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase127 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 else
                 {
@@ -690,7 +690,7 @@ namespace ServerTools
                     _phrase121 = _phrase121.Replace("{ClanName}", _clanname);
                     _sql = string.Format("UPDATE Players SET clanname = 'Unknown', isclanofficer = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                     SQL.FastQuery(_sql);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase121 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase121 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
             }
         }

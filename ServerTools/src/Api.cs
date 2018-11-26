@@ -378,12 +378,12 @@ namespace ServerTools
                     SQL.FastQuery(_sql2);
                     if (Zones.IsEnabled && Players.Victim.ContainsKey(_cInfo.entityId))
                     {
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", type /return to teleport back to your death position. There is a time limit.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", type /return to teleport back to your death position. There is a time limit.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         _sql2 = string.Format("UPDATE Players SET respawnTime = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                         SQL.FastQuery(_sql2);
                         if (Players.Forgive.ContainsKey(_cInfo.entityId))
                         {
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", type /forgive to release your killer from jail.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", type /forgive to release your killer from jail.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     if (Mogul.IsEnabled)
@@ -422,7 +422,7 @@ namespace ServerTools
 
         public bool ChatMessage(ClientInfo _cInfo, EChatType _type, int _senderId, string _msg, string _mainName, bool _localizeMain, List<int> _recipientEntityIds)
         {
-            return ChatHook.Hook(_cInfo, _type, _senderId, _msg, _mainName, _localizeMain, null);
+            return ChatHook.Hook(_cInfo, _type, _senderId, _msg, _mainName, _localizeMain, _recipientEntityIds);
         }
 
         public void PlayerDisconnected(ClientInfo _cInfo, bool _bShutdown)

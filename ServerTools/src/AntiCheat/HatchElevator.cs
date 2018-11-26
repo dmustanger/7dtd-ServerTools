@@ -86,7 +86,7 @@ namespace ServerTools
                                                     {
                                                         _phrase720 = "you are stunned and have broken your leg while smashing yourself through hatches. Ouch!";
                                                     }
-                                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase720 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color  + _phrase720 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                                     string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
                                                     string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
                                                     using (StreamWriter sw = new StreamWriter(_filepath, true))

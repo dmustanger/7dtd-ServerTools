@@ -16,7 +16,7 @@ namespace ServerTools
             string _message = "your wallet contains: {Value} {Name}.[-]";
             _message = _message.Replace("{Value}", _currentCoins.ToString());
             _message = _message.Replace("{Name}", Wallet.Coin_Name);
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
         }
 
         public static int GetcurrentCoins(ClientInfo _cInfo)

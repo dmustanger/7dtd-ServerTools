@@ -407,6 +407,14 @@ namespace ServerTools
             {
                 _commands_5 = string.Format("{0} /infoticker", _commands_5);
             }
+            if (Waypoint.IsEnabled)
+            {
+                _commands_5 = string.Format("{0} /waypoint", _commands_5);
+                _commands_5 = string.Format("{0} /waypoint name", _commands_5);
+                _commands_5 = string.Format("{0} /waysave name", _commands_5);
+                _commands_5 = string.Format("{0} /waypointdel name", _commands_5);
+                _commands_5 = string.Format("{0} /fway name", _commands_5);
+            }
             return _commands_5;
         }
 
@@ -921,11 +929,11 @@ namespace ServerTools
             _phrase616 = _phrase616.Replace("{TimeRemaining}", _timeleft.ToString());
             if (_announce)
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase616 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase616 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase616 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase616 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -947,7 +955,7 @@ namespace ServerTools
                         _phrase814 = "you do not have enough {WalletCoinName} in your wallet to run this command.";
                     }
                     _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + ", " + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
