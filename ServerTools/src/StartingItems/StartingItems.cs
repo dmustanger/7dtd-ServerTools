@@ -143,7 +143,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine("        <item item=\"meleeToolStoneAxe\" count=\"1\" quality=\"25\" />");
+                    sw.WriteLine("        <item item=\"meleeToolStoneAxe\" count=\"1\" quality=\"1\" />");
                     sw.WriteLine("        <item item=\"meleeToolTorch\" count=\"1\" quality=\"1\" />");
                     sw.WriteLine("        <item item=\"foodCanChili\" count=\"1\" quality=\"1\" />");
                     sw.WriteLine("        <item item=\"drinkJarBoiledWater\" count=\"1\" quality=\"1\" />");

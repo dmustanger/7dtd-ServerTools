@@ -351,7 +351,7 @@ namespace ServerTools
                         }
                         if (TeleportHome.IsEnabled && _message.ToLower() == "sethome")
                         {
-                            if (!Zones.Set_Home)
+                            if (Zones.IsEnabled && !Zones.Set_Home)
                             {
                                 if (!Players.ZoneExit.ContainsKey(_cInfo.entityId))
                                 {
@@ -371,7 +371,6 @@ namespace ServerTools
                             }
                             else
                             {
-
                                 TeleportHome.SetHome(_cInfo, _mainName, _announce);
                             }
                             return false;
@@ -1450,10 +1449,33 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (BikeReturn.IsEnabled && _message.ToLower() == "bike")
+                        if (VehicleTeleport.IsEnabled)
                         {
-                            BikeReturn.BikeDelay(_cInfo, _mainName);
-                            return false;
+                            if (VehicleTeleport.Bike && _message.ToLower() == "bike")
+                            {
+                                VehicleTeleport.VehicleDelay(_cInfo, _mainName, 1);
+                                return false;
+                            }
+                            if (VehicleTeleport.Mini_Bike && _message.ToLower() == "minibike")
+                            {
+                                VehicleTeleport.VehicleDelay(_cInfo, _mainName, 2);
+                                return false;
+                            }
+                            if (VehicleTeleport.Motor_Bike && _message.ToLower() == "motorbike")
+                            {
+                                VehicleTeleport.VehicleDelay(_cInfo, _mainName, 3);
+                                return false;
+                            }
+                            if (VehicleTeleport.Jeep && _message.ToLower() == "jeep")
+                            {
+                                VehicleTeleport.VehicleDelay(_cInfo, _mainName, 4);
+                                return false;
+                            }
+                            if (VehicleTeleport.Gyro && _message.ToLower() == "gyro")
+                            {
+                                VehicleTeleport.VehicleDelay(_cInfo, _mainName, 5);
+                                return false;
+                            }
                         }
                         if (Report.IsEnabled && _message.ToLower().StartsWith("report"))
                         {
@@ -1741,17 +1763,22 @@ namespace ServerTools
             else if (_type == EChatType.Friends)
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-                for (int i = 0; i < _cInfoList.Count; i++)
+                World world = GameManager.Instance.World;
+                List<EntityPlayer> _playerList = world.Players.list;
+                for (int i = 0; i < _playerList.Count; i++)
                 {
-                    ClientInfo _cInfo2 = _cInfoList[i];
-                    if (_cInfo2 != null)
+                    EntityPlayer _player2 = _playerList[i];
+                    if (_player != null)
                     {
-                        if (Friend_Chat_Color.StartsWith("[") && Friend_Chat_Color.EndsWith("]"))
+                        if (_player.IsFriendsWith(_player2))
                         {
-                            _message = _message.Insert(0, Friend_Chat_Color);
+                            ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_player2.entityId);
+                            if (Friend_Chat_Color.StartsWith("[") && Friend_Chat_Color.EndsWith("]"))
+                            {
+                                _message = _message.Insert(0, Friend_Chat_Color);
+                            }
+                            _cInfo2.SendPackage(new NetPackageChat(EChatType.Whisper, 33, _message, _name, false, null));
                         }
-                        _cInfo2.SendPackage(new NetPackageChat(EChatType.Whisper, 33, _message, _name, false, null));
                     }
                 }
             }

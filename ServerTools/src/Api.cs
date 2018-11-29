@@ -25,12 +25,7 @@ namespace ServerTools
 
         public void GameAwake()
         {
-            if (!Directory.Exists(ConfigPath))
-            {
-                Directory.CreateDirectory(ConfigPath);
-            }
-            LoadConfig.Load();
-            HowToSetup.Load();
+
         }
 
         public void SavePlayerData(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
@@ -395,7 +390,6 @@ namespace ServerTools
                             SQL.FastQuery(_sql2);
                         }
                     }
-                    PersistentContainer.Instance.Save();
                 }
                 if (_respawnReason == RespawnType.Teleport)
                 {
@@ -536,19 +530,25 @@ namespace ServerTools
 
         public void GameStartDone()
         {
-            Timers.LogAlert();
+            if (!Directory.Exists(ConfigPath))
+            {
+                Directory.CreateDirectory(ConfigPath);
+            }
+            LoadConfig.Load();
+            HowToSetup.Load();
             if (Fps.IsEnabled)
             {
                 Fps.SetTarget();
             }
-            RestartVote.Startup = true;
             Mods.Load();
+            Timers.LogAlert();
             Timers.LoadAlert();
+            RestartVote.Startup = true;
         }
 
         public void GameShutdown()
         {
-            StateManager.Shutdown();
+            
         }
     }
 }

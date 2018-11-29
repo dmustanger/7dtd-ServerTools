@@ -369,10 +369,6 @@ namespace ServerTools
             {
                 _commands_4 = string.Format("{0} /report", _commands_4);
             }
-            if (BikeReturn.IsEnabled)
-            {
-                _commands_4 = string.Format("{0} /bike", _commands_4);
-            }
             if (Stuck.IsEnabled)
             {
                 _commands_4 = string.Format("{0} /stuck", _commands_4);
@@ -414,6 +410,29 @@ namespace ServerTools
                 _commands_5 = string.Format("{0} /waysave name", _commands_5);
                 _commands_5 = string.Format("{0} /waypointdel name", _commands_5);
                 _commands_5 = string.Format("{0} /fway name", _commands_5);
+            }
+            if (VehicleTeleport.IsEnabled)
+            {
+                if (VehicleTeleport.Bike)
+                {
+                    _commands_5 = string.Format("{0} /bike", _commands_5);
+                }
+                if (VehicleTeleport.Mini_Bike)
+                {
+                    _commands_5 = string.Format("{0} /minibike", _commands_5);
+                }
+                if (VehicleTeleport.Motor_Bike)
+                {
+                    _commands_5 = string.Format("{0} /motorbike", _commands_5);
+                }
+                if (VehicleTeleport.Jeep)
+                {
+                    _commands_5 = string.Format("{0} /jeep", _commands_5);
+                }
+                if (VehicleTeleport.Gyro)
+                {
+                    _commands_5 = string.Format("{0} /gyro", _commands_5);
+                }
             }
             return _commands_5;
         }
@@ -922,7 +941,7 @@ namespace ServerTools
             string _phrase616;
             if (!Phrases.Dict.TryGetValue(616, out _phrase616))
             {
-                _phrase616 = "you can only use {Command} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                _phrase616 = " you can only use {Command} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
             }
             _phrase616 = _phrase616.Replace("{Command}", _message);
             _phrase616 = _phrase616.Replace("{DelayBetweenUses}", _newDelay.ToString());
@@ -952,7 +971,7 @@ namespace ServerTools
                     string _phrase814;
                     if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                     {
-                        _phrase814 = "you do not have enough {WalletCoinName} in your wallet to run this command.";
+                        _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
                     }
                     _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -1040,11 +1059,7 @@ namespace ServerTools
                         {
                             _response = _response.Replace("personalmessage ", "");
                         }
-                        ClientInfo _cInfo2 = ConsoleHelper.ParseParamIdOrName(_response);
-                        if (_cInfo2 != null)
-                        {
-                            ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _response + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                        }
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
                     {
@@ -1095,11 +1110,7 @@ namespace ServerTools
                         {
                             _response2 = _response.Replace("personalmessage ", "");
                         }
-                        ClientInfo _cInfo2 = ConsoleHelper.ParseParamIdOrName(_response);
-                        if (_cInfo2 != null)
-                        {
-                            ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _response + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                        }
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else if (_response2.StartsWith("tele ") || _response2.StartsWith("tp ") || _response2.StartsWith("teleportplayer "))
                     {

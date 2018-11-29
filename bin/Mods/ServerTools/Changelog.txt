@@ -1,5 +1,17 @@
 ﻿CHANGELOG
 
+12.4
+Added phrase 787
+Added tool Vehicle_Teleport. Allows players to save one of each vehicle type for teleport. Vehicle must be within 50 blocks to teleport
+Fixed Custom_Commands using pm
+Fixed load process to avoid database errors
+Fixed friend chat seen global
+Fixed command /bike not teleporting the bike to the player
+Changed Starting_Items default stone axe quality to 1
+Changed default spawn radius for Animal_Tracking. Increased the minimum and maximum range so they do not spawn as close to the player
+Changed phrase # 780, 781, 782, 783, 784, 785, 786
+Removed tool Bike_Return
+
 12.3
 Added entry to config file called Chat_Command_Response_Extended. Contains more options for Chat_Command_Response
 Added missing option to Waypoint tool called Delay_Between_Uses 

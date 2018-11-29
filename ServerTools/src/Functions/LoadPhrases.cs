@@ -1329,50 +1329,56 @@ namespace ServerTools
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"778\" Phrase=\"{0}\" />", _phrase778));
                 sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- ************************* Bike ************************* -->");
+                sw.WriteLine("        <!-- ******************* Vehicle Teleport ******************* -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 string _phrase780;
                 if (!Dict.TryGetValue(780, out _phrase780))
                 {
-                    _phrase780 = " you have not claimed this space or a friend. You can only save your bike inside a claimed space.";
+                    _phrase780 = " you have not claimed this space or a friend. You can only save your vehicle inside a claimed space.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"780\" Phrase=\"{0}\" />", _phrase780));
                 string _phrase781;
                 if (!Dict.TryGetValue(781, out _phrase781))
                 {
-                    _phrase781 = " saved your current bike for retrieval.";
+                    _phrase781 = " saved your current vehicle for retrieval.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"781\" Phrase=\"{0}\" />", _phrase781));
                 string _phrase782;
                 if (!Dict.TryGetValue(782, out _phrase782))
                 {
-                    _phrase782 = " found your bike and sent it to you.";
+                    _phrase782 = " found your vehicle and sent it to you.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"782\" Phrase=\"{0}\" />", _phrase782));
                 string _phrase783;
                 if (!Dict.TryGetValue(783, out _phrase783))
                 {
-                    _phrase783 = " you do not have a bike saved.";
+                    _phrase783 = " you do not have this vehicle type saved.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"783\" Phrase=\"{0}\" />", _phrase783));
                 string _phrase784;
                 if (!Dict.TryGetValue(784, out _phrase784))
                 {
-                    _phrase784 = " could not find your bike near by.";
+                    _phrase784 = " could not find your vehicle near by.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"784\" Phrase=\"{0}\" />", _phrase784));
                 string _phrase785;
                 if (!Dict.TryGetValue(785, out _phrase785))
                 {
-                    _phrase785 = " found your bike but someone else has used it. Save it again first.";
+                    _phrase785 = " found your vehicle but someone else is on it.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"785\" Phrase=\"{0}\" />", _phrase785));
                 string _phrase786;
                 if (!Dict.TryGetValue(786, out _phrase786))
                 {
-                    _phrase786 = " you can only use /bike once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase786 = " you can only use vehicle teleport once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"786\" Phrase=\"{0}\" />", _phrase786));
+                string _phrase787;
+                if (!Dict.TryGetValue(787, out _phrase787))
+                {
+                    _phrase787 = " you are on the wrong vehicle to save it with this command. You are using a {Vehicle}.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"787\" Phrase=\"{0}\" />", _phrase787));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ********************* World_Radius ********************* -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");

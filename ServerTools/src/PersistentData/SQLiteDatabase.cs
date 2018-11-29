@@ -27,7 +27,6 @@ namespace ServerTools
             string _binpath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
             if (File.Exists(_binpath))
             {
-                StateManager.Awake();
                 UpdateToSqlFromBin.Exec();
             }
             //----------------------------------------------------------------------------------------
@@ -55,8 +54,6 @@ namespace ServerTools
                 "bounty INTEGER DEFAULT 0, " +
                 "bountyHunter INTEGER DEFAULT 0, " +
                 "sessionTime INTEGER DEFAULT 0, " +
-                "bikeId INTEGER DEFAULT 0, " +
-                "lastBike TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
                 "jailTime INTEGER DEFAULT 0, " +
                 "jailName TEXT DEFAULT 'Unknown', " +
                 "jailDate TEXT DEFAULT '10/29/2000 7:30:00 AM', " +

@@ -14,8 +14,7 @@ namespace ServerTools
         {
             try
             {
-                World world = GameManager.Instance.World;
-                Entities = world.Entities.list;
+                Entities = GameManager.Instance.World.Entities.list;
                 for (int i = 0; i < Entities.Count; i++)
                 {
                     Entity _entity = Entities[i];
@@ -49,7 +48,7 @@ namespace ServerTools
                             {
                                 Vector3 _vec = _entity.position;
                                 GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                EntityPlayer _douche = world.GetClosestPlayer((int)_vec.x, (int)_vec.y, (int)_vec.z, 10, false);
+                                EntityPlayer _douche = GameManager.Instance.World.GetClosestPlayer((int)_vec.x, (int)_vec.y, (int)_vec.z, 10, false);
                                 if (_douche == null)
                                 {
                                     Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed minibike id {0}", _entity.entityId));

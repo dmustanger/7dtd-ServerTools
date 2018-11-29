@@ -98,6 +98,33 @@ namespace ServerTools
             {
                 Log.Out("Normal Player chat color and prefix enabled");
             }
+            Log.Out("------------------------------------");
+            Log.Out("[SERVERTOOLS] Vehicle Telport tools:");
+            Log.Out("------------------------------------");
+            if (VehicleTeleport.IsEnabled)
+            {
+                Log.Out("Vehicle Telport enabled");
+            }
+            if (VehicleTeleport.Bike)
+            {
+                Log.Out("Bike enabled");
+            }
+            if (VehicleTeleport.Mini_Bike)
+            {
+                Log.Out("MiniBike enabled");
+            }
+            if (VehicleTeleport.Motor_Bike)
+            {
+                Log.Out("MotorBike enabled");
+            }
+            if (VehicleTeleport.Jeep)
+            {
+                Log.Out("Jeep enabled");
+            }
+            if (VehicleTeleport.Gyro)
+            {
+                Log.Out("Gyro enabled");
+            }
             Log.Out("--------------------------");
             Log.Out("[SERVERTOOLS] Other tools:");
             Log.Out("--------------------------");
@@ -132,10 +159,6 @@ namespace ServerTools
             if (Bank.IsEnabled)
             {
                 Log.Out("Bank enabled");
-            }
-            if (BikeReturn.IsEnabled)
-            {
-                Log.Out("Bike enabled");
             }
             if (EntityCleanup.BlockIsEnabled)
             {

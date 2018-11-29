@@ -8,7 +8,7 @@ namespace ServerTools
     public class Animals
     {
         public static bool IsEnabled = false, Always_Show_Response = false;
-        public static int Delay_Between_Uses = 60, Minimum_Spawn_Radius = 20, Maximum_Spawn_Radius = 30, Command_Cost = 0;
+        public static int Delay_Between_Uses = 60, Minimum_Spawn_Radius = 40, Maximum_Spawn_Radius = 60, Command_Cost = 0;
         public static List<string> entities = new List<string>();
         public static string Animal_List = "81,82,83,84";
         private static Random rnd = new Random();

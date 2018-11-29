@@ -44,6 +44,18 @@ namespace ServerTools
                 }
                 SQL.FastQuery("UPDATE Config SET sql_version = 4 WHERE sql_version = 3");
             }
+            if (_version == 4)
+            {
+                if (SQL.IsMySql)
+                {
+                    MySqlDatabase.FastQuery("CREATE TABLE IF NOT EXISTS Vehicles (steamid INTEGER PRIMARY KEY, bikeId INT DEFAULT 0, lastBike VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', miniBikeId INT DEFAULT 0, lastMiniBike VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', motorBikeId INT DEFAULT 0, lastMotorBike VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', jeepId INT DEFAULT 0, lastJeep VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM', gyroId INT DEFAULT 0, lastGyro VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM')");
+                }
+                else
+                {
+                    SQLiteDatabase.FastQuery("CREATE TABLE IF NOT EXISTS Vehicles (steamid INTEGER PRIMARY KEY, bikeId INTEGER DEFAULT 0, lastBike TEXT DEFAULT '10/29/2000 7:30:00 AM', miniBikeId INTEGER DEFAULT 0, lastMiniBike TEXT DEFAULT '10/29/2000 7:30:00 AM', motorBikeId INTEGER DEFAULT 0, lastMotorBike TEXT DEFAULT '10/29/2000 7:30:00 AM', jeepId INTEGER DEFAULT 0, lastJeep TEXT DEFAULT '10/29/2000 7:30:00 AM', gyroId INTEGER DEFAULT 0, lastGyro TEXT DEFAULT '10/29/2000 7:30:00 AM')");
+                }
+                SQL.FastQuery("UPDATE Config SET sql_version = 5 WHERE sql_version = 4");
+            }
             CheckVersion();
         }
 

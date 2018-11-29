@@ -21,7 +21,6 @@ namespace ServerTools
             connection = new MySqlConnection(_connectionString);
             try
             {
-                Log.Out("[ServerTools] Connecting to MySql Database.");
                 connection.Open();
             }
             catch (MySqlException e)
@@ -44,7 +43,6 @@ namespace ServerTools
             string _binpath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
             if (File.Exists(_binpath))
             {
-                StateManager.Awake();
                 UpdateToSqlFromBin.Exec();
             }
             //----------------------------------------------------------------------------------------
