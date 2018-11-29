@@ -23,10 +23,8 @@ namespace ServerTools
             _result.Dispose();
             Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             Entity _attachedEntity = _player.AttachedToEntity;
-            Log.Out(string.Format("_attachedEntity = {0}", _attachedEntity));
             if (_attachedEntity == null)
             {
-                Log.Out("No attached vehicle");
                 bool _donator = false;
                 if (Delay_Between_Uses < 1)
                 {
@@ -160,7 +158,6 @@ namespace ServerTools
 
         public static void Exec1(ClientInfo _cInfo, Entity _player, int _vehicle)
         {
-            Log.Out("Attached vehicle, starting save of id");
             if (Inside_Claim)
             {
                 World world = GameManager.Instance.World;
@@ -174,7 +171,6 @@ namespace ServerTools
                 EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
                 if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                 {
-                    Log.Out("Inside claim space detected");
                     string _vehicleName = "";
                     string _messageName = "";
                     if (_vehicle == 1)
@@ -202,7 +198,6 @@ namespace ServerTools
                         _vehicleName = "vehicleGyrocopter";
                         _messageName = "gyro";
                     }
-                    Log.Out(string.Format("_player.AttachedToEntity.EntityClass.entityClassName = {0}", _player.AttachedToEntity.EntityClass.entityClassName));
                     if (_player.AttachedToEntity.EntityClass.entityClassName.ToString() == _vehicleName)
                     {
                         string _phrase781;
@@ -236,7 +231,6 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out("Wrong vehicle to save this id");
                         string _phrase787;
                         if (!Phrases.Dict.TryGetValue(787, out _phrase787))
                         {
@@ -258,7 +252,6 @@ namespace ServerTools
             }
             else
             {
-                Log.Out("Inside claim space not needed.");
                 string _vehicleName = "";
                     string _messageName = "";
                     if (_vehicle == 1)
@@ -288,7 +281,6 @@ namespace ServerTools
                     }
                     if (_player.AttachedToEntity.name == _vehicleName)
                     {
-                    Log.Out(string.Format("_player.AttachedToEntity.name = {0}", _player.AttachedToEntity.name));
                         string _phrase781;
                         if (!Phrases.Dict.TryGetValue(781, out _phrase781))
                         {
@@ -320,7 +312,6 @@ namespace ServerTools
                     }
                     else
                     {
-                    Log.Out("Wrong vehicle to save this id");
                     string _phrase787;
                         if (!Phrases.Dict.TryGetValue(787, out _phrase787))
                         {
