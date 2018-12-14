@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class API : IModApi
     {
-        public static string GamePath = GamePrefs.GetString(EnumGamePrefs.SaveGameFolder);
+        public static string GamePath = Path.GetFullPath($"{GameUtils.GetSaveGameDir()}{Path.DirectorySeparatorChar}..{Path.DirectorySeparatorChar}..");
         public static string ConfigPath = string.Format("{0}/ServerTools", GamePath);
         public static int MaxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
 
