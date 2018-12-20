@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int Delay_Between_Uses = 120, Command_Cost = 0;
+        public static Dictionary<int, DateTime> DeathTime = new Dictionary<int, DateTime>();
+        public static Dictionary<int, string> LastDeathPos = new Dictionary<int, string>();
 
         public static void DeathDelay(ClientInfo _cInfo, bool _announce, string _playerName)
         {
@@ -147,10 +150,10 @@ namespace ServerTools
 
         private static void TeleportPlayer(ClientInfo _cInfo, bool _announce)
         {
-            if (Players.DeathTime.ContainsKey(_cInfo.entityId))
+            if (DeathTime.ContainsKey(_cInfo.entityId))
             {
                 DateTime _time;
-                if (Players.DeathTime.TryGetValue(_cInfo.entityId, out _time))
+                if (DeathTime.TryGetValue(_cInfo.entityId, out _time))
                 {
                     TimeSpan varTime = DateTime.Now - _time;
                     double fractionalMinutes = varTime.TotalMinutes;
@@ -171,7 +174,7 @@ namespace ServerTools
                     if (_timepassed < 2)
                     {
                         string _value;
-                        if (Players.LastDeathPos.TryGetValue(_cInfo.entityId, out _value))
+                        if (LastDeathPos.TryGetValue(_cInfo.entityId, out _value))
                         {
                             Players.NoFlight.Add(_cInfo.entityId);
                             int x, y, z;
@@ -180,7 +183,7 @@ namespace ServerTools
                             int.TryParse(_cords[1], out y);
                             int.TryParse(_cords[2], out z);
                             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
-                            Players.LastDeathPos.Remove(_cInfo.entityId);
+                            LastDeathPos.Remove(_cInfo.entityId);
                             string _sql;
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
@@ -214,6 +217,30 @@ namespace ServerTools
             else
             {
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " you have no death position. Die first.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+        }
+
+        public static void PlayerKilled(Entity _entity2)
+        {
+            if (!DeathTime.ContainsKey(_entity2.entityId))
+            {
+                Vector3 _position = _entity2.GetPosition();
+                int x = (int)_position.x;
+                int y = (int)_position.y;
+                int z = (int)_position.z;
+                string _dposition = x + "," + y + "," + z;
+                DeathTime.Add(_entity2.entityId, DateTime.Now);
+                LastDeathPos.Add(_entity2.entityId, _dposition);
+            }
+            else
+            {
+                Vector3 _position = _entity2.GetPosition();
+                int x = (int)_position.x;
+                int y = (int)_position.y;
+                int z = (int)_position.z;
+                string _dposition = x + "," + y + "," + z;
+                DeathTime[_entity2.entityId] = DateTime.Now;
+                LastDeathPos[_entity2.entityId] = _dposition;
             }
         }
     }

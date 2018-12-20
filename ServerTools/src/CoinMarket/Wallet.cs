@@ -77,5 +77,24 @@ namespace ServerTools
                 SQL.FastQuery(_sql);
             }
         }
+
+        public static void PlayerKilled(Entity _entity2, ClientInfo _cInfo2)
+        {
+            if (IsEnabled && Lose_On_Death)
+            {
+                World world = GameManager.Instance.World;
+                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo2.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                int _playerSpentCoins;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+                _result.Dispose();
+                int _currentCoins = GetcurrentCoins(_cInfo2);
+                if (_currentCoins >= 1)
+                {
+                    _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _currentCoins, _cInfo2.playerId);
+                    SQL.FastQuery(_sql);
+                }
+            }
+        }
     }
 }

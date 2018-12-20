@@ -373,10 +373,6 @@ namespace ServerTools
             {
                 _commands_4 = string.Format("{0} /stuck", _commands_4);
             }
-            if (RestartVote.IsEnabled)
-            {
-                _commands_4 = string.Format("{0} /restart", _commands_4);
-            }
             if (Bank.IsEnabled)
             {
                 _commands_4 = string.Format("{0} /bank", _commands_4);
@@ -384,6 +380,10 @@ namespace ServerTools
                 _commands_4 = string.Format("{0} /withdraw #", _commands_4);
                 _commands_4 = string.Format("{0} /wallet deposit #", _commands_4);
                 _commands_4 = string.Format("{0} /wallet withdraw #", _commands_4);
+            }
+            if (NightVote.IsEnabled)
+            {
+                _commands_4 = string.Format("{0} /nightvote", _commands_4);
             }
             return _commands_4;
         }
@@ -1064,9 +1064,9 @@ namespace ServerTools
                     else if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
                     {
                         Players.NoFlight.Add(_cInfo.entityId);
-                        if (Players.ZoneExit.ContainsKey(_cInfo.entityId))
+                        if (Zones.ZoneExit.ContainsKey(_cInfo.entityId))
                         {
-                            Players.ZoneExit.Remove(_cInfo.entityId);
+                            Zones.ZoneExit.Remove(_cInfo.entityId);
                         }
                         try
                         {

@@ -353,7 +353,7 @@ namespace ServerTools
                         {
                             if (Zones.IsEnabled && !Zones.Set_Home)
                             {
-                                if (!Players.ZoneExit.ContainsKey(_cInfo.entityId))
+                                if (!Zones.ZoneExit.ContainsKey(_cInfo.entityId))
                                 {
                                     TeleportHome.SetHome(_cInfo, _mainName, _announce);
                                 }
@@ -399,7 +399,7 @@ namespace ServerTools
                             {
                                 if (!Zones.Set_Home)
                                 {
-                                    if (!Players.ZoneExit.ContainsKey(_cInfo.entityId))
+                                    if (!Zones.ZoneExit.ContainsKey(_cInfo.entityId))
                                     {
                                         if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                         {
@@ -485,7 +485,7 @@ namespace ServerTools
                             {
                                 if (!Zones.Set_Home)
                                 {
-                                    if (!Players.ZoneExit.ContainsKey(_cInfo.entityId))
+                                    if (!Zones.ZoneExit.ContainsKey(_cInfo.entityId))
                                     {
                                         TeleportHome.SetHome2(_cInfo, _mainName, _announce);
                                     }
@@ -982,7 +982,7 @@ namespace ServerTools
                         }
                         if (Zones.IsEnabled && _message.ToLower() == "return")
                         {
-                            if (Players.Victim.ContainsKey(_cInfo.entityId))
+                            if (Zones.Victim.ContainsKey(_cInfo.entityId))
                             {
                                 ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", sending you to your death point.[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 Zones.ReturnToPosition(_cInfo);
@@ -1007,7 +1007,7 @@ namespace ServerTools
                         }
                         if (Zones.IsEnabled && Jail.IsEnabled && _message.ToLower() == "forgive")
                         {
-                            if (Players.Forgive.ContainsKey(_cInfo.entityId))
+                            if (Zones.Forgive.ContainsKey(_cInfo.entityId))
                             {
                                 Jail.Forgive(_cInfo);
                                 return false;
@@ -1802,6 +1802,11 @@ namespace ServerTools
                         }
                     }
                 }
+                if (Party_Chat_Color.StartsWith("[") && Party_Chat_Color.EndsWith("]"))
+                {
+                    _message = _message.Insert(0, Party_Chat_Color);
+                }
+                _cInfo.SendPackage(new NetPackageChat(EChatType.Whisper, 33, _message, _name, false, null));
             }
         }
     }

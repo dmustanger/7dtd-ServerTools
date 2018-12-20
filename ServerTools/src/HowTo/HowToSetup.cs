@@ -18,8 +18,7 @@ namespace ServerTools
                 sw.WriteLine("ServerTools was coded and tested under a Windows operating system. It should operate on other major O.S. but if you find bugs, report them to");
                 sw.WriteLine("https://github.com/dmustanger/7dtd-ServerTools/issues");
                 sw.WriteLine();
-                sw.WriteLine("This version is compatible with 7 Days to Die: Alpha 16.");
-                sw.WriteLine("It may work with earlier versions but it was only tested on Alpha 16, all versions.");
+                sw.WriteLine("This version is compatible with 7 Days to Die: Alpha 17.");
                 sw.WriteLine();
                 sw.WriteLine("Open the ServerToolsConfig.xml found in the same directory as this file. You will need to enable and set each tools options to match your server preferences.");
                 sw.WriteLine();
@@ -32,7 +31,7 @@ namespace ServerTools
                 sw.WriteLine("Adminstrators can choose to enable MySql for a remote database. ONLY ENABLE THIS IF YOU HAVE A MySql DATABASE HOSTED!!!");
                 sw.WriteLine("If EnableMySql is set to false ServerTools will use sqlite by default and you do not need to change anything else on this line.");
                 sw.WriteLine("If EnableMySql is set to true you will need to set the ServerHost ip, UserName, Password and DatabaseName to match your MySql setup.");
-                sw.WriteLine("NOTE: MySql will not create a database, it must be made before you attemp to connect to it.");
+                sw.WriteLine("NOTE: MySql will not create a database, it must be made before you attempt to connect to it.");
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();

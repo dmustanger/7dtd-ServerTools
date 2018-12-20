@@ -9,7 +9,6 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Always_Show_Response = false;
         public static int Delay_Between_Uses = 60, Minimum_Spawn_Radius = 40, Maximum_Spawn_Radius = 60, Command_Cost = 0;
-        public static List<string> entities = new List<string>();
         public static string Animal_List = "81,82,83,84";
         private static Random rnd = new Random();
 
@@ -128,30 +127,6 @@ namespace ServerTools
             }
         }
 
-        public static void AnimalList()
-        {
-            entities.Clear();
-            string[] _animalList = { };
-            if (Animal_List.Contains(","))
-            {
-                _animalList = Animal_List.Split(',').ToArray();
-                for (int i = 0; i < _animalList.Length; i++)
-                {
-                    string _ent = _animalList[i];
-                    entities.Add(_ent);
-                }
-            }
-            else
-            {
-                _animalList = Animal_List.Split(' ').ToArray();
-                for (int i = 0; i < _animalList.Length; i++)
-                {
-                    string _ent = _animalList[i];
-                    entities.Add(_ent);
-                }
-            }
-        }
-
         public static void CommandCost(ClientInfo _cInfo, bool _announce)
         {
             int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
@@ -180,8 +155,17 @@ namespace ServerTools
 
         public static void GiveAnimals(ClientInfo _cInfo, bool _announce)
         {
-            if (entities.Count > 0)
+            if (Animal_List.Length > 0)
             {
+                string[] _animalList = { };
+                if (Animal_List.Contains(","))
+                {
+                    _animalList = Animal_List.Split(',').ToArray();
+                }
+                else
+                {
+                    _animalList = Animal_List.Split(' ').ToArray();
+                }
                 int minRad = 0;
                 int maxRad = 0;
                 if (Maximum_Spawn_Radius < Minimum_Spawn_Radius)
@@ -194,9 +178,9 @@ namespace ServerTools
                     minRad = Minimum_Spawn_Radius;
                     maxRad = Maximum_Spawn_Radius;
                 }
-                var r = rnd.Next(entities.Count);
-                string _newId = entities[r];
-                var _id = int.Parse(_newId);
+                int _r = rnd.Next(1, Animal_List.Length + 1);
+                int _newId;
+                int.TryParse(_animalList[_r], out _newId);
                 int _nextRadius = rnd.Next(minRad, maxRad + 1);
                 Dictionary<int, EntityClass>.KeyCollection entityTypesCollection = EntityClass.list.Dict.Keys;
                 int counter = 1;
@@ -207,9 +191,9 @@ namespace ServerTools
                     {
                         continue;
                     }
-                    if (_id == counter)
+                    if (_newId == counter)
                     {
-                        SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} {1} @ {2}", _cInfo.entityId, _nextRadius, _id), (ClientInfo)null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} {1} @ {2}", _cInfo.entityId, _nextRadius, _newId), (ClientInfo)null);
                     }
                     counter++;
                 }
@@ -237,8 +221,7 @@ namespace ServerTools
             }
             else
             {
-                AnimalList();
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", animal list was empty. Attempting to rebuild. Type /track again. If this repeats, contact an administrator.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", animal list is empty. Contact an administrator.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

@@ -21,9 +21,9 @@ namespace ServerTools
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    _phrase107 = "you do not have permissions to use this command.";
+                    _phrase107 = " you do not have permissions to use this command.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -37,11 +37,11 @@ namespace ServerTools
                 string _phrase502;
                 if (!Phrases.Dict.TryGetValue(502, out _phrase502))
                 {
-                    _phrase502 = "you have set the jail position as {JailPosition}.";
+                    _phrase502 = " you have set the jail position as {JailPosition}.";
                 }
                 _phrase502 = _phrase502.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase502 = _phrase502.Replace("{JailPosition}", Jail_Position);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase502 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase502 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 LoadConfig.UpdateXml();
             }
         }
@@ -53,9 +53,9 @@ namespace ServerTools
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    _phrase107 = "you do not have permissions to use this command.";
+                    _phrase107 = " you do not have permissions to use this command.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -64,9 +64,9 @@ namespace ServerTools
                     string _phrase503;
                     if (!Phrases.Dict.TryGetValue(503, out _phrase503))
                     {
-                        _phrase503 = "the jail position has not been set.";
+                        _phrase503 = " the jail position has not been set.";
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase503 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase503 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -77,10 +77,10 @@ namespace ServerTools
                         string _phrase201;
                         if (!Phrases.Dict.TryGetValue(201, out _phrase201))
                         {
-                            _phrase201 = "player {PlayerName} was not found.";
+                            _phrase201 = " player {PlayerName} was not found.";
                         }
                         _phrase201 = _phrase201.Replace("{PlayerName}", _playerName);
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase201 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase201 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
@@ -93,10 +93,10 @@ namespace ServerTools
                             string _phrase504;
                             if (!Phrases.Dict.TryGetValue(504, out _phrase504))
                             {
-                                _phrase504 = "player {PlayerName} is already in jail.";
+                                _phrase504 = " player {PlayerName} is already in jail.";
                             }
                             _phrase504 = _phrase504.Replace("{PlayerName}", _playerName);
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase504 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase504 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
@@ -126,25 +126,25 @@ namespace ServerTools
             string _phrase500;
             if (!Phrases.Dict.TryGetValue(500, out _phrase500))
             {
-                _phrase500 = "you have been sent to jail.";
+                _phrase500 = " you have been sent to jail.";
             }
-            ChatHook.ChatMessage(_PlayertoJail, LoadConfig.Chat_Response_Color + _PlayertoJail.playerName  + _phrase500 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_PlayertoJail, LoadConfig.Chat_Response_Color + _PlayertoJail.playerName + LoadConfig.Chat_Response_Color + _phrase500 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             if (Jail_Shock)
             {
                 string _phrase507;
                 if (!Phrases.Dict.TryGetValue(507, out _phrase507))
                 {
-                    _phrase507 = "the jail is electrified. Do not try to leave it.";
+                    _phrase507 = " the jail is electrified. Do not try to leave it.";
                 }
-                ChatHook.ChatMessage(_PlayertoJail, LoadConfig.Chat_Response_Color + _PlayertoJail.playerName  + _phrase507 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_PlayertoJail, LoadConfig.Chat_Response_Color + _PlayertoJail.playerName + LoadConfig.Chat_Response_Color + _phrase507 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             string _phrase505;
             if (!Phrases.Dict.TryGetValue(505, out _phrase505))
             {
-                _phrase505 = "you have put {PlayerName} in jail.";
+                _phrase505 = " you have put {PlayerName} in jail.";
             }
             _phrase505 = _phrase505.Replace("{PlayerName}", _PlayertoJail.playerName);
-            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase505 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase505 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void RemoveFromJail(ClientInfo _cInfo, string _playerName)
@@ -154,9 +154,9 @@ namespace ServerTools
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    _phrase107 = "you do not have permissions to use this command.";
+                    _phrase107 = " you do not have permissions to use this command.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -167,10 +167,10 @@ namespace ServerTools
                     string _phrase201;
                     if (!Phrases.Dict.TryGetValue(201, out _phrase201))
                     {
-                        _phrase201 = "player {PlayerName} was not found online.";
+                        _phrase201 = " player {PlayerName} was not found online.";
                     }
                     _phrase201 = _phrase201.Replace("{PlayerName}", _playerName);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase201 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase201 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -180,10 +180,10 @@ namespace ServerTools
                         string _phrase506;
                         if (!Phrases.Dict.TryGetValue(506, out _phrase506))
                         {
-                            _phrase506 = "player {PlayerName} is not in jail.";
+                            _phrase506 = " player {PlayerName} is not in jail.";
                         }
                         _phrase506 = _phrase506.Replace("{PlayerName}", _PlayertoUnJail.playerName);
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase506 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase506 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
@@ -192,10 +192,10 @@ namespace ServerTools
                             string _phrase506;
                             if (!Phrases.Dict.TryGetValue(506, out _phrase506))
                             {
-                                _phrase506 = "player {PlayerName} is not in jail.";
+                                _phrase506 = " player {PlayerName} is not in jail.";
                             }
                             _phrase506 = _phrase506.Replace("{PlayerName}", _PlayertoUnJail.playerName);
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase506 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase506 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                         else
                         {
@@ -217,9 +217,9 @@ namespace ServerTools
                             string _phrase501;
                             if (!Phrases.Dict.TryGetValue(501, out _phrase501))
                             {
-                                _phrase501 = "you have been released from jail.";
+                                _phrase501 = " you have been released from jail.";
                             }
-                            ChatHook.ChatMessage(_PlayertoUnJail, LoadConfig.Chat_Response_Color + _PlayertoUnJail.playerName  + _phrase501 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_PlayertoUnJail, LoadConfig.Chat_Response_Color + _PlayertoUnJail.playerName + LoadConfig.Chat_Response_Color + _phrase501 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
@@ -249,13 +249,13 @@ namespace ServerTools
                                 _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                                 if (Jail_Shock)
                                 {
-                                    _cInfo.SendPackage(new NetPackageConsoleCmdClient("buff " + "shockedBuff", true));
+                                    _cInfo.SendPackage(new NetPackageConsoleCmdClient("buff buffShocked", true));
                                     string _phrase508;
                                     if (!Phrases.Dict.TryGetValue(508, out _phrase508))
                                     {
-                                        _phrase508 = "don't pee on the electric fence.";
+                                        _phrase508 = " don't pee on the electric fence.";
                                     }
-                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase508 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase508 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                         }
@@ -267,26 +267,26 @@ namespace ServerTools
         public static void Forgive(ClientInfo _cInfo)
         {
             int _killId;
-            if (Players.Forgive.TryGetValue(_cInfo.entityId, out _killId))
+            if (Zones.Forgive.TryGetValue(_cInfo.entityId, out _killId))
             {
                 ClientInfo _cInfoKiller = ConnectionManager.Instance.Clients.ForEntityId(_killId);
                 if (_cInfoKiller == null)
                 {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", this player is not online and so can not be forgiven or removed from jail.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", this player is not online and so can not be forgiven or removed from jail.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
                     if (!Jailed.Contains(_cInfoKiller.playerId))
                     {
-                        Players.Forgive.Remove(_cInfo.entityId);
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", this player is not in jail.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        Zones.Forgive.Remove(_cInfo.entityId);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", this player is not in jail.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
                         EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoKiller.entityId];
                         if (_player.IsSpawned())
                         {
-                            Players.Forgive.Remove(_cInfo.entityId);
+                            Zones.Forgive.Remove(_cInfo.entityId);
                             Jailed.Remove(_cInfoKiller.playerId);
                             Players.NoFlight.Add(_cInfoKiller.entityId);
                             EntityBedrollPositionList _position = _player.SpawnPoints;
@@ -299,10 +299,10 @@ namespace ServerTools
                                 Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
                                 _cInfoKiller.SendPackage(new NetPackageTeleportPlayer(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), null, false));
                             }
-                            string _chatMessage = ChatHook.Player_Name_Color + _cInfo.playerName + ", you have forgiven {PlayerName} and released them from jail.[-]";
+                            string _chatMessage = ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", you have forgiven {PlayerName} and released them from jail.[-]";
                             _chatMessage = _chatMessage.Replace("{PlayerName}", _cInfoKiller.playerName);
                             ChatHook.ChatMessage(_cInfo, _chatMessage, _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            _chatMessage = ChatHook.Player_Name_Color + _cInfo.playerName + ", you have been forgiven and released from jail by {PlayerName}.[-]";
+                            _chatMessage = ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", you have been forgiven and released from jail by {PlayerName}.[-]";
                             _chatMessage = _chatMessage.Replace("{PlayerName}", _cInfo.playerName);
                             ChatHook.ChatMessage(_cInfoKiller, _chatMessage, _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             string _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _cInfoKiller.playerId);
@@ -310,14 +310,14 @@ namespace ServerTools
                         }
                         else
                         {
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", this player is not spawned and so can not be forgiven or removed from jail.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", this player is not spawned and so can not be forgiven or removed from jail.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
             }
             else
             {
-                Players.Forgive.Remove(_cInfo.entityId);
+                Zones.Forgive.Remove(_cInfo.entityId);
             }
         }
 
@@ -366,9 +366,9 @@ namespace ServerTools
                                 string _phrase501;
                                 if (!Phrases.Dict.TryGetValue(501, out _phrase501))
                                 {
-                                    _phrase501 = "you have been released from jail.";
+                                    _phrase501 = " you have been released from jail.";
                                 }
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase501 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase501 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                         else

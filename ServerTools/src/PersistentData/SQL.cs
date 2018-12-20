@@ -4,7 +4,7 @@ namespace ServerTools
 {
     public class SQL
     {
-        public static int Sql_version = 5;
+        public static int Sql_version = 6;
         public static bool IsMySql = false;
 
         public static void Connect()

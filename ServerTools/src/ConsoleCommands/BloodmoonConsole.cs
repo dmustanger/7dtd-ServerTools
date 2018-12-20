@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Bike Return.";
+            return "[ServerTools]- Enable or Disable Bloodmoon alert.";
         }
         public override string GetHelp()
         {

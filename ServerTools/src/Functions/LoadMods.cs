@@ -243,10 +243,6 @@ namespace ServerTools
             {
                 Jail.JailList();
             }
-            if (Animals.IsEnabled)
-            {
-                Animals.AnimalList();
-            }
             if (AutoShutdown.IsEnabled)
             {
                 AutoShutdown.ShutdownTime();
