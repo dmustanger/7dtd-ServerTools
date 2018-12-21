@@ -12,6 +12,7 @@ namespace ServerTools
         public Dictionary<string, Player> players = new Dictionary<string, Player>();
         public Dictionary<string, string> clans = new Dictionary<string, string>();
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
+        public static List<int> Died = new List<int>();
         public static List<int> ZonePvE = new List<int>();
         public static List<int> NoFlight = new List<int>();
 
@@ -70,6 +71,64 @@ namespace ServerTools
                             if (Zones.IsEnabled)
                             {
                                 ZoneCheck(_cInfo, _player);
+                            }
+                        }
+                        else if (!Died.Contains(_player.entityId))
+                        {
+                            Died.Add(_player.entityId);
+                            if (DeathSpot.IsEnabled)
+                            {
+                                DeathSpot.PlayerKilled(_player);
+                            }
+                            if (KillNotice.IsEnabled || Bounties.IsEnabled)
+                            {
+                                for (int j = 0; j < _playerList.Count; j++)
+                                {
+                                    EntityPlayer _player2 = _playerList[j];
+                                    Entity _target = _player2.GetDamagedTarget();
+                                    if (_target == _player && _player != _player2)
+                                    {
+                                        _player2.ClearDamagedTarget();
+                                        ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_player2.entityId);
+                                        if (_cInfo != null && _cInfo2 != null)
+                                        {
+                                            if (KillNotice.IsEnabled)
+                                            {
+                                                string _holdingItem = _player2.inventory.holdingItem.Name;
+                                                ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
+                                                if (_itemValue.type != ItemValue.None.type)
+                                                {
+                                                    _holdingItem = _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name;
+                                                }
+                                                KillNotice.Notice(_cInfo, _cInfo2, _holdingItem);
+                                            }
+                                            if (Bounties.IsEnabled)
+                                            {
+                                                Bounties.PlayerKilled(_player, _player2, _cInfo, _cInfo2);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (Wallet.IsEnabled && Wallet.Lose_On_Death)
+                            {
+                                World world = GameManager.Instance.World;
+                                string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                DataTable _result = SQL.TQuery(_sql);
+                                int _playerSpentCoins;
+                                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+                                _result.Dispose();
+                                int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                                if (_currentCoins >= 1)
+                                {
+                                    _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _currentCoins, _cInfo.playerId);
+                                    SQL.FastQuery(_sql);
+                                }
+                            }
+                            if (Event.Open && Event.PlayersTeam.ContainsKey(_cInfo.playerId))
+                            {
+                                string _sql = string.Format("UPDATE Players SET eventReturn = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
+                                SQL.FastQuery(_sql);
                             }
                         }
                     }

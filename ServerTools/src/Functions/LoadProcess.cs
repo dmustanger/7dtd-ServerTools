@@ -16,7 +16,15 @@ namespace ServerTools
             }
             if (_state == 2)
             {
-                SQL.Connect();
+                try
+                {
+                    SQL.Connect();
+                }
+                catch
+                {
+                    Log.Out("ServerTools failed to connect to an sql database. ST requires this to operate.");
+                    Load(3);
+                }
             }
             if (_state == 3)
             {

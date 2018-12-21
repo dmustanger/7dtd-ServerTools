@@ -587,65 +587,23 @@ namespace ServerTools
 
         public void EntityKilled(Entity _entity1, Entity _entity2)
         {
-            
             if (!_entity1.IsClientControlled() && _entity2.IsClientControlled())
             {
                 ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_entity2.entityId);
-                if (Wallet.IsEnabled && Wallet.Lose_On_Death)
+                if (_cInfo2 != null)
                 {
-                    Wallet.PlayerKilled(_entity2, _cInfo2);
-                }
-                if (Event.Open && Event.PlayersTeam.ContainsKey(_cInfo2.playerId))
-                {
-                    Event.PlayerKilled(_entity2, _cInfo2);
-                }
-                if (DeathSpot.IsEnabled)
-                {
-                    DeathSpot.PlayerKilled(_entity2);
-                }
-            }
-            else if (_entity1.IsClientControlled() && _entity2.IsClientControlled())
-            {
-                ClientInfo _cInfo1 = ConnectionManager.Instance.Clients.ForEntityId(_entity1.entityId);
-                ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_entity2.entityId);
-                EntityPlayer _player1 = null;
-                EntityPlayer _player2 = null;
-                List<EntityPlayer> _playerList = GameManager.Instance.World.Players.list;
-                for (int i = 0; i < _playerList.Count; i++)
-                {
-                    EntityPlayer _player = _playerList[i];
-                    if (_entity1.entityId == _player.entityId)
+                    if (Wallet.IsEnabled && Wallet.Lose_On_Death)
                     {
-                        _player1 = _player;
+                        Wallet.PlayerKilled(_entity2, _cInfo2);
                     }
-                    if (_entity2.entityId == _player.entityId)
+                    if (Event.Open && Event.PlayersTeam.ContainsKey(_cInfo2.playerId))
                     {
-                        _player2 = _player;
+                        Event.PlayerKilled(_entity2, _cInfo2);
                     }
-                }
-                if (Wallet.IsEnabled && Wallet.Lose_On_Death)
-                {
-                    Wallet.PlayerKilled(_entity2, _cInfo2);
-                }
-                if (Event.Open && Event.PlayersTeam.ContainsKey(_cInfo2.playerId))
-                {
-                    Event.PlayerKilled(_entity2, _cInfo2);
-                }
-                if (DeathSpot.IsEnabled)
-                {
-                    DeathSpot.PlayerKilled(_entity2);
-                }
-                if (KillNotice.IsEnabled)
-                {
-                    KillNotice.PlayerKilled(_player1, _cInfo1, _cInfo2);
-                }
-                if (Bounties.IsEnabled)
-                {
-                    Bounties.PlayerKilled(_player1, _player2, _cInfo1, _cInfo2);
-                }
-                if (Zones.IsEnabled)
-                {
-                    Zones.Check(_cInfo1, _cInfo2);
+                    if (DeathSpot.IsEnabled)
+                    {
+                        DeathSpot.PlayerKilled(_entity2);
+                    }
                 }
             }
         }

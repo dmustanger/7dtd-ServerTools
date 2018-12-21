@@ -77,8 +77,8 @@ namespace ServerTools
                             continue;
                         }
                         string _name = _line.GetAttribute("name");
-                        ItemValue _itemValue = ItemClass.GetItem(_name, true);
-                        if (_itemValue.type == ItemValue.None.type)
+                        ItemClass _class = ItemClass.GetItemClass(_name, true);
+                        if (_class == null)
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Kill Notice entry skipped. Weapon not found: {0}", _name));
                             continue;
@@ -114,43 +114,42 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine("        <weapon name=\"handPlayer\" newName=\"Fists of Fury\" />");
-                    sw.WriteLine("        <weapon name=\"clubWood\" newName=\"a Wooden Club\" />");
-                    sw.WriteLine("        <weapon name=\"clubIron\" newName=\"a Iron Club\" />");
-                    sw.WriteLine("        <weapon name=\"clubBarbed\" newName=\"a Barbed Club\" />");
-                    sw.WriteLine("        <weapon name=\"clubSpiked\" newName=\"a Spiked Club\" />");
-                    sw.WriteLine("        <weapon name=\"sledgehammer\" newName=\"a Sledge Hammer\" />");
-                    sw.WriteLine("        <weapon name=\"boneShiv\" newName=\"a Bone Shiv\" />");
-                    sw.WriteLine("        <weapon name=\"huntingKnife\" newName=\"a Hunting Knife\" />");
-                    sw.WriteLine("        <weapon name=\"machete\" newName=\"a Machete\" />");
+                    sw.WriteLine("        <weapon name=\"meleeHandPlayer\" newName=\"Fists of Fury\" />");
+                    sw.WriteLine("        <weapon name=\"meleeClubWood\" newName=\"a Wooden Club\" />");
+                    sw.WriteLine("        <weapon name=\"meleeClubIron\" newName=\"a Iron Club\" />");
+                    sw.WriteLine("        <weapon name=\"meleeClubBarbed\" newName=\"a Barbed Club\" />");
+                    sw.WriteLine("        <weapon name=\"meleeClubSpiked\" newName=\"a Spiked Club\" />");
+                    sw.WriteLine("        <weapon name=\"meleeSledgehammer\" newName=\"a Sledge Hammer\" />");
+                    sw.WriteLine("        <weapon name=\"meleeBoneShiv\" newName=\"a Bone Shiv\" />");
+                    sw.WriteLine("        <weapon name=\"meleeHuntingKnife\" newName=\"a Hunting Knife\" />");
+                    sw.WriteLine("        <weapon name=\"meleeMachete\" newName=\"a Machete\" />");
                     sw.WriteLine("        <weapon name=\"gunPistol\" newName=\"a Pistol\" />");
                     sw.WriteLine("        <weapon name=\"gun44Magnum\" newName=\"a Magnum\" />");
-                    sw.WriteLine("        <weapon name=\"gunSawedOffPumpShotgun\" newName=\"a Sawed Off Pump Shotgun\" />");
-                    sw.WriteLine("        <weapon name=\"gunPumpShotgun\" newName=\"a Pump Shotgun\" />");
-                    sw.WriteLine("        <weapon name=\"gunMP5\" newName=\"a MP5\" />");
+                    sw.WriteLine("        <weapon name=\"gunPumpShotgun\" newName=\"a Shotgun\" />");
+                    sw.WriteLine("        <weapon name=\"gunSMG5\" newName=\"a MP5\" />");
                     sw.WriteLine("        <weapon name=\"gunAK47\" newName=\"a AK-47\" />");
                     sw.WriteLine("        <weapon name=\"gunHuntingRifle\" newName=\"a Hunting Rifle\" />");
                     sw.WriteLine("        <weapon name=\"gunSniperRifle\" newName=\"a Sniper Rifle\" />");
                     sw.WriteLine("        <weapon name=\"gunRocketLauncher\" newName=\"a Rocket Launcher\" />");
-                    sw.WriteLine("        <weapon name=\"blunderbuss\" newName=\"a Blunderbuss\" />");
-                    sw.WriteLine("        <weapon name=\"stoneAxe\" newName=\"a Stone Axe\" />");
-                    sw.WriteLine("        <weapon name=\"tazasStoneaxe\" newName=\"a Tazas Stone Axe\" />");
-                    sw.WriteLine("        <weapon name=\"fireaxeIron\" newName=\"a Iron Axe\" />");
-                    sw.WriteLine("        <weapon name=\"fireaxeSteel\" newName=\"a Steel Axe\" />");
-                    sw.WriteLine("        <weapon name=\"pickaxeIron\" newName=\"a Iron Pickaxe\" />");
-                    sw.WriteLine("        <weapon name=\"pickaxeSteel\" newName=\"a Steel Pickaxe\" />");
-                    sw.WriteLine("        <weapon name=\"stoneShovel\" newName=\"a Stone Shovel\" />");
-                    sw.WriteLine("        <weapon name=\"shovelIron\" newName=\"a Iron Shovel\" />");
-                    sw.WriteLine("        <weapon name=\"shovelSteel\" newName=\"a Steel Shovel\" />");
-                    sw.WriteLine("        <weapon name=\"hoeIron\" newName=\"a Hoe\" />");
-                    sw.WriteLine("        <weapon name=\"wrench\" newName=\"a Wrench\" />");
-                    sw.WriteLine("        <weapon name=\"clawHammer\" newName=\"a Claw Hammer\" />");
-                    sw.WriteLine("        <weapon name=\"nailgun\" newName=\"a Nailgun\" />");
-                    sw.WriteLine("        <weapon name=\"chainsaw\" newName=\"a Chainsaw\" />");
-                    sw.WriteLine("        <weapon name=\"auger\" newName=\"a Auger\" />");
-                    sw.WriteLine("        <weapon name=\"woodenBow\" newName=\"a Wooden Bow\" />");
-                    sw.WriteLine("        <weapon name=\"crossbow\" newName=\"a Crossbow\" />");
-                    sw.WriteLine("        <weapon name=\"compoundBow\" newName=\"a Compund Bow\" />");
+                    sw.WriteLine("        <weapon name=\"gunBlunderbuss\" newName=\"a Blunderbuss\" />");
+                    sw.WriteLine("        <weapon name=\"meleeToolStoneAxe\" newName=\"a Stone Axe\" />");
+                    sw.WriteLine("        <weapon name=\"meleeToolStoneAxeTazas\" newName=\"a Tazas Stone Axe\" />");
+                    sw.WriteLine("        <weapon name=\"meleeToolFireaxeIron\" newName=\"a Iron Axe\" />");
+                    sw.WriteLine("        <weapon name=\"meleeToolFireaxeSteel\" newName=\"a Steel Axe\" />");
+                    sw.WriteLine("        <weapon name=\"meleeToolPickaxeIron\" newName=\"a Iron Pickaxe\" />");
+                    sw.WriteLine("        <weapon name=\"meleeToolPickaxeSteel\" newName=\"a Steel Pickaxe\" />");
+                    sw.WriteLine("        <weapon name=\"meleeToolShovelStone\" newName=\"a Stone Shovel\" />");
+                    sw.WriteLine("        <weapon name=\"meleeToolShovelIron\" newName=\"a Iron Shovel\" />");
+                    sw.WriteLine("        <weapon name=\"meleeToolShovelSteel\" newName=\"a Steel Shovel\" />");
+                    sw.WriteLine("        <weapon name=\"meleeToolHoeIron\" newName=\"a Hoe\" />");
+                    sw.WriteLine("        <weapon name=\"meleeToolWrench\" newName=\"a Wrench\" />");
+                    sw.WriteLine("        <weapon name=\"meleeToolClawHammer\" newName=\"a Claw Hammer\" />");
+                    sw.WriteLine("        <weapon name=\"gunToolNailgun\" newName=\"a Nailgun\" />");
+                    sw.WriteLine("        <weapon name=\"meleeToolChainsaw\" newName=\"a Chainsaw\" />");
+                    sw.WriteLine("        <weapon name=\"meleeToolAuger\" newName=\"a Auger\" />");
+                    sw.WriteLine("        <weapon name=\"gunWoodenBow\" newName=\"a Wooden Bow\" />");
+                    sw.WriteLine("        <weapon name=\"gunCrossbow\" newName=\"a Crossbow\" />");
+                    sw.WriteLine("        <weapon name=\"gunCompoundBow\" newName=\"a Compund Bow\" />");
                 }
                 sw.WriteLine("    </Weapons>");
                 sw.WriteLine("</KillNotice>");

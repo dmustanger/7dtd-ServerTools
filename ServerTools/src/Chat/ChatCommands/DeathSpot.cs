@@ -76,7 +76,7 @@ namespace ServerTools
                                     string _phrase735;
                                     if (!Phrases.Dict.TryGetValue(735, out _phrase735))
                                     {
-                                        _phrase735 = "you can only use /died once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                        _phrase735 = " you can only use /died once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                     }
                                     _phrase735 = _phrase735.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                     _phrase735 = _phrase735.Replace("{TimeRemaining}", _timeleft.ToString());
@@ -111,7 +111,7 @@ namespace ServerTools
                             string _phrase735;
                             if (!Phrases.Dict.TryGetValue(735, out _phrase735))
                             {
-                                _phrase735 = "you can only use /died once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                _phrase735 = " you can only use /died once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
                             _phrase735 = _phrase735.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                             _phrase735 = _phrase735.Replace("{TimeRemaining}", _timeleft.ToString());
@@ -141,7 +141,7 @@ namespace ServerTools
                 string _phrase814;
                 if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    _phrase814 = "you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -194,7 +194,7 @@ namespace ServerTools
                             string _phrase736;
                             if (!Phrases.Dict.TryGetValue(736, out _phrase736))
                             {
-                                _phrase736 = "teleporting you to your last death position. You can use this again in {DelayBetweenUses} minutes.";
+                                _phrase736 = " teleporting you to your last death position. You can use this again in {DelayBetweenUses} minutes.";
                             }
                             _phrase736 = _phrase736.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase736 = _phrase736.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());

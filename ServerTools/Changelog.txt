@@ -1,5 +1,10 @@
 ﻿CHANGELOG
 
+12.6
+Fixed the Kill_Notice tool
+Fixed default KillNotice.xml list
+Changed load process to continue the process despite the sql connection failing. Should guarantee the config file is written
+
 12.5
 Added phrase 587, 707, 826
 Added missing /nightvote to commands
