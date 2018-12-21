@@ -56,6 +56,18 @@ namespace ServerTools
                 }
                 SQL.FastQuery("UPDATE Config SET sql_version = 5 WHERE sql_version = 4");
             }
+            if (_version == 5)
+            {
+                if (SQL.IsMySql)
+                {
+                    MySqlDatabase.FastQuery("ALTER TABLE Players ADD lastVoteWeekly VARCHAR(50) DEFAULT '10/29/2000 7:30:00 AM'; ALTER TABLE Players ADD weeklyVoteCount INT DEFAULT 0;");
+                }
+                else
+                {
+                    SQLiteDatabase.FastQuery("ALTER TABLE Players ADD lastVoteWeekly TEXT DEFAULT '10/29/2000 7:30:00 AM'; ALTER TABLE Players ADD weeklyVoteCount INTEGER DEFAULT 0;");
+                }
+                SQL.FastQuery("UPDATE Config SET sql_version = 6 WHERE sql_version = 5");
+            }
             CheckVersion();
         }
 
@@ -68,6 +80,10 @@ namespace ServerTools
             if (_version != SQL.Sql_version)
             {
                 Exec(_version);
+            }
+            else
+            {
+                LoadProcess.Load(3);
             }
         }
     }

@@ -8,7 +8,7 @@ namespace ServerTools
 {
     class Waypoint
     {
-        public static bool IsEnabled = false, PvP_Check, Zombie_Check = false;
+        public static bool IsEnabled = false, PvP_Check, Zombie_Check = false, Vehicle = false;
         public static int Delay_Between_Uses = 0, Max_Waypoints = 2, Donator_Max_Waypoints = 4, Command_Cost = 0;
         public static Dictionary<int, DateTime> Invite = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> FriendPosition = new Dictionary<int, string>();
@@ -104,6 +104,21 @@ namespace ServerTools
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
+                if (Vehicle)
+                {
+                    Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                    Entity _attachedEntity = _player.AttachedToEntity;
+                    if (_attachedEntity != null)
+                    {
+                        string _phrase587;
+                        if (!Phrases.Dict.TryGetValue(587, out _phrase587))
+                        {
+                            _phrase587 = " you can not teleport to a waypoint with a vehicle.";
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase587 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        }
+                        return;
+                    }
+                }
                 bool _donator = false;
                 if (Delay_Between_Uses < 1)
                 {

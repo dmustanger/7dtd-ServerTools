@@ -132,7 +132,6 @@ namespace ServerTools
             }
             else
             {
-                Log.Out("Attached vehicle");
                 Exec1(_cInfo, _player, _vehicle);
             }
         }

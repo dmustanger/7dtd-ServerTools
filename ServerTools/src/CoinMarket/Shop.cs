@@ -275,7 +275,7 @@ namespace ServerTools
                         string _phrase821;
                         if (!Phrases.Dict.TryGetValue(821, out _phrase821))
                         {
-                            _phrase821 = "you are not inside a market or trader area. Find one and use this command again.";
+                            _phrase821 = " you are not inside a market or trader area. Find one and use this command again.";
                         }
                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase821 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -296,7 +296,7 @@ namespace ServerTools
                         string _phrase564;
                         if (!Phrases.Dict.TryGetValue(564, out _phrase564))
                         {
-                            _phrase564 = "you are outside the market. Get inside it and try again.";
+                            _phrase564 = " you are outside the market. Get inside it and try again.";
                         }
                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase564 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -314,7 +314,7 @@ namespace ServerTools
                         string _phrase619;
                         if (!Phrases.Dict.TryGetValue(619, out _phrase619))
                         {
-                            _phrase619 = "you are not inside a trader area. Find a trader and use this command again.";
+                            _phrase619 = " you are not inside a trader area. Find a trader and use this command again.";
                         }
                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase619 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -329,7 +329,7 @@ namespace ServerTools
                 string _phrase624;
                 if (!Phrases.Dict.TryGetValue(624, out _phrase624))
                 {
-                    _phrase624 = "the shop does not contain any items. Contact an administrator";
+                    _phrase624 = " the shop does not contain any items. Contact an administrator";
                 }
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase624 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
@@ -416,7 +416,7 @@ namespace ServerTools
                     string _phrase823;
                     if (!Phrases.Dict.TryGetValue(823, out _phrase823))
                     {
-                        _phrase823 = "type /buy # to purchase the shop item. You can add how many times you want to buy it. /buy # #";
+                        _phrase823 = " type /buy # to purchase the shop item. You can add how many times you want to buy it. /buy # #";
                     }
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase823 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -426,7 +426,7 @@ namespace ServerTools
                 string _phrase822;
                 if (!Phrases.Dict.TryGetValue(822, out _phrase822))
                 {
-                    _phrase822 = "this category is missing. Check /shop.";
+                    _phrase822 = " this category is missing. Check /shop.";
                 }
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase822 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
@@ -443,7 +443,7 @@ namespace ServerTools
                     string _phrase620;
                     if (!Phrases.Dict.TryGetValue(620, out _phrase620))
                     {
-                        _phrase620 = "the item or amount # you are trying to buy is not an integer. Please input /buy 1 2 for example.";
+                        _phrase620 = " the item or amount # you are trying to buy is not an integer. Please input /buy 1 2 for example.";
                     }
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase620 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -455,7 +455,7 @@ namespace ServerTools
                         string _phrase620;
                         if (!Phrases.Dict.TryGetValue(620, out _phrase620))
                         {
-                            _phrase620 = "the item or amount # you are trying to buy is not an integer. Please input /buy 1 2 for example.";
+                            _phrase620 = " the item or amount # you are trying to buy is not an integer. Please input /buy 1 2 for example.";
                         }
                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase620 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -481,7 +481,7 @@ namespace ServerTools
                                         string _phrase621;
                                         if (!Phrases.Dict.TryGetValue(621, out _phrase621))
                                         {
-                                            _phrase621 = "you do not have enough {Name}. Your wallet balance is {Value}.";
+                                            _phrase621 = " you do not have enough {Name}. Your wallet balance is {Value}.";
                                         }
                                         _phrase621 = _phrase621.Replace("{Name}", Wallet.Coin_Name);
                                         _phrase621 = _phrase621.Replace("{Value}", _currentCoins.ToString());
@@ -515,7 +515,7 @@ namespace ServerTools
                                     string _phrase621;
                                     if (!Phrases.Dict.TryGetValue(621, out _phrase621))
                                     {
-                                        _phrase621 = "you do not have enough {Name}. Your wallet balance is {Value}.";
+                                        _phrase621 = " you do not have enough {Name}. Your wallet balance is {Value}.";
                                     }
                                     _phrase621 = _phrase621.Replace("{Name}", Wallet.Coin_Name);
                                     _phrase621 = _phrase621.Replace("{Value}", _currentCoins.ToString());
@@ -530,7 +530,7 @@ namespace ServerTools
                     string _phrase622;
                     if (!Phrases.Dict.TryGetValue(622, out _phrase622))
                     {
-                        _phrase622 = "there was no item # matching the shop. Check the shop category again.";
+                        _phrase622 = " there was no item # matching the shop. Check the shop category again.";
                     }
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase622 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }

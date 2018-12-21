@@ -23,13 +23,6 @@ namespace ServerTools
             }
             connection = new SQLiteConnection(_dbConnection);
             CreateTables();
-            // can remove the below a few months after release
-            string _binpath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
-            if (File.Exists(_binpath))
-            {
-                UpdateToSqlFromBin.Exec();
-            }
-            //----------------------------------------------------------------------------------------
         }
 
 
@@ -158,6 +151,10 @@ namespace ServerTools
             if (_version != SQL.Sql_version)
             {
                 UpdateSQL.Exec(_version);
+            }
+            else
+            {
+                LoadProcess.Load(3);
             }
         }
 

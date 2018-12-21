@@ -286,5 +286,14 @@ namespace ServerTools
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ",the event ended while you were offline or not spawned.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
+
+        public static void PlayerKilled(Entity _entity2, ClientInfo _cInfo2)
+        {
+            if (Open && PlayersTeam.ContainsKey(_cInfo2.playerId))
+            {
+                string _sql = string.Format("UPDATE Players SET eventReturn = 'true' WHERE steamid = '{0}'", _cInfo2.playerId);
+                SQL.FastQuery(_sql);
+            }
+        }
     }
 }

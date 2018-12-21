@@ -1,5 +1,26 @@
 ﻿CHANGELOG
 
+12.5
+Added phrase 587, 707, 826
+Added missing /nightvote to commands
+Added tool Auto_Backup. Backs up your world save folder in a zip file. Set the time between saves and days before a save is deleted
+Added option to tool Home called Vehicle. Set true or false to control if a player can teleport home with a vehicle
+Added option to tool Waypoint called Vehicle. Set true or false to control if a player can teleport to a waypoint with a vehicle
+Added Vote_Reward_Extended to the config
+Added options to Vote_Reward_Extended called Weekly_Votes. If a player votes enough times in a week to match Weekly_Votes, they receive
+one extra reward
+Fixed party chat showing to the party but not for the sender
+Fixed response to /shutdown
+Fixed Animal_Tracking default entity id and updated internal code to allow live updates of id
+Fixed Jail option Jail_Shock not working
+Fixed more chat responses
+Fixed Anti cheat detection Underground_Check with the new blocks added to A17
+Fixed /commands showing /restart as a valid command
+Fixed New_Spawn_Tele
+Changed /stuck so that if players are on a vehicle, the vehicle will detach
+Changed internal code process for Bounty and detection of kills to work with new API
+Changed phrase 706
+
 12.4
 Added phrase 787
 Added tool Vehicle_Teleport. Allows players to save one of each vehicle type for teleport. Vehicle must be within 50 blocks to teleport

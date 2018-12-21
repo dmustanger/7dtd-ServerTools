@@ -32,7 +32,7 @@ namespace ServerTools
                                 _phrase748 = "{Player} has requested a restart vote.";
                             }
                             _phrase748 = _phrase748.Replace("{Player}", _cInfo.playerName);
-                            ChatHook.ChatMessage(_cInfoAdmins, LoadConfig.Chat_Response_Color + _cInfoAdmins.playerName  + _phrase748 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfoAdmins, LoadConfig.Chat_Response_Color + _phrase748 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     if (!adminOnline)

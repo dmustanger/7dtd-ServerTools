@@ -43,7 +43,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="src\AntiCheat\DupeLog.cs" />
+    <Compile Include="src\AutoBackup\AutoBackup.cs" />
     <Compile Include="src\Bank\Bank.cs" />
+    <Compile Include="src\Bloodmoon_Warrior\Bloodmoon_Warrior.cs" />
     <Compile Include="src\Chat\AdminChatCommands\SetMarket.cs" />
     <Compile Include="src\Chat\ChatCommands\MarketChat.cs" />
     <Compile Include="src\Chat\ChatCommands\Mogul.cs" />
@@ -117,6 +119,7 @@
     <Compile Include="src\ConsoleCommands\TraderListConsole.cs" />
     <Compile Include="src\ConsoleCommands\ZoneSetupConsole.cs" />
     <Compile Include="src\Event\Event.cs" />
+    <Compile Include="src\Functions\LoadProcess.cs" />
     <Compile Include="src\PersistentData\UpdateSQL.cs" />
     <Compile Include="src\PersistentData\UpdateToSqlFromBin.cs" />
     <Compile Include="src\Hardcore\Hardcore.cs" />
@@ -129,7 +132,7 @@
     <Compile Include="src\AntiCheat\UndergroundCheck.cs" />
     <Compile Include="src\AntiCheat\FlightCheck.cs" />
     <Compile Include="src\AntiCheat\InvalidItems.cs" />
-    <Compile Include="src\AntiCheat\Zones.cs" />
+    <Compile Include="src\Zones\Zones.cs" />
     <Compile Include="src\API.cs" />
     <Compile Include="src\AuctionBox\AuctionBox.cs" />
     <Compile Include="src\AutoShutdown\AutoShutdown.cs" />
@@ -245,6 +248,10 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\7dtd-binaries\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="DotNetZip, Version=1.12.0.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetZip.1.12.0\lib\net20\DotNetZip.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="GeotargetingControl">
       <HintPath>..\7dtd-binaries\GeotargetingControl.dll</HintPath>

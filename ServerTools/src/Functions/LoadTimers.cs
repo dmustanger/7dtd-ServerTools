@@ -10,7 +10,7 @@ namespace ServerTools
             Shutdown_Delay = 60, Infoticker_Delay = 60, _sSC = 0, _sSCD = 0,
             Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0, _eventTime = 0;
         private static int timer1SecondInstanceCount, _wV, _pSC, _b, _pL, _mC, _wSD, _iT, _rVS, _kV, _mV,
-            _rS, _rV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _nV, _vR, _eI, _eO, _zR; 
+            _rS, _rV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _nV, _vR, _eI, _eO, _zR, _tBS, _nP; 
         private static System.Timers.Timer t1 = new System.Timers.Timer();
 
         public static void TimerStart()
@@ -88,7 +88,7 @@ namespace ServerTools
                 Log.Out("World radius enabled");
             }
             Log.Out("--------------------------------------");
-            Log.Out("[SERVERTOOLS] Chat prefix-color tools:");
+            Log.Out("[SERVERTOOLS] Chat color-prefix tools:");
             Log.Out("--------------------------------------");
             if (ChatColorPrefix.IsEnabled)
             {
@@ -98,32 +98,31 @@ namespace ServerTools
             {
                 Log.Out("Normal Player chat color and prefix enabled");
             }
-            Log.Out("------------------------------------");
-            Log.Out("[SERVERTOOLS] Vehicle Telport tools:");
-            Log.Out("------------------------------------");
             if (VehicleTeleport.IsEnabled)
             {
-                Log.Out("Vehicle Telport enabled");
-            }
-            if (VehicleTeleport.Bike)
-            {
-                Log.Out("Bike enabled");
-            }
-            if (VehicleTeleport.Mini_Bike)
-            {
-                Log.Out("MiniBike enabled");
-            }
-            if (VehicleTeleport.Motor_Bike)
-            {
-                Log.Out("MotorBike enabled");
-            }
-            if (VehicleTeleport.Jeep)
-            {
-                Log.Out("Jeep enabled");
-            }
-            if (VehicleTeleport.Gyro)
-            {
-                Log.Out("Gyro enabled");
+                Log.Out("------------------------------------");
+                Log.Out("[SERVERTOOLS] Vehicle Telport tools:");
+                Log.Out("------------------------------------");
+                if (VehicleTeleport.Bike)
+                {
+                    Log.Out("Bike enabled");
+                }
+                if (VehicleTeleport.Mini_Bike)
+                {
+                    Log.Out("MiniBike enabled");
+                }
+                if (VehicleTeleport.Motor_Bike)
+                {
+                    Log.Out("MotorBike enabled");
+                }
+                if (VehicleTeleport.Jeep)
+                {
+                    Log.Out("Jeep enabled");
+                }
+                if (VehicleTeleport.Gyro)
+                {
+                    Log.Out("Gyro enabled");
+                }
             }
             Log.Out("--------------------------");
             Log.Out("[SERVERTOOLS] Other tools:");
@@ -143,6 +142,10 @@ namespace ServerTools
             if (AuctionBox.IsEnabled)
             {
                 Log.Out("Auction enabled");
+            }
+            if (AutoBackup.IsEnabled)
+            {
+                Log.Out("Auto backup enabled");
             }
             if (AutoSaveWorld.IsEnabled)
             {
@@ -618,7 +621,7 @@ namespace ServerTools
                 _pL = 0;
             }
             if (StopServer.stopServerCountingDown)
-            {               
+            {
                 _sSCD++;
                 if (_sSCD == 60)
                 {
@@ -636,7 +639,7 @@ namespace ServerTools
                     StopServer.StartShutdown3();
                 }
                 if (_sSC > 1 && _sSCD == 0)
-                {                    
+                {
                     StopServer.StartShutdown2(_sSC);
                 }
                 if (StopServer.Kick_30_Seconds)
@@ -708,7 +711,7 @@ namespace ServerTools
             if (AutoShutdown.Bloodmoon)
             {
                 _aSB++;
-                if (_aSB >= 1800)
+                if (_aSB >= 900)
                 {
                     _aSB = 0;
                     AutoShutdown.CheckBloodmoon();
@@ -809,7 +812,7 @@ namespace ServerTools
             if (Zones.IsEnabled & Zones.reminder.Count > 0)
             {
                 _zR++;
-                if (_zR >= Zones.Reminder_Delay)
+                if (_zR >= Zones.Reminder_Delay * 60)
                 {
                     _zR = 0;
                     Zones.Reminder();
@@ -818,6 +821,32 @@ namespace ServerTools
             else
             {
                 _zR = 0;
+            }
+            if (AutoBackup.IsEnabled)
+            {
+                _tBS++;
+                if (_tBS >= AutoBackup.Time_Between_Saves * 60)
+                {
+                    _tBS = 0;
+                    AutoBackup.Backup();
+                }
+            }
+            else
+            {
+                _tBS = 0;
+            }
+            if (API.Que.Count > 0)
+            {
+                _nP++;
+                if (_nP >= 5)
+                {
+                    API.NewPlayerQue(null);
+                    _nP = 0;
+                }
+            }
+            else
+            {
+                _nP = 0;
             }
         }
     }

@@ -242,27 +242,27 @@ namespace ServerTools
                                                     AdminToolsClientInfo Admin1 = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo1.playerId);
                                                     if (Admin1.PermissionLevel <= Admin_Level)
                                                     {
-                                                        string _phrase705;
-                                                        if (!Phrases.Dict.TryGetValue(705, out _phrase705))
+                                                        string _phrase706;
+                                                        if (!Phrases.Dict.TryGetValue(706, out _phrase706))
                                                         {
-                                                            _phrase705 = "Cheat Detected: {PlayerName} flying @ {X} {Y} {Z}";
+                                                            _phrase706 = "Cheat Detected: {PlayerName} flying @ {X} {Y} {Z}";
                                                         }
-                                                        _phrase705 = _phrase705.Replace("{PlayerName}", _cInfo.playerName);
-                                                        _phrase705 = _phrase705.Replace("{X}", x.ToString());
-                                                        _phrase705 = _phrase705.Replace("{Y}", y.ToString());
-                                                        _phrase705 = _phrase705.Replace("{Z}", z.ToString());
-                                                        ChatHook.ChatMessage(null, "[FF0000]" + _phrase705 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                        _phrase706 = _phrase706.Replace("{PlayerName}", _cInfo.playerName);
+                                                        _phrase706 = _phrase706.Replace("{X}", x.ToString());
+                                                        _phrase706 = _phrase706.Replace("{Y}", y.ToString());
+                                                        _phrase706 = _phrase706.Replace("{Z}", z.ToString());
+                                                        ChatHook.ChatMessage(null, "[FF0000]" + _phrase706 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                     }
                                                 }
                                                 if (Announce)
                                                 {
-                                                    string _phrase706;
-                                                    if (!Phrases.Dict.TryGetValue(706, out _phrase706))
+                                                    string _phrase707;
+                                                    if (!Phrases.Dict.TryGetValue(707, out _phrase707))
                                                     {
-                                                        _phrase706 = "Cheat Detected: {PlayerName} has been detected flying.";
+                                                        _phrase707 = "Cheat Detected: {PlayerName} has been detected flying.";
                                                     }
-                                                    _phrase706 = _phrase706.Replace("{PlayerName}", _cInfo.playerName);
-                                                    ChatHook.ChatMessage(null, "[FF0000]" + _phrase706 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                    _phrase707 = _phrase707.Replace("{PlayerName}", _cInfo.playerName);
+                                                    ChatHook.ChatMessage(null, "[FF0000]" + _phrase707 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                 }
                                             }
                                         }

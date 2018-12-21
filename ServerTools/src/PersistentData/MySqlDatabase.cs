@@ -39,13 +39,6 @@ namespace ServerTools
             }
             connection.Close();
             CreateTables();
-            // can remove the below a few months after release
-            string _binpath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
-            if (File.Exists(_binpath))
-            {
-                UpdateToSqlFromBin.Exec();
-            }
-            //----------------------------------------------------------------------------------------
         }
 
         private static void CreateTables()
@@ -174,6 +167,10 @@ namespace ServerTools
             if (_version != SQL.Sql_version)
             {
                 UpdateSQL.Exec(_version);
+            }
+            else
+            {
+                LoadProcess.Load(3);
             }
         }
 
