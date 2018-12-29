@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -75,7 +76,7 @@ namespace ServerTools
                                     string _phrase550;
                                     if (!Phrases.Dict.TryGetValue(550, out _phrase550))
                                     {
-                                        _phrase550 = "you can only use /lobby once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                        _phrase550 = " you can only use /lobby once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                     }
                                     _phrase550 = _phrase550.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                     _phrase550 = _phrase550.Replace("{TimeRemaining}", _timeleft.ToString());
@@ -110,7 +111,7 @@ namespace ServerTools
                             string _phrase550;
                             if (!Phrases.Dict.TryGetValue(550, out _phrase550))
                             {
-                                _phrase550 = "you can only use /lobby once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                _phrase550 = " you can only use /lobby once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
                             _phrase550 = _phrase550.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                             _phrase550 = _phrase550.Replace("{TimeRemaining}", _timeleft.ToString());
@@ -140,7 +141,7 @@ namespace ServerTools
                 string _phrase814;
                 if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    _phrase814 = "you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -181,11 +182,23 @@ namespace ServerTools
                     string _phrase552;
                     if (!Phrases.Dict.TryGetValue(552, out _phrase552))
                     {
-                        _phrase552 = "you can go back by typing /lobbyback when you are ready to leave the lobby.";
+                        _phrase552 = " you can go back by typing /lobbyback when you are ready to leave the lobby.";
                     }
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase552 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
-                string[] _cords = SetLobby.Lobby_Position.Split(',');
+                string[] _cords = { };
+                if (SetLobby.Lobby_Position.Contains(","))
+                {
+                    if (SetLobby.Lobby_Position.Contains(" "))
+                    {
+                        SetLobby.Lobby_Position.Replace(" ", "");
+                    }
+                    _cords = SetLobby.Lobby_Position.Split(',').ToArray();
+                }
+                else
+                {
+                    _cords = SetLobby.Lobby_Position.Split(' ').ToArray();
+                }
                 int.TryParse(_cords[0], out x);
                 int.TryParse(_cords[1], out y);
                 int.TryParse(_cords[2], out z);
@@ -194,7 +207,7 @@ namespace ServerTools
                 string _phrase553;
                 if (!Phrases.Dict.TryGetValue(553, out _phrase553))
                 {
-                    _phrase553 = "sending you to the lobby.";
+                    _phrase553 = " sending you to the lobby.";
                 }
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase553 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 if (Wallet.IsEnabled && Command_Cost >= 1)
@@ -209,7 +222,7 @@ namespace ServerTools
                 string _phrase554;
                 if (!Phrases.Dict.TryGetValue(554, out _phrase554))
                 {
-                    _phrase554 = "the lobby position is not set.";
+                    _phrase554 = " the lobby position is not set.";
                 }
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase554 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
@@ -225,7 +238,19 @@ namespace ServerTools
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 int x, y, z;
-                string[] _cords = SetLobby.Lobby_Position.Split(',');
+                string[] _cords = { };
+                if (SetLobby.Lobby_Position.Contains(","))
+                {
+                    if (SetLobby.Lobby_Position.Contains(" "))
+                    {
+                        SetLobby.Lobby_Position.Replace(" ", "");
+                    }
+                    _cords = SetLobby.Lobby_Position.Split(',').ToArray();
+                }
+                else
+                {
+                    _cords = SetLobby.Lobby_Position.Split(' ').ToArray();
+                }
                 int.TryParse(_cords[0], out x);
                 int.TryParse(_cords[1], out y);
                 int.TryParse(_cords[2], out z);
@@ -243,7 +268,7 @@ namespace ServerTools
                     string _phrase555;
                     if (!Phrases.Dict.TryGetValue(555, out _phrase555))
                     {
-                        _phrase555 = "sent you back to your saved location.";
+                        _phrase555 = " sent you back to your saved location.";
                     }
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase555 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -252,7 +277,7 @@ namespace ServerTools
                     string _phrase556;
                     if (!Phrases.Dict.TryGetValue(556, out _phrase556))
                     {
-                        _phrase556 = "you are outside the lobby. Get inside it and try again.";
+                        _phrase556 = " you are outside the lobby. Get inside it and try again.";
                     }
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase556 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }

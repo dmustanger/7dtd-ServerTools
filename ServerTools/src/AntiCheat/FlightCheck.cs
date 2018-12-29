@@ -204,6 +204,10 @@ namespace ServerTools
                             if (!Players.NoFlight.Contains(_cInfo.entityId))
                             {
                                 EntityPlayer ep = world.Players.dict[_cInfo.entityId];
+                                if (!ep.IsAlive() || !ep.IsSpawned())
+                                {
+                                    continue;
+                                }
                                 if (autoGetFlightCheck(ep, _cInfo) && ep.AttachedToEntity == null)
                                 {
                                     if (!Flag.ContainsKey(_cInfo.entityId))

@@ -151,14 +151,7 @@ namespace ServerTools
                 if (_respawnReason == RespawnType.EnterMultiplayer)
                 {
                     Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    if (_player.IsSpawned())
-                    {
-                        NewPlayerQue(_cInfo);
-                    }
-                    else
-                    {
-                        Que.Add(_cInfo);
-                    }
+                    Que.Add(_cInfo);
                 }
                 if (_respawnReason == RespawnType.JoinMultiplayer)
                 {
@@ -248,6 +241,10 @@ namespace ServerTools
                 }
                 if (_respawnReason == RespawnType.Died)
                 {
+                    if (Players.Died.Contains(_cInfo.entityId))
+                    {
+                        Players.Died.Remove(_cInfo.entityId);
+                    }
                     if (Bloodmoon.Show_On_Login && Bloodmoon.Show_On_Respawn)
                     {
                         Bloodmoon.GetBloodmoon(_cInfo, false);
@@ -389,23 +386,11 @@ namespace ServerTools
             }
         }
 
-        public static void NewPlayerQue(ClientInfo _cInfo)
+        public static void NewPlayerExec()
         {
-            if (_cInfo == null)
-            {
-                _cInfo = Que[0];
-                NewPlayerExec(_cInfo);
-            }
-            else
-            {
-                Que.Insert(0, _cInfo);
-                NewPlayerExec(_cInfo);
-            }
-        }
-
-        public static void NewPlayerExec(ClientInfo _cInfo)
-        {
-            if (_cInfo != null)
+            ClientInfo _cInfo = Que[0];
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            if (_cInfo != null && _player.IsSpawned())
             {
                 if (Motd.IsEnabled & Motd.Show_On_Respawn)
                 {
@@ -452,10 +437,6 @@ namespace ServerTools
                 string _name = SQL.EscapeString(_cInfo.playerName);
                 _sql = string.Format("UPDATE Players SET playername = '{0}', wallet = 0, playerSpentCoins = 0, sessionTime = 0, zkills = 0, kills = 0, deaths = 0 WHERE steamid = '{1}'", _name, _cInfo.playerId);
                 SQL.FastQuery(_sql);
-                Que.RemoveAt(0);
-            }
-            else
-            {
                 Que.RemoveAt(0);
             }
         }
@@ -587,22 +568,26 @@ namespace ServerTools
 
         public void EntityKilled(Entity _entity1, Entity _entity2)
         {
-            if (!_entity1.IsClientControlled() && _entity2.IsClientControlled())
+            if (_entity1 != null && _entity2 != null)
             {
-                ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_entity2.entityId);
-                if (_cInfo2 != null)
+                EntityType _type = _entity1.entityType;
+                if (_type == EntityType.Zombie && _entity2.IsClientControlled())
                 {
-                    if (Wallet.IsEnabled && Wallet.Lose_On_Death)
+                    ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_entity2.entityId);
+                    if (_cInfo2 != null)
                     {
-                        Wallet.PlayerKilled(_entity2, _cInfo2);
-                    }
-                    if (Event.Open && Event.PlayersTeam.ContainsKey(_cInfo2.playerId))
-                    {
-                        Event.PlayerKilled(_entity2, _cInfo2);
-                    }
-                    if (DeathSpot.IsEnabled)
-                    {
-                        DeathSpot.PlayerKilled(_entity2);
+                        if (Wallet.IsEnabled && Wallet.Lose_On_Death)
+                        {
+                            Wallet.PlayerKilled(_entity2, _cInfo2);
+                        }
+                        if (Event.Open && Event.PlayersTeam.ContainsKey(_cInfo2.playerId))
+                        {
+                            Event.PlayerKilled(_entity2, _cInfo2);
+                        }
+                        if (DeathSpot.IsEnabled)
+                        {
+                            DeathSpot.PlayerKilled(_entity2);
+                        }
                     }
                 }
             }

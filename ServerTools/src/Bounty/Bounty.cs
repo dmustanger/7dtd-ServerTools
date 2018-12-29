@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using UnityEngine;
 
 namespace ServerTools
 {
@@ -56,7 +55,7 @@ namespace ServerTools
             string _phrase910;
             if (!Phrases.Dict.TryGetValue(910, out _phrase910))
             {
-                _phrase910 = "type /bounty Id# Value or /bounty Id# for the minimum bounty against this player.";
+                _phrase910 = "Type /bounty Id# Value or /bounty Id# for the minimum bounty against this player.";
             }
             ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase910 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
@@ -92,14 +91,14 @@ namespace ServerTools
                                 _result.Dispose();
                                 _sql = string.Format("UPDATE Players SET bounty = {0} WHERE steamid = '{1}'", _bounty + _cost, _cInfo1.playerId);
                                 SQL.FastQuery(_sql);
-                                string _message1 = "you have added {Value} bounty to {PlayerName}.[-]";
+                                string _message1 = " you have added {Value} bounty to {PlayerName}.[-]";
                                 _message1 = _message1.Replace("{Value}", _cost.ToString());
                                 _message1 = _message1.Replace("{PlayerName}", _cInfo1.playerName);
                                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _message1 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                             else
                             {
-                                string _message1 = "you do not have enough in your wallet for this bounty: {Value}.[-]";
+                                string _message1 = " you do not have enough in your wallet for this bounty: {Value}.[-]";
                                 _message1 = _message1.Replace("{Value}", _cost.ToString());
                                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _message1 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
@@ -130,14 +129,14 @@ namespace ServerTools
                             _result.Dispose();
                             _sql = string.Format("UPDATE Players SET bounty = {0} WHERE steamid = '{1}'", _bounty + Minimum_Bounty, _cInfo1.playerId);
                             SQL.FastQuery(_sql);
-                            string _message1 = "you have added {Value} bounty to {PlayerName}.[-]";
+                            string _message1 = " you have added {Value} bounty to {PlayerName}.[-]";
                             _message1 = _message1.Replace("{Value}", Minimum_Bounty.ToString());
                             _message1 = _message1.Replace("{PlayerName}", _cInfo1.playerName);
                             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _message1 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                         else
                         {
-                            string _message1 = "you do not have enough in your wallet for this bounty: {Value}.[-]";
+                            string _message1 = " you do not have enough in your wallet for this bounty: {Value}.[-]";
                             _message1 = _message1.Replace("{Value}", Minimum_Bounty.ToString());
                             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _message1 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
@@ -207,7 +206,7 @@ namespace ServerTools
                     }
                     _phrase912 = _phrase912.Replace("{PlayerName}", _cInfo2.playerName);
                     _phrase912 = _phrase912.Replace("{Victim}", _cInfo1.playerName);
-                    ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _phrase912, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase912, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     using (StreamWriter sw = new StreamWriter(filepath, true))
                     {
                         sw.WriteLine(string.Format("{0}: {1} is a bounty hunter! {2} was snuffed out. Bounty was worth {3}", DateTime.Now, _cInfo2.playerName, _cInfo1.playerName, _bounty));

@@ -160,6 +160,10 @@ namespace ServerTools
                 string[] _animalList = { };
                 if (Animal_List.Contains(","))
                 {
+                    if (Animal_List.Contains(" "))
+                    {
+                        Animal_List.Replace(" ", "");
+                    }
                     _animalList = Animal_List.Split(',').ToArray();
                 }
                 else
@@ -170,15 +174,15 @@ namespace ServerTools
                 int maxRad = 0;
                 if (Maximum_Spawn_Radius < Minimum_Spawn_Radius)
                 {
-                    minRad = 20;
-                    maxRad = 30;
+                    minRad = 40;
+                    maxRad = 60;
                 }
                 else
                 {
                     minRad = Minimum_Spawn_Radius;
                     maxRad = Maximum_Spawn_Radius;
                 }
-                int _r = rnd.Next(1, Animal_List.Length + 1);
+                int _r = rnd.Next(0, Animal_List.Length + 1);
                 int _newId;
                 int.TryParse(_animalList[_r], out _newId);
                 int _nextRadius = rnd.Next(minRad, maxRad + 1);

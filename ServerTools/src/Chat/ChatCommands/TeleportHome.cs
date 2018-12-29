@@ -352,7 +352,7 @@ namespace ServerTools
                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase607 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
-                if (_owner == EnumLandClaimOwner.None)
+                else
                 {
                     string _phrase817;
                     if (!Phrases.Dict.TryGetValue(817, out _phrase817))
@@ -382,8 +382,7 @@ namespace ServerTools
                 if (Vehicle)
                 {
                     Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    Entity _attachedEntity = _player.AttachedToEntity;
-                    if (_attachedEntity != null)
+                    if (_player.AttachedToEntity != null)
                     {
                         string _phrase826;
                         if (!Phrases.Dict.TryGetValue(826, out _phrase826))

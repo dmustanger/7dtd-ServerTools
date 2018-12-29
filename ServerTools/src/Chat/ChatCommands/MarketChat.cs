@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -75,7 +76,7 @@ namespace ServerTools
                                     string _phrase560;
                                     if (!Phrases.Dict.TryGetValue(560, out _phrase560))
                                     {
-                                        _phrase560 = "you can only use /market once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                        _phrase560 = " you can only use /market once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                     }
                                     _phrase560 = _phrase560.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                     _phrase560 = _phrase560.Replace("{TimeRemaining}", _timeleft.ToString());
@@ -110,9 +111,8 @@ namespace ServerTools
                             string _phrase560;
                             if (!Phrases.Dict.TryGetValue(560, out _phrase560))
                             {
-                                _phrase560 = "{PlayerName} you can only use /market once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                _phrase560 = " you can only use /market once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
-                            _phrase560 = _phrase560.Replace("{PlayerName}", _playerName);
                             _phrase560 = _phrase560.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                             _phrase560 = _phrase560.Replace("{TimeRemaining}", _timeleft.ToString());
                             if (_announce)
@@ -141,7 +141,7 @@ namespace ServerTools
                 string _phrase814;
                 if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    _phrase814 = "you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -182,11 +182,23 @@ namespace ServerTools
                     string _phrase561;
                     if (!Phrases.Dict.TryGetValue(561, out _phrase561))
                     {
-                        _phrase561 = "you can go back by typing /marketback when you are ready to leave the market.";
+                        _phrase561 = " you can go back by typing /marketback when you are ready to leave the market.";
                     }
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase561 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
-                string[] _cords = SetMarket.Market_Position.Split(',');
+                string[] _cords = { };
+                if (SetMarket.Market_Position.Contains(","))
+                {
+                    if (SetMarket.Market_Position.Contains(" "))
+                    {
+                        SetMarket.Market_Position.Replace(" ", "");
+                    }
+                    _cords = SetMarket.Market_Position.Split(',').ToArray();
+                }
+                else
+                {
+                    _cords = SetMarket.Market_Position.Split(' ').ToArray();
+                }
                 int.TryParse(_cords[0], out x);
                 int.TryParse(_cords[1], out y);
                 int.TryParse(_cords[2], out z);
@@ -195,7 +207,7 @@ namespace ServerTools
                 string _phrase562;
                 if (!Phrases.Dict.TryGetValue(562, out _phrase562))
                 {
-                    _phrase562 = "sent you to the market.";
+                    _phrase562 = " sent you to the market.";
                 }
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase562 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 if (Wallet.IsEnabled && Command_Cost >= 1)
@@ -210,7 +222,7 @@ namespace ServerTools
                 string _phrase563;
                 if (!Phrases.Dict.TryGetValue(563, out _phrase563))
                 {
-                    _phrase563 = "the market position is not set.";
+                    _phrase563 = " the market position is not set.";
                 }
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase563 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
@@ -226,7 +238,19 @@ namespace ServerTools
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 int x, y, z;
-                string[] _cords = SetMarket.Market_Position.Split(',');
+                string[] _cords = { };
+                if (SetMarket.Market_Position.Contains(","))
+                {
+                    if (SetMarket.Market_Position.Contains(" "))
+                    {
+                        SetMarket.Market_Position.Replace(" ", "");
+                    }
+                    _cords = SetMarket.Market_Position.Split(',').ToArray();
+                }
+                else
+                {
+                    _cords = SetMarket.Market_Position.Split(' ').ToArray();
+                }
                 int.TryParse(_cords[0], out x);
                 int.TryParse(_cords[1], out y);
                 int.TryParse(_cords[2], out z);
@@ -244,7 +268,7 @@ namespace ServerTools
                     string _phrase555;
                     if (!Phrases.Dict.TryGetValue(555, out _phrase555))
                     {
-                        _phrase555 = "sent you back to your saved location.";
+                        _phrase555 = " sent you back to your saved location.";
                     }
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase555 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -253,14 +277,14 @@ namespace ServerTools
                     string _phrase564;
                     if (!Phrases.Dict.TryGetValue(564, out _phrase564))
                     {
-                        _phrase564 = "you are outside the market. Get inside it and try again.";
+                        _phrase564 = " you are outside the market. Get inside it and try again.";
                     }
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase564 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + "you have no saved return point[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you have no saved return point[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

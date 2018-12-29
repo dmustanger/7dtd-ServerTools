@@ -1,5 +1,17 @@
 ﻿CHANGELOG
 
+12.7
+Fixed more chat responses showing global instead of private
+Fixed friend chat not showing for the sender
+Fixed party chat showing twice for the sender
+Fixed Death_Alert stopping Zones in the code in some cases
+Changed anticheat code for flight detection to check if the player is alive and spawned
+Changed Market.xml to Shop.xml. Copy and paste your existing list in to the new file but take note of the changes in the file
+Changed code to allow commas, spaces or a combination for certain options in the config
+Changed Vote_Reward code to simplify and prevent errors
+Changed API process for entity killed to prevent errors
+Changed API process for a new player to prevent repeating indefinitely
+
 12.6
 Fixed the Kill_Notice tool
 Fixed default KillNotice.xml list

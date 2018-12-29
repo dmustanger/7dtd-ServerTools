@@ -108,6 +108,10 @@ namespace ServerTools
             string[] _cords = { };
             if (Jail_Position.Contains(","))
             {
+                if (Jail_Position.Contains(" "))
+                {
+                    Jail_Position.Replace(" ", "");
+                }
                 _cords = Jail_Position.Split(',');
             }
             else
@@ -239,7 +243,19 @@ namespace ServerTools
                         if (_player.Spawned)
                         {
                             int x, y, z;
-                            string[] _cords = Jail_Position.Split(',');
+                            string[] _cords = { };
+                            if (Jail_Position.Contains(","))
+                            {
+                                if (Jail_Position.Contains(" "))
+                                {
+                                    Jail_Position.Replace(" ", "");
+                                }
+                                _cords = Jail_Position.Split(',');
+                            }
+                            else
+                            {
+                                _cords = Jail_Position.Split(' ');
+                            }
                             int.TryParse(_cords[0], out x);
                             int.TryParse(_cords[1], out y);
                             int.TryParse(_cords[2], out z);

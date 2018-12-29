@@ -1133,7 +1133,7 @@ namespace ServerTools
                 string _phrase705;
                 if (!Dict.TryGetValue(705, out _phrase705))
                 {
-                    _phrase705 = " you have voted {Votes} time since {Date}. You need {Count} more votes before {Date2} to reach the bonus.";
+                    _phrase705 = " you have voted 1 time since {Date}. You need {Count} more votes before {Date2} to reach the bonus.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"705\" Phrase=\"{0}\" />", _phrase705));
                 sw.WriteLine("        <!-- ******************************************************** -->");

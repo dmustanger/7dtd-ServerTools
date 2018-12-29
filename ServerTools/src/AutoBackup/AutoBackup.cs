@@ -32,7 +32,7 @@ namespace ServerTools
                                 FileInfo b = new FileInfo(a);
                                 if (b.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
                                 {
-                                    Log.Out("[SERVERTOOLS] Starting world backupOld backup deleted");
+                                    Log.Out("[SERVERTOOLS] Starting world backup. Old backups deleted");
                                     b.Delete();
                                 }
                             }

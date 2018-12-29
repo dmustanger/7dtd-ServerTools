@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 
 namespace ServerTools
 {
@@ -97,6 +96,45 @@ namespace ServerTools
                     {
                         ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", you are muted.[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         return false;
+                    }
+                }
+                if (Badwords.Invalid_Name)
+                {
+                    bool _hasBadName = false;
+                    _mainName = _mainName.ToLower();
+                    foreach (string _word in Badwords.List)
+                    {
+                        if (_mainName.Contains(_word))
+                        {
+                            string _replace = "";
+                            for (int i = 0; i < _word.Length; i++)
+                            {
+                                _replace = string.Format("{0}*", _replace);
+                            }
+                            _mainName = _mainName.Replace(_word, _replace);
+                            _hasBadName = true;
+                        }
+                    }
+                    if (_hasBadName)
+                    {
+                        ChatMessage(_cInfo, ChatHook.Player_Name_Color + _mainName + LoadConfig.Chat_Response_Color + ", invalid Name-No Commands[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        return false;
+                    }
+                }
+                if (Badwords.IsEnabled)
+                {
+                    _message = _message.ToLower();
+                    foreach (string _word in Badwords.List)
+                    {
+                        if (_message.Contains(_word))
+                        {
+                            string _replace = "";
+                            for (int i = 0; i < _word.Length; i++)
+                            {
+                                _replace = string.Format("{0}*", _replace);
+                            }
+                            _message = _message.Replace(_word, _replace);
+                        }
                     }
                 }
                 if (!Jail.Jailed.Contains(_cInfo.playerId))
@@ -264,46 +302,6 @@ namespace ServerTools
                         _mainName = string.Format("({0}) {1}", _clanname, _mainName);
                         ChatMessage(_cInfo, _message, _senderId, _mainName, EChatType.Whisper, null);
                         return false;
-                    }
-                    if (Badwords.Invalid_Name)
-                    {
-                        bool _hasBadName = false;
-                        string _playerName1 = _mainName.ToLower();
-                        foreach (string _word in Badwords.List)
-                        {
-                            if (_playerName1.Contains(_word))
-                            {
-                                _hasBadName = true;
-                            }
-                        }
-                        if (_hasBadName)
-                        {
-                            ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", invalid Name-No Commands[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            return false;
-                        }
-                    }
-                    if (Badwords.IsEnabled)
-                    {
-                        bool _hasBadWord = false;
-                        string _message1 = _message.ToLower();
-                        foreach (string _word in Badwords.List)
-                        {
-                            if (_message1.Contains(_word))
-                            {
-                                string _replace = "";
-                                for (int i = 0; i < _word.Length; i++)
-                                {
-                                    _replace = string.Format("{0}*", _replace);
-                                }
-                                _message1 = _message1.Replace(_word, _replace);
-                                _hasBadWord = true;
-                            }
-                        }
-                        if (_hasBadWord)
-                        {
-                            ChatMessage(_cInfo, _message1, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            return false;
-                        }
                     }
                     if (_message.StartsWith(" "))
                     {
@@ -1781,6 +1779,11 @@ namespace ServerTools
                         }
                     }
                 }
+                if (Friend_Chat_Color.StartsWith("[") && Friend_Chat_Color.EndsWith("]"))
+                {
+                    _message = _message.Insert(0, Friend_Chat_Color);
+                }
+                _cInfo.SendPackage(new NetPackageChat(EChatType.Whisper, 33, _message, _name, false, null));
             }
             else if (_type == EChatType.Party)
             {
@@ -1802,11 +1805,6 @@ namespace ServerTools
                         }
                     }
                 }
-                if (Party_Chat_Color.StartsWith("[") && Party_Chat_Color.EndsWith("]"))
-                {
-                    _message = _message.Insert(0, Party_Chat_Color);
-                }
-                _cInfo.SendPackage(new NetPackageChat(EChatType.Whisper, 33, _message, _name, false, null));
             }
         }
     }

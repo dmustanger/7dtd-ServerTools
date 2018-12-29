@@ -14,7 +14,7 @@ namespace ServerTools
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    _phrase107 = "you do not have permissions to use this command.";
+                    _phrase107 = " you do not have permissions to use this command.";
                 }
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
@@ -30,7 +30,7 @@ namespace ServerTools
                 string _phrase551;
                 if (!Phrases.Dict.TryGetValue(551, out _phrase551))
                 {
-                    _phrase551 = "you have set the lobby position as {LobbyPosition}.";
+                    _phrase551 = " you have set the lobby position as {LobbyPosition}.";
                 }
                 _phrase551 = _phrase551.Replace("{LobbyPosition}", Lobby_Position);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase551 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);

@@ -85,15 +85,15 @@ namespace ServerTools
                                 for (int j = 0; j < _playerList.Count; j++)
                                 {
                                     EntityPlayer _player2 = _playerList[j];
-                                    Entity _target = _player2.GetDamagedTarget();
-                                    if (_target == _player && _player != _player2)
+                                    ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_player2.entityId);
+                                    if (_cInfo2 != null)
                                     {
-                                        _player2.ClearDamagedTarget();
-                                        ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_player2.entityId);
-                                        if (_cInfo != null && _cInfo2 != null)
+                                        if (KillNotice.IsEnabled)
                                         {
-                                            if (KillNotice.IsEnabled)
+                                            Entity _target = _player2.GetDamagedTarget();
+                                            if (_target == _player && _player != _player2)
                                             {
+                                                _player2.ClearDamagedTarget();
                                                 string _holdingItem = _player2.inventory.holdingItem.Name;
                                                 ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
                                                 if (_itemValue.type != ItemValue.None.type)
@@ -102,10 +102,10 @@ namespace ServerTools
                                                 }
                                                 KillNotice.Notice(_cInfo, _cInfo2, _holdingItem);
                                             }
-                                            if (Bounties.IsEnabled)
-                                            {
-                                                Bounties.PlayerKilled(_player, _player2, _cInfo, _cInfo2);
-                                            }
+                                        }
+                                        if (Bounties.IsEnabled)
+                                        {
+                                            Bounties.PlayerKilled(_player, _player2, _cInfo, _cInfo2);
                                         }
                                     }
                                 }

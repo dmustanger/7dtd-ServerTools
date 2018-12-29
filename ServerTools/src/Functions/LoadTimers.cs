@@ -10,7 +10,7 @@ namespace ServerTools
             Shutdown_Delay = 60, Infoticker_Delay = 60, _sSC = 0, _sSCD = 0,
             Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0, _eventTime = 0;
         private static int timer1SecondInstanceCount, _wV, _pSC, _b, _pL, _mC, _wSD, _iT, _rVS, _kV, _mV,
-            _rS, _rV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _nV, _vR, _eI, _eO, _zR, _tBS, _nP; 
+            _rS, _rV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _nV, _eI, _eO, _zR, _tBS, _nP; 
         private static System.Timers.Timer t1 = new System.Timers.Timer();
 
         public static void TimerStart()
@@ -32,6 +32,7 @@ namespace ServerTools
                 timer1Running = false;
                 t1.Stop();
             }
+            timer1SecondInstanceCount = 0;
         }
 
         public static void LogAlert()
@@ -747,21 +748,6 @@ namespace ServerTools
             {
                 _wR = 0;
             }
-            if (VoteReward.IsEnabled && VoteReward.QueOpen)
-            {
-                _vR++;
-                if (_vR >= 60)
-                {
-                    _vR = 0;
-                    VoteReward.que.Clear();
-                    VoteReward.QueOpen = false;
-                    VoteReward.RewardOpen = true;
-                }
-            }
-            else
-            {
-                _vR = 0;
-            }
             if (Event.Invited)
             {
                 _eI++;
@@ -840,7 +826,7 @@ namespace ServerTools
                 _nP++;
                 if (_nP >= 5)
                 {
-                    API.NewPlayerQue(null);
+                    API.NewPlayerExec();
                     _nP = 0;
                 }
             }

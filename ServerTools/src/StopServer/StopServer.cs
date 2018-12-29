@@ -29,8 +29,7 @@ namespace ServerTools
                 _phrase450 = "Server Shutdown In {Minutes} Minutes.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", Timers.Stop_Server_Time.ToString());
-            string _message = _phrase450;
-            Alert(_message, Alert_Count);
+            Alert(_phrase450, Alert_Count);
         }
 
         public static void StartShutdown2(int _newCount)
@@ -41,8 +40,7 @@ namespace ServerTools
                 _phrase450 = "Server Shutdown In {Minutes} Minutes.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", _newCount.ToString());
-            string _message = _phrase450;
-            Alert(_message, Alert_Count);
+            Alert(_phrase450, Alert_Count);
         }
 
         public static void StartShutdown3()
@@ -58,47 +56,39 @@ namespace ServerTools
                 _phrase450 = "Server Shutdown In {Minutes} Minutes.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", "1");
-            string _message = _phrase451;
-            string _message2 = _phrase450;
-            Alert(_message, 1);
-            Alert(_message, 1);
+            Alert(_phrase451, 1);
+            Alert(_phrase450, 1);
             SdtdConsole.Instance.ExecuteSync("saveworld", (ClientInfo)null);
         }
 
         public static void StartShutdown4()
         {
-            string _message = "10 seconds until shutdown";
-            Alert(_message, 1);
+            Alert("10 seconds until shutdown", 1);
         }
 
         public static void StartShutdown5()
         {
-            string _message = "5";
-            Alert(_message, 1);
+            Alert("5", 1);
         }
 
         public static void StartShutdown6()
         {
-            string _message = "4";
-            Alert(_message, 1);
+            Alert("4", 1);
         }
 
         public static void StartShutdown7()
         {
-            string _message = "3";
-            Alert(_message, 1);
+            Alert("3", 1);
         }
 
         public static void StartShutdown8()
         {
-            string _message = "2";
-            Alert(_message, 1);
+            Alert("2", 1);
         }
 
         public static void StartShutdown9()
         {
-            string _message = "1";
-            Alert(_message, 1);
+            Alert("1", 1);
         }
 
         public static void Stop()

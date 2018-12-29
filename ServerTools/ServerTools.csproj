@@ -176,8 +176,8 @@
     <Compile Include="src\Chat\Motd.cs" />
     <Compile Include="src\ClaimBlock\FirstClaimBlock.cs" />
     <Compile Include="src\ClanManager\ClanManager.cs" />
-    <Compile Include="src\CoinMarket\Shop.cs" />
-    <Compile Include="src\CoinMarket\Wallet.cs" />
+    <Compile Include="src\ShopAndWallet\Shop.cs" />
+    <Compile Include="src\ShopAndWallet\Wallet.cs" />
     <Compile Include="src\ConsoleCommands\%40AdminConsole.cs" />
     <Compile Include="src\ConsoleCommands\FamilyShareConsole.cs" />
     <Compile Include="src\ConsoleCommands\GiveBlockConsole.cs" />

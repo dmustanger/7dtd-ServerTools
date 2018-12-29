@@ -15,6 +15,8 @@ namespace ServerTools
                 sw.WriteLine("ServerTools - How to setup ServerTools");
                 sw.WriteLine(string.Format("This was drafted for version {0}", LoadConfig.version));
                 sw.WriteLine();
+                sw.WriteLine("The how to setup file is not kept up to date. You will find a note in the changelog when the file has been updated. The above version note is automatic.");
+                sw.WriteLine();
                 sw.WriteLine("ServerTools was coded and tested under a Windows operating system. It should operate on other major O.S. but if you find bugs, report them to");
                 sw.WriteLine("https://github.com/dmustanger/7dtd-ServerTools/issues");
                 sw.WriteLine();
