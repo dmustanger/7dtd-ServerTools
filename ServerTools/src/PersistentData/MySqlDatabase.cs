@@ -168,10 +168,10 @@ namespace ServerTools
             {
                 UpdateSQL.Exec(_version);
             }
-            else
-            {
-                LoadProcess.Load(3);
-            }
+            //else
+            //{
+            //    LoadProcess.Load(3);//Leaving the loading to the loader.... it knows what to do
+            //}
         }
 
         public static void FastQuery(string _sql)

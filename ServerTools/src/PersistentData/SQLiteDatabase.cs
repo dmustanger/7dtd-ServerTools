@@ -1,13 +1,13 @@
 ﻿using System.Data;
-using System.Data.SQLite;
 using System.IO;
+using Mono.Data.Sqlite;
 
 namespace ServerTools
 {
     public class SQLiteDatabase
     {
-        private static SQLiteConnection connection;
-        private static SQLiteCommand cmd;
+        private static SqliteConnection connection;
+        private static SqliteCommand cmd;
 
         public static void SetConnection()
         {
@@ -21,7 +21,7 @@ namespace ServerTools
             {
                 _dbConnection = string.Format("Data Source={0};Version=3;New=True;Compress=True;", _filepath);
             }
-            connection = new SQLiteConnection(_dbConnection);
+            connection = new SqliteConnection(_dbConnection);
             CreateTables();
         }
 
@@ -152,10 +152,10 @@ namespace ServerTools
             {
                 UpdateSQL.Exec(_version);
             }
-            else
-            {
-                LoadProcess.Load(3);
-            }
+            //else
+            //{
+            //    LoadProcess.Load(3);  //Leaving the loading to the loader.... it knows what to do
+            //}
         }
 
         public static DataTable TQuery(string _sql)
@@ -164,12 +164,12 @@ namespace ServerTools
             try
             {
                 connection.Open();
-                cmd = new SQLiteCommand(_sql, connection);
-                SQLiteDataReader _reader = cmd.ExecuteReader();
+                cmd = new SqliteCommand(_sql, connection);
+                SqliteDataReader _reader = cmd.ExecuteReader();
                 dt.Load(_reader);
                 _reader.Close();
             }
-            catch (SQLiteException e)
+            catch (SqliteException e)
             {
                 Log.Out(string.Format("[ServerTools] SQLiteException in SQLiteDatabase.TQuery: {0}", e));
             }
@@ -182,10 +182,10 @@ namespace ServerTools
             try
             {
                 connection.Open();
-                cmd = new SQLiteCommand(_sql, connection);
+                cmd = new SqliteCommand(_sql, connection);
                 cmd.ExecuteNonQuery();
             }
-            catch (SQLiteException e)
+            catch (SqliteException e)
             {
                 Log.Out(string.Format("[ServerTools] SQLiteException in SQLiteDatabase.FastQuery: {0}", e));
             }

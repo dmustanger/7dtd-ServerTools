@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 
 namespace ServerTools
 {
@@ -196,7 +195,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                _sql = string.Format("SELECT Players.return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                                 DataTable _result2 = SQL.TQuery(_sql);
                                 bool _return1 = false, _return2 = false;
                                 bool.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
@@ -209,7 +208,7 @@ namespace ServerTools
                                         _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                                         SQL.FastQuery(_sql);
                                     }
-                                    _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                    _sql = string.Format("UPDATE Players SET Players.return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                                     SQL.FastQuery(_sql);
                                     Event.EventReturn(_cInfo);
                                 }
@@ -262,7 +261,7 @@ namespace ServerTools
                             {
                                 Hardcore.Check(_cInfo);
                             }
-                            string _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            string _sql = string.Format("SELECT Players.return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                             DataTable _result1 = SQL.TQuery(_sql);
                             bool _return1 = false, _return2 = false;
                             bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
@@ -275,7 +274,7 @@ namespace ServerTools
                                     _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                                     SQL.FastQuery(_sql);
                                 }
-                                _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                _sql = string.Format("UPDATE Players SET Players.return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                                 SQL.FastQuery(_sql);
                                 Event.EventReturn(_cInfo);
                             }
@@ -293,7 +292,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                _sql = string.Format("SELECT Players.return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                                 DataTable _result1 = SQL.TQuery(_sql);
                                 bool _return1 = false, _return2 = false;
                                 bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
@@ -306,7 +305,7 @@ namespace ServerTools
                                         _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                                         SQL.FastQuery(_sql);
                                     }
-                                    _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                    _sql = string.Format("UPDATE Players SET Players.return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                                     SQL.FastQuery(_sql);
                                     Event.EventReturn(_cInfo);
                                 }
@@ -327,7 +326,7 @@ namespace ServerTools
                         {
                             Hardcore.Check(_cInfo);
                         }
-                        string _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        string _sql = string.Format("SELECT Players.return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                         DataTable _result1 = SQL.TQuery(_sql);
                         bool _return1 = false, _return2 = false;
                         bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
@@ -340,7 +339,7 @@ namespace ServerTools
                                 _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                                 SQL.FastQuery(_sql);
                             }
-                            _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                            _sql = string.Format("UPDATE Players SET Players.return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                             SQL.FastQuery(_sql);
                             Event.EventReturn(_cInfo);
                         }

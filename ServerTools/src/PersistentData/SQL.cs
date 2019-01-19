@@ -11,10 +11,12 @@ namespace ServerTools
         {
             if (IsMySql)
             {
+                Log.Out("[SERVERTOOLS] Using MySQL for persistence");
                 MySqlDatabase.SetConnection();
             }
             else
             {
+                Log.Out("[SERVERTOOLS] Using Sqlite for persistence");
                 SQLiteDatabase.SetConnection();
             }
         }

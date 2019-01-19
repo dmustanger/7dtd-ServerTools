@@ -391,7 +391,7 @@ namespace ServerTools
             }
             string _binpath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
             File.Delete(_binpath);
-            LoadProcess.Load(4);
+            //LoadProcess.Load(4); //legacy call to load settings - already done this
         }
     }
 }

@@ -10,7 +10,8 @@ namespace ServerTools
             {
                 if (SQL.IsMySql)
                 {
-                    MySqlDatabase.FastQuery("ALTER TABLE Players ADD return VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD eventRespawn VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD eventSpawn VARCHAR(50) DEFAULT 'false';");
+                    //Use of MySQL keyword as a columnname not ending very well....
+                    MySqlDatabase.FastQuery("ALTER TABLE Players ADD `return` VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD eventRespawn VARCHAR(50) DEFAULT 'false'; ALTER TABLE Players ADD eventSpawn VARCHAR(50) DEFAULT 'false';");
                 }
                 else
                 {
@@ -81,10 +82,10 @@ namespace ServerTools
             {
                 Exec(_version);
             }
-            else
-            {
-                LoadProcess.Load(3);
-            }
+            //else
+            //{
+            //    LoadProcess.Load(3); //Leaving the loading to the loader.... it knows what to do
+            //}
         }
     }
 }
