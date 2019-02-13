@@ -6,6 +6,7 @@ namespace ServerTools
     public class AdminChat
     {
         public static bool IsEnabled = false;
+        public static string Command118 = "admin", Command119 = "all";
 
         public static void SendAdmins(ClientInfo _sender, string _message)
         {
@@ -14,7 +15,7 @@ namespace ServerTools
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    _phrase107 = "you do not have permissions to use this command.";
+                    _phrase107 = " you do not have permissions to use this command.";
                 }
                 ChatHook.ChatMessage(_sender, LoadConfig.Chat_Response_Color + _sender.playerName  + _phrase107 + "[-]", _sender.entityId, _sender.playerName, EChatType.Whisper, null);
             }
@@ -28,9 +29,8 @@ namespace ServerTools
                         AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                         if (Admin.PermissionLevel <= ChatHook.Mod_Level)
                         {
-                            _message = _message.Replace("@ADMINS ", "");
-                            _message = _message.Replace("@admins ", "");
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _sender.playerName + ": " + _message + "[-]", _sender.entityId, _sender.playerName, EChatType.Whisper, null);
+                            _message = _message.Replace("@" + Command118 + " ", "");
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _sender.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _sender.entityId, _sender.playerName, EChatType.Whisper, null);
                         }
                     }
                 }
@@ -39,20 +39,19 @@ namespace ServerTools
 
         public static void SendAll(ClientInfo _cInfo, string _message)
         {
-            string[] _commands = { "say" };
+            string[] _commands = { Command119 };
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_commands, _cInfo.playerId))
             {
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                 {
-                    _phrase107 = "you do not have permissions to use this command.";
+                    _phrase107 = " you do not have permissions to use this command.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                _message = _message.Replace("@ALL ", "");
-                _message = _message.Replace("@all ", "");
+                _message = _message.Replace("@" + Command119 + " ", "");
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }

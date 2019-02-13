@@ -146,7 +146,7 @@ namespace ServerTools
                 string _phrase6;
                 if (!Dict.TryGetValue(6, out _phrase6))
                 {
-                    _phrase6 = " you can only use /gimme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase6 = " you can only use {CommandPrivate}{Command24} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"6\" Phrase=\"{0}\" />", _phrase6));
                 string _phrase7;
@@ -161,7 +161,7 @@ namespace ServerTools
                 string _phrase8;
                 if (!Dict.TryGetValue(8, out _phrase8))
                 {
-                    _phrase8 = " you can only use /killme, /wrist, /hang, or /suicide once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase8 = " you can only use {CommandPrivate}killme, {CommandPrivate}{Command21}, {CommandPrivate}{Command22}, or {CommandPrivate}{Command23} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"8\" Phrase=\"{0}\" />", _phrase8));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -194,7 +194,7 @@ namespace ServerTools
                 string _phrase13;
                 if (!Dict.TryGetValue(13, out _phrase13))
                 {
-                    _phrase13 = " you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase13 = " you can only use {CommandPrivate}{Command2} or {CommandPrivate}{Command6} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"13\" Phrase=\"{0}\" />", _phrase13));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -293,19 +293,19 @@ namespace ServerTools
                 string _phrase109;
                 if (!Dict.TryGetValue(109, out _phrase109))
                 {
-                    _phrase109 = " is already a member of a clan.";
+                    _phrase109 = "{PlayerName} is already a member of a clan.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"109\" Phrase=\"{0}\" />", _phrase109));
                 string _phrase110;
                 if (!Dict.TryGetValue(110, out _phrase110))
                 {
-                    _phrase110 = " already has pending clan invites.";
+                    _phrase110 = "{PlayerName} already has pending clan invites.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"110\" Phrase=\"{0}\" />", _phrase110));
                 string _phrase111;
                 if (!Dict.TryGetValue(111, out _phrase111))
                 {
-                    _phrase111 = " you have been invited to join the clan {ClanName}. Type /clanaccept to join or /clandecline to decline the offer.";
+                    _phrase111 = " you have been invited to join the clan {ClanName}. Type {CommandPrivate}{Command36} to join or {CommandPrivate}{Command37} to decline the offer.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"111\" Phrase=\"{0}\" />", _phrase111));
                 string _phrase112;
@@ -329,7 +329,7 @@ namespace ServerTools
                 string _phrase115;
                 if (!Dict.TryGetValue(115, out _phrase115))
                 {
-                    _phrase115 = " has joined the clan.";
+                    _phrase115 = "{PlayerName} has joined the clan.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"115\" Phrase=\"{0}\" />", _phrase115));
                 string _phrase116;
@@ -341,7 +341,7 @@ namespace ServerTools
                 string _phrase117;
                 if (!Dict.TryGetValue(117, out _phrase117))
                 {
-                    _phrase117 = " is not a member of your clan.";
+                    _phrase117 = "{PlayerName} is not a member of your clan.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"117\" Phrase=\"{0}\" />", _phrase117));
                 string _phrase118;
@@ -371,13 +371,13 @@ namespace ServerTools
                 string _phrase122;
                 if (!Dict.TryGetValue(122, out _phrase122))
                 {
-                    _phrase122 = " is already a officer.";
+                    _phrase122 = "{PlayerName} is already a officer.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"122\" Phrase=\"{0}\" />", _phrase122));
                 string _phrase123;
                 if (!Dict.TryGetValue(123, out _phrase123))
                 {
-                    _phrase123 = " has been promoted to an officer.";
+                    _phrase123 = "{PlayerName} has been promoted to an officer.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"123\" Phrase=\"{0}\" />", _phrase123));
                 string _phrase124;
@@ -632,7 +632,7 @@ namespace ServerTools
                 string _phrase527;
                 if (!Dict.TryGetValue(527, out _phrase527))
                 {
-                    _phrase527 = " type /ready when you are prepared to leave. You will teleport back to your spawn location.";
+                    _phrase527 = " type {CommandPrivate}{Command86} when you are prepared to leave. You will teleport back to your spawn location.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"527\" Phrase=\"{0}\" />", _phrase527));
                 string _phrase528;
@@ -644,7 +644,7 @@ namespace ServerTools
                 string _phrase529;
                 if (!Dict.TryGetValue(529, out _phrase529))
                 {
-                    _phrase529 = " you have left the new player area. Return to it before using /ready.";
+                    _phrase529 = " you have left the new player area. Return to it before using {CommandPrivate}{Command86}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"529\" Phrase=\"{0}\" />", _phrase529));
                 string _phrase530;
@@ -659,13 +659,13 @@ namespace ServerTools
                 string _phrase535;
                 if (!Dict.TryGetValue(535, out _phrase535))
                 {
-                    _phrase535 = " there is no open lottery. Type /lottery # to open a new lottery at that buy in price. You must have enough in your wallet.";
+                    _phrase535 = " there is no open lottery. Type {CommandPrivate}{Command84} # to open a new lottery at that buy in price. You must have enough in your wallet.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"535\" Phrase=\"{0}\" />", _phrase535));
                 string _phrase536;
                 if (!Dict.TryGetValue(536, out _phrase536))
                 {
-                    _phrase536 = " a lottery is open for {Value} {CoinName}. Minimum buy in is {BuyIn}. Enter it by typing /lottery enter.";
+                    _phrase536 = " a lottery is open for {Value} {CoinName}. Minimum buy in is {BuyIn}. Enter it by typing {CommandPrivate}{Command85}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"536\" Phrase=\"{0}\" />", _phrase536));
                 string _phrase537;
@@ -683,7 +683,7 @@ namespace ServerTools
                 string _phrase539;
                 if (!Dict.TryGetValue(539, out _phrase539))
                 {
-                    _phrase539 = "A lottery has opened for {Value} {CoinName} and will draw soon. Type /lottery enter to join.";
+                    _phrase539 = "A lottery has opened for {Value} {CoinName} and will draw soon. Type {CommandPrivate}{Command85} to join.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"539\" Phrase=\"{0}\" />", _phrase539));
                 string _phrase540;
@@ -707,7 +707,7 @@ namespace ServerTools
                 string _phrase543;
                 if (!Dict.TryGetValue(543, out _phrase543))
                 {
-                    _phrase543 = "A lottery draw will begin in five minutes. Get your entries in before it starts. Type /lottery enter.";
+                    _phrase543 = "A lottery draw will begin in five minutes. Get your entries in before it starts. Type {CommandPrivate}{Command85}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"543\" Phrase=\"{0}\" />", _phrase543));
                 string _phrase544;
@@ -722,7 +722,7 @@ namespace ServerTools
                 string _phrase550;
                 if (!Dict.TryGetValue(550, out _phrase550))
                 {
-                    _phrase550 = " you can only use /lobby once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase550 = " you can only use {CommandPrivate}{Command88} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"550\" Phrase=\"{0}\" />", _phrase550));
                 string _phrase551;
@@ -734,7 +734,7 @@ namespace ServerTools
                 string _phrase552;
                 if (!Dict.TryGetValue(552, out _phrase552))
                 {
-                    _phrase552 = " you can go back by typing /lobbyback when you are ready to leave the lobby.";
+                    _phrase552 = " you can go back by typing {CommandPrivate}{Command53} when you are ready to leave the lobby.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"552\" Phrase=\"{0}\" />", _phrase552));
                 string _phrase553;
@@ -767,13 +767,13 @@ namespace ServerTools
                 string _phrase560;
                 if (!Dict.TryGetValue(560, out _phrase560))
                 {
-                    _phrase560 = " you can only use /market once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase560 = " you can only use {CommandPrivate}{Command51} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"560\" Phrase=\"{0}\" />", _phrase560));
                 string _phrase561;
                 if (!Dict.TryGetValue(561, out _phrase561))
                 {
-                    _phrase561 = " you can go back by typing /marketback when you are ready to leave the market.";
+                    _phrase561 = " you can go back by typing {CommandPrivate}{Command51} when you are ready to leave the market.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"561\" Phrase=\"{0}\" />", _phrase561));
                 string _phrase562;
@@ -905,7 +905,7 @@ namespace ServerTools
                 string _phrase602;
                 if (!Dict.TryGetValue(602, out _phrase602))
                 {
-                    _phrase602 = " you can only use /reward once every {DelayBetweenRewards} hours. Time remaining: {TimeRemaining} hour(s).";
+                    _phrase602 = " you can only use {CommandPrivate}{Command46} once every {DelayBetweenRewards} hours. Time remaining: {TimeRemaining} hour(s).";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"602\" Phrase=\"{0}\" />", _phrase602)); 
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -926,7 +926,7 @@ namespace ServerTools
                 string _phrase605;
                 if (!Dict.TryGetValue(605, out _phrase605))
                 {
-                    _phrase605 = " you can only use /travel once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase605 = " you can only use {CommandPrivate}{Command49} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"605\" Phrase=\"{0}\" />", _phrase605));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -935,7 +935,7 @@ namespace ServerTools
                 string _phrase606;
                 if (!Dict.TryGetValue(606, out _phrase606))
                 {
-                    _phrase606 = " you can only use /return for two minutes after respawn. Time has expired.";
+                    _phrase606 = " you can only use {CommandPrivate}{Command50} for two minutes after respawning. Time has expired.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"606\" Phrase=\"{0}\" />", _phrase606));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -965,7 +965,7 @@ namespace ServerTools
                 string _phrase611;
                 if (!Dict.TryGetValue(611, out _phrase611))
                 {
-                    _phrase611 = "A vote to change the weather has begun and will close in 30 seconds.";
+                    _phrase611 = "A vote to change the weather has begun and will close in 60 seconds.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"611\" Phrase=\"{0}\" />", _phrase611));
                 string _phrase612;
@@ -989,7 +989,7 @@ namespace ServerTools
                 string _phrase615;
                 if (!Dict.TryGetValue(615, out _phrase615))
                 {
-                    _phrase615 = "Type /clear, /rain or /snow to cast your vote.";
+                    _phrase615 = "Type {CommandPrivate}{Command63}, {CommandPrivate}{Command64} or {CommandPrivate}{Command65} to cast your vote.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"615\" Phrase=\"{0}\" />", _phrase615));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -998,7 +998,7 @@ namespace ServerTools
                 string _phrase616;
                 if (!Dict.TryGetValue(616, out _phrase616))
                 {
-                    _phrase616 = " you can only use {Command} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase616 = " you can only use {CommandPrivate}{Command15} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"616\" Phrase=\"{0}\" />", _phrase616));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1013,7 +1013,7 @@ namespace ServerTools
                 string _phrase618;
                 if (!Dict.TryGetValue(618, out _phrase618))
                 {
-                    _phrase618 = "Type /shop 'category' to view that list";
+                    _phrase618 = "Type {CommandPrivate}{Command57} 'category' to view that list.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"618\" Phrase=\"{0}\" />", _phrase618));
                 string _phrase619;
@@ -1025,7 +1025,7 @@ namespace ServerTools
                 string _phrase620;
                 if (!Dict.TryGetValue(620, out _phrase620))
                 {
-                    _phrase620 = " the item or amount # you are trying to buy is not an integer. Please input /buy 1 2 for example.";
+                    _phrase620 = " the item or amount # you are trying to buy is not an integer. Please input {CommandPrivate}{Command58} 1 2 for example.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"620\" Phrase=\"{0}\" />", _phrase620));
                 string _phrase621;
@@ -1076,7 +1076,7 @@ namespace ServerTools
                 string _phrase628;
                 if (!Dict.TryGetValue(628, out _phrase628))
                 {
-                    _phrase628 = " would like to teleport to you. Type /accept in chat to accept the request.";
+                    _phrase628 = " would like to teleport to you. Type {CommandPrivate}{Command60} in chat to accept the request.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"628\" Phrase=\"{0}\" />", _phrase628));
                 string _phrase629;
@@ -1115,7 +1115,7 @@ namespace ServerTools
                 string _phrase702;
                 if (!Dict.TryGetValue(702, out _phrase702))
                 {
-                    _phrase702 = "Unable to get a result from the website, {PlayerName}. Please try again.";
+                    _phrase702 = "Unable to get a result from the website, {PlayerName}. Please try {CommandPrivate}{Command46} again.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"702\" Phrase=\"{0}\" />", _phrase702));
                 string _phrase703;
@@ -1214,7 +1214,7 @@ namespace ServerTools
                 string _phrase735;
                 if (!Dict.TryGetValue(735, out _phrase735))
                 {
-                    _phrase735 = " you can only use /died once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase735 = " you can only use {CommandPrivate}{Command61} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"735\" Phrase=\"{0}\" />", _phrase735));
                 string _phrase736;
@@ -1229,7 +1229,7 @@ namespace ServerTools
                 string _phrase740;
                 if (!Dict.TryGetValue(740, out _phrase740))
                 {
-                    _phrase740 = "A vote to restart the server has opened and will close in 30 seconds. Type /yes to cast your vote.";
+                    _phrase740 = "A vote to restart the server has opened and will close in 60 seconds. Type {CommandPrivate}{Command70} to cast your vote.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"740\" Phrase=\"{0}\" />", _phrase740));
                 string _phrase741;
@@ -1305,21 +1305,6 @@ namespace ServerTools
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"765\" Phrase=\"{0}\" />", _phrase765));
                 sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- ************************* Bag ************************** -->");
-                sw.WriteLine("        <!-- ******************************************************** -->");
-                string _phrase770;
-                if (!Dict.TryGetValue(770, out _phrase770))
-                {
-                    _phrase770 = " your dropped bag was sent to you.";
-                }
-                sw.WriteLine(string.Format("        <Phrase id=\"770\" Phrase=\"{0}\" />", _phrase770));
-                string _phrase771;
-                if (!Dict.TryGetValue(771, out _phrase771))
-                {
-                    _phrase771 = " you can only use /bag once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                }
-                sw.WriteLine(string.Format("        <Phrase id=\"771\" Phrase=\"{0}\" />", _phrase771));
-                sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ********************** Mute_Player ********************* -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 string _phrase775;
@@ -1331,19 +1316,19 @@ namespace ServerTools
                 string _phrase776;
                 if (!Dict.TryGetValue(776, out _phrase776))
                 {
-                    _phrase776 = "Type /yes to cast your vote.";
+                    _phrase776 = "Type {CommandPrivate}{Command70} to cast your vote.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"776\" Phrase=\"{0}\" />", _phrase776));
                 string _phrase777;
                 if (!Dict.TryGetValue(777, out _phrase777))
                 {
-                    _phrase777 = " has been muted for 60 minutes.";
+                    _phrase777 = "{PlayerName} has been muted for 60 minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"777\" Phrase=\"{0}\" />", _phrase777));
                 string _phrase778;
                 if (!Dict.TryGetValue(778, out _phrase778))
                 {
-                    _phrase778 = " type /mute # to start a vote to mute that player from chat.";
+                    _phrase778 = " type {CommandPrivate}{Command67} # to start a vote to mute that player from chat.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"778\" Phrase=\"{0}\" />", _phrase778));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1412,7 +1397,7 @@ namespace ServerTools
                 string _phrase795;
                 if (!Dict.TryGetValue(795, out _phrase795))
                 {
-                    _phrase795 = " you can only use /report once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase795 = " you can only make a report once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"795\" Phrase=\"{0}\" />", _phrase795));
                 string _phrase796;
@@ -1493,7 +1478,7 @@ namespace ServerTools
                 string _phrase811;
                 if (!Dict.TryGetValue(811, out _phrase811))
                 {
-                    _phrase811 = " you can only use /return for four minutes after respawn. Time has expired.";
+                    _phrase811 = " you can only use {CommandPrivate}{Command50} for four minutes after respawning. Time has expired.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"811\" Phrase=\"{0}\" />", _phrase811));
                 string _phrase812;
@@ -1517,7 +1502,7 @@ namespace ServerTools
                 string _phrase815;
                 if (!Dict.TryGetValue(815, out _phrase815))
                 {
-                    _phrase815 = " you can only use /fhome or /fhome2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase815 = " you can only use {CommandPrivate}{Command3} or {CommandPrivate}{Command7} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"815\" Phrase=\"{0}\" />", _phrase815));
                 string _phrase816;
@@ -1559,13 +1544,13 @@ namespace ServerTools
                 string _phrase822;
                 if (!Dict.TryGetValue(822, out _phrase822))
                 {
-                    _phrase822 = "This category is missing. Check /shop.";
+                    _phrase822 = " this category is missing. Check {CommandPrivate}{Command57}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"822\" Phrase=\"{0}\" />", _phrase822));
                 string _phrase823;
                 if (!Dict.TryGetValue(823, out _phrase823))
                 {
-                    _phrase823 = "Type /buy # to purchase the shop item. You can add how many times you want to buy it. /buy # #";
+                    _phrase823 = " type {CommandPrivate}{Command58} # to purchase the shop item. You can add how many times you want to buy it with {CommandPrivate}{Command58} # #";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"823\" Phrase=\"{0}\" />", _phrase823));
                 string _phrase824;
@@ -1592,7 +1577,7 @@ namespace ServerTools
                 string _phrase900;
                 if (!Dict.TryGetValue(900, out _phrase900))
                 {
-                    _phrase900 = " you can only use /auction sell {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
+                    _phrase900 = " you can only use {CommandPrivate}{Command74} {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"900\" Phrase=\"{0}\" />", _phrase900));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1601,7 +1586,7 @@ namespace ServerTools
                 string _phrase910;
                 if (!Dict.TryGetValue(910, out _phrase910))
                 {
-                    _phrase910 = " type /bounty Id# Value or /bounty Id# for the minimum bounty against this player.";
+                    _phrase910 = "Type {CommandPrivate}{Command83} Id# Value or {CommandPrivate}{Command83} Id# for the minimum bounty against this player.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"910\" Phrase=\"{0}\" />", _phrase910));
                 string _phrase911;
@@ -1637,7 +1622,7 @@ namespace ServerTools
                 string _phrase920;
                 if (!Dict.TryGetValue(920, out _phrase920))
                 {
-                    _phrase920 = " you can only use /stuck once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase920 = " you can only use {CommandPrivate}{Command90} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"920\" Phrase=\"{0}\" />", _phrase920));
                 string _phrase921;
@@ -1676,7 +1661,7 @@ namespace ServerTools
                 string _phrase927;
                 if (!Dict.TryGetValue(927, out _phrase927))
                 {
-                    _phrase927 = "Type /pollyes or /pollno to vote.";
+                    _phrase927 = "Type {CommandPrivate}{Command91} or {CommandPrivate}{Command92} to vote.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"927\" Phrase=\"{0}\" />", _phrase927));
                 string _phrase928;
@@ -1710,7 +1695,7 @@ namespace ServerTools
                 string _phrase932;
                 if (!Dict.TryGetValue(932, out _phrase932))
                 {
-                    _phrase932 = "A vote to skip the night has begun. You have 30 seconds to type /yes.";
+                    _phrase932 = "A vote to skip the night has begun. You have 60 seconds to type {CommandPrivate}{Command70}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"932\" Phrase=\"{0}\" />", _phrase932));
                 string _phrase933;
@@ -1809,7 +1794,7 @@ namespace ServerTools
                 string _phrase959;
                 if (!Dict.TryGetValue(959, out _phrase959))
                 {
-                    _phrase959 = " type /kickvote # to start a vote to kick that player.";
+                    _phrase959 = " type {CommandPrivate}{Command68} # to start a vote to kick that player.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"959\" Phrase=\"{0}\" />", _phrase959));
                 sw.WriteLine("        <!-- ******************************************************** -->");

@@ -34,7 +34,7 @@ namespace ServerTools
                 }
                 _phrase565 = _phrase565.Replace("{MarketPosition}", Market_Position);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase565 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                LoadConfig.UpdateXml();
+                LoadConfig.WriteXml();
             }
         }
     }

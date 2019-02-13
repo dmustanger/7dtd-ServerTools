@@ -8,6 +8,7 @@ namespace ServerTools
     public class Animals
     {
         public static bool IsEnabled = false, Always_Show_Response = false;
+        public static string Command30 = "trackanimal", Command31 = "track";
         public static int Delay_Between_Uses = 60, Minimum_Spawn_Radius = 40, Maximum_Spawn_Radius = 60, Command_Cost = 0;
         public static string Animal_List = "81,82,83,84";
         private static Random rnd = new Random();
@@ -166,7 +167,7 @@ namespace ServerTools
                     }
                     _animalList = Animal_List.Split(',').ToArray();
                 }
-                else
+                else if (Animal_List.Contains(" "))
                 {
                     _animalList = Animal_List.Split(' ').ToArray();
                 }
@@ -186,21 +187,12 @@ namespace ServerTools
                 int _newId;
                 int.TryParse(_animalList[_r], out _newId);
                 int _nextRadius = rnd.Next(minRad, maxRad + 1);
-                Dictionary<int, EntityClass>.KeyCollection entityTypesCollection = EntityClass.list.Dict.Keys;
-                int counter = 1;
-                foreach (int i in entityTypesCollection)
+                EntityClass eClass = EntityClass.list[_newId];
+                if (!eClass.bAllowUserInstantiate)
                 {
-                    EntityClass eClass = EntityClass.list[i];
-                    if (!eClass.bAllowUserInstantiate)
-                    {
-                        continue;
-                    }
-                    if (_newId == counter)
-                    {
-                        SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} {1} @ {2}", _cInfo.entityId, _nextRadius, _newId), (ClientInfo)null);
-                    }
-                    counter++;
+                    return;
                 }
+                SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} {1} @ {2}", _cInfo.entityId, _nextRadius, _newId), (ClientInfo)null);
                 string _phrase715;
                 if (!Phrases.Dict.TryGetValue(715, out _phrase715))
                 {

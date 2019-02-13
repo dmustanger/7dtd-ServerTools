@@ -12,7 +12,7 @@ namespace ServerTools
         private static Dictionary<int, ItemStack[]> Inventory = new Dictionary<int, ItemStack[]>();
         private static Dictionary<int, int> Crafted = new Dictionary<int, int>();
         private static string _file = string.Format("DupeLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string _filepath = string.Format("{0}/DupeLogs/{1}", API.GamePath, _file);
+        private static string _filepath = string.Format("{0}/ServerTools/Logs/DupeLogs/{1}", API.GamePath, _file);
         private const string file = "DuplicateItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         public static List<string> dict = new List<string>();
@@ -21,9 +21,9 @@ namespace ServerTools
 
         public static void CreateFolder()
         {
-            if (!Directory.Exists(API.GamePath + "/DupeLogs"))
+            if (!Directory.Exists(API.GamePath + "/ServerTools/Logs/DupeLogs"))
             {
-                Directory.CreateDirectory(API.GamePath + "/DupeLogs");
+                Directory.CreateDirectory(API.GamePath + "/ServerTools/Logs/DupeLogs");
             }
         }
 

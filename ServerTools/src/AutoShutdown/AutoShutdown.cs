@@ -7,6 +7,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Alert_On_Login = false, Bloodmoon = false, Kick_Login = false;
         public static int Countdown_Timer = 2, Days_Until_Horde = 7;
+        public static string Command47 = "shutdown";
         public static List<DateTime> timerStart = new List<DateTime>();
 
         public static void ShutdownTime()

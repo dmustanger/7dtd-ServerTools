@@ -7,6 +7,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int Admin_Level = 0, Mod_Level = 1;
+        public static string Command48 = "adminlist";
         private static List<string> Admins = new List<string>();
         private static List<string> Mods = new List<string>();
 

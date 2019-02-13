@@ -6,7 +6,8 @@ namespace ServerTools
     public class NewSpawnTele
     {
         public static bool IsEnabled = false, Return = false;
-        private static string[] _cmd = { "tele" };
+        public static string Command29 = "setspawn", Command86 = "ready";
+        private static string[] _cmd = { Command29 };
         public static string New_Spawn_Tele_Position = "0,0,0";
 
         public static void SetNewSpawnTele(ClientInfo _cInfo)
@@ -36,7 +37,7 @@ namespace ServerTools
                 }
                 _phrase525 = _phrase525.Replace("{NewSpawnTelePosition}", New_Spawn_Tele_Position);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase525 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                LoadConfig.UpdateXml();
+                LoadConfig.WriteXml();
             }
         }
 
@@ -86,8 +87,10 @@ namespace ServerTools
                 string _phrase527;
                 if (!Phrases.Dict.TryGetValue(527, out _phrase527))
                 {
-                    _phrase527 = " type /ready when you are prepared to leave. You will teleport back to your spawn location.";
+                    _phrase527 = " type {CommandPrivate}{Command86} when you are prepared to leave. You will teleport back to your spawn location.";
                 }
+                _phrase527 = _phrase527.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase527 = _phrase527.Replace("{Command86}", Command86);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase527 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
@@ -135,8 +138,10 @@ namespace ServerTools
                     string _phrase529;
                     if (!Phrases.Dict.TryGetValue(529, out _phrase529))
                     {
-                        _phrase529 = " you have left the new player area. Return to it before using /ready.";
+                        _phrase529 = " you have left the new player area. Return to it before using {CommandPrivate}{Command86}.";
                     }
+                    _phrase529 = _phrase529.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase529 = _phrase529.Replace("{Command86}", Command86);
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase529 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }

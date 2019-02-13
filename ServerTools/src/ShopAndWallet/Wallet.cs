@@ -5,7 +5,7 @@ namespace ServerTools
     class Wallet
     {
         public static bool IsEnabled = false, Lose_On_Death = false;
-        public static string Coin_Name = "coin";
+        public static string Coin_Name = "coin", Command56 = "wallet";
         public static int Zombie_Kills = 10;
         public static int Player_Kills = 50;
         public static int Deaths = 25;
@@ -13,10 +13,10 @@ namespace ServerTools
         public static void WalletValue(ClientInfo _cInfo, string _playerName)
         {
             int _currentCoins = GetcurrentCoins(_cInfo);
-            string _message = " your wallet contains: {Value} {Name}.[-]";
+            string _message = " your wallet contains: {Value} {Name}.";
             _message = _message.Replace("{Value}", _currentCoins.ToString());
             _message = _message.Replace("{Name}", Wallet.Coin_Name);
-            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static int GetcurrentCoins(ClientInfo _cInfo)

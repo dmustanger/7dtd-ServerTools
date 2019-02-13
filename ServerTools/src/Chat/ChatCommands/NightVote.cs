@@ -7,6 +7,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, VoteOpen = false;
         public static int Players_Online = 5, Votes_Needed = 3;
+        public static string Command69 = "nightvote";
         public static List<int> Night = new List<int>();
 
         public static void Vote(ClientInfo _cInfo)
@@ -24,8 +25,10 @@ namespace ServerTools
                             string _phrase932;
                             if (!Phrases.Dict.TryGetValue(932, out _phrase932))
                             {
-                                _phrase932 = "A vote to skip the night has begun. You have 30 seconds to type /yes.";
+                                _phrase932 = "A vote to skip the night has begun. You have 60 seconds to type {CommandPrivate}{Command70}.";
                             }
+                            _phrase932 = _phrase932.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase932 = _phrase932.Replace("{Command70}", RestartVote.Command70);
                             ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase932 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         }
                         else
@@ -33,9 +36,9 @@ namespace ServerTools
                             string _phrase930;
                             if (!Phrases.Dict.TryGetValue(930, out _phrase930))
                             {
-                                _phrase930 = "you can not start a vote during a bloodmoon.";
+                                _phrase930 = " you can not start a vote during a bloodmoon.";
                             }
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase930 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase930 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
@@ -43,9 +46,9 @@ namespace ServerTools
                         string _phrase931;
                         if (!Phrases.Dict.TryGetValue(931, out _phrase931))
                         {
-                            _phrase931 = "you can not start a vote during the day.";
+                            _phrase931 = " you can not start a vote during the day.";
                         }
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase931 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase931 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
 
                 }
@@ -54,10 +57,10 @@ namespace ServerTools
                     string _phrase933;
                     if (!Phrases.Dict.TryGetValue(933, out _phrase933))
                     {
-                        _phrase933 = "you can only start this vote if at least {Count} players are online.";
+                        _phrase933 = " you can only start this vote if at least {Count} players are online.";
                     }
                     _phrase933 = _phrase933.Replace("{Count}", Players_Online.ToString());
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase933 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase933 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 
 namespace ServerTools
 {
@@ -22,7 +21,6 @@ namespace ServerTools
             ModEvents.PlayerDisconnected.RegisterHandler(PlayerDisconnected);
             ModEvents.ChatMessage.RegisterHandler(ChatMessage);
             ModEvents.GameStartDone.RegisterHandler(GameStartDone);
-            ModEvents.EntityKilled.RegisterHandler(EntityKilled);
         }
 
         public void GameAwake()
@@ -564,33 +562,6 @@ namespace ServerTools
         public void GameStartDone()
         {
             LoadProcess.Load(1);
-        }
-
-        public void EntityKilled(Entity _entity1, Entity _entity2)
-        {
-            if (_entity1 != null && _entity2 != null)
-            {
-                EntityType _type = _entity1.entityType;
-                if (_type == EntityType.Zombie && _entity2.IsClientControlled())
-                {
-                    ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_entity2.entityId);
-                    if (_cInfo2 != null)
-                    {
-                        if (Wallet.IsEnabled && Wallet.Lose_On_Death)
-                        {
-                            Wallet.PlayerKilled(_entity2, _cInfo2);
-                        }
-                        if (Event.Open && Event.PlayersTeam.ContainsKey(_cInfo2.playerId))
-                        {
-                            Event.PlayerKilled(_entity2, _cInfo2);
-                        }
-                        if (DeathSpot.IsEnabled)
-                        {
-                            DeathSpot.PlayerKilled(_entity2);
-                        }
-                    }
-                }
-            }
         }
 
         public void GameShutdown()

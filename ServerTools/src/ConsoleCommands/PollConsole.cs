@@ -7,10 +7,11 @@ namespace ServerTools
 {
     class PollConsole : ConsoleCmdAbstract
     {
+        public static string Command91 = "pollyes", Command92 = "pollno", Command93 = "poll";
         public static List<string> PolledYes = new List<string>();
         public static List<string> PolledNo = new List<string>();
         private static string _file = string.Format("PollLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string _filepath = string.Format("{0}/PollLogs/{1}", API.GamePath, _file);
+        private static string _filepath = string.Format("{0}/ServerTools/Logs/PollLogs/{1}", API.GamePath, _file);
 
         public override string GetDescription()
         {
@@ -33,11 +34,17 @@ namespace ServerTools
                 "5. Opens the last poll for <time> in hours.\n";
         }
 
-
-
         public override string[] GetCommands()
         {
             return new string[] { "st-Poll", "poll" };
+        }
+
+        public static void CreateFolder()
+        {
+            if (!Directory.Exists(API.GamePath + "/ServerTools/Logs/PollLogs"))
+            {
+                Directory.CreateDirectory(API.GamePath + "/ServerTools/Logs/PollLogs");
+            }
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -100,8 +107,11 @@ namespace ServerTools
                             string _phrase927;
                             if (!Phrases.Dict.TryGetValue(927, out _phrase927))
                             {
-                                _phrase927 = "Type /pollyes or /pollno to vote.";
+                                _phrase927 = "Type {CommandPrivate}{Command91} or {CommandPrivate}{Command92} to vote.";
                             }
+                            _phrase927 = _phrase927.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase927 = _phrase927.Replace("{Command91}", Command91);
+                            _phrase927 = _phrase927.Replace("{Command92}", Command92);
                             ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase926, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase927, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             SdtdConsole.Instance.Output(string.Format("Opened a new poll for {0} hours.", _hours));
@@ -290,14 +300,6 @@ namespace ServerTools
             }
         }
 
-        public static void CreateFolder()
-        {
-            if (!Directory.Exists(API.GamePath + "/PollLogs"))
-            {
-                Directory.CreateDirectory(API.GamePath + "/PollLogs");
-            }
-        }
-
         public static void Message(ClientInfo _cInfo)
         {
             string _sql = "SELECT pollTime, pollHours, pollMessage, pollYes, pollNo FROM Polls WHERE pollOpen = 'true'";
@@ -327,8 +329,11 @@ namespace ServerTools
                     string _phrase927;
                     if (!Phrases.Dict.TryGetValue(927, out _phrase927))
                     {
-                        _phrase927 = "Type /pollyes or /pollno to vote.";
+                        _phrase927 = "Type {CommandPrivate}{Command91} or {CommandPrivate}{Command92} to vote.";
                     }
+                    _phrase927 = _phrase927.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase927 = _phrase927.Replace("{Command91}", Command91);
+                    _phrase927 = _phrase927.Replace("{Command92}", Command92);
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase926 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase927 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }

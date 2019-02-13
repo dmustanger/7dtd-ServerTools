@@ -17,7 +17,7 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine("The how to setup file is not kept up to date. You will find a note in the changelog when the file has been updated. The above version note is automatic.");
                 sw.WriteLine();
-                sw.WriteLine("ServerTools was coded and tested under a Windows operating system. It should operate on other major O.S. but if you find bugs, report them to");
+                sw.WriteLine("ServerTools was coded and tested under a Linux operating system. If you find bugs, report them to");
                 sw.WriteLine("https://github.com/dmustanger/7dtd-ServerTools/issues");
                 sw.WriteLine();
                 sw.WriteLine("This version is compatible with 7 Days to Die: Alpha 17.");
@@ -26,13 +26,12 @@ namespace ServerTools
                 sw.WriteLine();
                 sw.WriteLine();
                 sw.WriteLine();
-                sw.WriteLine("<Tool Name=\"DataBase\" EnableMySql=\"False\" ServerHost=\"localhost\" DatabaseName=\"ServerTools\" UserName=\"UserName\" Password=\"ChangeMe\" />");
+                sw.WriteLine("<Tool Name=\"DataBase\" ServerHost=\"localhost\" DatabaseName=\"ServerTools\" UserName=\"UserName\" Password=\"ChangeMe\" />");
                 sw.WriteLine();
                 sw.WriteLine("Set True or False for Enable");
                 sw.WriteLine();
-                sw.WriteLine("Adminstrators can choose to enable MySql for a remote database. ONLY ENABLE THIS IF YOU HAVE A MySql DATABASE HOSTED!!!");
-                sw.WriteLine("If EnableMySql is set to false ServerTools will use sqlite by default and you do not need to change anything else on this line.");
-                sw.WriteLine("If EnableMySql is set to true you will need to set the ServerHost ip, UserName, Password and DatabaseName to match your MySql setup.");
+                sw.WriteLine("Adminstrators must install MySQL and setup their database!!!");
+                sw.WriteLine("You will need to set the ServerHost ip, UserName, Password and DatabaseName to match your MySql setup.");
                 sw.WriteLine("NOTE: MySql will not create a database, it must be made before you attempt to connect to it.");
                 sw.WriteLine();
                 sw.WriteLine();

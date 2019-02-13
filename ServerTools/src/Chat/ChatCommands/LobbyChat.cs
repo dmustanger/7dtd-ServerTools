@@ -10,6 +10,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Return = false, PvP_Check = false, Zombie_Check = false;
         public static int Delay_Between_Uses = 5, Lobby_Size = 25, Command_Cost = 0;
+        public static string Command53 = "lobbyback", Command54 = "lback", Command88 = "lobby";
         public static List<int> LobbyPlayers = new List<int>();
 
         public static void Delay(ClientInfo _cInfo, string _playerName, bool _announce)
@@ -76,10 +77,12 @@ namespace ServerTools
                                     string _phrase550;
                                     if (!Phrases.Dict.TryGetValue(550, out _phrase550))
                                     {
-                                        _phrase550 = " you can only use /lobby once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                        _phrase550 = " you can only use {CommandPrivate}{Command88} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                     }
                                     _phrase550 = _phrase550.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                     _phrase550 = _phrase550.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    _phrase550 = _phrase550.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase550 = _phrase550.Replace("{Command88}", Command88);
                                     if (_announce)
                                     {
                                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase550 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
@@ -111,10 +114,12 @@ namespace ServerTools
                             string _phrase550;
                             if (!Phrases.Dict.TryGetValue(550, out _phrase550))
                             {
-                                _phrase550 = " you can only use /lobby once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                _phrase550 = " you can only use {CommandPrivate}{Command88} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
                             _phrase550 = _phrase550.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                             _phrase550 = _phrase550.Replace("{TimeRemaining}", _timeleft.ToString());
+                            _phrase550 = _phrase550.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase550 = _phrase550.Replace("{Command88}", Command88);
                             if (_announce)
                             {
                                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase550 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
@@ -182,8 +187,10 @@ namespace ServerTools
                     string _phrase552;
                     if (!Phrases.Dict.TryGetValue(552, out _phrase552))
                     {
-                        _phrase552 = " you can go back by typing /lobbyback when you are ready to leave the lobby.";
+                        _phrase552 = " you can go back by typing {CommandPrivate}{Command53} when you are ready to leave the lobby.";
                     }
+                    _phrase552 = _phrase552.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase552 = _phrase552.Replace("{Command53}", Command53);
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase552 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 string[] _cords = { };

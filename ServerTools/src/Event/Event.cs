@@ -7,6 +7,7 @@ namespace ServerTools
     class Event
     {
         public static bool Open = false, Invited = false, Cancel = false, Extend = false, Return = false;
+        public static string Command100 = "join";
         public static Dictionary<string, int> SetupStage = new Dictionary<string, int>();
         public static Dictionary<string, string> SetupName = new Dictionary<string, string>();
         public static Dictionary<string, int> PlayersTeam = new Dictionary<string, int>();
@@ -111,7 +112,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    _message = "{EventName} still has space for more players. Type /event.";
+                    _message = "{EventName} still has space for more players. Type " + ChatHook.Command_Private + Command100 + ".";
                     _message = _message.Replace("{EventName}", _eventName);
                     ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     _message = "{Count} of {Total} have signed up.";

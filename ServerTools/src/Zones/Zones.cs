@@ -12,7 +12,7 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false, Kill_Enabled = false, Jail_Enabled = false, Kick_Enabled = false,
             Ban_Enabled = false, Zone_Message = false, Set_Home = false, No_Zombie = false;
         public static int Days_Before_Log_Delete = 5, Reminder_Delay = 20;
-        
+        public static string Command50 = "return";
         public static Dictionary<int, DateTime> reminder = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> reminderMsg = new Dictionary<int, string>();
         public static Dictionary<int, string[]> zoneSetup1 = new Dictionary<int, string[]>();
@@ -310,7 +310,7 @@ namespace ServerTools
                         Victim.Add(_cInfoVictim.entityId, _sposition);
                     }
                     string _file1 = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                    string _filepath1 = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file1);
+                    string _filepath1 = string.Format("{0}/ServerTools/Logs/DetectionLogs/{1}", API.GamePath, _file1);
                     using (StreamWriter sw = new StreamWriter(_filepath1, true))
                     {
                         sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, murdered {2}, Steam Id {3} in a protected zone.", _cInfoKiller.playerName, _cInfoKiller.steamId, _cInfoVictim.playerName, _cInfoVictim.steamId));
@@ -381,9 +381,11 @@ namespace ServerTools
                             string _phrase811;
                             if (!Phrases.Dict.TryGetValue(606, out _phrase811))
                             {
-                                _phrase811 = " you can only use /return for four minutes after respawning. Time has expired.";
+                                _phrase811 = " you can only use {CommandPrivate}{Command50} for four minutes after respawning. Time has expired.";
                             }
                             _phrase811 = _phrase811.Replace("{PlayerName}", _cInfo.playerName);
+                            _phrase811 = _phrase811.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase811 = _phrase811.Replace("{Command50}", Zones.Command50);
                             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase811 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             Victim.Remove(_cInfo.entityId);
                         }
@@ -411,9 +413,11 @@ namespace ServerTools
                     string _phrase606;
                     if (!Phrases.Dict.TryGetValue(606, out _phrase606))
                     {
-                        _phrase606 = " you can only use /return for two minutes after respawning. Time has expired.";
+                        _phrase606 = " you can only use {CommandPrivate}{Command50} for two minutes after respawning. Time has expired.";
                     }
                     _phrase606 = _phrase606.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase606 = _phrase606.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase606 = _phrase606.Replace("{Command50}", Command50);
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase606 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     Victim.Remove(_cInfo.entityId);
                 }

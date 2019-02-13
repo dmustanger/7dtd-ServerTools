@@ -6,6 +6,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int Days_Until_Horde = 7;
+        public static string Command16 = "day7", Command17 = "day";
 
         public static void GetInfo(ClientInfo _cInfo, bool _announce)
         {

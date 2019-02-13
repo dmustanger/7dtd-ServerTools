@@ -10,6 +10,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, PvP_Check = false, Zombie_Check = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
+        public static string Command59 = "friend", Command60 = "accept";
         public static Dictionary<int, int> Dict = new Dictionary<int, int>();
         public static Dictionary<int, DateTime> Dict1 = new Dictionary<int, DateTime>();
         public static Dictionary<int, int> Count = new Dictionary<int, int>();
@@ -94,7 +95,7 @@ namespace ServerTools
                                 string _phrase630;
                                 if (!Phrases.Dict.TryGetValue(630, out _phrase630))
                                 {
-                                    _phrase630 = "you can only teleport to a friend once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                    _phrase630 = " you can only teleport to a friend once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                 }
                                 _phrase630 = _phrase630.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                 _phrase630 = _phrase630.Replace("{TimeRemaining}", _timeleft.ToString());
@@ -129,7 +130,7 @@ namespace ServerTools
                         string _phrase630;
                         if (!Phrases.Dict.TryGetValue(630, out _phrase630))
                         {
-                            _phrase630 = "you can only teleport to a friend once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                            _phrase630 = " you can only teleport to a friend once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                         }
                         _phrase630 = _phrase630.Replace("{PlayerName}", _cInfo.playerName);
                         _phrase630 = _phrase630.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
@@ -161,7 +162,7 @@ namespace ServerTools
                     string _phrase814;
                     if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                     {
-                        _phrase814 = "you do not have enough {WalletCoinName} in your wallet to run this command.";
+                        _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
                     }
                     _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -196,7 +197,7 @@ namespace ServerTools
                 string _phrase626;
                 if (!Phrases.Dict.TryGetValue(626, out _phrase626))
                 {
-                    _phrase626 = "this {EntityId} is not valid. Only integers accepted.";
+                    _phrase626 = " this {EntityId} is not valid. Only integers accepted.";
                 }
                 _phrase626 = _phrase626.Replace("{EntityId}", _Id.ToString());
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase626 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -208,16 +209,18 @@ namespace ServerTools
                 string _phrase627;
                 if (!Phrases.Dict.TryGetValue(627, out _phrase627))
                 {
-                    _phrase627 = "sent your friend {PlayerName} a teleport request.";
+                    _phrase627 = " sent your friend {PlayerName} a teleport request.";
                 }
                 _phrase627 = _phrase627.Replace("{PlayerName}", _cInfo3.playerName);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase627 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 string _phrase628;
                 if (!Phrases.Dict.TryGetValue(628, out _phrase628))
                 {
-                    _phrase628 = "would like to teleport to you. Type /accept in chat to accept the request.";
+                    _phrase628 = " would like to teleport to you. Type {CommandPrivate}{Command60} in chat to accept the request.";
                 }
                 _phrase628 = _phrase628.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase628 = _phrase628.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase628 = _phrase628.Replace("{Command60}", Command60);
                 ChatHook.ChatMessage(_cInfo3, LoadConfig.Chat_Response_Color + _cInfo3.playerName  + _phrase628 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 if (Dict.ContainsKey(_cInfo3.entityId))
                 {
@@ -237,7 +240,7 @@ namespace ServerTools
                 string _phrase629;
                 if (!Phrases.Dict.TryGetValue(629, out _phrase629))
                 {
-                    _phrase629 = "did not find EntityId {EntityId}. No teleport request sent.";
+                    _phrase629 = " did not find EntityId {EntityId}. No teleport request sent.";
                 }
                 _phrase629 = _phrase629.Replace("{EntityId}", _Id.ToString());
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase629 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -262,7 +265,7 @@ namespace ServerTools
                 string _phrase631;
                 if (!Phrases.Dict.TryGetValue(631, out _phrase631))
                 {
-                    _phrase631 = "your request was accepted. Teleporting you to your friend.";
+                    _phrase631 = " your request was accepted. Teleporting you to your friend.";
                 }
                 ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName  + _phrase631 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }

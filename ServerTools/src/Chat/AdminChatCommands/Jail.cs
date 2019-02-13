@@ -9,7 +9,8 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Jail_Shock = false;
         public static int Jail_Size = 8;
-        private static string[] _cmd = { "jail" };
+        public static string Command26 = "setjail", Command27 = "jail", Command28 = "unjail", Command55 = "forgive";
+        private static string[] _cmd = { Command27 };
         public static string Jail_Position = "0,0,0";
         public static SortedDictionary<string, Vector3> JailReleasePosition = new SortedDictionary<string, Vector3>();
         public static List<string> Jailed = new List<string>();
@@ -39,10 +40,9 @@ namespace ServerTools
                 {
                     _phrase502 = " you have set the jail position as {JailPosition}.";
                 }
-                _phrase502 = _phrase502.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase502 = _phrase502.Replace("{JailPosition}", Jail_Position);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase502 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                LoadConfig.UpdateXml();
+                LoadConfig.WriteXml();
             }
         }
 
@@ -70,7 +70,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    _playerName = _playerName.Replace("jail ", "");
+                    _playerName = _playerName.Replace(Command27 + " ", "");
                     ClientInfo _PlayertoJail = ConsoleHelper.ParseParamIdOrName(_playerName);
                     if (_PlayertoJail == null)
                     {

@@ -6,6 +6,7 @@ namespace ServerTools
     public class FirstClaimBlock
     {
         public static bool IsEnabled = false;
+        public static string Command32 = "claim";
 
         public static void firstClaim(ClientInfo _cInfo)
         {

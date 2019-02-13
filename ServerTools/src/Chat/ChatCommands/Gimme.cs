@@ -12,6 +12,7 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false, Always_Show_Response = false,
             Zombies = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
+        public static string Command24 = "gimme", Command25 = "gimmie";
         private const string file = "GimmeItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static Dictionary<string, int[]> dict = new Dictionary<string, int[]>();
@@ -274,10 +275,12 @@ namespace ServerTools
                                     string _phrase6;
                                     if (!Phrases.Dict.TryGetValue(6, out _phrase6))
                                     {
-                                        _phrase6 = " you can only use /gimme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                        _phrase6 = " you can only use {CommandPrivate}{Command24} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                     }
                                     _phrase6 = _phrase6.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                     _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    _phrase6 = _phrase6.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase6 = _phrase6.Replace("{Command24}", Command24);
                                     if (_announce)
                                     {
                                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color  + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
@@ -309,10 +312,12 @@ namespace ServerTools
                             string _phrase6;
                             if (!Phrases.Dict.TryGetValue(6, out _phrase6))
                             {
-                                _phrase6 = " you can only use /gimme once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                _phrase6 = " you can only use {CommandPrivate}{Command24} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
                             _phrase6 = _phrase6.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                             _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
+                            _phrase6 = _phrase6.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase6 = _phrase6.Replace("{Command24}", Command24);
                             if (_announce)
                             {
                                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color  + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
@@ -373,8 +378,8 @@ namespace ServerTools
         private static void RandomItem(ClientInfo _cInfo, bool _announce)
         {
             string _randomItem = list.RandomObject();
-            ItemValue _itemValue = ItemClass.GetItem(_randomItem, true);
-            _itemValue = new ItemValue(_itemValue.type, true);
+            ItemValue _itemValue = ItemClass.GetItem(_randomItem, false);
+            _itemValue = new ItemValue(_itemValue.type, false);
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             int _quality = 1;
             if (_itemValue.HasQuality)
@@ -388,7 +393,7 @@ namespace ServerTools
                 int _count = random.Next(_counts[0], _counts[1] + 1);
                 ItemStack _itemDrop = new ItemStack(_itemValue, _count);
                 ItemValue itemValue;
-                itemValue = new ItemValue(ItemClass.GetItem(_randomItem).type, _quality, _quality, true);
+                itemValue = new ItemValue(ItemClass.GetItem(_randomItem).type, _quality, _quality, false);
                 World world = GameManager.Instance.World;
                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                 {

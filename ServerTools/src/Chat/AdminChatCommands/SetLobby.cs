@@ -5,6 +5,7 @@ namespace ServerTools
     class SetLobby
     {
         public static string Lobby_Position = "0,0,0";
+        public static string Command87 = "setlobby";
         private static string[] _cmd = { "lobby" };
 
         public static void Set(ClientInfo _cInfo)
@@ -34,7 +35,7 @@ namespace ServerTools
                 }
                 _phrase551 = _phrase551.Replace("{LobbyPosition}", Lobby_Position);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase551 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                LoadConfig.UpdateXml();
+                LoadConfig.WriteXml();
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Data.SQLite;
 using System.IO;
 
@@ -8,6 +9,7 @@ namespace ServerTools
     {
         private static SQLiteConnection connection;
         private static SQLiteCommand cmd;
+        private static List<string> FQuery = new List<string>();
 
         public static void SetConnection()
         {
@@ -152,10 +154,6 @@ namespace ServerTools
             {
                 UpdateSQL.Exec(_version);
             }
-            else
-            {
-                LoadProcess.Load(3);
-            }
         }
 
         public static DataTable TQuery(string _sql)
@@ -179,17 +177,33 @@ namespace ServerTools
 
         public static void FastQuery(string _sql)
         {
-            try
+            if (FQuery.Count > 0)
             {
-                connection.Open();
-                cmd = new SQLiteCommand(_sql, connection);
-                cmd.ExecuteNonQuery();
+                FQuery.Add(_sql);
             }
-            catch (SQLiteException e)
+            else
             {
-                Log.Out(string.Format("[ServerTools] SQLiteException in SQLiteDatabase.FastQuery: {0}", e));
+                try
+                {
+                    connection.Open();
+                    cmd = new SQLiteCommand(_sql, connection);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (SQLiteException e)
+                {
+                    Log.Out(string.Format("[ServerTools] SQLiteException in SQLiteDatabase.FastQuery: {0}", e));
+                }
+                connection.Close();
+                if (FQuery.Contains(_sql))
+                {
+                    FQuery.Remove(_sql);
+                }
+                if (FQuery.Count > 0)
+                {
+                    _sql = FQuery[0];
+                    FastQuery(_sql);
+                }
             }
-            connection.Close();
         }
     }
 }

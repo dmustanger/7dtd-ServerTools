@@ -59,7 +59,7 @@ namespace ServerTools
                 SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for teleporting\"", _cInfo.playerId), (ClientInfo)null);
             }
             string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-            string _filepath = string.Format("{0}/DetectionLogs/{1}", API.GamePath, _file);
+            string _filepath = string.Format("{0}/ServerTools/Logs/DetectionLogs/{1}", API.GamePath, _file);
             using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
                 sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, Entity Id {2} teleporting.", _cInfo.playerName, _cInfo.steamId, _cInfo.entityId));
@@ -71,12 +71,12 @@ namespace ServerTools
 
         public static void DetectionLogsDir()
         {
-            if (!Directory.Exists(API.GamePath + "/DetectionLogs"))
+            if (!Directory.Exists(API.GamePath + "/ServerTools/Logs/DetectionLogs"))
             {
-                Directory.CreateDirectory(API.GamePath + "/DetectionLogs");
+                Directory.CreateDirectory(API.GamePath + "/ServerTools/Logs/DetectionLogs");
             }
 
-            string[] files = Directory.GetFiles(API.GamePath + "/DetectionLogs");
+            string[] files = Directory.GetFiles(API.GamePath + "/ServerTools/Logs/DetectionLogs");
             int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
             foreach (string file in files)
             {

@@ -11,6 +11,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, No_Admins = false;
         public static int Delay_Between_Uses = 24, Admin_Level = 0;
+        public static string Command71 = "auction", Command72 = "auction cancel", Command73 = "auction buy", Command74 = "auction sell";
         private static DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
         private static LinkedList<Chunk> chunkArray = new LinkedList<Chunk>();
         private static string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
@@ -72,10 +73,12 @@ namespace ServerTools
                                         string _phrase900;
                                         if (!Phrases.Dict.TryGetValue(900, out _phrase900))
                                         {
-                                            _phrase900 = " you can only use /auction sell {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
+                                            _phrase900 = " you can only use {CommandPrivate}{Command74} {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
                                         }
                                         _phrase900 = _phrase900.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                         _phrase900 = _phrase900.Replace("{TimeRemaining}", _timeleft.ToString());
+                                        _phrase900 = _phrase900.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                        _phrase900 = _phrase900.Replace("{Command74}", Command74);
                                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase900 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
@@ -93,10 +96,12 @@ namespace ServerTools
                                 string _phrase900;
                                 if (!Phrases.Dict.TryGetValue(900, out _phrase900))
                                 {
-                                    _phrase900 = " you can only use /auction sell {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
+                                    _phrase900 = " you can only use {CommandPrivate}{Command74} {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
                                 }
                                 _phrase900 = _phrase900.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                                 _phrase900 = _phrase900.Replace("{TimeRemaining}", _timeleft.ToString());
+                                _phrase900 = _phrase900.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                _phrase900 = _phrase900.Replace("{Command74}", Command74);
                                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase900 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
@@ -114,8 +119,10 @@ namespace ServerTools
             {
                 int _auctionid;
                 int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _auctionid);
-                string _message = " you have auction item # {Value} in the auction already. Wait for it to sell or cancel it with /auction cancel.";
+                string _message = " you have auction item # {Value} in the auction already. Wait for it to sell or cancel it with {CommandPrivate}{Command72}.";
                 _message = _message.Replace("{Value}", _auctionid.ToString());
+                _message = _message.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _message = _message.Replace("{Command72}", Command72);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
@@ -295,7 +302,7 @@ namespace ServerTools
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", this # could not be found. Please check the auction list by typing /auction.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", this # could not be found. Please check the auction list by typing " + ChatHook.Command_Private + Command71 + ".[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             _result.Dispose();
         }
@@ -312,7 +319,7 @@ namespace ServerTools
             int.TryParse(_result.Rows[0].ItemArray.GetValue(4).ToString(), out _quality);
             int _itemPrice;
             int.TryParse(_result.Rows[0].ItemArray.GetValue(5).ToString(), out _itemPrice);
-            ItemValue itemValue = ItemClass.GetItem(_itemName, true);
+            ItemValue itemValue = ItemClass.GetItem(_itemName, false);
             if (itemValue.type == ItemValue.None.type)
             {
                 Log.Out(string.Format("Could not find itemValue for {0}", _itemName));
@@ -320,7 +327,7 @@ namespace ServerTools
             }
             else
             {
-                itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, true);
+                itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, false);
             }
             World world = GameManager.Instance.World;
             var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
@@ -377,7 +384,7 @@ namespace ServerTools
                 if (_timepassed >= 15)
                 {
                     string _itemName = _result.Rows[0].ItemArray.GetValue(2).ToString();
-                    ItemValue itemValue = ItemClass.GetItem(_itemName, true);
+                    ItemValue itemValue = ItemClass.GetItem(_itemName, false);
                     if (itemValue.type == ItemValue.None.type)
                     {
                         Log.Out(string.Format("Could not find itemValue {0}", itemValue));
@@ -387,7 +394,7 @@ namespace ServerTools
                     {
                         int _quality;
                         int.TryParse(_result.Rows[0].ItemArray.GetValue(4).ToString(), out _quality);
-                        itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, true);
+                        itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, false);
                     }
                     int _itemCount;
                     int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _itemCount);

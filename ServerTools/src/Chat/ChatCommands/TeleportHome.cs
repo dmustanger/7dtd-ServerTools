@@ -10,6 +10,8 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Set_Home2_Enabled = false, Set_Home2_Donor_Only = false, PvP_Check = false, Zombie_Check = false, Vehicle = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
+        public static string Command1 = "sethome", Command2 = "home", Command3 = "fhome", Command4 = "delhome", Command5 = "sethome2", 
+            Command6 = "home2", Command7 = "fhome2", Command8 = "delhome2", Command9 = "go";
         public static Dictionary<int, DateTime> Invite = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> FriendPosition = new Dictionary<int, string>();
 
@@ -176,10 +178,13 @@ namespace ServerTools
                                             string _phrase13;
                                             if (!Phrases.Dict.TryGetValue(13, out _phrase13))
                                             {
-                                                _phrase13 = " you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                                _phrase13 = " you can only use {CommandPrivate}{Command2} or {CommandPrivate}{Command6} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                             }
                                             _phrase13 = _phrase13.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                             _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
+                                            _phrase13 = _phrase13.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                            _phrase13 = _phrase13.Replace("{Command2}", Command2);
+                                            _phrase13 = _phrase13.Replace("{Command6}", Command6);
                                             if (_announce)
                                             {
                                                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
@@ -211,10 +216,13 @@ namespace ServerTools
                                     string _phrase13;
                                     if (!Phrases.Dict.TryGetValue(13, out _phrase13))
                                     {
-                                        _phrase13 = " you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                        _phrase13 = " you can only use {CommandPrivate}{Command2} or {CommandPrivate}{Command6} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                     }
                                     _phrase13 = _phrase13.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                                     _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    _phrase13 = _phrase13.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase13 = _phrase13.Replace("{Command2}", Command2);
+                                    _phrase13 = _phrase13.Replace("{Command6}", Command6);
                                     if (_announce)
                                     {
                                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
@@ -481,10 +489,13 @@ namespace ServerTools
                                             string _phrase13;
                                             if (!Phrases.Dict.TryGetValue(13, out _phrase13))
                                             {
-                                                _phrase13 = " you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                                _phrase13 = " you can only use {CommandPrivate}{Command2} or {CommandPrivate}{Command6} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                             }
                                             _phrase13 = _phrase13.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                             _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
+                                            _phrase13 = _phrase13.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                            _phrase13 = _phrase13.Replace("{Command2}", Command2);
+                                            _phrase13 = _phrase13.Replace("{Command6}", Command6);
                                             if (_announce)
                                             {
                                                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
@@ -516,10 +527,13 @@ namespace ServerTools
                                     string _phrase13;
                                     if (!Phrases.Dict.TryGetValue(13, out _phrase13))
                                     {
-                                        _phrase13 = " you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                        _phrase13 = " you can only use {CommandPrivate}{Command2} or {CommandPrivate}{Command6} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                     }
                                     _phrase13 = _phrase13.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                                     _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    _phrase13 = _phrase13.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase13 = _phrase13.Replace("{Command2}", Command2);
+                                    _phrase13 = _phrase13.Replace("{Command6}", Command6);
                                     if (_announce)
                                     {
                                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
@@ -749,10 +763,13 @@ namespace ServerTools
                                             string _phrase13;
                                             if (!Phrases.Dict.TryGetValue(13, out _phrase13))
                                             {
-                                                _phrase13 = " you can only use /home or /home2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                                _phrase13 = " you can only use {CommandPrivate}{Command2} or {CommandPrivate}{Command6} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                             }
                                             _phrase13 = _phrase13.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                             _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
+                                            _phrase13 = _phrase13.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                            _phrase13 = _phrase13.Replace("{Command2}", Command2);
+                                            _phrase13 = _phrase13.Replace("{Command6}", Command6);
                                             if (_announce)
                                             {
                                                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
@@ -784,10 +801,13 @@ namespace ServerTools
                                     string _phrase815;
                                     if (!Phrases.Dict.TryGetValue(815, out _phrase815))
                                     {
-                                        _phrase815 = " you can only use /fhome or /fhome2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                        _phrase815 = " you can only use {CommandPrivate}{Command3} or {CommandPrivate}{Command7} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                     }
                                     _phrase815 = _phrase815.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                                     _phrase815 = _phrase815.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    _phrase815 = _phrase815.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase815 = _phrase815.Replace("{Command3}", Command3);
+                                    _phrase815 = _phrase815.Replace("{Command7}", Command7);
                                     if (_announce)
                                     {
                                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase815 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
@@ -971,10 +991,13 @@ namespace ServerTools
                                             string _phrase815;
                                             if (!Phrases.Dict.TryGetValue(815, out _phrase815))
                                             {
-                                                _phrase815 = " you can only use /fhome or /fhome2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                                _phrase815 = " you can only use {CommandPrivate}{Command3} or {CommandPrivate}{Command7} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                             }
                                             _phrase815 = _phrase815.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                             _phrase815 = _phrase815.Replace("{TimeRemaining}", _timeleft.ToString());
+                                            _phrase815 = _phrase815.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                            _phrase815 = _phrase815.Replace("{Command3}", Command3);
+                                            _phrase815 = _phrase815.Replace("{Command7}", Command7);
                                             if (_announce)
                                             {
                                                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase815 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
@@ -1006,10 +1029,13 @@ namespace ServerTools
                                     string _phrase815;
                                     if (!Phrases.Dict.TryGetValue(815, out _phrase815))
                                     {
-                                        _phrase815 = " you can only use /fhome or /fhome2 once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                        _phrase815 = " you can only use {CommandPrivate}{Command3} or {CommandPrivate}{Command7} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                     }
                                     _phrase815 = _phrase815.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                                     _phrase815 = _phrase815.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    _phrase815 = _phrase815.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase815 = _phrase815.Replace("{Command3}", Command3);
+                                    _phrase815 = _phrase815.Replace("{Command7}", Command7);
                                     if (_announce)
                                     {
                                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase815 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
@@ -1103,8 +1129,10 @@ namespace ServerTools
                     {
                         if ((x - (int)_player2.position.x) * (x - (int)_player2.position.x) + (z - (int)_player2.position.z) * (z - (int)_player2.position.z) <= 10 * 10)
                         {
-                            string _response1 = " your friend {PlayerName} has invited you to their saved home. Type /go to accept the request.[-]";
+                            string _response1 = " your friend {PlayerName} has invited you to their saved home. Type {CommandPrivate}{Command9} to accept the request.";
                             _response1 = _response1.Replace("{PlayerName}", _cInfo.playerName);
+                            _response1 = _response1.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _response1 = _response1.Replace("{Command9}", Command9);
                             string _response2 = " invited your friend {PlayerName} to your saved home.[-]";
                             _response2 = _response2.Replace("{PlayerName}", _cInfo2.playerName);
                             ChatHook.ChatMessage(_cInfo2, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _response1 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);

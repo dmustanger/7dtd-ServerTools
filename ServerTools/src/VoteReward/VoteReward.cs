@@ -12,6 +12,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, RandomListRunning = false, Reward_Entity = false;
         public static int Reward_Count = 1, Delay_Between_Uses = 24, Entity_Id = 73, _counter = 0, Weekly_Votes = 5;
+        public static string Command46 = "reward";
         public static string Your_Voting_Site = ("https://7daystodie-servers.com/server/12345"), API_Key = ("xxxxxxxx");
         private const string file = "VoteReward.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -51,7 +52,7 @@ namespace ServerTools
             {
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
-            }            
+            }
             XmlNode _XmlNode = xmlDoc.DocumentElement;
             foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
@@ -67,33 +68,33 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Rewards' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Vote Reward' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
                         if (!_line.HasAttribute("itemOrBlock"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring reward entry because of missing itemOrBlock attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing itemOrBlock attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("countMin"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring reward entry because of missing countMin attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing countMin attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("countMax"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring reward entry because of missing countMax attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing countMax attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("qualityMin"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring reward entry because of missing qualityMin attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing qualityMin attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("qualityMax"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring reward entry because of missing qualityMax attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing qualityMax attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         int _countMin = 1;
@@ -102,22 +103,22 @@ namespace ServerTools
                         int _qualityMax = 1;
                         if (!int.TryParse(_line.GetAttribute("countMin"), out _countMin))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring reward entry because of invalid (non-numeric) value for 'count' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'count' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!int.TryParse(_line.GetAttribute("countMax"), out _countMax))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring reward entry because of invalid (non-numeric) value for 'count' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'count' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!int.TryParse(_line.GetAttribute("qualityMin"), out _qualityMin))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring reward entry because of invalid (non-numeric) value for 'quality' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'quality' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!int.TryParse(_line.GetAttribute("qualityMax"), out _qualityMax))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring reward entry because of invalid (non-numeric) value for 'quality' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'quality' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (_qualityMax > 6)
@@ -251,10 +252,12 @@ namespace ServerTools
                         string _phrase602;
                         if (!Phrases.Dict.TryGetValue(602, out _phrase602))
                         {
-                            _phrase602 = " you can only use /reward once every {DelayBetweenRewards} hours. Time remaining: {TimeRemaining} hour(s).";
+                            _phrase602 = " you can only use {CommandPrivate}{Command46} once every {DelayBetweenRewards} hours. Time remaining: {TimeRemaining} hour(s).";
                         }
                         _phrase602 = _phrase602.Replace("{DelayBetweenRewards}", Delay_Between_Uses.ToString());
                         _phrase602 = _phrase602.Replace("{TimeRemaining}", _timeleft.ToString());
+                        _phrase602 = _phrase602.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                        _phrase602 = _phrase602.Replace("{Command46}", Command46);
                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase602 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
@@ -288,9 +291,11 @@ namespace ServerTools
                     string _phrase702;
                     if (!Phrases.Dict.TryGetValue(702, out _phrase702))
                     {
-                        _phrase702 = "Unable to get a result from the website, {PlayerName}. Please try /reward again.";
+                        _phrase702 = "Unable to get a result from the website, {PlayerName}. Please try {CommandPrivate}{Command46} again.";
                     }
                     _phrase702 = _phrase702.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase702 = _phrase702.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase702 = _phrase702.Replace("{Command46}", Command46);
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase702 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
@@ -340,9 +345,9 @@ namespace ServerTools
                         _result2.Dispose();
                         if (_weeklyVoteCount + 1 == Weekly_Votes)
                         {
-                            ItemOrBlockRandom(_cInfo);
                             _sql = string.Format("UPDATE Players SET weeklyVoteCount = 1, lastVoteWeekly = {0} WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                             SQL.FastQuery(_sql);
+                            ItemOrBlockRandom(_cInfo);
                             string _phrase704;
                             if (!Phrases.Dict.TryGetValue(704, out _phrase704))
                             {
@@ -451,6 +456,85 @@ namespace ServerTools
 
         private static void Entity(ClientInfo _cInfo)
         {
+            Entityspawn(_cInfo);
+            string _sql2 = string.Format("UPDATE Players SET lastVoteReward = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+            SQL.FastQuery(_sql2);
+            if (Weekly_Votes > 0)
+            {
+                string _sql = string.Format("SELECT lastVoteWeekly FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                DateTime _lastVoteWeekly;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastVoteWeekly);
+                _result.Dispose();
+                TimeSpan varTime = DateTime.Now - _lastVoteWeekly;
+                double fractionalDays = varTime.TotalDays;
+                int _timepassed = (int)fractionalDays;
+                if (_timepassed < 7)
+                {
+                    _sql = string.Format("SELECT weeklyVoteCount FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    DataTable _result2 = SQL.TQuery(_sql);
+                    int _weeklyVoteCount;
+                    int.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _weeklyVoteCount);
+                    _result2.Dispose();
+                    if (_weeklyVoteCount + 1 == Weekly_Votes)
+                    {
+                        _sql = string.Format("UPDATE Players SET weeklyVoteCount = 1, lastVoteWeekly = {0} WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                        SQL.FastQuery(_sql);
+                        Entityspawn(_cInfo);
+                        string _phrase704;
+                        if (!Phrases.Dict.TryGetValue(704, out _phrase704))
+                        {
+                            _phrase704 = " you have reached the votes needed in a week. Thank you! Sent you an extra reward and reset your weekly votes to 1.";
+                        }
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase704 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                    else
+                    {
+                        _sql = string.Format("UPDATE Players SET weeklyVoteCount = {0} WHERE steamid = '{1}'", _weeklyVoteCount + 1, _cInfo.playerId);
+                        SQL.FastQuery(_sql);
+                        int _remainingVotes = Weekly_Votes - _weeklyVoteCount + 1;
+                        DateTime _date2 = _lastVoteWeekly.AddDays(7);
+                        string _phrase705;
+                        if (!Phrases.Dict.TryGetValue(705, out _phrase705))
+                        {
+                            _phrase705 = " you have voted {Votes} time since {Date}. You need {Count} more votes before {Date2} to reach the bonus.";
+                        }
+                        _phrase705 = _phrase705.Replace("{Votes}", _weeklyVoteCount + 1.ToString());
+                        _phrase705 = _phrase705.Replace("{Date}", _lastVoteWeekly.ToString());
+                        _phrase705 = _phrase705.Replace("{Count}", _remainingVotes.ToString());
+                        _phrase705 = _phrase705.Replace("{Date2}", _date2.ToString());
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase705 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                }
+                else
+                {
+                    _sql = string.Format("UPDATE Players SET weeklyVoteCount = 1, lastVoteWeekly = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    SQL.FastQuery(_sql);
+                    int _remainingVotes = Weekly_Votes - 1;
+                    DateTime _date2 = DateTime.Now.AddDays(7);
+                    string _phrase705;
+                    if (!Phrases.Dict.TryGetValue(705, out _phrase705))
+                    {
+                        _phrase705 = " you have voted 1 time since {Date}. You need {Count} more votes before {Date2} to reach the bonus.";
+                    }
+                    _phrase705 = _phrase705.Replace("{Date}", DateTime.Now.ToString());
+                    _phrase705 = _phrase705.Replace("{Count}", _remainingVotes.ToString());
+                    _phrase705 = _phrase705.Replace("{Date2}", _date2.ToString());
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase705 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
+            }
+            string _phrase701;
+            if (!Phrases.Dict.TryGetValue(701, out _phrase701))
+            {
+                _phrase701 = "Thank you for your vote {PlayerName}. You can vote and receive another reward in {VoteDelay} hours.";
+            }
+            _phrase701 = _phrase701.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase701 = _phrase701.Replace("{VoteDelay}", Delay_Between_Uses.ToString());
+            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase701 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+        }
+
+        private static void Entityspawn(ClientInfo _cInfo)
+        {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             if (_player.IsSpawned())
             {
@@ -480,85 +564,10 @@ namespace ServerTools
                         {
                             Entity entity = EntityFactory.CreateEntity(i, new Vector3((float)_x, (float)_y, (float)_z));
                             GameManager.Instance.World.SpawnEntityInWorld(entity);
-                            string _sql2 = string.Format("UPDATE Players SET lastVoteReward = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                            SQL.FastQuery(_sql2);
-                            string _message = "spawned a {EntityName} near you.";
-                            _message = _message.Replace("{EntityName}", eClass.entityClassName);
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            if (Weekly_Votes > 0)
-                            {
-                                string _sql = string.Format("SELECT lastVoteWeekly FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                DataTable _result = SQL.TQuery(_sql);
-                                DateTime _lastVoteWeekly;
-                                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastVoteWeekly);
-                                _result.Dispose();
-                                TimeSpan varTime = DateTime.Now - _lastVoteWeekly;
-                                double fractionalDays = varTime.TotalDays;
-                                int _timepassed = (int)fractionalDays;
-                                if (_timepassed < 7)
-                                {
-                                    _sql = string.Format("SELECT weeklyVoteCount FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                    DataTable _result2 = SQL.TQuery(_sql);
-                                    int _weeklyVoteCount;
-                                    int.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _weeklyVoteCount);
-                                    _result2.Dispose();
-                                    if (_weeklyVoteCount + 1 == Weekly_Votes)
-                                    {
-                                        Entity(_cInfo);
-                                        _sql = string.Format("UPDATE Players SET weeklyVoteCount = 1, lastVoteWeekly = {0} WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                                        SQL.FastQuery(_sql);
-                                        string _phrase704;
-                                        if (!Phrases.Dict.TryGetValue(704, out _phrase704))
-                                        {
-                                            _phrase704 = " you have reached the votes needed in a week. Thank you! Sent you an extra reward and reset your weekly votes to 1.";
-                                        }
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase704 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                        return;
-                                    }
-                                    else
-                                    {
-                                        _sql = string.Format("UPDATE Players SET weeklyVoteCount = {0} WHERE steamid = '{1}'", _weeklyVoteCount + 1, _cInfo.playerId);
-                                        SQL.FastQuery(_sql);
-                                        int _remainingVotes = Weekly_Votes - _weeklyVoteCount + 1;
-                                        DateTime _date2 = _lastVoteWeekly.AddDays(7);
-                                        string _phrase705;
-                                        if (!Phrases.Dict.TryGetValue(705, out _phrase705))
-                                        {
-                                            _phrase705 = " you have voted {Votes} time since {Date}. You need {Count} more votes before {Date2} to reach the bonus.";
-                                        }
-                                        _phrase705 = _phrase705.Replace("{Votes}", _weeklyVoteCount + 1.ToString());
-                                        _phrase705 = _phrase705.Replace("{Date}", _lastVoteWeekly.ToString());
-                                        _phrase705 = _phrase705.Replace("{Count}", _remainingVotes.ToString());
-                                        _phrase705 = _phrase705.Replace("{Date2}", _date2.ToString());
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase705 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                }
-                                else
-                                {
-                                    _sql = string.Format("UPDATE Players SET weeklyVoteCount = 1, lastVoteWeekly = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                                    SQL.FastQuery(_sql);
-                                    int _remainingVotes = Weekly_Votes - 1;
-                                    DateTime _date2 = DateTime.Now.AddDays(7);
-                                    string _phrase705;
-                                    if (!Phrases.Dict.TryGetValue(705, out _phrase705))
-                                    {
-                                        _phrase705 = " you have voted 1 time since {Date}. You need {Count} more votes before {Date2} to reach the bonus.";
-                                    }
-                                    _phrase705 = _phrase705.Replace("{Date}", DateTime.Now.ToString());
-                                    _phrase705 = _phrase705.Replace("{Count}", _remainingVotes.ToString());
-                                    _phrase705 = _phrase705.Replace("{Date2}", _date2.ToString());
-                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase705 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                }
-                            }
-                            string _phrase701;
-                            if (!Phrases.Dict.TryGetValue(701, out _phrase701))
-                            {
-                                _phrase701 = "Thank you for your vote {PlayerName}. You can vote and receive another reward in {VoteDelay} hours.";
-                            }
-                            _phrase701 = _phrase701.Replace("{PlayerName}", _cInfo.playerName);
-                            _phrase701 = _phrase701.Replace("{VoteDelay}", Delay_Between_Uses.ToString());
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase701 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             Log.Out(string.Format("[SERVERTOOLS] Spawned an entity reward {0} at {1} x, {2} y, {3} z for {4}", eClass.entityClassName, _x, _y, _z, _cInfo.playerName));
+                            string _message = " spawned a {EntityName} near you.";
+                            _message = _message.Replace("{EntityName}", eClass.entityClassName);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                         counter++;
                     }
@@ -574,7 +583,7 @@ namespace ServerTools
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", can not give you a vote reward unless spawned. Please type /reward again.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", can not give you a vote reward unless spawned. Please type " + ChatHook.Command_Private + Command46 + " again.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

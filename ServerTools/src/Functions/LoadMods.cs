@@ -235,6 +235,14 @@ namespace ServerTools
             {
                 ChatColorPrefix.Load();
             }
+            if (LoadTriggers.IsRunning)
+            {
+                LoadTriggers.Unload();
+            }
+            if (!LoadTriggers.IsRunning)
+            {
+                LoadTriggers.Load();
+            }
             if (MutePlayer.IsEnabled)
             {
                 MutePlayer.MuteList();

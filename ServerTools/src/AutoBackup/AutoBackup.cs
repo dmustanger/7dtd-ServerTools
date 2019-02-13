@@ -8,9 +8,9 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false;
         public static int Time_Between_Saves = 240, Days_Before_Save_Delete = 3;
-        private static string saveDirectory = string.Format("{0}", GameUtils.GetSaveGameDir());
+        public static string Destination = "";
 
-        public static void Backup()
+        public static void BackupExec()
         {
             if (!IsRunning && !StopServer.stopServerCountingDown)
             {
@@ -21,9 +21,24 @@ namespace ServerTools
                     {
                         Log.Out("[SERVERTOOLS] Starting world backup");
                         ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Starting world backup..." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        string saveDirectory = GameUtils.GetSaveGameDir();
                         string[] _files1 = Directory.GetFiles(saveDirectory, "*", SearchOption.AllDirectories);
-                        string _parentDirectory = Directory.GetParent(saveDirectory).FullName;
-                        string[] _files2 = Directory.GetFiles(_parentDirectory, "*.zip");
+                        string _parentDirectory = "";
+                        string[] _files2 = { };
+                        if (Destination == "")
+                        {
+                            _parentDirectory = Directory.GetParent(saveDirectory).FullName;
+                            _files2 = Directory.GetFiles(_parentDirectory, "*.zip");
+                        }
+                        else
+                        {
+                            if (!Directory.Exists(Destination))
+                            {
+                                Directory.CreateDirectory(Destination);
+                                Log.Out(string.Format("[SERVERTOOLS] World backup destination folder not found. The folder has been created at {0} and backup resumed", Destination));
+                            }
+                            _files2 = Directory.GetFiles(Destination, "*.zip");
+                        }
                         int _daysBeforeDeleted = (Days_Before_Save_Delete * -1);
                         if (_files2 != null)
                         {
@@ -32,17 +47,17 @@ namespace ServerTools
                                 FileInfo b = new FileInfo(a);
                                 if (b.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
                                 {
-                                    Log.Out("[SERVERTOOLS] Starting world backup. Old backups deleted");
+                                    Log.Out(string.Format("[SERVERTOOLS] Old backup named {0} was deleted due to its age", b.Name));
                                     b.Delete();
                                 }
                             }
                         }
                         foreach (var c in _files1)
                         {
-                            zip.AddFile(c, Path.GetDirectoryName(c).Replace(saveDirectory, string.Empty));
+                            zip.AddFile(c, Path.GetDirectoryName(c).Replace(Destination, string.Empty));
                         }
-                        zip.Save(Path.ChangeExtension(saveDirectory + string.Format("_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm")), ".zip"));
-                        Log.Out("[SERVERTOOLS] World backup completed successfully");
+                        zip.Save(Path.ChangeExtension(Destination + string.Format("_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm")), ".zip"));
+                        Log.Out(string.Format("[SERVERTOOLS] World backup completed successfully. File is located and named {0}", Destination + "_" + DateTime.Now + ".zip"));
                         ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "World backup completed successfully" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     }
                 }

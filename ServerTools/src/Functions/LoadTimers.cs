@@ -102,7 +102,7 @@ namespace ServerTools
             if (VehicleTeleport.IsEnabled)
             {
                 Log.Out("------------------------------------");
-                Log.Out("[SERVERTOOLS] Vehicle Telport tools:");
+                Log.Out("[SERVERTOOLS] Vehicle Teleport tools:");
                 Log.Out("------------------------------------");
                 if (VehicleTeleport.Bike)
                 {
@@ -379,7 +379,7 @@ namespace ServerTools
                 if (WeatherVote.VoteOpen)
                 {
                     _wV++;
-                    if (_wV >= 30)
+                    if (_wV >= 60)
                     {
                         _wV = 0;
                         WeatherVote.CallForVote2();
@@ -438,7 +438,7 @@ namespace ServerTools
                 if (RestartVote.VoteOpen)
                 {
                     _rV++;
-                    if (_rV >= 30)
+                    if (_rV >= 60)
                     {
                         _rV = 0;
                         RestartVote.CallForVote2();
@@ -454,7 +454,7 @@ namespace ServerTools
                 if (NightVote.VoteOpen)
                 {
                     _nV++;
-                    if (_nV >= 30)
+                    if (_nV >= 60)
                     {
                         _nV = 0;
                         NightVote.VoteCount();
@@ -470,7 +470,7 @@ namespace ServerTools
                 if (MuteVote.VoteOpen)
                 {
                     _mV++;
-                    if (_mV >= 30)
+                    if (_mV >= 60)
                     {
                         _mV = 0;
                         MuteVote.VoteCount();
@@ -486,7 +486,7 @@ namespace ServerTools
                 if (KickVote.VoteOpen)
                 {
                     _kV++;
-                    if (_kV >= 30)
+                    if (_kV >= 60)
                     {
                         _kV = 0;
                         KickVote.VoteCount();
@@ -814,7 +814,7 @@ namespace ServerTools
                 if (_tBS >= AutoBackup.Time_Between_Saves * 60)
                 {
                     _tBS = 0;
-                    AutoBackup.Backup();
+                    AutoBackup.BackupExec();
                 }
             }
             else

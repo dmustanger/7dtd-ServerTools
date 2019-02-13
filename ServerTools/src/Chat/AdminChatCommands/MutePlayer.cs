@@ -7,8 +7,9 @@ namespace ServerTools
     public class MutePlayer
     {
         public static bool IsEnabled = false;
+        public static string Command13 = "mute", Command14 = "unmute";
+        private static string[] _cmd = { Command13 };
         public static List<string> Mutes = new List<string>();
-        private static string[] _cmd = { "mute" };
 
         public static void Add(ClientInfo _cInfo, string _playerName)
         {
@@ -19,20 +20,20 @@ namespace ServerTools
                     string _phrase107;
                     if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                     {
-                        _phrase107 = "you do not have permissions to use this command.";
+                        _phrase107 = " you do not have permissions to use this command.";
                     }
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    _playerName = _playerName.Replace("mute ", "");
+                    _playerName = _playerName.Replace(Command13 + " ", "");
                     ClientInfo _PlayertoMute = ConsoleHelper.ParseParamIdOrName(_playerName);
                     if (_PlayertoMute == null)
                     {
                         string _phrase201;
                         if (!Phrases.Dict.TryGetValue(201, out _phrase201))
                         {
-                            _phrase201 = "player {PlayerName} was not found.";
+                            _phrase201 = " player {PlayerName} was not found.";
                         }
                         _phrase201 = _phrase201.Replace("{PlayerName}", _playerName);
                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase201 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -49,7 +50,7 @@ namespace ServerTools
                             string _phrase202;
                             if (!Phrases.Dict.TryGetValue(202, out _phrase202))
                             {
-                                _phrase202 = "player {PlayerName} is already muted.";
+                                _phrase202 = " player {PlayerName} is already muted.";
                             }
                             _phrase202 = _phrase202.Replace("{PlayerName}", _playerName);
                             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase202 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -63,7 +64,7 @@ namespace ServerTools
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + "this command is not enabled.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + " this command is not enabled.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -75,7 +76,7 @@ namespace ServerTools
             string _phrase203;
             if (!Phrases.Dict.TryGetValue(203, out _phrase203))
             {
-                _phrase203 = "you have muted {PlayerName} for 60 minutes.";
+                _phrase203 = " you have muted {PlayerName} for 60 minutes.";
             }
 
             _phrase203 = _phrase203.Replace("{PlayerName}", _player.playerName);
@@ -98,7 +99,7 @@ namespace ServerTools
                     string _phrase107;
                     if (!Phrases.Dict.TryGetValue(107, out _phrase107))
                     {
-                        _phrase107 = "you do not have permissions to use this command.";
+                        _phrase107 = " you do not have permissions to use this command.";
                     }
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase107 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -111,7 +112,7 @@ namespace ServerTools
                         string _phrase201;
                         if (!Phrases.Dict.TryGetValue(201, out _phrase201))
                         {
-                            _phrase201 = "player {PlayerName} was not found online.";
+                            _phrase201 = " player {PlayerName} was not found online.";
                         }
                         _phrase201 = _phrase201.Replace("{PlayerName}", _playerName);
                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase201 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -124,7 +125,7 @@ namespace ServerTools
                             string _phrase204;
                             if (!Phrases.Dict.TryGetValue(204, out _phrase204))
                             {
-                                _phrase204 = "player {PlayerName} is not muted.";
+                                _phrase204 = " player {PlayerName} is not muted.";
                             }
                             _phrase204 = _phrase204.Replace("{PlayerName}", _playerName);
                             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase204 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -136,7 +137,7 @@ namespace ServerTools
                                 string _phrase204;
                                 if (!Phrases.Dict.TryGetValue(204, out _phrase204))
                                 {
-                                    _phrase204 = "player {PlayerName} is not muted.";
+                                    _phrase204 = " player {PlayerName} is not muted.";
                                 }
                                 _phrase204 = _phrase204.Replace("{PlayerName}", _playerName);
                                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase204 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -149,7 +150,7 @@ namespace ServerTools
                                 string _phrase205;
                                 if (!Phrases.Dict.TryGetValue(205, out _phrase205))
                                 {
-                                    _phrase205 = "you have unmuted {PlayerName}.";
+                                    _phrase205 = " you have unmuted {PlayerName}.";
                                 }
                                 _phrase205 = _phrase205.Replace("{PlayerName}", _playerName);
                                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase205 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -160,7 +161,7 @@ namespace ServerTools
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + "this command is not enabled.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + " this command is not enabled.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

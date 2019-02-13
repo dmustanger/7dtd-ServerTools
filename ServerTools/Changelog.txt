@@ -1,5 +1,27 @@
 ﻿CHANGELOG
 
+12.8
+Added tool named Private_Message. Players can send each other private messages with /pmessage and respond with /rmessage or /pm /rm
+Added tool Custom_Triggers. Creates CustomTriggers.xml. This has every single tool linked in so that admins can change the default
+commands. Example: /gimme could be changed to /banana. Numbers are okay but do not use symbols such as !@#$%^&*. Do not use capital
+letters. Do not repeat entries
+Added option to Auto_Backup for a custom destination save folder. Leave it blank to keep it as the default world save parent directory
+Fixed /wallet response showing globally
+Fixed clan chat repeating based on how many members were in the clan online and sent global
+Fixed Vote_Reward spamming entities if the Weekly_Vote was reached
+Fixed command /waypointsave not working properly
+Fixed FQuery responding as busy by adding a que to the internal operation
+Fixed clan command responses showing global
+Fixed more chat responses
+Fixed one escape string to avoid errors on a database query
+Changed output log responses to reveal more information on errors and xml input issues
+Changed vote times from 30 seconds to 60 so players have more time to vote
+Changed /commands response to show the proper private command if it is changed from the default
+Updated phrase 6,8,109,110,111,115,117,122,527,529,535,536,539,543,550,552,560,561,602,605,606,611,616,618,620,628,702,735,740,776,777,
+778,795,811,815,822,823,900,910,920,927,932,959
+Removed phrase 770,771
+*Note* ServerTools xml files and log files will go to C:/ServerTools by default
+
 12.7
 Fixed more chat responses showing global instead of private
 Fixed friend chat not showing for the sender

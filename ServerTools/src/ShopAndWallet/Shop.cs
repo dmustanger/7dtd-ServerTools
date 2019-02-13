@@ -9,6 +9,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Inside_Market = false, Inside_Traders = false;
         public static int Delay_Between_Uses = 60;
+        public static string Command57 = "shop", Command58 = "buy";
         private const string file = "Shop.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<int, string[]> dict = new SortedDictionary<int, string[]>();
@@ -364,8 +365,10 @@ namespace ServerTools
             string _phrase618;
             if (!Phrases.Dict.TryGetValue(618, out _phrase618))
             {
-                _phrase618 = "Type /shop 'category' to view that list.";
+                _phrase618 = "Type {CommandPrivate}{Command57} 'category' to view that list.";
             }
+            _phrase618 = _phrase618.Replace("{CommandPrivate}", ChatHook.Command_Private);
+            _phrase618 = _phrase618.Replace("{Command57}", Command57);
             ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase618 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
@@ -416,8 +419,10 @@ namespace ServerTools
                     string _phrase823;
                     if (!Phrases.Dict.TryGetValue(823, out _phrase823))
                     {
-                        _phrase823 = " type /buy # to purchase the shop item. You can add how many times you want to buy it. /buy # #";
+                        _phrase823 = " type {CommandPrivate}{Command58} # to purchase the shop item. You can add how many times you want to buy it with {CommandPrivate}{Command58} # #";
                     }
+                    _phrase823 = _phrase823.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase823 = _phrase823.Replace("{Command58}", Command58);
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase823 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
@@ -426,8 +431,10 @@ namespace ServerTools
                 string _phrase822;
                 if (!Phrases.Dict.TryGetValue(822, out _phrase822))
                 {
-                    _phrase822 = " this category is missing. Check /shop.";
+                    _phrase822 = " this category is missing. Check {CommandPrivate}{Command57}.";
                 }
+                _phrase822 = _phrase822.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase822 = _phrase822.Replace("{Command57}", Command57);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase822 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
@@ -443,8 +450,10 @@ namespace ServerTools
                     string _phrase620;
                     if (!Phrases.Dict.TryGetValue(620, out _phrase620))
                     {
-                        _phrase620 = " the item or amount # you are trying to buy is not an integer. Please input /buy 1 2 for example.";
+                        _phrase620 = " the item or amount # you are trying to buy is not an integer. Please input {CommandPrivate}{Command58} 1 2 for example.";
                     }
+                    _phrase620 = _phrase620.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase620 = _phrase620.Replace("{Command58}", Command58);
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase620 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
@@ -455,8 +464,10 @@ namespace ServerTools
                         string _phrase620;
                         if (!Phrases.Dict.TryGetValue(620, out _phrase620))
                         {
-                            _phrase620 = " the item or amount # you are trying to buy is not an integer. Please input /buy 1 2 for example.";
+                            _phrase620 = " the item or amount # you are trying to buy is not an integer. Please input {CommandPrivate}{Command58} 1 2 for example.";
                         }
+                        _phrase620 = _phrase620.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                        _phrase620 = _phrase620.Replace("{Command58}", Command58);
                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase620 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else

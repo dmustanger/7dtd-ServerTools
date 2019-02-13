@@ -14,7 +14,7 @@ namespace ServerTools
                 Directory.CreateDirectory(API.GamePath + "/ChatLogs");
             }
             string _file = string.Format("ChatLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-            string _filepath = string.Format("{0}/ChatLogs/{1}", API.GamePath, _file);
+            string _filepath = string.Format("{0}/ServerTools/Logs/ChatLogs/{1}", API.GamePath, _file);
             using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
                 sw.WriteLine(string.Format("{0} {1}: {2}", DateTime.Now, _playerName, _message));

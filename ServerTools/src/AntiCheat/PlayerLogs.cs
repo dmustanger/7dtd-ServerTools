@@ -9,16 +9,16 @@ namespace ServerTools
         public static bool IsEnabled = false, Position = false, Inventory = false, P_Data = false;
         public static int Days_Before_Log_Delete = 5;
         private static string _file = string.Format("PlayerLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string _filepath = string.Format("{0}/PlayerLogs/{1}", API.GamePath, _file);
+        private static string _filepath = string.Format("{0}/ServerTools/Logs/PlayerLogs/{1}", API.GamePath, _file);
 
         public static void PlayerLogsDir()
         {
-            if (!Directory.Exists(API.GamePath + "/PlayerLogs"))
+            if (!Directory.Exists(API.GamePath + "/ServerTools/Logs/PlayerLogs"))
             {
-                Directory.CreateDirectory(API.GamePath + "/PlayerLogs");
+                Directory.CreateDirectory(API.GamePath + "/ServerTools/Logs/PlayerLogs");
             }
 
-            string[] files = Directory.GetFiles(API.GamePath + "/PlayerLogs");
+            string[] files = Directory.GetFiles(API.GamePath + "/ServerTools/Logs/PlayerLogs");
             int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
             foreach (string file in files)
             {

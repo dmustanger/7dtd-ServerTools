@@ -10,6 +10,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int Minimum_Bounty = 5, Kill_Streak = 0, Bonus = 25;
+        public static string Command83 = "bounty";
         public static Dictionary<int, int> KillStreak = new Dictionary<int, int>();
         private static string file = string.Format("Bounty_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string filepath = string.Format("{0}/BountyLogs/{1}", API.GamePath, file);
@@ -55,8 +56,10 @@ namespace ServerTools
             string _phrase910;
             if (!Phrases.Dict.TryGetValue(910, out _phrase910))
             {
-                _phrase910 = "Type /bounty Id# Value or /bounty Id# for the minimum bounty against this player.";
+                _phrase910 = "Type {CommandPrivate}{Command83} Id# Value or {CommandPrivate}{Command83} Id# for the minimum bounty against this player.";
             }
+            _phrase910 = _phrase910.Replace("{CommandPrivate}", ChatHook.Command_Private);
+            _phrase910 = _phrase910.Replace("{Command83}", Command83);
             ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase910 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
@@ -106,7 +109,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", to add a custom bounty type / bounty Id# Value, or minimum with /bounty Id#.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", to add a custom bounty value, type " + ChatHook.Command_Private + Command83 + " Id# Value, or the minimum with " + ChatHook.Command_Private + Command83 + " Id#.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }

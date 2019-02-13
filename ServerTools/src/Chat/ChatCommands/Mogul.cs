@@ -5,6 +5,7 @@ namespace ServerTools
     class Mogul
     {
         public static bool IsEnabled = false;
+        public static string Command101 = "mogul";
 
         public static void TopThree(ClientInfo _cInfo, bool _announce)
         {

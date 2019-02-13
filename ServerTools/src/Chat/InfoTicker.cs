@@ -8,6 +8,7 @@ namespace ServerTools
     public class InfoTicker
     {
         public static bool IsEnabled = false, IsRunning = false, Random = false;
+        public static string Command104 = "infoticker";
         private const string file = "InfoTicker.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static Dictionary<string, string> dict = new Dictionary<string, string>();

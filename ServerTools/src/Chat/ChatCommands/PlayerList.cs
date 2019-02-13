@@ -6,6 +6,7 @@ namespace ServerTools
     class PlayerList
     {
         public static bool IsEnabled = false;
+        public static string Command89 = "list";
 
         public static void Exec(ClientInfo _cInfo, string _playerName)
         {
@@ -15,7 +16,7 @@ namespace ServerTools
                 ClientInfo _cInfo1 = _cInfoList[i];
                 if (_cInfo != _cInfo1)
                 {
-                    string _response = "Player name {PlayerName}, Id = {EntityId}[-]";
+                    string _response = "Player = {PlayerName}, Id = {EntityId}[-]";
                     _response = _response.Replace("{PlayerName}", _cInfo1.playerName);
                     _response = _response.Replace("{EntityId}", _cInfo1.playerName);
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response, _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);

@@ -10,6 +10,8 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, PvP_Check, Zombie_Check = false, Vehicle = false;
         public static int Delay_Between_Uses = 0, Max_Waypoints = 2, Donator_Max_Waypoints = 4, Command_Cost = 0;
+        public static string Command10 = "goway", Command106 = "waypoint", Command107 = "way", Command108 = "wp", Command109 = "fwaypoint", Command110 = "fway", Command111 = "fwp", 
+            Command112 = "waypointsave", Command113 = "waysave", Command114 = "ws", Command115 = "waypointdel", Command116 = "waydel", Command117 = "wd";
         public static Dictionary<int, DateTime> Invite = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> FriendPosition = new Dictionary<int, string>();
 
@@ -721,8 +723,9 @@ namespace ServerTools
                     {
                         if ((x - (int)_player2.position.x) * (x - (int)_player2.position.x) + (z - (int)_player2.position.z) * (z - (int)_player2.position.z) <= 10 * 10)
                         {
-                            string _message = " your friend {PlayerName} has invited you to their saved waypoint. Type /go to accept the request.";
+                            string _message = " your friend {PlayerName} has invited you to their saved waypoint. Type {CommandPrivate}{Command10} to accept the request.";
                             _message = _message.Replace("{PlayerName}", _cInfo.playerName);
+                            _message = _message.Replace("{Command10}", Command10);
                             ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName  + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             _message = " invited your friend {PlayerName} to your saved waypoint.";
                             _message = _message.Replace("{PlayerName}", _cInfo.playerName);

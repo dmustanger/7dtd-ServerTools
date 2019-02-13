@@ -167,7 +167,5 @@ Entity cleanup: removes falling blocks, stuck falling trees<br>
 <br>
 Command costs: set a price required to use certain commands. Dependant on ingame wallet and earning coins by killing zombies. In game coins such as casino coin can be transferred through the bank<br>
 <br>
-Auto Backup: Takes a backup of the world save folder and places it in a zip file. Zip files that are older than the max time set in options are auto deleted<br>
-<br>
 <br> 
 <br>

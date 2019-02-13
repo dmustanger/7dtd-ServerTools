@@ -8,6 +8,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int Max_Deaths = 9;
+        public static string Command11 = "top3", Command12 = "score";
 
         public static void Announce(ClientInfo _cInfo)
         {

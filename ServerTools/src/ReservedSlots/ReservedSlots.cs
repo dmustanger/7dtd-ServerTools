@@ -8,8 +8,9 @@ namespace ServerTools
     public class ReservedSlots
     {
         public static bool IsEnabled = false, IsRunning = false, Donator_Name_Coloring = false,
-            Reduced_Delay = false;
+            Reduced_Delay = false, Reserved_Check = false;
         public static int Session_Time = 30, Admin_Level = 0, Admin_Slots = 0;
+        public static string Command45 = "reserved";
         public static Dictionary<string, DateTime> Dict = new Dictionary<string, DateTime>();
         public static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
         public static Dictionary<string, DateTime> Kicked = new Dictionary<string, DateTime>();

@@ -8,15 +8,21 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        public const double version = 12.7;
-        public static bool UpdateConfigs = false;
+        public const double version = 12.8;
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
 
         public static void Load()
         {
-            LoadXml();
-            InitFileWatcher();
+            if (!Utils.FileExists(API.ConfigPath + "/ServerToolsConfig.xml"))
+            {
+                WriteXml();
+            }
+            else
+            {
+                LoadXml();
+                InitFileWatcher();
+            }
         }
 
         private static void LoadXml()
@@ -24,11 +30,6 @@ namespace ServerTools
             Log.Out("---------------------------------------------------------------");
             Log.Out("[SERVERTOOLS] Verifying configuration file & Saving new entries");
             Log.Out("---------------------------------------------------------------");
-            if (!Utils.FileExists(configFilePath))
-            {
-                UpdateXml();
-                return;
-            }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
@@ -69,7 +70,8 @@ namespace ServerTools
                         }
                         if (_oldversion != version)
                         {
-                            UpdateConfigs = true;
+                            WriteXml();
+                            return;
                         }
                     }
                 }
@@ -95,9 +97,14 @@ namespace ServerTools
                         switch (_line.GetAttribute("Name"))
                         {
                             case "DataBase":
-                                if (!_line.HasAttribute("EnableMySql"))
+                                if (!_line.HasAttribute("IsMySql"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring DataBase entry because of missing 'EnableMySql' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring DataBase entry because of missing 'IsMySql' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("IsMySql"), out SQL.IsMySql))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring DataBase entry because of invalid (true/false) value for 'IsMySql' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("ServerHost"))
@@ -130,14 +137,21 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring DataBase entry because of missing 'Password' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                MySqlDatabase.Server = _line.GetAttribute("ServerHost");
-                                MySqlDatabase.Database = _line.GetAttribute("DatabaseName");
-                                MySqlDatabase.UserName = _line.GetAttribute("UserName");
-                                MySqlDatabase.Password = _line.GetAttribute("Password");
-                                if (!bool.TryParse(_line.GetAttribute("EnableMySql"), out SQL.IsMySql))
+                                if (_line.HasAttribute("ServerHost"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring DataBase entry because of invalid (true/false) value for 'EnableMySql' attribute: {0}", subChild.OuterXml));
-                                    continue;
+                                    MySqlDatabase.Server = _line.GetAttribute("ServerHost");
+                                }
+                                if (_line.HasAttribute("DatabaseName"))
+                                {
+                                    MySqlDatabase.Database = _line.GetAttribute("DatabaseName");
+                                }
+                                if (_line.HasAttribute("UserName"))
+                                {
+                                    MySqlDatabase.UserName = _line.GetAttribute("UserName");
+                                }
+                                if (_line.HasAttribute("Password"))
+                                {
+                                    MySqlDatabase.Password = _line.GetAttribute("Password");
                                 }
                                 break;
                             case "Admin_Chat_Commands":
@@ -240,7 +254,10 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking entry because of missing 'Entity_Id' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                Animals.Animal_List = _line.GetAttribute("Entity_Id");
+                                if (_line.HasAttribute("Entity_Id"))
+                                {
+                                    Animals.Animal_List = _line.GetAttribute("Entity_Id");
+                                }
                                 if (!_line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking entry because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
@@ -326,6 +343,15 @@ namespace ServerTools
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup entry because of invalid (non-numeric) value for 'Time_Between_Saves' attribute: {0}", subChild.OuterXml));
                                     continue;
+                                }
+                                if (!_line.HasAttribute("Destination"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup entry because of missing 'Destination' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (_line.HasAttribute("Destination"))
+                                {
+                                    AutoBackup.Destination = _line.GetAttribute("Destination");
                                 }
                                 if (!_line.HasAttribute("Days_Before_Save_Delete"))
                                 {
@@ -470,7 +496,10 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry because of missing 'Ingame_Coin' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                Bank.Ingame_Coin = _line.GetAttribute("Ingame_Coin");
+                                if (_line.HasAttribute("Ingame_Coin"))
+                                {
+                                    Bank.Ingame_Coin = _line.GetAttribute("Ingame_Coin");
+                                }
                                 if (!_line.HasAttribute("Limit"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bank entry because of missing 'Limit' attribute: {0}", subChild.OuterXml));
@@ -626,25 +655,21 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response entry because of missing 'Server_Response_Name' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                Server_Response_Name = _line.GetAttribute("Server_Response_Name");
                                 if (!_line.HasAttribute("Main_Color"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response entry because of missing 'Main_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                Chat_Response_Color = _line.GetAttribute("Main_Color");
                                 if (!_line.HasAttribute("Chat_Command_Private"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response entry because of missing 'Chat_Command_Private' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                ChatHook.Command_Private = _line.GetAttribute("Chat_Command_Private");
                                 if (!_line.HasAttribute("Chat_Command_Public"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response entry because of missing 'Chat_Command_Public' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                ChatHook.Command_Public = _line.GetAttribute("Chat_Command_Public");
                                 if (!_line.HasAttribute("Mute_Commands"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response entry because of missing 'Mute_Commands' attribute: {0}", subChild.OuterXml));
@@ -655,6 +680,22 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response entry because of invalid (true/false) value for 'Mute_Commands' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (_line.HasAttribute("Server_Response_Name"))
+                                {
+                                    Server_Response_Name = _line.GetAttribute("Server_Response_Name");
+                                }
+                                if (_line.HasAttribute("Main_Color"))
+                                {
+                                    Chat_Response_Color = _line.GetAttribute("Main_Color");
+                                }
+                                if (_line.HasAttribute("Chat_Command_Private"))
+                                {
+                                    ChatHook.Command_Private = _line.GetAttribute("Chat_Command_Private");
+                                }
+                                if (_line.HasAttribute("Chat_Command_Public"))
+                                {
+                                    ChatHook.Command_Public = _line.GetAttribute("Chat_Command_Public");
+                                }
                                 break;
                             case "Chat_Command_Response_Extended":
                                 if (!_line.HasAttribute("Friend_Chat_Color"))
@@ -662,19 +703,28 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response_Extended entry because of missing 'Friend_Chat_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                ChatHook.Friend_Chat_Color = _line.GetAttribute("Friend_Chat_Color");
                                 if (!_line.HasAttribute("Party_Chat_Color"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response_Extended entry because of missing 'Party_Chat_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                ChatHook.Party_Chat_Color = _line.GetAttribute("Party_Chat_Color");
                                 if (!_line.HasAttribute("Player_Name_Color"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Response_Extended entry because of missing 'Player_Name_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                ChatHook.Player_Name_Color = _line.GetAttribute("Player_Name_Color");
+                                if (_line.HasAttribute("Friend_Chat_Color"))
+                                {
+                                    ChatHook.Friend_Chat_Color = _line.GetAttribute("Friend_Chat_Color");
+                                }
+                                if (_line.HasAttribute("Party_Chat_Color"))
+                                {
+                                    ChatHook.Party_Chat_Color = _line.GetAttribute("Party_Chat_Color");
+                                }
+                                if (_line.HasAttribute("Player_Name_Color"))
+                                {
+                                    ChatHook.Player_Name_Color = _line.GetAttribute("Player_Name_Color");
+                                }
                                 break;
                             case "Chat_Flood_Protection":
                                 if (!_line.HasAttribute("Enable"))
@@ -736,7 +786,10 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clan_Manager entry because of missing 'Private_Chat_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                ClanManager.Private_Chat_Color = _line.GetAttribute("Private_Chat_Color");
+                                if (_line.HasAttribute("Private_Chat_Color"))
+                                {
+                                    ClanManager.Private_Chat_Color = _line.GetAttribute("Private_Chat_Color");
+                                }
                                 break;
                             case "Country_Ban":
                                 if (!_line.HasAttribute("Enable"))
@@ -755,7 +808,7 @@ namespace ServerTools
                                     continue;
                                 }
                                 CountryBan.BannedCountries.Clear();
-                                if (CountryBan.IsEnabled)
+                                if (_line.HasAttribute("Countries_Not_Allowed"))
                                 {
                                     string[] _countries = _line.GetAttribute("Countries_Not_Allowed").Split(',');
                                     foreach (string _country in _countries)
@@ -763,7 +816,7 @@ namespace ServerTools
                                         if (!CountryBan.BannedCountries.Contains(_country))
                                         {
                                             CountryBan.BannedCountries.Add(_country);
-                                        } 
+                                        }
                                     }
                                 }
                                 break;
@@ -1368,7 +1421,10 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Jail entry because of missing 'Jail_Position' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                Jail.Jail_Position = _line.GetAttribute("Jail_Position");
+                                if (_line.HasAttribute("Jail_Position"))
+                                {
+                                    Jail.Jail_Position = _line.GetAttribute("Jail_Position");
+                                }
                                 if (!_line.HasAttribute("Jail_Shock"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Jail entry because of missing 'Jail_Shock' attribute: {0}", subChild.OuterXml));
@@ -1470,7 +1526,10 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry because of missing 'Lobby_Position' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                SetLobby.Lobby_Position = _line.GetAttribute("Lobby_Position");
+                                if (_line.HasAttribute("Lobby_Position"))
+                                {
+                                    SetLobby.Lobby_Position = _line.GetAttribute("Lobby_Position");
+                                }
                                 if (!_line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Lobby entry because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
@@ -1594,7 +1653,10 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry because of missing 'Market_Position' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                SetMarket.Market_Position = _line.GetAttribute("Market_Position");
+                                if (_line.HasAttribute("Market_Position"))
+                                {
+                                    SetMarket.Market_Position = _line.GetAttribute("Market_Position");
+                                }
                                 if (!_line.HasAttribute("Command_Cost"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Market entry because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
@@ -1696,7 +1758,10 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Player entry because of missing a Entry_Message attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                NewPlayer.Entry_Message = _line.GetAttribute("Entry_Message");
+                                if (_line.HasAttribute("Entry_Message"))
+                                {
+                                    NewPlayer.Entry_Message = _line.GetAttribute("Entry_Message");
+                                }
                                 break;
                             case "New_Spawn_Tele":
                                 if (!_line.HasAttribute("Enable"))
@@ -1714,7 +1779,10 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Spawn_Tele entry because of missing a New_Spawn_Tele_Position attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                NewSpawnTele.New_Spawn_Tele_Position = _line.GetAttribute("New_Spawn_Tele_Position");
+                                if (_line.HasAttribute("New_Spawn_Tele_Position"))
+                                {
+                                    NewSpawnTele.New_Spawn_Tele_Position = _line.GetAttribute("New_Spawn_Tele_Position");
+                                }
                                 if (!_line.HasAttribute("Return"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring New_Spawn_Tele entry because of missing 'Return' attribute: {0}", subChild.OuterXml));
@@ -1801,8 +1869,14 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Normal_Player_Name_Coloring entry because of missing 'Normal_Player_Color' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                ChatHook.Normal_Player_Prefix = _line.GetAttribute("Normal_Player_Prefix");
-                                ChatHook.Normal_Player_Color = _line.GetAttribute("Normal_Player_Color");
+                                if (_line.HasAttribute("Normal_Player_Prefix"))
+                                {
+                                    ChatHook.Normal_Player_Prefix = _line.GetAttribute("Normal_Player_Prefix");
+                                }
+                                if (_line.HasAttribute("Normal_Player_Color"))
+                                {
+                                    ChatHook.Normal_Player_Color = _line.GetAttribute("Normal_Player_Color");
+                                }
                                 break;
                             case "Player_List":
                                 if (!_line.HasAttribute("Enable"))
@@ -1920,6 +1994,18 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
+                            case "Private_Message":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Private_Message entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Whisper.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Private_Message entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
                             case "Real_World_Time":
                                 if (!_line.HasAttribute("Enable"))
                                 {
@@ -1946,7 +2032,10 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Real_World_Time entry because of missing 'Time_Zone' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                RealWorldTime.Time_Zone = _line.GetAttribute("Time_Zone");
+                                if (_line.HasAttribute("Time_Zone"))
+                                {
+                                    RealWorldTime.Time_Zone = _line.GetAttribute("Time_Zone");
+                                }
                                 if (!_line.HasAttribute("Adjustment"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Real_World_Time entry because of missing 'Adjustment' attribute: {0}", subChild.OuterXml));
@@ -2016,7 +2105,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Reserved_Slots entry because of missing 'Reserved_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Reserved_Check"), out ChatHook.Reserved_Check))
+                                if (!bool.TryParse(_line.GetAttribute("Reserved_Check"), out ReservedSlots.Reserved_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Reserved_Slots entry because of invalid (true/false) value for 'Reserved_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -2603,13 +2692,19 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry because of missing 'Your_Voting_Site' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                VoteReward.Your_Voting_Site = _line.GetAttribute("Your_Voting_Site");
+                                if (_line.HasAttribute("Your_Voting_Site"))
+                                {
+                                    VoteReward.Your_Voting_Site = _line.GetAttribute("Your_Voting_Site");
+                                }
                                 if (!_line.HasAttribute("API_Key"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry because of missing 'API_Key' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                VoteReward.API_Key = _line.GetAttribute("API_Key");
+                                if (_line.HasAttribute("API_Key"))
+                                {
+                                    VoteReward.API_Key = _line.GetAttribute("API_Key");
+                                }
                                 if (!_line.HasAttribute("Delay_Between_Uses"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Voting entry because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
@@ -3005,107 +3100,111 @@ namespace ServerTools
                     }
                 }
             }
-            if (UpdateConfigs)
-            {
-                UpdateXml();
-            }
-            UpdateConfigs = false;
         }
 
-        public static void UpdateXml()
+        public static void WriteXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(configFilePath))
+            try
             {
-                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                sw.WriteLine("<ServerTools>");
-                sw.WriteLine("    <Version>");
-                sw.WriteLine(string.Format("        <Version Version=\"{0}\" />", version.ToString()));
-                sw.WriteLine("    </Version>");
-                sw.WriteLine("    <Tools>");
-                sw.WriteLine(string.Format("        <Tool Name=\"DataBase\" EnableMySql=\"{0}\" ServerHost=\"{1}\" Port=\"{2}\" DatabaseName=\"{3}\" UserName=\"{4}\" Password=\"{5}\" />", SQL.IsMySql, MySqlDatabase.Server, MySqlDatabase.Port, MySqlDatabase.Database, MySqlDatabase.UserName, MySqlDatabase.Password));
-                sw.WriteLine(string.Format("        <Tool Name=\"Admin_Chat_Commands\" Enable=\"{0}\" />", AdminChat.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Admin_List\" Enable=\"{0}\" Admin_Level=\"{1}\" Moderator_Level=\"{2}\" />", AdminList.IsEnabled, AdminList.Admin_Level, AdminList.Mod_Level));
-                sw.WriteLine(string.Format("        <Tool Name=\"Animal_Tracking\" Enable=\"{0}\" Always_Show_Response=\"{1}\" Delay_Between_Uses=\"{2}\" Minimum_Spawn_Radius=\"{3}\" Maximum_Spawn_Radius=\"{4}\" Entity_Id=\"{5}\" Command_Cost=\"{6}\" />", Animals.IsEnabled, Animals.Always_Show_Response, Animals.Delay_Between_Uses, Animals.Minimum_Spawn_Radius, Animals.Maximum_Spawn_Radius, Animals.Animal_List, Animals.Command_Cost));
-                sw.WriteLine(string.Format("        <Tool Name=\"Announce_Invalid_Item_Stack\" Enable=\"{0}\" />", InventoryCheck.Anounce_Invalid_Stack));
-                sw.WriteLine(string.Format("        <Tool Name=\"Auction\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" No_Admins=\"{2}\" Admin_Level=\"{3}\" />", AuctionBox.IsEnabled, AuctionBox.Delay_Between_Uses, AuctionBox.No_Admins, AuctionBox.Admin_Level));
-                sw.WriteLine(string.Format("        <Tool Name=\"Auto_Backup\" Enable=\"{0}\" Time_Between_Saves=\"{1}\" Days_Before_Save_Delete=\"{2}\" />", AutoBackup.IsEnabled, AutoBackup.Time_Between_Saves, AutoBackup.Days_Before_Save_Delete));
-                sw.WriteLine(string.Format("        <Tool Name=\"Auto_Save_World\" Enable=\"{0}\" Delay_Between_World_Saves=\"{1}\" />", AutoSaveWorld.IsEnabled, Timers.Delay_Between_World_Saves));
-                sw.WriteLine(string.Format("        <Tool Name=\"Auto_Shutdown\" Enable=\"{0}\" Countdown_Timer=\"{1}\" Time_Before_Shutdown=\"{2}\" Alert_On_Login=\"{3}\" Days_Until_Horde=\"{4}\" Kick_During_Countdown=\"{5}\" />", AutoShutdown.IsEnabled, AutoShutdown.Countdown_Timer, Timers.Shutdown_Delay, AutoShutdown.Alert_On_Login, AutoShutdown.Days_Until_Horde, AutoShutdown.Kick_Login));
-                sw.WriteLine(string.Format("        <Tool Name=\"Bad_Word_Filter\" Enable=\"{0}\" Invalid_Name=\"{1}\" />", Badwords.IsEnabled, Badwords.Invalid_Name));
-                sw.WriteLine(string.Format("        <Tool Name=\"Bank\" Enable=\"{0}\" Inside_Claim=\"{1}\" Ingame_Coin=\"{2}\" Limit=\"{3}\" Deposit_Fee=\"{4}\" />", Bank.IsEnabled, Bank.Inside_Claim, Bank.Ingame_Coin, Bank.Limit, Bank.Deposit_Fee));
-                sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Show_On_Login=\"{1}\" Show_On_Respawn=\"{2}\" Auto_Show=\"{3}\" Auto_Show_Delay=\"{4}\" Days_Until_Horde=\"{5}\" />", Bloodmoon.IsEnabled, Bloodmoon.Show_On_Login, Bloodmoon.Show_On_Respawn, Bloodmoon.Auto_Show, Timers.Auto_Show_Bloodmoon_Delay, Bloodmoon.Days_Until_Horde));
-                sw.WriteLine(string.Format("        <Tool Name=\"Bounties\" Enable=\"{0}\" Minimum_Bounty=\"{1}\" Kill_Streak=\"{2}\" Bonus=\"{3}\" />", Bounties.IsEnabled, Bounties.Minimum_Bounty, Bounties.Kill_Streak, Bounties.Bonus));
-                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Color_Prefix\" Enable=\"{0}\" />", ChatColorPrefix.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response\" Server_Response_Name=\"{0}\" Main_Color=\"{1}\" Chat_Command_Private=\"{2}\" Chat_Command_Public=\"{3}\" Mute_Commands=\"{4}\" />", Server_Response_Name, Chat_Response_Color, ChatHook.Command_Private, ChatHook.Command_Public, MutePlayer.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response_Extended\" Friend_Chat_Color=\"{0}\" Party_Chat_Color=\"{1}\" Player_Name_Color=\"{2}\" />", ChatHook.Friend_Chat_Color, ChatHook.Party_Chat_Color, ChatHook.Player_Name_Color));
-                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Flood_Protection\" Enable=\"{0}\" Max_Length=\"{1}\" Messages_Per_Min=\"{2}\" />", ChatHook.ChatFlood, ChatHook.Max_Length, ChatHook.Messages_Per_Min));
-                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Logger\" Enable=\"{0}\" />", ChatLog.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Clan_Manager\" Enable=\"{0}\" Private_Chat_Color=\"{1}\" />", ClanManager.IsEnabled, ClanManager.Private_Chat_Color));
-                sw.WriteLine(string.Format("        <Tool Name=\"Country_Ban\" Enable=\"{0}\" Countries_Not_Allowed=\"CN,IL\" />", CountryBan.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Credentials\" Enable=\"{0}\" No_Family_Share=\"{1}\" No_Bad_Id=\"{2}\" No_Internal=\"{3}\" Admin_Level=\"{4}\" />", CredentialCheck.IsEnabled, CredentialCheck.Family_Share, CredentialCheck.Bad_Id, CredentialCheck.No_Internal, CredentialCheck.Admin_Level));
-                sw.WriteLine(string.Format("        <Tool Name=\"Custom_Commands\" Enable=\"{0}\" />", CustomCommands.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Day7\" Enable=\"{0}\" Days_Until_Horde=\"{1}\" />", Day7.IsEnabled, Day7.Days_Until_Horde));
-                sw.WriteLine(string.Format("        <Tool Name=\"Death_Spot\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", DeathSpot.IsEnabled, DeathSpot.Delay_Between_Uses, DeathSpot.Command_Cost));
-                sw.WriteLine(string.Format("        <Tool Name=\"Dupe_Log\" Enable=\"{0}\" />", DupeLog.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Entity_Cleanup\" Enable=\"{0}\" Falling_Blocks=\"{1}\" Falling_Tree=\"{2}\" Entity_Underground=\"{3}\" Delete_Bikes=\"{4}\" />", EntityCleanup.IsEnabled, EntityCleanup.BlockIsEnabled, EntityCleanup.FallingTreeEnabled, EntityCleanup.Underground, EntityCleanup.Bikes));
-                sw.WriteLine(string.Format("        <Tool Name=\"First_Claim_Block\" Enable=\"{0}\" />", FirstClaimBlock.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Flight_Check\" Enable=\"{0}\" Admin_Level=\"{1}\" Max_Ping=\"{2}\" Max_Height=\"{3}\" Kill_Enabled=\"{4}\" Announce=\"{5}\" Jail_Enabled=\"{6}\" Kick_Enabled=\"{7}\" Ban_Enabled=\"{8}\" Days_Before_Log_Delete=\"{9}\" />", FlightCheck.IsEnabled, FlightCheck.Admin_Level, FlightCheck.Max_Ping, FlightCheck.Max_Height, FlightCheck.Kill_Player, FlightCheck.Announce, FlightCheck.Jail_Enabled, FlightCheck.Kick_Enabled, FlightCheck.Ban_Enabled, FlightCheck.Days_Before_Log_Delete));
-                sw.WriteLine(string.Format("        <Tool Name=\"FPS\" Enable=\"{0}\" Set_Target=\"{1}\" />", Fps.IsEnabled, Fps.Set_Target));
-                sw.WriteLine(string.Format("        <Tool Name=\"Friend_Teleport\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" PvP_Check=\"{3}\" Zombie_Check=\"{4}\" />", FriendTeleport.IsEnabled, FriendTeleport.Delay_Between_Uses, FriendTeleport.Command_Cost, FriendTeleport.PvP_Check, FriendTeleport.Zombie_Check));
-                sw.WriteLine(string.Format("        <Tool Name=\"Gimme\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Always_Show_Response=\"{2}\" Zombies=\"{3}\" Command_Cost=\"{4}\" />", Gimme.IsEnabled, Gimme.Delay_Between_Uses, Gimme.Always_Show_Response, Gimme.Zombies, Gimme.Command_Cost));
-                sw.WriteLine(string.Format("        <Tool Name=\"Hardcore\" Enable=\"{0}\" Max_Deaths=\"{1}\" />", Hardcore.IsEnabled, Hardcore.Max_Deaths));
-                sw.WriteLine(string.Format("        <Tool Name=\"Hatch_Elevator_Detector\" Enable=\"{0}\" />", HatchElevator.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"High_Ping_Kicker\" Enable=\"{0}\" Max_Ping=\"{1}\" Samples_Needed=\"{2}\" />", HighPingKicker.IsEnabled, HighPingKicker.Max_Ping, HighPingKicker.Samples_Needed));
-                sw.WriteLine(string.Format("        <Tool Name=\"Hordes\" Enable=\"{0}\" />", Hordes.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Info_Ticker\" Enable=\"{0}\" Delay_Between_Messages=\"{1}\" Random=\"{2}\" />", InfoTicker.IsEnabled, Timers.Infoticker_Delay, InfoTicker.Random));
-                sw.WriteLine(string.Format("        <Tool Name=\"Invalid_Item_Kicker\" Enable=\"{0}\" Ban=\"{1}\" Admin_Level=\"{2}\" Days_Before_Log_Delete=\"{3}\" />", InventoryCheck.IsEnabled, InventoryCheck.Ban_Player, InventoryCheck.Admin_Level, InventoryCheck.Days_Before_Log_Delete));               
-                sw.WriteLine(string.Format("        <Tool Name=\"Jail\" Enable=\"{0}\" Jail_Size=\"{1}\" Jail_Position=\"{2}\" Jail_Shock=\"{3}\" />", Jail.IsEnabled, Jail.Jail_Size, Jail.Jail_Position, Jail.Jail_Shock));
-                sw.WriteLine(string.Format("        <Tool Name=\"Kick_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", KickVote.IsEnabled, KickVote.Players_Online, KickVote.Votes_Needed));
-                sw.WriteLine(string.Format("        <Tool Name=\"Kill_Notice\" Enable=\"{0}\" />", KillNotice.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Lobby\" Enable=\"{0}\" Return=\"{1}\" Delay_Between_Uses=\"{2}\" Lobby_Size=\"{3}\" Lobby_Position=\"{4}\" Command_Cost=\"{5}\" PvP_Check=\"{6}\" Zombie_Check=\"{7}\" />", LobbyChat.IsEnabled, LobbyChat.Return, LobbyChat.Delay_Between_Uses, LobbyChat.Lobby_Size, SetLobby.Lobby_Position, LobbyChat.Command_Cost, LobbyChat.PvP_Check, LobbyChat.Zombie_Check));
-                sw.WriteLine(string.Format("        <Tool Name=\"Location\" Enable=\"{0}\" />", Loc.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Login_Notice\" Enable=\"{0}\" />", LoginNotice.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Lottery\" Enable=\"{0}\" Bonus=\"{1}\" />", Lottery.IsEnabled, Lottery.Bonus));
-                sw.WriteLine(string.Format("        <Tool Name=\"Market\" Enable=\"{0}\" Return=\"{1}\" Delay_Between_Uses=\"{2}\" Market_Size=\"{3}\" Market_Position=\"{4}\" Command_Cost=\"{5}\" PvP_Check=\"{6}\" Zombie_Check=\"{7}\" />", MarketChat.IsEnabled, MarketChat.Return, MarketChat.Delay_Between_Uses, MarketChat.Market_Size, SetMarket.Market_Position, MarketChat.Command_Cost, LobbyChat.PvP_Check, LobbyChat.Zombie_Check));
-                sw.WriteLine(string.Format("        <Tool Name=\"Motd\" Enable=\"{0}\" Show_On_Respawn=\"{1}\" />", Motd.IsEnabled, Motd.Show_On_Respawn));
-                sw.WriteLine(string.Format("        <Tool Name=\"Mute_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", MuteVote.IsEnabled, MuteVote.Players_Online, MuteVote.Votes_Needed));
-                sw.WriteLine(string.Format("        <Tool Name=\"New_Player\" Enable=\"{0}\" Entry_Message=\"{1}\" />", NewPlayer.IsEnabled, NewPlayer.Entry_Message));
-                sw.WriteLine(string.Format("        <Tool Name=\"New_Spawn_Tele\" Enable=\"{0}\" New_Spawn_Tele_Position=\"{1}\" Return=\"{2}\" />", NewSpawnTele.IsEnabled, NewSpawnTele.New_Spawn_Tele_Position, NewSpawnTele.Return));
-                sw.WriteLine(string.Format("        <Tool Name=\"Night_Alert\" Enable=\"{0}\" Delay=\"{1}\" />", NightAlert.IsEnabled, Timers.Night_Time_Delay));
-                sw.WriteLine(string.Format("        <Tool Name=\"Night_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", NightVote.IsEnabled, NightVote.Players_Online, NightVote.Votes_Needed));
-                sw.WriteLine(string.Format("        <Tool Name=\"Normal_Player_Name_Coloring\" Enable=\"{0}\" Normal_Player_Prefix=\"{1}\" Normal_Player_Color=\"{2}\" />", ChatHook.Normal_Player_Name_Coloring, ChatHook.Normal_Player_Prefix, ChatHook.Normal_Player_Color));
-                sw.WriteLine(string.Format("        <Tool Name=\"Player_List\" Enable=\"{0}\" />", PlayerList.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Player_Logs\" Enable=\"{0}\" Interval=\"{1}\" Position=\"{2}\" Inventory=\"{3}\" Extra=\"{4}\" Days_Before_Log_Delete=\"{5}\" />", PlayerLogs.IsEnabled, Timers.Player_Log_Interval, PlayerLogs.Position, PlayerLogs.Inventory, PlayerLogs.P_Data, PlayerLogs.Days_Before_Log_Delete));
-                sw.WriteLine(string.Format("        <Tool Name=\"Player_Stat_Check\" Enable=\"{0}\" Admin_Level=\"{1}\" Kick_Enabled=\"{2}\" Ban_Enabled=\"{3}\" />", PlayerStatCheck.IsEnabled, PlayerStatCheck.Admin_Level, PlayerStatCheck.Kick_Enabled, PlayerStatCheck.Ban_Enabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Real_World_Time\" Enable=\"{0}\" Delay=\"{1}\" Time_Zone=\"{2}\" Adjustment=\"{3}\" />", RealWorldTime.IsEnabled, Timers.Real_Time_Delay, RealWorldTime.Time_Zone, RealWorldTime.Adjustment));
-                sw.WriteLine(string.Format("        <Tool Name=\"Report\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Admin_Level=\"{2}\" Days_Before_Log_Delete=\"{3}\" />", Report.IsEnabled, Report.Delay, Report.Admin_Level, Report.Days_Before_Log_Delete));
-                sw.WriteLine(string.Format("        <Tool Name=\"Reserved_Slots\" Enable=\"{0}\" Reserved_Check=\"{1}\" Session_Time=\"{2}\" Admin_Level=\"{3}\" Admin_Slots=\"{4}\" Reduced_Delay=\"{5}\" />", ReservedSlots.IsEnabled, ChatHook.Reserved_Check, ReservedSlots.Session_Time, ReservedSlots.Admin_Level, ReservedSlots.Admin_Slots, ReservedSlots.Reduced_Delay));
-                sw.WriteLine(string.Format("        <Tool Name=\"Restart_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" Admin_Level=\"{3}\" />", RestartVote.IsEnabled, RestartVote.Players_Online, RestartVote.Votes_Needed, RestartVote.Admin_Level));
-                sw.WriteLine(string.Format("        <Tool Name=\"Session\" Enable=\"{0}\" />", Shop.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Set_Home\" Enable=\"{0}\" Set_Home2_Enabled=\"{1}\" Set_Home2_Donor_Only=\"{2}\" Delay_Between_Uses=\"{3}\" Command_Cost=\"{4}\" PvP_Check=\"{5}\" Zombie_Check=\"{6}\" Vehicle=\"{7}\" />", TeleportHome.IsEnabled, TeleportHome.Set_Home2_Enabled, TeleportHome.Set_Home2_Donor_Only, TeleportHome.Delay_Between_Uses, TeleportHome.Command_Cost, TeleportHome.PvP_Check, TeleportHome.Zombie_Check, TeleportHome.Vehicle));
-                sw.WriteLine(string.Format("        <Tool Name=\"Shop\" Enable=\"{0}\" Inside_Market=\"{1}\" Inside_Traders=\"{2}\" />", Shop.IsEnabled, Shop.Inside_Market, Shop.Inside_Traders));
-                sw.WriteLine(string.Format("        <Tool Name=\"Starting_Items\" Enable=\"{0}\" />", StartingItems.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Stopserver\" Ten_Second_Countdown=\"{0}\" Kick_30_Seconds=\"{1}\" Alert_Count=\"{2}\" />", StopServer.Ten_Second_Countdown, StopServer.Kick_30_Seconds, StopServer.Alert_Count));
-                sw.WriteLine(string.Format("        <Tool Name=\"Stuck\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" />", Stuck.IsEnabled, Stuck.Delay_Between_Uses));
-                sw.WriteLine(string.Format("        <Tool Name=\"Suicide\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" PvP_Check=\"{2}\" Zombie_Check=\"{3}\" />", Suicide.IsEnabled, Suicide.Delay_Between_Uses, Suicide.PvP_Check, Suicide.Zombie_Check));
-                sw.WriteLine(string.Format("        <Tool Name=\"Travel\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" PvP_Check=\"{3}\" Zombie_Check=\"{4}\" />", Travel.IsEnabled, Travel.Delay_Between_Uses, Travel.Command_Cost, Travel.PvP_Check, Travel.Zombie_Check));
-                sw.WriteLine(string.Format("        <Tool Name=\"Underground_Check\" Enable=\"{0}\" Admin_Level=\"{1}\" Max_Ping=\"{2}\" Kill_Enabled=\"{3}\" Announce=\"{4}\" Jail_Enabled=\"{5}\" Kick_Enabled=\"{6}\" Ban_Enabled=\"{7}\" Days_Before_Log_Delete=\"{8}\" />", UndergroundCheck.IsEnabled, UndergroundCheck.Admin_Level, UndergroundCheck.Max_Ping, UndergroundCheck.Kill_Player, UndergroundCheck.Announce, UndergroundCheck.Jail_Enabled, UndergroundCheck.Kick_Enabled, UndergroundCheck.Ban_Enabled, UndergroundCheck.Days_Before_Log_Delete));
-                sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Teleport\" Enable=\"{0}\" Bike=\"{1}\" Mini_Bike=\"{2}\" Motor_Bike=\"{3}\" Jeep=\"{4}\" Gyro=\"{5}\" Inside_Claim=\"{6}\" Delay_Between_Uses=\"{7}\" Command_Cost=\"{8}\" />", VehicleTeleport.IsEnabled, VehicleTeleport.Bike, VehicleTeleport.Mini_Bike, VehicleTeleport.Motor_Bike, VehicleTeleport.Jeep, VehicleTeleport.Gyro, VehicleTeleport.Inside_Claim, VehicleTeleport.Delay_Between_Uses, VehicleTeleport.Command_Cost));
-                sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" Your_Voting_Site=\"{1}\" API_Key=\"{2}\" Delay_Between_Uses=\"{3}\" Reward_Count=\"{4}\" />", VoteReward.IsEnabled, VoteReward.Your_Voting_Site, VoteReward.API_Key, VoteReward.Delay_Between_Uses, VoteReward.Reward_Count));
-                sw.WriteLine(string.Format("        <Tool Name=\"Voting_Extended\" Reward_Entity=\"{0}\" Entity_Id=\"{1}\" Weekly_Votes=\"{2}\" />", VoteReward.Reward_Entity, VoteReward.Entity_Id, VoteReward.Weekly_Votes));
-                sw.WriteLine(string.Format("        <Tool Name=\"Wallet\" Enable=\"{0}\" Coin_Name=\"{1}\" Zombie_Kill_Value=\"{2}\" Player_Kill_Value=\"{3}\" Death_Penalty_Value=\"{4}\" Lose_On_Death=\"{5}\" />", Wallet.IsEnabled, Wallet.Coin_Name, Wallet.Zombie_Kills, Wallet.Player_Kills, Wallet.Deaths, Wallet.Lose_On_Death));
-                sw.WriteLine(string.Format("        <Tool Name=\"Watchlist\" Enable=\"{0}\" Admin_Level=\"{1}\" Alert_Delay=\"{2}\" />", Watchlist.IsEnabled, Watchlist.Admin_Level, Timers.Alert_Delay));
-                sw.WriteLine(string.Format("        <Tool Name=\"Waypoints\" Enable=\"{0}\" Max_Waypoints =\"{1}\" Donator_Max_Waypoints=\"{2}\" Command_Cost =\"{3}\" Delay_Between_Uses=\"{4}\" PvP_Check =\"{5}\" Zombie_Check=\"{6}\" Vehicle=\"{7}\" />", Waypoint.IsEnabled, Waypoint.Max_Waypoints, Waypoint.Donator_Max_Waypoints, Waypoint.Command_Cost, Waypoint.Delay_Between_Uses, Waypoint.PvP_Check, Waypoint.Zombie_Check, Waypoint.Vehicle));
-                sw.WriteLine(string.Format("        <Tool Name=\"Weather_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", WeatherVote.IsEnabled, WeatherVote.Players_Online, WeatherVote.Votes_Needed));
-                sw.WriteLine(string.Format("        <Tool Name=\"World_Radius\" Enable=\"{0}\" Normal_Player=\"{1}\" Donator=\"{2}\" Admin_Level=\"{3}\" />", WorldRadius.IsEnabled, WorldRadius.Normal_Player, WorldRadius.Donator, WorldRadius.Admin_Level));
-                sw.WriteLine(string.Format("        <Tool Name=\"Zone\" Enable=\"{0}\" Kill_Enabled=\"{1}\" Jail_Enabled=\"{2}\" Kick_Enabled=\"{3}\" Ban_Enabled=\"{4}\" Zone_Message=\"{5}\" Reminder_Notice_Delay=\"{6}\" Set_Home=\"{7}\" Days_Before_Log_Delete=\"{8}\" />", Zones.IsEnabled, Zones.Kill_Enabled, Zones.Jail_Enabled, Zones.Kick_Enabled, Zones.Ban_Enabled, Zones.Zone_Message, Zones.Reminder_Delay, Zones.Set_Home, Zones.Days_Before_Log_Delete));
-                sw.WriteLine("    </Tools>");
-                sw.WriteLine("</ServerTools>");
-                sw.Flush();
-                sw.Close();
+                fileWatcher.EnableRaisingEvents = false;
+                using (StreamWriter sw = new StreamWriter(configFilePath))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    sw.WriteLine("<ServerTools>");
+                    sw.WriteLine("    <Version>");
+                    sw.WriteLine(string.Format("        <Version Version=\"{0}\" />", version.ToString()));
+                    sw.WriteLine("    </Version>");
+                    sw.WriteLine("    <Tools>");
+                    sw.WriteLine(string.Format("        <Tool Name=\"DataBase\" IsMySql=\"{0}\" ServerHost=\"{1}\" Port=\"{2}\" DatabaseName=\"{3}\" UserName=\"{4}\" Password=\"{5}\" />", SQL.IsMySql, MySqlDatabase.Server, MySqlDatabase.Port, MySqlDatabase.Database, MySqlDatabase.UserName, MySqlDatabase.Password));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Admin_Chat_Commands\" Enable=\"{0}\" />", AdminChat.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Admin_List\" Enable=\"{0}\" Admin_Level=\"{1}\" Moderator_Level=\"{2}\" />", AdminList.IsEnabled, AdminList.Admin_Level, AdminList.Mod_Level));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Animal_Tracking\" Enable=\"{0}\" Always_Show_Response=\"{1}\" Delay_Between_Uses=\"{2}\" Minimum_Spawn_Radius=\"{3}\" Maximum_Spawn_Radius=\"{4}\" Entity_Id=\"{5}\" Command_Cost=\"{6}\" />", Animals.IsEnabled, Animals.Always_Show_Response, Animals.Delay_Between_Uses, Animals.Minimum_Spawn_Radius, Animals.Maximum_Spawn_Radius, Animals.Animal_List, Animals.Command_Cost));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Announce_Invalid_Item_Stack\" Enable=\"{0}\" />", InventoryCheck.Anounce_Invalid_Stack));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Auction\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" No_Admins=\"{2}\" Admin_Level=\"{3}\" />", AuctionBox.IsEnabled, AuctionBox.Delay_Between_Uses, AuctionBox.No_Admins, AuctionBox.Admin_Level));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Auto_Backup\" Enable=\"{0}\" Time_Between_Saves=\"{1}\" Destination=\"{2}\" Days_Before_Save_Delete=\"{3}\" />", AutoBackup.IsEnabled, AutoBackup.Time_Between_Saves, AutoBackup.Destination, AutoBackup.Days_Before_Save_Delete));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Auto_Save_World\" Enable=\"{0}\" Delay_Between_World_Saves=\"{1}\" />", AutoSaveWorld.IsEnabled, Timers.Delay_Between_World_Saves));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Auto_Shutdown\" Enable=\"{0}\" Countdown_Timer=\"{1}\" Time_Before_Shutdown=\"{2}\" Alert_On_Login=\"{3}\" Days_Until_Horde=\"{4}\" Kick_During_Countdown=\"{5}\" />", AutoShutdown.IsEnabled, AutoShutdown.Countdown_Timer, Timers.Shutdown_Delay, AutoShutdown.Alert_On_Login, AutoShutdown.Days_Until_Horde, AutoShutdown.Kick_Login));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Bad_Word_Filter\" Enable=\"{0}\" Invalid_Name=\"{1}\" />", Badwords.IsEnabled, Badwords.Invalid_Name));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Bank\" Enable=\"{0}\" Inside_Claim=\"{1}\" Ingame_Coin=\"{2}\" Limit=\"{3}\" Deposit_Fee=\"{4}\" />", Bank.IsEnabled, Bank.Inside_Claim, Bank.Ingame_Coin, Bank.Limit, Bank.Deposit_Fee));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Show_On_Login=\"{1}\" Show_On_Respawn=\"{2}\" Auto_Show=\"{3}\" Auto_Show_Delay=\"{4}\" Days_Until_Horde=\"{5}\" />", Bloodmoon.IsEnabled, Bloodmoon.Show_On_Login, Bloodmoon.Show_On_Respawn, Bloodmoon.Auto_Show, Timers.Auto_Show_Bloodmoon_Delay, Bloodmoon.Days_Until_Horde));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Bounties\" Enable=\"{0}\" Minimum_Bounty=\"{1}\" Kill_Streak=\"{2}\" Bonus=\"{3}\" />", Bounties.IsEnabled, Bounties.Minimum_Bounty, Bounties.Kill_Streak, Bounties.Bonus));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Chat_Color_Prefix\" Enable=\"{0}\" />", ChatColorPrefix.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response\" Server_Response_Name=\"{0}\" Main_Color=\"{1}\" Chat_Command_Private=\"{2}\" Chat_Command_Public=\"{3}\" Mute_Commands=\"{4}\" />", Server_Response_Name, Chat_Response_Color, ChatHook.Command_Private, ChatHook.Command_Public, MutePlayer.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response_Extended\" Friend_Chat_Color=\"{0}\" Party_Chat_Color=\"{1}\" Player_Name_Color=\"{2}\" />", ChatHook.Friend_Chat_Color, ChatHook.Party_Chat_Color, ChatHook.Player_Name_Color));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Chat_Flood_Protection\" Enable=\"{0}\" Max_Length=\"{1}\" Messages_Per_Min=\"{2}\" />", ChatHook.ChatFlood, ChatHook.Max_Length, ChatHook.Messages_Per_Min));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Chat_Logger\" Enable=\"{0}\" />", ChatLog.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Clan_Manager\" Enable=\"{0}\" Private_Chat_Color=\"{1}\" />", ClanManager.IsEnabled, ClanManager.Private_Chat_Color));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Country_Ban\" Enable=\"{0}\" Countries_Not_Allowed=\"CN,IL\" />", CountryBan.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Credentials\" Enable=\"{0}\" No_Family_Share=\"{1}\" No_Bad_Id=\"{2}\" No_Internal=\"{3}\" Admin_Level=\"{4}\" />", CredentialCheck.IsEnabled, CredentialCheck.Family_Share, CredentialCheck.Bad_Id, CredentialCheck.No_Internal, CredentialCheck.Admin_Level));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Custom_Commands\" Enable=\"{0}\" />", CustomCommands.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Day7\" Enable=\"{0}\" Days_Until_Horde=\"{1}\" />", Day7.IsEnabled, Day7.Days_Until_Horde));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Death_Spot\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", DeathSpot.IsEnabled, DeathSpot.Delay_Between_Uses, DeathSpot.Command_Cost));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Dupe_Log\" Enable=\"{0}\" />", DupeLog.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Entity_Cleanup\" Enable=\"{0}\" Falling_Blocks=\"{1}\" Falling_Tree=\"{2}\" Entity_Underground=\"{3}\" Delete_Bikes=\"{4}\" />", EntityCleanup.IsEnabled, EntityCleanup.BlockIsEnabled, EntityCleanup.FallingTreeEnabled, EntityCleanup.Underground, EntityCleanup.Bikes));
+                    sw.WriteLine(string.Format("        <Tool Name=\"First_Claim_Block\" Enable=\"{0}\" />", FirstClaimBlock.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Flight_Check\" Enable=\"{0}\" Admin_Level=\"{1}\" Max_Ping=\"{2}\" Max_Height=\"{3}\" Kill_Enabled=\"{4}\" Announce=\"{5}\" Jail_Enabled=\"{6}\" Kick_Enabled=\"{7}\" Ban_Enabled=\"{8}\" Days_Before_Log_Delete=\"{9}\" />", FlightCheck.IsEnabled, FlightCheck.Admin_Level, FlightCheck.Max_Ping, FlightCheck.Max_Height, FlightCheck.Kill_Player, FlightCheck.Announce, FlightCheck.Jail_Enabled, FlightCheck.Kick_Enabled, FlightCheck.Ban_Enabled, FlightCheck.Days_Before_Log_Delete));
+                    sw.WriteLine(string.Format("        <Tool Name=\"FPS\" Enable=\"{0}\" Set_Target=\"{1}\" />", Fps.IsEnabled, Fps.Set_Target));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Friend_Teleport\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" PvP_Check=\"{3}\" Zombie_Check=\"{4}\" />", FriendTeleport.IsEnabled, FriendTeleport.Delay_Between_Uses, FriendTeleport.Command_Cost, FriendTeleport.PvP_Check, FriendTeleport.Zombie_Check));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Gimme\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Always_Show_Response=\"{2}\" Zombies=\"{3}\" Command_Cost=\"{4}\" />", Gimme.IsEnabled, Gimme.Delay_Between_Uses, Gimme.Always_Show_Response, Gimme.Zombies, Gimme.Command_Cost));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Hardcore\" Enable=\"{0}\" Max_Deaths=\"{1}\" />", Hardcore.IsEnabled, Hardcore.Max_Deaths));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Hatch_Elevator_Detector\" Enable=\"{0}\" />", HatchElevator.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"High_Ping_Kicker\" Enable=\"{0}\" Max_Ping=\"{1}\" Samples_Needed=\"{2}\" />", HighPingKicker.IsEnabled, HighPingKicker.Max_Ping, HighPingKicker.Samples_Needed));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Hordes\" Enable=\"{0}\" />", Hordes.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Info_Ticker\" Enable=\"{0}\" Delay_Between_Messages=\"{1}\" Random=\"{2}\" />", InfoTicker.IsEnabled, Timers.Infoticker_Delay, InfoTicker.Random));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Invalid_Item_Kicker\" Enable=\"{0}\" Ban=\"{1}\" Admin_Level=\"{2}\" Days_Before_Log_Delete=\"{3}\" />", InventoryCheck.IsEnabled, InventoryCheck.Ban_Player, InventoryCheck.Admin_Level, InventoryCheck.Days_Before_Log_Delete));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Jail\" Enable=\"{0}\" Jail_Size=\"{1}\" Jail_Position=\"{2}\" Jail_Shock=\"{3}\" />", Jail.IsEnabled, Jail.Jail_Size, Jail.Jail_Position, Jail.Jail_Shock));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Kick_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", KickVote.IsEnabled, KickVote.Players_Online, KickVote.Votes_Needed));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Kill_Notice\" Enable=\"{0}\" />", KillNotice.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Lobby\" Enable=\"{0}\" Return=\"{1}\" Delay_Between_Uses=\"{2}\" Lobby_Size=\"{3}\" Lobby_Position=\"{4}\" Command_Cost=\"{5}\" PvP_Check=\"{6}\" Zombie_Check=\"{7}\" />", LobbyChat.IsEnabled, LobbyChat.Return, LobbyChat.Delay_Between_Uses, LobbyChat.Lobby_Size, SetLobby.Lobby_Position, LobbyChat.Command_Cost, LobbyChat.PvP_Check, LobbyChat.Zombie_Check));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Location\" Enable=\"{0}\" />", Loc.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Login_Notice\" Enable=\"{0}\" />", LoginNotice.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Lottery\" Enable=\"{0}\" Bonus=\"{1}\" />", Lottery.IsEnabled, Lottery.Bonus));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Market\" Enable=\"{0}\" Return=\"{1}\" Delay_Between_Uses=\"{2}\" Market_Size=\"{3}\" Market_Position=\"{4}\" Command_Cost=\"{5}\" PvP_Check=\"{6}\" Zombie_Check=\"{7}\" />", MarketChat.IsEnabled, MarketChat.Return, MarketChat.Delay_Between_Uses, MarketChat.Market_Size, SetMarket.Market_Position, MarketChat.Command_Cost, LobbyChat.PvP_Check, LobbyChat.Zombie_Check));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Motd\" Enable=\"{0}\" Show_On_Respawn=\"{1}\" />", Motd.IsEnabled, Motd.Show_On_Respawn));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Mute_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", MuteVote.IsEnabled, MuteVote.Players_Online, MuteVote.Votes_Needed));
+                    sw.WriteLine(string.Format("        <Tool Name=\"New_Player\" Enable=\"{0}\" Entry_Message=\"{1}\" />", NewPlayer.IsEnabled, NewPlayer.Entry_Message));
+                    sw.WriteLine(string.Format("        <Tool Name=\"New_Spawn_Tele\" Enable=\"{0}\" New_Spawn_Tele_Position=\"{1}\" Return=\"{2}\" />", NewSpawnTele.IsEnabled, NewSpawnTele.New_Spawn_Tele_Position, NewSpawnTele.Return));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Night_Alert\" Enable=\"{0}\" Delay=\"{1}\" />", NightAlert.IsEnabled, Timers.Night_Time_Delay));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Night_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", NightVote.IsEnabled, NightVote.Players_Online, NightVote.Votes_Needed));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Normal_Player_Name_Coloring\" Enable=\"{0}\" Normal_Player_Prefix=\"{1}\" Normal_Player_Color=\"{2}\" />", ChatHook.Normal_Player_Name_Coloring, ChatHook.Normal_Player_Prefix, ChatHook.Normal_Player_Color));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Player_List\" Enable=\"{0}\" />", PlayerList.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Player_Logs\" Enable=\"{0}\" Interval=\"{1}\" Position=\"{2}\" Inventory=\"{3}\" Extra=\"{4}\" Days_Before_Log_Delete=\"{5}\" />", PlayerLogs.IsEnabled, Timers.Player_Log_Interval, PlayerLogs.Position, PlayerLogs.Inventory, PlayerLogs.P_Data, PlayerLogs.Days_Before_Log_Delete));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Player_Stat_Check\" Enable=\"{0}\" Admin_Level=\"{1}\" Kick_Enabled=\"{2}\" Ban_Enabled=\"{3}\" />", PlayerStatCheck.IsEnabled, PlayerStatCheck.Admin_Level, PlayerStatCheck.Kick_Enabled, PlayerStatCheck.Ban_Enabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Private_Message\" Enable=\"{0}\" />", Whisper.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Real_World_Time\" Enable=\"{0}\" Delay=\"{1}\" Time_Zone=\"{2}\" Adjustment=\"{3}\" />", RealWorldTime.IsEnabled, Timers.Real_Time_Delay, RealWorldTime.Time_Zone, RealWorldTime.Adjustment));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Report\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Admin_Level=\"{2}\" Days_Before_Log_Delete=\"{3}\" />", Report.IsEnabled, Report.Delay, Report.Admin_Level, Report.Days_Before_Log_Delete));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Reserved_Slots\" Enable=\"{0}\" Reserved_Check=\"{1}\" Session_Time=\"{2}\" Admin_Level=\"{3}\" Admin_Slots=\"{4}\" Reduced_Delay=\"{5}\" />", ReservedSlots.IsEnabled, ReservedSlots.Reserved_Check, ReservedSlots.Session_Time, ReservedSlots.Admin_Level, ReservedSlots.Admin_Slots, ReservedSlots.Reduced_Delay));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Restart_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" Admin_Level=\"{3}\" />", RestartVote.IsEnabled, RestartVote.Players_Online, RestartVote.Votes_Needed, RestartVote.Admin_Level));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Session\" Enable=\"{0}\" />", Shop.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Set_Home\" Enable=\"{0}\" Set_Home2_Enabled=\"{1}\" Set_Home2_Donor_Only=\"{2}\" Delay_Between_Uses=\"{3}\" Command_Cost=\"{4}\" PvP_Check=\"{5}\" Zombie_Check=\"{6}\" Vehicle=\"{7}\" />", TeleportHome.IsEnabled, TeleportHome.Set_Home2_Enabled, TeleportHome.Set_Home2_Donor_Only, TeleportHome.Delay_Between_Uses, TeleportHome.Command_Cost, TeleportHome.PvP_Check, TeleportHome.Zombie_Check, TeleportHome.Vehicle));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Shop\" Enable=\"{0}\" Inside_Market=\"{1}\" Inside_Traders=\"{2}\" />", Shop.IsEnabled, Shop.Inside_Market, Shop.Inside_Traders));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Starting_Items\" Enable=\"{0}\" />", StartingItems.IsEnabled));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Stopserver\" Ten_Second_Countdown=\"{0}\" Kick_30_Seconds=\"{1}\" Alert_Count=\"{2}\" />", StopServer.Ten_Second_Countdown, StopServer.Kick_30_Seconds, StopServer.Alert_Count));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Stuck\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" />", Stuck.IsEnabled, Stuck.Delay_Between_Uses));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Suicide\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" PvP_Check=\"{2}\" Zombie_Check=\"{3}\" />", Suicide.IsEnabled, Suicide.Delay_Between_Uses, Suicide.PvP_Check, Suicide.Zombie_Check));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Travel\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" PvP_Check=\"{3}\" Zombie_Check=\"{4}\" />", Travel.IsEnabled, Travel.Delay_Between_Uses, Travel.Command_Cost, Travel.PvP_Check, Travel.Zombie_Check));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Underground_Check\" Enable=\"{0}\" Admin_Level=\"{1}\" Max_Ping=\"{2}\" Kill_Enabled=\"{3}\" Announce=\"{4}\" Jail_Enabled=\"{5}\" Kick_Enabled=\"{6}\" Ban_Enabled=\"{7}\" Days_Before_Log_Delete=\"{8}\" />", UndergroundCheck.IsEnabled, UndergroundCheck.Admin_Level, UndergroundCheck.Max_Ping, UndergroundCheck.Kill_Player, UndergroundCheck.Announce, UndergroundCheck.Jail_Enabled, UndergroundCheck.Kick_Enabled, UndergroundCheck.Ban_Enabled, UndergroundCheck.Days_Before_Log_Delete));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Teleport\" Enable=\"{0}\" Bike=\"{1}\" Mini_Bike=\"{2}\" Motor_Bike=\"{3}\" Jeep=\"{4}\" Gyro=\"{5}\" Inside_Claim=\"{6}\" Delay_Between_Uses=\"{7}\" Command_Cost=\"{8}\" />", VehicleTeleport.IsEnabled, VehicleTeleport.Bike, VehicleTeleport.Mini_Bike, VehicleTeleport.Motor_Bike, VehicleTeleport.Jeep, VehicleTeleport.Gyro, VehicleTeleport.Inside_Claim, VehicleTeleport.Delay_Between_Uses, VehicleTeleport.Command_Cost));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" Your_Voting_Site=\"{1}\" API_Key=\"{2}\" Delay_Between_Uses=\"{3}\" Reward_Count=\"{4}\" />", VoteReward.IsEnabled, VoteReward.Your_Voting_Site, VoteReward.API_Key, VoteReward.Delay_Between_Uses, VoteReward.Reward_Count));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Voting_Extended\" Reward_Entity=\"{0}\" Entity_Id=\"{1}\" Weekly_Votes=\"{2}\" />", VoteReward.Reward_Entity, VoteReward.Entity_Id, VoteReward.Weekly_Votes));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Wallet\" Enable=\"{0}\" Coin_Name=\"{1}\" Zombie_Kill_Value=\"{2}\" Player_Kill_Value=\"{3}\" Death_Penalty_Value=\"{4}\" Lose_On_Death=\"{5}\" />", Wallet.IsEnabled, Wallet.Coin_Name, Wallet.Zombie_Kills, Wallet.Player_Kills, Wallet.Deaths, Wallet.Lose_On_Death));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Watchlist\" Enable=\"{0}\" Admin_Level=\"{1}\" Alert_Delay=\"{2}\" />", Watchlist.IsEnabled, Watchlist.Admin_Level, Timers.Alert_Delay));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Waypoints\" Enable=\"{0}\" Max_Waypoints =\"{1}\" Donator_Max_Waypoints=\"{2}\" Command_Cost =\"{3}\" Delay_Between_Uses=\"{4}\" PvP_Check =\"{5}\" Zombie_Check=\"{6}\" Vehicle=\"{7}\" />", Waypoint.IsEnabled, Waypoint.Max_Waypoints, Waypoint.Donator_Max_Waypoints, Waypoint.Command_Cost, Waypoint.Delay_Between_Uses, Waypoint.PvP_Check, Waypoint.Zombie_Check, Waypoint.Vehicle));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Weather_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", WeatherVote.IsEnabled, WeatherVote.Players_Online, WeatherVote.Votes_Needed));
+                    sw.WriteLine(string.Format("        <Tool Name=\"World_Radius\" Enable=\"{0}\" Normal_Player=\"{1}\" Donator=\"{2}\" Admin_Level=\"{3}\" />", WorldRadius.IsEnabled, WorldRadius.Normal_Player, WorldRadius.Donator, WorldRadius.Admin_Level));
+                    sw.WriteLine(string.Format("        <Tool Name=\"Zone\" Enable=\"{0}\" Kill_Enabled=\"{1}\" Jail_Enabled=\"{2}\" Kick_Enabled=\"{3}\" Ban_Enabled=\"{4}\" Zone_Message=\"{5}\" Reminder_Notice_Delay=\"{6}\" Set_Home=\"{7}\" Days_Before_Log_Delete=\"{8}\" />", Zones.IsEnabled, Zones.Kill_Enabled, Zones.Jail_Enabled, Zones.Kick_Enabled, Zones.Ban_Enabled, Zones.Zone_Message, Zones.Reminder_Delay, Zones.Set_Home, Zones.Days_Before_Log_Delete));
+                    sw.WriteLine("    </Tools>");
+                    sw.WriteLine("</ServerTools>");
+                    sw.Flush();
+                    sw.Close();
+                }
+                fileWatcher.EnableRaisingEvents = true;
+                LoadXml();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            catch
+            {
+                Log.Out("[ServerTools] Could not write the configuration file.");
+            }
         }
 
         private static void InitFileWatcher()
@@ -3120,7 +3219,7 @@ namespace ServerTools
         {
             if (!Utils.FileExists(configFilePath))
             {
-                UpdateXml();
+                WriteXml();
             }
             LoadXml();
             Mods.Load();

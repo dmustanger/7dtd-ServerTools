@@ -120,6 +120,7 @@
     <Compile Include="src\ConsoleCommands\ZoneSetupConsole.cs" />
     <Compile Include="src\Event\Event.cs" />
     <Compile Include="src\Functions\LoadProcess.cs" />
+    <Compile Include="src\Functions\LoadTriggers.cs" />
     <Compile Include="src\PersistentData\UpdateSQL.cs" />
     <Compile Include="src\PersistentData\UpdateToSqlFromBin.cs" />
     <Compile Include="src\Hardcore\Hardcore.cs" />
@@ -261,8 +262,9 @@
       <HintPath>..\7dtd-binaries\LogLibrary.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MySql.Data">
-      <HintPath>..\7dtd-binaries\MySql.Data.dll</HintPath>
+    <Reference Include="MySql.Data, Version=5.2.7.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MySql.Data.8.0.13\lib\netstandard2.0\MySql.Data.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />

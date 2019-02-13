@@ -11,6 +11,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, PvP_Check = false, Zombie_Check = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
+        public static string Command49 = "travel";
         private const string file = "TravelLocations.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<string, string[]> Box = new SortedDictionary<string, string[]>();
@@ -217,17 +218,19 @@ namespace ServerTools
                                     string _phrase605;
                                     if (!Phrases.Dict.TryGetValue(605, out _phrase605))
                                     {
-                                        _phrase605 = "you can only use /travel once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                        _phrase605 = " you can only use {CommandPrivate}{Command49} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                                     }
                                     _phrase605 = _phrase605.Replace("{DelayBetweenUses}", _newDelay.ToString());
                                     _phrase605 = _phrase605.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    _phrase605 = _phrase605.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase605 = _phrase605.Replace("{Command49}", Command49);
                                     if (_announce)
                                     {
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase605 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase605 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                     }
                                     else
                                     {
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase605 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase605 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                             }
@@ -252,17 +255,19 @@ namespace ServerTools
                             string _phrase605;
                             if (!Phrases.Dict.TryGetValue(605, out _phrase605))
                             {
-                                _phrase605 = "you can only use /travel once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                _phrase605 = " you can only use {CommandPrivate}{Command49} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                             }
                             _phrase605 = _phrase605.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                             _phrase605 = _phrase605.Replace("{TimeRemaining}", _timeleft.ToString());
+                            _phrase605 = _phrase605.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase605 = _phrase605.Replace("{Command49}", Command49);
                             if (_announce)
                             {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase605 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase605 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             }
                             else
                             {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase605 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase605 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
@@ -282,10 +287,10 @@ namespace ServerTools
                 string _phrase814;
                 if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    _phrase814 = "you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -730,10 +735,10 @@ namespace ServerTools
                         string _phrase603;
                         if (!Phrases.Dict.TryGetValue(603, out _phrase603))
                         {
-                            _phrase603 = "you have traveled to {Destination}.";
+                            _phrase603 = " you have traveled to {Destination}.";
                         }
                         _phrase603 = _phrase603.Replace("{Destination}", kvpCorners.Key);
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase603 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase603 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
@@ -743,9 +748,9 @@ namespace ServerTools
                             string _phrase604;
                             if (!Phrases.Dict.TryGetValue(604, out _phrase604))
                             {
-                                _phrase604 = "you are not in a travel location.";
+                                _phrase604 = " you are not in a travel location.";
                             }
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase604 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase604 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
