@@ -11,7 +11,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Kill_Enabled = false, Jail_Enabled = false, Kick_Enabled = false,
             Ban_Enabled = false, Zone_Message = false, Set_Home = false, No_Zombie = false;
-        public static int Days_Before_Log_Delete = 5, Reminder_Delay = 20;
+        public static int Reminder_Delay = 20;
         public static string Command50 = "return";
         public static Dictionary<int, DateTime> reminder = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> reminderMsg = new Dictionary<int, string>();
@@ -310,7 +310,7 @@ namespace ServerTools
                         Victim.Add(_cInfoVictim.entityId, _sposition);
                     }
                     string _file1 = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                    string _filepath1 = string.Format("{0}/ServerTools/Logs/DetectionLogs/{1}", API.GamePath, _file1);
+                    string _filepath1 = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file1);
                     using (StreamWriter sw = new StreamWriter(_filepath1, true))
                     {
                         sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, murdered {2}, Steam Id {3} in a protected zone.", _cInfoKiller.playerName, _cInfoKiller.steamId, _cInfoVictim.playerName, _cInfoVictim.steamId));
@@ -318,25 +318,6 @@ namespace ServerTools
                         sw.Flush();
                         sw.Close();
                     }
-                }
-            }
-        }
-
-        public static void DetectionLogsDir()
-        {
-            if (!Directory.Exists(API.GamePath + "/DetectionLogs"))
-            {
-                Directory.CreateDirectory(API.GamePath + "/DetectionLogs");
-            }
-
-            string[] files = Directory.GetFiles(API.GamePath + "/DetectionLogs");
-            int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
-            foreach (string file in files)
-            {
-                FileInfo fi = new FileInfo(file);
-                if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                {
-                    fi.Delete();
                 }
             }
         }

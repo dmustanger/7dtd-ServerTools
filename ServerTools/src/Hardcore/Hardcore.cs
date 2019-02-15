@@ -139,19 +139,15 @@ namespace ServerTools
             }
             string _session = string.Format("0:00", _newSession % 60);
             SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Hardcore Game Over: Zombie Kills {1}, Player Kills {2}, Deaths {3}, Score {4}, Playtime {5}\"", _cInfo.playerId, _player.KilledZombies, _player.KilledPlayers, _deaths, _player.Score, _newSession), (ClientInfo)null);
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
-            if (p != null)
+            string _filepath = string.Format("{0}/Player/{1}.map", GameUtils.GetSaveGameDir(), _cInfo.playerId);
+            string _filepath1 = string.Format("{0}/Player/{1}.ttp", GameUtils.GetSaveGameDir(), _cInfo.playerId);
+            if (File.Exists(_filepath))
             {
-                string _filepath = string.Format("{0}/Player/{1}.map", GameUtils.GetSaveGameDir(), _cInfo.playerId);
-                string _filepath1 = string.Format("{0}/Player/{1}.ttp", GameUtils.GetSaveGameDir(), _cInfo.playerId);
-                if (File.Exists(_filepath))
-                {
-                    File.Delete(_filepath);
-                }
-                if (File.Exists(_filepath1))
-                {
-                    File.Delete(_filepath1);
-                }
+                File.Delete(_filepath);
+            }
+            if (File.Exists(_filepath1))
+            {
+                File.Delete(_filepath1);
             }
             string _phrase951;
             if (!Phrases.Dict.TryGetValue(951, out _phrase951))

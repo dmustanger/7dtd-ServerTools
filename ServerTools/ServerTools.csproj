@@ -122,7 +122,6 @@
     <Compile Include="src\Functions\LoadProcess.cs" />
     <Compile Include="src\Functions\LoadTriggers.cs" />
     <Compile Include="src\PersistentData\UpdateSQL.cs" />
-    <Compile Include="src\PersistentData\UpdateToSqlFromBin.cs" />
     <Compile Include="src\Hardcore\Hardcore.cs" />
     <Compile Include="src\AntiCheat\CredentialCheck.cs" />
     <Compile Include="src\AntiCheat\HatchElevator.cs" />
@@ -212,7 +211,6 @@
     <Compile Include="src\NewSpawnTele\NewSpawnTele.cs" />
     <Compile Include="src\OutputLog\SdtdLog.cs" />
     <Compile Include="src\PersistentData\MySqlDatabase.cs" />
-    <Compile Include="src\PersistentData\PersistentContainer.cs" />
     <Compile Include="src\PersistentData\Player.cs" />
     <Compile Include="src\PersistentData\Players.cs" />
     <Compile Include="src\PersistentData\SQL.cs" />

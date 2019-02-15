@@ -12,25 +12,6 @@ namespace ServerTools
         private static List<int> Flag = new List<int>();
         public static SortedDictionary<int, int> LastPositionY = new SortedDictionary<int, int>();
 
-        public static void DetectionLogsDir()
-        {
-            if (!Directory.Exists(API.GamePath + "/ServerTools/Logs/DetectionLogs"))
-            {
-                Directory.CreateDirectory(API.GamePath + "/ServerTools/Logs/DetectionLogs");
-            }
-
-            string[] files = Directory.GetFiles(API.GamePath + "/ServerTools/Logs/DetectionLogs");
-            int _daysBeforeDeleted = (DaysBeforeDeleted * -1);
-            foreach (string file in files)
-            {
-                FileInfo fi = new FileInfo(file);
-                if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                {
-                    fi.Delete();
-                }
-            }
-        }
-
         public static void AutoHatchCheck()
         {           
             if (ConnectionManager.Instance.ClientCount() > 0)
@@ -84,11 +65,11 @@ namespace ServerTools
                                                     string _phrase720;
                                                     if (!Phrases.Dict.TryGetValue(705, out _phrase720))
                                                     {
-                                                        _phrase720 = "you are stunned and have broken your leg while smashing yourself through hatches. Ouch!";
+                                                        _phrase720 = " you are stunned and have broken your leg while smashing yourself through hatches. Ouch!";
                                                     }
-                                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color  + _phrase720 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase720 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                                     string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                                                    string _filepath = string.Format("{0}/ServerTools/Logs/DetectionLogs/{1}", API.GamePath, _file);
+                                                    string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
                                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                     {
                                                         sw.WriteLine(string.Format("{0} {1} steamId {2} was detected using a hatch elevator @ {3} X, {4} Y, {5} Z", DateTime.Now, _cInfo.playerName, _cInfo.playerId, ep.position.x, ep.position.y, ep.position.z));

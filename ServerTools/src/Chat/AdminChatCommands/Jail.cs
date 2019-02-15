@@ -178,8 +178,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    Player p = PersistentContainer.Instance.Players[_PlayertoUnJail.playerId, false];
-                    if (p == null)
+                    string _sql = string.Format("SELECT jailTime FROM Players WHERE steamid = '{0}'", _PlayertoUnJail.playerId);
+                    DataTable _result = SQL.TQuery(_sql);
+                    int _jailTime;
+                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _jailTime);
+                    _result.Dispose();
+                    if (_jailTime == 0)
                     {
                         string _phrase506;
                         if (!Phrases.Dict.TryGetValue(506, out _phrase506))
@@ -205,7 +209,7 @@ namespace ServerTools
                         {
                             Jailed.Remove(_PlayertoUnJail.playerId);
                             Players.NoFlight.Add(_PlayertoUnJail.entityId);
-                            string _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _PlayertoUnJail.playerId);
+                            _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _PlayertoUnJail.playerId);
                             SQL.FastQuery(_sql);
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_PlayertoUnJail.entityId];
                             EntityBedrollPositionList _position = _player.SpawnPoints;

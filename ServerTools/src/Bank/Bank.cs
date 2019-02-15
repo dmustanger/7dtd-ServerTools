@@ -16,7 +16,7 @@ namespace ServerTools
         private static DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
         private static LinkedList<Chunk> chunkArray = new LinkedList<Chunk>();
         private static string file = string.Format("Bank_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string filepath = string.Format("{0}/BankLogs/{1}", API.GamePath, file);
+        private static string filepath = string.Format("{0}/Logs/BankLogs/{1}", API.ConfigPath, file);
         private static System.Random random = new System.Random();
 
         public static void Check(ClientInfo _cInfo)
@@ -54,14 +54,6 @@ namespace ServerTools
             _message = _message.Replace("{Value}", _bank.ToString());
             _message = _message.Replace("{Id}", _rndId.ToString());
             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-        }
-
-        public static void CreateFolder()
-        {
-            if (!Directory.Exists(API.GamePath + "/BankLogs"))
-            {
-                Directory.CreateDirectory(API.GamePath + "/BankLogs");
-            }
         }
 
         public static void CheckLocation(ClientInfo _cInfo, string _amount, int _exec)

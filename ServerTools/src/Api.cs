@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 
 namespace ServerTools
 {
     public class API : IModApi
     {
-        public static string GamePath = GamePrefs.GetString(EnumGamePrefs.SaveGameFolder);
+        public static string GamePath = Directory.GetCurrentDirectory();
         public static string ConfigPath = string.Format("{0}/ServerTools", GamePath);
         public static int MaxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
         public static List<ClientInfo> Que = new List<ClientInfo>();
@@ -448,113 +449,120 @@ namespace ServerTools
         {
             if (_cInfo != null)
             {
-                if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
+                try
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    if (_player != null)
+                    if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
                     {
-                        string _sql = string.Format("UPDATE Players SET zkills = {0}, kills = {1}, deaths = {2} WHERE steamid = '{3}'", XUiM_Player.GetZombieKills(_player), XUiM_Player.GetPlayerKills(_player), XUiM_Player.GetDeaths(_player), _cInfo.playerId);
-                        SQL.FastQuery(_sql);
-                        if (Wallet.IsEnabled)
+                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                        if (_player != null)
                         {
-                            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
-                            _sql = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", _currentCoins, _cInfo.playerId);
+                            string _sql = string.Format("UPDATE Players SET zkills = {0}, kills = {1}, deaths = {2} WHERE steamid = '{3}'", XUiM_Player.GetZombieKills(_player), XUiM_Player.GetPlayerKills(_player), XUiM_Player.GetDeaths(_player), _cInfo.playerId);
                             SQL.FastQuery(_sql);
-                        }
-                    }
-                }
-                if (HatchElevator.LastPositionY.ContainsKey(_cInfo.entityId))
-                {
-                    HatchElevator.LastPositionY.Remove(_cInfo.entityId);
-                }
-                if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
-                {
-                    FriendTeleport.Dict.Remove(_cInfo.entityId);
-                    FriendTeleport.Dict1.Remove(_cInfo.entityId);
-                }
-                if (Zones.ZoneExit.ContainsKey(_cInfo.entityId))
-                {
-                    Zones.ZoneExit.Remove(_cInfo.entityId);
-                }
-                if (Zones.Forgive.ContainsKey(_cInfo.entityId))
-                {
-                    Zones.Forgive.Remove(_cInfo.entityId);
-                }
-                if (Zones.Victim.ContainsKey(_cInfo.entityId))
-                {
-                    Zones.Victim.Remove(_cInfo.entityId);
-                }
-                if (FlightCheck.Flag.ContainsKey(_cInfo.entityId))
-                {
-                    FlightCheck.Flag.Remove(_cInfo.entityId);
-                }
-                if (FlightCheck.fLastPositionXZ.ContainsKey(_cInfo.entityId))
-                {
-                    FlightCheck.fLastPositionXZ.Remove(_cInfo.entityId);
-                }
-                if (FlightCheck.fLastPositionY.ContainsKey(_cInfo.entityId))
-                {
-                    FlightCheck.fLastPositionY.Remove(_cInfo.entityId);
-                }
-                if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
-                {
-                    FriendTeleport.Dict.Remove(_cInfo.entityId);
-                }
-                if (FriendTeleport.Dict1.ContainsKey(_cInfo.entityId))
-                {
-                    FriendTeleport.Dict1.Remove(_cInfo.entityId);
-                }
-                if (Travel.Flag.Contains(_cInfo.entityId))
-                {
-                    Travel.Flag.Remove(_cInfo.entityId);
-                }
-                if (UndergroundCheck.Flag.ContainsKey(_cInfo.entityId))
-                {
-                    UndergroundCheck.Flag.Remove(_cInfo.entityId);
-                }
-                if (UndergroundCheck.uLastPositionXZ.ContainsKey(_cInfo.entityId))
-                {
-                    UndergroundCheck.uLastPositionXZ.Remove(_cInfo.entityId);
-                }
-                if (Wallet.IsEnabled)
-                {
-                    string _sql2 = string.Format("SELECT steamid FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                    DataTable _result2 = SQL.TQuery(_sql2);
-                    if (_result2.Rows.Count > 0)
-                    {
-                        DateTime _time;
-                        if (Players.Session.TryGetValue(_cInfo.playerId, out _time))
-                        {
-                            TimeSpan varTime = DateTime.Now - _time;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
-                            if (_timepassed > 60)
+                            if (Wallet.IsEnabled)
                             {
-                                int _hours = _timepassed / 60 * 10;
-                                Wallet.AddCoinsToWallet(_cInfo.playerId, _hours);
+                                int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                                _sql = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", _currentCoins, _cInfo.playerId);
+                                SQL.FastQuery(_sql);
                             }
-                            string _sql1 = string.Format("SELECT sessionTime FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                            DataTable _result1 = SQL.TQuery(_sql1);
-                            int _sessionTime;
-                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _sessionTime);
-                            _result1.Dispose();
-                            _sql1 = string.Format("UPDATE Players SET sessionTime = {0} WHERE steamid = '{1}'", _sessionTime + _timepassed, _cInfo.playerId);
-                            SQL.FastQuery(_sql1);
                         }
                     }
-                    _result2.Dispose();
+                    if (HatchElevator.LastPositionY.ContainsKey(_cInfo.entityId))
+                    {
+                        HatchElevator.LastPositionY.Remove(_cInfo.entityId);
+                    }
+                    if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
+                    {
+                        FriendTeleport.Dict.Remove(_cInfo.entityId);
+                        FriendTeleport.Dict1.Remove(_cInfo.entityId);
+                    }
+                    if (Zones.ZoneExit.ContainsKey(_cInfo.entityId))
+                    {
+                        Zones.ZoneExit.Remove(_cInfo.entityId);
+                    }
+                    if (Zones.Forgive.ContainsKey(_cInfo.entityId))
+                    {
+                        Zones.Forgive.Remove(_cInfo.entityId);
+                    }
+                    if (Zones.Victim.ContainsKey(_cInfo.entityId))
+                    {
+                        Zones.Victim.Remove(_cInfo.entityId);
+                    }
+                    if (FlightCheck.Flag.ContainsKey(_cInfo.entityId))
+                    {
+                        FlightCheck.Flag.Remove(_cInfo.entityId);
+                    }
+                    if (FlightCheck.fLastPositionXZ.ContainsKey(_cInfo.entityId))
+                    {
+                        FlightCheck.fLastPositionXZ.Remove(_cInfo.entityId);
+                    }
+                    if (FlightCheck.fLastPositionY.ContainsKey(_cInfo.entityId))
+                    {
+                        FlightCheck.fLastPositionY.Remove(_cInfo.entityId);
+                    }
+                    if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
+                    {
+                        FriendTeleport.Dict.Remove(_cInfo.entityId);
+                    }
+                    if (FriendTeleport.Dict1.ContainsKey(_cInfo.entityId))
+                    {
+                        FriendTeleport.Dict1.Remove(_cInfo.entityId);
+                    }
+                    if (Travel.Flag.Contains(_cInfo.entityId))
+                    {
+                        Travel.Flag.Remove(_cInfo.entityId);
+                    }
+                    if (UndergroundCheck.Flag.ContainsKey(_cInfo.entityId))
+                    {
+                        UndergroundCheck.Flag.Remove(_cInfo.entityId);
+                    }
+                    if (UndergroundCheck.uLastPositionXZ.ContainsKey(_cInfo.entityId))
+                    {
+                        UndergroundCheck.uLastPositionXZ.Remove(_cInfo.entityId);
+                    }
+                    if (Wallet.IsEnabled)
+                    {
+                        string _sql2 = string.Format("SELECT steamid FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result2 = SQL.TQuery(_sql2);
+                        if (_result2.Rows.Count > 0)
+                        {
+                            DateTime _time;
+                            if (Players.Session.TryGetValue(_cInfo.playerId, out _time))
+                            {
+                                TimeSpan varTime = DateTime.Now - _time;
+                                double fractionalMinutes = varTime.TotalMinutes;
+                                int _timepassed = (int)fractionalMinutes;
+                                if (_timepassed > 60)
+                                {
+                                    int _hours = _timepassed / 60 * 10;
+                                    Wallet.AddCoinsToWallet(_cInfo.playerId, _hours);
+                                }
+                                string _sql1 = string.Format("SELECT sessionTime FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                DataTable _result1 = SQL.TQuery(_sql1);
+                                int _sessionTime;
+                                int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _sessionTime);
+                                _result1.Dispose();
+                                _sql1 = string.Format("UPDATE Players SET sessionTime = {0} WHERE steamid = '{1}'", _sessionTime + _timepassed, _cInfo.playerId);
+                                SQL.FastQuery(_sql1);
+                            }
+                        }
+                        _result2.Dispose();
+                    }
+                    if (Players.Session.ContainsKey(_cInfo.playerId))
+                    {
+                        Players.Session.Remove(_cInfo.playerId);
+                    }
+                    if (Bank.TransferId.ContainsKey(_cInfo.playerId))
+                    {
+                        Bank.TransferId.Remove(_cInfo.playerId);
+                    }
+                    if (Zones.reminder.ContainsKey(_cInfo.entityId))
+                    {
+                        Zones.reminder.Remove(_cInfo.entityId);
+                    }
                 }
-                if (Players.Session.ContainsKey(_cInfo.playerId))
+                catch
                 {
-                    Players.Session.Remove(_cInfo.playerId);
-                }
-                if (Bank.TransferId.ContainsKey(_cInfo.playerId))
-                {
-                    Bank.TransferId.Remove(_cInfo.playerId);
-                }
-                if (Zones.reminder.ContainsKey(_cInfo.entityId))
-                {
-                    Zones.reminder.Remove(_cInfo.entityId);
+
                 }
             }
         }

@@ -13,26 +13,7 @@ namespace ServerTools
         public static int Admin_Level = 0, Delay = 60, Days_Before_Log_Delete = 5;
         public static string Command82 = "report";
         private static string _file = string.Format("Report_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string _filepath = string.Format("{0}/ServerTools/Logs/PlayerReports/{1}", API.GamePath, _file);
-
-        public static void ReportLogsDir()
-        {
-            if (!Directory.Exists(API.GamePath + "/PlayerReports"))
-            {
-                Directory.CreateDirectory(API.GamePath + "/PlayerReports");
-            }
-
-            string[] files = Directory.GetFiles(API.GamePath + "/PlayerReports");
-            int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
-            foreach (string file in files)
-            {
-                FileInfo fi = new FileInfo(file);
-                if (fi.CreationTime <= DateTime.Now.AddDays(_daysBeforeDeleted))
-                {
-                    fi.Delete();
-                }
-            }
-        }
+        private static string _filepath = string.Format("{0}/Logs/PlayerReports/{1}", API.ConfigPath, _file);
 
         public static void Check(ClientInfo _cInfo, string _message)
         {

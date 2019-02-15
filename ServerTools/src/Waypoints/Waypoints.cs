@@ -133,7 +133,6 @@ namespace ServerTools
                     DateTime _lastWaypoint;
                     DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastWaypoint);
                     _result.Dispose();
-                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                     if (_lastWaypoint.ToString() == "10/29/2000 7:30:00 AM")
                     {
                         ClaimCheck(_cInfo, _waypoint);
@@ -540,7 +539,6 @@ namespace ServerTools
                     DateTime _lastWaypoint;
                     DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastWaypoint);
                     _result.Dispose();
-                    Player p = PersistentContainer.Instance.Players[_cInfo.playerId, false];
                     if (_lastWaypoint.ToString() == "10/29/2000 7:30:00 AM")
                     {
                         FClaimCheck(_cInfo, _waypoint);

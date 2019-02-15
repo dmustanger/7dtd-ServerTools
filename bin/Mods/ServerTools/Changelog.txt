@@ -1,5 +1,11 @@
 ﻿CHANGELOG
 
+12.9
+Shifted default location of xml files and log files to your dedicated servers installation directory. A new folder called
+ServerTools will be created there with all the files in one place
+Added tool named Logs that has one option to control how many days logs last before they are deleted
+Removed options name Days_Before_Log_Delete from all tools but the Logs tool
+
 12.8
 Added tool named Private_Message. Players can send each other private messages with /pmessage and respond with /rmessage or /pm /rm
 Added tool Custom_Triggers. Creates CustomTriggers.xml. This has every single tool linked in so that admins can change the default

@@ -19,25 +19,6 @@ namespace ServerTools
         public static List<string> dict = new List<string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
-
-        public static void DetectionLogsDir()
-        {
-            if (!Directory.Exists(API.GamePath + "/ServerTools/Logs/DetectionLogs"))
-            {
-                Directory.CreateDirectory(API.GamePath + "/ServerTools/Logs/DetectionLogs");
-            }
-            string[] files = Directory.GetFiles(API.GamePath + "/ServerTools/Logs/DetectionLogs");
-            int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
-            foreach (string _file in files)
-            {
-                FileInfo fi = new FileInfo(_file);
-                if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                {
-                    fi.Delete();
-                }
-            }
-        }
-
         public static void AutoUndergroundCheck()
         {
             if (ConnectionManager.Instance.ClientCount() > 0)
@@ -84,7 +65,7 @@ namespace ServerTools
                                                 Penalty(_cInfo);
                                                 Log.Warning(string.Format("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z));
                                                 string _file1 = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                                                string _filepath1 = string.Format("{0}/ServerTools/Logs/DetectionLogs/{1}", API.GamePath, _file1);
+                                                string _filepath1 = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file1);
                                                 using (StreamWriter sw = new StreamWriter(_filepath1, true))
                                                 {
                                                     sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying underground @ {2} {3} {4}. ", _cInfo.playerName, _cInfo.steamId, x, y, z));

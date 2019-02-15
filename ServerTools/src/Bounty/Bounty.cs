@@ -13,15 +13,7 @@ namespace ServerTools
         public static string Command83 = "bounty";
         public static Dictionary<int, int> KillStreak = new Dictionary<int, int>();
         private static string file = string.Format("Bounty_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string filepath = string.Format("{0}/BountyLogs/{1}", API.GamePath, file);
-
-        public static void CreateFolder()
-        {
-            if (!Directory.Exists(API.GamePath + "/BountyLogs"))
-            {
-                Directory.CreateDirectory(API.GamePath + "/BountyLogs");
-            }
-        }
+        private static string filepath = string.Format("{0}/Logs/BountyLogs/{1}", API.ConfigPath, file);
 
         public static void BountyList(ClientInfo _cInfo, string _playerName)
         {
@@ -164,7 +156,6 @@ namespace ServerTools
                         DataTable _result2 = SQL.TQuery(_sql1);
                         string _clanName2 = _result2.Rows[0].ItemArray.GetValue(0).ToString();
                         _result2.Dispose();
-                        Player p2 = PersistentContainer.Instance.Players[_cInfo2.playerId, false];
                         if (_clanName != "Unknown" && _clanName2 != "Unknown")
                         {
                             if (_clanName == _clanName2)

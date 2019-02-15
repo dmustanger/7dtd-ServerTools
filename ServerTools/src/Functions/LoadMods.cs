@@ -9,67 +9,10 @@ namespace ServerTools
         public static void Load()
         {
             Timers.TimerStart();
-            if (TeleportCheck.IsEnabled)
-            {
-                TeleportCheck.DetectionLogsDir();
-            }
             if (CountryBan.IsEnabled)
             {
                 CountryBan.Load();
             }
-            if (FlightCheck.IsEnabled)
-            {
-                FlightCheck.DetectionLogsDir();
-            }
-            if (HatchElevator.IsEnabled)
-            {
-                HatchElevator.DetectionLogsDir();
-            }
-            if (PlayerLogs.IsEnabled)
-            {
-                PlayerLogs.PlayerLogsDir();
-            }
-            if (InventoryCheck.IsEnabled)
-            {
-                InventoryCheck.PlayerLogsDir();
-            }
-            if (Report.IsEnabled)
-            {
-                Report.ReportLogsDir();
-            }
-            if (PlayerStatCheck.IsEnabled)
-            {
-                PlayerStatCheck.DetectionLogsDir();
-            }
-            if (UndergroundCheck.IsEnabled)
-            {
-                UndergroundCheck.DetectionLogsDir();
-            }
-            if (Zones.IsEnabled)
-            {
-                Zones.DetectionLogsDir();
-            }
-            if (Bank.IsEnabled)
-            {
-                Bank.CreateFolder();
-            }
-            if (AuctionBox.IsEnabled)
-            {
-                AuctionBox.CreateFolder();
-            }
-            if (Bounties.IsEnabled)
-            {
-                Bounties.CreateFolder();
-            }
-            if (CredentialCheck.IsEnabled)
-            {
-                CredentialCheck.CreateFolder();
-            }
-            if (DupeLog.IsEnabled)
-            {
-                DupeLog.CreateFolder();
-            }
-            PollConsole.CreateFolder();
             string _sql = "SELECT pollOpen FROM Polls WHERE pollOpen = 'true'";
             DataTable _result = SQL.TQuery(_sql);
             if (_result.Rows.Count > 0)

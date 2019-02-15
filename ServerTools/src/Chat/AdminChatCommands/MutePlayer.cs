@@ -119,8 +119,12 @@ namespace ServerTools
                     }
                     else
                     {
-                        Player p = PersistentContainer.Instance.Players[_PlayertoUnMute.playerId, false];
-                        if (p == null)
+                        string _sql = string.Format("SELECT muteTime FROM Players WHERE steamid = '{0}'", _PlayertoUnMute.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        int _muteTime;
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _muteTime);
+                        _result.Dispose();
+                        if (_muteTime == 0)
                         {
                             string _phrase204;
                             if (!Phrases.Dict.TryGetValue(204, out _phrase204))
@@ -145,7 +149,7 @@ namespace ServerTools
                             else
                             {
                                 Mutes.Remove(_PlayertoUnMute.playerId);
-                                string _sql = string.Format("UPDATE Players SET muteTime = 0 WHERE steamid = '{0}'", _PlayertoUnMute.playerId);
+                                _sql = string.Format("UPDATE Players SET muteTime = 0 WHERE steamid = '{0}'", _PlayertoUnMute.playerId);
                                 SQL.FastQuery(_sql);
                                 string _phrase205;
                                 if (!Phrases.Dict.TryGetValue(205, out _phrase205))

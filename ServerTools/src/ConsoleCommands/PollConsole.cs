@@ -11,7 +11,7 @@ namespace ServerTools
         public static List<string> PolledYes = new List<string>();
         public static List<string> PolledNo = new List<string>();
         private static string _file = string.Format("PollLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string _filepath = string.Format("{0}/ServerTools/Logs/PollLogs/{1}", API.GamePath, _file);
+        private static string _filepath = string.Format("{0}/Logs/PollLogs/{1}", API.ConfigPath, _file);
 
         public override string GetDescription()
         {
@@ -37,14 +37,6 @@ namespace ServerTools
         public override string[] GetCommands()
         {
             return new string[] { "st-Poll", "poll" };
-        }
-
-        public static void CreateFolder()
-        {
-            if (!Directory.Exists(API.GamePath + "/ServerTools/Logs/PollLogs"))
-            {
-                Directory.CreateDirectory(API.GamePath + "/ServerTools/Logs/PollLogs");
-            }
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

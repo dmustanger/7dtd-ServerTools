@@ -181,7 +181,6 @@ namespace ServerTools
             bool _isclanowner;
             bool.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _isclanowner);
             _result.Dispose();
-            Player p = PersistentContainer.Instance.Players[_cInfo.playerId, true];
             if (_isclanowner)
             {
                 if (!clans.ContainsKey(_clanName))

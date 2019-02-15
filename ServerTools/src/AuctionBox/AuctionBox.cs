@@ -15,15 +15,7 @@ namespace ServerTools
         private static DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
         private static LinkedList<Chunk> chunkArray = new LinkedList<Chunk>();
         private static string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string filepath = string.Format("{0}/AuctionLog/{1}", API.GamePath, file);
-
-        public static void CreateFolder()
-        {
-            if (!Directory.Exists(API.GamePath + "/AuctionLog"))
-            {
-                Directory.CreateDirectory(API.GamePath + "/AuctionLog");
-            }
-        }
+        private static string filepath = string.Format("{0}/Logs/AuctionLog/{1}", API.ConfigPath, file);
 
         public static void Delay(ClientInfo _cInfo, string _price)
         {

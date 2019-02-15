@@ -15,7 +15,6 @@ namespace ServerTools
         public static int Max_Length = 250, Messages_Per_Min = 5;
         public static bool ChatCommandPrivateEnabled = false, ChatCommandPublicEnabled = false;
         public static string Command_Private = "/", Command_Public = "!";
-        private static string filepath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
         private static SortedDictionary<string, DateTime> Dict = new SortedDictionary<string, DateTime>();
         private static SortedDictionary<string, string> Dict1 = new SortedDictionary<string, string>();
 

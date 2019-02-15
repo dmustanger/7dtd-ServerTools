@@ -10,26 +10,7 @@ namespace ServerTools
         public static bool IsEnabled = false, Kick_Enabled = false, Ban_Enabled = false;
         public static int Admin_Level = 0, Days_Before_Log_Delete = 5;
         private static string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string _filepath = string.Format("{0}/ServerTools/Logs/DetectionLogs/{1}", API.GamePath, _file);
-
-        public static void DetectionLogsDir()
-        {
-            if (!Directory.Exists(API.GamePath + "/ServerTools/Logs/DetectionLogs"))
-            {
-                Directory.CreateDirectory(API.GamePath + "/ServerTools/Logs/DetectionLogs");
-            }
-
-            string[] files = Directory.GetFiles(API.GamePath + "/ServerTools/Logs/DetectionLogs");
-            int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
-            foreach (string file in files)
-            {
-                FileInfo fi = new FileInfo(file);
-                if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
-                {
-                    fi.Delete();
-                }
-            }
-        }
+        private static string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
 
         public static void PlayerStat()
         {
