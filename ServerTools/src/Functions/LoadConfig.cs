@@ -23,6 +23,10 @@ namespace ServerTools
             Log.Out("---------------------------------------------------------------");
             Log.Out("[SERVERTOOLS] Verifying configuration file & Saving new entries");
             Log.Out("---------------------------------------------------------------");
+            if (!Utils.FileExists(configFilePath))
+            {
+                WriteXml();
+            }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
