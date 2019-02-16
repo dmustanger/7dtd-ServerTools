@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        public const double version = 12.9;
+        public const double version = 12.91;
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
 
@@ -349,6 +349,16 @@ namespace ServerTools
                                 if (_line.HasAttribute("Destination"))
                                 {
                                     AutoBackup.Destination = _line.GetAttribute("Destination");
+                                }
+                                if (!_line.HasAttribute("Days_Before_Save_Delete"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup entry because of missing 'Days_Before_Save_Delete' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Days_Before_Save_Delete"), out AutoBackup.Days_Before_Save_Delete))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Backup entry because of invalid (non-numeric) value for 'Days_Before_Save_Delete' attribute: {0}", subChild.OuterXml));
+                                    continue;
                                 }
                                 break;
                             case "Auto_Save_World":
@@ -3053,7 +3063,6 @@ namespace ServerTools
 
         public static void WriteXml()
         {
-            Log.Out("[SERVERTOOLS] Test 5");
             fileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(configFilePath))
             {
@@ -3069,7 +3078,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Animal_Tracking\" Enable=\"{0}\" Always_Show_Response=\"{1}\" Delay_Between_Uses=\"{2}\" Minimum_Spawn_Radius=\"{3}\" Maximum_Spawn_Radius=\"{4}\" Entity_Id=\"{5}\" Command_Cost=\"{6}\" />", Animals.IsEnabled, Animals.Always_Show_Response, Animals.Delay_Between_Uses, Animals.Minimum_Spawn_Radius, Animals.Maximum_Spawn_Radius, Animals.Animal_List, Animals.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Announce_Invalid_Item_Stack\" Enable=\"{0}\" />", InventoryCheck.Anounce_Invalid_Stack));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auction\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" No_Admins=\"{2}\" Admin_Level=\"{3}\" />", AuctionBox.IsEnabled, AuctionBox.Delay_Between_Uses, AuctionBox.No_Admins, AuctionBox.Admin_Level));
-                sw.WriteLine(string.Format("        <Tool Name=\"Auto_Backup\" Enable=\"{0}\" Time_Between_Saves=\"{1}\" Destination=\"{2}\" />", AutoBackup.IsEnabled, AutoBackup.Time_Between_Saves, AutoBackup.Destination));
+                sw.WriteLine(string.Format("        <Tool Name=\"Auto_Backup\" Enable=\"{0}\" Time_Between_Saves=\"{1}\" Destination=\"{2}\" Days_Before_Save_Delete=\"{3}\" />", AutoBackup.IsEnabled, AutoBackup.Time_Between_Saves, AutoBackup.Destination, AutoBackup.Days_Before_Save_Delete));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Save_World\" Enable=\"{0}\" Delay_Between_World_Saves=\"{1}\" />", AutoSaveWorld.IsEnabled, Timers.Delay_Between_World_Saves));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Shutdown\" Enable=\"{0}\" Countdown_Timer=\"{1}\" Time_Before_Shutdown=\"{2}\" Alert_On_Login=\"{3}\" Days_Until_Horde=\"{4}\" Kick_During_Countdown=\"{5}\" />", AutoShutdown.IsEnabled, AutoShutdown.Countdown_Timer, Timers.Shutdown_Delay, AutoShutdown.Alert_On_Login, AutoShutdown.Days_Until_Horde, AutoShutdown.Kick_Login));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bad_Word_Filter\" Enable=\"{0}\" Invalid_Name=\"{1}\" />", Badwords.IsEnabled, Badwords.Invalid_Name));

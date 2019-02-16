@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Bad Word Filter.";
+            return "[ServerTools]- Enable or Disable Bank.";
         }
         public override string GetHelp()
         {

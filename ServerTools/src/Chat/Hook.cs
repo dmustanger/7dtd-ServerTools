@@ -66,7 +66,7 @@ namespace ServerTools
                     {
                         if (_timepassed < 60)
                         {
-                            _sql = string.Format("UPDATE Players SET messageCount = '{0}' WHERE steamid = '{1}'", _count + 1, _cInfo.playerId);
+                            _sql = string.Format("UPDATE Players SET messageCount = {0} WHERE steamid = '{1}'", _count + 1, _cInfo.playerId);
                             SQL.FastQuery(_sql);
                         }
                         else
@@ -322,21 +322,15 @@ namespace ServerTools
                         {
                             _message = _message.Replace(Command_Private, "");
                         }
-                        if (_message.ToLower().StartsWith(CustomCommands.Command122))
+                        if (Whisper.IsEnabled && _message.ToLower().StartsWith(Whisper.Command122))
                         {
-                            if (CustomCommands.IsEnabled)
-                            {
-                                Whisper.Send(_cInfo, _message);
-                                return false;
-                            }
+                            Whisper.Send(_cInfo, _message);
+                            return false;
                         }
-                        if (_message.ToLower().StartsWith(CustomCommands.Command123))
+                        if (Whisper.IsEnabled && _message.ToLower().StartsWith(Whisper.Command123))
                         {
-                            if (CustomCommands.IsEnabled)
-                            {
-                                Whisper.Reply(_cInfo, _message);
-                                return false;
-                            }
+                            Whisper.Reply(_cInfo, _message);
+                            return false;
                         }
                         if (TeleportHome.IsEnabled && _message.ToLower() == TeleportHome.Command1)
                         {
@@ -686,50 +680,94 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (CustomCommands.IsEnabled)
+                        if (_message.ToLower() == CustomCommands.Command15)
                         {
-                            if (_message.ToLower() == CustomCommands.Command15)
+                            string _commands1 = CustomCommands.GetChatCommands1(_cInfo);
+                            string _commands2 = CustomCommands.GetChatCommands2(_cInfo);
+                            string _commands3 = CustomCommands.GetChatCommands3(_cInfo);
+                            string _commands4 = CustomCommands.GetChatCommands4(_cInfo);
+                            string _commands5 = CustomCommands.GetChatCommands5(_cInfo);
+                            string _commands6 = CustomCommands.GetChatCommands6(_cInfo);
+                            string _commandsCustom = CustomCommands.GetChatCommandsCustom(_cInfo);
+                            string _commandsAdmin = CustomCommands.GetChatCommandsAdmin(_cInfo);
+                            if (_announce)
                             {
-                                string _commands1 = CustomCommands.GetChatCommands1(_cInfo);
-                                string _commands2 = CustomCommands.GetChatCommands2(_cInfo);
-                                string _commands3 = CustomCommands.GetChatCommands3(_cInfo);
-                                string _commands4 = CustomCommands.GetChatCommands4(_cInfo);
-                                string _commands5 = CustomCommands.GetChatCommands5(_cInfo);
-                                string _commandsCustom = CustomCommands.GetChatCommandsCustom(_cInfo);
-                                string _commandsAdmin = CustomCommands.GetChatCommandsAdmin(_cInfo);
-                                if (_announce)
+                                ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands1, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                if (_commands2.EndsWith("More Commands:"))
                                 {
-                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands1, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                     ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands2, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                }
+                                if (_commands3.EndsWith("More Commands:"))
+                                {
                                     ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands3, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                }
+                                if (_commands4.EndsWith("More Commands:"))
+                                {
                                     ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands4, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                    if (CustomCommands.IsEnabled)
+                                }
+                                if (_commands5.EndsWith("More Commands:"))
+                                {
+                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands5, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                }
+                                if (_commands6.EndsWith("More Commands:"))
+                                {
+                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands6, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                }
+                                if (CustomCommands.IsEnabled)
+                                {
+                                    if (_commandsCustom.EndsWith("Custom commands are:"))
                                     {
                                         ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commandsCustom, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                     }
-                                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                                    if (Admin.PermissionLevel <= Admin_Level)
+                                }
+                                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                                if (Admin.PermissionLevel <= Admin_Level)
+                                {
+                                    if (_commandsAdmin.EndsWith("Admin commands are:"))
                                     {
-                                        ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commandsAdmin, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        _commandsAdmin = string.Format("{0}Sorry, there are no admin chat commands.", LoadConfig.Chat_Response_Color);
+                                    }
+                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commandsAdmin, _senderId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                }
+                            }
+                            else
+                            {
+                                ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands1, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                if (!_commands2.EndsWith("More Commands:"))
+                                {
+                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands2, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                                if (!_commands3.EndsWith("More Commands:"))
+                                {
+                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands3, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                                if (!_commands4.EndsWith("More Commands:"))
+                                {
+                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands4, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                                if (!_commands5.EndsWith("More Commands:"))
+                                {
+                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands5, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                                if (!_commands6.EndsWith("More Commands:"))
+                                {
+                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands6, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                                if (CustomCommands.IsEnabled)
+                                {
+                                    if (!_commandsCustom.EndsWith("Custom commands are:"))
+                                    {
+                                        ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commandsCustom, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
-                                else
+                                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                                if (Admin.PermissionLevel <= Admin_Level)
                                 {
-                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands1, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands2, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands3, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands4, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    if (CustomCommands.IsEnabled)
+                                    if (_commandsAdmin.EndsWith("Admin commands are:"))
                                     {
-                                        string _chatMessage = LoadConfig.Chat_Response_Color + _commandsCustom;
-                                        ChatMessage(_cInfo, _chatMessage, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        _commandsAdmin = string.Format("{0}Sorry, there are no admin chat commands.", LoadConfig.Chat_Response_Color);
                                     }
-                                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                                    if (Admin.PermissionLevel <= Admin_Level)
-                                    {
-                                        string _chatMessage = LoadConfig.Chat_Response_Color + _commandsAdmin;
-                                        ChatMessage(_cInfo, _chatMessage, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
+                                    ChatMessage(_cInfo, _commandsAdmin, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             return false;
@@ -1550,7 +1588,7 @@ namespace ServerTools
                                 _phrase813 = _phrase813.Replace("{NoCount}", _pollNo.ToString());
                                 if (_announce)
                                 {
-                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color +_phrase926 + "[-]", _senderId, _cInfo.playerName, EChatType.Global, null);
+                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase926 + "[-]", _senderId, _cInfo.playerName, EChatType.Global, null);
                                     ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase813 + "[-]", _senderId, _cInfo.playerName, EChatType.Global, null);
                                 }
                                 else
@@ -1742,18 +1780,18 @@ namespace ServerTools
                             return false;
                         }
                     }
-                }
-                if (AdminChat.IsEnabled && (_message.ToLower().StartsWith("@" + AdminChat.Command118 + " ") || _message.ToLower().StartsWith("@" + AdminChat.Command119 + " ")))
-                {
-                    if (_message.StartsWith("@" + AdminChat.Command118 + " "))
+                    if (AdminChat.IsEnabled && (_message.ToLower().StartsWith("@" + AdminChat.Command118 + " ") || _message.ToLower().StartsWith("@" + AdminChat.Command119 + " ")))
                     {
-                        AdminChat.SendAdmins(_cInfo, _message);
-                        return false;
-                    }
-                    if (_message.StartsWith("@" + AdminChat.Command119 + " "))
-                    {
-                        AdminChat.SendAll(_cInfo, _message);
-                        return false;
+                        if (_message.StartsWith("@" + AdminChat.Command118 + " "))
+                        {
+                            AdminChat.SendAdmins(_cInfo, _message);
+                            return false;
+                        }
+                        if (_message.StartsWith("@" + AdminChat.Command119 + " "))
+                        {
+                            AdminChat.SendAll(_cInfo, _message);
+                            return false;
+                        }
                     }
                 }
             }

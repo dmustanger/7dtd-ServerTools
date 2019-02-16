@@ -9,7 +9,7 @@ namespace ServerTools
     public class CustomCommands
     {
         public static bool IsEnabled = false, IsRunning = false;
-        public static string Command15 = "commands", Command122 = "pm", Command123 = "re";
+        public static string Command15 = "commands";
         public static Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
         public static Dictionary<string, int[]> Dict1 = new Dictionary<string, int[]>();
         public static List<int> TeleportCheckProtection = new List<int>();
@@ -196,6 +196,7 @@ namespace ServerTools
 
         public static string GetChatCommands1(ClientInfo _cInfo)
         {
+            Log.Out("[SERVERTOOLS] Test Custom Commands Started");
             string _commands_1 = string.Format("{0}Commands are:", LoadConfig.Chat_Response_Color);
             if (FriendTeleport.IsEnabled)
             {
@@ -228,9 +229,9 @@ namespace ServerTools
             {
                 _commands_1 = string.Format("{0} {1}{2}", _commands_1, ChatHook.Command_Private, Bloodmoon.Command18);
             }
-            if (IsEnabled)
+            if (Whisper.IsEnabled)
             {
-                _commands_1 = string.Format("{0} {1}{2} {3}{4}", _commands_1, ChatHook.Command_Private, Command122, ChatHook.Command_Private, Command122);
+                _commands_1 = string.Format("{0} {1}{2} {3}{4}", _commands_1, ChatHook.Command_Private, Whisper.Command122, ChatHook.Command_Private, Whisper.Command122);
             }
             if (ClanManager.IsEnabled)
             {
@@ -434,14 +435,6 @@ namespace ServerTools
             {
                 _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, PlayerList.Command89);
             }
-            if (AdminChat.IsEnabled)
-            {
-                _commands_6 = string.Format("{0} " + "@" + AdminChat.Command118, _commands_6);
-            }
-            if (AdminChat.IsEnabled)
-            {
-                _commands_6 = string.Format("{0} " + "@" + AdminChat.Command119, _commands_6);
-            }
             return _commands_6;
         }
 
@@ -464,11 +457,6 @@ namespace ServerTools
                     }
                 }
             }
-            if (_commandsCustom.EndsWith("Custom commands are:"))
-            {
-                _commandsCustom = string.Format("{0}Sorry, there are no custom chat commands.", LoadConfig.Chat_Response_Color);
-            }
-            _commandsCustom = string.Format("{0}[-]", _commandsCustom);
             return _commandsCustom;
         }
 
@@ -480,8 +468,11 @@ namespace ServerTools
                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                 if (Admin.PermissionLevel <= ChatHook.Mod_Level)
                 {
-                    _commandsAdmin = string.Format("{0} @" + AdminChat.Command118, _commandsAdmin);
-                    _commandsAdmin = string.Format("{0} @" + AdminChat.Command119, _commandsAdmin);
+                    if (AdminChat.IsEnabled)
+                    {
+                        _commandsAdmin = string.Format("{0} @" + AdminChat.Command118, _commandsAdmin);
+                        _commandsAdmin = string.Format("{0} @" + AdminChat.Command119, _commandsAdmin);
+                    }
                     if (Jail.IsEnabled)
                     {
                         _commandsAdmin = string.Format("{0} {1}{2}", _commandsAdmin, ChatHook.Command_Private, Jail.Command27);
@@ -490,10 +481,6 @@ namespace ServerTools
                     {
                         _commandsAdmin = string.Format("{0} {1}{2}", _commandsAdmin, ChatHook.Command_Private, MutePlayer.Command13);
                         _commandsAdmin = string.Format("{0} {1}{2}", _commandsAdmin, ChatHook.Command_Private, MutePlayer.Command14);
-                    }
-                    if (_commandsAdmin.EndsWith("Admin commands are:"))
-                    {
-                        _commandsAdmin = string.Format("{0}Sorry, there are no admin chat commands.", LoadConfig.Chat_Response_Color);
                     }
                 }
             }

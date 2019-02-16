@@ -1,5 +1,14 @@
 ﻿CHANGELOG
 
+12.91
+Added Days_Before_Save_Delete option back to AutoBackup
+Fixed dupelog not working correctly
+Fixed /commands response missing the 5th set of commands
+Fixed one console help response
+Fixed commands not responding if custom commands were enabled
+Changed /commands response to not show sections where no commands are enabled
+Removed log out "test 5" when the config file is written
+
 12.9
 Shifted default location of xml files and log files to your dedicated servers installation directory. A new folder called
 ServerTools will be created there with all the files in one place
