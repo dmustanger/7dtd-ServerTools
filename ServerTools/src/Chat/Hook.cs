@@ -841,7 +841,7 @@ namespace ServerTools
                             {
                                 if (_message.ToLower() == ClanManager.Command33)
                                 {
-                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: /" + ClanManager.Command33 + " clanName[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: " + ChatHook.Command_Private + ClanManager.Command33 + " clanName[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 else
                                 {
@@ -857,7 +857,7 @@ namespace ServerTools
                             {
                                 if (_message.ToLower() == ClanManager.Command35)
                                 {
-                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: /" + ClanManager.Command35 + " playerName[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: " + ChatHook.Command_Private + ClanManager.Command35 + " playerName[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 else
                                 {
@@ -877,7 +877,7 @@ namespace ServerTools
                             {
                                 if (_message.ToLower() == ClanManager.Command38)
                                 {
-                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: /" + ClanManager.Command38 + " playerName[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: " + ChatHook.Command_Private + ClanManager.Command38 + " playerName[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 else
                                 {
@@ -889,7 +889,7 @@ namespace ServerTools
                             {
                                 if (_message.ToLower() == ClanManager.Command39)
                                 {
-                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: /" + ClanManager.Command39 + " playerName[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: " + ChatHook.Command_Private + ClanManager.Command39 + " playerName[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 else
                                 {
@@ -901,7 +901,7 @@ namespace ServerTools
                             {
                                 if (_message.ToLower() == ClanManager.Command40)
                                 {
-                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: /" + ClanManager.Command40 + " playerName[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: " + ChatHook.Command_Private + ClanManager.Command40 + " playerName[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 else
                                 {
@@ -922,7 +922,7 @@ namespace ServerTools
                             {
                                 if (_message.ToLower() == ClanManager.Command43)
                                 {
-                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: /" + ClanManager.Command43 + " message[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: " + ChatHook.Command_Private + ClanManager.Command43 + " message[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 else
                                 {
@@ -934,7 +934,7 @@ namespace ServerTools
                             {
                                 if (_message.ToLower() == ClanManager.Command44)
                                 {
-                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: /" + ClanManager.Command44 + " newName[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: " + ChatHook.Command_Private + ClanManager.Command44 + " newName[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 else
                                 {
@@ -1040,6 +1040,7 @@ namespace ServerTools
                             }
                             else
                             {
+                                _message = _message.ToLower().Replace(Shop.Command57 + " ", "");
                                 Shop.PosCheck(_cInfo, _mainName, _message, 2);
                             }
                             return false;

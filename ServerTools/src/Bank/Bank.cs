@@ -91,7 +91,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " you can not use this command here.Stand in your own or a friend's claimed space.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you can not use this command here.Stand in your own or a friend's claimed space.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -208,25 +208,25 @@ namespace ServerTools
                                                                     sw.Flush();
                                                                     sw.Close();
                                                                 }
-                                                                string _message = "deposited {Value} in to your bank minus the transfer fee of {Percent} percent.";
+                                                                string _message = " deposited {Value} in to your bank minus the transfer fee of {Percent} percent.";
                                                                 _message = _message.Replace("{Value}", _coinAmount.ToString());
                                                                 _message = _message.Replace("{Percent}", Deposit_Fee.ToString());
-                                                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                                                 return;
                                                             }
                                                             else
                                                             {
-                                                                string _message = "your bank can not hold this much. The bank can hold {Limit} total. You currently have {Value}.";
+                                                                string _message = " your bank can not hold this much. The bank can hold {Limit} total. You currently have {Value}.";
                                                                 _message = _message.Replace("{Limit}", Limit.ToString());
                                                                 _message = _message.Replace("{Value}", _bank.ToString());
-                                                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                                             }
                                                         }
                                                         else
                                                         {
-                                                            string _message = "there is not enough {Name} in the secure loot to deposit this value.";
+                                                            string _message = " there is not enough {Name} in the secure loot to deposit this value.";
                                                             _message = _message.Replace("{Name}", Ingame_Coin);
-                                                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                                         }
                                                     }
                                                 }

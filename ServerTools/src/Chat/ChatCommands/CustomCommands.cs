@@ -231,7 +231,7 @@ namespace ServerTools
             }
             if (Whisper.IsEnabled)
             {
-                _commands_1 = string.Format("{0} {1}{2} {3}{4}", _commands_1, ChatHook.Command_Private, Whisper.Command122, ChatHook.Command_Private, Whisper.Command122);
+                _commands_1 = string.Format("{0} {1}{2} {3}{4}", _commands_1, ChatHook.Command_Private, Whisper.Command120, ChatHook.Command_Private, Whisper.Command122);
             }
             if (ClanManager.IsEnabled)
             {

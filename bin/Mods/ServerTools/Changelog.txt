@@ -1,5 +1,11 @@
 ﻿CHANGELOG
 
+12.92
+Fixed /commands response for whisper commands
+Fixed /shop 'category' failing to show the items from that category
+Fixed Autobackup failing if using the default location
+Fixed some chat responses
+
 12.91
 Added Days_Before_Save_Delete option back to AutoBackup
 Fixed dupelog not working correctly

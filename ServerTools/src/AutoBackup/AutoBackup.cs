@@ -23,11 +23,10 @@ namespace ServerTools
                         ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Starting world backup..." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         string saveDirectory = GameUtils.GetSaveGameDir();
                         string[] _files1 = Directory.GetFiles(saveDirectory, "*", SearchOption.AllDirectories);
-                        string _parentDirectory = "";
+                        string _parentDirectory = Directory.GetParent(saveDirectory).FullName;
                         string[] _files2 = { };
                         if (Destination == "")
                         {
-                            _parentDirectory = Directory.GetParent(saveDirectory).FullName;
                             _files2 = Directory.GetFiles(_parentDirectory, "*.zip");
                         }
                         else
@@ -52,12 +51,24 @@ namespace ServerTools
                                 }
                             }
                         }
-                        foreach (var c in _files1)
+                        if (Destination == "")
                         {
-                            zip.AddFile(c, Path.GetDirectoryName(c).Replace(Destination, string.Empty));
+                            foreach (var c in _files1)
+                            {
+                                zip.AddFile(c, Path.GetDirectoryName(c).Replace(_parentDirectory, string.Empty));
+                            }
+                            zip.Save(Path.ChangeExtension(_parentDirectory + string.Format("_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm")), ".zip"));
+                            Log.Out(string.Format("[SERVERTOOLS] World backup completed successfully. File is located and named {0}", _parentDirectory + "_" + DateTime.Now + ".zip"));
                         }
-                        zip.Save(Path.ChangeExtension(Destination + string.Format("_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm")), ".zip"));
-                        Log.Out(string.Format("[SERVERTOOLS] World backup completed successfully. File is located and named {0}", Destination + "_" + DateTime.Now + ".zip"));
+                        else
+                        {
+                            foreach (var c in _files1)
+                            {
+                                zip.AddFile(c, Path.GetDirectoryName(c).Replace(Destination, string.Empty));
+                            }
+                            zip.Save(Path.ChangeExtension(Destination + string.Format("_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm")), ".zip"));
+                            Log.Out(string.Format("[SERVERTOOLS] World backup completed successfully. File is located and named {0}", Destination + "_" + DateTime.Now + ".zip"));
+                        }
                         ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "World backup completed successfully" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     }
                 }
