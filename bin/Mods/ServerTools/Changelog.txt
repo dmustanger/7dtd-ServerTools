@@ -1,5 +1,18 @@
 ﻿CHANGELOG
 
+12.93
+Added option to Player_Stat_Check called Max_Speed. This is the max speed a player can be caught traveling. Adjust it for mods
+Added all entries to the invalid items system that are marked as dev or none for CreativeMode in the items or blocks.xml. These
+are not on the InvalidItems.xml but apply automatically
+Fixed personal messages used in custom commands and removed the default market example due to the Market tool existing
+Fixed some chat responses
+Fixed potential bug when using /animaltracking
+Fixed /clan message responding with the server name instead of the player name that sent it
+Fixed phrase 621
+Changed CustomCommands.xml. Replaced say with global. Command responses you want to be seen by all should start with global
+Changed CustomCommands.xml. Replaced pm with whisper. Command responses you want to be seen by the user only should start with whisper 
+Changed quality check for Shop.xml. It will check for the max quality and limit to it. Helps with mods
+
 12.92
 Fixed /commands response for whisper commands
 Fixed /shop 'category' failing to show the items from that category

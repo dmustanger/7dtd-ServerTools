@@ -157,16 +157,16 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine("        <Command Number=\"1\" Trigger=\"help\" Response=\"say Type " + ChatHook.Command_Private + Command15 + " for a list of chat commands.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"2\" Trigger=\"info\" Response=\"say Server Info: \" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"3\" Trigger=\"rules\" Response=\"pm Visit YourSiteHere to see the rules.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"pm Visit YourSiteHere.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"pm The Teamspeak3 info is YourInfoHere.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"6\" Trigger=\"market\" Response=\"tele {EntityId} 0 -1 0\" Response2=\"pm {PlayerName} you have been sent to the market.\" DelayBetweenUses=\"60\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"7\" Trigger=\"spawnZ\" Response=\"ser {EntityId} 20 @ 4 9 11\" Response2=\"pm {PlayerName}, spawned zombies around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"8\" Trigger=\"discord\" Response=\"pm The discord channel is .\" Response2=\"\" DelayBetweenUses=\"20\" Hidden=\"true\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"9\" Trigger=\"test1\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"30\" Hidden=\"true\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"10\" Trigger=\"test2\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"40\" Hidden=\"true\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"1\" Trigger=\"help\" Response=\"global Type " + ChatHook.Command_Private + Command15 + " for a list of chat commands.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"2\" Trigger=\"info\" Response=\"global Server Info: \" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"3\" Trigger=\"rules\" Response=\"whisper Visit YourSiteHere to see the rules.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"whisper Visit YourSiteHere.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"whisper The Teamspeak3 info is YourInfoHere.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"6\" Trigger=\"spawnZ\" Response=\"ser {EntityId} 40 @ 4 11 14\" Response2=\"pm Zombies have spawn around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"7\" Trigger=\"discord\" Response=\"whisper The discord channel is .\" Response2=\"\" DelayBetweenUses=\"20\" Hidden=\"true\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"8\" Trigger=\"test1\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"30\" Hidden=\"true\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"9\" Trigger=\"test2\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"40\" Hidden=\"true\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"10\" Trigger=\"test3\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"40\" Hidden=\"true\" Cost=\"0\" />");
                 }
                 sw.WriteLine("    </Commands>");
                 sw.WriteLine("</CustomCommands>");
@@ -1032,10 +1032,15 @@ namespace ServerTools
                     _response = _response.Replace("{EntityId}", _cInfo.entityId.ToString());
                     _response = _response.Replace("{SteamId}", _cInfo.playerId);
                     _response = _response.Replace("{PlayerName}", _playerName);
-                    if (_response.StartsWith("say "))
+                    if (_response.StartsWith("global "))
                     {
-                        _response = _response.Replace("say ", "");
+                        _response = _response.Replace("global ", "");
                         ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    }
+                    else if (_response.StartsWith("whisper ") || _response.StartsWith("whisper "))
+                    {
+                        _response = _response.Replace("whisper ", "");
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
                     {
@@ -1071,10 +1076,15 @@ namespace ServerTools
                     _response2 = _response2.Replace("{EntityId}", _cInfo.entityId.ToString());
                     _response2 = _response2.Replace("{SteamId}", _cInfo.playerId);
                     _response2 = _response2.Replace("{PlayerName}", _playerName);
-                    if (_response2.StartsWith("say "))
+                    if (_response2.StartsWith("global "))
                     {
-                        _response2 = _response2.Replace("say ", "");
+                        _response2 = _response2.Replace("global ", "");
                         ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response2 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    }
+                    else if (_response2.StartsWith("whisper ") || _response2.StartsWith("whisper "))
+                    {
+                        _response2 = _response2.Replace("whisper ", "");
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response2 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else if (_response2.StartsWith("tele ") || _response2.StartsWith("tp ") || _response2.StartsWith("teleportplayer "))
                     {
@@ -1083,7 +1093,14 @@ namespace ServerTools
                     }
                     else
                     {
-                        SdtdConsole.Instance.ExecuteSync(_response2, _cInfo);
+                        try
+                        {
+                            SdtdConsole.Instance.ExecuteSync(_response2, _cInfo);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.Run: {0}.", e));
+                        }
                     }
                 }
             }

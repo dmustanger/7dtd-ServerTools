@@ -1031,7 +1031,7 @@ namespace ServerTools
                 string _phrase621;
                 if (!Dict.TryGetValue(621, out _phrase621))
                 {
-                    _phrase621 = " you do not have enough {CoinName}. Your wallet balance is {WalletBalance}.";
+                    _phrase621 = " you do not have enough {Name}. Your wallet balance is {Value}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"621\" Phrase=\"{0}\" />", _phrase621));
                 string _phrase622;

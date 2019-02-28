@@ -37,7 +37,7 @@ namespace ServerTools
                 {
                     HighPingKicker.CheckPing(_cInfo);
                 }
-                if (InventoryCheck.IsEnabled || InventoryCheck.Anounce_Invalid_Stack)
+                if (InventoryCheck.IsEnabled || InventoryCheck.Announce_Invalid_Stack)
                 {
                     InventoryCheck.CheckInv(_cInfo, _playerDataFile);
                 }

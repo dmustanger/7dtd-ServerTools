@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class InventoryCheck
     {
-        public static bool IsEnabled = false, IsRunning = false, Anounce_Invalid_Stack = false, Ban_Player = false;
+        public static bool IsEnabled = false, IsRunning = false, Announce_Invalid_Stack = false, Ban_Player = false;
         public static int Admin_Level = 0, Days_Before_Log_Delete = 5;
         private static string file = "InvalidItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -183,20 +183,20 @@ namespace ServerTools
                         {
                             int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
                             string _name = ItemClass.list[_itemValue.type].GetItemName();
-                            if (Anounce_Invalid_Stack && _count > _maxAllowed)
+                            if (Announce_Invalid_Stack && _count > _maxAllowed)
                             {
                                 string _phrase3;
                                 if (!Phrases.Dict.TryGetValue(3, out _phrase3))
                                 {
-                                    _phrase3 = "you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
+                                    _phrase3 = " you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
                                 }
                                 _phrase3 = _phrase3.Replace("{ItemName}", _name);
                                 _phrase3 = _phrase3.Replace("{ItemCount}", _count.ToString());
                                 _phrase3 = _phrase3.Replace("{MaxPerStack}", _maxAllowed.ToString());
-                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName  + _phrase3 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + _phrase3 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 ChatLog.Log(_phrase3, LoadConfig.Server_Response_Name);
                             }
-                            if (IsEnabled && dict.Contains(_name))
+                            if (IsEnabled && (dict.Contains(_name) || _itemValue.ItemClass.CreativeMode == EnumCreativeMode.Dev || _itemValue.ItemClass.CreativeMode == EnumCreativeMode.None))
                             {
                                 if (Ban_Player)
                                 {
@@ -207,7 +207,7 @@ namespace ServerTools
                                     }
                                     _phrase4 = _phrase4.Replace("{PlayerName}", _cInfo.playerName);
                                     _phrase4 = _phrase4.Replace("{ItemName}", _name);
-                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName  + _phrase4 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _phrase4 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Invalid Item {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                     {
@@ -234,7 +234,7 @@ namespace ServerTools
                                                 }
                                                 _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
                                                 _phrase5 = _phrase5.Replace("{ItemName}", _name);
-                                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName  + _phrase5 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);                                                
+                                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _phrase5 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                 using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                 {
                                                     sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, with invalid item: {2}. Kicked the player.", _cInfo.playerName, _cInfo.playerId, _name));
@@ -246,7 +246,6 @@ namespace ServerTools
                                             }
                                             else
                                             {
-                                                playerflag.Remove(_cInfo.entityId);
                                                 playerflag[_cInfo.entityId] = 2;
                                                 string _phrase799;
                                                 if (!Phrases.Dict.TryGetValue(799, out _phrase799))
@@ -255,7 +254,7 @@ namespace ServerTools
                                                 }
                                                 _phrase799 = _phrase799.Replace("{PlayerName}", _cInfo.playerName);
                                                 _phrase799 = _phrase799.Replace("{ItemName}", _name);
-                                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName  + _phrase799 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _phrase799 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                             }
                                         }
                                     }
@@ -269,7 +268,7 @@ namespace ServerTools
                                         }
                                         _phrase800 = _phrase800.Replace("{PlayerName}", _cInfo.playerName);
                                         _phrase800 = _phrase800.Replace("{ItemName}", _name);
-                                        ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName  + _phrase800 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                        ChatHook.ChatMessage(_cInfo, "[FF0000]" + _phrase800 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                     }
                                 }
                             }
@@ -295,20 +294,20 @@ namespace ServerTools
                         {
                             int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
                             string _name = ItemClass.list[_itemValue.type].GetItemName();
-                            if (Anounce_Invalid_Stack && _count > _maxAllowed)
+                            if (Announce_Invalid_Stack && _count > _maxAllowed)
                             {
                                 string _phrase3;
                                 if (!Phrases.Dict.TryGetValue(3, out _phrase3))
                                 {
-                                    _phrase3 = "you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
+                                    _phrase3 = " you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
                                 }
                                 _phrase3 = _phrase3.Replace("{ItemName}", _name);
                                 _phrase3 = _phrase3.Replace("{ItemCount}", _count.ToString());
                                 _phrase3 = _phrase3.Replace("{MaxPerStack}", _maxAllowed.ToString());
                                 ChatLog.Log(_phrase3, LoadConfig.Server_Response_Name);
-                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName  + _phrase3 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + _phrase3 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
-                            if (IsEnabled && dict.Contains(_name))
+                            if (IsEnabled && (dict.Contains(_name) || _itemValue.ItemClass.CreativeMode == EnumCreativeMode.Dev || _itemValue.ItemClass.CreativeMode == EnumCreativeMode.None))
                             {
                                 if (Ban_Player)
                                 {
@@ -320,7 +319,7 @@ namespace ServerTools
                                     }
                                     _phrase4 = _phrase4.Replace("{PlayerName}", _cInfo.playerName);
                                     _phrase4 = _phrase4.Replace("{ItemName}", _name);
-                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName  + _phrase4 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _phrase4 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                 }
                                 else
                                 {
@@ -338,7 +337,7 @@ namespace ServerTools
                                                 }
                                                 _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
                                                 _phrase5 = _phrase5.Replace("{ItemName}", _name);
-                                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName  + _phrase5 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _phrase5 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                 SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
                                                 using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                 {
@@ -351,7 +350,6 @@ namespace ServerTools
                                             }
                                             else
                                             {
-                                                playerflag.Remove(_cInfo.entityId);
                                                 playerflag[_cInfo.entityId] = 2;
                                                 string _phrase799;
                                                 if (!Phrases.Dict.TryGetValue(799, out _phrase799))
@@ -360,7 +358,7 @@ namespace ServerTools
                                                 }
                                                 _phrase799 = _phrase799.Replace("{PlayerName}", _cInfo.playerName);
                                                 _phrase799 = _phrase799.Replace("{ItemName}", _name);
-                                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName  + _phrase799 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                ChatHook.ChatMessage(_cInfo, "[FF0000]" + _phrase799 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                             }
                                         }
                                     }
@@ -374,7 +372,7 @@ namespace ServerTools
                                         }
                                         _phrase800 = _phrase800.Replace("{PlayerName}", _cInfo.playerName);
                                         _phrase800 = _phrase800.Replace("{ItemName}", _name);
-                                        ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName  + _phrase800 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                        ChatHook.ChatMessage(_cInfo, "[FF0000]" + _phrase800 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                     }
                                 }
                             }

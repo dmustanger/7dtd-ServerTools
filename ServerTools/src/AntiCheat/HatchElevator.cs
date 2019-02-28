@@ -44,8 +44,8 @@ namespace ServerTools
                             for (int k = y - 2; k <= (y + 1); k++)
                             {
                                 BlockValue Block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
-                                if (Block.Block.blockID != 788 || Block.Block.blockID != 389 || Block.Block.blockID != 949)
-                                {List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                                if (Block.Block.GetBlockName() != "meow" || Block.Block.blockID != 389 || Block.Block.blockID != 949 || Block.Block.blockID != 788)
+                                {
                                     if (Block.Block.blockID == 1251 || Block.Block.blockID == 1252 || Block.Block.blockID == 1253 ||
                                         Block.Block.blockID == 1463 || Block.Block.blockID == 1464 || Block.Block.blockID == 1465 ||
                                         Block.Block.blockID == 1469 || Block.Block.blockID == 1470 || Block.Block.blockID == 1471)

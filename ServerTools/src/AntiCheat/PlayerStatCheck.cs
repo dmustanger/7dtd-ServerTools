@@ -8,7 +8,7 @@ namespace ServerTools
     class PlayerStatCheck
     {
         public static bool IsEnabled = false, Kick_Enabled = false, Ban_Enabled = false;
-        public static int Admin_Level = 0, Days_Before_Log_Delete = 5;
+        public static int Admin_Level = 0, Days_Before_Log_Delete = 5, Max_Speed = 20;
         private static string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
 
@@ -119,7 +119,7 @@ namespace ServerTools
                             }
                             if (!Players.NoFlight.Contains(_cInfo.entityId))
                             {
-                                if (p_speedForward > 20)
+                                if (p_speedForward > Max_Speed)
                                 {
                                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                                     {

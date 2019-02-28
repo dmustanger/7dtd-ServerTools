@@ -133,10 +133,6 @@ namespace ServerTools
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop Item entry because of invalid (non-numeric) value for 'price' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (_quality > 6)
-                        {
-                            _quality = 1;
-                        }
                         string _name = _line.GetAttribute("name");
                         string _secondaryname;
                         if (_line.HasAttribute("secondaryname"))
@@ -170,6 +166,10 @@ namespace ServerTools
                         if (!categories.Contains(_category))
                         {
                             categories.Add(_category);
+                        }
+                        if (_quality > Constants.cItemMaxQuality)
+                        {
+                            _quality = Constants.cItemMaxQuality;
                         }
                         if (!dict.ContainsKey(_item))
                         {

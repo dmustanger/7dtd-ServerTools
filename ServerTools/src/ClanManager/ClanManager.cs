@@ -760,7 +760,7 @@ namespace ServerTools
                 ClientInfo _cInfo1 = ConsoleHelper.ParseParamIdOrName(row[0].ToString());
                 if (_cInfo1 != null)
                 {
-                    ChatHook.ChatMessage(_cInfo1, Private_Chat_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo1, Private_Chat_Color + _message + "[-]", _cInfo.entityId, _cInfo.playerName, EChatType.Whisper, null);
                     if (ChatLog.IsEnabled)
                     {
                         ChatLog.Log(_message, _cInfo.playerName);

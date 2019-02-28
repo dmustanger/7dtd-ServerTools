@@ -183,7 +183,7 @@ namespace ServerTools
                     minRad = Minimum_Spawn_Radius;
                     maxRad = Maximum_Spawn_Radius;
                 }
-                int _r = rnd.Next(0, Animal_List.Length + 1);
+                int _r = rnd.Next(0, Animal_List.Length);
                 int _newId;
                 int.TryParse(_animalList[_r], out _newId);
                 int _nextRadius = rnd.Next(minRad, maxRad + 1);
