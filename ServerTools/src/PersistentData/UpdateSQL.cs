@@ -23,7 +23,7 @@ namespace ServerTools
                 if (SQL.IsMySql)
                 {
                     MySqlDatabase.FastQuery("ALTER TABLE EventSpawns DROP eventSpawn; ALTER TABLE EventSpawns DROP eventRespawn;");
-                    MySqlDatabase.FastQuery("ALTER TABLE EventSpawns ADD eventSpawn VARCHAR(50); ALTER TABLE EventSpawns ADD eventRespawn VARCHAR(50);");
+                    MySqlDatabase.FastQuery("ALTER TABLE EventSpawns ADD eventSpawn VARCHAR(50) DEFAULT 'false'; ALTER TABLE EventSpawns ADD eventRespawn VARCHAR(50) DEFAULT 'false';");
                 }
                 else
                 {

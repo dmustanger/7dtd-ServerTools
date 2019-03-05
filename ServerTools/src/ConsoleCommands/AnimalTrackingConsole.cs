@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Xml;
 
 namespace ServerTools
 {
@@ -37,13 +38,39 @@ namespace ServerTools
                 if (_params[0].ToLower().Equals("off"))
                 {
                     Animals.IsEnabled = false;
-                    SdtdConsole.Instance.Output(string.Format("Animals has been set to off"));
+                    XmlDocument doc = new XmlDocument();
+                    doc.Load("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    XmlNodeList aNodes = doc.SelectNodes("/ServerTools/Tools");
+                    foreach (XmlNode aNode in aNodes)
+                    {
+                        XmlAttribute _attribute1 = aNode.Attributes["Name"];
+                        XmlAttribute _attribute2 = aNode.Attributes["Enable"];
+                        if (_attribute1 != null && _attribute1.Value == "Animal_Tracking" && _attribute2 != null)
+                        {
+                            _attribute2.Value = "False";
+                        }
+                    }
+                    doc.Save("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    SdtdConsole.Instance.Output(string.Format("Animal tracking has been set to off"));
                     return;
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
                     Animals.IsEnabled = true;
-                    SdtdConsole.Instance.Output(string.Format("Animals has been set to on"));
+                    XmlDocument doc = new XmlDocument();
+                    doc.Load("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    XmlNodeList aNodes = doc.SelectNodes("/ServerTools/Tools");
+                    foreach (XmlNode aNode in aNodes)
+                    {
+                        XmlAttribute _attribute1 = aNode.Attributes["Name"];
+                        XmlAttribute _attribute2 = aNode.Attributes["Enable"];
+                        if (_attribute1 != null && _attribute1.Value == "Animal_Tracking" && _attribute2 != null)
+                        {
+                            _attribute2.Value = "True";
+                        }
+                    }
+                    doc.Save("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    SdtdConsole.Instance.Output(string.Format("Animal tracking has been set to on"));
                     return;
                 }
                 else if (_params[0].ToLower().Equals("reset"))

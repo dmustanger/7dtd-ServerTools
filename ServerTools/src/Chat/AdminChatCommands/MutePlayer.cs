@@ -71,7 +71,21 @@ namespace ServerTools
         public static void Mute(ClientInfo _admin, ClientInfo _player)
         {
             Mutes.Add(_player.playerId);
-            string _sql = string.Format("UPDATE Players SET muteTime = 60, muteName = '{0}', muteDate = '{1}' WHERE steamid = '{2}'", _player.playerName, DateTime.Now, _player.playerId);
+            string _name = SQL.EscapeString(_player.playerName);
+            if (_name.Contains("!") || _name.Contains("@") || _name.Contains("#") || _name.Contains("$") || _name.Contains("%") || _name.Contains("^") || _name.Contains("&") || _name.Contains("*") || _name.Contains("'") || _name.Contains(";"))
+            {
+                _name = _name.Replace("!", "");
+                _name = _name.Replace("@", "");
+                _name = _name.Replace("#", "");
+                _name = _name.Replace("$", "");
+                _name = _name.Replace("%", "");
+                _name = _name.Replace("^", "");
+                _name = _name.Replace("&", "");
+                _name = _name.Replace("*", "");
+                _name = _name.Replace("'", "");
+                _name = _name.Replace(";", "");
+            }
+            string _sql = string.Format("UPDATE Players SET muteTime = 60, muteName = '{0}', muteDate = '{1}' WHERE steamid = '{2}'", _name, DateTime.Now, _player.playerId);
             SQL.FastQuery(_sql);
             string _phrase203;
             if (!Phrases.Dict.TryGetValue(203, out _phrase203))
@@ -81,13 +95,6 @@ namespace ServerTools
 
             _phrase203 = _phrase203.Replace("{PlayerName}", _player.playerName);
             ChatHook.ChatMessage(_admin, LoadConfig.Chat_Response_Color + _admin.playerName  + _phrase203 + "[-]", _admin.entityId, _admin.playerName, EChatType.Whisper, null);
-        }
-
-        public static void MuteVoteAdd(ClientInfo _player)
-        {
-            Mutes.Add(_player.playerId);
-            string _sql = string.Format("UPDATE Players SET muteTime = 60, muteName = '{0}', muteDate = '{1}' WHERE steamid = '{2}'", _player.playerName, DateTime.Now, _player.playerId);
-            SQL.FastQuery(_sql);
         }
 
         public static void Remove(ClientInfo _cInfo, string _playerName)

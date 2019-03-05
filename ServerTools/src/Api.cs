@@ -62,6 +62,19 @@ namespace ServerTools
                 string _sql = string.Format("SELECT steamid FROM Players WHERE steamid = '{0}'", _cInfo.playerId); ;
                 DataTable _result = SQL.TQuery(_sql);
                 string _name = SQL.EscapeString(_cInfo.playerName);
+                if (_name.Contains("!") || _name.Contains("@") || _name.Contains("#") || _name.Contains("$") || _name.Contains("%") || _name.Contains("^") || _name.Contains("&") || _name.Contains("*") || _name.Contains("'") || _name.Contains(";"))
+                {
+                    _name = _name.Replace("!", "");
+                    _name = _name.Replace("@", "");
+                    _name = _name.Replace("#", "");
+                    _name = _name.Replace("$", "");
+                    _name = _name.Replace("%", "");
+                    _name = _name.Replace("^", "");
+                    _name = _name.Replace("&", "");
+                    _name = _name.Replace("*", "");
+                    _name = _name.Replace("'", "");
+                    _name = _name.Replace(";", "");
+                }
                 if (_result.Rows.Count == 0)
                 {
                     _sql = string.Format("INSERT INTO Players (steamid, playername, last_joined) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _name, DateTime.Now);
@@ -147,6 +160,19 @@ namespace ServerTools
             if (_cInfo != null)
             {
                 string _name = SQL.EscapeString(_cInfo.playerName);
+                if (_name.Contains("!") || _name.Contains("@") || _name.Contains("#") || _name.Contains("$") || _name.Contains("%") || _name.Contains("^") || _name.Contains("&") || _name.Contains("*") || _name.Contains("'") || _name.Contains(";"))
+                {
+                    _name = _name.Replace("!", "");
+                    _name = _name.Replace("@", "");
+                    _name = _name.Replace("#", "");
+                    _name = _name.Replace("$", "");
+                    _name = _name.Replace("%", "");
+                    _name = _name.Replace("^", "");
+                    _name = _name.Replace("&", "");
+                    _name = _name.Replace("*", "");
+                    _name = _name.Replace("'", "");
+                    _name = _name.Replace(";", "");
+                }
                 if (_respawnReason == RespawnType.EnterMultiplayer)
                 {
                     Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
@@ -434,6 +460,19 @@ namespace ServerTools
                     Hardcore.Announce(_cInfo);
                 }
                 string _name = SQL.EscapeString(_cInfo.playerName);
+                if (_name.Contains("!") || _name.Contains("@") || _name.Contains("#") || _name.Contains("$") || _name.Contains("%") || _name.Contains("^") || _name.Contains("&") || _name.Contains("*") || _name.Contains("'") || _name.Contains(";"))
+                {
+                    _name = _name.Replace("!", "");
+                    _name = _name.Replace("@", "");
+                    _name = _name.Replace("#", "");
+                    _name = _name.Replace("$", "");
+                    _name = _name.Replace("%", "");
+                    _name = _name.Replace("^", "");
+                    _name = _name.Replace("&", "");
+                    _name = _name.Replace("*", "");
+                    _name = _name.Replace("'", "");
+                    _name = _name.Replace(";", "");
+                }
                 _sql = string.Format("UPDATE Players SET playername = '{0}', wallet = 0, playerSpentCoins = 0, sessionTime = 0, zkills = 0, kills = 0, deaths = 0 WHERE steamid = '{1}'", _name, _cInfo.playerId);
                 SQL.FastQuery(_sql);
                 Que.RemoveAt(0);

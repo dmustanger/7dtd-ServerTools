@@ -183,16 +183,30 @@ namespace ServerTools
                     minRad = Minimum_Spawn_Radius;
                     maxRad = Maximum_Spawn_Radius;
                 }
-                int _r = rnd.Next(0, Animal_List.Length);
-                int _newId;
-                int.TryParse(_animalList[_r], out _newId);
-                int _nextRadius = rnd.Next(minRad, maxRad + 1);
-                EntityClass eClass = EntityClass.list[_newId];
-                if (!eClass.bAllowUserInstantiate)
+                List<string> _animalId = new List<string>();
+                foreach (string i in _animalList)
                 {
-                    return;
+                    _animalId.Add(i);
                 }
-                SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} {1} @ {2}", _cInfo.entityId, _nextRadius, _newId), (ClientInfo)null);
+                int _r = rnd.Next(_animalId.Count);
+                int _newId;
+                int.TryParse(_animalId[_r], out _newId);
+                int _nextRadius = rnd.Next(minRad, maxRad + 1);
+                Dictionary<int, EntityClass>.KeyCollection entityTypesCollection = EntityClass.list.Dict.Keys;
+                int counter = 1;
+                foreach (int i in entityTypesCollection)
+                {
+                    EntityClass eClass = EntityClass.list[i];
+                    if (!eClass.bAllowUserInstantiate)
+                    {
+                        continue;
+                    }
+                    if (_newId == counter)
+                    {
+                        SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} {1} @ {2}", _cInfo.entityId, _nextRadius, _newId), (ClientInfo)null);
+                    }
+                    counter++;
+                }
                 string _phrase715;
                 if (!Phrases.Dict.TryGetValue(715, out _phrase715))
                 {
@@ -205,7 +219,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + LoadConfig.Chat_Response_Color + _phrase715 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase715 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 string _sql;
                 if (Wallet.IsEnabled && Command_Cost >= 1)

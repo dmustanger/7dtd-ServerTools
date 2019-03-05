@@ -65,7 +65,7 @@ namespace ServerTools
                 World world = GameManager.Instance.World;
                 foreach (KeyValuePair<string, int[]> kvp in StartingItems.startItemList)
                 {
-                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], true);
+                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], true, default(FastTags), 1);
                     var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                     {
                         entityClass = EntityClass.FromString("item"),

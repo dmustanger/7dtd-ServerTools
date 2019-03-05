@@ -1,5 +1,23 @@
 ﻿CHANGELOG
 
+12.94
+Added a trigger to EventTriggers.xml to control /clanlist
+Added /clanlist to /commands response
+Added two options to Invalid_Item_Kicker called Dev_Items and Hidden_Items. Controls whether items marked as dev or none for 
+CreativeMode are detected without being on the InvalidItems.xml list
+Fixed some clan commands not responding properly
+Fixed a syntax error sometimes seen from a player name
+Fixed /claim responses showing global instead of private
+Fixed Mute_Vote not applying correctly
+Fixed clan messages showing globally
+Fixed Zones option PVE not functioning properly
+Fixed console commands that turn on or off a tool not updating the config file
+Fixed Animal_Tracking not working
+Fixed Bad_Words_Filter preventing the use of capital letters in chat
+Changed some code dealing with item spawn from various tools like gimme or starting items
+Changed default command /clan to /clanchat or /cc for short to avoid conflicts with other clan based commands
+Updated Hatch_Elevator_Detector tool to work again
+
 12.93
 Added option to Player_Stat_Check called Max_Speed. This is the max speed a player can be caught traveling. Adjust it for mods
 Added all entries to the invalid items system that are marked as dev or none for CreativeMode in the items or blocks.xml. These

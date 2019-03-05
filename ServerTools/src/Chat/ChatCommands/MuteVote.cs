@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ServerTools
@@ -30,7 +31,7 @@ namespace ServerTools
                             {
                                 _phrase775 = "A vote to mute {PlayerName} in chat has begun and will close in 60 seconds.";
                             }
-                            _phrase775 = _phrase775.Replace("{PlayerName}", _playerInfo.playerName);
+                            _phrase775 = _phrase775.Replace("{PlayerName}", _playerMute.playerName);
                             ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase775 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             string _phrase776;
                             if (!Phrases.Dict.TryGetValue(776, out _phrase776))
@@ -59,7 +60,23 @@ namespace ServerTools
         {
             if (Mute.Count >= Votes_Needed)
             {
-                MutePlayer.MuteVoteAdd(_playerMute);
+                MutePlayer.Mutes.Add(_playerMute.playerId);
+                string _name = SQL.EscapeString(_playerMute.playerName);
+                if (_name.Contains("!") || _name.Contains("@") || _name.Contains("#") || _name.Contains("$") || _name.Contains("%") || _name.Contains("^") || _name.Contains("&") || _name.Contains("*") || _name.Contains("'") || _name.Contains(";"))
+                {
+                    _name = _name.Replace("!", "");
+                    _name = _name.Replace("@", "");
+                    _name = _name.Replace("#", "");
+                    _name = _name.Replace("$", "");
+                    _name = _name.Replace("%", "");
+                    _name = _name.Replace("^", "");
+                    _name = _name.Replace("&", "");
+                    _name = _name.Replace("*", "");
+                    _name = _name.Replace("'", "");
+                    _name = _name.Replace(";", "");
+                }
+                string _sql = string.Format("UPDATE Players SET muteTime = 60, muteName = '{0}', muteDate = '{1}' WHERE steamid = '{2}'", _name, DateTime.Now, _playerMute.playerId);
+                SQL.FastQuery(_sql);
                 string _phrase777;
                 if (!Phrases.Dict.TryGetValue(777, out _phrase777))
                 {

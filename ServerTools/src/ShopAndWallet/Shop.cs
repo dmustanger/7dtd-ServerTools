@@ -551,7 +551,7 @@ namespace ServerTools
         public static void ShopPurchase(ClientInfo _cInfo, string _itemName, int _count, int _quality, int _price, string _playerName, int currentCoins)
         {
             World world = GameManager.Instance.World;
-            ItemValue itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, true);
+            ItemValue itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, true, default(FastTags), 1);
             var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
             {
                 entityClass = EntityClass.FromString("item"),

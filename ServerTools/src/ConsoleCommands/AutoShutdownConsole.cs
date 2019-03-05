@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace ServerTools
 {
@@ -33,10 +34,38 @@ namespace ServerTools
                 if (_params[0].ToLower().Equals("off"))
                 {
                     AutoShutdown.IsEnabled = false;
+                    XmlDocument doc = new XmlDocument();
+                    doc.Load("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    XmlNodeList aNodes = doc.SelectNodes("/ServerTools/Tools");
+                    foreach (XmlNode aNode in aNodes)
+                    {
+                        XmlAttribute _attribute1 = aNode.Attributes["Name"];
+                        XmlAttribute _attribute2 = aNode.Attributes["Enable"];
+                        if (_attribute1 != null && _attribute1.Value == "Auto_Shutdown" && _attribute2 != null)
+                        {
+                            _attribute2.Value = "False";
+                        }
+                    }
+                    doc.Save("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    SdtdConsole.Instance.Output(string.Format("Auto shutdown has been set to off"));
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
                     AutoShutdown.IsEnabled = true;
+                    XmlDocument doc = new XmlDocument();
+                    doc.Load("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    XmlNodeList aNodes = doc.SelectNodes("/ServerTools/Tools");
+                    foreach (XmlNode aNode in aNodes)
+                    {
+                        XmlAttribute _attribute1 = aNode.Attributes["Name"];
+                        XmlAttribute _attribute2 = aNode.Attributes["Enable"];
+                        if (_attribute1 != null && _attribute1.Value == "Auto_Shutdown" && _attribute2 != null)
+                        {
+                            _attribute2.Value = "True";
+                        }
+                    }
+                    doc.Save("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    SdtdConsole.Instance.Output(string.Format("Auto shutdown has been set to off"));
                 }
                 else
                 {

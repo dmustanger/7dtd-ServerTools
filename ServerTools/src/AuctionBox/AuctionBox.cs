@@ -319,7 +319,7 @@ namespace ServerTools
             }
             else
             {
-                itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, false);
+                itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, false, default(FastTags), 1);
             }
             World world = GameManager.Instance.World;
             var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
@@ -386,7 +386,7 @@ namespace ServerTools
                     {
                         int _quality;
                         int.TryParse(_result.Rows[0].ItemArray.GetValue(4).ToString(), out _quality);
-                        itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, false);
+                        itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, false, default(FastTags), 1);
                     }
                     int _itemCount;
                     int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _itemCount);

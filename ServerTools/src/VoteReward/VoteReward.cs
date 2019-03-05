@@ -427,7 +427,7 @@ namespace ServerTools
                 {
                     quality = 1;
                 }
-                ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item).type, quality, quality, true);
+                ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item).type, quality, quality, false, default(FastTags), 1);
                 Give(_cInfo, _itemValue, _count);
             }
         }

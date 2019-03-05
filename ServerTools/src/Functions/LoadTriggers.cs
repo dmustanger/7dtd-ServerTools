@@ -8,10 +8,9 @@ namespace ServerTools
     {
         public static bool IsRunning = false;
         private const string file = "EventTriggers.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        public static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        public static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static Dictionary<int, string[]> dict = new Dictionary<int, string[]>();
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-
 
         public static void Load()
         {
@@ -157,7 +156,7 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"40\" default=\"clandemote\" replacement=\"clandemote\" />");
                     sw.WriteLine("        <trigger number=\"41\" default=\"clanleave\" replacement=\"clanleave\" />");
                     sw.WriteLine("        <trigger number=\"42\" default=\"clancommands\" replacement=\"clancommands\" />");
-                    sw.WriteLine("        <trigger number=\"43\" default=\"clan\" replacement=\"clan\" />");
+                    sw.WriteLine("        <trigger number=\"43\" default=\"clanchat\" replacement=\"clanchat\" />");
                     sw.WriteLine("        <trigger number=\"44\" default=\"clanrename\" replacement=\"clanrename\" />");
                     sw.WriteLine("        <trigger number=\"45\" default=\"reserved\" replacement=\"reserved\" />");
                     sw.WriteLine("        <trigger number=\"46\" default=\"reward\" replacement=\"reward\" />");
@@ -238,6 +237,8 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"121\" default=\"pm\" replacement=\"pm\" />");
                     sw.WriteLine("        <trigger number=\"122\" default=\"rmessage\" replacement=\"rmessage\" />");
                     sw.WriteLine("        <trigger number=\"123\" default=\"rm\" replacement=\"rm\" />");
+                    sw.WriteLine("        <trigger number=\"124\" default=\"cc\" replacement=\"cc\" />");
+                    sw.WriteLine("        <trigger number=\"125\" default=\"clanlist\" replacement=\"clanlist\" />");
                 }
                 sw.WriteLine("    </triggers>");
                 sw.WriteLine("</Event>");
@@ -763,6 +764,14 @@ namespace ServerTools
                     if (kvp.Key == 123)
                     {
                         Whisper.Command123 = kvp.Value[1];
+                    }
+                    if (kvp.Key == 124)
+                    {
+                        ClanManager.Command124 = kvp.Value[1];
+                    }
+                    if (kvp.Key == 125)
+                    {
+                        ClanManager.Command125 = kvp.Value[1];
                     }
                 }
             }

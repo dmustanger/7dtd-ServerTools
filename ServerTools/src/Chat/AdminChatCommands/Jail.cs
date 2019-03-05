@@ -125,7 +125,21 @@ namespace ServerTools
             Players.NoFlight.Add(_PlayertoJail.entityId);
             _PlayertoJail.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
             Jailed.Add(_PlayertoJail.playerId);
-            string _sql = string.Format("UPDATE Players SET jailTime = 60, jailName = '{0}', jailDate = '{1}' WHERE steamid = '{2}'", _PlayertoJail.playerName, DateTime.Now, _PlayertoJail.playerId);
+            string _name = SQL.EscapeString(_PlayertoJail.playerName);
+            if (_name.Contains("!") || _name.Contains("@") || _name.Contains("#") || _name.Contains("$") || _name.Contains("%") || _name.Contains("^") || _name.Contains("&") || _name.Contains("*") || _name.Contains("'") || _name.Contains(";"))
+            {
+                _name = _name.Replace("!", "");
+                _name = _name.Replace("@", "");
+                _name = _name.Replace("#", "");
+                _name = _name.Replace("$", "");
+                _name = _name.Replace("%", "");
+                _name = _name.Replace("^", "");
+                _name = _name.Replace("&", "");
+                _name = _name.Replace("*", "");
+                _name = _name.Replace("'", "");
+                _name = _name.Replace(";", "");
+            }
+            string _sql = string.Format("UPDATE Players SET jailTime = 60, jailName = '{0}', jailDate = '{1}' WHERE steamid = '{2}'", _name, DateTime.Now, _PlayertoJail.playerId);
             SQL.FastQuery(_sql);
             string _phrase500;
             if (!Phrases.Dict.TryGetValue(500, out _phrase500))

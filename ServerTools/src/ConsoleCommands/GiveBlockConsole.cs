@@ -72,7 +72,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        _itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, 1, 1, true);
+                        _itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, 1, 1, true, default(FastTags), 1);
                     }
                     if (_params[0].ToLower() == "all")
                     {

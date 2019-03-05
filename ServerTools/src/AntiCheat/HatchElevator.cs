@@ -44,11 +44,11 @@ namespace ServerTools
                             for (int k = y - 2; k <= (y + 1); k++)
                             {
                                 BlockValue Block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
-                                if (Block.Block.GetBlockName() != "meow" || Block.Block.blockID != 389 || Block.Block.blockID != 949 || Block.Block.blockID != 788)
+                                if (Block.Block.GetBlockName() != "woodTrellisDiamond" || Block.Block.GetBlockName() != "woodTrellisSquare" || Block.Block.GetBlockName() != "ladderWood" || Block.Block.GetBlockName() != "ladderMetal" || Block.Block.GetBlockName() != "ladderSteel")
                                 {
-                                    if (Block.Block.blockID == 1251 || Block.Block.blockID == 1252 || Block.Block.blockID == 1253 ||
-                                        Block.Block.blockID == 1463 || Block.Block.blockID == 1464 || Block.Block.blockID == 1465 ||
-                                        Block.Block.blockID == 1469 || Block.Block.blockID == 1470 || Block.Block.blockID == 1471)
+                                    if (Block.Block.GetBlockName() == "woodHatch1_v1" || Block.Block.GetBlockName() == "woodHatch1_v2" || Block.Block.GetBlockName() == "woodHatch1_v3" ||
+                                        Block.Block.GetBlockName() == "scrapHatch_v1" || Block.Block.GetBlockName() == "scrapHatch_v2" || Block.Block.GetBlockName() == "scrapHatch_v3" ||
+                                        Block.Block.GetBlockName() == "vaultHatch_v1" || Block.Block.GetBlockName() == "vaultHatch_v2" || Block.Block.GetBlockName() == "vaultHatch_v3")
                                     {
                                         if (Flag.Contains(Id))
                                         {

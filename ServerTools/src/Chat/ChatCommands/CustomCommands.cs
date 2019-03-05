@@ -435,6 +435,10 @@ namespace ServerTools
             {
                 _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, PlayerList.Command89);
             }
+            if (ClanManager.IsEnabled)
+            {
+                _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, ClanManager.Command125);
+            }
             return _commands_6;
         }
 

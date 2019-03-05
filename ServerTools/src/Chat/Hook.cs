@@ -92,10 +92,10 @@ namespace ServerTools
                 if (Badwords.Invalid_Name)
                 {
                     bool _hasBadName = false;
-                    _mainName = _mainName.ToLower();
+                    string _mainName1 = _mainName.ToLower();
                     foreach (string _word in Badwords.List)
                     {
-                        if (_mainName.Contains(_word))
+                        if (_mainName1.Contains(_word))
                         {
                             string _replace = "";
                             for (int i = 0; i < _word.Length; i++)
@@ -103,6 +103,7 @@ namespace ServerTools
                                 _replace = string.Format("{0}*", _replace);
                             }
                             _mainName = _mainName.Replace(_word, _replace);
+                            _mainName = _mainName.Replace(_word.ToUpper(), _replace);
                             _hasBadName = true;
                         }
                     }
@@ -114,17 +115,13 @@ namespace ServerTools
                 }
                 if (Badwords.IsEnabled)
                 {
-                    _message = _message.ToLower();
+                    string _message1 = _message.ToLower();
                     foreach (string _word in Badwords.List)
                     {
-                        if (_message.Contains(_word))
+                        if (_message1.Contains(_word))
                         {
-                            string _replace = "";
-                            for (int i = 0; i < _word.Length; i++)
-                            {
-                                _replace = string.Format("{0}*", _replace);
-                            }
-                            _message = _message.Replace(_word, _replace);
+                            ChatMessage(_cInfo, ChatHook.Player_Name_Color + _mainName + LoadConfig.Chat_Response_Color + ", invalid word used: " + _word + "[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            return false;
                         }
                     }
                 }
@@ -284,7 +281,7 @@ namespace ServerTools
                         }
                         return false;
                     }
-                    if (ClanManager.IsEnabled && !_message.StartsWith("@") && _mainName != LoadConfig.Server_Response_Name && _senderId != 33 && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && ClanManager.ClanMember.Contains(_cInfo.playerId))
+                    if (ClanManager.IsEnabled && !_message.StartsWith("@") && _mainName != LoadConfig.Server_Response_Name && _senderId != 33 && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && !_message.StartsWith(ClanManager.Command43) && !_message.StartsWith(ClanManager.Command124) && ClanManager.ClanMember.Contains(_cInfo.playerId))
                     {
                         string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                         DataTable _result = SQL.TQuery(_sql);
@@ -835,7 +832,7 @@ namespace ServerTools
                             FirstClaimBlock.firstClaim(_cInfo);
                             return false;
                         }
-                        if (ClanManager.IsEnabled && (_message.ToLower().StartsWith(ClanManager.Command33) || _message.ToLower() == ClanManager.Command34 || _message.ToLower().StartsWith(ClanManager.Command35) || _message.ToLower() == ClanManager.Command36 || _message.ToLower() == ClanManager.Command37 || _message.ToLower().StartsWith(ClanManager.Command38) || _message.ToLower().StartsWith(ClanManager.Command39) || _message.ToLower().StartsWith(ClanManager.Command40) || _message.ToLower().StartsWith(ClanManager.Command41) || _message.ToLower() == ClanManager.Command42 || _message.ToLower().StartsWith(ClanManager.Command43) || _message.ToLower().StartsWith(ClanManager.Command44)))
+                        if (ClanManager.IsEnabled && (_message.ToLower().StartsWith(ClanManager.Command33) || _message.ToLower() == ClanManager.Command34 || _message.ToLower().StartsWith(ClanManager.Command35) || _message.ToLower() == ClanManager.Command36 || _message.ToLower() == ClanManager.Command37 || _message.ToLower().StartsWith(ClanManager.Command38) || _message.ToLower().StartsWith(ClanManager.Command39) || _message.ToLower().StartsWith(ClanManager.Command40) || _message.ToLower().StartsWith(ClanManager.Command41) || _message.ToLower() == ClanManager.Command42 || _message.ToLower().StartsWith(ClanManager.Command43) || _message.ToLower().StartsWith(ClanManager.Command44) || _message.ToLower().StartsWith(ClanManager.Command124) || _message.ToLower() == ClanManager.Command125))
                         {
                             if (_message.ToLower().StartsWith(ClanManager.Command33))
                             {
@@ -848,10 +845,12 @@ namespace ServerTools
                                     _message = _message.Replace(ClanManager.Command33 + " ", "");
                                     ClanManager.AddClan(_cInfo, _message);
                                 }
+                                return false;
                             }
                             if (_message.ToLower() == ClanManager.Command34)
                             {
                                 ClanManager.RemoveClan(_cInfo);
+                                return false;
                             }
                             if (_message.ToLower().StartsWith(ClanManager.Command35))
                             {
@@ -864,14 +863,17 @@ namespace ServerTools
                                     _message = _message.Replace(ClanManager.Command35 + " ", "");
                                     ClanManager.InviteMember(_cInfo, _message);
                                 }
+                                return false;
                             }
                             if (_message.ToLower() == ClanManager.Command36)
                             {
                                 ClanManager.InviteAccept(_cInfo);
+                                return false;
                             }
                             if (_message.ToLower() == ClanManager.Command37)
                             {
                                 ClanManager.InviteDecline(_cInfo);
+                                return false;
                             }
                             if (_message.ToLower().StartsWith(ClanManager.Command38))
                             {
@@ -884,6 +886,7 @@ namespace ServerTools
                                     _message = _message.Replace(ClanManager.Command38 + " ", "");
                                     ClanManager.RemoveMember(_cInfo, _message);
                                 }
+                                return false;
                             }
                             if (_message.ToLower().StartsWith(ClanManager.Command39))
                             {
@@ -896,6 +899,7 @@ namespace ServerTools
                                     _message = _message.Replace(ClanManager.Command39 + " ", "");
                                     ClanManager.PromoteMember(_cInfo, _message);
                                 }
+                                return false;
                             }
                             if (_message.ToLower().StartsWith(ClanManager.Command40))
                             {
@@ -908,27 +912,39 @@ namespace ServerTools
                                     _message = _message.Replace(ClanManager.Command40 + " ", "");
                                     ClanManager.DemoteMember(_cInfo, _message);
                                 }
+                                return false;
                             }
                             if (_message.ToLower() == ClanManager.Command41)
                             {
                                 ClanManager.LeaveClan(_cInfo);
+                                return false;
                             }
                             if (_message.ToLower() == ClanManager.Command42)
                             {
                                 string _clanCommands = ClanManager.GetChatCommands(_cInfo);
                                 ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _clanCommands, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                return false;
                             }
-                            if (_message.ToLower().StartsWith(ClanManager.Command43))
+                            if (_message.ToLower().StartsWith(ClanManager.Command43) || _message.ToLower().StartsWith(ClanManager.Command124) && ClanManager.ClanMember.Contains(_cInfo.playerId))
                             {
-                                if (_message.ToLower() == ClanManager.Command43)
+                                if (_message.ToLower() == ClanManager.Command43 || _message.ToLower() == ClanManager.Command124)
                                 {
-                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: " + ChatHook.Command_Private + ClanManager.Command43 + " message[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: " + ChatHook.Command_Private + ClanManager.Command43 + " message or " + ChatHook.Command_Private + ClanManager.Command124 + " message[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 else
                                 {
-                                    _message = _message.ToLower().Replace(ClanManager.Command43 + " ", "");
-                                    ClanManager.Clan(_cInfo, _message);
+                                    if (_message.ToLower().StartsWith(ClanManager.Command43))
+                                    {
+                                        _message = _message.ToLower().Replace(ClanManager.Command43 + " ", "");
+                                        ClanManager.Clan(_cInfo, _message);
+                                    }
+                                    else
+                                    {
+                                        _message = _message.ToLower().Replace(ClanManager.Command124 + " ", "");
+                                        ClanManager.Clan(_cInfo, _message);
+                                    }
                                 }
+                                return false;
                             }
                             if (_message.ToLower().StartsWith(ClanManager.Command44))
                             {
@@ -941,8 +957,14 @@ namespace ServerTools
                                     _message = _message.Replace(ClanManager.Command44 + " ", "");
                                     ClanManager.ClanRename(_cInfo, _message);
                                 }
+                                return false;
                             }
-                            return false;
+                            if (_message.ToLower() == ClanManager.Command125)
+                            {
+                                string _clanlist = ClanManager.GetClanList();
+                                ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _clanlist, _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                return false;
+                            }
                         }
                         if (ReservedSlots.Reserved_Check && _message.ToLower() == ReservedSlots.Command45)
                         {

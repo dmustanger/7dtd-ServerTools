@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Xml;
 
 namespace ServerTools
 {
@@ -190,9 +191,9 @@ namespace ServerTools
                         }
                     }
                 }
-                catch
+                catch (XmlException e)
                 {
-                    Log.Out(string.Format("[ServerTools] Error in creation of directory {0}", API.ConfigPath));
+                    Log.Out(string.Format("[ServerTools] Error in creation of directory {0}. Error = {1}", API.ConfigPath, e.Message));
                 }
                 Load(2);
             }
@@ -202,9 +203,9 @@ namespace ServerTools
                 {
                     LoadConfig.Load();
                 }
-                catch
+                catch (XmlException e)
                 {
-                    Log.Out("[ServerTools] Failed to load the configuration file");
+                    Log.Out("[ServerTools] Failed to load the configuration file. Error = {0}", e.Message);
                 }
                 Load(3);
             }
@@ -214,9 +215,9 @@ namespace ServerTools
                 {
                     SQL.Connect();
                 }
-                catch
+                catch (XmlException e)
                 {
-                    Log.Out("[ServerTools] Failed to connect to an sql database. ST requires this to operate");
+                    Log.Out("[ServerTools] Failed to connect to an sql database. ST requires this to operate. Error = {0}", e.Message);
                 }
                 Load(4);
             }
@@ -226,9 +227,9 @@ namespace ServerTools
                 {
                     Mods.Load();
                 }
-                catch
+                catch (XmlException e)
                 {
-                    Log.Out("[ServerTools] Failed to load the tools. Restart the server and check for errors");
+                    Log.Out("[ServerTools] Failed to load the tools. Restart the server and check for errors. Error = {0}", e.Message);
                 }
                 Load(5);
             }
@@ -238,9 +239,9 @@ namespace ServerTools
                 {
                     LoadTriggers.LoadXml();
                 }
-                catch
+                catch (XmlException e)
                 {
-                    Log.Out("[ServerTools] Failed to load the EventTriggers.xml. Check for errors in the file.");
+                    Log.Out("[ServerTools] Failed to load the EventTriggers.xml. Check for errors in the file. Error = {0}", e.Message);
                 }
                 Load(6);
             }
@@ -250,17 +251,17 @@ namespace ServerTools
                 {
                     Phrases.Load();
                 }
-                catch
+                catch (XmlException e)
                 {
-                    Log.Out("[ServerTools] Failed to load the phrases. Restart the server and check for errors");
+                    Log.Out("[ServerTools] Failed to load the Phrases.xml. Restart the server and check for errors. Error = {0}", e.Message);
                 }
                 try
                 {
                     HowToSetup.Load();
                 }
-                catch
+                catch (XmlException e)
                 {
-                    Log.Out("[ServerTools] Failed to load the HowToSetup.xml");
+                    Log.Out("[ServerTools] Failed to load the HowToSetup.xml. Error = {0}", e.Message);
                 }
                 Load(7);
             }
@@ -272,9 +273,9 @@ namespace ServerTools
                     {
                         Fps.SetTarget();
                     }
-                    catch
+                    catch (XmlException e)
                     {
-                        Log.Out("[ServerTools] Failed to set the target fps");
+                        Log.Out("[ServerTools] Failed to set the target fps. Error = {0}", e.Message);
                     }
                 }
                 Load(8);

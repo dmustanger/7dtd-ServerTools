@@ -80,7 +80,7 @@ namespace ServerTools
                             {
                                 DeathSpot.PlayerKilled(_player);
                             }
-                            if (KillNotice.IsEnabled || Bounties.IsEnabled)
+                            if (KillNotice.IsEnabled || Bounties.IsEnabled || Zones.IsEnabled)
                             {
                                 for (int j = 0; j < _playerList.Count; j++)
                                 {
@@ -106,6 +106,10 @@ namespace ServerTools
                                         if (Bounties.IsEnabled)
                                         {
                                             Bounties.PlayerKilled(_player, _player2, _cInfo, _cInfo2);
+                                        }
+                                        if (Zones.IsEnabled)
+                                        {
+                                            Zones.Check(_cInfo2, _cInfo);
                                         }
                                     }
                                 }

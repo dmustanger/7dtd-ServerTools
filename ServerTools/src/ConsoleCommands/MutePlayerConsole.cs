@@ -70,6 +70,19 @@ namespace ServerTools
                             else
                             {
                                 string _name = SQL.EscapeString(_cInfo.playerName);
+                                if (_name.Contains("!") || _name.Contains("@") || _name.Contains("#") || _name.Contains("$") || _name.Contains("%") || _name.Contains("^") || _name.Contains("&") || _name.Contains("*") || _name.Contains("'") || _name.Contains(";"))
+                                {
+                                    _name = _name.Replace("!", "");
+                                    _name = _name.Replace("@", "");
+                                    _name = _name.Replace("#", "");
+                                    _name = _name.Replace("$", "");
+                                    _name = _name.Replace("%", "");
+                                    _name = _name.Replace("^", "");
+                                    _name = _name.Replace("&", "");
+                                    _name = _name.Replace("*", "");
+                                    _name = _name.Replace("'", "");
+                                    _name = _name.Replace(";", "");
+                                }
                                 string _sql;
                                 if (_muteTime == -1)
                                 {

@@ -27,7 +27,7 @@ namespace ServerTools
             }
             if (!ClanManager.IsEnabled)
             {
-                ClanManager.clans.Clear();
+                ClanManager.Clans.Clear();
                 ClanManager.ClanMember.Clear();
             }
             if (!InfoTicker.IsEnabled && InfoTicker.IsRunning)

@@ -393,7 +393,7 @@ namespace ServerTools
                 int _count = random.Next(_counts[0], _counts[1] + 1);
                 ItemStack _itemDrop = new ItemStack(_itemValue, _count);
                 ItemValue itemValue;
-                itemValue = new ItemValue(ItemClass.GetItem(_randomItem).type, _quality, _quality, false);
+                itemValue = new ItemValue(ItemClass.GetItem(_randomItem).type, _quality, _quality, false, default(FastTags), 1);
                 World world = GameManager.Instance.World;
                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                 {
