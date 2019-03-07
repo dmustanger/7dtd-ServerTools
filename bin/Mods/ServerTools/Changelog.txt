@@ -1,6 +1,6 @@
 ﻿CHANGELOG
 
-12.5
+12.95
 Recompiled files
 Fixed /playerlist response to show all player entity id
 Changed clan name limits. They must be 1-8 characters in length. Existing clans are not effected
