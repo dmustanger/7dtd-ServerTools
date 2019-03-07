@@ -162,7 +162,7 @@ namespace ServerTools
                     sw.WriteLine("        <Command Number=\"3\" Trigger=\"rules\" Response=\"whisper Visit YourSiteHere to see the rules.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"whisper Visit YourSiteHere.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"whisper The Teamspeak3 info is YourInfoHere.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"6\" Trigger=\"spawnZ\" Response=\"ser {EntityId} 40 @ 4 11 14\" Response2=\"pm Zombies have spawn around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"6\" Trigger=\"spawnz\" Response=\"ser {EntityId} 40 @ 4 11 14\" Response2=\"pm Zombies have spawn around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Number=\"7\" Trigger=\"discord\" Response=\"whisper The discord channel is .\" Response2=\"\" DelayBetweenUses=\"20\" Hidden=\"true\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Number=\"8\" Trigger=\"test1\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"30\" Hidden=\"true\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Number=\"9\" Trigger=\"test2\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"40\" Hidden=\"true\" Cost=\"0\" />");

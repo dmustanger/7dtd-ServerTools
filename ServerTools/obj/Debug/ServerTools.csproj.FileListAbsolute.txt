@@ -180,3 +180,11 @@ C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-12.94 - Linux\Serve
 C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-12.94 - Linux\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
 C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-12.94 - Linux\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.Cache
 C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-12.94 - Linux\ServerTools\obj\Debug\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-12.95\bin\Mods\ServerTools\ModInfo.xml
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-12.95\bin\Mods\ServerTools\Changelog.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-12.95\bin\Mods\ServerTools\GeoLiteCity.dat
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-12.95\bin\Mods\ServerTools\ServerTools.dll.config
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-12.95\bin\Mods\ServerTools\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-12.95\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-12.95\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.Cache
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-12.95\ServerTools\obj\Debug\ServerTools.dll

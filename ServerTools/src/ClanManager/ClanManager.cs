@@ -15,9 +15,18 @@ namespace ServerTools
         public static string GetClanList()
         {
             string _clanList = ("Clan names are:");
+            int _counter = 0;
             foreach (KeyValuePair<string,string> i in Clans)
             {
-                _clanList = string.Format("{0} {1}", _clanList, i.Key);
+                _counter++;
+                if (_counter == Clans.Count)
+                {
+                    _clanList = string.Format("{0} {1}", _clanList, i.Key);
+                }
+                else
+                {
+                    _clanList = string.Format("{0} {1},", _clanList, i.Key);
+                }
             }
             return _clanList;
         }
@@ -49,71 +58,78 @@ namespace ServerTools
 
         public static void AddClan(ClientInfo _cInfo, string _clanName)
         {
-            string _sql = string.Format("SELECT clanname, isclanowner FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            string _clan = _result.Rows[0].ItemArray.GetValue(0).ToString();
-            bool _isclanowner;
-            bool.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _isclanowner);
-            _result.Dispose();
-            if (_isclanowner)
+            if (_clanName.Length < 1 || _clanName.Length > 8)
             {
-                string _phrase101;
-                if (!Phrases.Dict.TryGetValue(101, out _phrase101))
-                {
-                    _phrase101 = " you have already created the clan {ClanName}.";
-                }
-                _phrase101 = _phrase101.Replace("{ClanName}", _clan.ToString());
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase101 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + "The clan name is too short or too long. It must be 1 - 8 characters." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                if (_clan.ToString() != "Unknown")
+                string _sql = string.Format("SELECT clanname, isclanowner FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                string _clan = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                bool _isclanowner;
+                bool.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _isclanowner);
+                _result.Dispose();
+                if (_isclanowner)
                 {
-                    string _phrase103;
-                    if (!Phrases.Dict.TryGetValue(103, out _phrase103))
+                    string _phrase101;
+                    if (!Phrases.Dict.TryGetValue(101, out _phrase101))
                     {
-                        _phrase103 = " you are currently a member of the clan {ClanName}.";
+                        _phrase101 = " you have already created the clan {ClanName}.";
                     }
-                    _phrase103 = _phrase103.Replace("{ClanName}", _clan.ToString());
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase103 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    _phrase101 = _phrase101.Replace("{ClanName}", _clan.ToString());
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase101 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    if (Clans.ContainsKey(_clanName))
+                    if (_clan.ToString() != "Unknown")
                     {
-                        string _phrase102;
-                        if (!Phrases.Dict.TryGetValue(102, out _phrase102))
+                        string _phrase103;
+                        if (!Phrases.Dict.TryGetValue(103, out _phrase103))
                         {
-                            _phrase102 = " can not add the clan {ClanName} because it already exist.";
+                            _phrase103 = " you are currently a member of the clan {ClanName}.";
                         }
-                        _phrase102 = _phrase102.Replace("{ClanName}", _clanName);
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase102 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        _phrase103 = _phrase103.Replace("{ClanName}", _clan.ToString());
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase103 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
-                        if (string.IsNullOrEmpty(_clanName) || _clanName.Length < 3)
+                        if (Clans.ContainsKey(_clanName))
                         {
-                            string _phrase129;
-                            if (!Phrases.Dict.TryGetValue(129, out _phrase129))
+                            string _phrase102;
+                            if (!Phrases.Dict.TryGetValue(102, out _phrase102))
                             {
-                                _phrase129 = " the clanName must be longer than 2 characters.";
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase129 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                _phrase102 = " can not add the clan {ClanName} because it already exist.";
                             }
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase129 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            _phrase102 = _phrase102.Replace("{ClanName}", _clanName);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase102 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                         else
                         {
-                            _sql = string.Format("UPDATE Players SET clanname = '{0}', isclanowner = 'true', isclanofficer = 'true' WHERE steamid = '{1}'", _clanName, _cInfo.playerId);
-                            SQL.FastQuery(_sql);
-                            ClanMember.Add(_cInfo.playerId);
-                            Clans.Add(_clanName, _cInfo.playerId);
-                            string _phrase104;
-                            if (!Phrases.Dict.TryGetValue(104, out _phrase104))
+                            if (string.IsNullOrEmpty(_clanName) || _clanName.Length < 3)
                             {
-                                _phrase104 = " you have added the clan {ClanName}.";
+                                string _phrase129;
+                                if (!Phrases.Dict.TryGetValue(129, out _phrase129))
+                                {
+                                    _phrase129 = " the clanName must be longer than 2 characters.";
+                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase129 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase129 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
-                            _phrase104 = _phrase104.Replace("{ClanName}", _clanName);
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase104 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            else
+                            {
+                                _sql = string.Format("UPDATE Players SET clanname = '{0}', isclanowner = 'true', isclanofficer = 'true' WHERE steamid = '{1}'", _clanName, _cInfo.playerId);
+                                SQL.FastQuery(_sql);
+                                ClanMember.Add(_cInfo.playerId);
+                                Clans.Add(_clanName, _cInfo.playerId);
+                                string _phrase104;
+                                if (!Phrases.Dict.TryGetValue(104, out _phrase104))
+                                {
+                                    _phrase104 = " you have added the clan {ClanName}.";
+                                }
+                                _phrase104 = _phrase104.Replace("{ClanName}", _clanName);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase104 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            }
                         }
                     }
                 }
@@ -177,72 +193,79 @@ namespace ServerTools
 
         public static void ClanRename(ClientInfo _cInfo, string _clanName)
         {
-            string _sql = string.Format("SELECT clanname, isclanowner FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            string _oldClanName = _result.Rows[0].ItemArray.GetValue(0).ToString();
-            bool _isclanowner;
-            bool.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _isclanowner);
-            _result.Dispose();
-            if (_isclanowner)
+            if (_clanName.Length < 1 || _clanName.Length > 8)
             {
-                if (!Clans.ContainsKey(_clanName))
-                {
-                    foreach (KeyValuePair<string,string> i in Clans)
-                    {
-                        if (i.Key == _oldClanName)
-                        {
-                            Clans[i.Key] = _clanName;
-                        }
-                    }
-                    _sql = string.Format("UPDATE Players SET clanname = '{0}' WHERE clanname = '{1}'", _clanName, _oldClanName);
-                    SQL.FastQuery(_sql);
-                    _sql = string.Format("UPDATE Players SET invitedtoclan = '{0}' WHERE invitedtoclan = '{1}'", _clanName, _oldClanName);
-                    SQL.FastQuery(_sql);
-                    string _phrase130;
-                    if (!Phrases.Dict.TryGetValue(130, out _phrase130))
-                    {
-                        _phrase130 = " you have changed your clan name to {ClanName}.";
-                    }
-                    _phrase130 = _phrase130.Replace("{ClanName}", _clanName);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase130 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    _sql = string.Format("SELECT steamid FROM Players WHERE clanname = '{0}'", _clanName);
-                    DataTable _result1 = SQL.TQuery(_sql);
-                    foreach (DataRow row in _result1.Rows)
-                    {
-                        ClientInfo _cInfo1 = ConnectionManager.Instance.Clients.ForPlayerId(row[0].ToString());
-                        if (_cInfo1 != null)
-                        {
-                            string _phrase131;
-                            if (!Phrases.Dict.TryGetValue(131, out _phrase131))
-                            {
-                                _phrase131 = " your clan name has been changed by the owner to {ClanName}.";
-                            }
-                            _phrase131 = _phrase131.Replace("{ClanName}", _clanName);
-                            ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _cInfo1.playerName + _phrase130 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                        }
-                    }
-                    _result1.Dispose();
-                }
-                else
-                {
-                    string _phrase102;
-                    if (!Phrases.Dict.TryGetValue(102, out _phrase102))
-                    {
-                        _phrase102 = " can not add the clan {ClanName} because it already exist.";
-                    }
-                    _phrase102 = _phrase102.Replace("{PlayerName}", _cInfo.playerName);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase102 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + "The clan name is too short or too long. It must be 1 - 8 characters." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                string _phrase105;
-                if (!Phrases.Dict.TryGetValue(105, out _phrase105))
+                string _sql = string.Format("SELECT clanname, isclanowner FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                string _oldClanName = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                bool _isclanowner;
+                bool.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _isclanowner);
+                _result.Dispose();
+                if (_isclanowner)
                 {
-                    _phrase105 = " you are not the owner of any clans.";
+                    if (!Clans.ContainsKey(_clanName))
+                    {
+                        foreach (KeyValuePair<string, string> i in Clans)
+                        {
+                            if (i.Key == _oldClanName)
+                            {
+                                Clans[i.Key] = _clanName;
+                            }
+                        }
+                        _sql = string.Format("UPDATE Players SET clanname = '{0}' WHERE clanname = '{1}'", _clanName, _oldClanName);
+                        SQL.FastQuery(_sql);
+                        _sql = string.Format("UPDATE Players SET invitedtoclan = '{0}' WHERE invitedtoclan = '{1}'", _clanName, _oldClanName);
+                        SQL.FastQuery(_sql);
+                        string _phrase130;
+                        if (!Phrases.Dict.TryGetValue(130, out _phrase130))
+                        {
+                            _phrase130 = " you have changed your clan name to {ClanName}.";
+                        }
+                        _phrase130 = _phrase130.Replace("{ClanName}", _clanName);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase130 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        _sql = string.Format("SELECT steamid FROM Players WHERE clanname = '{0}'", _clanName);
+                        DataTable _result1 = SQL.TQuery(_sql);
+                        foreach (DataRow row in _result1.Rows)
+                        {
+                            ClientInfo _cInfo1 = ConnectionManager.Instance.Clients.ForPlayerId(row[0].ToString());
+                            if (_cInfo1 != null)
+                            {
+                                string _phrase131;
+                                if (!Phrases.Dict.TryGetValue(131, out _phrase131))
+                                {
+                                    _phrase131 = " your clan name has been changed by the owner to {ClanName}.";
+                                }
+                                _phrase131 = _phrase131.Replace("{ClanName}", _clanName);
+                                ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _cInfo1.playerName + _phrase130 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            }
+                        }
+                        _result1.Dispose();
+                    }
+                    else
+                    {
+                        string _phrase102;
+                        if (!Phrases.Dict.TryGetValue(102, out _phrase102))
+                        {
+                            _phrase102 = " can not add the clan {ClanName} because it already exist.";
+                        }
+                        _phrase102 = _phrase102.Replace("{PlayerName}", _cInfo.playerName);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase102 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
                 }
-                _phrase105 = _phrase105.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase105 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                else
+                {
+                    string _phrase105;
+                    if (!Phrases.Dict.TryGetValue(105, out _phrase105))
+                    {
+                        _phrase105 = " you are not the owner of any clans.";
+                    }
+                    _phrase105 = _phrase105.Replace("{PlayerName}", _cInfo.playerName);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase105 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
             }
         }
 
