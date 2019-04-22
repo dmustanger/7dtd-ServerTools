@@ -181,7 +181,6 @@ namespace ServerTools
                         string _value;
                         if (LastDeathPos.TryGetValue(_cInfo.entityId, out _value))
                         {
-                            Players.NoFlight.Add(_cInfo.entityId);
                             int x, y, z;
                             string[] _cords = _value.Split(',');
                             int.TryParse(_cords[0], out x);
@@ -195,13 +194,12 @@ namespace ServerTools
                                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                             }
                             _sql = string.Format("UPDATE Players SET lastDied = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "DeathSpot");
                             string _phrase736;
                             if (!Phrases.Dict.TryGetValue(736, out _phrase736))
                             {
                                 _phrase736 = " teleporting you to your last death position. You can use this again in {DelayBetweenUses} minutes.";
                             }
-                            _phrase736 = _phrase736.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase736 = _phrase736.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
                             if (_announce)
                             {

@@ -42,7 +42,7 @@ namespace ServerTools
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", claim block has been added to your inventory or if inventory is full, it dropped at your feet.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 _sql = string.Format("UPDATE Players SET firstClaim = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "FirstClaimBlock");
             }
             else
             {

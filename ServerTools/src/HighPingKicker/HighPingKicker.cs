@@ -82,7 +82,7 @@ namespace ServerTools
                                 _sql = string.Format("INSERT INTO Players (steamid, pingimmunity) VALUES ('{0}', 'true')", _id);
                             }
                             _result.Dispose();
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "HighPingKicker");
                         }
                     }
                 }

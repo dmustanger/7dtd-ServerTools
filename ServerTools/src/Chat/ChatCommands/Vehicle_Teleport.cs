@@ -19,7 +19,7 @@ namespace ServerTools
             {
                 string _steamid = SQL.EscapeString(_cInfo.playerId);
                 _sql = string.Format("INSERT INTO Vehicles (steamid) VALUES ('{0}')", _steamid);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "VehicleTeleport");
             }
             _result.Dispose();
             Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
@@ -227,7 +227,7 @@ namespace ServerTools
                         {
                             _sql = string.Format("UPDATE Vehicles SET gyroId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
                         }
-                        SQL.FastQuery(_sql);
+                        SQL.FastQuery(_sql, "VehicleTeleport");
                     }
                     else
                     {
@@ -308,7 +308,7 @@ namespace ServerTools
                         {
                             _sql = string.Format("UPDATE Vehicles SET gyroId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
                         }
-                        SQL.FastQuery(_sql);
+                        SQL.FastQuery(_sql, "VehicleTeleport");
                     }
                     else
                     {
@@ -397,7 +397,7 @@ namespace ServerTools
                                         _sql = string.Format("UPDATE Vehicles SET lastGyro = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                                     }
 
-                                    SQL.FastQuery(_sql);
+                                    SQL.FastQuery(_sql, "VehicleTeleport");
                                     return;
                                 }
                                 else

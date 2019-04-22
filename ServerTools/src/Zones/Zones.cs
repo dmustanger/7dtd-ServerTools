@@ -20,6 +20,7 @@ namespace ServerTools
         public static Dictionary<int, string> Victim = new Dictionary<int, string>();
         public static Dictionary<int, int> Forgive = new Dictionary<int, int>();
         public static Dictionary<int, string> ZoneExit = new Dictionary<int, string>();
+        public static List<int> ZonePvE = new List<int>();
         public static List<string[]> Box1 = new List<string[]>();
         public static List<bool[]> Box2 = new List<bool[]>();
         private static int _xMinCheck = 0, _yMinCheck = 0, _zMinCheck = 0, _xMaxCheck = 0, _yMaxCheck = 0, _zMaxCheck = 0;
@@ -213,110 +214,223 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void Check(ClientInfo _cInfoKiller, ClientInfo _cInfoVictim)
+        public static void Check(ClientInfo _cInfoVictim, ClientInfo _cInfoKiller)
         {
-            if (ZoneExit.ContainsKey(_cInfoVictim.entityId) || ZoneExit.ContainsKey(_cInfoKiller.entityId))
+            if (ZonePvE.Contains(_cInfoVictim.entityId) && ZonePvE.Contains(_cInfoKiller.entityId))
             {
-                if (Players.ZonePvE.Contains(_cInfoVictim.entityId) && Players.ZonePvE.Contains(_cInfoKiller.entityId))
+                string _phrase801;
+                if (!Phrases.Dict.TryGetValue(801, out _phrase801))
                 {
-                    string _phrase801;
-                    if (!Phrases.Dict.TryGetValue(801, out _phrase801))
-                    {
-                        _phrase801 = "{PlayerName} has murdered you while you were in a protected zone.";
-                    }
-                    _phrase801 = _phrase801.Replace("{PlayerName}", _cInfoKiller.playerName);
-                    ChatHook.ChatMessage(_cInfoVictim, LoadConfig.Chat_Response_Color + _phrase801 + "[-]", _cInfoKiller.entityId, _cInfoKiller.playerName, EChatType.Whisper, null);
-                    string _phrase802;
-                    if (!Phrases.Dict.TryGetValue(802, out _phrase802))
-                    {
-                        _phrase802 = " you have murdered a player inside a protected zone. Their name was {PlayerName}";
-                    }
-                    _phrase802 = _phrase802.Replace("{PlayerName}", _cInfoVictim.playerName);
-                    ChatHook.ChatMessage(_cInfoKiller, LoadConfig.Chat_Response_Color + _phrase802 + "[-]", _cInfoVictim.entityId, _cInfoVictim.playerName, EChatType.Whisper, null);
-                    Penalty(_cInfoKiller, _cInfoVictim);
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoVictim.entityId];
-                    int x = (int)_player.position.x;
-                    int y = (int)_player.position.y;
-                    int z = (int)_player.position.z;
-                    string _sposition = x + "," + y + "," + z;
-                    if (Victim.ContainsKey(_cInfoVictim.entityId))
-                    {
-                        Victim[_cInfoVictim.entityId] = _sposition;
-                    }
-                    else
-                    {
-                        Victim.Add(_cInfoVictim.entityId, _sposition);
-                    }
+                    _phrase801 = "{PlayerName} has murdered you while you were in a pve zone.";
                 }
-                if (Players.ZonePvE.Contains(_cInfoVictim.entityId) & !Players.ZonePvE.Contains(_cInfoKiller.entityId))
+                _phrase801 = _phrase801.Replace("{PlayerName}", _cInfoKiller.playerName);
+                ChatHook.ChatMessage(_cInfoVictim, LoadConfig.Chat_Response_Color + _phrase801 + "[-]", _cInfoKiller.entityId, _cInfoKiller.playerName, EChatType.Whisper, null);
+                string _phrase802;
+                if (!Phrases.Dict.TryGetValue(802, out _phrase802))
                 {
-                    string _phrase801;
-                    if (!Phrases.Dict.TryGetValue(801, out _phrase801))
-                    {
-                        _phrase801 = "{PlayerName} has murdered you while you were in a protected zone.";
-                    }
-                    _phrase801 = _phrase801.Replace("{PlayerName}", _cInfoKiller.playerName);
-                    ChatHook.ChatMessage(_cInfoVictim, LoadConfig.Chat_Response_Color + _phrase801 + "[-]", _cInfoKiller.entityId, _cInfoKiller.playerName, EChatType.Whisper, null);
-                    string _phrase802;
-                    if (!Phrases.Dict.TryGetValue(802, out _phrase802))
-                    {
-                        _phrase802 = " you have murdered a player inside a protected zone. Their name was {PlayerName}";
-                    }
-                    _phrase802 = _phrase802.Replace("{PlayerName}", _cInfoVictim.playerName);
-                    ChatHook.ChatMessage(_cInfoKiller, LoadConfig.Chat_Response_Color + _phrase802 + "[-]", _cInfoVictim.entityId, _cInfoVictim.playerName, EChatType.Whisper, null);
-                    Penalty(_cInfoKiller, _cInfoVictim);
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoVictim.entityId];
-                    int x = (int)_player.position.x;
-                    int y = (int)_player.position.y;
-                    int z = (int)_player.position.z;
-                    string _sposition = x + "," + y + "," + z;
-                    if (Victim.ContainsKey(_cInfoVictim.entityId))
-                    {
-                        Victim[_cInfoVictim.entityId] = _sposition;
-                    }
-                    else
-                    {
-                        Victim.Add(_cInfoVictim.entityId, _sposition);
-                    }
+                    _phrase802 = " you have murdered a player inside a pve zone. Their name was {PlayerName}";
                 }
-                if (!Players.ZonePvE.Contains(_cInfoVictim.entityId) & Players.ZonePvE.Contains(_cInfoKiller.entityId))
+                _phrase802 = _phrase802.Replace("{PlayerName}", _cInfoVictim.playerName);
+                ChatHook.ChatMessage(_cInfoKiller, LoadConfig.Chat_Response_Color + _phrase802 + "[-]", _cInfoVictim.entityId, _cInfoVictim.playerName, EChatType.Whisper, null);
+                Penalty(_cInfoKiller, _cInfoVictim);
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoVictim.entityId];
+                int x = (int)_player.position.x;
+                int y = (int)_player.position.y;
+                int z = (int)_player.position.z;
+                string _sposition = x + "," + y + "," + z;
+                if (Victim.ContainsKey(_cInfoVictim.entityId))
                 {
-                    string _phrase803;
-                    if (!Phrases.Dict.TryGetValue(801, out _phrase803))
+                    Victim[_cInfoVictim.entityId] = _sposition;
+                }
+                else
+                {
+                    Victim.Add(_cInfoVictim.entityId, _sposition);
+                }
+            }
+            if (ZonePvE.Contains(_cInfoVictim.entityId) & !ZonePvE.Contains(_cInfoKiller.entityId))
+            {
+                string _phrase801;
+                if (!Phrases.Dict.TryGetValue(801, out _phrase801))
+                {
+                    _phrase801 = "{PlayerName} has murdered you while you were in a pve zone.";
+                }
+                _phrase801 = _phrase801.Replace("{PlayerName}", _cInfoKiller.playerName);
+                ChatHook.ChatMessage(_cInfoVictim, LoadConfig.Chat_Response_Color + _phrase801 + "[-]", _cInfoKiller.entityId, _cInfoKiller.playerName, EChatType.Whisper, null);
+                string _phrase802;
+                if (!Phrases.Dict.TryGetValue(802, out _phrase802))
+                {
+                    _phrase802 = " you have murdered a player inside a pve zone. Their name was {PlayerName}";
+                }
+                _phrase802 = _phrase802.Replace("{PlayerName}", _cInfoVictim.playerName);
+                ChatHook.ChatMessage(_cInfoKiller, LoadConfig.Chat_Response_Color + _phrase802 + "[-]", _cInfoVictim.entityId, _cInfoVictim.playerName, EChatType.Whisper, null);
+                Penalty(_cInfoKiller, _cInfoVictim);
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoVictim.entityId];
+                int x = (int)_player.position.x;
+                int y = (int)_player.position.y;
+                int z = (int)_player.position.z;
+                string _sposition = x + "," + y + "," + z;
+                if (Victim.ContainsKey(_cInfoVictim.entityId))
+                {
+                    Victim[_cInfoVictim.entityId] = _sposition;
+                }
+                else
+                {
+                    Victim.Add(_cInfoVictim.entityId, _sposition);
+                }
+            }
+            if (!ZonePvE.Contains(_cInfoVictim.entityId) && ZonePvE.Contains(_cInfoKiller.entityId))
+            {
+                string _phrase803;
+                if (!Phrases.Dict.TryGetValue(801, out _phrase803))
+                {
+                    _phrase803 = "{PlayerName} has murdered you while they were in a pve zone.";
+                }
+                _phrase803 = _phrase803.Replace("{PlayerName}", _cInfoKiller.playerName);
+                ChatHook.ChatMessage(_cInfoVictim, LoadConfig.Chat_Response_Color + _phrase803 + "[-]", _cInfoKiller.entityId, _cInfoKiller.playerName, EChatType.Whisper, null);
+                string _phrase802;
+                if (!Phrases.Dict.TryGetValue(802, out _phrase802))
+                {
+                    _phrase802 = " you have murdered a player inside a pve zone. Their name was {PlayerName}";
+                }
+                _phrase802 = _phrase802.Replace("{PlayerName}", _cInfoVictim.playerName);
+                ChatHook.ChatMessage(_cInfoKiller, ChatHook.Player_Name_Color + _cInfoKiller.playerName + LoadConfig.Chat_Response_Color + _phrase802 + "[-]", _cInfoVictim.entityId, _cInfoVictim.playerName, EChatType.Whisper, null);
+                Penalty(_cInfoKiller, _cInfoVictim);
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoVictim.entityId];
+                int x = (int)_player.position.x;
+                int y = (int)_player.position.y;
+                int z = (int)_player.position.z;
+                string _sposition = x + "," + y + "," + z;
+                if (Victim.ContainsKey(_cInfoVictim.entityId))
+                {
+                    Victim[_cInfoVictim.entityId] = _sposition;
+                }
+                else
+                {
+                    Victim.Add(_cInfoVictim.entityId, _sposition);
+                }
+                string _file1 = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+                string _filepath1 = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file1);
+                using (StreamWriter sw = new StreamWriter(_filepath1, true))
+                {
+                    sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, murdered {2}, Steam Id {3} in a pve zone.", _cInfoKiller.playerName, _cInfoKiller.steamId, _cInfoVictim.playerName, _cInfoVictim.steamId));
+                    sw.WriteLine();
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+        }
+
+        public static void ZoneCheck(ClientInfo _cInfo, EntityPlayer _player)
+        {
+            if (Zones.Box1.Count > 0)
+            {
+                int _flagCount = 0;
+                int _X = (int)_player.position.x;
+                int _Y = (int)_player.position.y;
+                int _Z = (int)_player.position.z;
+                for (int i = 0; i < Zones.Box1.Count; i++)
+                {
+                    string[] _box = Zones.Box1[i];
+                    bool[] _box2 = Zones.Box2[i];
+                    if (Zones.BoxCheck(_box, _X, _Y, _Z, _box2))
                     {
-                        _phrase803 = "{PlayerName} has murdered you while they were in a protected zone.";
-                    }
-                    _phrase803 = _phrase803.Replace("{PlayerName}", _cInfoKiller.playerName);
-                    ChatHook.ChatMessage(_cInfoVictim, LoadConfig.Chat_Response_Color + _phrase803 + "[-]", _cInfoKiller.entityId, _cInfoKiller.playerName, EChatType.Whisper, null);
-                    string _phrase802;
-                    if (!Phrases.Dict.TryGetValue(802, out _phrase802))
-                    {
-                        _phrase802 = " you have murdered a player inside a protected zone. Their name was {PlayerName}";
-                    }
-                    _phrase802 = _phrase802.Replace("{PlayerName}", _cInfoVictim.playerName);
-                    ChatHook.ChatMessage(_cInfoKiller, ChatHook.Player_Name_Color + _cInfoKiller.playerName + LoadConfig.Chat_Response_Color + _phrase802 + "[-]", _cInfoVictim.entityId, _cInfoVictim.playerName, EChatType.Whisper, null);
-                    Penalty(_cInfoKiller, _cInfoVictim);
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoVictim.entityId];
-                    int x = (int)_player.position.x;
-                    int y = (int)_player.position.y;
-                    int z = (int)_player.position.z;
-                    string _sposition = x + "," + y + "," + z;
-                    if (Victim.ContainsKey(_cInfoVictim.entityId))
-                    {
-                        Victim[_cInfoVictim.entityId] = _sposition;
+                        if (!Zones.ZoneExit.ContainsKey(_player.entityId))
+                        {
+                            for (int j = 0; j < Zones.Box1.Count; j++)
+                            {
+                                string[] _box3 = Zones.Box1[j];
+                                bool[] _box4 = Zones.Box2[j];
+                                if (Zones.BoxCheck(_box3, _X, _Y, _Z, _box4))
+                                {
+                                    Zones.ZoneExit.Add(_player.entityId, _box3[3]);
+                                    if (_box4[1])
+                                    {
+                                        ZonePvE.Add(_player.entityId);
+                                    }
+                                    if (Zones.Zone_Message)
+                                    {
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _box3[2] + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    }
+                                    if (_box3[4] != "")
+                                    {
+                                        Zones.Response(_cInfo, _box3[4]);
+                                    }
+                                    Zones.reminder.Add(_player.entityId, DateTime.Now);
+                                    Zones.reminderMsg.Add(_player.entityId, _box3[5]);
+                                    return;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            string _exitMsg;
+                            if (Zones.ZoneExit.TryGetValue(_player.entityId, out _exitMsg))
+                            {
+                                if (_exitMsg != _box[3])
+                                {
+                                    for (int j = 0; j < Zones.Box1.Count; j++)
+                                    {
+                                        string[] _box3 = Zones.Box1[j];
+                                        bool[] _box4 = Zones.Box2[j];
+                                        if (Zones.BoxCheck(_box3, _X, _Y, _Z, _box4))
+                                        {
+                                            Zones.ZoneExit[_player.entityId] = _box3[3];
+                                            if (_box4[1])
+                                            {
+                                                if (!ZonePvE.Contains(_player.entityId))
+                                                {
+                                                    ZonePvE.Add(_player.entityId);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (ZonePvE.Contains(_player.entityId))
+                                                {
+                                                    ZonePvE.Remove(_player.entityId);
+                                                }
+                                            }
+                                            if (Zones.Zone_Message)
+                                            {
+                                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _box3[2] + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                            }
+                                            if (_box3[4] != "")
+                                            {
+                                                Zones.Response(_cInfo, _box3[4]);
+                                            }
+                                            Zones.reminder[_player.entityId] = DateTime.Now;
+                                            Zones.reminderMsg[_player.entityId] = _box3[5];
+                                            return;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    return;
+                                }
+                            }
+                        }
                     }
                     else
                     {
-                        Victim.Add(_cInfoVictim.entityId, _sposition);
-                    }
-                    string _file1 = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                    string _filepath1 = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file1);
-                    using (StreamWriter sw = new StreamWriter(_filepath1, true))
-                    {
-                        sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, murdered {2}, Steam Id {3} in a protected zone.", _cInfoKiller.playerName, _cInfoKiller.steamId, _cInfoVictim.playerName, _cInfoVictim.steamId));
-                        sw.WriteLine();
-                        sw.Flush();
-                        sw.Close();
+                        _flagCount++;
+                        if (_flagCount == Zones.Box1.Count && Zones.ZoneExit.ContainsKey(_player.entityId))
+                        {
+                            if (Zones.Zone_Message)
+                            {
+                                string _msg;
+                                if (Zones.ZoneExit.TryGetValue(_player.entityId, out _msg))
+                                {
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _msg + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                            }
+                            Zones.ZoneExit.Remove(_player.entityId);
+                            if (ZonePvE.Contains(_player.entityId))
+                            {
+                                ZonePvE.Remove(_player.entityId);
+                            }
+                            Zones.reminder.Remove(_player.entityId);
+                            Zones.reminderMsg.Remove(_player.entityId);
+                        }
                     }
                 }
             }
@@ -342,8 +456,7 @@ namespace ServerTools
                     if (DateTime.Now < _dt)
                     {
                         _donator = true;
-                        int _newDelay = 4;
-                        if (_timepassed <= _newDelay)
+                        if (_timepassed <= 6)
                         {
                             string _deathPos;
                             if (Victim.TryGetValue(_cInfo.entityId, out _deathPos))
@@ -362,7 +475,7 @@ namespace ServerTools
                             string _phrase811;
                             if (!Phrases.Dict.TryGetValue(606, out _phrase811))
                             {
-                                _phrase811 = " you can only use {CommandPrivate}{Command50} for four minutes after respawning. Time has expired.";
+                                _phrase811 = " you can only use {CommandPrivate}{Command50} for six minutes after being killed in a pve zone. Time has expired.";
                             }
                             _phrase811 = _phrase811.Replace("{PlayerName}", _cInfo.playerName);
                             _phrase811 = _phrase811.Replace("{CommandPrivate}", ChatHook.Command_Private);
@@ -375,7 +488,7 @@ namespace ServerTools
             }
             if (!_donator)
             {
-                if (_timepassed <= 2)
+                if (_timepassed <= 3)
                 {
                     string _deathPos;
                     if (Victim.TryGetValue(_cInfo.entityId, out _deathPos))
@@ -394,7 +507,7 @@ namespace ServerTools
                     string _phrase606;
                     if (!Phrases.Dict.TryGetValue(606, out _phrase606))
                     {
-                        _phrase606 = " you can only use {CommandPrivate}{Command50} for two minutes after respawning. Time has expired.";
+                        _phrase606 = " you can only use {CommandPrivate}{Command50} for three minutes after being killed in a pve zone. Time has expired.";
                     }
                     _phrase606 = _phrase606.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase606 = _phrase606.Replace("{CommandPrivate}", ChatHook.Command_Private);
@@ -409,32 +522,39 @@ namespace ServerTools
         {
             if (Jail_Enabled)
             {
-                string _message = "[FF0000]{PlayerName} has been jailed for murder in a protected zone.";
+                string _message = "[FF0000]{PlayerName} has been jailed for murder in a pve zone.";
                 _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
                 ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0} 120", _cInfoKiller.playerId), (ClientInfo)null);
-                Forgive[_cInfoVictim.entityId] = _cInfoKiller.entityId;
+                if (!Forgive.ContainsKey(_cInfoVictim.entityId))
+                {
+                    Forgive.Add(_cInfoVictim.entityId, _cInfoKiller.entityId);
+                }
+                else
+                {
+                    Forgive[_cInfoVictim.entityId] = _cInfoKiller.entityId;
+                }
             }
             if (Kill_Enabled)
             {
-                string _message = "[FF0000]{PlayerName} has been executed for murder in a protected zone.";
+                string _message = "[FF0000]{PlayerName} has been executed for murder in a pve zone.";
                 _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
                 ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfoKiller.playerId), (ClientInfo)null);
             }
             if (Kick_Enabled)
             {
-                string _message = "[FF0000]{PlayerName} has been kicked for murder in a protected zone.";
+                string _message = "[FF0000]{PlayerName} has been kicked for murder in a pve zone.";
                 _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
                 ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for murder in a protected zone\"", _cInfoKiller.playerId), (ClientInfo)null);
+                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for murder in a pve zone\"", _cInfoKiller.playerId), (ClientInfo)null);
             }
             if (Ban_Enabled)
             {
-                string _message = "[FF0000]{PlayerName} has been banned for murder in a protected zone.";
+                string _message = "[FF0000]{PlayerName} has been banned for murder in a pve zone.";
                 _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
                 ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for murder in a protected zone\"", _cInfoKiller.playerId), (ClientInfo)null);
+                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for murder in a pve zone\"", _cInfoKiller.playerId), (ClientInfo)null);
             }
         }
 
@@ -451,7 +571,6 @@ namespace ServerTools
 
             if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
             {
-                Players.NoFlight.Add(_cInfo.entityId);
                 SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
             }
             else

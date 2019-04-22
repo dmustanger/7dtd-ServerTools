@@ -17,10 +17,10 @@ namespace ServerTools
 
         public static void BountyList(ClientInfo _cInfo, string _playerName)
         {
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-            for (int i = 0; i < _cInfoList.Count; i++)
+            List<ClientInfo> ClientInfoList = ConnectionManager.Instance.Clients.List.ToList();
+            for (int i = 0; i < ClientInfoList.Count; i++)
             {
-                ClientInfo _cInfo1 = _cInfoList[i];
+                ClientInfo _cInfo1 = ClientInfoList[i];
                 if (_cInfo1 != null)
                 {
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
@@ -85,7 +85,7 @@ namespace ServerTools
                                 int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bounty);
                                 _result.Dispose();
                                 _sql = string.Format("UPDATE Players SET bounty = {0} WHERE steamid = '{1}'", _bounty + _cost, _cInfo1.playerId);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "Bounties");
                                 string _message1 = " you have added {Value} bounty to {PlayerName}.[-]";
                                 _message1 = _message1.Replace("{Value}", _cost.ToString());
                                 _message1 = _message1.Replace("{PlayerName}", _cInfo1.playerName);
@@ -123,7 +123,7 @@ namespace ServerTools
                             int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bounty);
                             _result.Dispose();
                             _sql = string.Format("UPDATE Players SET bounty = {0} WHERE steamid = '{1}'", _bounty + Minimum_Bounty, _cInfo1.playerId);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "Bounties");
                             string _message1 = " you have added {Value} bounty to {PlayerName}.[-]";
                             _message1 = _message1.Replace("{Value}", Minimum_Bounty.ToString());
                             _message1 = _message1.Replace("{PlayerName}", _cInfo1.playerName);
@@ -142,7 +142,7 @@ namespace ServerTools
 
         public static void PlayerKilled(EntityPlayer _player1, EntityPlayer _player2, ClientInfo _cInfo1, ClientInfo _cInfo2)
         {
-            if (!_player1.IsFriendsWith(_player2) && !_player2.IsFriendsWith(_player1) && !_player1.Party.ContainsMember(_player2))
+            if (!_player1.IsFriendsWith(_player2) && !_player2.IsFriendsWith(_player1) && !_player1.Party.ContainsMember(_player2) && !_player2.Party.ContainsMember(_player1))
             {
                 if (ClanManager.IsEnabled)
                 {
@@ -181,18 +181,18 @@ namespace ServerTools
                     int.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
                     int.TryParse(_result2.Rows[0].ItemArray.GetValue(1).ToString(), out _hunterCountKiller);
                     _result2.Dispose();
-                    if (Bonus > 0 && _hunterCountVictim >= Bonus)
+                    if (_hunterCountVictim >= Bonus)
                     {
                         _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, bountyHunter = {1} WHERE steamid = '{2}'", _playerSpentCoins + _bounty + Bonus, _hunterCountKiller + 1, _cInfo2.playerId);
-                        SQL.FastQuery(_sql);
+                        SQL.FastQuery(_sql, "Bounties");
                     }
                     else
                     {
                         _sql = string.Format("UPDATE Players SET playerSpentCoins = {0}, bountyHunter = {1} WHERE steamid = '{2}'", _playerSpentCoins + _bounty, _hunterCountKiller + 1, _cInfo2.playerId);
-                        SQL.FastQuery(_sql);
+                        SQL.FastQuery(_sql, "Bounties");
                     }
                     _sql = string.Format("UPDATE Players SET bounty = 0, bountyHunter = 0 WHERE steamid = '{0}'", _cInfo1.playerId);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "Bounties");
                     string _phrase912;
                     if (!Phrases.Dict.TryGetValue(912, out _phrase912))
                     {
@@ -247,7 +247,7 @@ namespace ServerTools
                                 int.TryParse(_result3.Rows[0].ItemArray.GetValue(0).ToString(), out _oldBounty);
                                 _result3.Dispose();
                                 _sql = string.Format("UPDATE Players SET bounty = {0} WHERE steamid = '{1}'", _oldBounty + Bounties.Bonus, _cInfo1.playerId);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "Bounties");
                                 using (StreamWriter sw = new StreamWriter(filepath, true))
                                 {
                                     sw.WriteLine(string.Format("{0}: {1} is on a kill streak of {2}. Their bounty has increased.", DateTime.Now, _cInfo2.playerName, _newValue));

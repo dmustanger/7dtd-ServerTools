@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Sets the Max Ping limit for the server.";
+            return "[ServerTools]-Sets The Max Ping Limit For The Server.";
         }
         public override string GetHelp()
         {

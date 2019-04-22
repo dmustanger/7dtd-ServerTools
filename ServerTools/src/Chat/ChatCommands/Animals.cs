@@ -227,7 +227,7 @@ namespace ServerTools
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 }
                 _sql = string.Format("UPDATE Players SET lastAnimals = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "Animals");
             }
             else
             {

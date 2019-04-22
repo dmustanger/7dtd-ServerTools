@@ -43,17 +43,25 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="src\AntiCheat\DupeLog.cs" />
+    <Compile Include="src\AntiCheat\GodModeFlight.cs" />
+    <Compile Include="src\AntiCheat\PlayerDamage.cs" />
     <Compile Include="src\AutoBackup\AutoBackup.cs" />
     <Compile Include="src\Bank\Bank.cs" />
     <Compile Include="src\Bloodmoon_Warrior\Bloodmoon_Warrior.cs" />
     <Compile Include="src\Chat\AdminChatCommands\SetMarket.cs" />
+    <Compile Include="src\Chat\BreakTime.cs" />
     <Compile Include="src\Chat\ChatCommands\MarketChat.cs" />
     <Compile Include="src\Chat\ChatCommands\Mogul.cs" />
     <Compile Include="src\Chat\ChatCommands\Session.cs" />
     <Compile Include="src\Chat\ChatColorPrefix\ChatColorPrefix.cs" />
     <Compile Include="src\ConsoleCommands\AdminChatCommandConsole.cs" />
+    <Compile Include="src\ConsoleCommands\AutoBackupConsole.cs" />
+    <Compile Include="src\ConsoleCommands\BanPlayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\DonorConsole.cs" />
     <Compile Include="src\ConsoleCommands\ChatColorPrefixConsole.cs" />
+    <Compile Include="src\ConsoleCommands\KillAll.cs" />
+    <Compile Include="src\ConsoleCommands\TeleportUnderPlayerConsole.cs" />
+    <Compile Include="src\ConsoleCommands\TrackingConsole.cs" />
     <Compile Include="src\ConsoleCommands\WorldRadiusConsole.cs" />
     <Compile Include="src\ConsoleCommands\WeatherVoteConsole.cs" />
     <Compile Include="src\ConsoleCommands\WalletConsole.cs" />
@@ -92,7 +100,6 @@
     <Compile Include="src\ConsoleCommands\HardcoreConsole.cs" />
     <Compile Include="src\ConsoleCommands\GimmeConsole.cs" />
     <Compile Include="src\ConsoleCommands\FriendTeleportConsole.cs" />
-    <Compile Include="src\ConsoleCommands\FlightCheckConsole.cs" />
     <Compile Include="src\ConsoleCommands\FirstClaimBlockConsole.cs" />
     <Compile Include="src\ConsoleCommands\EntityCleanupConsole.cs" />
     <Compile Include="src\ConsoleCommands\DupeLogConsole.cs" />
@@ -129,9 +136,8 @@
     <Compile Include="src\AntiCheat\WorldRadius.cs" />
     <Compile Include="src\AntiCheat\PlayerStatCheck.cs" />
     <Compile Include="src\AntiCheat\PlayerLogs.cs" />
-    <Compile Include="src\AntiCheat\UndergroundCheck.cs" />
-    <Compile Include="src\AntiCheat\FlightCheck.cs" />
     <Compile Include="src\AntiCheat\InvalidItems.cs" />
+    <Compile Include="src\Tracking\Tracking.cs" />
     <Compile Include="src\Zones\Zones.cs" />
     <Compile Include="src\API.cs" />
     <Compile Include="src\AuctionBox\AuctionBox.cs" />
@@ -192,7 +198,6 @@
     <Compile Include="src\ConsoleCommands\StopServerCommandConsole.cs" />
     <Compile Include="src\ConsoleCommands\TempBanConsole.cs" />
     <Compile Include="src\ConsoleCommands\PollConsole.cs" />
-    <Compile Include="src\ConsoleCommands\UndergroundCheckConsole.cs" />
     <Compile Include="src\CountryBan\CountryBan.cs" />
     <Compile Include="src\EntityCleanup\EntityCleanup.cs" />
     <Compile Include="src\Functions\LoadConfig.cs" />
@@ -211,7 +216,6 @@
     <Compile Include="src\NewSpawnTele\NewSpawnTele.cs" />
     <Compile Include="src\OutputLog\SdtdLog.cs" />
     <Compile Include="src\PersistentData\MySqlDatabase.cs" />
-    <Compile Include="src\PersistentData\Player.cs" />
     <Compile Include="src\PersistentData\Players.cs" />
     <Compile Include="src\PersistentData\SQL.cs" />
     <Compile Include="src\PersistentData\SQLiteDatabase.cs" />

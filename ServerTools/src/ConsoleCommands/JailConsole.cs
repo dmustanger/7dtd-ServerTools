@@ -11,7 +11,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools]-Puts a player in jail.";
+            return "[ServerTools]-Puts A Player In Jail.";
         }
         public override string GetHelp()
         {
@@ -44,38 +44,14 @@ namespace ServerTools
                 if (_params[0].ToLower().Equals("off"))
                 {
                     Jail.IsEnabled = false;
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load("@" + API.ConfigPath + "/ServerToolsConfig.xml");
-                    XmlNodeList aNodes = doc.SelectNodes("/ServerTools/Tools");
-                    foreach (XmlNode aNode in aNodes)
-                    {
-                        XmlAttribute _attribute1 = aNode.Attributes["Name"];
-                        XmlAttribute _attribute2 = aNode.Attributes["Enable"];
-                        if (_attribute1 != null && _attribute1.Value == "Jail" && _attribute2 != null)
-                        {
-                            _attribute2.Value = "False";
-                        }
-                    }
-                    doc.Save("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Jail has been set to off"));
                     return;
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
                     Jail.IsEnabled = true;
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load("@" + API.ConfigPath + "/ServerToolsConfig.xml");
-                    XmlNodeList aNodes = doc.SelectNodes("/ServerTools/Tools");
-                    foreach (XmlNode aNode in aNodes)
-                    {
-                        XmlAttribute _attribute1 = aNode.Attributes["Name"];
-                        XmlAttribute _attribute2 = aNode.Attributes["Enable"];
-                        if (_attribute1 != null && _attribute1.Value == "Jail" && _attribute2 != null)
-                        {
-                            _attribute2.Value = "True";
-                        }
-                    }
-                    doc.Save("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Jail has been set to on"));
                     return;
                 }
@@ -152,14 +128,14 @@ namespace ServerTools
                                     SdtdConsole.Instance.Output(string.Format("You have put {0} in jail for life.", _cInfo.playerName));
                                 }
                                 string _sql = string.Format("UPDATE Players SET jailTime = {0}, jailName = '{1}', jailDate = '{2}' WHERE steamid = '{3}'", _jailTime, _cInfo.playerName, DateTime.Now, _cInfo.playerId);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "JailConsole");
                             }
                         }
                         else
                         {
                             string _id = SQL.EscapeString(_params[1]);
                             string _sql = string.Format("UPDATE Players SET jailTime = {0}, jailName = 'Unknown', jailDate = '{1}' WHERE steamid = '{2}'", _jailTime, DateTime.Now, _id);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "JailConsole");
                             SdtdConsole.Instance.Output(string.Format("Player with Id {0} can not be found online but has been set for jail.", _id));
                             return;
                         }
@@ -209,7 +185,7 @@ namespace ServerTools
                                 _phrase501 = _phrase501.Replace("{PlayerName}", _cInfo.playerName);
                                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase501 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 string _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _cInfo.playerId);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "JailConsole");
                                 SdtdConsole.Instance.Output(string.Format("You have released a player with steam id {0} from jail. ", _params[1]));
                                 return;
                             }
@@ -217,7 +193,7 @@ namespace ServerTools
                             {
                                 string _id = SQL.EscapeString(_params[1]);
                                 string _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _id);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "JailConsole");
                                 Jail.Jailed.Remove(_cInfo.playerId);
                                 SdtdConsole.Instance.Output(string.Format("Player with steam Id {0} has been removed from the jail list.", _params[1]));
                                 return;

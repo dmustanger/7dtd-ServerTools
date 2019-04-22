@@ -77,10 +77,10 @@ namespace ServerTools
 
         public static void List(ClientInfo _cInfo)
         {
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-            for (int i = 0; i < _cInfoList.Count; i++)
+            List<ClientInfo> ClientInfoList = ConnectionManager.Instance.Clients.List.ToList();
+            for (int i = 0; i < ClientInfoList.Count; i++)
             {
-                ClientInfo _cInfo2 = _cInfoList[i];
+                ClientInfo _cInfo2 = ClientInfoList[i];
                 if (_cInfo2 != _cInfo)
                 {
                     string _phrase958;

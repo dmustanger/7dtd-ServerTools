@@ -278,11 +278,10 @@ namespace ServerTools
                 int.TryParse(_cordsplit[0], out x);
                 int.TryParse(_cordsplit[1], out y);
                 int.TryParse(_cordsplit[2], out z);
-                Players.NoFlight.Add(_cInfo.entityId);
                 _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 _sql = string.Format("UPDATE Players SET lastWaypoint = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "Waypoints");
                 string _phrase577;
                 if (!Phrases.Dict.TryGetValue(577, out _phrase577))
                 {
@@ -359,7 +358,7 @@ namespace ServerTools
                             string _wposition = x + "," + y + "," + z;
                             _waypoint = SQL.EscapeString(_waypoint);
                             _sql = string.Format("INSERT INTO Waypoints (steamid, wayPointName, position) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _waypoint, _wposition);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "Waypoints");
                             string _message = " saved waypoint name as {Name} to {X} {Y} {Z}.";
                             _message = _message.Replace("{Name}", _waypoint);
                             _message = _message.Replace("{X}", x.ToString());
@@ -391,7 +390,7 @@ namespace ServerTools
                         string _wposition = x + "," + y + "," + z;
                         _waypoint = SQL.EscapeString(_waypoint);
                         _sql = string.Format("INSERT INTO Waypoints (steamid, wayPointName, position) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _waypoint, _wposition);
-                        SQL.FastQuery(_sql);
+                        SQL.FastQuery(_sql, "Waypoints");
                         string _message = " saved waypoint name as {Name} to {X} {Y} {Z}.";
                         _message = _message.Replace("{Name}", _waypoint);
                         _message = _message.Replace("{X}", x.ToString());
@@ -429,7 +428,7 @@ namespace ServerTools
                             string _wposition = x + "," + y + "," + z;
                             _waypoint = SQL.EscapeString(_waypoint);
                             _sql = string.Format("INSERT INTO Waypoints (steamid, wayPointName, position) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _waypoint, _wposition);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "Waypoints");
                             string _message = " saved waypoint name as {Name} to {X} {Y} {Z}.";
                             _message = _message.Replace("{Name}", _waypoint);
                             _message = _message.Replace("{X}", x.ToString());
@@ -471,7 +470,7 @@ namespace ServerTools
                         string _wposition = x + "," + y + "," + z;
                         _waypoint = SQL.EscapeString(_waypoint);
                         _sql = string.Format("INSERT INTO Waypoints (steamid, wayPointName, position) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _waypoint, _wposition);
-                        SQL.FastQuery(_sql);
+                        SQL.FastQuery(_sql, "Waypoints");
                         string _message = " saved waypoint name as {Name} to {X} {Y} {Z}.";
                         _message = _message.Replace("{Name}", _waypoint);
                         _message = _message.Replace("{X}", x.ToString());
@@ -501,14 +500,14 @@ namespace ServerTools
             if (_result.Rows.Count > 0)
             {
                 _sql = string.Format("DELETE FROM Waypoints WHERE steamid = '{0}' AND wayPointName = '{1}'", _cInfo.playerId, _waypoint);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "Waypoints");
                 string _phrase583;
                 if (!Phrases.Dict.TryGetValue(583, out _phrase583))
                 {
                     _phrase583 = " waypoint {Name} has been deleted.";
                 }
                 _phrase583 = _phrase583.Replace("{Name}", _waypoint);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase583 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase583 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -518,7 +517,7 @@ namespace ServerTools
                     _phrase578 = " you have not saved this waypoint.";
                 }
                 _phrase578 = _phrase578.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase578 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase578 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             _result.Dispose(); 
         }
@@ -678,11 +677,10 @@ namespace ServerTools
                 int.TryParse(_cordsplit[0], out x);
                 int.TryParse(_cordsplit[1], out y);
                 int.TryParse(_cordsplit[2], out z);
-                Players.NoFlight.Add(_cInfo.entityId);
                 _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 _sql = string.Format("UPDATE Players SET lastWaypoint = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "Waypoints");
                 string _phrase577;
                 if (!Phrases.Dict.TryGetValue(577, out _phrase577))
                 {
@@ -759,7 +757,6 @@ namespace ServerTools
                         int.TryParse(_cords[0], out x);
                         int.TryParse(_cords[1], out y);
                         int.TryParse(_cords[2], out z);
-                        Players.NoFlight.Add(_cInfo.entityId);
                         _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                         Invite.Remove(_cInfo.entityId);
                         FriendPosition.Remove(_cInfo.entityId);

@@ -2,11 +2,13 @@
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
+using System.Linq;
 
 namespace ServerTools
 {
     public class SQLiteDatabase
     {
+        public static bool FastQ = false;
         private static SQLiteConnection connection;
         private static SQLiteCommand cmd;
         private static List<string> FQuery = new List<string>();
@@ -17,11 +19,11 @@ namespace ServerTools
             string _filepath = string.Format("{0}/ServerTools.db", GameUtils.GetSaveGameDir());
             if (File.Exists(_filepath))
             {
-                _dbConnection = string.Format("Data Source={0};Version=3;New=False;Compress=True;", _filepath);
+                _dbConnection = string.Format("Data Source={0};Version=3;New=False;Compress=True;Pooling=false;", _filepath);
             }
             else
             {
-                _dbConnection = string.Format("Data Source={0};Version=3;New=True;Compress=True;", _filepath);
+                _dbConnection = string.Format("Data Source={0};Version=3;New=True;Compress=True;Pooling=false;", _filepath);
             }
             connection = new SQLiteConnection(_dbConnection);
             CreateTables();
@@ -96,7 +98,7 @@ namespace ServerTools
                 "customCommand9 TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
                 "customCommand10 TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
                 "countryban TEXT DEFAULT 'false' " +
-                ");");
+                ");", "SQLiteDatabase");
             FastQuery("CREATE TABLE IF NOT EXISTS Auction (" +
                 "auctionid INTEGER PRIMARY KEY, " +
                 "steamid TEXT NOT NULL, " +
@@ -105,13 +107,13 @@ namespace ServerTools
                 "itemQuality INTEGER NOT NULL, " +
                 "itemPrice INTEGER NOT NULL, " +
                 "cancelTime TEXT DEFAULT '10/29/2000 7:30:00 AM' " +
-                ");");
+                ");", "SQLiteDatabase");
             FastQuery("CREATE TABLE IF NOT EXISTS Waypoints (" +
                 "wayPointid INTEGER PRIMARY KEY, " +
                 "steamid TEXT NOT NULL, " +
                 "wayPointName TEXT NOT NULL, " +
                 "position TEXT NOT NULL " +
-                ");");
+                ");", "SQLiteDatabase");
             FastQuery("CREATE TABLE IF NOT EXISTS Polls (" +
                 "pollid INTEGER PRIMARY KEY, " +
                 "pollOpen TEXT DEFAULT 'false', " +
@@ -120,7 +122,7 @@ namespace ServerTools
                 "pollMessage TEXT NOT NULL, " +
                 "pollYes INTEGER DEFAULT 0, " +
                 "pollNo INTEGER DEFAULT 0 " +
-                ");");
+                ");", "SQLiteDatabase");
             FastQuery("CREATE TABLE IF NOT EXISTS Events (" +
                 "eventid INTEGER PRIMARY KEY, " +
                 "eventAdmin TEXT, " +
@@ -130,20 +132,20 @@ namespace ServerTools
                 "eventPlayerCount INTEGER, " +
                 "eventTime INTEGER, " +
                 "eventActive TEXT " +
-                ");");
+                ");", "SQLiteDatabase");
             FastQuery("CREATE TABLE IF NOT EXISTS EventSpawns (" +
                 "eventid INTEGER NOT NULL, " +
                 "eventTeam INTEGER NOT NULL, " +
                 "eventSpawn TEXT, " +
                 "eventRespawn TEXT, " +
                 "FOREIGN KEY(eventid) REFERENCES Events(eventid) " +
-                ");");
-            FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER);");
+                ");", "SQLiteDatabase");
+            FastQuery("CREATE TABLE IF NOT EXISTS Config (sql_version INTEGER);", "SQLiteDatabase");
             int _version = 1;
             DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");
             if (_result.Rows.Count == 0)
             {
-                FastQuery("INSERT INTO Config (sql_version) VALUES (1)");
+                FastQuery("INSERT INTO Config (sql_version) VALUES (1)", "SQLiteDatabase");
             }
             else
             {
@@ -175,33 +177,32 @@ namespace ServerTools
             return dt;
         }
 
-        public static void FastQuery(string _sql)
+        public static void FastQuery(string _sql, string _class)
         {
-            if (FQuery.Count > 0)
-            {
-                FQuery.Add(_sql);
-            }
-            else
+            FQuery.Add(_sql);
+            if (!FastQ)
             {
                 try
                 {
+                    FastQ = true;
                     connection.Open();
-                    cmd = new SQLiteCommand(_sql, connection);
+                    cmd = new SQLiteCommand(FQuery[0], connection);
                     cmd.ExecuteNonQuery();
                 }
                 catch (SQLiteException e)
                 {
                     Log.Out(string.Format("[ServerTools] SQLiteException in SQLiteDatabase.FastQuery: {0}", e));
                 }
-                connection.Close();
-                if (FQuery.Contains(_sql))
-                {
-                    FQuery.Remove(_sql);
-                }
+                FQuery.Remove(FQuery[0]);
                 if (FQuery.Count > 0)
                 {
-                    _sql = FQuery[0];
-                    FastQuery(_sql);
+                    cmd = new SQLiteCommand(FQuery[0], connection);
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    connection.Close();
+                    FastQ = false;
                 }
             }
         }

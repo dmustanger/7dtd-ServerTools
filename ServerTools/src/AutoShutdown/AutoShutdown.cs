@@ -21,7 +21,7 @@ namespace ServerTools
             ulong _worldTime = GameManager.Instance.World.worldTime;
             int _daysUntilHorde = Days_Until_Horde - GameUtils.WorldTimeToDays(_worldTime) % Days_Until_Horde;
             int _worldHours = (int)(_worldTime / 1000UL) % 24;
-            if (_daysUntilHorde == Days_Until_Horde && (_worldHours >= (int)SkyManager.GetDuskTime() - 3) || SkyManager.BloodMoon())
+            if (SkyManager.BloodMoon())
             {
                 Bloodmoon = true;
             }

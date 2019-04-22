@@ -82,11 +82,6 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Custom Commands entry because of missing a Response attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("Response2"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Custom Commands entry because of missing a Response2 attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
                         if (!_line.HasAttribute("Hidden"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Custom Commands entry because of missing a Hidden attribute: {0}", subChild.OuterXml));
@@ -120,10 +115,9 @@ namespace ServerTools
                         if (!Dict.ContainsKey(_trigger))
                         {
                             string _response1 = _line.GetAttribute("Response");
-                            string _response2 = _line.GetAttribute("Response2");
                             string _hidden = _line.GetAttribute("Hidden");
-                            string[] _response = { _response1, _response2, _hidden };
-                            Dict.Add(_trigger, _response);
+                            string[] _s = { _response1, _hidden };
+                            Dict.Add(_trigger, _s);
                         }
                         if (!Dict1.ContainsKey(_trigger))
                         {
@@ -151,22 +145,22 @@ namespace ServerTools
                         int[] _value;
                         if (Dict1.TryGetValue(kvp.Key, out _value))
                         {
-                            sw.WriteLine(string.Format("        <Command Number=\"{0}\" Trigger=\"{1}\" Response=\"{2}\" Response2=\"{3}\" DelayBetweenUses=\"{4}\" Hidden=\"{5}\" Cost=\"{6}\" />", _value[0], kvp.Key, kvp.Value[0], kvp.Value[1], _value[1], kvp.Value[2], _value[2]));
+                            sw.WriteLine(string.Format("        <Command Number=\"{0}\" Trigger=\"{1}\" Response=\"{2}\" DelayBetweenUses=\"{3}\" Hidden=\"{4}\" Cost=\"{5}\" />", _value[0], kvp.Key, kvp.Value[0], _value[1], kvp.Value[1], _value[2]));
                         }
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <Command Number=\"1\" Trigger=\"help\" Response=\"global Type " + ChatHook.Command_Private + Command15 + " for a list of chat commands.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"2\" Trigger=\"info\" Response=\"global Server Info: \" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"3\" Trigger=\"rules\" Response=\"whisper Visit YourSiteHere to see the rules.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"whisper Visit YourSiteHere.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"whisper The Teamspeak3 info is YourInfoHere.\" Response2=\"\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"6\" Trigger=\"spawnz\" Response=\"ser {EntityId} 40 @ 4 11 14\" Response2=\"pm Zombies have spawn around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"7\" Trigger=\"discord\" Response=\"whisper The discord channel is .\" Response2=\"\" DelayBetweenUses=\"20\" Hidden=\"true\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"8\" Trigger=\"test1\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"30\" Hidden=\"true\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"9\" Trigger=\"test2\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"40\" Hidden=\"true\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"10\" Trigger=\"test3\" Response=\"Your command here\" Response2=\"\" DelayBetweenUses=\"40\" Hidden=\"true\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"1\" Trigger=\"help\" Response=\"global Type " + ChatHook.Command_Private + Command15 + " for a list of chat commands.\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"2\" Trigger=\"info\" Response=\"global Server Info: \" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"3\" Trigger=\"rules\" Response=\"whisper Visit YourSiteHere to see the rules.\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"whisper Visit YourSiteHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"whisper The Teamspeak3 info is YourInfoHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"6\" Trigger=\"spawnz\" Response=\"ser {EntityId} 40 @ 4 11 14 ^ pm Zombies have spawn around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"7\" Trigger=\"discord\" Response=\"whisper The discord channel is .\" DelayBetweenUses=\"20\" Hidden=\"true\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"8\" Trigger=\"test1\" Response=\"Your command here\" DelayBetweenUses=\"30\" Hidden=\"true\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"9\" Trigger=\"test2\" Response=\"Your command here\" DelayBetweenUses=\"40\" Hidden=\"true\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"10\" Trigger=\"test3\" Response=\"Your command here\" DelayBetweenUses=\"40\" Hidden=\"true\" Cost=\"0\" />");
                 }
                 sw.WriteLine("    </Commands>");
                 sw.WriteLine("</CustomCommands>");
@@ -449,7 +443,7 @@ namespace ServerTools
             {
                 foreach (KeyValuePair<string, string[]> kvp in Dict)
                 {
-                    string _h = kvp.Value[2];
+                    string _h = kvp.Value[1];
                     bool _result;
                     if (bool.TryParse(_h, out _result))
                     {
@@ -499,7 +493,7 @@ namespace ServerTools
             {
                 if (_c[1] == 0)
                 {
-                    CommandCost(_cInfo, _message, _playerName, _announce, _c);
+                    Permission(_cInfo, _message, _playerName, _announce, _c);
                 }
                 else
                 {
@@ -528,7 +522,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
+                                            Permission(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -568,7 +562,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
+                                            Permission(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -608,7 +602,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
+                                            Permission(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -648,7 +642,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
+                                            Permission(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -688,7 +682,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
+                                            Permission(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -728,7 +722,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
+                                            Permission(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -768,7 +762,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
+                                            Permission(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -808,7 +802,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
+                                            Permission(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -848,7 +842,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
+                                            Permission(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -888,7 +882,7 @@ namespace ServerTools
                                         int _newDelay = _c[1] / 2;
                                         if (_timepassed >= _newDelay)
                                         {
-                                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
+                                            Permission(_cInfo, _message, _playerName, _announce, _c);
                                         }
                                         else
                                         {
@@ -908,7 +902,7 @@ namespace ServerTools
                     {
                         if (_timepassed >= _c[1] || _timepassed == -1)
                         {
-                            CommandCost(_cInfo, _message, _playerName, _announce, _c);
+                            Permission(_cInfo, _message, _playerName, _announce, _c);
                         }
                         else
                         {
@@ -940,11 +934,30 @@ namespace ServerTools
             _phrase616 = _phrase616.Replace("{TimeRemaining}", _timeleft.ToString());
             if (_announce)
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase616 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase616 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase616 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase616 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+        }
+
+        public static void Permission(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int[] _c)
+        {
+            string[] _command = { _message };
+            if (GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo.playerId))
+            {
+                CommandCost(_cInfo, _message, _playerName, _announce, _c);
+            }
+            else
+            {
+                string _phrase827;
+                if (!Phrases.Dict.TryGetValue(827, out _phrase827))
+                {
+                    _phrase827 = " you do not have permission to use {Command}.";
+                }
+                _phrase827 = _phrase827.Replace("{Command}", _message);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase827 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -966,7 +979,7 @@ namespace ServerTools
                         _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
                     }
                     _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -980,82 +993,82 @@ namespace ServerTools
             if (_c[0] == 1)
             {
                 string _sql = string.Format("UPDATE Players SET customCommand1 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "CustomCommands");
             }
             if (_c[0] == 2)
             {
                 string _sql = string.Format("UPDATE Players SET customCommand2 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "CustomCommands");
             }
             if (_c[0] == 3)
             {
                 string _sql = string.Format("UPDATE Players SET customCommand3 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "CustomCommands");
             }
             if (_c[0] == 4)
             {
                 string _sql = string.Format("UPDATE Players SET customCommand4 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "CustomCommands");
             }
             if (_c[0] == 5)
             {
                 string _sql = string.Format("UPDATE Players SET customCommand5 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "CustomCommands");
             }
             if (_c[0] == 6)
             {
                 string _sql = string.Format("UPDATE Players SET customCommand6 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "CustomCommands");
             }
             if (_c[0] == 7)
             {
                 string _sql = string.Format("UPDATE Players SET customCommand7 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "CustomCommands");
             }
             if (_c[0] == 8)
             {
                 string _sql = string.Format("UPDATE Players SET customCommand8 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "CustomCommands");
             }
             if (_c[0] == 9)
             {
                 string _sql = string.Format("UPDATE Players SET customCommand9 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "CustomCommands");
             }
             if (_c[0] == 10)
             {
                 string _sql = string.Format("UPDATE Players SET customCommand10 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "CustomCommands");
             }
             string[] _r;
             if (Dict.TryGetValue(_message, out _r))
             {
-                string _response = _r[0];
-                if (_response != null)
+                string[] _responseSplit = _r[0].Split('^');
+                foreach (string _response in _responseSplit)
                 {
-                    _response = _response.Replace("{EntityId}", _cInfo.entityId.ToString());
-                    _response = _response.Replace("{SteamId}", _cInfo.playerId);
-                    _response = _response.Replace("{PlayerName}", _playerName);
-                    if (_response.StartsWith("global "))
+                    string _responseAdj = _response;
+                    _responseAdj = _responseAdj.Replace("{EntityId}", _cInfo.entityId.ToString());
+                    _responseAdj = _responseAdj.Replace("{SteamId}", _cInfo.playerId);
+                    _responseAdj = _responseAdj.Replace("{PlayerName}", _playerName);
+                    if (_responseAdj.StartsWith("global "))
                     {
-                        _response = _response.Replace("global ", "");
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        _responseAdj = _responseAdj.Replace("global ", "");
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     }
-                    else if (_response.StartsWith("whisper ") || _response.StartsWith("whisper "))
+                    else if (_responseAdj.StartsWith("whisper ") || _responseAdj.StartsWith("whisper "))
                     {
-                        _response = _response.Replace("whisper ", "");
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        _responseAdj = _response.Replace("whisper ", "");
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    else if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
+                    else if (_responseAdj.StartsWith("tele ") || _responseAdj.StartsWith("tp ") || _responseAdj.StartsWith("teleportplayer "))
                     {
-                        Players.NoFlight.Add(_cInfo.entityId);
                         if (Zones.ZoneExit.ContainsKey(_cInfo.entityId))
                         {
                             Zones.ZoneExit.Remove(_cInfo.entityId);
                         }
                         try
                         {
-                            SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                            SdtdConsole.Instance.ExecuteSync(_responseAdj, _cInfo);
                         }
                         catch (Exception e)
                         {
@@ -1066,7 +1079,7 @@ namespace ServerTools
                     {
                         try
                         {
-                            SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
+                            SdtdConsole.Instance.ExecuteSync(_responseAdj, _cInfo);
                         }
                         catch (Exception e)
                         {
@@ -1074,39 +1087,7 @@ namespace ServerTools
                         }
                     }
                 }
-                string _response2 = _r[1];
-                if (_response2 != null)
-                {
-                    _response2 = _response2.Replace("{EntityId}", _cInfo.entityId.ToString());
-                    _response2 = _response2.Replace("{SteamId}", _cInfo.playerId);
-                    _response2 = _response2.Replace("{PlayerName}", _playerName);
-                    if (_response2.StartsWith("global "))
-                    {
-                        _response2 = _response2.Replace("global ", "");
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response2 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    }
-                    else if (_response2.StartsWith("whisper ") || _response2.StartsWith("whisper "))
-                    {
-                        _response2 = _response2.Replace("whisper ", "");
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response2 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                    else if (_response2.StartsWith("tele ") || _response2.StartsWith("tp ") || _response2.StartsWith("teleportplayer "))
-                    {
-                        Players.NoFlight.Add(_cInfo.entityId);
-                        SdtdConsole.Instance.ExecuteSync(_response2, _cInfo);
-                    }
-                    else
-                    {
-                        try
-                        {
-                            SdtdConsole.Instance.ExecuteSync(_response2, _cInfo);
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.Run: {0}.", e));
-                        }
-                    }
-                }
+                
             }
         }
     }

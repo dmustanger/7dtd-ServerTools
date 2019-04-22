@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace ServerTools
 {
@@ -59,7 +60,7 @@ namespace ServerTools
                         else
                         {
                             _sql = string.Format("UPDATE Players SET messageCount = 1, messageTime = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "Chathook");
                         }
                     }
                     else
@@ -67,12 +68,12 @@ namespace ServerTools
                         if (_timepassed < 60)
                         {
                             _sql = string.Format("UPDATE Players SET messageCount = {0} WHERE steamid = '{1}'", _count + 1, _cInfo.playerId);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "Chathook");
                         }
                         else
                         {
                             _sql = string.Format("UPDATE Players SET messageCount = 1, messageTime = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "Chathook");
                         }
                     }
                     
@@ -95,7 +96,7 @@ namespace ServerTools
                     string _mainName1 = _mainName.ToLower();
                     foreach (string _word in Badwords.List)
                     {
-                        if (_mainName1.Contains(_word))
+                        if (_mainName1.Contains(_word) || _mainName1.Contains(_word.ToUpper()))
                         {
                             string _replace = "";
                             for (int i = 0; i < _word.Length; i++)
@@ -127,84 +128,107 @@ namespace ServerTools
                 }
                 if (!Jail.Jailed.Contains(_cInfo.playerId))
                 {
-                    if (ChatColorPrefix.IsEnabled && !_message.StartsWith("@") && _mainName != LoadConfig.Server_Response_Name && _senderId != 33 && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public) && ChatColorPrefix.dict.ContainsKey(_cInfo.playerId))
+                    if ((ChatColorPrefix.IsEnabled || ClanManager.IsEnabled) && !_message.StartsWith("@") && _mainName != LoadConfig.Server_Response_Name && _senderId != 33 && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public))
                     {
-                        string[] _colorPrefix;
-                        if (ChatColorPrefix.dict.TryGetValue(_cInfo.playerId, out _colorPrefix))
+                        if (ChatColorPrefix.dict.ContainsKey(_cInfo.playerId))
                         {
-                            if (!ClanManager.ClanMember.Contains(_cInfo.playerId))
+                            string[] _colorPrefix;
+                            if (ChatColorPrefix.dict.TryGetValue(_cInfo.playerId, out _colorPrefix))
                             {
-                                if (_colorPrefix[2] != "")
+                                if (!ClanManager.IsEnabled)
                                 {
-                                    if (_type == EChatType.Friends)
+                                    if (_colorPrefix[2] != "")
                                     {
-                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends){1} {2}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), _type, _recipientEntityIds);
-                                    }
-                                    else if (_type == EChatType.Party)
-                                    {
-                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party){1} {2}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), _type, _recipientEntityIds);
+                                        if (_type == EChatType.Friends)
+                                        {
+                                            ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends){1} {2}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), _type, _recipientEntityIds);
+                                        }
+                                        else if (_type == EChatType.Party)
+                                        {
+                                            ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party){1} {2}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), _type, _recipientEntityIds);
+                                        }
+                                        else
+                                        {
+                                            ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}{1} {2}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), _type, _recipientEntityIds);
+                                        }
                                     }
                                     else
                                     {
-                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}{1} {2}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), _type, _recipientEntityIds);
+                                        if (_type == EChatType.Friends)
+                                        {
+                                            ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends){1}[-]", _colorPrefix[3], _mainName), _type, _recipientEntityIds);
+                                        }
+                                        else if (_type == EChatType.Party)
+                                        {
+                                            ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party){1}[-]", _colorPrefix[3], _mainName), _type, _recipientEntityIds);
+                                        }
+                                        else
+                                        {
+                                            ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}{1}[-]", _colorPrefix[3], _mainName), _type, _recipientEntityIds);
+                                        }
+
                                     }
                                 }
-                                else
+                                else if (ClanManager.IsEnabled && ClanManager.ClanMember.Contains(_cInfo.playerId))
                                 {
-                                    if (_type == EChatType.Friends)
+                                    string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                    DataTable _result = SQL.TQuery(_sql);
+                                    string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                                    _result.Dispose();
+                                    if (_colorPrefix[2] != "")
                                     {
-                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends){1}[-]", _colorPrefix[3], _mainName), _type, _recipientEntityIds);
-                                    }
-                                    else if (_type == EChatType.Party)
-                                    {
-                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party){1}[-]", _colorPrefix[3], _mainName), _type, _recipientEntityIds);
+                                        if (_type == EChatType.Friends)
+                                        {
+                                            ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends)({1}){2} {3}[-]", _colorPrefix[3], _clanname, _colorPrefix[2], _mainName), _type, _recipientEntityIds);
+                                        }
+                                        else if (_type == EChatType.Party)
+                                        {
+                                            ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party)({1}){2} {3}[-]", _colorPrefix[3], _clanname, _colorPrefix[2], _mainName), _type, _recipientEntityIds);
+                                        }
+                                        else
+                                        {
+                                            ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}({1}){2} {3}[-]", _colorPrefix[3], _clanname, _colorPrefix[2], _mainName), _type, _recipientEntityIds);
+                                        }
                                     }
                                     else
                                     {
-                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}{1}[-]", _colorPrefix[3], _mainName), _type, _recipientEntityIds);
+                                        if (_type == EChatType.Friends)
+                                        {
+                                            ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends)({1}) {2}[-]", _colorPrefix[3], _clanname, _mainName), _type, _recipientEntityIds);
+                                        }
+                                        else if (_type == EChatType.Party)
+                                        {
+                                            ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party)({1}) {2}[-]", _colorPrefix[3], _clanname, _mainName), _type, _recipientEntityIds);
+                                        }
+                                        else
+                                        {
+                                            ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}({1}) {2}[-]", _colorPrefix[3], _clanname, _mainName), _type, _recipientEntityIds);
+                                        }
                                     }
-                                    
                                 }
+                            }
+                            return false;
+                        }
+                        else if (ClanManager.IsEnabled && ClanManager.ClanMember.Contains(_cInfo.playerId))
+                        {
+                            string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result = SQL.TQuery(_sql);
+                            string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
+                            _result.Dispose();
+                            if (_type == EChatType.Friends)
+                            {
+                                ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("(Friends)({0}) {1}[-]", _clanname, _mainName), _type, _recipientEntityIds);
+                            }
+                            else if (_type == EChatType.Party)
+                            {
+                                ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("(Party)({0}) {1}[-]", _clanname, _mainName), _type, _recipientEntityIds);
                             }
                             else
                             {
-                                string _sql = string.Format("SELECT clanname FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                DataTable _result = SQL.TQuery(_sql);
-                                string _clanname = _result.Rows[0].ItemArray.GetValue(0).ToString();
-                                _result.Dispose();
-                                if (_colorPrefix[2] != "")
-                                {
-                                    if (_type == EChatType.Friends)
-                                    {
-                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends)({1}){2} {3}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), _type, _recipientEntityIds);
-                                    }
-                                    else if (_type == EChatType.Party)
-                                    {
-                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party)({1}){2} {3}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), _type, _recipientEntityIds);
-                                    }
-                                    else
-                                    {
-                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}({1}){2} {3}[-]", _colorPrefix[3], _colorPrefix[2], _mainName), _type, _recipientEntityIds);
-                                    }
-                                }
-                                else
-                                {
-                                    if (_type == EChatType.Friends)
-                                    {
-                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends)({1}) {2}[-]", _colorPrefix[3], _clanname, _mainName), _type, _recipientEntityIds);
-                                    }
-                                    else if (_type == EChatType.Party)
-                                    {
-                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party)({1}) {2}[-]", _colorPrefix[3], _clanname, _mainName), _type, _recipientEntityIds);
-                                    }
-                                    else
-                                    {
-                                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}({1}) {2}[-]", _colorPrefix[3], _clanname, _mainName), _type, _recipientEntityIds);
-                                    }
-                                }
+                                ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("({0}) {1}[-]", _clanname, _mainName), _type, _recipientEntityIds);
                             }
+                            return false;
                         }
-                        return false;
                     }
                     if (Normal_Player_Name_Coloring && !_message.StartsWith("@") && _mainName != LoadConfig.Server_Response_Name && _senderId != 33 && !_message.StartsWith(Command_Private) && !_message.StartsWith(Command_Public))
                     {
@@ -375,7 +399,7 @@ namespace ServerTools
                         }
                         if (TeleportHome.Set_Home2_Enabled && _message.ToLower() == TeleportHome.Command5)
                         {
-                            if (TeleportHome.Set_Home2_Donor_Only && ReservedSlots.IsEnabled)
+                            if (TeleportHome.Set_Home2_Reserved_Only && ReservedSlots.IsEnabled)
                             {
                                 if (!Zones.Set_Home)
                                 {
@@ -461,7 +485,7 @@ namespace ServerTools
                                     }
                                 }
                             }
-                            else if (!TeleportHome.Set_Home2_Donor_Only)
+                            else if (!TeleportHome.Set_Home2_Reserved_Only)
                             {
                                 if (!Zones.Set_Home)
                                 {
@@ -490,7 +514,7 @@ namespace ServerTools
                         }
                         if (TeleportHome.Set_Home2_Enabled && _message.ToLower() == TeleportHome.Command6)
                         {
-                            if (TeleportHome.Set_Home2_Donor_Only && ReservedSlots.IsEnabled)
+                            if (TeleportHome.Set_Home2_Reserved_Only && ReservedSlots.IsEnabled)
                             {
                                 if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
@@ -524,7 +548,7 @@ namespace ServerTools
                                     }
                                 }
                             }
-                            else if (!TeleportHome.Set_Home2_Donor_Only)
+                            else if (!TeleportHome.Set_Home2_Reserved_Only)
                             {
                                 TeleportHome.Check2(_cInfo, _mainName, _announce);
                             }
@@ -543,7 +567,7 @@ namespace ServerTools
                         }
                         if (TeleportHome.Set_Home2_Enabled && _message.ToLower() == TeleportHome.Command7)
                         {
-                            if (TeleportHome.Set_Home2_Donor_Only && ReservedSlots.IsEnabled)
+                            if (TeleportHome.Set_Home2_Reserved_Only && ReservedSlots.IsEnabled)
                             {
                                 if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
@@ -577,7 +601,7 @@ namespace ServerTools
                                     }
                                 }
                             }
-                            else if (!TeleportHome.Set_Home2_Donor_Only)
+                            else if (!TeleportHome.Set_Home2_Reserved_Only)
                             {
                                 TeleportHome.FCheck2(_cInfo, _mainName, _announce);
                             }
@@ -596,7 +620,7 @@ namespace ServerTools
                         }
                         if (TeleportHome.Set_Home2_Enabled && _message.ToLower() == TeleportHome.Command8)
                         {
-                            if (TeleportHome.Set_Home2_Donor_Only && ReservedSlots.IsEnabled)
+                            if (TeleportHome.Set_Home2_Reserved_Only && ReservedSlots.IsEnabled)
                             {
                                 if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
@@ -630,7 +654,7 @@ namespace ServerTools
                                     }
                                 }
                             }
-                            else if (!TeleportHome.Set_Home2_Donor_Only)
+                            else if (!TeleportHome.Set_Home2_Reserved_Only)
                             {
                                 TeleportHome.DelHome2(_cInfo, _mainName, _announce);
                             }
@@ -1058,12 +1082,12 @@ namespace ServerTools
                         {
                             if (_message.ToLower() == (Shop.Command57))
                             {
-                                Shop.PosCheck(_cInfo, _mainName, _message, 1);
+                                Shop.PosCheck(_cInfo, _mainName, _message, 1, 0);
                             }
                             else
                             {
                                 _message = _message.ToLower().Replace(Shop.Command57 + " ", "");
-                                Shop.PosCheck(_cInfo, _mainName, _message, 2);
+                                Shop.PosCheck(_cInfo, _mainName, _message, 2, 0);
                             }
                             return false;
                         }
@@ -1071,29 +1095,55 @@ namespace ServerTools
                         {
                             if (_message.ToLower() == (Shop.Command58))
                             {
-                                ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: " + ChatHook.Command_Private + Shop.Command58 + " # or " + ChatHook.Command_Private + Shop.Command58 + " # #[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                Shop.PosCheck(_cInfo, _mainName, _message, 3, 1);
                             }
-                            else
+                            else if (_message.ToLower().StartsWith(Shop.Command58 + " "))
                             {
                                 _message = _message.ToLower().Replace(Shop.Command58 + " ", "");
-                                Shop.PosCheck(_cInfo, _mainName, _message, 3);
-                            }
-                            return false;
-                        }
-                        if (FriendTeleport.IsEnabled && _message.ToLower().StartsWith(FriendTeleport.Command59))
-                        {
-                            if (_message.ToLower() == FriendTeleport.Command59)
-                            {
-                                FriendTeleport.ListFriends(_cInfo, _message);
+                                if (_message.Contains(" "))
+                                {
+                                    string a = _message.Split(' ').First();
+                                    string b = _message.Split(' ').Last();
+                                    int _count;
+                                    if (int.TryParse(b, out _count))
+                                    {
+                                        Shop.PosCheck(_cInfo, _mainName, a, 3, _count);
+                                    }
+                                    else
+                                    {
+                                        string _phrase620;
+                                        if (!Phrases.Dict.TryGetValue(620, out _phrase620))
+                                        {
+                                            _phrase620 = " the item amount # you are trying to buy is not an integer. Please input {CommandPrivate}{Command58} 1 2 for example.";
+                                        }
+                                        _phrase620 = _phrase620.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                        _phrase620 = _phrase620.Replace("{Command58}", Shop.Command58);
+                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase620 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    }
+                                }
+                                else
+                                {
+                                    Shop.PosCheck(_cInfo, _mainName, _message, 3, 1);
+                                }
                             }
                             else
                             {
-                                _message = _message.ToLower().Replace(FriendTeleport.Command59 + " ", "");
-                                FriendTeleport.CheckDelay(_cInfo, _message, _announce);
+                                ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: " + ChatHook.Command_Private + Shop.Command58 + " # or " + ChatHook.Command_Private + Shop.Command58 + " # #[-]", _senderId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                             return false;
                         }
-                        if (FriendTeleport.IsEnabled && _message.ToLower() == (FriendTeleport.Command60))
+                        if (FriendTeleport.IsEnabled && _message.ToLower().StartsWith(FriendTeleport.Command59 + " "))
+                        {
+                            _message = _message.ToLower().Replace(FriendTeleport.Command59 + " ", "");
+                            FriendTeleport.Checks(_cInfo, _message, _announce);
+                            return false;
+                        }
+                        if (FriendTeleport.IsEnabled && _message.ToLower() == FriendTeleport.Command59)
+                        {
+                            FriendTeleport.ListFriends(_cInfo, _message);
+                            return false;
+                        }
+                        if (FriendTeleport.IsEnabled && _message.ToLower() == FriendTeleport.Command60)
                         {
                             if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
                             {
@@ -1639,17 +1689,31 @@ namespace ServerTools
                             Bank.CheckLocation(_cInfo, _message, 2);
                             return false;
                         }
-                        if (Bank.IsEnabled && _message.ToLower().StartsWith(Bank.Command97 + " "))
+                        if (Bank.IsEnabled && Wallet.IsEnabled && _message.ToLower().StartsWith(Bank.Command97 + " "))
                         {
-                            _message = _message.ToLower().Replace(Bank.Command97 + " ", "");
-                            Bank.CheckLocation(_cInfo, _message, 3);
-                            return false;
+                            if (Wallet.Bank_Transfers)
+                            {
+                                _message = _message.ToLower().Replace(Bank.Command97 + " ", "");
+                                Bank.CheckLocation(_cInfo, _message, 3);
+                                return false;
+                            }
+                            else
+                            {
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", the server has wallet to bank account transfers turned off.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            }
                         }
-                        if (Bank.IsEnabled && _message.ToLower().StartsWith(Bank.Command98 + " "))
+                        if (Bank.IsEnabled && Wallet.IsEnabled && _message.ToLower().StartsWith(Bank.Command98 + " "))
                         {
-                            _message = _message.ToLower().Replace(Bank.Command98 + " ", "");
-                            Bank.CheckLocation(_cInfo, _message, 4);
-                            return false;
+                            if (Wallet.Bank_Transfers)
+                            {
+                                _message = _message.ToLower().Replace(Bank.Command98 + " ", "");
+                                Bank.CheckLocation(_cInfo, _message, 4);
+                                return false;
+                            }
+                            else
+                            {
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", the server has bank account to wallet transfers turned off.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            }
                         }
                         if (Bank.IsEnabled && _message.ToLower().StartsWith(Bank.Command99 + " "))
                         {

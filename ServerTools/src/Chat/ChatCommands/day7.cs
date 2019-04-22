@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ServerTools
 {
@@ -20,7 +21,7 @@ namespace ServerTools
             int _4x4 = 0;
             int _gyros = 0;
             int _supplyCrates = 0;
-            int _daysUntilHorde = Days_Until_Horde - GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()) % Days_Until_Horde;
+            int _daysRemaining = DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()));
             List<Entity> _entities = GameManager.Instance.World.Entities.list;
             foreach (Entity _e in _entities)
             {
@@ -64,13 +65,14 @@ namespace ServerTools
                     {
                         _supplyCrates = _supplyCrates + 1;
                     }
-                }  
+                }
             }
             string _phrase300;
             string _phrase301;
             string _phrase302;
             string _phrase303;
             string _phrase304;
+            string _phrase305;
             string _phrase306;
             if (!Phrases.Dict.TryGetValue(300, out _phrase300))
             {
@@ -92,12 +94,16 @@ namespace ServerTools
             {
                 _phrase304 = "Total Supply Crates:{SupplyCrates}";
             }
+            if (!Phrases.Dict.TryGetValue(305, out _phrase305))
+            {
+                _phrase305 = "The horde is here!";
+            }
             if (!Phrases.Dict.TryGetValue(306, out _phrase306))
             {
                 _phrase306 = "Next horde night is today";
             }
             _phrase300 = _phrase300.Replace("{Fps}", _fps);
-            _phrase301 = _phrase301.Replace("{DaysUntilHorde}", _daysUntilHorde.ToString());
+            _phrase301 = _phrase301.Replace("{DaysUntilHorde}", _daysRemaining.ToString());
             _phrase302 = _phrase302.Replace("{Players}", _playerCount.ToString());
             _phrase302 = _phrase302.Replace("{Zombies}", _zombies.ToString());
             _phrase302 = _phrase302.Replace("{Animals}", _animals.ToString());
@@ -110,9 +116,13 @@ namespace ServerTools
             if (_announce)
             {
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase300 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                if (_daysUntilHorde == Days_Until_Horde)
+                if (_daysRemaining == 0 && !SkyManager.BloodMoon())
                 {
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase306 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                }
+                else if (SkyManager.BloodMoon())
+                {
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 else
                 {
@@ -125,9 +135,13 @@ namespace ServerTools
             else
             {
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase300 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                if (_daysUntilHorde == Days_Until_Horde)
+                if (_daysRemaining == 0 && !SkyManager.BloodMoon())
                 {
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase306 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
+                else if (SkyManager.BloodMoon())
+                {
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -136,6 +150,20 @@ namespace ServerTools
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase302 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase303 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase304 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+        }
+
+        public static int DaysRemaining(int _daysUntilHorde)
+        {
+            if (_daysUntilHorde <= Days_Until_Horde)
+            {
+                int _daysLeft = Days_Until_Horde - _daysUntilHorde;
+                return _daysLeft;
+            }
+            else
+            {
+                int _daysLeft = _daysUntilHorde - Days_Until_Horde;
+                return DaysRemaining(_daysLeft);
             }
         }
     }

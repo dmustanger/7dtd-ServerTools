@@ -18,10 +18,12 @@ namespace ServerTools
                    "1. Turn off all credential check tools\n" +
                    "2. Turn on all credential check tools\n";
         }
+
         public override string[] GetCommands()
         {
             return new string[] { "st-Credentials", "credentials" };
         }
+
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
             try
@@ -34,38 +36,14 @@ namespace ServerTools
                 if (_params[0].ToLower().Equals("off"))
                 {
                     CredentialCheck.IsEnabled = false;
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load("@" + API.ConfigPath + "/ServerToolsConfig.xml");
-                    XmlNodeList aNodes = doc.SelectNodes("/ServerTools/Tools");
-                    foreach (XmlNode aNode in aNodes)
-                    {
-                        XmlAttribute _attribute1 = aNode.Attributes["Name"];
-                        XmlAttribute _attribute2 = aNode.Attributes["Enable"];
-                        if (_attribute1 != null && _attribute1.Value == "Credentials" && _attribute2 != null)
-                        {
-                            _attribute2.Value = "False";
-                        }
-                    }
-                    doc.Save("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Credential check has been set to off"));
                     return;
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
                     CredentialCheck.IsEnabled = true;
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load("@" + API.ConfigPath + "/ServerToolsConfig.xml");
-                    XmlNodeList aNodes = doc.SelectNodes("/ServerTools/Tools");
-                    foreach (XmlNode aNode in aNodes)
-                    {
-                        XmlAttribute _attribute1 = aNode.Attributes["Name"];
-                        XmlAttribute _attribute2 = aNode.Attributes["Enable"];
-                        if (_attribute1 != null && _attribute1.Value == "Credentials" && _attribute2 != null)
-                        {
-                            _attribute2.Value = "True";
-                        }
-                    }
-                    doc.Save("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Credential check has been set to on"));
                     return;
                 }

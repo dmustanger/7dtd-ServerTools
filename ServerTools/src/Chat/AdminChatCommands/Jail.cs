@@ -122,7 +122,6 @@ namespace ServerTools
             int.TryParse(_cords[0], out x);
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
-            Players.NoFlight.Add(_PlayertoJail.entityId);
             _PlayertoJail.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
             Jailed.Add(_PlayertoJail.playerId);
             string _name = SQL.EscapeString(_PlayertoJail.playerName);
@@ -140,7 +139,7 @@ namespace ServerTools
                 _name = _name.Replace(";", "");
             }
             string _sql = string.Format("UPDATE Players SET jailTime = 60, jailName = '{0}', jailDate = '{1}' WHERE steamid = '{2}'", _name, DateTime.Now, _PlayertoJail.playerId);
-            SQL.FastQuery(_sql);
+            SQL.FastQuery(_sql, "Jail");
             string _phrase500;
             if (!Phrases.Dict.TryGetValue(500, out _phrase500))
             {
@@ -222,9 +221,8 @@ namespace ServerTools
                         else
                         {
                             Jailed.Remove(_PlayertoUnJail.playerId);
-                            Players.NoFlight.Add(_PlayertoUnJail.entityId);
                             _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _PlayertoUnJail.playerId);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "Jail");
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_PlayertoUnJail.entityId];
                             EntityBedrollPositionList _position = _player.SpawnPoints;
                             if (_position.Count > 0)
@@ -322,7 +320,8 @@ namespace ServerTools
                         {
                             Zones.Forgive.Remove(_cInfo.entityId);
                             Jailed.Remove(_cInfoKiller.playerId);
-                            Players.NoFlight.Add(_cInfoKiller.entityId);
+                            string _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _cInfoKiller.playerId);
+                            SQL.FastQuery(_sql, "Jail");
                             EntityBedrollPositionList _position = _player.SpawnPoints;
                             if (_position.Count > 0)
                             {
@@ -339,8 +338,6 @@ namespace ServerTools
                             _chatMessage = ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", you have been forgiven and released from jail by {PlayerName}.[-]";
                             _chatMessage = _chatMessage.Replace("{PlayerName}", _cInfo.playerName);
                             ChatHook.ChatMessage(_cInfoKiller, _chatMessage, _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            string _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _cInfoKiller.playerId);
-                            SQL.FastQuery(_sql);
                         }
                         else
                         {
@@ -348,10 +345,6 @@ namespace ServerTools
                         }
                     }
                 }
-            }
-            else
-            {
-                Zones.Forgive.Remove(_cInfo.entityId);
             }
         }
 
@@ -386,7 +379,7 @@ namespace ServerTools
                             {
                                 Jailed.Remove(_id);
                                 _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _cInfo.playerId);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "Jail");
                                 EntityBedrollPositionList _position = _player.SpawnPoints;
                                 if (_position.Count > 0)
                                 {
@@ -409,7 +402,7 @@ namespace ServerTools
                         {
                             Jailed.Remove(_id);
                             _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", _cInfo.playerId);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "Jail");
                         }
                     }
                 }
@@ -447,7 +440,7 @@ namespace ServerTools
                             else
                             {
                                 _sql = string.Format("UPDATE Players SET jailTime = 0 WHERE steamid = '{0}'", row[0].ToString());
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "Jail");
                             }
                         }
                     }

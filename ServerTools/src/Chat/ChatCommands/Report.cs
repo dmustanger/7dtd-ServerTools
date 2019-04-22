@@ -55,10 +55,10 @@ namespace ServerTools
             _message = _message.Replace(Command82 + " ", "");
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             Vector3 _pos = _player.position;
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-            for (int i = 0; i < _cInfoList.Count; i++)
+            List<ClientInfo> ClientInfoList = ConnectionManager.Instance.Clients.List.ToList();
+            for (int i = 0; i < ClientInfoList.Count; i++)
             {
-                ClientInfo _cInfoAdmins = _cInfoList[i];
+                ClientInfo _cInfoAdmins = ClientInfoList[i];
                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfoAdmins.playerId);
                 if (Admin.PermissionLevel <= Admin_Level)
                 {
@@ -86,7 +86,7 @@ namespace ServerTools
             }
             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase797 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             string _sql = string.Format("UPDATE Players SET lastLog = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-            SQL.FastQuery(_sql);
+            SQL.FastQuery(_sql, "Report");
             Log.Out(string.Format("[SERVERTOOLS] Report sent by player name {0}", _cInfo.playerName));
         }
     }

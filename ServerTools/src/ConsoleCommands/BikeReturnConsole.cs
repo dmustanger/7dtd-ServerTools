@@ -8,25 +8,25 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Vehicle Teleport.";
+            return "[ServerTools]- Enable or Disable Vehicle Teleport tool.";
         }
         public override string GetHelp()
         {
             return "Usage:\n" +
                    "  1. VehicleTeleport off\n" +
                    "  2. VehicleTeleport on\n" +
-                   "  2. VehicleTeleport bike\n" +
-                   "  2. VehicleTeleport minibike\n" +
-                   "  2. VehicleTeleport motorbike\n" +
-                   "  2. VehicleTeleport jeep\n" +
-                   "  2. VehicleTeleport gyro\n" +
-                   "1. Turn off the vehicle teleport\n" +
-                   "2. Turn on the vehicle teleport\n" +
-                   "2. Turn on/off the vehicle teleport for bike\n" +
-                   "2. Turn on/off the vehicle teleport for minibike\n" +
-                   "2. Turn on/off the vehicle teleport for motorbike\n" +
-                   "2. Turn on/off the vehicle teleport for jeep\n" +
-                   "2. Turn on/off the vehicle teleport for gyro\n";
+                   "  3. VehicleTeleport bike\n" +
+                   "  4. VehicleTeleport minibike\n" +
+                   "  5. VehicleTeleport motorbike\n" +
+                   "  6. VehicleTeleport jeep\n" +
+                   "  7. VehicleTeleport gyro\n" +
+                   "1. Turn off the vehicle teleport tool\n" +
+                   "2. Turn on the vehicle teleport tool\n" +
+                   "3. Turn on/off the vehicle teleport for bike\n" +
+                   "4. Turn on/off the vehicle teleport for minibike\n" +
+                   "5. Turn on/off the vehicle teleport for motorbike\n" +
+                   "6. Turn on/off the vehicle teleport for jeep\n" +
+                   "7. Turn on/off the vehicle teleport for gyro\n";
         }
         public override string[] GetCommands()
         {
@@ -44,38 +44,14 @@ namespace ServerTools
                 if (_params[0].ToLower().Equals("off"))
                 {
                     VehicleTeleport.IsEnabled = false;
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load("@" + API.ConfigPath + "/ServerToolsConfig.xml");
-                    XmlNodeList aNodes = doc.SelectNodes("/ServerTools/Tools");
-                    foreach (XmlNode aNode in aNodes)
-                    {
-                        XmlAttribute _attribute1 = aNode.Attributes["Name"];
-                        XmlAttribute _attribute2 = aNode.Attributes["Enable"];
-                        if (_attribute1 != null && _attribute1.Value == "Vehicle_Teleport" && _attribute2 != null)
-                        {
-                            _attribute2.Value = "False";
-                        }
-                    }
-                    doc.Save("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Vehicle teleport has been set to off"));
                     return;
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
                     VehicleTeleport.IsEnabled = true;
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load("@" + API.ConfigPath + "/ServerToolsConfig.xml");
-                    XmlNodeList aNodes = doc.SelectNodes("/ServerTools/Tools");
-                    foreach (XmlNode aNode in aNodes)
-                    {
-                        XmlAttribute _attribute1 = aNode.Attributes["Name"];
-                        XmlAttribute _attribute2 = aNode.Attributes["Enable"];
-                        if (_attribute1 != null && _attribute1.Value == "Vehicle_Teleport" && _attribute2 != null)
-                        {
-                            _attribute2.Value = "True";
-                        }
-                    }
-                    doc.Save("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Vehicle teleport has been set to on"));
                     return;
                 }

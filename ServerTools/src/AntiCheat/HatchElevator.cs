@@ -16,10 +16,10 @@ namespace ServerTools
         {           
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-                for (int i = 0; i < _cInfoList.Count; i++)
+                List<ClientInfo> ClientInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                for (int i = 0; i < ClientInfoList.Count; i++)
                 {
-                    ClientInfo _cInfo = _cInfoList[i];
+                    ClientInfo _cInfo = ClientInfoList[i];
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                     HatchCheck(_cInfo, _player);
                 }

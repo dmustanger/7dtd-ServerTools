@@ -16,10 +16,10 @@ namespace ServerTools
         {
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-                for (int i = 0; i < _cInfoList.Count; i++)
+                List<ClientInfo> ClientInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                for (int i = 0; i < ClientInfoList.Count; i++)
                 {
-                    ClientInfo _cInfo = _cInfoList[i];
+                    ClientInfo _cInfo = ClientInfoList[i];
                     GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
                     AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                     if (Admin.PermissionLevel > Admin_Level)
@@ -117,28 +117,25 @@ namespace ServerTools
                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat height\"", _cInfo.playerId), (ClientInfo)null);
                                 }
                             }
-                            if (!Players.NoFlight.Contains(_cInfo.entityId))
+                            if (p_speedForward > Max_Speed)
                             {
-                                if (p_speedForward > Max_Speed)
+                                using (StreamWriter sw = new StreamWriter(_filepath, true))
                                 {
-                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
-                                    {
-                                        sw.WriteLine(string.Format("{0} {1} steamId {2} was detected with an illegal run speed value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_speedForward));
-                                        sw.WriteLine();
-                                        sw.Flush();
-                                        sw.Close();
-                                    }
-                                    Log.Warning("Detected player {0} steamId {1} speed hacking", _cInfo.playerName, _cInfo.playerId);
-                                    if (Kick_Enabled)
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " was detected and kicked for illegal player speed" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat speed\"", _cInfo.playerId), (ClientInfo)null);
-                                    }
-                                    if (Ban_Enabled)
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " was detected and banned for illegal player speed" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat speed\"", _cInfo.playerId), (ClientInfo)null);
-                                    }
+                                    sw.WriteLine(string.Format("{0} {1} steamId {2} was detected with an illegal run speed value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_speedForward));
+                                    sw.WriteLine();
+                                    sw.Flush();
+                                    sw.Close();
+                                }
+                                Log.Warning("Detected player {0} steamId {1} speed hacking", _cInfo.playerName, _cInfo.playerId);
+                                if (Kick_Enabled)
+                                {
+                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " was detected and kicked for illegal player speed" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat speed\"", _cInfo.playerId), (ClientInfo)null);
+                                }
+                                if (Ban_Enabled)
+                                {
+                                    ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + " was detected and banned for illegal player speed" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat speed\"", _cInfo.playerId), (ClientInfo)null);
                                 }
                             }
                         }

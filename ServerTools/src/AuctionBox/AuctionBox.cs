@@ -145,10 +145,10 @@ namespace ServerTools
                                             int _playerCount = ConnectionManager.Instance.ClientCount();
                                             if (_playerCount > 1)
                                             {
-                                                List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-                                                for (int k = 0; k < _cInfoList.Count; k++)
+                                                List<ClientInfo> ClientInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                                                for (int k = 0; k < ClientInfoList.Count; k++)
                                                 {
-                                                    ClientInfo _cInfo2 = _cInfoList[k];
+                                                    ClientInfo _cInfo2 = ClientInfoList[k];
                                                     if (_cInfo != _cInfo2)
                                                     {
                                                         EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
@@ -179,7 +179,7 @@ namespace ServerTools
                                                         string _itemName = _itemClass.GetItemName();
                                                         SecureLoot.UpdateSlot(slotNumber, ItemStack.Empty);
                                                         _sql = string.Format("INSERT INTO Auction (steamid, itemName, itemCount, itemQuality, itemPrice, cancelTime, sellDate) VALUES ('{0}', '{1}', {2}, {3}, {4}, '{5}', '{6}')", _cInfo.playerId, _itemName, item.count, item.itemValue.Quality, _price, DateTime.Now, DateTime.Now);
-                                                        SQL.FastQuery(_sql);
+                                                        SQL.FastQuery(_sql, "AuctionBox");
                                                         string _message = "your auction item {Name} has been removed from the secure loot and added to the auction.";
                                                         _message = _message.Replace("{Name}", _itemName);
                                                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -345,7 +345,7 @@ namespace ServerTools
             double _percent = _itemPrice * 0.05;
             int _newCoin2 = _itemPrice - (int)_percent;
             _sql = string.Format("DELETE FROM Auction WHERE auctionid = {0}", _purchase);
-            SQL.FastQuery(_sql);
+            SQL.FastQuery(_sql, "AuctionBox");
             Wallet.AddCoinsToWallet(_steamid, _newCoin2);
             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", seller has received the funds in their wallet.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             ClientInfo _cInfo1 = ConnectionManager.Instance.Clients.ForPlayerId(_steamid);
@@ -405,7 +405,7 @@ namespace ServerTools
                     _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                     world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                     _sql = string.Format("DELETE FROM Auction WHERE steamid = '{0}'", _cInfo.playerId);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "AuctionBox");
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", your auction item has returned to you.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     using (StreamWriter sw = new StreamWriter(filepath, true))
                     {

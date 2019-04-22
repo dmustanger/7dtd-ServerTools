@@ -34,7 +34,7 @@ namespace ServerTools
             {
                 ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _strings[1] + "[-]", _cInfo.entityId, _cInfo.playerName, EChatType.Whisper, null);
                 string _sql = string.Format("UPDATE Players SET lastwhisper = '{0}' WHERE steamid = '{1}'", _cInfo.playerId, _cInfo1.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "Whisper");
             }
         }
 
@@ -78,7 +78,7 @@ namespace ServerTools
                 {
                     ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, _cInfo.playerName, EChatType.Whisper, null);
                     _sql = string.Format("UPDATE Players SET lastwhisper = '{0}' WHERE steamid = '{1}'", _cInfo.playerId, _cInfo1.playerId);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "Whisper");
                 }
             }
         }

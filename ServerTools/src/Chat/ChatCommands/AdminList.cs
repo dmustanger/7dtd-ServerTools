@@ -15,10 +15,10 @@ namespace ServerTools
         {
             Admins.Clear();
             Mods.Clear();
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-            for (int i = 0; i < _cInfoList.Count; i++)
+            List<ClientInfo> ClientInfoList = ConnectionManager.Instance.Clients.List.ToList();
+            for (int i = 0; i < ClientInfoList.Count; i++)
             {
-                ClientInfo _cInfoAdmins = _cInfoList[i];
+                ClientInfo _cInfoAdmins = ClientInfoList[i];
                 GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins.playerId);
                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfoAdmins.playerId);
                 if (Admin.PermissionLevel <= Admin_Level)

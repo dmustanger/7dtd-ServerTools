@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace ServerTools
 {
@@ -62,19 +63,7 @@ namespace ServerTools
                 string _sql = string.Format("SELECT steamid FROM Players WHERE steamid = '{0}'", _cInfo.playerId); ;
                 DataTable _result = SQL.TQuery(_sql);
                 string _name = SQL.EscapeString(_cInfo.playerName);
-                if (_name.Contains("!") || _name.Contains("@") || _name.Contains("#") || _name.Contains("$") || _name.Contains("%") || _name.Contains("^") || _name.Contains("&") || _name.Contains("*") || _name.Contains("'") || _name.Contains(";"))
-                {
-                    _name = _name.Replace("!", "");
-                    _name = _name.Replace("@", "");
-                    _name = _name.Replace("#", "");
-                    _name = _name.Replace("$", "");
-                    _name = _name.Replace("%", "");
-                    _name = _name.Replace("^", "");
-                    _name = _name.Replace("&", "");
-                    _name = _name.Replace("*", "");
-                    _name = _name.Replace("'", "");
-                    _name = _name.Replace(";", "");
-                }
+                _name = Regex.Replace(_name, @"[^\u0000-\u007F]+", string.Empty);
                 if (_result.Rows.Count == 0)
                 {
                     _sql = string.Format("INSERT INTO Players (steamid, playername, last_joined) VALUES ('{0}', '{1}', '{2}')", _cInfo.playerId, _name, DateTime.Now);
@@ -84,7 +73,7 @@ namespace ServerTools
                     _sql = string.Format("UPDATE Players SET playername = '{0}', last_joined = '{1}' WHERE steamid = '{2}'", _name, DateTime.Now, _cInfo.playerId);
                 }
                 _result.Dispose();
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "API");
                 if (StopServer.NoEntry)
                 {
                     int _seconds = (60 - Timers._sSCD);
@@ -160,19 +149,7 @@ namespace ServerTools
             if (_cInfo != null)
             {
                 string _name = SQL.EscapeString(_cInfo.playerName);
-                if (_name.Contains("!") || _name.Contains("@") || _name.Contains("#") || _name.Contains("$") || _name.Contains("%") || _name.Contains("^") || _name.Contains("&") || _name.Contains("*") || _name.Contains("'") || _name.Contains(";"))
-                {
-                    _name = _name.Replace("!", "");
-                    _name = _name.Replace("@", "");
-                    _name = _name.Replace("#", "");
-                    _name = _name.Replace("$", "");
-                    _name = _name.Replace("%", "");
-                    _name = _name.Replace("^", "");
-                    _name = _name.Replace("&", "");
-                    _name = _name.Replace("*", "");
-                    _name = _name.Replace("'", "");
-                    _name = _name.Replace(";", "");
-                }
+                _name = Regex.Replace(_name, @"[^\u0000-\u007F]+", string.Empty);
                 if (_respawnReason == RespawnType.EnterMultiplayer)
                 {
                     Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
@@ -232,10 +209,10 @@ namespace ServerTools
                                     if (_return2)
                                     {
                                         _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                                        SQL.FastQuery(_sql);
+                                        SQL.FastQuery(_sql, "API");
                                     }
                                     _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                                    SQL.FastQuery(_sql);
+                                    SQL.FastQuery(_sql, "API");
                                     Event.EventReturn(_cInfo);
                                 }
                                 else if (_return2)
@@ -253,14 +230,14 @@ namespace ServerTools
                         }
                     }
                     _sql = string.Format("UPDATE Players SET playername = '{0}', zkills = {1}, kills = {2}, deaths = {3} WHERE steamid = '{4}'", _name, _zCount, _killCount, _deathCount, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "API");
                     if (Mogul.IsEnabled)
                     {
                         if (Wallet.IsEnabled)
                         {
                             int currentCoins = Wallet.GetcurrentCoins(_cInfo);
                             _sql = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "API");
                         }
                     }
                 }
@@ -298,10 +275,10 @@ namespace ServerTools
                                 if (_return2)
                                 {
                                     _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                                    SQL.FastQuery(_sql);
+                                    SQL.FastQuery(_sql, "API");
                                 }
                                 _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "API");
                                 Event.EventReturn(_cInfo);
                             }
                         }
@@ -329,10 +306,10 @@ namespace ServerTools
                                     if (_return2)
                                     {
                                         _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                                        SQL.FastQuery(_sql);
+                                        SQL.FastQuery(_sql, "API");
                                     }
                                     _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                                    SQL.FastQuery(_sql);
+                                    SQL.FastQuery(_sql, "API");
                                     Event.EventReturn(_cInfo);
                                 }
                                 else if (_return2)
@@ -363,20 +340,20 @@ namespace ServerTools
                             if (_return2)
                             {
                                 _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "API");
                             }
                             _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "API");
                             Event.EventReturn(_cInfo);
                         }
                     }
                     string _sql2 = string.Format("UPDATE Players SET deaths = {0} WHERE steamid = '{1}'", XUiM_Player.GetDeaths(_player), _cInfo.playerId);
-                    SQL.FastQuery(_sql2);
+                    SQL.FastQuery(_sql2, "API");
                     if (Zones.IsEnabled && Zones.Victim.ContainsKey(_cInfo.entityId))
                     {
                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", type /return to teleport back to your death position. There is a time limit.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         _sql2 = string.Format("UPDATE Players SET respawnTime = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                        SQL.FastQuery(_sql2);
+                        SQL.FastQuery(_sql2, "API");
                         if (Zones.Forgive.ContainsKey(_cInfo.entityId))
                         {
                             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", type /forgive to release your killer from jail.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -388,7 +365,7 @@ namespace ServerTools
                         {
                             int currentCoins = Wallet.GetcurrentCoins(_cInfo);
                             _sql2 = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", currentCoins, _cInfo.playerId);
-                            SQL.FastQuery(_sql2);
+                            SQL.FastQuery(_sql2, "API");
                         }
                     }
                 }
@@ -398,10 +375,6 @@ namespace ServerTools
                     {
                         StartingItems.StartingItemCheck(_cInfo);
                         StartingItems.Que.Remove(_cInfo.playerId);
-                    }
-                    if (Players.NoFlight.Contains(_cInfo.entityId))
-                    {
-                        Players.NoFlight.Remove(_cInfo.entityId);
                     }
                     if (HatchElevator.IsEnabled)
                     {
@@ -460,21 +433,9 @@ namespace ServerTools
                     Hardcore.Announce(_cInfo);
                 }
                 string _name = SQL.EscapeString(_cInfo.playerName);
-                if (_name.Contains("!") || _name.Contains("@") || _name.Contains("#") || _name.Contains("$") || _name.Contains("%") || _name.Contains("^") || _name.Contains("&") || _name.Contains("*") || _name.Contains("'") || _name.Contains(";"))
-                {
-                    _name = _name.Replace("!", "");
-                    _name = _name.Replace("@", "");
-                    _name = _name.Replace("#", "");
-                    _name = _name.Replace("$", "");
-                    _name = _name.Replace("%", "");
-                    _name = _name.Replace("^", "");
-                    _name = _name.Replace("&", "");
-                    _name = _name.Replace("*", "");
-                    _name = _name.Replace("'", "");
-                    _name = _name.Replace(";", "");
-                }
+                _name = Regex.Replace(_name, @"[^\u0000-\u007F]+", string.Empty);
                 _sql = string.Format("UPDATE Players SET playername = '{0}', wallet = 0, playerSpentCoins = 0, sessionTime = 0, zkills = 0, kills = 0, deaths = 0 WHERE steamid = '{1}'", _name, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "API");
                 Que.RemoveAt(0);
             }
         }
@@ -496,12 +457,12 @@ namespace ServerTools
                         if (_player != null)
                         {
                             string _sql = string.Format("UPDATE Players SET zkills = {0}, kills = {1}, deaths = {2} WHERE steamid = '{3}'", XUiM_Player.GetZombieKills(_player), XUiM_Player.GetPlayerKills(_player), XUiM_Player.GetDeaths(_player), _cInfo.playerId);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "API");
                             if (Wallet.IsEnabled)
                             {
                                 int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
                                 _sql = string.Format("UPDATE Players SET wallet = {0} WHERE steamid = '{1}'", _currentCoins, _cInfo.playerId);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "API");
                             }
                         }
                     }
@@ -526,18 +487,6 @@ namespace ServerTools
                     {
                         Zones.Victim.Remove(_cInfo.entityId);
                     }
-                    if (FlightCheck.Flag.ContainsKey(_cInfo.entityId))
-                    {
-                        FlightCheck.Flag.Remove(_cInfo.entityId);
-                    }
-                    if (FlightCheck.fLastPositionXZ.ContainsKey(_cInfo.entityId))
-                    {
-                        FlightCheck.fLastPositionXZ.Remove(_cInfo.entityId);
-                    }
-                    if (FlightCheck.fLastPositionY.ContainsKey(_cInfo.entityId))
-                    {
-                        FlightCheck.fLastPositionY.Remove(_cInfo.entityId);
-                    }
                     if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
                     {
                         FriendTeleport.Dict.Remove(_cInfo.entityId);
@@ -549,14 +498,6 @@ namespace ServerTools
                     if (Travel.Flag.Contains(_cInfo.entityId))
                     {
                         Travel.Flag.Remove(_cInfo.entityId);
-                    }
-                    if (UndergroundCheck.Flag.ContainsKey(_cInfo.entityId))
-                    {
-                        UndergroundCheck.Flag.Remove(_cInfo.entityId);
-                    }
-                    if (UndergroundCheck.uLastPositionXZ.ContainsKey(_cInfo.entityId))
-                    {
-                        UndergroundCheck.uLastPositionXZ.Remove(_cInfo.entityId);
                     }
                     if (Wallet.IsEnabled)
                     {
@@ -581,7 +522,7 @@ namespace ServerTools
                                 int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _sessionTime);
                                 _result1.Dispose();
                                 _sql1 = string.Format("UPDATE Players SET sessionTime = {0} WHERE steamid = '{1}'", _sessionTime + _timepassed, _cInfo.playerId);
-                                SQL.FastQuery(_sql1);
+                                SQL.FastQuery(_sql1, "API");
                             }
                         }
                         _result2.Dispose();
@@ -599,9 +540,9 @@ namespace ServerTools
                         Zones.reminder.Remove(_cInfo.entityId);
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-
+                    Log.Out(string.Format("[SERVERTOOLS] Error in Player Disconnection: {0}.", e.Message));
                 }
             }
         }
@@ -609,11 +550,14 @@ namespace ServerTools
         public void GameStartDone()
         {
             LoadProcess.Load(1);
+            Tracking.Cleanup();
+            Players.Load();
         }
 
         public void GameShutdown()
         {
-            
+            Timers.TimerStop();
+            Players.Unload();
         }
     }
 }

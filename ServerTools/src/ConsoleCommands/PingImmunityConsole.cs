@@ -63,7 +63,7 @@ namespace ServerTools
                             {
                                 _sql = string.Format("INSERT INTO Players (steamid, pingimmunity) VALUES ('{0}', 'true')", _cInfo.playerId);
                             }
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "PingImmunityConsole");
                             SdtdConsole.Instance.Output(string.Format("Added Id {0} to the Ping Immunity list.", _params[1]));
                         }
                         _result.Dispose();
@@ -99,7 +99,7 @@ namespace ServerTools
                                 {
                                     _sql = string.Format("INSERT INTO Players (steamid, pingimmunity) VALUES ('{0}', 'true')", _id);
                                 }
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "PingImmunityConsole");
                                 SdtdConsole.Instance.Output(string.Format("Added Id {0} to the Ping Immunity list.", _params[1]));
                             }
                             _result.Dispose();
@@ -121,7 +121,7 @@ namespace ServerTools
                         if (_result.Rows.Count > 0)
                         {
                             _sql = string.Format("UPDATE Players SET pingimmunity = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "PingImmunityConsole");
                             SdtdConsole.Instance.Output(string.Format("Removed Id {0} from Ping Immunity list.", _params[1]));
                         }
                         else
@@ -144,7 +144,7 @@ namespace ServerTools
                             if (_result.Rows.Count > 0)
                             {
                                 _sql = string.Format("UPDATE Players SET pingimmunity = 'false' WHERE steamid = '{0}'", _id);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "PingImmunityConsole");
                                 SdtdConsole.Instance.Output(string.Format("Removed Id {0} from the Ping Immunity list.", _params[1]));
                             }
                             else

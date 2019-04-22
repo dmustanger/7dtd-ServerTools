@@ -1,9 +1,11 @@
 ﻿
+using UnityEngine;
+
 namespace ServerTools
 {
     class StopServer
     {
-        public static bool Ten_Second_Countdown = false, stopServerCountingDown = false, Kick_30_Seconds = false, NoEntry = false;
+        public static bool Ten_Second_Countdown = false, stopServerCountingDown = false, Kick_30_Seconds = false, NoEntry = false, Shutdown = false;
         public static int Alert_Count = 2;
 
         public static void StartShutdown()
@@ -93,9 +95,10 @@ namespace ServerTools
 
         public static void Stop()
         {
-            Timers.TimerStop();
             Log.Out("[SERVERTOOLS] Running shutdown.");
-            SdtdConsole.Instance.ExecuteSync("shutdown", (ClientInfo)null);
+            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Running shutdown."));
+            Application.Quit();
+            Shutdown = true;
         }
 
         public static void Kick30()
@@ -114,9 +117,15 @@ namespace ServerTools
             ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             if (_count > 1)
             {
-                int _newCount = _count - 1;
-                Alert(_message, _newCount);
+                Alert(_message, _count - 1);
             }
+        }
+
+        public static void FailSafe()
+        {
+            Log.Out("[SERVERTOOLS] Detected server still operating after shutdown. Attempting shutdown.");
+            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Detected server still operating after shutdown. Attempting shutdown."));
+            Application.Quit();
         }
     }
 }

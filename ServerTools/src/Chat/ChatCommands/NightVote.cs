@@ -14,8 +14,7 @@ namespace ServerTools
         {
             if (!VoteOpen)
             {
-                int _playerCount = ConnectionManager.Instance.ClientCount();
-                if (_playerCount >= Players_Online)
+                if (ConnectionManager.Instance.ClientCount() >= Players_Online)
                 {
                     if (!GameManager.Instance.World.IsDaytime())
                     {

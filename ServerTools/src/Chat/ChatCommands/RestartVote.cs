@@ -18,29 +18,33 @@ namespace ServerTools
                 if (!StartedVote)
                 {
                     bool adminOnline = false;
-                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-                    for (int i = 0; i < _cInfoList.Count; i++)
+                    List<ClientInfo> ClientInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                    for (int i = 0; i < ClientInfoList.Count; i++)
                     {
-                        ClientInfo _cInfoAdmins = _cInfoList[i];
-                        GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins.playerId);
-                        AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfoAdmins.playerId);
-                        if (Admin.PermissionLevel <= Admin_Level)
+                        ClientInfo _cInfoAdmins = ClientInfoList[i];
+                        if (_cInfo != _cInfoAdmins)
                         {
-                            adminOnline = true;
-                            string _phrase748;
-                            if (!Phrases.Dict.TryGetValue(748, out _phrase748))
+                            if (GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins.playerId))
                             {
-                                _phrase748 = "{Player} has requested a restart vote.";
+                                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfoAdmins.playerId);
+                                if (Admin.PermissionLevel <= Admin_Level)
+                                {
+                                    adminOnline = true;
+                                    string _phrase748;
+                                    if (!Phrases.Dict.TryGetValue(748, out _phrase748))
+                                    {
+                                        _phrase748 = "{Player} has requested a restart vote.";
+                                    }
+                                    _phrase748 = _phrase748.Replace("{Player}", _cInfo.playerName);
+                                    ChatHook.ChatMessage(_cInfoAdmins, LoadConfig.Chat_Response_Color + _phrase748 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
                             }
-                            _phrase748 = _phrase748.Replace("{Player}", _cInfo.playerName);
-                            ChatHook.ChatMessage(_cInfoAdmins, LoadConfig.Chat_Response_Color + _phrase748 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     if (!adminOnline)
                     {
 
-                        int _playerCount = ConnectionManager.Instance.ClientCount();
-                        if (_playerCount >= Players_Online)
+                        if (ConnectionManager.Instance.ClientCount() >= Players_Online)
                         {
                             StartedVote = true;
                             string _phrase740;

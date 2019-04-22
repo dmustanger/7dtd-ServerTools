@@ -8,17 +8,16 @@ namespace ServerTools
     class WorldRadius
     {
         public static bool IsEnabled = false;
-        public static int Admin_Level = 0, Normal_Player = 8000, Donator = 10000;
+        public static int Admin_Level = 0, Normal_Player = 8000, Reserved = 10000;
 
         public static void Exec()
         {
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
-                World world = GameManager.Instance.World;
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-                for (int i = 0; i < _cInfoList.Count; i++)
+                List<ClientInfo> ClientInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                for (int i = 0; i < ClientInfoList.Count; i++)
                 {
-                    ClientInfo _cInfo = _cInfoList[i];
+                    ClientInfo _cInfo = ClientInfoList[i];
                     AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                     if (Admin.PermissionLevel > Admin_Level)
                     {
@@ -30,28 +29,28 @@ namespace ServerTools
                             {
                                 if (DateTime.Now < _dt)
                                 {
-                                    DonatorRad(_player);
+                                    DonatorRad(_cInfo, _player);
                                 }
                                 else
                                 {
-                                    NormalRad(_player);
+                                    NormalRad(_cInfo, _player);
                                 }
                             }
                             else
                             {
-                                NormalRad(_player);
+                                NormalRad(_cInfo, _player);
                             }
                         }
                         else
                         {
-                            NormalRad(_player);
+                            NormalRad(_cInfo, _player);
                         }
                     }
                 }
             }
         }
 
-        public static void NormalRad(EntityPlayer _player)
+        public static void NormalRad(ClientInfo _cInfo, EntityPlayer _player)
         {
             if ((0 - _player.position.x) * (0 - _player.position.x) + (0 - _player.position.z) * (0 - _player.position.z) >= Normal_Player * Normal_Player)
             {
@@ -72,7 +71,6 @@ namespace ServerTools
                 {
                     _vec3z = (int)_player.position.z + 6;
                 }
-                ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_player.entityId);
                 _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_vec3x, -1, _vec3z), null, false));
                 string _phrase790;
                 if (!Phrases.Dict.TryGetValue(790, out _phrase790))
@@ -84,9 +82,9 @@ namespace ServerTools
             }
         }
 
-        public static void DonatorRad(EntityPlayer _player)
+        public static void DonatorRad(ClientInfo _cInfo, EntityPlayer _player)
         {
-            if ((0 - _player.position.x) * (0 - _player.position.x) + (0 - _player.position.z) * (0 - _player.position.z) >= Donator * Donator)
+            if ((0 - _player.position.x) * (0 - _player.position.x) + (0 - _player.position.z) * (0 - _player.position.z) >= Reserved * Reserved)
             {
                 int _vec3x, _vec3z;
                 if (_player.position.x >= 0)
@@ -105,7 +103,6 @@ namespace ServerTools
                 {
                     _vec3z = (int)_player.position.z + 6;
                 }
-                ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_player.entityId);
                 _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_vec3x, -1, _vec3z), null, false));
                 string _phrase790;
                 if (!Phrases.Dict.TryGetValue(790, out _phrase790))

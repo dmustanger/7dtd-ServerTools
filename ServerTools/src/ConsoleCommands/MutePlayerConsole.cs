@@ -9,7 +9,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools]-Mutes a players chat.";
+            return "[ServerTools]-Mutes A Players Chat.";
         }
         public override string GetHelp()
         {
@@ -88,13 +88,13 @@ namespace ServerTools
                                 {
                                     MutePlayer.Mutes.Add(_cInfo.playerId);
                                     _sql = string.Format("UPDATE Players SET muteTime = -1, playername = '{0}', WHERE steamid = '{1}'", _name, _cInfo.playerId);
-                                    SQL.FastQuery(_sql);
+                                    SQL.FastQuery(_sql, "MutePlayerConsole");
                                     SdtdConsole.Instance.Output(string.Format("Steam Id {0}, player name {1} has been muted indefinitely.", _cInfo.playerId, _cInfo.playerName));
                                     return;
                                 }
                                 MutePlayer.Mutes.Add(_cInfo.playerId);
                                 _sql = string.Format("UPDATE Players SET muteTime = {0}, playername = '{1}', muteDate = '{2}' WHERE steamid = '{3}'", _muteTime, _name, DateTime.Now, _cInfo.playerId);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "MutePlayerConsole");
                                 SdtdConsole.Instance.Output(string.Format("Steam Id {0}, player name {1} has been muted for {2} minutes.", _cInfo.playerId, _cInfo.playerName, _muteTime));
                                 return;
                             }
@@ -127,7 +127,7 @@ namespace ServerTools
                             }
                             MutePlayer.Mutes.Remove(_id);
                             string _sql = string.Format("UPDATE Players SET muteTime = 0 WHERE steamid = '{0}'", _id);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "MutePlayerConsole");
                             SdtdConsole.Instance.Output(string.Format("Steam Id {0} has been unmuted.", _id));
                             return;
                         }

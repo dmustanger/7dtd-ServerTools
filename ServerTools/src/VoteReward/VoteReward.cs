@@ -325,7 +325,7 @@ namespace ServerTools
             else
             {
                 string _sql = string.Format("UPDATE Players SET lastVoteReward = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "VoteReward");
                 if (Weekly_Votes > 0)
                 {
                     _sql = string.Format("SELECT lastVoteWeekly FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
@@ -346,7 +346,7 @@ namespace ServerTools
                         if (_weeklyVoteCount + 1 == Weekly_Votes)
                         {
                             _sql = string.Format("UPDATE Players SET weeklyVoteCount = 1, lastVoteWeekly = {0} WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "VoteReward");
                             ItemOrBlockRandom(_cInfo);
                             string _phrase704;
                             if (!Phrases.Dict.TryGetValue(704, out _phrase704))
@@ -358,7 +358,7 @@ namespace ServerTools
                         else
                         {
                             _sql = string.Format("UPDATE Players SET weeklyVoteCount = {0} WHERE steamid = '{1}'", _weeklyVoteCount + 1, _cInfo.playerId);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "VoteReward");
                             int _remainingVotes = Weekly_Votes - _weeklyVoteCount + 1;
                             DateTime _date2 = _lastVoteWeekly.AddDays(7);
                             string _phrase705;
@@ -376,7 +376,7 @@ namespace ServerTools
                     else
                     {
                         _sql = string.Format("UPDATE Players SET weeklyVoteCount = 1, lastVoteWeekly = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                        SQL.FastQuery(_sql);
+                        SQL.FastQuery(_sql, "VoteReward");
                         int _remainingVotes = Weekly_Votes - 1;
                         DateTime _date2 = DateTime.Now.AddDays(7);
                         string _phrase705;
@@ -458,7 +458,7 @@ namespace ServerTools
         {
             Entityspawn(_cInfo);
             string _sql2 = string.Format("UPDATE Players SET lastVoteReward = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-            SQL.FastQuery(_sql2);
+            SQL.FastQuery(_sql2, "VoteReward");
             if (Weekly_Votes > 0)
             {
                 string _sql = string.Format("SELECT lastVoteWeekly FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
@@ -479,7 +479,7 @@ namespace ServerTools
                     if (_weeklyVoteCount + 1 == Weekly_Votes)
                     {
                         _sql = string.Format("UPDATE Players SET weeklyVoteCount = 1, lastVoteWeekly = {0} WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                        SQL.FastQuery(_sql);
+                        SQL.FastQuery(_sql, "VoteReward");
                         Entityspawn(_cInfo);
                         string _phrase704;
                         if (!Phrases.Dict.TryGetValue(704, out _phrase704))
@@ -491,7 +491,7 @@ namespace ServerTools
                     else
                     {
                         _sql = string.Format("UPDATE Players SET weeklyVoteCount = {0} WHERE steamid = '{1}'", _weeklyVoteCount + 1, _cInfo.playerId);
-                        SQL.FastQuery(_sql);
+                        SQL.FastQuery(_sql, "VoteReward");
                         int _remainingVotes = Weekly_Votes - _weeklyVoteCount + 1;
                         DateTime _date2 = _lastVoteWeekly.AddDays(7);
                         string _phrase705;
@@ -509,7 +509,7 @@ namespace ServerTools
                 else
                 {
                     _sql = string.Format("UPDATE Players SET weeklyVoteCount = 1, lastVoteWeekly = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "VoteReward");
                     int _remainingVotes = Weekly_Votes - 1;
                     DateTime _date2 = DateTime.Now.AddDays(7);
                     string _phrase705;

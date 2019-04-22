@@ -109,10 +109,10 @@ namespace ServerTools
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             if (PvP_Check)
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-                for (int i = 0; i < _cInfoList.Count; i++)
+                List<ClientInfo> ClientInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                for (int i = 0; i < ClientInfoList.Count; i++)
                 {
-                    ClientInfo _cInfo2 = _cInfoList[i];
+                    ClientInfo _cInfo2 = ClientInfoList[i];
                     if (_cInfo2 != null)
                     {
                         EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
@@ -138,8 +138,7 @@ namespace ServerTools
             }
             if (Zombie_Check)
             {
-                World world = GameManager.Instance.World;
-                List<Entity> Entities = world.Entities.list;
+                List<Entity> Entities = GameManager.Instance.World.Entities.list;
                 for (int i = 0; i < Entities.Count; i++)
                 {
                     Entity _entity = Entities[i];
@@ -165,7 +164,7 @@ namespace ServerTools
             }
             SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), (ClientInfo)null);
             string _sql = string.Format("UPDATE Players SET lastkillme = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-            SQL.FastQuery(_sql);
+            SQL.FastQuery(_sql, "Suicide");
         }
     }
 }

@@ -37,38 +37,14 @@ namespace ServerTools
                 if (_params[0].ToLower().Equals("off"))
                 {
                     Gimme.IsEnabled = false;
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load("@" + API.ConfigPath + "/ServerToolsConfig.xml");
-                    XmlNodeList aNodes = doc.SelectNodes("/ServerTools/Tools");
-                    foreach (XmlNode aNode in aNodes)
-                    {
-                        XmlAttribute _attribute1 = aNode.Attributes["Name"];
-                        XmlAttribute _attribute2 = aNode.Attributes["Enable"];
-                        if (_attribute1 != null && _attribute1.Value == "Gimme" && _attribute2 != null)
-                        {
-                            _attribute2.Value = "False";
-                        }
-                    }
-                    doc.Save("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Gimme has been set to off"));
                     return;
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
                     Gimme.IsEnabled = true;
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load("@" + API.ConfigPath + "/ServerToolsConfig.xml");
-                    XmlNodeList aNodes = doc.SelectNodes("/ServerTools/Tools");
-                    foreach (XmlNode aNode in aNodes)
-                    {
-                        XmlAttribute _attribute1 = aNode.Attributes["Name"];
-                        XmlAttribute _attribute2 = aNode.Attributes["Enable"];
-                        if (_attribute1 != null && _attribute1.Value == "Gimme" && _attribute2 != null)
-                        {
-                            _attribute2.Value = "True";
-                        }
-                    }
-                    doc.Save("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Gimme has been set to on"));
                     return;
                 }
@@ -103,7 +79,7 @@ namespace ServerTools
                     if (_result.Rows.Count != 0)
                     {
                         _sql = string.Format("UPDATE Players SET last_gimme = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _id);
-                        SQL.FastQuery(_sql);
+                        SQL.FastQuery(_sql, "GimmeConsole");
                         SdtdConsole.Instance.Output(string.Format("Gimme delay reset for steamid {0}.", _id));
                     }
                     else

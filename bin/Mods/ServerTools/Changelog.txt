@@ -1,5 +1,45 @@
 ﻿CHANGELOG
 
+13.0
+Added phrase 305,632,633
+Added tool Break_Reminder. If a player goes over the set minutes in a single session, a message will remind them to
+to take a break. You can set the message and time required
+Added tool God_And_Flight_Detector. Set the admin level required to use god mode. Detects flight and no clip users as well
+Added tool Tracking. Set the rate it logs and how many days total. Logs what item is held at the time
+Added option Chest_Checker to Invalid_Item_Kicker. Checks for invalid items in chests, removes them and logs the event
+Added to invalid item detection. It will now log when players are warned to drop an item
+Added option to Wallet named Bank_Transfers. Controls whether players can transfer funds between the bank and wallet
+Added permission levels for Custom_Commands. Specify the custom command and level required in your default serveradmin.xml
+Added console command to trigger a backup. It resets the next scheduled backup to the Time_Between_Saves value
+Added console command teleu. Teleports you underneith a player. Teleports -10 blocks under target unless too low
+Added console command BanPlayer. Similar to the normal ban command but it will remove all existing claims of the player
+Added console commands to reset online players vote reward and all online and offline players
+Added console command kill all. Removes all animals and zombies from the map
+Fixed the default phrase 625 and 933 if the ServerToolsPhrases.xml is missing them
+Fixed sql alteration causing error for some user
+Fixed when a user in a zone marked PvE true is killed. It will only apply the auto penalty to the killer
+Fixed some chat responses
+Fixed clan chat issues
+Fixed friend teleport invitations and acceptance
+Fixed /friend response
+Fixed console commands turning on and off tools
+Fixed Night_Alert not showing in chat
+Fixed some errors caused by stupid player names
+Fixed restart vote not functioning as intended when an admin is online
+Fixed item spawn from purchases creating items with random attachments
+Fixed a few console command help responses
+Changed internal code for Zones, Bounties, Kill_Notice, God_And_Flight_Detector, Death_Spot to respond a bit quicker
+Changed the internal code for the shop purchase
+Changed sql connection code to avoid database lockup
+Changed clan name limit to 2 - 8 characters
+Changed quality limit allowed to be spawned through various tools. Raised to 200 for modifications
+Changed some code for the shutdown process and added a fail safe to try and shutdown again if it does not work
+Changed CustomCommands.xml response to allow unlimited console commands. Separate them by using ^ in between each command
+Updated phrase 108,112,120,606,625,811
+Updated default trigger 89. Changed /list to /playerlist
+Updated HowToSetup.xml
+Removed Underground_Check and Flight_Check tools. God_And_Flight_Detector replaces them
+
 12.95
 Recompiled files
 Fixed /playerlist response to show all player entity id

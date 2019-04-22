@@ -76,7 +76,7 @@ namespace ServerTools
                     _name = _name.Replace(";", "");
                 }
                 string _sql = string.Format("UPDATE Players SET muteTime = 60, muteName = '{0}', muteDate = '{1}' WHERE steamid = '{2}'", _name, DateTime.Now, _playerMute.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "MuteVote");
                 string _phrase777;
                 if (!Phrases.Dict.TryGetValue(777, out _phrase777))
                 {
@@ -91,10 +91,10 @@ namespace ServerTools
 
         public static void List(ClientInfo _cInfo)
         {
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-            for (int i = 0; i < _cInfoList.Count; i++)
+            List<ClientInfo> ClientInfoList = ConnectionManager.Instance.Clients.List.ToList();
+            for (int i = 0; i < ClientInfoList.Count; i++)
             {
-                ClientInfo _cInfo2 = _cInfoList[i];
+                ClientInfo _cInfo2 = ClientInfoList[i];
                 if (_cInfo2 != _cInfo)
                 {
                     string _phrase958;

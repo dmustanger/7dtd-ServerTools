@@ -86,7 +86,7 @@ namespace ServerTools
                 _name = _name.Replace(";", "");
             }
             string _sql = string.Format("UPDATE Players SET muteTime = 60, muteName = '{0}', muteDate = '{1}' WHERE steamid = '{2}'", _name, DateTime.Now, _player.playerId);
-            SQL.FastQuery(_sql);
+            SQL.FastQuery(_sql, "MutePlayer");
             string _phrase203;
             if (!Phrases.Dict.TryGetValue(203, out _phrase203))
             {
@@ -157,7 +157,7 @@ namespace ServerTools
                             {
                                 Mutes.Remove(_PlayertoUnMute.playerId);
                                 _sql = string.Format("UPDATE Players SET muteTime = 0 WHERE steamid = '{0}'", _PlayertoUnMute.playerId);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "MutePlayer");
                                 string _phrase205;
                                 if (!Phrases.Dict.TryGetValue(205, out _phrase205))
                                 {
@@ -206,7 +206,7 @@ namespace ServerTools
                             else
                             {
                                 _sql = string.Format("UPDATE Players SET muteTime = 0 WHERE steamid = '{0}'", row[0].ToString());
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "MutePlayer");
                             }
                         }
                     }
@@ -236,7 +236,7 @@ namespace ServerTools
                     {
                         Mutes.Remove(_id);
                         _sql = string.Format("UPDATE Players SET muteTime = 0 WHERE steamid = '{0}'", _id);
-                        SQL.FastQuery(_sql);
+                        SQL.FastQuery(_sql, "MutePlayer");
                     }
                 }
             }

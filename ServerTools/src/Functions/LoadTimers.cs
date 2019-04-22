@@ -5,12 +5,12 @@ namespace ServerTools
     class Timers
     {
         public static bool timer1Running = false;
-        public static int Player_Log_Interval = 60, Auto_Show_Bloodmoon_Delay = 30,
+        public static int Player_Log_Interval = 60, Auto_Show_Bloodmoon_Delay = 30, _tBS,
             Delay_Between_World_Saves = 15, Stop_Server_Time = 1, _newCount = 0,
             Shutdown_Delay = 60, Infoticker_Delay = 60, _sSC = 0, _sSCD = 0,
             Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0, _eventTime = 0;
-        private static int timer1SecondInstanceCount, _wV, _pSC, _b, _pL, _mC, _wSD, _iT, _rVS, _kV, _mV,
-            _rS, _rV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _nV, _eI, _eO, _zR, _tBS, _nP; 
+        private static int timer1SecondInstanceCount, _wV, _pSC, _b, _pL, _mC, _wSD, _iT, _rVS, _kV, _mV, _bT, _cC,
+            _rS, _rV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _nV, _eI, _eO, _zR, _nP, _sC, _tP; 
         private static System.Timers.Timer t1 = new System.Timers.Timer();
 
         public static void TimerStart()
@@ -48,9 +48,9 @@ namespace ServerTools
             {
                 Log.Out("Dupe Log enabled");
             }
-            if (FlightCheck.IsEnabled)
+            if (GodModeFlight.IsEnabled)
             {
-                Log.Out("Flight enabled");
+                Log.Out("God mode enabled");
             }
             if (HatchElevator.IsEnabled)
             {
@@ -59,11 +59,7 @@ namespace ServerTools
             if (InventoryCheck.IsEnabled)
             {
                 Log.Out("Invalid item kicker enabled");
-            }
-            if (UndergroundCheck.IsEnabled)
-            {
-                Log.Out("Underground flight enabled");
-            }            
+            }           
             if (Jail.IsEnabled)
             {
                 Log.Out("Jail enabled");
@@ -175,6 +171,10 @@ namespace ServerTools
             if (Bounties.IsEnabled)
             {
                 Log.Out("Bounties enabled");
+            }
+            if (BreakTime.IsEnabled)
+            {
+                Log.Out("Break time enabled");
             }
             if (ChatHook.ChatFlood)
             {
@@ -308,6 +308,10 @@ namespace ServerTools
             {
                 Log.Out("Suicide enabled");
             }
+            if (Tracking.IsEnabled)
+            {
+                Log.Out("Tracking enabled");
+            }
             if (Travel.IsEnabled)
             {
                 Log.Out("Travel enabled");
@@ -335,31 +339,13 @@ namespace ServerTools
 
         public static void Init(object sender, ElapsedEventArgs e)
         {
-            if (FlightCheck.IsEnabled)
-            {
-                if ((int)GameManager.Instance.fps.Counter > 5)
-                {
-                    FlightCheck.AutoFlightCheck();
-                }
-            }
             if (HatchElevator.IsEnabled)
             {
                 HatchElevator.AutoHatchCheck();
             }
-            if (UndergroundCheck.IsEnabled)
-            {
-                if ((int)GameManager.Instance.fps.Counter > 5)
-                {
-                    UndergroundCheck.AutoUndergroundCheck();
-                }
-            }
             if (Jail.IsEnabled)
             {
                 Jail.StatusCheck();
-            }
-            if (Bounties.IsEnabled || KillNotice.IsEnabled || DeathSpot.IsEnabled || Zones.IsEnabled || Event.Open)
-            {
-                Players.Exec();
             }
             if (Jail.Jailed.Count > 0)
             {
@@ -373,6 +359,19 @@ namespace ServerTools
             else
             {
                 _jR = 0;
+            }
+            if (StopServer.Shutdown)
+            {
+                _sC++;
+                if (_sC >= 60)
+                {
+                    _sC = 0;
+                    StopServer.FailSafe();
+                }
+            }
+            else
+            {
+                _sC = 0;
             }
             if (WeatherVote.IsEnabled)
             {
@@ -510,7 +509,7 @@ namespace ServerTools
             {
                 _h = 0;
             }
-            if (EntityCleanup.IsEnabled && (EntityCleanup.BlockIsEnabled || EntityCleanup.FallingTreeEnabled || EntityCleanup.Underground || EntityCleanup.Bikes))
+            if (EntityCleanup.IsEnabled && (EntityCleanup.BlockIsEnabled || EntityCleanup.FallingTreeEnabled || EntityCleanup.Underground || EntityCleanup.MiniBikes))
             {
                 _eC++;
                 if (_eC >= 10)
@@ -565,7 +564,7 @@ namespace ServerTools
             if (PlayerStatCheck.IsEnabled)
             {
                 _pSC++;
-                if (_pSC >= 2)
+                if (_pSC >= 5)
                 {
                     _pSC = 0;
                     PlayerStatCheck.PlayerStat();
@@ -833,6 +832,45 @@ namespace ServerTools
             else
             {
                 _nP = 0;
+            }
+            if (BreakTime.IsEnabled)
+            {
+                _bT++;
+                if (_bT >= BreakTime.Break_Time * 60)
+                {
+                    _bT = 0;
+                    BreakTime.Exec();
+                }
+            }
+            else
+            {
+                _bT = 0;
+            }
+            if (Tracking.IsEnabled)
+            {
+                _tP++;
+                if (_tP >= Tracking.Rate)
+                {
+                    _tP = 0;
+                    Tracking.Exec();
+                }
+            }
+            else
+            {
+                _tP = 0;
+            }
+            if (InventoryCheck.IsEnabled && InventoryCheck.Chest_Checker)
+            {
+                _cC++;
+                if (_cC >= 300)
+                {
+                    _cC = 0;
+                    InventoryCheck.ChestCheck();
+                }
+            }
+            else
+            {
+                _cC = 0;
             }
         }
     }

@@ -287,7 +287,7 @@ namespace ServerTools
                 string _phrase108;
                 if (!Dict.TryGetValue(108, out _phrase108))
                 {
-                    _phrase108 = " the name {TargetPlayerName} was not found.";
+                    _phrase108 = " the player {Player} was not found.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"108\" Phrase=\"{0}\" />", _phrase108));
                 string _phrase109;
@@ -311,7 +311,7 @@ namespace ServerTools
                 string _phrase112;
                 if (!Dict.TryGetValue(112, out _phrase112))
                 {
-                    _phrase112 = " you have invited {InvitedPlayerName} to the clan {ClanName}.";
+                    _phrase112 = " you have invited {PlayerName} to the clan {ClanName}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"112\" Phrase=\"{0}\" />", _phrase112));
                 string _phrase113;
@@ -359,7 +359,7 @@ namespace ServerTools
                 string _phrase120;
                 if (!Dict.TryGetValue(120, out _phrase120))
                 {
-                    _phrase120 = " you have removed {PlayertoRemove} from clan {ClanName}.";
+                    _phrase120 = " you have removed {PlayerName} from clan {ClanName}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"120\" Phrase=\"{0}\" />", _phrase120));
                 string _phrase121;
@@ -497,7 +497,7 @@ namespace ServerTools
                 string _phrase305;
                 if (!Dict.TryGetValue(305, out _phrase305))
                 {
-                    _phrase305 = "";
+                    _phrase305 = "The horde is here!";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"305\" Phrase=\"{0}\" />", _phrase305));
                 string _phrase306;
@@ -935,7 +935,7 @@ namespace ServerTools
                 string _phrase606;
                 if (!Dict.TryGetValue(606, out _phrase606))
                 {
-                    _phrase606 = " you can only use {CommandPrivate}{Command50} for two minutes after respawning. Time has expired.";
+                    _phrase606 = " you can only use {CommandPrivate}{Command50} for three minutes after being killed in a pve zone. Time has expired.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"606\" Phrase=\"{0}\" />", _phrase606));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1058,7 +1058,7 @@ namespace ServerTools
                 string _phrase625;
                 if (!Dict.TryGetValue(625, out _phrase625))
                 {
-                    _phrase625 = " your friend {FriendName} with Id # {EntityId} is online.";
+                    _phrase625 = "Friend = {FriendName}, Id = {EntityId}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"625\" Phrase=\"{0}\" />", _phrase625));
                 string _phrase626;
@@ -1097,6 +1097,18 @@ namespace ServerTools
                     _phrase631 = " your request was accepted. Teleporting you to your friend.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"631\" Phrase=\"{0}\" />", _phrase631));
+                string _phrase632;
+                if (!Dict.TryGetValue(632, out _phrase632))
+                {
+                    _phrase632 = "No friends found online.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"632\" Phrase=\"{0}\" />", _phrase632));
+                string _phrase633;
+                if (!Dict.TryGetValue(633, out _phrase633))
+                {
+                    _phrase633 = "This player is not your friend. You can not request teleport to them.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"633\" Phrase=\"{0}\" />", _phrase633));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ************************ Voting ************************ -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1478,7 +1490,7 @@ namespace ServerTools
                 string _phrase811;
                 if (!Dict.TryGetValue(811, out _phrase811))
                 {
-                    _phrase811 = " you can only use {CommandPrivate}{Command50} for four minutes after respawning. Time has expired.";
+                    _phrase811 = " you can only use {CommandPrivate}{Command50} for six minutes after being killed in a pve zone. Time has expired.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"811\" Phrase=\"{0}\" />", _phrase811));
                 string _phrase812;
@@ -1571,6 +1583,12 @@ namespace ServerTools
                     _phrase826 = " you can not teleport home with a vehicle.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"826\" Phrase=\"{0}\" />", _phrase826));
+                string _phrase827;
+                if (!Dict.TryGetValue(827, out _phrase827))
+                {
+                    _phrase827 = " you do not have permission to use {Command}.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"827\" Phrase=\"{0}\" />", _phrase827));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- *********************** Auction ************************ -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1701,7 +1719,7 @@ namespace ServerTools
                 string _phrase933;
                 if (!Dict.TryGetValue(933, out _phrase933))
                 {
-                    _phrase933 = " not enough players are online to start a weather vote.";
+                    _phrase933 = " you can only start this vote if at least {Count} players are online.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"933\" Phrase=\"{0}\" />", _phrase933));
                 string _phrase934;

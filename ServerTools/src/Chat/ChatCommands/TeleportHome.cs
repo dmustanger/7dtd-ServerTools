@@ -8,7 +8,7 @@ namespace ServerTools
 {
     public class TeleportHome
     {
-        public static bool IsEnabled = false, Set_Home2_Enabled = false, Set_Home2_Donor_Only = false, PvP_Check = false, Zombie_Check = false, Vehicle = false;
+        public static bool IsEnabled = false, Set_Home2_Enabled = false, Set_Home2_Reserved_Only = false, PvP_Check = false, Zombie_Check = false, Vehicle = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
         public static string Command1 = "sethome", Command2 = "home", Command3 = "fhome", Command4 = "delhome", Command5 = "sethome2", 
             Command6 = "home2", Command7 = "fhome2", Command8 = "delhome2", Command9 = "go";
@@ -33,7 +33,7 @@ namespace ServerTools
                 {
                     string _sposition = x + "," + y + "," + z;
                     string _sql = string.Format("UPDATE Players SET homeposition = '{0}' WHERE steamid = '{1}'", _sposition, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "TeleportHome");
                     string _phrase10;
                     if (!Phrases.Dict.TryGetValue(10, out _phrase10))
                     {
@@ -78,8 +78,7 @@ namespace ServerTools
                 if (Vehicle)
                 {
                     Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    Entity _attachedEntity = _player.AttachedToEntity;
-                    if (_attachedEntity != null)
+                    if (_player.AttachedToEntity != null)
                     {
                         string _phrase826;
                         if (!Phrases.Dict.TryGetValue(826, out _phrase826))
@@ -284,7 +283,6 @@ namespace ServerTools
                     return;
                 }
             }
-            Players.NoFlight.Add(_cInfo.entityId);
             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
             string _sql;
             if (Wallet.IsEnabled && Command_Cost >= 1)
@@ -292,7 +290,7 @@ namespace ServerTools
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
             }
             _sql = string.Format("UPDATE Players SET lastsethome = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-            SQL.FastQuery(_sql);
+            SQL.FastQuery(_sql, "TeleportHome");
         }
 
         public static void DelHome(ClientInfo _cInfo, string _playerName, bool _announce)
@@ -312,7 +310,7 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", deleted home.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 _sql = string.Format("UPDATE Players SET homeposition = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "TeleportHome");
             }
             else
             {
@@ -345,7 +343,7 @@ namespace ServerTools
                 {
                     string _sposition = x + "," + y + "," + z;
                     string _sql = string.Format("UPDATE Players SET homeposition2 = '{0}' WHERE steamid = '{1}'", _sposition, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "TeleportHome");
                     string _phrase607;
                     if (!Phrases.Dict.TryGetValue(607, out _phrase607))
                     {
@@ -595,11 +593,10 @@ namespace ServerTools
                     return;
                 }
             }
-            Players.NoFlight.Add(_cInfo.entityId);
             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
             string _sql = string.Format("UPDATE Players SET lastsethome = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-            SQL.FastQuery(_sql);
+            SQL.FastQuery(_sql, "TeleportHome");
         }
 
         public static void DelHome2(ClientInfo _cInfo, string _playerName, bool _announce)
@@ -629,7 +626,7 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase609 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 _sql = string.Format("UPDATE Players SET homeposition2 = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "TeleportHome");
             }
             else
             {
@@ -661,8 +658,7 @@ namespace ServerTools
                 if (Vehicle)
                 {
                     Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    Entity _attachedEntity = _player.AttachedToEntity;
-                    if (_attachedEntity != null)
+                    if (_player.AttachedToEntity != null)
                     {
                         string _phrase826;
                         if (!Phrases.Dict.TryGetValue(826, out _phrase826))
@@ -870,11 +866,10 @@ namespace ServerTools
             int.TryParse(_cords[0], out x);
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
-            Players.NoFlight.Add(_cInfo.entityId);
             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
             string _sql = string.Format("UPDATE Players SET lastsethome = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-            SQL.FastQuery(_sql);
+            SQL.FastQuery(_sql, "TeleportHome");
             string _phrase818;
             if (!Phrases.Dict.TryGetValue(818, out _phrase818))
             {
@@ -1098,11 +1093,10 @@ namespace ServerTools
                     return;
                 }
             }
-            Players.NoFlight.Add(_cInfo.entityId);
             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
             string _sql = string.Format("UPDATE Players SET lastsethome = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-            SQL.FastQuery(_sql);
+            SQL.FastQuery(_sql, "TeleportHome");
             string _phrase818;
             if (!Phrases.Dict.TryGetValue(818, out _phrase818))
             {
@@ -1168,7 +1162,6 @@ namespace ServerTools
                         int.TryParse(_cords[0], out x);
                         int.TryParse(_cords[1], out y);
                         int.TryParse(_cords[2], out z);
-                        Players.NoFlight.Add(_cInfo.entityId);
                         _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                         Invite.Remove(_cInfo.entityId);
                         FriendPosition.Remove(_cInfo.entityId);

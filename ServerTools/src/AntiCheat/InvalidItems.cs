@@ -7,13 +7,13 @@ namespace ServerTools
 {
     public class InventoryCheck
     {
-        public static bool IsEnabled = false, IsRunning = false, Announce_Invalid_Stack = false, Ban_Player = false, Dev_Items = true, Hidden_Items = true;
+        public static bool IsEnabled = false, IsRunning = false, Announce_Invalid_Stack = false, Ban_Player = false, Dev_Items = false, Hidden_Items = false, Chest_Checker = false;
         public static int Admin_Level = 0, Days_Before_Log_Delete = 5;
         private static string file = "InvalidItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static List<string> dict = new List<string>();
-        private static Dictionary<int, int> playerflag = new Dictionary<int, int>();
         private static List<int> dropCheck = new List<int>();
+        private static Dictionary<int, int> playerflag = new Dictionary<int, int>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
@@ -284,7 +284,7 @@ namespace ServerTools
                         }
                     }
                     for (int i = 0; i < _playerDataFile.bag.Length; i++)
-                    {                        
+                    {
                         ItemStack _intemStack = new ItemStack();
                         ItemValue _itemValue = new ItemValue();
                         _intemStack = _playerDataFile.bag[i];
@@ -359,6 +359,13 @@ namespace ServerTools
                                                 _phrase799 = _phrase799.Replace("{PlayerName}", _cInfo.playerName);
                                                 _phrase799 = _phrase799.Replace("{ItemName}", _name);
                                                 ChatHook.ChatMessage(_cInfo, "[FF0000]" + _phrase799 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                {
+                                                    sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, with invalid item: {2}. Warning was given to drop it.", _cInfo.playerName, _cInfo.playerId, _name));
+                                                    sw.WriteLine();
+                                                    sw.Flush();
+                                                    sw.Close();
+                                                }
                                             }
                                         }
                                     }
@@ -373,6 +380,13 @@ namespace ServerTools
                                         _phrase800 = _phrase800.Replace("{PlayerName}", _cInfo.playerName);
                                         _phrase800 = _phrase800.Replace("{ItemName}", _name);
                                         ChatHook.ChatMessage(_cInfo, "[FF0000]" + _phrase800 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                        {
+                                            sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, with invalid item: {2}. Warning was given to drop it.", _cInfo.playerName, _cInfo.playerId, _name));
+                                            sw.WriteLine();
+                                            sw.Flush();
+                                            sw.Close();
+                                        }
                                     }
                                 }
                             }
@@ -394,6 +408,53 @@ namespace ServerTools
                         if (dropCheck.Contains(_cInfo.entityId))
                         {
                             dropCheck.Remove(_cInfo.entityId);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void ChestCheck()
+        {
+            LinkedList<Chunk> chunkArray = new LinkedList<Chunk>();
+            DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
+            ChunkClusterList chunklist = GameManager.Instance.World.ChunkClusters;
+            for (int i = 0; i < chunklist.Count; i++)
+            {
+                ChunkCluster chunk = chunklist[i];
+                chunkArray = chunk.GetChunkArray();
+                foreach (Chunk _c in chunkArray)
+                {
+                    tiles = _c.GetTileEntities();
+                    foreach (TileEntity tile in tiles.dict.Values)
+                    {
+                        TileEntityType type = tile.GetTileEntityType();
+                        if (type.ToString().Equals("SecureLoot"))
+                        {
+                            TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
+                            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(SecureLoot.GetOwner());
+                            if (Admin.PermissionLevel > Admin_Level)
+                            {
+                                ItemStack[] items = SecureLoot.items;
+                                int slotNumber = 0;
+                                foreach (ItemStack item in items)
+                                {
+                                    if (!item.IsEmpty())
+                                    {
+                                        ItemClass _itemClass = ItemClass.list[item.itemValue.type];
+                                        string _itemName = _itemClass.GetItemName();
+                                        if (dict.Contains(_itemName))
+                                        {
+                                            int _count = item.count;
+                                            ItemStack itemStack = new ItemStack();
+                                            SecureLoot.UpdateSlot(slotNumber, itemStack);
+                                            Vector3i _chestPos = SecureLoot.localChunkPos;
+                                            Log.Out(string.Format("[SERVERTOOLS] Removed {0} {1}, from a chest located at {2} {3} {4}", item.count, _itemName, _chestPos.x, _chestPos.y, _chestPos.z));
+                                        }
+                                    }
+                                    slotNumber++;
+                                }
+                            }
                         }
                     }
                 }

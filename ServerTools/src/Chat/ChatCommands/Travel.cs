@@ -723,7 +723,6 @@ namespace ServerTools
                                 return;
                             }
                         }
-                        Players.NoFlight.Add(_cInfo.entityId);
                         _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(xDest, yDest, zDest), null, false));
                         string _sql;
                         if (Wallet.IsEnabled && Command_Cost >= 1)
@@ -731,7 +730,7 @@ namespace ServerTools
                             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                         }
                         _sql = string.Format("UPDATE Players SET lastTravel = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                        SQL.FastQuery(_sql);
+                        SQL.FastQuery(_sql, "Travel");
                         string _phrase603;
                         if (!Phrases.Dict.TryGetValue(603, out _phrase603))
                         {

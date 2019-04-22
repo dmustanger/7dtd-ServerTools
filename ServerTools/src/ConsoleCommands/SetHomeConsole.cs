@@ -37,38 +37,14 @@ namespace ServerTools
                 if (_params[0].ToLower().Equals("off"))
                 {
                     TeleportHome.IsEnabled = false;
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load("@" + API.ConfigPath + "/ServerToolsConfig.xml");
-                    XmlNodeList aNodes = doc.SelectNodes("/ServerTools/Tools");
-                    foreach (XmlNode aNode in aNodes)
-                    {
-                        XmlAttribute _attribute1 = aNode.Attributes["Name"];
-                        XmlAttribute _attribute2 = aNode.Attributes["Enable"];
-                        if (_attribute1 != null && _attribute1.Value == "Home" && _attribute2 != null)
-                        {
-                            _attribute2.Value = "False";
-                        }
-                    }
-                    doc.Save("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Set home has been set to off"));
                     return;
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
                     TeleportHome.IsEnabled = true;
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load("@" + API.ConfigPath + "/ServerToolsConfig.xml");
-                    XmlNodeList aNodes = doc.SelectNodes("/ServerTools/Tools");
-                    foreach (XmlNode aNode in aNodes)
-                    {
-                        XmlAttribute _attribute1 = aNode.Attributes["Name"];
-                        XmlAttribute _attribute2 = aNode.Attributes["Enable"];
-                        if (_attribute1 != null && _attribute1.Value == "Home" && _attribute2 != null)
-                        {
-                            _attribute2.Value = "True";
-                        }
-                    }
-                    doc.Save("@" + API.ConfigPath + "/ServerToolsConfig.xml");
+                    LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Set home has been set to on"));
                     return;
                 }
@@ -93,7 +69,7 @@ namespace ServerTools
                     if (_lastsethome.ToString() != "10/29/2000 7:30:00 AM")
                     {
                         _sql = string.Format("UPDATE Players SET lastsethome = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _cInfo.playerId);
-                        SQL.FastQuery(_sql);
+                        SQL.FastQuery(_sql, "SetHomeConsole");
                         SdtdConsole.Instance.Output("Players chat command /home and /home2 delay reset.");
                     }
                     else

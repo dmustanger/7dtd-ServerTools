@@ -4,7 +4,7 @@ namespace ServerTools
 {
     public class SQL
     {
-        public static int Sql_version = 6;
+        public static int Sql_version = 7;
         public static bool IsMySql = false;
 
         public static void Connect()
@@ -19,7 +19,7 @@ namespace ServerTools
             }
         }
 
-        public static void FastQuery(string _sql)
+        public static void FastQuery(string _sql, string _class)
         {
             if (IsMySql)
             {
@@ -27,7 +27,7 @@ namespace ServerTools
             }
             else
             {
-                SQLiteDatabase.FastQuery(_sql);
+                SQLiteDatabase.FastQuery(_sql, _class);
             }
         }
 

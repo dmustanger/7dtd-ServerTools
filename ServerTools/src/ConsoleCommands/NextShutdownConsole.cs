@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Returns the next scheduled auto shutdown.";
+            return "[ServerTools]-Returns The Next Scheduled Auto Shutdown.";
         }
 
         public override string GetHelp()

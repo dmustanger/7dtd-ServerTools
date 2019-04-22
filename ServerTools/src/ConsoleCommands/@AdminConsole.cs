@@ -12,16 +12,19 @@ public class @AdminsConsole : ConsoleCmdAbstract
     {
         return "[ServerTools]-Sends a message to all online admins.";
     }
+
     public override string GetHelp()
     {
         return "Usage:\n" +
             "  1. @Admin Your message\n" +
             "1. Sends your private chat message to all online admins.\n";
     }
+
     public override string[] GetCommands()
     {
         return new string[] { "st-@Admin", "@A", "@a" };
     }
+
     public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
     {
         try

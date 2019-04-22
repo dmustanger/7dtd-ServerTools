@@ -4,7 +4,7 @@ namespace ServerTools
 {
     class Wallet
     {
-        public static bool IsEnabled = false, Lose_On_Death = false;
+        public static bool IsEnabled = false, Lose_On_Death = false, Bank_Transfers = false;
         public static string Coin_Name = "coin", Command56 = "wallet";
         public static int Zombie_Kills = 10;
         public static int Player_Kills = 50;
@@ -49,7 +49,7 @@ namespace ServerTools
             int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
             _result.Dispose();
             _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins + _amount, _steamid);
-            SQL.FastQuery(_sql);
+            SQL.FastQuery(_sql, "Wallet");
         }
 
         public static void SubtractCoinsFromWallet(string _steamid, int _amount)
@@ -60,7 +60,7 @@ namespace ServerTools
             int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
             _result.Dispose();
             _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _amount, _steamid);
-            SQL.FastQuery(_sql);
+            SQL.FastQuery(_sql, "Wallet");
         }
 
         public static void ClearWallet(ClientInfo _cInfo)
@@ -74,7 +74,7 @@ namespace ServerTools
                 int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
                 _result.Dispose();
                 _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _walletValue, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "Wallet");
             }
         }
 
@@ -92,7 +92,7 @@ namespace ServerTools
                 if (_currentCoins >= 1)
                 {
                     _sql = string.Format("UPDATE Players SET playerSpentCoins = {0} WHERE steamid = '{1}'", _playerSpentCoins - _currentCoins, _cInfo2.playerId);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "Wallet");
                 }
             }
         }

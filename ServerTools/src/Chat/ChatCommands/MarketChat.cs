@@ -183,7 +183,7 @@ namespace ServerTools
                     string _mposition = x + "," + y + "," + z;
                     MarketPlayers.Add(_cInfo.entityId);
                     _sql = string.Format("UPDATE Players SET marketReturn = '{0}' WHERE steamid = '{1}'", _mposition, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "MarketChat");
                     string _phrase561;
                     if (!Phrases.Dict.TryGetValue(561, out _phrase561))
                     {
@@ -209,7 +209,6 @@ namespace ServerTools
                 int.TryParse(_cords[0], out x);
                 int.TryParse(_cords[1], out y);
                 int.TryParse(_cords[2], out z);
-                Players.NoFlight.Add(_cInfo.entityId);
                 _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                 string _phrase562;
                 if (!Phrases.Dict.TryGetValue(562, out _phrase562))
@@ -222,7 +221,7 @@ namespace ServerTools
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 }
                 _sql = string.Format("UPDATE Players SET lastMarket = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "MarketChat");
             }
             else
             {
@@ -267,11 +266,10 @@ namespace ServerTools
                     int.TryParse(_returnCoords[0], out x);
                     int.TryParse(_returnCoords[1], out y);
                     int.TryParse(_returnCoords[2], out z);
-                    Players.NoFlight.Add(_cInfo.entityId);
                     _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                     MarketPlayers.Remove(_cInfo.entityId);
                     _sql = string.Format("UPDATE Players SET marketReturn = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "MarketChat");
                     string _phrase555;
                     if (!Phrases.Dict.TryGetValue(555, out _phrase555))
                     {

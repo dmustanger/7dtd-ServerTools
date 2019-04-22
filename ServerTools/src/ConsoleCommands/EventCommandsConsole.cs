@@ -57,7 +57,7 @@ namespace ServerTools
                         _result.Dispose();
                         string _name = SQL.EscapeString(_params[1]);
                         _sql = string.Format("INSERT INTO Events (eventAdmin, eventName) VALUES ('{0}', '{1}')", _steamId, _name);
-                        SQL.FastQuery(_sql);
+                        SQL.FastQuery(_sql, "EventCommandsConsole");
                         if (Event.SetupStage.ContainsKey(_steamId))
                         {
                             Event.SetupName[_steamId] = _params[1];
@@ -115,7 +115,7 @@ namespace ServerTools
                             if (_count == _eventTeams)
                             {
                                 _sql = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventSpawn) VALUES ({0}, {1}, '{2}')", _eventid, _count, _pos);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "EventCommandsConsole");
                                 Event.SetupStage[_steamId] = 4;
                                 SdtdConsole.Instance.Output(string.Format("The spawn position for team {0} has been set to {1} {2} {3}.", _count, x, y, z));
                                 SdtdConsole.Instance.Output("Stand where you would like the respawn for team 1 if they die during the event, then type event save.");
@@ -124,7 +124,7 @@ namespace ServerTools
                             else
                             {
                                 _sql = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventSpawn) VALUES ({0}, {1}, '{2}')", _eventid, _count, _pos);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "EventCommandsConsole");
                                 SdtdConsole.Instance.Output(string.Format("The spawn position for team {0} has been set to {1} {2} {3}.", _count, x, y, z));
                                 SdtdConsole.Instance.Output(string.Format("Stand where you would like the spawn for team {0} when the event starts and type event save.", _count + 1));
                                 return;
@@ -153,7 +153,7 @@ namespace ServerTools
                             if (_count == _eventTeams)
                             {
                                 _sql = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventRespawn) VALUES ({0}, {1}, '{2}')", _eventid, _count, _pos);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "EventCommandsConsole");
                                 Event.SetupStage[_steamId] = 5;
                                 SdtdConsole.Instance.Output(string.Format("The respawn position for team {0} has been set to {1} {2} {3}.", _count, x, y, z));
                                 SdtdConsole.Instance.Output("Setup is complete. Type event start to send out the invitation to players.");
@@ -162,7 +162,7 @@ namespace ServerTools
                             else
                             {
                                 _sql = string.Format("INSERT INTO EventSpawns (eventid, eventTeam, eventRespawn) VALUES ({0}, {1}, '{2}')", _eventid, _count, _pos);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "EventCommandsConsole");
                                 SdtdConsole.Instance.Output(string.Format("The respawn position for team {0} has been set to {1} {2} {3}.", _count, x, y, z));
                                 SdtdConsole.Instance.Output(string.Format("Stand where you would like the respawn for team {0} when the event starts and type event save.", _count + 1));
                                 return;
@@ -265,7 +265,7 @@ namespace ServerTools
                                         else
                                         {
                                             string _sql = string.Format("UPDATE Players SET return = 'true' WHERE steamid = '{0}'", _steamId);
-                                            SQL.FastQuery(_sql);
+                                            SQL.FastQuery(_sql, "EventCommandsConsole");
                                             Event.PlayersTeam.Remove(_player.Key);
                                             SdtdConsole.Instance.Output(string.Format("Player with Id {0} was not spawned but they have been removed from the event and set to go back to their return point.", _player.Key));
                                         }
@@ -273,13 +273,13 @@ namespace ServerTools
                                     else
                                     {
                                         string _sql = string.Format("UPDATE Players SET return = 'true' WHERE steamid = '{0}'", _steamId);
-                                        SQL.FastQuery(_sql);
+                                        SQL.FastQuery(_sql, "EventCommandsConsole");
                                         Event.PlayersTeam.Remove(_player.Key);
                                         SdtdConsole.Instance.Output(string.Format("Player with Id {0} was offline but they have been removed from the event and set to go back to their return point.", _player.Key));
                                     }
                                 }
                                 string _sql2 = string.Format("UPDATE Events SET eventAdmin = null, eventActive = 'false' WHERE eventAdmin = '{0}'", Event.Admin);
-                                SQL.FastQuery(_sql2);
+                                SQL.FastQuery(_sql2, "EventCommandsConsole");
                                 Event.Cancel = false;
                                 Event.Open = false;
                                 Event.Admin = null;
@@ -456,7 +456,7 @@ namespace ServerTools
                                         int.TryParse(_cords[2], out z);
                                         _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                                         _sql = string.Format("UPDATE Players SET eventReturn = 'Unknown', eventSpawn = 'false', eventRespawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                                        SQL.FastQuery(_sql);
+                                        SQL.FastQuery(_sql, "EventCommandsConsole");
                                         Event.PlayersTeam.Remove(_params[1]);
                                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you have been removed from the event and sent to your return point.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                         SdtdConsole.Instance.Output(string.Format("Player with Id {0} was removed from the event and sent to their return point.", _params[1]));
@@ -465,7 +465,7 @@ namespace ServerTools
                                     else
                                     {
                                         string _sql = string.Format("UPDATE Players SET return = 'true', eventSpawn = 'false', eventRespawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                                        SQL.FastQuery(_sql);
+                                        SQL.FastQuery(_sql, "EventCommandsConsole");
                                         Event.PlayersTeam.Remove(_params[1]);
                                         SdtdConsole.Instance.Output(string.Format("Player with Id {0} was not spawned but they were removed from the event and set to return to their return point.", _params[1]));
                                     }
@@ -473,7 +473,7 @@ namespace ServerTools
                                 else
                                 {
                                     string _sql = string.Format("UPDATE Players SET return = 'true', eventSpawn = 'false', eventRespawn = 'false' WHERE steamid = '{0}'", _params[1]);
-                                    SQL.FastQuery(_sql);
+                                    SQL.FastQuery(_sql, "EventCommandsConsole");
                                     Event.PlayersTeam.Remove(_params[1]);
                                     SdtdConsole.Instance.Output(string.Format("Player with Id {0} was offline but they have been removed from the event and set to return to their return point.", _params[1]));
                                     return;
@@ -519,7 +519,7 @@ namespace ServerTools
                                             string _eventInvite = _result.Rows[0].ItemArray.GetValue(1).ToString();
                                             _result.Dispose();
                                             _sql = string.Format("UPDATE Events SET eventActive = 'true' WHERE eventid = {0} AND eventAdmin = '{1}'", _eventid, _steamId);
-                                            SQL.FastQuery(_sql);
+                                            SQL.FastQuery(_sql, "EventCommandsConsole");
                                             string _msg1 = "Event: {EventName}[-]";
                                             string _msg2 = _eventInvite;
                                             string _msg3 = "Type /event if you want to join the event. You will return to where you are when it ends.[-]";
@@ -559,9 +559,9 @@ namespace ServerTools
                         if (_result.Rows.Count > 0)
                         {
                             _sql = string.Format("Delete FROM Events WHERE eventid = {0}", _id);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "EventCommandsConsole");
                             _sql = string.Format("Delete FROM EventSpawns WHERE eventid = {0}", _id);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "EventCommandsConsole");
                             SdtdConsole.Instance.Output(string.Format("Deleted the event with id: {0}.", _id));
                             return;
                         }
@@ -591,7 +591,7 @@ namespace ServerTools
                                 {
                                     string _invite = SQL.EscapeString(_params[0]);
                                     string _sql = string.Format("UPDATE Events SET eventInvite = '{0}' WHERE eventAdmin = '{1}' AND eventName = '{2}'", _invite, _steamId, _eventName);
-                                    SQL.FastQuery(_sql);
+                                    SQL.FastQuery(_sql, "EventCommandsConsole");
                                     Event.SetupStage[_steamId] = 2;
                                     SdtdConsole.Instance.Output(string.Format("The event invitation has been set to {0}.", _params[0]));
                                     SdtdConsole.Instance.Output("How many teams, total players, and time in minutes will the event last? Type event <TeamCount> <TotalPlayers> <TimeInMin>.");
@@ -623,7 +623,7 @@ namespace ServerTools
                                                         _eventTime = 1;
                                                     }
                                                     string _sql = string.Format("UPDATE Events SET eventTeams = {0}, eventPlayerCount = {1}, eventTime = {2} WHERE eventAdmin = '{3}' AND eventName = '{4}'", _teamCount, _playerCount, _eventTime, _steamId, _eventName);
-                                                    SQL.FastQuery(_sql);
+                                                    SQL.FastQuery(_sql, "EventCommandsConsole");
                                                     Event.SetupStage[_steamId] = 3;
                                                     SdtdConsole.Instance.Output(string.Format("The event info has been set: team count {0}, total players {1}, event time {2}.", _teamCount, _playerCount, _eventTime));
                                                     if (_teamCount == 1)

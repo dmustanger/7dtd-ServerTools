@@ -62,17 +62,16 @@ namespace ServerTools
                 Vector3 Vec3 = _player.position;
                 string _position = _player.position.x + "," + _player.position.y + "," + _player.position.z;
                 string _sql1 = string.Format("UPDATE Players SET newTeleSpawn = '{0}' WHERE steamid = '{1}'", _position, _cInfo.playerId);
-                SQL.FastQuery(_sql1);
+                SQL.FastQuery(_sql1, "NewSpawnTele");
             }
             string[] _cords = New_Spawn_Tele_Position.Split(',');
             int x, y, z;
             int.TryParse(_cords[0], out x);
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
-            Players.NoFlight.Add(_cInfo.entityId);
             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
             string _sql2 = string.Format("UPDATE Players SET newSpawn = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
-            SQL.FastQuery(_sql2);
+            SQL.FastQuery(_sql2, "NewSpawnTele");
             if (!Return)
             {
                 string _phrase526;
@@ -122,10 +121,9 @@ namespace ServerTools
                     int.TryParse(_oldCords[0], out x);
                     int.TryParse(_oldCords[1], out y);
                     int.TryParse(_oldCords[2], out z);
-                    Players.NoFlight.Add(_cInfo.entityId);
                     _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                     _sql = string.Format("UPDATE Players SET newTeleSpawn = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "NewSpawnTele");
                     string _phrase530;
                     if (!Phrases.Dict.TryGetValue(530, out _phrase530))
                     {

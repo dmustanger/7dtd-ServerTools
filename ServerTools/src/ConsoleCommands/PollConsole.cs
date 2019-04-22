@@ -89,7 +89,7 @@ namespace ServerTools
                         else
                         {
                             _sql = string.Format("INSERT INTO Polls (pollOpen, pollTime, pollHours, pollMessage) VALUES ('true', '{0}', {1}, '{2}')", DateTime.Now, _hours, _message);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "PollConsole");
                             string _phrase926;
                             if (!Phrases.Dict.TryGetValue(926, out _phrase926))
                             {
@@ -165,11 +165,11 @@ namespace ServerTools
                             if (_result1.Rows.Count > 0)
                             {
                                 _sql = "DELETE FROM Polls WHERE pollOpen = 'false'";
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "PollConsole");
                             }
                             _result1.Dispose();
                             _sql = "UPDATE Polls SET pollOpen = 'false' WHERE pollOpen = 'true'";
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "PollConsole");
                             PolledYes.Clear();
                             PolledNo.Clear();
                             SdtdConsole.Instance.Output("Closed the open poll.");
@@ -234,7 +234,7 @@ namespace ServerTools
                             int _hours;
                             int.TryParse(_params[1], out _hours);
                             _sql = string.Format("UPDATE Polls SET pollOpen = 'true', pollTime = '{0}', pollHours = {1} WHERE pollOpen = 'false'", DateTime.Now, _hours);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "PollConsole");
                         }
                         else
                         {
@@ -368,7 +368,7 @@ namespace ServerTools
                     int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _pollNo);
                     _pollYes = _pollYes + 1;
                     _sql = string.Format("UPDATE Polls SET pollYes = {0} WHERE pollOpen = 'true'", _pollYes);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "PollConsole");
                     string _phrase928;
                     if (!Phrases.Dict.TryGetValue(928, out _phrase928))
                     {
@@ -414,7 +414,7 @@ namespace ServerTools
                     int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _pollNo);
                     _pollNo = _pollNo + 1;
                     _sql = string.Format("UPDATE Polls SET pollNo = {0} WHERE pollOpen = 'true'", _pollNo);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "PollConsole");
                     string _phrase929;
                     if (!Phrases.Dict.TryGetValue(929, out _phrase929))
                     {
@@ -463,7 +463,7 @@ namespace ServerTools
                     _phrase925 = _phrase925.Replace("{YesVote}", _pollYes.ToString());
                     _phrase925 = _phrase925.Replace("{NoVote}", _pollNo.ToString());
                     _sql = "UPDATE Polls SET pollOpen = 'false' WHERE pollOpen = 'true'";
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "PollConsole");
                     using (StreamWriter sw = new StreamWriter(_filepath, true))
                     {
                         sw.WriteLine(string.Format("{0}  Poll {1} ... has completed. The final results were yes {2} / no {3}", DateTime.Now, _pollMessage, _pollYes, _pollNo));

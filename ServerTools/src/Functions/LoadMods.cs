@@ -46,14 +46,6 @@ namespace ServerTools
             {
                 Gimme.Load();
             }
-            if (UndergroundCheck.IsRunning && !UndergroundCheck.IsEnabled)
-            {
-                UndergroundCheck.Unload();
-            }
-            if (!UndergroundCheck.IsRunning && UndergroundCheck.IsEnabled)
-            {
-                UndergroundCheck.Load();
-            }
             if (Badwords.IsRunning && !Badwords.IsEnabled)
             {
                 Badwords.Unload();

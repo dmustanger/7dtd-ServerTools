@@ -202,7 +202,7 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"86\" default=\"ready\" replacement=\"ready\" />");
                     sw.WriteLine("        <trigger number=\"87\" default=\"setlobby\" replacement=\"setlobby\" />");
                     sw.WriteLine("        <trigger number=\"88\" default=\"lobby\" replacement=\"lobby\" />");
-                    sw.WriteLine("        <trigger number=\"89\" default=\"list\" replacement=\"list\" />");
+                    sw.WriteLine("        <trigger number=\"89\" default=\"playerlist\" replacement=\"playerlist\" />");
                     sw.WriteLine("        <trigger number=\"90\" default=\"stuck\" replacement=\"stuck\" />");
                     sw.WriteLine("        <trigger number=\"91\" default=\"pollyes\" replacement=\"pollyes\" />");
                     sw.WriteLine("        <trigger number=\"92\" default=\"pollno\" replacement=\"pollno\" />");

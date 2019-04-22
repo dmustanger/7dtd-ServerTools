@@ -74,7 +74,7 @@ namespace ServerTools
                 }
                 catch (Exception e)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in Backup.Run: {0}.", e));
+                    Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Run: {0}.", e));
                 }
                 IsRunning = false;
             }

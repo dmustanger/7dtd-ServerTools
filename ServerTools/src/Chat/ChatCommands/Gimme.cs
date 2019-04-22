@@ -433,7 +433,7 @@ namespace ServerTools
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 }
                 _sql = string.Format("UPDATE Players SET last_gimme = '{0}' WHERE steamid = '{1}'", DateTime.Now.ToString(), _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "Gimme");
             }
         }
 
@@ -472,7 +472,7 @@ namespace ServerTools
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
             }
             _sql = string.Format("UPDATE Players SET last_gimme = '{0}' WHERE steamid = '{1}'", DateTime.Now.ToString(), _cInfo.playerId);
-            SQL.FastQuery(_sql);
+            SQL.FastQuery(_sql, "Gimme");
         }
     }
 }

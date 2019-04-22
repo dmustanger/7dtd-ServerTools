@@ -21,7 +21,7 @@ namespace ServerTools
                 Invited = false;
                 PlayersTeam.Clear();
                 string _sql = "UPDATE Events SET eventAdmin = null, eventActive = 'false' WHERE eventActive = 'true'";
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "Event");
                 ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(Admin);
                 Admin = null;
                 if (_cInfo != null)
@@ -44,7 +44,7 @@ namespace ServerTools
                 string _sposition = x + "," + y + "," + z;
                 string _eventReturn = SQL.EscapeString(_sposition);
                 string _sql = string.Format("UPDATE Players SET eventReturn = '{0}' WHERE steamid = {1}", _eventReturn, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "Event");
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you have signed up for the event and your current location has been saved for return.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 _sql = string.Format("SELECT eventid, eventName, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventAdmin = '{0}' AND eventActive = 'true'", Admin);
                 DataTable _result1 = SQL.TQuery(_sql);
@@ -94,13 +94,13 @@ namespace ServerTools
                             else
                             {
                                 _sql = string.Format("UPDATE Players SET eventSpawn = 'true' WHERE steamid = {0}", _eventPlayer.Key);
-                                SQL.FastQuery(_sql);
+                                SQL.FastQuery(_sql, "Event");
                             }
                         }
                         else
                         {
                             _sql = string.Format("UPDATE Players SET eventSpawn = 'true' WHERE steamid = {0}", _eventPlayer.Key);
-                            SQL.FastQuery(_sql);
+                            SQL.FastQuery(_sql, "Event");
                         }
                     }
                     int _eventTime = _time * 60;
@@ -212,7 +212,7 @@ namespace ServerTools
                         string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
                         _result.Dispose();
                         _sql = string.Format("UPDATE Players SET eventReturn = 'Unknown' WHERE steamid = '{0}'", _player.Key);
-                        SQL.FastQuery(_sql);
+                        SQL.FastQuery(_sql, "Event");
                         int x, y, z;
                         string[] _cords = _pos.Split(',');
                         int.TryParse(_cords[0], out x);
@@ -226,12 +226,12 @@ namespace ServerTools
                 else
                 {
                     string _sql = string.Format("UPDATE Players SET return = 'true' WHERE steamid = '{0}'", _player.Key);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "Event");
                     PlayersTeam.Remove(_player.Key);
                 }
             }
             string _sql2 = string.Format("UPDATE Events SET eventActive = 'false' WHERE eventAdmin = '{0}'", Admin);
-            SQL.FastQuery(_sql2);
+            SQL.FastQuery(_sql2, "Event");
             Open = false;
             Admin = null;
         }
@@ -249,7 +249,7 @@ namespace ServerTools
             int.TryParse(_cords[2], out z);
             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
             _sql = string.Format("UPDATE Players SET eventReturn = 'Unknown', return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-            SQL.FastQuery(_sql);
+            SQL.FastQuery(_sql, "Event");
             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", the event ended while you were offline or not spawned. You have been sent to your return point.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
         }
 
@@ -276,14 +276,14 @@ namespace ServerTools
                     int.TryParse(_cords[2], out z);
                     _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                     _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "Event");
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you have been sent to your event spawn point.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
             }
             else
             {
                 string _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "Event");
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ",the event ended while you were offline or not spawned.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
@@ -293,7 +293,7 @@ namespace ServerTools
             if (Open && PlayersTeam.ContainsKey(_cInfo2.playerId))
             {
                 string _sql = string.Format("UPDATE Players SET eventReturn = 'true' WHERE steamid = '{0}'", _cInfo2.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "Event");
             }
         }
     }

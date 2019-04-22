@@ -15,11 +15,10 @@ namespace ServerTools
         {
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
-                World world = GameManager.Instance.World;
-                List<EntityPlayer> PlayerList = world.Players.list;
-                for (int i = 0; i < PlayerList.Count; i++)
+                List<EntityPlayer> EntityPlayerList = GameManager.Instance.World.Players.list;
+                for (int i = 0; i < EntityPlayerList.Count; i++)
                 {
-                    EntityPlayer _player = PlayerList[i];
+                    EntityPlayer _player = EntityPlayerList[i];
                     if (_player != null)
                     {
                         ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_player.entityId);

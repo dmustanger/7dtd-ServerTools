@@ -183,7 +183,7 @@ namespace ServerTools
                     string _pposition = x + "," + y + "," + z;
                     LobbyPlayers.Add(_cInfo.entityId);
                     _sql = string.Format("UPDATE Players SET lobbyReturn = '{0}' WHERE steamid = '{1}'", _pposition, _cInfo.playerId);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "LobbyChat");
                     string _phrase552;
                     if (!Phrases.Dict.TryGetValue(552, out _phrase552))
                     {
@@ -209,7 +209,6 @@ namespace ServerTools
                 int.TryParse(_cords[0], out x);
                 int.TryParse(_cords[1], out y);
                 int.TryParse(_cords[2], out z);
-                Players.NoFlight.Add(_cInfo.entityId);
                 _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                 string _phrase553;
                 if (!Phrases.Dict.TryGetValue(553, out _phrase553))
@@ -222,7 +221,7 @@ namespace ServerTools
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 }
                 _sql = string.Format("UPDATE Players SET lastLobby = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql);
+                SQL.FastQuery(_sql, "LobbyChat");
             }
             else
             {
@@ -267,17 +266,16 @@ namespace ServerTools
                     int.TryParse(_returnCoords[0], out x);
                     int.TryParse(_returnCoords[1], out y);
                     int.TryParse(_returnCoords[2], out z);
-                    Players.NoFlight.Add(_cInfo.entityId);
                     _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                     LobbyPlayers.Remove(_cInfo.entityId);
                     _sql = string.Format("UPDATE Players SET lobbyReturn = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
-                    SQL.FastQuery(_sql);
+                    SQL.FastQuery(_sql, "LobbyChat");
                     string _phrase555;
                     if (!Phrases.Dict.TryGetValue(555, out _phrase555))
                     {
                         _phrase555 = " sent you back to your saved location.";
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase555 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase555 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {

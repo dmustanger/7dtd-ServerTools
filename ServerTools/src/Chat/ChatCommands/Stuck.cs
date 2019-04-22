@@ -13,10 +13,9 @@ namespace ServerTools
         public static void Delay(ClientInfo _cInfo, string _playerName, bool _announce)
         {
             Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            Entity _attachedEntity = _player.AttachedToEntity;
-            if (_attachedEntity != null)
+            if (_player.AttachedToEntity != null)
             {
-                _attachedEntity.Detach();
+                _player.AttachedToEntity.Detach();
                 return;
             }
             bool _donator = false;
@@ -174,7 +173,6 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo, EntityPlayer _player)
         {
-            Players.NoFlight.Add(_cInfo.entityId);
             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3((int)_player.position.x, -1, (int)_player.position.z), null, false));
             string _phrase922;
             if (!Phrases.Dict.TryGetValue(922, out _phrase922))
@@ -183,7 +181,7 @@ namespace ServerTools
             }
             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase922 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             string _sql = string.Format("UPDATE Players SET lastStuck = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-            SQL.FastQuery(_sql);
+            SQL.FastQuery(_sql, "Stuck");
         }
     }
 }

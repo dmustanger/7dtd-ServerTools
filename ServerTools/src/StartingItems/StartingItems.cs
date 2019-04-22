@@ -216,7 +216,7 @@ namespace ServerTools
                 Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
             }
             string _sql = string.Format("UPDATE Players SET startingItems = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
-            SQL.FastQuery(_sql);
+            SQL.FastQuery(_sql, "StartingItems");
         }
     }
 }
