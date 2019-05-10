@@ -4,7 +4,7 @@
     <Name value="Server Tools" />
     <Description value="ServerTools for 7 Days to Die Dedicated Servers" />
     <Author value="Dmustanger and ObsessiveCompulsive" />
-    <Version value="13.0" />
+    <Version value="13.1" />
     <Website value="https://github.com/dmustanger/7dtd-ServerTools/releases" />
   </ModInfo>
 </xml>

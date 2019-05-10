@@ -1,41 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Threading;
 
 namespace ServerTools
 {
     public class Players
     {
-        public static bool IsRunning = false;
+        public static bool IsRunning = false, IsRunning2 = false;
         public Dictionary<string, string> clans = new Dictionary<string, string>();
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
         public static List<int> Died = new List<int>();
-        private static Thread th;
 
-        public static void Load()
+        public static void PlayerCheck()
         {
-            Start();
-            IsRunning = true;
-        }
-
-        public static void Unload()
-        {
-            th.Abort();
-            IsRunning = false;
-        }
-
-        private static void Start()
-        {
-            th = new Thread(new ThreadStart(PlayerCheck));
-            th.IsBackground = true;
-            th.Start();
-        }
-
-        private static void PlayerCheck()
-        {
-            while (IsRunning)
+            if (!IsRunning2)
             {
+                IsRunning2 = true;
                 if (ConnectionManager.Instance.ClientCount() > 0)
                 {
                     List<EntityPlayer> EntityPlayerList = GameManager.Instance.World.Players.list;
@@ -129,7 +109,7 @@ namespace ServerTools
                         }
                     }
                 }
-                Thread.Sleep(500);
+                IsRunning2 = false;
             }
         }
 

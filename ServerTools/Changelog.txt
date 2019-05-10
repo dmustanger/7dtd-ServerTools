@@ -1,5 +1,31 @@
 ﻿CHANGELOG
 
+13.1
+Added Under_Water tool. Detects if a player is submerged under two blocks of water. Teleports the player to 
+the surface of their location. Helps prevent building under water
+Added options to Hardcore called Maximum_Extra_Lives and Life_Price. Allows players to purchase extra lives but 
+the cost is multiplied by how many they have purchased
+Added to location tool. Using /loc now mentions being inside of a zone
+Added phrase 761
+Fixed missing Bank Transfers option for Wallet tool in config
+Fixed debug log out when using /commands
+Fixed Custom_Commands using whisper responses and failing to apply {EntityId} and other tags
+Fixed improper call for phrase 803 instead of 801
+Fixed Starting_Items spawning items with no quality
+Fixed a few console command help responses
+Fixed when members of a clan use chat and Normal_Player_Color was not applying
+Fixed console command ResetPlayer
+Fixed Hardcore tool reset of players who have run out of lives
+Fixed event chat responses while signing up and operating
+Fixed chat commands permissions for using setlobby and setmarket
+Fixed muted players using /, ! or @ in chat to circumvent and show their chat
+Changed console command KillAll to KillEnt. Works the same as before by removing all zombies and animals
+Changed Entity_Cleanup to remove zombies and animals below bedrock instead of teleport to the surface
+Changed dedicated thread operations to a dynamic operation hooked in to a systems timer
+Updated HowToSetup.xml
+Updated phrase 705,760,802
+Removed Night_Vote tool. Changing your world time can screw up zombie spawning. Pimps need to fix this
+
 13.0
 Added phrase 305,632,633
 Added tool Break_Reminder. If a player goes over the set minutes in a single session, a message will remind them to

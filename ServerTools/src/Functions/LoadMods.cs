@@ -9,6 +9,7 @@ namespace ServerTools
         public static void Load()
         {
             Timers.TimerStart();
+            Timers.Timer2Start();
             if (CountryBan.IsEnabled)
             {
                 CountryBan.Load();

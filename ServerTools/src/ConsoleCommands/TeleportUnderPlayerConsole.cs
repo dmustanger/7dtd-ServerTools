@@ -20,7 +20,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-TeleportUnderPlayer", "teleportunderplayer", "tup" };
+            return new string[] { "st-TeleportUnderPlayer", "teleportunderplayer", "tup", "teleu" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -40,7 +40,7 @@ namespace ServerTools
                         EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
                         if ((int)_player2.position.y < 13)
                         {
-                            _senderInfo.RemoteClientInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3((int)_player2.position.x, 3, (int)_player2.position.z), null, false));
+                            _senderInfo.RemoteClientInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3((int)_player2.position.x, 0, (int)_player2.position.z), null, false));
                             SdtdConsole.Instance.Output(string.Format("Teleport successful"));
                             return;
                         }
@@ -60,6 +60,7 @@ namespace ServerTools
                 else
                 {
                     SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    return;
                 }
             }
             catch (Exception e)

@@ -94,6 +94,20 @@ namespace ServerTools
                 }
                 SQL.FastQuery("UPDATE Config SET sql_version = 7 WHERE sql_version = 6", "UpdateSQL");
             }
+            if (_version == 7)
+            {
+                if (SQL.IsMySql)
+                {
+                    MySqlDatabase.FastQuery("CREATE TABLE IF NOT EXISTS Hardcore (Id INTEGER PRIMARY KEY, steamid VARCHAR(50) NOT NULL, sessionTime INT DEFAULT 0, kills INT DEFAULT 0, zKills INT DEFAULT 0, score INT DEFAULT 0, deaths INT DEFAULT 0, playerName VARCHAR(50) NOT NULL)");
+                    MySqlDatabase.FastQuery("ALTER TABLE Players ADD extraLives INT DEFAULT 0;");
+                }
+                else
+                {
+                    SQLiteDatabase.FastQuery("CREATE TABLE IF NOT EXISTS Hardcore (Id INTEGER PRIMARY KEY, steamid TEXT NOT NULL, sessionTime INTEGER DEFAULT 0, kills INTEGER DEFAULT 0, zKills INTEGER DEFAULT 0, score INTEGER DEFAULT 0, deaths INTEGER DEFAULT 0, playerName TEXT NOT NULL)", "UpdateSQL");
+                    SQLiteDatabase.FastQuery("ALTER TABLE Players ADD extraLives INTEGER DEFAULT 0;", "UpdateSQL");
+                }
+                SQL.FastQuery("UPDATE Config SET sql_version = 8 WHERE sql_version = 7", "UpdateSQL");
+            }
             CheckVersion();
         }
 

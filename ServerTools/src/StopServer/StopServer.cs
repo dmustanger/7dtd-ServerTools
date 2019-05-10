@@ -96,7 +96,6 @@ namespace ServerTools
         public static void Stop()
         {
             Log.Out("[SERVERTOOLS] Running shutdown.");
-            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Running shutdown."));
             Application.Quit();
             Shutdown = true;
         }

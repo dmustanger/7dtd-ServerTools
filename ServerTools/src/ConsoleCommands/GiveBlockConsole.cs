@@ -9,7 +9,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Gives a block directly to a players inventory. Drops to the ground if full.";
+            return "[ServerTools]-Gives A Block Directly To A Players Inventory. Drops To The Ground If Full.";
         }
         public override string GetHelp()
         {

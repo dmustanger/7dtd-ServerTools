@@ -183,10 +183,10 @@ namespace ServerTools
                 }
                 else
                 {
-                    sw.WriteLine("        <zone corner1=\"-8000,-56,8000\" corner2=\"8000,200,0\" entryMessage=\"You are entering the Northern side\" exitMessage=\"You have exited the Northern Side\" response=\"\" reminderNotice=\"You are still in the North\" circle=\"false\" PvE=\"false\" noZombie=\"false\" />");
-                    sw.WriteLine("        <zone corner1=\"-8000,-56,-1\" corner2=\"8000,200,-8000\" entryMessage=\"You are entering the Southern side\" exitMessage=\"You have exited the Southern Side\" response=\"\" reminderNotice=\"You are still in the South\" circle=\"false\" PvE=\"false\" noZombie=\"false\" />");
-                    sw.WriteLine("        <zone corner1=\"-100,60,-90\" corner2=\"40\" entryMessage=\"You have entered the Market\" exitMessage=\"You have exited the Market\" response=\"say {PlayerName} has entered the market\" reminderNotice=\"\" circle=\"true\" PvE=\"true\" noZombie=\"true\" />");
-                    sw.WriteLine("        <zone corner1=\"0,100,0\" corner2=\"25,105,25\" entryMessage=\"You have entered the Lobby\" exitMessage=\"You have exited the Lobby\" response=\"say {PlayerName} has entered the lobby\" reminderNotice=\"You have been in the lobby for a long time...\" circle=\"false\" PvE=\"true\" noZombie=\"true\" />");
+                    sw.WriteLine("        <zone corner1=\"-8000,0,8000\" corner2=\"8000,200,0\" entryMessage=\"You are entering the Northern side\" exitMessage=\"You have exited the Northern Side\" response=\"\" reminderNotice=\"You are still in the North\" circle=\"false\" PvE=\"false\" noZombie=\"false\" />");
+                    sw.WriteLine("        <zone corner1=\"-8000,0,-1\" corner2=\"8000,200,-8000\" entryMessage=\"You are entering the Southern side\" exitMessage=\"You have exited the Southern Side\" response=\"\" reminderNotice=\"You are still in the South\" circle=\"false\" PvE=\"false\" noZombie=\"false\" />");
+                    sw.WriteLine("        <zone corner1=\"-100,0,-90\" corner2=\"40\" entryMessage=\"You have entered the Market\" exitMessage=\"You have exited the Market\" response=\"say {PlayerName} has entered the market\" reminderNotice=\"\" circle=\"true\" PvE=\"true\" noZombie=\"true\" />");
+                    sw.WriteLine("        <zone corner1=\"0,0,0\" corner2=\"25,105,25\" entryMessage=\"You have entered the Lobby\" exitMessage=\"You have exited the Lobby\" response=\"say {PlayerName} has entered the lobby\" reminderNotice=\"You have been in the lobby for a long time...\" circle=\"false\" PvE=\"true\" noZombie=\"true\" />");
                 }
                 sw.WriteLine("    </Zone>");
                 sw.WriteLine("</Zones>");
@@ -280,17 +280,17 @@ namespace ServerTools
             }
             if (!ZonePvE.Contains(_cInfoVictim.entityId) && ZonePvE.Contains(_cInfoKiller.entityId))
             {
-                string _phrase803;
-                if (!Phrases.Dict.TryGetValue(801, out _phrase803))
+                string _phrase801;
+                if (!Phrases.Dict.TryGetValue(801, out _phrase801))
                 {
-                    _phrase803 = "{PlayerName} has murdered you while they were in a pve zone.";
+                    _phrase801 = "{PlayerName} has murdered you while they were in a pve zone.";
                 }
-                _phrase803 = _phrase803.Replace("{PlayerName}", _cInfoKiller.playerName);
-                ChatHook.ChatMessage(_cInfoVictim, LoadConfig.Chat_Response_Color + _phrase803 + "[-]", _cInfoKiller.entityId, _cInfoKiller.playerName, EChatType.Whisper, null);
+                _phrase801 = _phrase801.Replace("{PlayerName}", _cInfoKiller.playerName);
+                ChatHook.ChatMessage(_cInfoVictim, LoadConfig.Chat_Response_Color + _phrase801 + "[-]", _cInfoKiller.entityId, _cInfoKiller.playerName, EChatType.Whisper, null);
                 string _phrase802;
                 if (!Phrases.Dict.TryGetValue(802, out _phrase802))
                 {
-                    _phrase802 = " you have murdered a player inside a pve zone. Their name was {PlayerName}";
+                    _phrase802 = " you have murdered a player inside a pve zone. Their name was {PlayerName}.";
                 }
                 _phrase802 = _phrase802.Replace("{PlayerName}", _cInfoVictim.playerName);
                 ChatHook.ChatMessage(_cInfoKiller, ChatHook.Player_Name_Color + _cInfoKiller.playerName + LoadConfig.Chat_Response_Color + _phrase802 + "[-]", _cInfoVictim.entityId, _cInfoVictim.playerName, EChatType.Whisper, null);
@@ -420,7 +420,10 @@ namespace ServerTools
                                 string _msg;
                                 if (Zones.ZoneExit.TryGetValue(_player.entityId, out _msg))
                                 {
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _msg + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    if (_msg != "")
+                                    {
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _msg + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    }
                                 }
                             }
                             Zones.ZoneExit.Remove(_player.entityId);
@@ -568,8 +571,7 @@ namespace ServerTools
                 _response = _response.Replace("say ", "");
                 ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
-
-            if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
+            else if (_response.StartsWith("tele ") || _response.StartsWith("tp ") || _response.StartsWith("teleportplayer "))
             {
                 SdtdConsole.Instance.ExecuteSync(_response, _cInfo);
             }

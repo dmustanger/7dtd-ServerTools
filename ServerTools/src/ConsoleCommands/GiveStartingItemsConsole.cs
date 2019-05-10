@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Gives the starting items from the list directly to a players inventory. Drops to the ground if full.";
+            return "[ServerTools]- Gives The Starting Items From The List Directly To A Players Inventory. Drops To The Ground If Full.";
         }
         public override string GetHelp()
         {

@@ -10,7 +10,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools]-Gives a item directly to a players inventory. Drops to the ground if full.";
+            return "[ServerTools]- Gives A Item Directly To A Players Inventory. Drops To The Ground If Full.";
         }
         public override string GetHelp()
         {

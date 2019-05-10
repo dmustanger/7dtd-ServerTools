@@ -10,14 +10,14 @@ namespace ServerTools
         public static bool IsEnabled = false, Jail_Shock = false;
         public static int Jail_Size = 8;
         public static string Command26 = "setjail", Command27 = "jail", Command28 = "unjail", Command55 = "forgive";
-        private static string[] _cmd = { Command27 };
         public static string Jail_Position = "0,0,0";
         public static SortedDictionary<string, Vector3> JailReleasePosition = new SortedDictionary<string, Vector3>();
         public static List<string> Jailed = new List<string>();
 
         public static void SetJail(ClientInfo _cInfo)
         {
-            if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo.playerId))
+            string[] _command1 = { Command26 };
+            if (!GameManager.Instance.adminTools.CommandAllowedFor(_command1, _cInfo.playerId))
             {
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
@@ -48,7 +48,8 @@ namespace ServerTools
 
         public static void PutInJail(ClientInfo _cInfo, string _playerName)
         {
-            if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo.playerId))
+            string[] _command2 = { Command27 };
+            if (!GameManager.Instance.adminTools.CommandAllowedFor(_command2, _cInfo.playerId))
             {
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
@@ -166,7 +167,8 @@ namespace ServerTools
 
         public static void RemoveFromJail(ClientInfo _cInfo, string _playerName)
         {
-            if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo.playerId))
+            string[] _command3 = { Command28 };
+            if (!GameManager.Instance.adminTools.CommandAllowedFor(_command3, _cInfo.playerId))
             {
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))

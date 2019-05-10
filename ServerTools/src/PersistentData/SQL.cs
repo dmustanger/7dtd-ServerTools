@@ -4,7 +4,7 @@ namespace ServerTools
 {
     public class SQL
     {
-        public static int Sql_version = 7;
+        public static int Sql_version = 8;
         public static bool IsMySql = false;
 
         public static void Connect()
@@ -40,7 +40,7 @@ namespace ServerTools
             }
             else
             {
-                dt = SQLiteDatabase.TQuery(_sql);
+                dt = SQLiteDatabase.TypeQuery(_sql);
             }
             return dt;
         }

@@ -8,10 +8,10 @@ namespace ServerTools
 {
     public class SQLiteDatabase
     {
-        public static bool FastQ = false;
+        public static bool FastQ = false, TypeQ = false;
         private static SQLiteConnection connection;
         private static SQLiteCommand cmd;
-        private static List<string> FQuery = new List<string>();
+        private static Queue<string> FQuery = new Queue<string>();
 
         public static void SetConnection()
         {
@@ -42,12 +42,6 @@ namespace ServerTools
                 "bank INTEGER DEFAULT 0, " +
                 "wallet INTEGER DEFAULT 0, " +
                 "playerSpentCoins INTEGER DEFAULT 0, " +
-                "hardcoreSessionTime INTEGER DEFAULT 0, " +
-                "hardcoreKills INTEGER DEFAULT 0, " +
-                "hardcoreZKills INTEGER DEFAULT 0, " +
-                "hardcoreScore INTEGER DEFAULT 0, " +
-                "hardcoreDeaths INTEGER DEFAULT 0, " +
-                "hardcoreName TEXT DEFAULT 'Unknown', " +
                 "bounty INTEGER DEFAULT 0, " +
                 "bountyHunter INTEGER DEFAULT 0, " +
                 "sessionTime INTEGER DEFAULT 0, " +
@@ -158,7 +152,7 @@ namespace ServerTools
             }
         }
 
-        public static DataTable TQuery(string _sql)
+        public static DataTable TypeQuery(string _sql)
         {
             DataTable dt = new DataTable();
             try
@@ -168,35 +162,35 @@ namespace ServerTools
                 SQLiteDataReader _reader = cmd.ExecuteReader();
                 dt.Load(_reader);
                 _reader.Close();
+                connection.Close();
             }
             catch (SQLiteException e)
             {
                 Log.Out(string.Format("[ServerTools] SQLiteException in SQLiteDatabase.TQuery: {0}", e));
             }
-            connection.Close();
             return dt;
         }
 
         public static void FastQuery(string _sql, string _class)
         {
-            FQuery.Add(_sql);
+            FQuery.Enqueue(_sql);
             if (!FastQ)
             {
                 try
                 {
                     FastQ = true;
-                    connection.Open();
-                    cmd = new SQLiteCommand(FQuery[0], connection);
+                    connection.Open(); 
+                    cmd = new SQLiteCommand(FQuery.ElementAt(0), connection);
                     cmd.ExecuteNonQuery();
                 }
                 catch (SQLiteException e)
                 {
                     Log.Out(string.Format("[ServerTools] SQLiteException in SQLiteDatabase.FastQuery: {0}", e));
                 }
-                FQuery.Remove(FQuery[0]);
+                FQuery.Dequeue();
                 if (FQuery.Count > 0)
                 {
-                    cmd = new SQLiteCommand(FQuery[0], connection);
+                    cmd = new SQLiteCommand(FQuery.ElementAt(0), connection);
                     cmd.ExecuteNonQuery();
                 }
                 else

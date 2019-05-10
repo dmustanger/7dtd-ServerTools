@@ -26,7 +26,7 @@ namespace ServerTools
                 Admin = null;
                 if (_cInfo != null)
                 {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", not enough players signed up for the event. The setup has been cleared.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", not enough players signed up for the event. The setup has been cleared.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "The event did not get enough players signed up to begin and has been cancelled.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
@@ -45,7 +45,7 @@ namespace ServerTools
                 string _eventReturn = SQL.EscapeString(_sposition);
                 string _sql = string.Format("UPDATE Players SET eventReturn = '{0}' WHERE steamid = {1}", _eventReturn, _cInfo.playerId);
                 SQL.FastQuery(_sql, "Event");
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you have signed up for the event and your current location has been saved for return.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you have signed up for the event and your current location has been saved for return.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 _sql = string.Format("SELECT eventid, eventName, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventAdmin = '{0}' AND eventActive = 'true'", Admin);
                 DataTable _result1 = SQL.TQuery(_sql);
                 int _eventid;
@@ -59,9 +59,9 @@ namespace ServerTools
                 int.TryParse(_result1.Rows[0].ItemArray.GetValue(4).ToString(), out _time);
                 _result1.Dispose();
                 PlayersTeam.Add(_cInfo.playerId, TeamCount);
-                string _message = "you are on team {Team}.";
+                string _message = " you are on team {Team}.";
                 _message = _message.Replace("{Team}", TeamCount.ToString());
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 if (TeamCount == _eventTeams)
                 {
                     TeamCount = 1;
@@ -89,7 +89,7 @@ namespace ServerTools
                                 int.TryParse(_cords[1], out _y);
                                 int.TryParse(_cords[2], out _z);
                                 _cInfo2.SendPackage(new NetPackageTeleportPlayer(new Vector3(_x, _y, _z), null, false));
-                                ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + ", you have been sent to your event spawn point.[-]", _cInfo2.entityId, _cInfo2.playerName, EChatType.Global, null);
+                                ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + ", you have been sent to your event spawn point.[-]", _cInfo2.entityId, _cInfo2.playerName, EChatType.Whisper, null);
                             }
                             else
                             {
@@ -123,7 +123,7 @@ namespace ServerTools
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you are already signed up for this event. It will start when enough players sign up.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you are already signed up for this event. It will start when enough players sign up.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -156,7 +156,7 @@ namespace ServerTools
             ClientInfo _cInfo1 = ConnectionManager.Instance.Clients.GetForPlayerName(Admin);
             if (_cInfo1 != null)
             {
-                ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _cInfo1.playerName + ", the event is at half time.[-]", _cInfo1.entityId, _cInfo1.playerName, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _cInfo1.playerName + ", the event is at half time.[-]", _cInfo1.entityId, _cInfo1.playerName, EChatType.Whisper, null);
             }
             foreach (var _player in PlayersTeam)
             {
@@ -165,7 +165,7 @@ namespace ServerTools
                 {
                     if (_cInfo2.entityId != _cInfo1.entityId)
                     {
-                        ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + ", the event is at half time.[-]", _cInfo1.entityId, _cInfo1.playerName, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + ", the event is at half time.[-]", _cInfo1.entityId, _cInfo1.playerName, EChatType.Whisper, null);
                     }
                 }
             }
@@ -176,7 +176,7 @@ namespace ServerTools
             ClientInfo _cInfo1 = ConnectionManager.Instance.Clients.GetForPlayerName(Admin);
             if (_cInfo1 != null)
             {
-                ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _cInfo1.playerName + ", the event has five minutes remaining. If you need to extend the time remaining, in the console type event extend <time>. The time is in minutes.[-]", _cInfo1.entityId, _cInfo1.playerName, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _cInfo1.playerName + ", the event has five minutes remaining. If you need to extend the time remaining, in the console type event extend <time>. The time is in minutes.[-]", _cInfo1.entityId, _cInfo1.playerName, EChatType.Whisper, null);
             }
             Extend = true;
             foreach (var _player in PlayersTeam)
@@ -186,7 +186,7 @@ namespace ServerTools
                 {
                     if (_cInfo2.entityId != _cInfo1.entityId)
                     {
-                        ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + ", the event has five minutes remaining.[-]", _cInfo1.entityId, _cInfo1.playerName, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + ", the event has five minutes remaining.[-]", _cInfo1.entityId, _cInfo1.playerName, EChatType.Whisper, null);
                     }
                 }
             }
@@ -220,7 +220,7 @@ namespace ServerTools
                         int.TryParse(_cords[2], out z);
                         _cInfo2.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                         PlayersTeam.Remove(_player.Key);
-                        ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + ", the current event has ended and event players have been sent back to their return points.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + ", the current event has ended and event players have been sent back to their return points.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
@@ -250,7 +250,7 @@ namespace ServerTools
             _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
             _sql = string.Format("UPDATE Players SET eventReturn = 'Unknown', return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
             SQL.FastQuery(_sql, "Event");
-            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", the event ended while you were offline or not spawned. You have been sent to your return point.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", the event ended while you were offline or not spawned. You have been sent to your return point.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void EventSpawn(ClientInfo _cInfo)
@@ -277,14 +277,14 @@ namespace ServerTools
                     _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                     _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                     SQL.FastQuery(_sql, "Event");
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you have been sent to your event spawn point.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you have been sent to your event spawn point.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
                 string _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                 SQL.FastQuery(_sql, "Event");
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ",the event ended while you were offline or not spawned.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", the event ended while you were offline or not spawned.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

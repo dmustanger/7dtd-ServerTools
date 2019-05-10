@@ -9,7 +9,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Auto Backup.";
+            return "[ServerTools]- Bans A Player But Also Removes Their Active Claim Blocks.";
         }
 
         public override string GetHelp()

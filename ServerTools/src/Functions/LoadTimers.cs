@@ -4,14 +4,15 @@ namespace ServerTools
 {
     class Timers
     {
-        public static bool timer1Running = false;
+        public static bool timer1Running = false, timer2Running = false;
         public static int Player_Log_Interval = 60, Auto_Show_Bloodmoon_Delay = 30, _tBS,
             Delay_Between_World_Saves = 15, Stop_Server_Time = 1, _newCount = 0,
             Shutdown_Delay = 60, Infoticker_Delay = 60, _sSC = 0, _sSCD = 0,
             Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0, _eventTime = 0;
-        private static int timer1SecondInstanceCount, _wV, _pSC, _b, _pL, _mC, _wSD, _iT, _rVS, _kV, _mV, _bT, _cC,
-            _rS, _rV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _nV, _eI, _eO, _zR, _nP, _sC, _tP; 
+        private static int timer1SecondInstanceCount, timerHalfSecondInstanceCount, _wV, _pSC, _b, _pL, _mC, _wSD, _iT, _rVS, _kV, _mV, _bT, _cC,
+            _rS, _rV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _eI, _eO, _zR, _nP, _sC, _tP;
         private static System.Timers.Timer t1 = new System.Timers.Timer();
+        private static System.Timers.Timer t2 = new System.Timers.Timer();
 
         public static void TimerStart()
         {
@@ -33,6 +34,28 @@ namespace ServerTools
                 t1.Stop();
             }
             timer1SecondInstanceCount = 0;
+        }
+
+        public static void Timer2Start()
+        {
+            timerHalfSecondInstanceCount++;
+            if (timerHalfSecondInstanceCount <= 1)
+            {
+                timer2Running = true;
+                t2.Interval = 250;
+                t2.Start();
+                t2.Elapsed += new ElapsedEventHandler(Init2);
+            }
+        }
+
+        public static void Timer2Stop()
+        {
+            if (timer2Running)
+            {
+                timer2Running = false;
+                t2.Stop();
+            }
+            timerHalfSecondInstanceCount = 0;
         }
 
         public static void LogAlert()
@@ -59,7 +82,7 @@ namespace ServerTools
             if (InventoryCheck.IsEnabled)
             {
                 Log.Out("Invalid item kicker enabled");
-            }           
+            }
             if (Jail.IsEnabled)
             {
                 Log.Out("Jail enabled");
@@ -280,10 +303,6 @@ namespace ServerTools
             {
                 Log.Out("Night alert enabled");
             }
-            if (NightVote.IsEnabled)
-            {
-                Log.Out("Night vote enabled");
-            }
             if (RealWorldTime.IsEnabled)
             {
                 Log.Out("Real world time enabled");
@@ -316,6 +335,10 @@ namespace ServerTools
             {
                 Log.Out("Travel enabled");
             }
+            if (UnderWater.IsEnabled)
+            {
+                Log.Out("Under water enabled");
+            }
             if (VoteReward.IsEnabled)
             {
                 Log.Out("Vote reward enabled");
@@ -346,6 +369,10 @@ namespace ServerTools
             if (Jail.IsEnabled)
             {
                 Jail.StatusCheck();
+            }
+            if (UnderWater.IsEnabled)
+            {
+                UnderWater.Exec();
             }
             if (Jail.Jailed.Count > 0)
             {
@@ -447,22 +474,6 @@ namespace ServerTools
             else
             {
                 _rV = 0;
-            }
-            if (NightVote.IsEnabled)
-            {
-                if (NightVote.VoteOpen)
-                {
-                    _nV++;
-                    if (_nV >= 60)
-                    {
-                        _nV = 0;
-                        NightVote.VoteCount();
-                    }
-                }
-            }
-            else
-            {
-                _nV = 0;
             }
             if (MuteVote.IsEnabled)
             {
@@ -872,6 +883,11 @@ namespace ServerTools
             {
                 _cC = 0;
             }
+        }
+
+        public static void Init2(object sender, ElapsedEventArgs e)
+        {
+            Players.PlayerCheck();
         }
     }
 }

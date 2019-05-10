@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Linq;
 
 namespace ServerTools
 {
@@ -17,9 +18,9 @@ namespace ServerTools
             {
                 _message = _message.Replace(Command121 + " ", "");
             }
-            string[] _strings = _message.Split(new char[] { ' ' }, 2);
-            _strings[1] = _strings[1].TrimStart();
-            ClientInfo _cInfo1 = ConsoleHelper.ParseParamIdOrName(_strings[0]);
+            string _nameId = _message.ElementAt(0).ToString();
+            string _msg = _message.ElementAt(1).ToString();
+            ClientInfo _cInfo1 = ConsoleHelper.ParseParamIdOrName(_nameId);
             if (_cInfo1 == null)
             {
                 string _phrase14;
@@ -27,12 +28,12 @@ namespace ServerTools
                 {
                     _phrase14 = " player {TargetName} was not found.";
                 }
-                _phrase14 = _phrase14.Replace("{TargetName}", _strings[0]);
+                _phrase14 = _phrase14.Replace("{TargetName}", _nameId);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase14 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _strings[1] + "[-]", _cInfo.entityId, _cInfo.playerName, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _msg + "[-]", _cInfo.entityId, _cInfo.playerName, EChatType.Whisper, null);
                 string _sql = string.Format("UPDATE Players SET lastwhisper = '{0}' WHERE steamid = '{1}'", _cInfo.playerId, _cInfo1.playerId);
                 SQL.FastQuery(_sql, "Whisper");
             }

@@ -182,7 +182,7 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"66\" default=\"restartvote\" replacement=\"restartvote\" />");
                     sw.WriteLine("        <trigger number=\"67\" default=\"mutevote\" replacement=\"mutevote\" />");
                     sw.WriteLine("        <trigger number=\"68\" default=\"kickvote\" replacement=\"kickvote\" />");
-                    sw.WriteLine("        <trigger number=\"69\" default=\"nightvote\" replacement=\"nightvote\" />");
+                    sw.WriteLine("        <trigger number=\"69\" default=\"\" replacement=\"\" />");
                     sw.WriteLine("        <trigger number=\"70\" default=\"yes\" replacement=\"yes\" />");
                     sw.WriteLine("        <trigger number=\"71\" default=\"auction\" replacement=\"auction\" />");
                     sw.WriteLine("        <trigger number=\"72\" default=\"auction cancel\" replacement=\"auction cancel\" />");
@@ -239,6 +239,7 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"123\" default=\"rm\" replacement=\"rm\" />");
                     sw.WriteLine("        <trigger number=\"124\" default=\"cc\" replacement=\"cc\" />");
                     sw.WriteLine("        <trigger number=\"125\" default=\"clanlist\" replacement=\"clanlist\" />");
+                    sw.WriteLine("        <trigger number=\"126\" default=\"life\" replacement=\"life\" />");
                 }
                 sw.WriteLine("    </triggers>");
                 sw.WriteLine("</Event>");
@@ -547,7 +548,7 @@ namespace ServerTools
                     }
                     if (kvp.Key == 69)
                     {
-                        NightVote.Command69 = kvp.Value[1];
+
                     }
                     if (kvp.Key == 70)
                     {
@@ -772,6 +773,10 @@ namespace ServerTools
                     if (kvp.Key == 125)
                     {
                         ClanManager.Command125 = kvp.Value[1];
+                    }
+                    if (kvp.Key == 126)
+                    {
+                        Hardcore.Command126 = kvp.Value[1];
                     }
                 }
             }

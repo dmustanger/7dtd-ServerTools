@@ -23,7 +23,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[ServerTools] Directory found", API.ConfigPath));
+                        Log.Out("[ServerTools] Directory found");
                     }
                     Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/ChatLogs"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/ChatLogs"))
@@ -33,7 +33,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[ServerTools] Directory found", API.ConfigPath + "/Logs/ChatLogs"));
+                        Log.Out("[ServerTools] Directory found");
                     }
                     Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/DetectionLogs"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/DetectionLogs"))
@@ -43,7 +43,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[ServerTools] Directory found", API.ConfigPath + "/Logs/DetectionLogs"));
+                        Log.Out("[ServerTools] Directory found");
                     }
                     Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/BountyLogs"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/BountyLogs"))
@@ -53,7 +53,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[ServerTools] Directory found", API.ConfigPath + "/Logs/BountyLogs"));
+                        Log.Out("[ServerTools] Directory found");
                     }
                     Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/AuctionLog"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/AuctionLog"))
@@ -63,7 +63,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[ServerTools] Directory found", API.ConfigPath + "/Logs/AuctionLog"));
+                        Log.Out("[ServerTools] Directory found");
                     }
                     Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/BankLogs"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/BankLogs"))
@@ -73,7 +73,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[ServerTools] Directory found", API.ConfigPath + "/Logs/BankLogs"));
+                        Log.Out("[ServerTools] Directory found");
                     }
                     Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/DupeLogs"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/DupeLogs"))
@@ -83,7 +83,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[ServerTools] Directory found", API.ConfigPath + "/Logs/DupeLogs"));
+                        Log.Out("[ServerTools] Directory found");
                     }
                     Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/PlayerLogs"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/PlayerLogs"))
@@ -93,7 +93,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[ServerTools] Directory found", API.ConfigPath + "/Logs/PlayerLogs"));
+                        Log.Out("[ServerTools] Directory found");
                     }
                     Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/PlayerReports"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/PlayerReports"))
@@ -103,7 +103,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[ServerTools] Directory found", API.ConfigPath + "/Logs/PlayerReports"));
+                        Log.Out("[ServerTools] Directory found");
                     }
                     Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/PollLogs"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/PollLogs"))
@@ -113,7 +113,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        Log.Out(string.Format("[ServerTools] Directory found", API.ConfigPath + "/Logs/PollLogs"));
+                        Log.Out("[ServerTools] Directory found");
                     }
 
 

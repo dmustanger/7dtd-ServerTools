@@ -206,16 +206,5 @@ namespace ServerTools
                 ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase915 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
-
-        public static void PlayerKilled(EntityPlayer _player1, ClientInfo _cInfo1, ClientInfo _cInfo2)
-        {
-            string _holdingItem = _player1.inventory.holdingItem.Name;
-            ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
-            if (_itemValue.type != ItemValue.None.type)
-            {
-                _holdingItem = _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name;
-            }
-            Notice(_cInfo1, _cInfo2, _holdingItem);
-        }
     }
 }

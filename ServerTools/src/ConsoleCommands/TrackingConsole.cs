@@ -112,7 +112,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Invalid argument {1}.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[1]));
                         }
                     }
                     else
@@ -185,22 +185,22 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        SdtdConsole.Instance.Output(string.Format("Invalid argument {4}.", _params[4]));
+                                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[4]));
                                     }
                                 }
                                 else
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("Invalid argument {3}.", _params[3]));
+                                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[3]));
                                 }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("Invalid argument {2}.", _params[2]));
+                                SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[2]));
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Invalid argument {1}.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[1]));
                         }
                     }
                     else
@@ -211,7 +211,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid arguments."));
+                    SdtdConsole.Instance.Output("Invalid arguments.");
                 }
             }
             catch (Exception e)

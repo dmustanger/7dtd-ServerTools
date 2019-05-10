@@ -206,16 +206,16 @@ namespace ServerTools
                 {
                     _cords = SetLobby.Lobby_Position.Split(' ').ToArray();
                 }
-                int.TryParse(_cords[0], out x);
-                int.TryParse(_cords[1], out y);
-                int.TryParse(_cords[2], out z);
-                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                 string _phrase553;
                 if (!Phrases.Dict.TryGetValue(553, out _phrase553))
                 {
                     _phrase553 = " sending you to the lobby.";
                 }
+                int.TryParse(_cords[0], out x);
+                int.TryParse(_cords[1], out y);
+                int.TryParse(_cords[2], out z);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase553 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);

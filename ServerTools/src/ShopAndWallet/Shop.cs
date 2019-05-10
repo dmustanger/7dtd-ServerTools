@@ -516,12 +516,12 @@ namespace ServerTools
             world.SpawnEntityInWorld(entityItem);
             _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
             world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-            SdtdConsole.Instance.Output(string.Format("Sold {0} to {1}.", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name, _cInfo.playerName));
+            Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _price);
+            Log.Out(string.Format("Sold {0} to {1}.", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name, _cInfo.playerName));
             string _message = "{Count} {Item} was purchased through the shop. If your bag is full, check the ground.";
             _message = _message.Replace("{Count}", _count.ToString());
             _message = _message.Replace("{Item}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
             ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-            Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _price);
         }
     }
 }

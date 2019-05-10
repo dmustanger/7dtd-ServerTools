@@ -36,7 +36,10 @@ namespace ServerTools
                                 Directory.CreateDirectory(Destination);
                                 Log.Out(string.Format("[SERVERTOOLS] World backup destination folder not found. The folder has been created at {0} and backup resumed", Destination));
                             }
-                            _files2 = Directory.GetFiles(Destination, "*.zip");
+                            else
+                            {
+                                _files2 = Directory.GetFiles(Destination, "*.zip");
+                            }
                         }
                         int _daysBeforeDeleted = (Days_Before_Save_Delete * -1);
                         if (_files2 != null)

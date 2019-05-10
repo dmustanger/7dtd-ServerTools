@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace ServerTools
@@ -30,7 +28,7 @@ namespace ServerTools
                             {
                                 _holdingItem = _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name;
                             }
-                            string _sql = string.Format("INSERT INTO Tracking (dateTime, position, steamId, playerName, holding) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')", DateTime.Now.ToString(), _pos, _cInfo.playerId, _cInfo.playerName, _holdingItem);
+                            string _sql = string.Format("INSERT INTO Tracking (dateTime, position, steamId, playerName, holding) VALUES (DATETIME('NOW'), '{0}', '{1}', '{2}', '{3}')", _pos, _cInfo.playerId, _cInfo.playerName, _holdingItem);
                             SQL.FastQuery(_sql, "Tracking");
                         }
                     }
@@ -40,29 +38,12 @@ namespace ServerTools
 
         public static void Cleanup()
         {
-            string _sql = string.Format("SELECT * FROM Tracking ORDER BY dateTime ASC");
-            DataTable _result = SQL.TQuery(_sql);
-            if (_result.Rows.Count > 0)
+            if (Tracking.IsEnabled)
             {
-                for (int i = 0; i < _result.Rows.Count; i++)
-                {
-                    DataRow _row = _result.Rows[i];
-                    if (_row != null)
-                    {
-                        DateTime _dateTime;
-                        DateTime.TryParse(_row.ItemArray.GetValue(1).ToString(), out _dateTime);
-                        DateTime _dateCheck = _dateTime.AddDays(Days_Before_Log_Delete);
-                        if (_dateCheck <= DateTime.Now)
-                        {
-                            int _id;
-                            int.TryParse(_row.ItemArray.GetValue(0).ToString(), out _id);
-                            _sql = string.Format("DELETE FROM Tracking WHERE Id = {0}", _id);
-                            SQL.FastQuery(_sql, "Tracking");
-                        }
-                    }
-                }
+                Log.Out("Database tracking log cleanup started");
+                string _sql = string.Format("DELETE FROM Tracking WHERE dateTime < DATETIME('NOW', '-{0} days')", Days_Before_Log_Delete);
+                Log.Out("Database tracking log cleanup complete");
             }
-            _result.Dispose();
         }
     }
 }

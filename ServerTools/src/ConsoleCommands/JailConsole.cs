@@ -11,7 +11,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools]-Puts A Player In Jail.";
+            return "[ServerTools]- Puts A Player In Jail.";
         }
         public override string GetHelp()
         {

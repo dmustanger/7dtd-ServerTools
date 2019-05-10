@@ -59,7 +59,7 @@
     <Compile Include="src\ConsoleCommands\BanPlayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\DonorConsole.cs" />
     <Compile Include="src\ConsoleCommands\ChatColorPrefixConsole.cs" />
-    <Compile Include="src\ConsoleCommands\KillAll.cs" />
+    <Compile Include="src\ConsoleCommands\KillEnt.cs" />
     <Compile Include="src\ConsoleCommands\TeleportUnderPlayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\TrackingConsole.cs" />
     <Compile Include="src\ConsoleCommands\WorldRadiusConsole.cs" />
@@ -80,7 +80,6 @@
     <Compile Include="src\ConsoleCommands\PlayerLogsConsole.cs" />
     <Compile Include="src\ConsoleCommands\PlayerListConsole.cs" />
     <Compile Include="src\ConsoleCommands\NormalPlayerColoringConsole.cs" />
-    <Compile Include="src\ConsoleCommands\NightVoteConsole.cs" />
     <Compile Include="src\ConsoleCommands\NightAlertConsole.cs" />
     <Compile Include="src\ConsoleCommands\NewSpawnTeleConsole.cs" />
     <Compile Include="src\ConsoleCommands\NewPlayerConsole.cs" />
@@ -138,6 +137,7 @@
     <Compile Include="src\AntiCheat\PlayerLogs.cs" />
     <Compile Include="src\AntiCheat\InvalidItems.cs" />
     <Compile Include="src\Tracking\Tracking.cs" />
+    <Compile Include="src\UnderWater\UnderWater.cs" />
     <Compile Include="src\Zones\Zones.cs" />
     <Compile Include="src\API.cs" />
     <Compile Include="src\AuctionBox\AuctionBox.cs" />
@@ -155,7 +155,6 @@
     <Compile Include="src\Chat\ChatCommands\Animals.cs" />
     <Compile Include="src\Chat\ChatCommands\CustomCommands.cs" />
     <Compile Include="src\Chat\ChatCommands\day7.cs" />
-    <Compile Include="src\Chat\ChatCommands\NightVote.cs" />
     <Compile Include="src\Chat\ChatCommands\KickVote.cs" />
     <Compile Include="src\Chat\ChatCommands\Loc.cs" />
     <Compile Include="src\Chat\ChatCommands\Fps.cs" />

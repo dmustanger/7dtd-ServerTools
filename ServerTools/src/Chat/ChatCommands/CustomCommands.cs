@@ -156,7 +156,7 @@ namespace ServerTools
                     sw.WriteLine("        <Command Number=\"3\" Trigger=\"rules\" Response=\"whisper Visit YourSiteHere to see the rules.\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"whisper Visit YourSiteHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"whisper The Teamspeak3 info is YourInfoHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"6\" Trigger=\"spawnz\" Response=\"ser {EntityId} 40 @ 4 11 14 ^ pm Zombies have spawn around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"6\" Trigger=\"spawnz\" Response=\"ser {EntityId} 40 @ 4 11 14 ^ whisper Zombies have spawn around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Number=\"7\" Trigger=\"discord\" Response=\"whisper The discord channel is .\" DelayBetweenUses=\"20\" Hidden=\"true\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Number=\"8\" Trigger=\"test1\" Response=\"Your command here\" DelayBetweenUses=\"30\" Hidden=\"true\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Number=\"9\" Trigger=\"test2\" Response=\"Your command here\" DelayBetweenUses=\"40\" Hidden=\"true\" Cost=\"0\" />");
@@ -190,7 +190,6 @@ namespace ServerTools
 
         public static string GetChatCommands1(ClientInfo _cInfo)
         {
-            Log.Out("[SERVERTOOLS] Test Custom Commands Started");
             string _commands_1 = string.Format("{0}Commands are:", LoadConfig.Chat_Response_Color);
             if (FriendTeleport.IsEnabled)
             {
@@ -366,10 +365,6 @@ namespace ServerTools
                 _commands_4 = string.Format("{0} {1}{2} #", _commands_4, ChatHook.Command_Private, Bank.Command97);
                 _commands_4 = string.Format("{0} {1}{2} #", _commands_4, ChatHook.Command_Private, Bank.Command98);
             }
-            if (NightVote.IsEnabled)
-            {
-                _commands_4 = string.Format("{0} {1}{2}", _commands_4, ChatHook.Command_Private, NightVote.Command69);
-            }
             return _commands_4;
         }
 
@@ -432,6 +427,10 @@ namespace ServerTools
             if (ClanManager.IsEnabled)
             {
                 _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, ClanManager.Command125);
+            }
+            if (Hardcore.IsEnabled && Hardcore.Max_Extra_Lives > 0)
+            {
+                _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, Hardcore.Command126);
             }
             return _commands_6;
         }
@@ -1053,22 +1052,22 @@ namespace ServerTools
                     if (_responseAdj.StartsWith("global "))
                     {
                         _responseAdj = _responseAdj.Replace("global ", "");
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", _cInfo.entityId, _playerName, EChatType.Global, null);
                     }
                     else if (_responseAdj.StartsWith("whisper ") || _responseAdj.StartsWith("whisper "))
                     {
-                        _responseAdj = _response.Replace("whisper ", "");
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        _responseAdj = _responseAdj.Replace("whisper ", "");
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", _cInfo.entityId, _playerName, EChatType.Whisper, null);
                     }
                     else if (_responseAdj.StartsWith("tele ") || _responseAdj.StartsWith("tp ") || _responseAdj.StartsWith("teleportplayer "))
                     {
-                        if (Zones.ZoneExit.ContainsKey(_cInfo.entityId))
-                        {
-                            Zones.ZoneExit.Remove(_cInfo.entityId);
-                        }
                         try
                         {
                             SdtdConsole.Instance.ExecuteSync(_responseAdj, _cInfo);
+                            if (Zones.ZoneExit.ContainsKey(_cInfo.entityId))
+                            {
+                                Zones.ZoneExit.Remove(_cInfo.entityId);
+                            }
                         }
                         catch (Exception e)
                         {

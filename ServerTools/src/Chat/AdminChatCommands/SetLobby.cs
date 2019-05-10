@@ -6,11 +6,11 @@ namespace ServerTools
     {
         public static string Lobby_Position = "0,0,0";
         public static string Command87 = "setlobby";
-        private static string[] _cmd = { "lobby" };
 
         public static void Set(ClientInfo _cInfo)
         {
-            if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo.playerId))
+            string[] _command = { Command87 };
+            if (!GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo.playerId))
             {
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))

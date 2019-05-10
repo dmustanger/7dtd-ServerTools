@@ -28,19 +28,25 @@ namespace ServerTools
                                 {
                                     GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
                                     Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed falling block id {0}", _entity.entityId));
+                                    continue;
                                 }
                                 if (FallingTreeEnabled && _name == "fallingTree")
                                 {
                                     GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
                                     Log.Out("[SERVERTOOLS] Entity cleanup: Removed falling tree");
+                                    continue;
                                 }
                                 if (Underground)
                                 {
-                                    int y = (int)_entity.position.y;
-                                    if (y <= 0)
+                                    EntityType _type = _entity.entityType;
+                                    if (_type == EntityType.Zombie || _type == EntityType.Animal)
                                     {
-                                        _entity.SetPosition(new Vector3((int)_entity.position.x, -1, (int)_entity.position.z));
-                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Teleported entity id {0} to the surface @ {1} -1 {2}", _entity.entityId, (int)_entity.position.x, (int)_entity.position.z));
+                                        if ((int)_entity.position.y <= -10)
+                                        {
+                                            GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
+                                            Log.Out("[SERVERTOOLS] Entity cleanup: Removed {0} with entity id {1}", _name, _entity.entityId);
+                                            continue;
+                                        }
                                     }
                                 }
                                 if (MiniBikes && _name == "vehicleMinibike")

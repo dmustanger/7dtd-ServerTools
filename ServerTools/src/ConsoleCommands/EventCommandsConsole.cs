@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -10,7 +9,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Start and coordinate an event.";
+            return "[ServerTools]- Start And Coordinate An Event.";
         }
 
         public override string GetHelp()

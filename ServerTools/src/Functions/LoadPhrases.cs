@@ -1145,39 +1145,9 @@ namespace ServerTools
                 string _phrase705;
                 if (!Dict.TryGetValue(705, out _phrase705))
                 {
-                    _phrase705 = " you have voted 1 time since {Date}. You need {Count} more votes before {Date2} to reach the bonus.";
+                    _phrase705 = " you have voted {Votes} time since {Date}. You need {Count} more votes before {Date2} to reach the bonus.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"705\" Phrase=\"{0}\" />", _phrase705));
-                sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- ********************* Flight_Check ********************* -->");
-                sw.WriteLine("        <!-- ******************************************************** -->");
-                string _phrase706;
-                if (!Dict.TryGetValue(706, out _phrase706))
-                {
-                    _phrase706 = "Detected {PlayerName} flying @ {X} {Y} {Z}";
-                }
-                sw.WriteLine(string.Format("        <Phrase id=\"706\" Phrase=\"{0}\" />", _phrase706));
-                string _phrase707;
-                if (!Dict.TryGetValue(707, out _phrase707))
-                {
-                    _phrase707 = " has been detected flying.";
-                }
-                sw.WriteLine(string.Format("        <Phrase id=\"707\" Phrase=\"{0}\" />", _phrase707));
-                sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- ****************** Underground_Check ******************* -->");
-                sw.WriteLine("        <!-- ******************************************************** -->");
-                string _phrase710;
-                if (!Dict.TryGetValue(710, out _phrase710))
-                {
-                    _phrase710 = "Detected {PlayerName} flying underground @ {X} {Y} {Z}.";
-                }
-                sw.WriteLine(string.Format("        <Phrase id=\"710\" Phrase=\"{0}\" />", _phrase710));
-                string _phrase711;
-                if (!Dict.TryGetValue(711, out _phrase711))
-                {
-                    _phrase711 = " has been detected flying underground.";
-                }
-                sw.WriteLine(string.Format("        <Phrase id=\"711\" Phrase=\"{0}\" />", _phrase711));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ******************* Animal_Tracking ******************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1304,9 +1274,15 @@ namespace ServerTools
                 string _phrase760;
                 if (!Dict.TryGetValue(760, out _phrase760))
                 {
-                    _phrase760 = "Your current position is X {X}, Y {Y}, Z {Z}.";
+                    _phrase760 = " your current position is X  {X}, Y  {Y}, Z  {Z}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"760\" Phrase=\"{0}\" />", _phrase760));
+                string _phrase761;
+                if (!Dict.TryGetValue(761, out _phrase761))
+                {
+                    _phrase761 = " your current position is X  {X}, Y  {Y}, Z  {Z}. You are inside a zone.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"761\" Phrase=\"{0}\" />", _phrase761));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ******************* Real_World_Time ******************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1448,7 +1424,7 @@ namespace ServerTools
                 string _phrase802;
                 if (!Dict.TryGetValue(802, out _phrase802))
                 {
-                    _phrase802 = "You have murdered a player inside a protected zone. Their name was {Victim}";
+                    _phrase802 = " you have murdered a player inside a pve zone. Their name was {PlayerName}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"802\" Phrase=\"{0}\" />", _phrase802));
                 string _phrase804;

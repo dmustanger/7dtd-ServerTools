@@ -23,6 +23,7 @@ namespace ServerTools
             ModEvents.PlayerDisconnected.RegisterHandler(PlayerDisconnected);
             ModEvents.ChatMessage.RegisterHandler(ChatMessage);
             ModEvents.GameStartDone.RegisterHandler(GameStartDone);
+            ModEvents.EntityKilled.RegisterHandler(EntityKilled);
         }
 
         public void GameAwake()
@@ -32,7 +33,7 @@ namespace ServerTools
 
         public void SavePlayerData(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
         {
-            if (_cInfo != null)
+            if (_cInfo != null && _playerDataFile != null)
             {
                 if (HighPingKicker.IsEnabled)
                 {
@@ -95,7 +96,7 @@ namespace ServerTools
                         TimeSpan varTime = DateTime.Now - _dateTime;
                         double fractionalMinutes = varTime.TotalMinutes;
                         int _timepassed = (int)fractionalMinutes;
-                        if (_timepassed >= 5)
+                        if (_timepassed <= 5)
                         {
                             int _timeleft = 5 - _timepassed;
                             string _phrase22;
@@ -109,6 +110,7 @@ namespace ServerTools
                         }
                         else
                         {
+                            ReservedSlots.Kicked.Remove(_cInfo.playerId);
                             ReservedSlots.CheckReservedSlot(_cInfo);
                         }
                     }
@@ -547,17 +549,20 @@ namespace ServerTools
             }
         }
 
+        public void EntityKilled(Entity _deadEnt, Entity _killer)
+        {
+
+        }
+
         public void GameStartDone()
         {
             LoadProcess.Load(1);
             Tracking.Cleanup();
-            Players.Load();
         }
 
         public void GameShutdown()
         {
-            Timers.TimerStop();
-            Players.Unload();
+
         }
     }
 }

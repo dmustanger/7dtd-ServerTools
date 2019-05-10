@@ -7,8 +7,8 @@ namespace ServerTools
     class Hardcore
     {
         public static bool IsEnabled = false;
-        public static int Max_Deaths = 9;
-        public static string Command11 = "top3", Command12 = "score";
+        public static int Max_Deaths = 9, Max_Extra_Lives = 3, Life_Price = 2000;
+        public static string Command11 = "top3", Command12 = "score", Command126 = "life";
 
         public static void Announce(ClientInfo _cInfo)
         {
@@ -45,7 +45,36 @@ namespace ServerTools
                     }
                     else
                     {
-                        EndGame(_cInfo, _player);
+                        if (Max_Extra_Lives > 0)
+                        {
+                            string _sql = string.Format("SELECT extraLives FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result = SQL.TQuery(_sql);
+                            int _extraLives;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _extraLives);
+                            _result.Dispose();
+                            if (_deaths < Max_Deaths + _extraLives)
+                            {
+                                int _lives = (Max_Deaths + _extraLives) - _deaths;
+                                string _phrase950;
+                                if (!Phrases.Dict.TryGetValue(950, out _phrase950))
+                                {
+                                    _phrase950 = "Hardcore: Zombie Kills {ZombieKills}, Player Kills {PlayerKills}, Score {Score}, Lives remaining {Lives}...";
+                                }
+                                _phrase950 = _phrase950.Replace("{ZombieKills}", _player.KilledZombies.ToString());
+                                _phrase950 = _phrase950.Replace("{PlayerKills}", _player.KilledPlayers.ToString());
+                                _phrase950 = _phrase950.Replace("{Score}", _player.Score.ToString());
+                                _phrase950 = _phrase950.Replace("{Lives}", _lives.ToString());
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase950 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            }
+                            else
+                            {
+                                EndGame(_cInfo, _player);
+                            }
+                        }
+                        else
+                        {
+                            EndGame(_cInfo, _player);
+                        }
                     }
                 }
             }
@@ -65,79 +94,24 @@ namespace ServerTools
             int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _oldSession);
             _result.Dispose();
             int _newSession = _oldSession + _timepassed;
-            _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result1 = SQL.TQuery(_sql);
-            if (_result1.Rows.Count != 0)
-            {
-                string _name = SQL.EscapeString(_cInfo.playerName);
-                _sql = string.Format("UPDATE Players SET " +
-                    "playername = 'Unknown', " +
-                    "last_gimme = '10/29/2000 7:30:00 AM', " +
-                    "lastkillme = '10/29/2000 7:30:00 AM', " +
-                    "playerSpentCoins = 0, " +
-                    "hardcoreSessionTime = {0}, " +
-                    "hardcoreKills = {1}, " +
-                    "hardcoreZKills = {2}, " +
-                    "hardcoreScore = {3}, " +
-                    "hardcoreDeaths = {4}, " +
-                    "hardcoreName = '{5}', " +
-                    "sessionTime = 0, " +
-                    "bikeId = 0, " +
-                    "lastBike = '10/29/2000 7:30:00 AM', " +
-                    "jailName = 'Unknown', " +
-                    "jailDate = '10/29/2000 7:30:00 AM', " +
-                    "muteName = 'Unknown', " +
-                    "muteDate = '10/29/2000 7:30:00 AM', " +
-                    "lobbyReturn = 'Unknown', " +
-                    "newTeleSpawn = 'Unknown', " +
-                    "homeposition = 'Unknown', " +
-                    "homeposition2 = 'Unknown', " +
-                    "lastsethome = '10/29/2000 7:30:00 AM', " +
-                    "lastwhisper = 'Unknown', " +
-                    "lastStuck = '10/29/2000 7:30:00 AM', " +
-                    "lastLobby = '10/29/2000 7:30:00 AM', " +
-                    "lastLog = '10/29/2000 7:30:00 AM', " +
-                    "lastDied = '10/29/2000 7:30:00 AM', " +
-                    "lastFriendTele = '10/29/2000 7:30:00 AM', " +
-                    "respawnTime = '10/29/2000 7:30:00 AM', " +
-                    "lastTravel = '10/29/2000 7:30:00 AM', " +
-                    "lastAnimals = '10/29/2000 7:30:00 AM', " +
-                    "lastVoteReward = '10/29/2000 7:30:00 AM', " +
-                    "firstClaim = 'false', " +
-                    "ismuted = 'false', " +
-                    "isjailed = 'false', " +
-                    "startingItems = 'false', " +
-                    "clanname = 'Unknown', " +
-                    "invitedtoclan = 'Unknown', " +
-                    "isclanowner = 'false', " +
-                    "isclanofficer = 'false', " +
-                    "customCommand1 = '10/29/2000 7:30:00 AM', " +
-                    "customCommand2 = '10/29/2000 7:30:00 AM', " +
-                    "customCommand3 = '10/29/2000 7:30:00 AM', " +
-                    "customCommand4 = '10/29/2000 7:30:00 AM', " +
-                    "customCommand5 = '10/29/2000 7:30:00 AM', " +
-                    "customCommand6 = '10/29/2000 7:30:00 AM', " +
-                    "customCommand7 = '10/29/2000 7:30:00 AM', " +
-                    "customCommand8 = '10/29/2000 7:30:00 AM', " +
-                    "customCommand9 = '10/29/2000 7:30:00 AM', " +
-                    "customCommand10 = '10/29/2000 7:30:00 AM' " +
-                    "WHERE steamid = '{6}'", _newSession, _player.KilledPlayers, _player.KilledZombies, _player.Score, _deaths, _name, _cInfo.playerId);
-                SQL.FastQuery(_sql, "Hardcore");
-                _sql = string.Format("SELECT steamid FROM Auction WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result2 = SQL.TQuery(_sql);
-                if (_result2.Rows.Count > 0)
-                {
-                    _sql = string.Format("DELETE FROM Auction WHERE steamid = '{0}'", _cInfo.playerId);
-                    SQL.FastQuery(_sql, "Hardcore");
-                }
-                _result2.Dispose();
-            }
-            _result1.Dispose();
+            string _name = SQL.EscapeString(_cInfo.playerName);
+            _sql = string.Format("UPDATE Hardcore SET sessionTime = {0}, kills = {1}, zKills = {2}, score = {3}, deaths = {4}, playerName = '{5}' WHERE steamid = '{6}'", _newSession, _player.KilledPlayers, _player.KilledZombies, _player.Score, _deaths, _name, _cInfo.playerId);
+            SQL.FastQuery(_sql, "Hardcore");
+            _sql = string.Format("DELETE FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            SQL.FastQuery(_sql, "Hardcore");
+            _sql = string.Format("DELETE FROM Auction WHERE steamid = '{0}'", _cInfo.playerId);
+            SQL.FastQuery(_sql, "Hardcore");
+            _sql = string.Format("DELETE FROM Waypoints WHERE steamid = '{0}'", _cInfo.playerId);
+            SQL.FastQuery(_sql, "Hardcore");
+            _sql = string.Format("DELETE FROM Tracking WHERE steamid = '{0}'", _cInfo.playerId);
+            SQL.FastQuery(_sql, "Hardcore");
+            _sql = string.Format("DELETE FROM Vehicles WHERE steamid = '{0}'", _cInfo.playerId);
+            SQL.FastQuery(_sql, "Hardcore");
             if (ClanManager.ClanMember.Contains(_cInfo.playerId))
             {
                 ClanManager.ClanMember.Remove(_cInfo.playerId);
             }
-            string _session = string.Format("0:00", _newSession % 60);
+            string _session = string.Format("{0:00}", _newSession % 60);
             SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Hardcore Game Over: Zombie Kills {1}, Player Kills {2}, Deaths {3}, Score {4}, Playtime {5}\"", _cInfo.playerId, _player.KilledZombies, _player.KilledPlayers, _deaths, _player.Score, _newSession), (ClientInfo)null);
             string _filepath = string.Format("{0}/Player/{1}.map", GameUtils.GetSaveGameDir(), _cInfo.playerId);
             string _filepath1 = string.Format("{0}/Player/{1}.ttp", GameUtils.GetSaveGameDir(), _cInfo.playerId);
@@ -167,7 +141,7 @@ namespace ServerTools
         {
             int _sessionTime, _score, _topSession1 = 0, _topSession2 = 0, _topSession3 = 0, _topScore1 = 0, _topScore2 = 0, _topScore3 = 0;
             string _sessionName1 = "", _sessionName2 = "", _sessionName3 = "", _ScoreName1 = "", _ScoreName2 = "", _ScoreName3 = "";
-            string _sql = "SELECT hardcoreSessionTime, hardcoreScore, hardcoreName From Players";
+            string _sql = "SELECT sessionTime, score, playerName From Hardcore";
             DataTable _result = SQL.TQuery(_sql);
             foreach (DataRow row in _result.Rows)
             {
@@ -272,7 +246,7 @@ namespace ServerTools
 
         public static void Score(ClientInfo _cInfo, bool _announce)
         {
-            string _sql = string.Format("SELECT hardcoreSessionTime, hardcoreKills, hardcoreZKills, hardcoreScore, hardcoreDeaths, hardcoreName From Players WHERE steamid = '{0}'", _cInfo.playerId);
+            string _sql = string.Format("SELECT sessionTime, kills, zKills, score, deaths, playerName From Hardcore WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
             string _phrase948;
             if (!Phrases.Dict.TryGetValue(948, out _phrase948))
@@ -294,6 +268,53 @@ namespace ServerTools
             else
             {
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase948 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+        }
+
+        public static void BuyLives(ClientInfo _cInfo)
+        {
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            int _deaths = XUiM_Player.GetDeaths(_player);
+            string _sql = string.Format("SELECT extraLives FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int _extraLives;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _extraLives);
+            _result.Dispose();
+            if (Life_Price > 0)
+            {
+                if (_extraLives < Max_Extra_Lives)
+                {
+                    int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                    int _cost = Life_Price * _extraLives;
+                    if (_currentCoins >= _cost)
+                    {
+                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _cost);
+                        _sql = string.Format("UPDATE Players SET extraLives = {0} WHERE steamid = '{1}'", _extraLives + 1, _cInfo.playerId);
+                        SQL.FastQuery(_sql, "Hardcore");
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have bought one extra life." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                    else
+                    {
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you need a total of " + _cost.ToString() + " " + Wallet.Coin_Name + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                }
+                else
+                {
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you are at the maximum extra lives." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
+            }
+            else
+            {
+                if (_extraLives < Max_Extra_Lives)
+                {
+                    _sql = string.Format("UPDATE Players SET extraLives = {0} WHERE steamid = '{1}'", _extraLives + 1, _cInfo.playerId);
+                    SQL.FastQuery(_sql, "Hardcore");
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have bought one extra life." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
+                else
+                {
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you are at the maximum extra lives." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
             }
         }
     }
