@@ -349,7 +349,7 @@ namespace ServerTools
             }
             if (Zones.IsEnabled)
             {
-                Log.Out("Zone protection enabled");
+                Log.Out("Zone enabled");
             }
         }
 
@@ -887,7 +887,7 @@ namespace ServerTools
 
         public static void Init2(object sender, ElapsedEventArgs e)
         {
-            Players.PlayerCheck();
+            PlayerOperations.PlayerCheck();
         }
     }
 }

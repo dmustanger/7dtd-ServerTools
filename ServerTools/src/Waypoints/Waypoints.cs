@@ -230,7 +230,7 @@ namespace ServerTools
         {
             if (Wallet.IsEnabled && Command_Cost >= 1)
             {
-                int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
                 if (_currentCoins >= Command_Cost)
                 {
                     Exec(_cInfo, _waypoint, _player);
@@ -278,7 +278,7 @@ namespace ServerTools
                 int.TryParse(_cordsplit[0], out x);
                 int.TryParse(_cordsplit[1], out y);
                 int.TryParse(_cordsplit[2], out z);
-                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
+                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 _sql = string.Format("UPDATE Players SET lastWaypoint = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                 SQL.FastQuery(_sql, "Waypoints");
@@ -633,7 +633,7 @@ namespace ServerTools
 
         private static void FCommandCost(ClientInfo _cInfo, string _waypoint, EntityPlayer _player)
         {
-            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
             if (_currentCoins >= Command_Cost)
             {
                 FExec(_cInfo, _waypoint, _player);
@@ -677,7 +677,7 @@ namespace ServerTools
                 int.TryParse(_cordsplit[0], out x);
                 int.TryParse(_cordsplit[1], out y);
                 int.TryParse(_cordsplit[2], out z);
-                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
+                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 _sql = string.Format("UPDATE Players SET lastWaypoint = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                 SQL.FastQuery(_sql, "Waypoints");
@@ -757,7 +757,7 @@ namespace ServerTools
                         int.TryParse(_cords[0], out x);
                         int.TryParse(_cords[1], out y);
                         int.TryParse(_cords[2], out z);
-                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                         Invite.Remove(_cInfo.entityId);
                         FriendPosition.Remove(_cInfo.entityId);
                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", sending you to your friend's waypoint.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);

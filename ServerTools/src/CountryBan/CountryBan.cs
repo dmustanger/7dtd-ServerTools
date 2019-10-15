@@ -1,4 +1,4 @@
-﻿using Geotargeting;
+﻿using MaxMind.GeoIP2;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -9,31 +9,30 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         private static string _assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        private static string _dbPath = string.Format("{0}/GeoLiteCity.dat", _assemblyFolder);
+        private static string _dbPath = string.Format("{0}/GeoLite2-Country.mmdb", _assemblyFolder);
         public static List<string> BannedCountries = new List<string>();
-        private static LookupService reader;
-
-        public static void Load ()
-        {
-            if (File.Exists(_dbPath))
-            {
-                reader = new LookupService(_dbPath, LookupService.GEOIP_STANDARD);
-            }
-            else
-            {
-                IsEnabled = false;
-            }
-        }
 
         public static bool IsCountryBanned (ClientInfo _cInfo)
         {
-            Location _location = reader.getLocation(_cInfo.ip);
-            if (BannedCountries.Contains(_location.countryCode))
+            if (BannedCountries.Contains(Get(_cInfo.ip)))
             {
-                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Players from {1} are not allowed\"", _cInfo.playerId, _location.countryCode), (ClientInfo)null);
+                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Players from your country are not allowed\"", _cInfo.playerId), (ClientInfo)null);
                 return true;
             }
             return false;
+        }
+
+        public static string Get(string _ip)
+        {
+            if (File.Exists(_dbPath))
+            {
+                using (var _reader = new DatabaseReader(_dbPath))
+                {
+                    var _country = _reader.Country(_ip);
+                    return _country.Country.IsoCode;
+                }
+            }
+            return "Unknown";
         }
     }
 }

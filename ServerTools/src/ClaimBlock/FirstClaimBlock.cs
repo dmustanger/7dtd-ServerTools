@@ -1,5 +1,4 @@
-﻿using System.Data;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ServerTools
 {
@@ -10,12 +9,7 @@ namespace ServerTools
 
         public static void firstClaim(ClientInfo _cInfo)
         {
-            
-            string _sql = string.Format("SELECT firstClaim FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            bool _firstClaim;
-            bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _firstClaim);
-            _result.Dispose();
+            bool _firstClaim = PersistentContainer.Instance.Players[_cInfo.playerId].FirstClaimBlock;
             if (!_firstClaim)
             {
                 World world = GameManager.Instance.World;
@@ -25,7 +19,7 @@ namespace ServerTools
 
                 if (Equals(itemValue, ItemValue.None))
                 {
-                    SdtdConsole.Instance.Output(string.Format("Unable to find block {0} for /claim command", claimBlock));
+                    SdtdConsole.Instance.Output(string.Format("Unable to find block {0} for /{1} command", claimBlock, Command32));
                 }
                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                 {
@@ -38,15 +32,15 @@ namespace ServerTools
                     belongsPlayerId = _cInfo.entityId
                 });
                 world.SpawnEntityInWorld(entityItem);
-                _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
+                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", claim block has been added to your inventory or if inventory is full, it dropped at your feet.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                _sql = string.Format("UPDATE Players SET firstClaim = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
-                SQL.FastQuery(_sql, "FirstClaimBlock");
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " claim block has been added to your inventory or if inventory is full, it dropped at your feet.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                PersistentContainer.Instance.Players[_cInfo.playerId].FirstClaimBlock = true;
+                PersistentContainer.Instance.Save();
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you have already received your first claim block. Contact an administrator if you require help.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " you have already received your first claim block. Contact an administrator if you require help.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

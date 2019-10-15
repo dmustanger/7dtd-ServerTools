@@ -11,16 +11,12 @@ namespace ServerTools
         public static void Exec(ClientInfo _cInfo)
         {
             DateTime _time;
-            if (Players.Session.TryGetValue(_cInfo.playerId, out _time))
+            if (PlayerOperations.Session.TryGetValue(_cInfo.playerId, out _time))
             {
                 TimeSpan varTime = DateTime.Now - _time;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int _timepassed = (int)fractionalMinutes;
-                string _sql = string.Format("SELECT sessionTime FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TQuery(_sql);
-                int _sessionTime;
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _sessionTime);
-                _result.Dispose();
+                int _sessionTime = PersistentContainer.Instance.Players[_cInfo.playerId].SessionTime;
                 _sessionTime = _sessionTime + _timepassed;
                 string _phrase570;
                 if (!Phrases.Dict.TryGetValue(570, out _phrase570))

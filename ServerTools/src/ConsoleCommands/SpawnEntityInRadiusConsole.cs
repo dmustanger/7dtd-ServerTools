@@ -16,7 +16,7 @@ namespace ServerTools
             return "Usage:\n" +
                 "  1. ser <x> <y> <z> <spawn radius> @ [<list of entities>]\n" +
                 "  2. ser <x> <z> <spawn radius> @ [<list of entities>]>\n" +
-                "  3. ser <steamId/entityId/playerName> <spawn radius> @ [<list of entities>]\n" +
+                "  3. ser <SteamId/EntityId/PlayerName> <spawn radius> @ [<list of entities>]\n" +
                 "1. Spawn one or more entity with in a radius of the specified coordinates. Enter the x y z coordinates, radius and entity id of the entity to spawn\n" +
                 "2. Spawn one or more entity with in a radius of the specified coordinates. Enter the x z coordinates, radius and entity id of the entity to spawn\n" +
                 "3. Spawn one or more entity with in a radius of the specified player. Enter the steam id, player name or entity id of the player. Enter the radius and entity id to spawn\n" +
