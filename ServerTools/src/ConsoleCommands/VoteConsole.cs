@@ -68,85 +68,55 @@ namespace ServerTools
                             ClientInfo _cInfo2 = ClientInfoList[i];
                             if (_cInfo2 != null)
                             {
-                                string _sql = string.Format("SELECT lastVoteReward FROM Players WHERE steamid = '{0}'", _cInfo2.playerId);
-                                DataTable _result = SQL.TQuery(_sql);
-                                if (_result.Rows.Count != 0)
-                                {
-                                    DateTime _lastVoteReward;
-                                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastVoteReward);
-                                    if (_lastVoteReward.ToString() != "10/29/2000 7:30:00 AM")
-                                    {
-                                        _sql = string.Format("UPDATE Players SET lastVoteReward = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _cInfo2.playerId);
-                                        SQL.FastQuery(_sql, "VoteConsole");
-                                        SdtdConsole.Instance.Output(string.Format("Vote reward delay reset for {0}.", _cInfo2.playerName));
-                                    }
-                                    else
-                                    {
-                                        SdtdConsole.Instance.Output(string.Format("Player named {0} does not have a vote reward delay that requires reset.", _cInfo2.playerName));
-                                    }
-                                }
+                                PersistentContainer.Instance.Players[_cInfo2.playerId].LastVote = DateTime.Now;
+                                PersistentContainer.Instance.Save();
+                                SdtdConsole.Instance.Output(string.Format("Vote reward delay reset for {0}.", _cInfo2.playerName));
                             }
                         }
                         return;
                     }
                     if (_params[1].ToLower().Equals("all"))
                     {
-                        string _sql = string.Format("UPDATE Players SET lastVoteReward = '10/29/2000 7:30:00 AM' WHERE lastVoteReward != '10/29/2000 7:30:00 AM'");
-                        SQL.FastQuery(_sql, "VoteConsole");
-                        return;
-                    }
-                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                    if (_cInfo != null)
-                    {
-                        string _sql = string.Format("SELECT lastVoteReward FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        if (_result.Rows.Count != 0)
+                        for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
                         {
-                            DateTime _lastVoteReward;
-                            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastVoteReward);
-                            if (_lastVoteReward.ToString() != "10/29/2000 7:30:00 AM")
+                            string _id = PersistentContainer.Instance.Players.SteamIDs[i];
+                            PersistentPlayer p = PersistentContainer.Instance.Players[_id];
                             {
-                                _sql = string.Format("UPDATE Players SET lastVoteReward = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _cInfo.playerId);
-                                SQL.FastQuery(_sql, "VoteConsole");
-                                SdtdConsole.Instance.Output("Vote reward delay reset.");
-                            }
-                            else
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a vote reward delay that requires reset.", _params[1]));
+                                PersistentContainer.Instance.Players[_id].LastVote = DateTime.Now.AddYears(-1);
                             }
                         }
-                        _result.Dispose();
+                        PersistentContainer.Instance.Save();
+                        SdtdConsole.Instance.Output("Vote reward delay reset for all players.");
+                        return;
                     }
                     else
                     {
-                        if (_params[1].Length != 17)
+                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                        if (_cInfo != null)
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}", _params[1]));
-                            return;
-                        }
-                        string _id = SQL.EscapeString(_params[1]);
-                        string _sql = string.Format("SELECT lastVoteReward FROM Players WHERE steamid = '{0}'", _id);
-                        DataTable _result = SQL.TQuery(_sql);
-                        if (_result.Rows.Count != 0)
-                        {
-                            DateTime _lastVoteReward;
-                            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastVoteReward);
-                            if (_lastVoteReward.ToString() != "10/29/2000 7:30:00 AM")
-                            {
-                                _sql = string.Format("UPDATE Players SET lastVoteReward = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _id);
-                                SQL.FastQuery(_sql, "VoteConsole");
-                                SdtdConsole.Instance.Output("Vote reward delay reset.");
-                            }
-                            else
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a vote reward delay that requires reset.", _params[1]));
-                            }
+                            PersistentContainer.Instance.Players[_cInfo.playerId].LastVote = DateTime.Now;
+                            PersistentContainer.Instance.Save();
+                            SdtdConsole.Instance.Output(string.Format("Vote reward delay reset for {0}.", _cInfo.playerName));
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a vote reward delay to reset.", _params[1]));
+                            if (_params[1].Length != 17)
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}", _params[1]));
+                                return;
+                            }
+                            PersistentPlayer p = PersistentContainer.Instance.Players[_params[1]];
+                            if (p != null)
+                            {
+                                PersistentContainer.Instance.Players[_params[1]].LastVote = DateTime.Now.AddYears(-1);
+                                PersistentContainer.Instance.Save();
+                                SdtdConsole.Instance.Output(string.Format("Vote reward delay reset for {0}.", _params[1]));
+                            }
+                            else
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a Vote reward delay to reset.", _params[1]));
+                            }
                         }
-                        _result.Dispose();
                     }
                 }
                 else

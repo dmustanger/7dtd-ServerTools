@@ -112,17 +112,25 @@ namespace ServerTools
                             }
                         }
                         string _trigger = _line.GetAttribute("Trigger");
+                        string _response1 = _line.GetAttribute("Response");
+                        string _hidden = _line.GetAttribute("Hidden");
+                        string[] _s = { _response1, _hidden };
+                        int[] _c = { _number, _delay, _cost };
                         if (!Dict.ContainsKey(_trigger))
                         {
-                            string _response1 = _line.GetAttribute("Response");
-                            string _hidden = _line.GetAttribute("Hidden");
-                            string[] _s = { _response1, _hidden };
                             Dict.Add(_trigger, _s);
+                        }
+                        else
+                        {
+                            Dict[_trigger] = _s;
                         }
                         if (!Dict1.ContainsKey(_trigger))
                         {
-                            int[] _c = { _number, _delay, _cost };
                             Dict1.Add(_trigger, _c);
+                        }
+                        else
+                        {
+                            Dict1[_trigger] = _c;
                         }
                     }
                 }
@@ -484,443 +492,257 @@ namespace ServerTools
             return _commandsAdmin;
         }
 
-        public static void CheckCustomDelay(ClientInfo _cInfo, string _message, string _playerName, bool _announce)
+        public static void Exec(ClientInfo _cInfo, string _message, string _playerName, bool _announce)
         {
-            int _timepassed = 0;
             int[] _c;
             if (Dict1.TryGetValue(_message, out _c))
             {
-                if (_c[1] == 0)
+                if (_c[1] <= 0)
                 {
                     Permission(_cInfo, _message, _playerName, _announce, _c);
                 }
                 else
                 {
-                    bool _donator = false;
+                    int _timepassed = 0;
                     if (_c[0] == 1)
                     {
-                        string _sql = string.Format("SELECT customCommand1 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        DateTime _customCommand1;
-                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand1);
-                        _result.Dispose();
-                        if (_customCommand1.ToString() != "10/29/2000 7:30:00 AM")
+                        DateTime _customCommand1 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand1;
+                        TimeSpan varTime = DateTime.Now - _customCommand1;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        _timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                         {
-                            TimeSpan varTime = DateTime.Now - _customCommand1;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            _timepassed = (int)fractionalMinutes;
-                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        _donator = true;
-                                        int _newDelay = _c[1] / 2;
-                                        if (_timepassed >= _newDelay)
-                                        {
-                                            Permission(_cInfo, _message, _playerName, _announce, _c);
-                                        }
-                                        else
-                                        {
-                                            int _timeleft = _newDelay - _timepassed;
-                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
-                                        }
-                                    }
+                                    int _newDelay = _c[1] / 2;
+                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
+                                    return;
                                 }
                             }
                         }
-                        else
-                        {
-                            _timepassed = -1;
-                        }
+                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
                     }
-                    if (_c[0] == 2)
+                    else if (_c[0] == 2)
                     {
-                        string _sql = string.Format("SELECT customCommand2 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        DateTime _customCommand2;
-                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand2);
-                        _result.Dispose();
-                        if (_customCommand2.ToString() != "10/29/2000 7:30:00 AM")
+                        DateTime _customCommand2 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand2;
+                        TimeSpan varTime = DateTime.Now - _customCommand2;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        _timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                         {
-                            TimeSpan varTime = DateTime.Now - _customCommand2;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            _timepassed = (int)fractionalMinutes;
-                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        _donator = true;
-                                        int _newDelay = _c[1] / 2;
-                                        if (_timepassed >= _newDelay)
-                                        {
-                                            Permission(_cInfo, _message, _playerName, _announce, _c);
-                                        }
-                                        else
-                                        {
-                                            int _timeleft = _newDelay - _timepassed;
-                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
-                                        }
-                                    }
+                                    int _newDelay = _c[1] / 2;
+                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
+                                    return;
                                 }
                             }
                         }
-                        else
-                        {
-                            _timepassed = -1;
-                        }
+                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
                     }
-                    if (_c[0] == 3)
+                    else if (_c[0] == 3)
                     {
-                        string _sql = string.Format("SELECT customCommand3 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        DateTime _customCommand3;
-                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand3);
-                        _result.Dispose();
-                        if (_customCommand3.ToString() != "10/29/2000 7:30:00 AM")
+                        DateTime _customCommand3 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand3;
+                        TimeSpan varTime = DateTime.Now - _customCommand3;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        _timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                         {
-                            TimeSpan varTime = DateTime.Now - _customCommand3;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            _timepassed = (int)fractionalMinutes;
-                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        _donator = true;
-                                        int _newDelay = _c[1] / 2;
-                                        if (_timepassed >= _newDelay)
-                                        {
-                                            Permission(_cInfo, _message, _playerName, _announce, _c);
-                                        }
-                                        else
-                                        {
-                                            int _timeleft = _newDelay - _timepassed;
-                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
-                                        }
-                                    }
+                                    int _newDelay = _c[1] / 2;
+                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
+                                    return;
                                 }
                             }
                         }
-                        else
-                        {
-                            _timepassed = -1;
-                        }
+                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
                     }
-                    if (_c[0] == 4)
+                    else if (_c[0] == 4)
                     {
-                        string _sql = string.Format("SELECT customCommand4 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        DateTime _customCommand4;
-                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand4);
-                        _result.Dispose();
-                        if (_customCommand4.ToString() != "10/29/2000 7:30:00 AM")
+                        DateTime _customCommand4 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand4;
+                        TimeSpan varTime = DateTime.Now - _customCommand4;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        _timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                         {
-                            TimeSpan varTime = DateTime.Now - _customCommand4;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            _timepassed = (int)fractionalMinutes;
-                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        _donator = true;
-                                        int _newDelay = _c[1] / 2;
-                                        if (_timepassed >= _newDelay)
-                                        {
-                                            Permission(_cInfo, _message, _playerName, _announce, _c);
-                                        }
-                                        else
-                                        {
-                                            int _timeleft = _newDelay - _timepassed;
-                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
-                                        }
-                                    }
+                                    int _newDelay = _c[1] / 2;
+                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
+                                    return;
                                 }
                             }
                         }
-                        else
-                        {
-                            _timepassed = -1;
-                        }
+                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
                     }
-                    if (_c[0] == 5)
+                    else if (_c[0] == 5)
                     {
-                        string _sql = string.Format("SELECT customCommand5 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        DateTime _customCommand5;
-                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand5);
-                        _result.Dispose();
-                        if (_customCommand5.ToString() != "10/29/2000 7:30:00 AM")
+                        DateTime _customCommand5 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand5;
+                        TimeSpan varTime = DateTime.Now - _customCommand5;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        _timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                         {
-                            TimeSpan varTime = DateTime.Now - _customCommand5;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            _timepassed = (int)fractionalMinutes;
-                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        _donator = true;
-                                        int _newDelay = _c[1] / 2;
-                                        if (_timepassed >= _newDelay)
-                                        {
-                                            Permission(_cInfo, _message, _playerName, _announce, _c);
-                                        }
-                                        else
-                                        {
-                                            int _timeleft = _newDelay - _timepassed;
-                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
-                                        }
-                                    }
+                                    int _newDelay = _c[1] / 2;
+                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
+                                    return;
                                 }
                             }
                         }
-                        else
-                        {
-                            _timepassed = -1;
-                        }
+                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
                     }
-                    if (_c[0] == 6)
+                    else if (_c[0] == 6)
                     {
-                        string _sql = string.Format("SELECT customCommand6 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        DateTime _customCommand6;
-                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand6);
-                        _result.Dispose();
-                        if (_customCommand6.ToString() != "10/29/2000 7:30:00 AM")
+                        DateTime _customCommand6 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand6;
+                        TimeSpan varTime = DateTime.Now - _customCommand6;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        _timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                         {
-                            TimeSpan varTime = DateTime.Now - _customCommand6;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            _timepassed = (int)fractionalMinutes;
-                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        _donator = true;
-                                        int _newDelay = _c[1] / 2;
-                                        if (_timepassed >= _newDelay)
-                                        {
-                                            Permission(_cInfo, _message, _playerName, _announce, _c);
-                                        }
-                                        else
-                                        {
-                                            int _timeleft = _newDelay - _timepassed;
-                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
-                                        }
-                                    }
+                                    int _newDelay = _c[1] / 2;
+                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
+                                    return;
                                 }
                             }
                         }
-                        else
-                        {
-                            _timepassed = -1;
-                        }
+                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
                     }
-                    if (_c[0] == 7)
+                    else if (_c[0] == 7)
                     {
-                        string _sql = string.Format("SELECT customCommand7 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        DateTime _customCommand7;
-                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand7);
-                        _result.Dispose();
-                        if (_customCommand7.ToString() != "10/29/2000 7:30:00 AM")
+                        DateTime _customCommand7 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand7;
+                        TimeSpan varTime = DateTime.Now - _customCommand7;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        _timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                         {
-                            TimeSpan varTime = DateTime.Now - _customCommand7;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            _timepassed = (int)fractionalMinutes;
-                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        _donator = true;
-                                        int _newDelay = _c[1] / 2;
-                                        if (_timepassed >= _newDelay)
-                                        {
-                                            Permission(_cInfo, _message, _playerName, _announce, _c);
-                                        }
-                                        else
-                                        {
-                                            int _timeleft = _newDelay - _timepassed;
-                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
-                                        }
-                                    }
+                                    int _newDelay = _c[1] / 2;
+                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
+                                    return;
                                 }
                             }
                         }
-                        else
-                        {
-                            _timepassed = -1;
-                        }
+                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
                     }
-                    if (_c[0] == 8)
+                    else if (_c[0] == 8)
                     {
-                        string _sql = string.Format("SELECT customCommand8 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        DateTime _customCommand8;
-                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand8);
-                        _result.Dispose();
-                        if (_customCommand8.ToString() != "10/29/2000 7:30:00 AM")
+                        DateTime _customCommand8 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand8;
+                        TimeSpan varTime = DateTime.Now - _customCommand8;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        _timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                         {
-                            TimeSpan varTime = DateTime.Now - _customCommand8;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            _timepassed = (int)fractionalMinutes;
-                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        _donator = true;
-                                        int _newDelay = _c[1] / 2;
-                                        if (_timepassed >= _newDelay)
-                                        {
-                                            Permission(_cInfo, _message, _playerName, _announce, _c);
-                                        }
-                                        else
-                                        {
-                                            int _timeleft = _newDelay - _timepassed;
-                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
-                                        }
-                                    }
+                                    int _newDelay = _c[1] / 2;
+                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
+                                    return;
                                 }
                             }
                         }
-                        else
-                        {
-                            _timepassed = -1;
-                        }
+                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
                     }
-                    if (_c[0] == 9)
+                    else if (_c[0] == 9)
                     {
-                        string _sql = string.Format("SELECT customCommand9 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        DateTime _customCommand9;
-                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand9);
-                        _result.Dispose();
-                        if (_customCommand9.ToString() != "10/29/2000 7:30:00 AM")
+                        DateTime _customCommand9 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand9;
+                        TimeSpan varTime = DateTime.Now - _customCommand9;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        _timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                         {
-                            TimeSpan varTime = DateTime.Now - _customCommand9;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            _timepassed = (int)fractionalMinutes;
-                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        _donator = true;
-                                        int _newDelay = _c[1] / 2;
-                                        if (_timepassed >= _newDelay)
-                                        {
-                                            Permission(_cInfo, _message, _playerName, _announce, _c);
-                                        }
-                                        else
-                                        {
-                                            int _timeleft = _newDelay - _timepassed;
-                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _newDelay);
-                                        }
-                                    }
+                                    int _newDelay = _c[1] / 2;
+                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
+                                    return;
                                 }
                             }
                         }
-                        else
-                        {
-                            _timepassed = -1;
-                        }
+                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
                     }
-                    if (_c[0] == 10)
+                    else if (_c[0] == 10)
                     {
-                        string _sql = string.Format("SELECT customCommand10 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result = SQL.TQuery(_sql);
-                        DateTime _customCommand10;
-                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _customCommand10);
-                        _result.Dispose();
-                        if (_customCommand10.ToString() != "10/29/2000 7:30:00 AM")
+                        DateTime _customCommand10 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand10;
+                        TimeSpan varTime = DateTime.Now - _customCommand10;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        _timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                         {
-                            TimeSpan varTime = DateTime.Now - _customCommand10;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            _timepassed = (int)fractionalMinutes;
-                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        _donator = true;
-                                        int _newDelay = _c[1] / 2;
-                                        if (_timepassed >= _newDelay)
-                                        {
-                                            Permission(_cInfo, _message, _playerName, _announce, _c);
-                                        }
-                                        else
-                                        {
-                                            int _timeleft1 = _newDelay - _timepassed;
-                                            DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft1, _newDelay);
-                                        }
-                                    }
+                                    int _newDelay = _c[1] / 2;
+                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
+                                    return;
                                 }
                             }
                         }
-                        else
-                        {
-                            _timepassed = -1;
-                        }
-                    }
-                    if (!_donator)
-                    {
-                        if (_timepassed >= _c[1] || _timepassed == -1)
-                        {
-                            Permission(_cInfo, _message, _playerName, _announce, _c);
-                        }
-                        else
-                        {
-                            int _timeleft = _c[1] - _timepassed;
-                            if (_announce)
-                            {
-                                DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _c[1]);
-                            }
-                            else
-                            {
-                                DelayResponse(_cInfo, _message, _playerName, _announce, _timeleft, _c[1]);
-                            }
-                        }
+                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
                     }
                 }
             }
         }
 
-        public static void DelayResponse(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int _timeleft, int _newDelay)
+        public static void Timepass(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int _timepassed, int _delay, int[] _c)
+        {
+            if (_timepassed >= _delay)
+            {
+                Permission(_cInfo, _message, _playerName, _announce, _c);
+            }
+            else
+            {
+                int _timeleft1 = _delay - _timepassed;
+                Response(_cInfo, _message, _playerName, _announce, _timeleft1, _delay);
+            }
+        }
+
+
+        public static void Response(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int _timeleft, int _newDelay)
         {
             string _phrase616;
             if (!Phrases.Dict.TryGetValue(616, out _phrase616))
@@ -964,11 +786,11 @@ namespace ServerTools
         {
             if (_c[2] > 0)
             {
-                int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
                 if (_currentCoins >= _c[2])
                 {
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _c[2]);
-                    CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                    CommandExecute(_cInfo, _message, _playerName, _announce, _c);
                 }
                 else
                 {
@@ -983,81 +805,78 @@ namespace ServerTools
             }
             else
             {
-                CommandResponse(_cInfo, _message, _playerName, _announce, _c);
+                CommandExecute(_cInfo, _message, _playerName, _announce, _c);
             }
         }
 
-        public static void CommandResponse(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int[] _c)
+        public static void CommandExecute(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int[] _c)
         {
             if (_c[0] == 1)
             {
-                string _sql = string.Format("UPDATE Players SET customCommand1 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql, "CustomCommands");
+                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand1 = DateTime.Now;
             }
-            if (_c[0] == 2)
+            else if (_c[0] == 2)
             {
-                string _sql = string.Format("UPDATE Players SET customCommand2 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql, "CustomCommands");
+                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand2 = DateTime.Now;
             }
-            if (_c[0] == 3)
+            else if (_c[0] == 3)
             {
-                string _sql = string.Format("UPDATE Players SET customCommand3 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql, "CustomCommands");
+                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand3 = DateTime.Now;
             }
-            if (_c[0] == 4)
+            else if (_c[0] == 4)
             {
-                string _sql = string.Format("UPDATE Players SET customCommand4 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql, "CustomCommands");
+                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand4 = DateTime.Now;
             }
-            if (_c[0] == 5)
+            else if (_c[0] == 5)
             {
-                string _sql = string.Format("UPDATE Players SET customCommand5 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql, "CustomCommands");
+                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand5 = DateTime.Now;
             }
-            if (_c[0] == 6)
+            else if (_c[0] == 6)
             {
-                string _sql = string.Format("UPDATE Players SET customCommand6 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql, "CustomCommands");
+                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand6 = DateTime.Now;
             }
-            if (_c[0] == 7)
+            else if (_c[0] == 7)
             {
-                string _sql = string.Format("UPDATE Players SET customCommand7 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql, "CustomCommands");
+                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand7 = DateTime.Now;
             }
-            if (_c[0] == 8)
+            else if (_c[0] == 8)
             {
-                string _sql = string.Format("UPDATE Players SET customCommand8 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql, "CustomCommands");
+                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand8 = DateTime.Now;
             }
-            if (_c[0] == 9)
+            else if (_c[0] == 9)
             {
-                string _sql = string.Format("UPDATE Players SET customCommand9 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql, "CustomCommands");
+                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand9 = DateTime.Now;
             }
-            if (_c[0] == 10)
+            else if (_c[0] == 10)
             {
-                string _sql = string.Format("UPDATE Players SET customCommand10 = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                SQL.FastQuery(_sql, "CustomCommands");
+                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand10 = DateTime.Now;
             }
+            PersistentContainer.Instance.Save();
             string[] _r;
             if (Dict.TryGetValue(_message, out _r))
             {
                 string[] _responseSplit = _r[0].Split('^');
                 foreach (string _response in _responseSplit)
                 {
+                    if (_response.StartsWith(" "))
+                    {
+                        _response.Remove(0, 1);
+                    }
                     string _responseAdj = _response;
                     _responseAdj = _responseAdj.Replace("{EntityId}", _cInfo.entityId.ToString());
                     _responseAdj = _responseAdj.Replace("{SteamId}", _cInfo.playerId);
                     _responseAdj = _responseAdj.Replace("{PlayerName}", _playerName);
-                    if (_responseAdj.StartsWith("global "))
+                    if (_responseAdj.ToLower().StartsWith("global "))
                     {
+                        _responseAdj = _responseAdj.Replace("Global ", "");
                         _responseAdj = _responseAdj.Replace("global ", "");
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", _cInfo.entityId, _playerName, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     }
-                    else if (_responseAdj.StartsWith("whisper ") || _responseAdj.StartsWith("whisper "))
+                    else if (_responseAdj.ToLower().StartsWith("whisper "))
                     {
+                        _responseAdj = _responseAdj.Replace("Whisper ", "");
                         _responseAdj = _responseAdj.Replace("whisper ", "");
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", _cInfo.entityId, _playerName, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else if (_responseAdj.StartsWith("tele ") || _responseAdj.StartsWith("tp ") || _responseAdj.StartsWith("teleportplayer "))
                     {
@@ -1078,7 +897,7 @@ namespace ServerTools
                     {
                         try
                         {
-                            SdtdConsole.Instance.ExecuteSync(_responseAdj, _cInfo);
+                            SdtdConsole.Instance.ExecuteSync(_responseAdj, null);
                         }
                         catch (Exception e)
                         {
@@ -1086,7 +905,6 @@ namespace ServerTools
                         }
                     }
                 }
-                
             }
         }
     }

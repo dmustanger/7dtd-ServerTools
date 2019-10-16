@@ -10,7 +10,7 @@ namespace ServerTools
         public static bool IsEnabled = false;
         public static int Admin_Level = 0;
 
-        public static void GodFlightCheck(ClientInfo _cInfo)
+        public static void GodCheck(ClientInfo _cInfo)
         {
             GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
             AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);

@@ -1150,7 +1150,7 @@
              <remarks>
                It will show up, for example, while viewing properties of the file in
                Windows Explorer.  You can use any arbitrary string, but typically you
-               want something like "Copyright © Dino Chiesa 2011".
+               want something like "Copyright � Dino Chiesa 2011".
              </remarks>
             
         </member>
@@ -1291,7 +1291,7 @@
             
              <para>
              The generated exe image will execute on any machine that has the .NET
-             Framework 2.0 installed on it.  The generated exe image is also a
+             Framework 4.0 installed on it.  The generated exe image is also a
              valid ZIP file, readable with DotNetZip or another Zip library or tool
              such as WinZip.
              </para>
@@ -1325,13 +1325,12 @@
              <c>SaveSelfExtractor()</c>/ The user who runs the SFX will have the
              opportunity to change the extract directory before extracting. When
              the user runs the Command-Line SFX, the user must explicitly specify
-             the directory to which to extract.  The .NET Framework 2.0 is required
+             the directory to which to extract.  The .NET Framework 4.0 is required
              on the computer when the self-extracting archive is run.
              </para>
             
              <para>
-             NB: This method is not available in the version of DotNetZip build for
-             the .NET Compact Framework, nor in the "Reduced" DotNetZip library.
+             NB: This method is not available in the "Reduced" DotNetZip library.
              </para>
             
              </remarks>
@@ -2337,7 +2336,7 @@
                directory path within the archive.  There is no need for a file by the
                given name to exist in the filesystem; the name is used within the zip
                archive only. The content for the entry is encoded using the default text
-               encoding for the machine, or on Silverlight, using UTF-8.
+               encoding for the machine.
              </remarks>
             
              <param name="content">
@@ -2812,9 +2811,9 @@
                the given file name and directory path, if it exists, and then calling
                <see cref="M:Ionic.Zip.ZipFile.AddEntry(System.String,System.String)" />.  See the documentation for
                that method for further explanation. The string content is encoded
-               using the default encoding for the machine, or on Silverlight, using
-               UTF-8. This encoding is distinct from the encoding used for the
-               filename itself.  See <see cref="P:Ionic.Zip.ZipFile.AlternateEncoding"/>.
+               using the default encoding for the machine. This encoding is distinct
+               from the encoding used for the filename itself.  See
+               <see cref="P:Ionic.Zip.ZipFile.AlternateEncoding"/>.
              </para>
             
              </remarks>
@@ -3143,8 +3142,7 @@
              <para> This method may take a long time to run for large zip files.  </para>
             
              <para>
-               This method is not supported in the Reduced or Compact Framework
-               versions of DotNetZip.
+               This method is not supported in the Reduced version of DotNetZip.
              </para>
             
              <para>
@@ -3184,8 +3182,7 @@
              </para>
             
              <para>
-               This method is not supported in the Reduced or Compact
-               Framework versions of DotNetZip.
+               This method is not supported in the Reduced version of DotNetZip.
              </para>
             
              </remarks>
@@ -4232,7 +4229,7 @@
                zipfile correctly, you have to specify the same codepage at the time you
                read it. If try to read that zip file with Windows Explorer or another
                application that is not flexible with respect to the codepage used to
-               decode filenames in zipfiles, you will get a filename like "Inf°.txt".
+               decode filenames in zipfiles, you will get a filename like "Inf�.txt".
              </para>
             
              <para>
@@ -9026,11 +9023,6 @@
                article.</see>
              </para>
             
-             <para>
-               The WinZip AES algorithms are not supported with the version of DotNetZip that
-               runs on the .NET Compact Framework.  This is because .NET CF lacks the
-               HMACSHA1 class that is required for producing the archive.
-             </para>
              </remarks>
         </member>
         <member name="F:Ionic.Zip.EncryptionAlgorithm.None">
@@ -9704,11 +9696,6 @@
             </summary>
             <remarks>
             <para>
-              The System.IO.Path.GetRandomFileName() method is not available on
-              the Compact Framework, so this library provides its own substitute
-              on NETCF.
-            </para>
-            <para>
               This method produces a filename of the form
               DotNetZip-xxxxxxxx.tmp, where xxxxxxxx is replaced by randomly
               chosen characters, and creates that file.
@@ -9721,7 +9708,8 @@
             </summary>
             <remarks>
             This could be gracefully handled with an extension attribute, but
-            This assembly is built for .NET 2.0, so I cannot use them.
+            This assembly used to be built for .NET 2.0, so could not use
+            extension methods.
             </remarks>
         </member>
         <member name="T:Ionic.Zip.CountingStream">
@@ -10756,13 +10744,6 @@
                These attributes may not be interesting or useful if the resulting archive
                is extracted on a non-Windows platform.  How these attributes get used
                upon extraction depends on the platform and tool used.
-             </para>
-            
-             <para>
-               This property is only partially supported in the Silverlight version
-               of the library: applications can read attributes on entries within
-               ZipFiles. But extracting entries within Silverlight will not set the
-               attributes on the extracted files.
              </para>
             
              </remarks>
@@ -17950,6 +17931,15 @@
             <param name="dictionary">The dictionary bytes to use.</param>
             <returns>Z_OK if all goes well.</returns>
         </member>
+        <member name="M:Ionic.Zlib.ZlibCodec.SetDictionaryUnconditionally(System.Byte[])">
+            <summary>
+            Set the dictionary to be used for either Inflation or Deflation unconditionally.
+            </summary>
+            <remarks>Decoding a MSZip file requires the dictionary state to be set unconditionally
+            at the end of each block to the previous decoded data</remarks>
+            <param name="dictionary">The dictionary bytes to use.</param>
+            <returns>Z_OK if all goes well.</returns>
+        </member>
         <member name="T:Ionic.Zlib.ZlibConstants">
             <summary>
             A bunch of constants used in the Zlib interface.
@@ -17997,12 +17987,12 @@
         </member>
         <member name="F:Ionic.Zlib.ZlibConstants.WorkingBufferSizeDefault">
             <summary>
-            The size of the working buffer used in the ZlibCodec class. Defaults to 8192 bytes.
+            The size of the working buffer used in the ZlibCodec class.
             </summary>
         </member>
         <member name="F:Ionic.Zlib.ZlibConstants.WorkingBufferSizeMin">
             <summary>
-            The minimum size of the working buffer used in the ZlibCodec class.  Currently it is 128 bytes.
+            The minimum size of the working buffer used in the ZlibCodec class.
             </summary>
         </member>
         <member name="T:Ionic.Zlib.ZlibStream">

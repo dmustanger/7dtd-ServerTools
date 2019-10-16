@@ -19,7 +19,7 @@ namespace ServerTools
                    "  3. Home reset <steamId/entityId>\n" +
                    "1. Turn off set home\n" +
                    "2. Turn on set home\n" +
-                   "3. Reset the delay of the player's /home and /home2 command delays\n";
+                   "3. Reset the delay of the player's /home1 and /home2 command delays\n";
         }
         public override string[] GetCommands()
         {
@@ -29,9 +29,9 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count < 1 || _params.Count > 2)
+                if (_params.Count < 1 || _params.Count > 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -60,17 +60,13 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}", _params[1]));
                         return;
                     }
-                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                    string _sql = string.Format("SELECT lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                    DataTable _result = SQL.TQuery(_sql);
-                    DateTime _lastsethome;
-                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _lastsethome);
-                    _result.Dispose();
-                    if (_lastsethome.ToString() != "10/29/2000 7:30:00 AM")
+                    PersistentPlayer p = PersistentContainer.Instance.Players[_params[1]];
+                    if (p != null)
                     {
-                        _sql = string.Format("UPDATE Players SET lastsethome = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _cInfo.playerId);
-                        SQL.FastQuery(_sql, "SetHomeConsole");
-                        SdtdConsole.Instance.Output("Players chat command /home and /home2 delay reset.");
+                        PersistentContainer.Instance.Players[_params[1]].LastHome1 = DateTime.Now.AddYears(-1);
+                        PersistentContainer.Instance.Players[_params[1]].LastHome2 = DateTime.Now.AddYears(-1);
+                        PersistentContainer.Instance.Save();
+                        SdtdConsole.Instance.Output(string.Format("Home delay reset for {0}.", _params[1]));
                     }
                     else
                     {

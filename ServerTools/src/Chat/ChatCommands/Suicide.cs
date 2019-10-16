@@ -12,20 +12,15 @@ namespace ServerTools
         public static int Delay_Between_Uses = 60;
         public static string Command20 = "killme", Command21 = "wrist", Command22 = "hang", Command23 = "suicide";
 
-        public static void CheckPlayer(ClientInfo _cInfo, bool _announce)
+        public static void Exec(ClientInfo _cInfo)
         {
-            bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
                 Kill(_cInfo);
             }
             else
             {
-                string _sql = string.Format("SELECT lastkillme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TQuery(_sql);
-                DateTime _lastkillme;
-                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastkillme);
-                _result.Dispose();
+                DateTime _lastkillme = PersistentContainer.Instance.Players[_cInfo.playerId].LastKillMe;
                 TimeSpan varTime = DateTime.Now - _lastkillme;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int _timepassed = (int)fractionalMinutes;
@@ -37,72 +32,41 @@ namespace ServerTools
                         ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                         if (DateTime.Now < _dt)
                         {
-                            _donator = true;
-                            int _newDelay = Delay_Between_Uses / 2;
-                            if (_timepassed >= _newDelay)
-                            {
-                                Kill(_cInfo);
-                            }
-                            else
-                            {
-                                int _timeleft = _newDelay - _timepassed;
-                                string _phrase8;
-                                if (!Phrases.Dict.TryGetValue(8, out _phrase8))
-                                {
-                                    _phrase8 = " you can only use {CommandPrivate}killme, {CommandPrivate}{Command21}, {CommandPrivate}{Command22}, or {CommandPrivate}{Command23} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                }
-                                _phrase8 = _phrase8.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeleft.ToString());
-                                _phrase8 = _phrase8.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                                _phrase8 = _phrase8.Replace("{Command20}", Command20);
-                                _phrase8 = _phrase8.Replace("{Command21}", Command21);
-                                _phrase8 = _phrase8.Replace("{Command22}", Command22);
-                                _phrase8 = _phrase8.Replace("{Command23}", Command23);
-                                if (_announce)
-                                {
-                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase8 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                }
-                                else
-                                {
-                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase8 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                }
-                            }
+                            int _delay = Delay_Between_Uses / 2;
+                            Time(_cInfo, _timepassed, _delay);
+                            return;
                         }
                     }
                 }
-                if (!_donator)
-                {
-                    if (_timepassed >= Delay_Between_Uses)
-                    {
-                        Kill(_cInfo);
-                    }
-                    else
-                    {
-                        int _timeleft = Delay_Between_Uses - _timepassed;
-                        string _phrase8;
-                        if (!Phrases.Dict.TryGetValue(8, out _phrase8))
-                        {
-                            _phrase8 = " you can only use {CommandPrivate}killme, {CommandPrivate}{Command21}, {CommandPrivate}{Command22}, or {CommandPrivate}{Command23} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                        }
-                        _phrase8 = _phrase8.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                        _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeleft.ToString());
-                        _phrase8 = _phrase8.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                        _phrase8 = _phrase8.Replace("{Command20}", Command20);
-                        _phrase8 = _phrase8.Replace("{Command21}", Command21);
-                        _phrase8 = _phrase8.Replace("{Command22}", Command22);
-                        _phrase8 = _phrase8.Replace("{Command23}", Command23);
-                        if (_announce)
-                        {
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase8 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                        }
-                        else
-                        {
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase8 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                        }
-                    }
-                }
+                Time(_cInfo, _timepassed, Delay_Between_Uses);
             }
         }
+
+        private static void Time(ClientInfo _cInfo, int _timepassed, int _delay)
+        {
+            if (_timepassed >= _delay)
+            {
+                Kill(_cInfo);
+            }
+            else
+            {
+                int _timeleft = _delay - _timepassed;
+                string _phrase8;
+                if (!Phrases.Dict.TryGetValue(8, out _phrase8))
+                {
+                    _phrase8 = " you can only use {CommandPrivate}killme, {CommandPrivate}{Command21}, {CommandPrivate}{Command22}, or {CommandPrivate}{Command23} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                _phrase8 = _phrase8.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase8 = _phrase8.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase8 = _phrase8.Replace("{Command20}", Command20);
+                _phrase8 = _phrase8.Replace("{Command21}", Command21);
+                _phrase8 = _phrase8.Replace("{Command22}", Command22);
+                _phrase8 = _phrase8.Replace("{Command23}", Command23);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase8 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+        }
+
 
         private static void Kill(ClientInfo _cInfo)
         {
@@ -163,8 +127,8 @@ namespace ServerTools
                 }
             }
             SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), (ClientInfo)null);
-            string _sql = string.Format("UPDATE Players SET lastkillme = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-            SQL.FastQuery(_sql, "Suicide");
+            PersistentContainer.Instance.Players[_cInfo.playerId].LastKillMe = DateTime.Now;
+            PersistentContainer.Instance.Save();
         }
     }
 }

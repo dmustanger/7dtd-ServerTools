@@ -59,16 +59,6 @@ namespace ServerTools
                         {
                             File.Delete(_filepath1);
                         }
-                        _sql = string.Format("UPDATE Players SET playername = 'Unknown', last_gimme = '10/29/2000 7:30:00 AM', lastkillme = '10/29/2000 7:30:00 AM', playerSpentCoins = 0, sessionTime = 0, bikeId = 0, lastBike = '10/29/2000 7:30:00 AM', jailName = 'Unknown', jailDate = '10/29/2000 7:30:00 AM', muteName = 'Unknown', muteDate = '10/29/2000 7:30:00 AM', lobbyReturn = 'Unknown', newTeleSpawn = 'Unknown', homeposition = 'Unknown', homeposition2 = 'Unknown', lastsethome = '10/29/2000 7:30:00 AM', lastwhisper = 'Unknown', lastStuck = '10/29/2000 7:30:00 AM', lastLobby = '10/29/2000 7:30:00 AM', lastLog = '10/29/2000 7:30:00 AM', lastBackpack = '10/29/2000 7:30:00 AM', lastFriendTele = '10/29/2000 7:30:00 AM', respawnTime = '10/29/2000 7:30:00 AM', lastTravel = '10/29/2000 7:30:00 AM', lastAnimals = '10/29/2000 7:30:00 AM', lastVoteReward = '10/29/2000 7:30:00 AM', firstClaim = 'false', ismuted = 'false', isjailed = 'false', startingItems = 'false', clanname = 'Unknown', invitedtoclan = 'Unknown', isclanowner = 'false', isclanofficer = 'false', customCommand1 = '10/29/2000 7:30:00 AM', customCommand2 = '10/29/2000 7:30:00 AM', customCommand3 = '10/29/2000 7:30:00 AM', customCommand4 = '10/29/2000 7:30:00 AM', customCommand5 = '10/29/2000 7:30:00 AM', customCommand6 = '10/29/2000 7:30:00 AM', customCommand7 = '10/29/2000 7:30:00 AM', customCommand8 = '10/29/2000 7:30:00 AM', customCommand9 = '10/29/2000 7:30:00 AM', customCommand10 = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _cInfo.playerId);
-                        SQL.FastQuery(_sql, "ResetPlayerConsole");
-                        _sql = string.Format("SELECT * FROM Auction WHERE steamid = '{0}'", _cInfo.playerId);
-                        DataTable _result1 = SQL.TQuery(_sql);
-                        if (_result1.Rows.Count != 0)
-                        {
-                            _sql = string.Format("DELETE FROM Auction WHERE steamid = '{0}'", _cInfo.playerId);
-                            SQL.FastQuery(_sql, "ResetPlayerConsole");
-                        }
-                        _result1.Dispose();
                     }
                     _result.Dispose();
                     string _phrase401;
@@ -84,7 +74,7 @@ namespace ServerTools
                     string _steamid = SQL.EscapeString(_params[0]);
                     string _filepath = string.Format("{0}/Player/{1}.map", GameUtils.GetSaveGameDir(), _steamid);
                     string _filepath1 = string.Format("{0}/Player/{1}.ttp", GameUtils.GetSaveGameDir(), _steamid);
-                    string _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _steamid);
+                    string _sql = string.Format("SELECT steamid FROM Players WHERE steamid = '{0}'", _steamid);
                     DataTable _result = SQL.TQuery(_sql);
                     if (_result.Rows.Count != 0)
                     {
@@ -104,16 +94,6 @@ namespace ServerTools
                         {
                             File.Delete(_filepath1);
                         }
-                        _sql = string.Format("UPDATE Players SET playername = 'Unknown', last_gimme = '10/29/2000 7:30:00 AM', lastkillme = '10/29/2000 7:30:00 AM', playerSpentCoins = 0, sessionTime = 0, bikeId = 0, lastBike = '10/29/2000 7:30:00 AM', jailName = 'Unknown', jailDate = '10/29/2000 7:30:00 AM', muteName = 'Unknown', muteDate = '10/29/2000 7:30:00 AM', lobbyReturn = 'Unknown', newTeleSpawn = 'Unknown', homeposition = 'Unknown', homeposition2 = 'Unknown', lastsethome = '10/29/2000 7:30:00 AM', lastwhisper = 'Unknown', lastStuck = '10/29/2000 7:30:00 AM', lastLobby = '10/29/2000 7:30:00 AM', lastLog = '10/29/2000 7:30:00 AM', lastDied = '10/29/2000 7:30:00 AM', lastFriendTele = '10/29/2000 7:30:00 AM', respawnTime = '10/29/2000 7:30:00 AM', lastTravel = '10/29/2000 7:30:00 AM', lastAnimals = '10/29/2000 7:30:00 AM', lastVoteReward = '10/29/2000 7:30:00 AM', firstClaim = 'false', ismuted = 'false', isjailed = 'false', startingItems = 'false', clanname = 'Unknown', invitedtoclan = 'Unknown', isclanowner = 'false', isclanofficer = 'false', customCommand1 = '10/29/2000 7:30:00 AM', customCommand2 = '10/29/2000 7:30:00 AM', customCommand3 = '10/29/2000 7:30:00 AM', customCommand4 = '10/29/2000 7:30:00 AM', customCommand5 = '10/29/2000 7:30:00 AM', customCommand6 = '10/29/2000 7:30:00 AM', customCommand7 = '10/29/2000 7:30:00 AM', customCommand8 = '10/29/2000 7:30:00 AM', customCommand9 = '10/29/2000 7:30:00 AM', customCommand10 = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _steamid);
-                        SQL.FastQuery(_sql, "ResetPlayerConsole");
-                        _sql = string.Format("SELECT * FROM Auction WHERE steamid = '{0}'", _steamid);
-                        DataTable _result1 = SQL.TQuery(_sql);
-                        if (_result1.Rows.Count != 0)
-                        {
-                            _sql = string.Format("DELETE FROM Auction WHERE steamid = '{0}'", _steamid);
-                            SQL.FastQuery(_sql, "ResetPlayerConsole");
-                        }
-                        _result1.Dispose();
                     }
                     _result.Dispose();
                     string _phrase401;
