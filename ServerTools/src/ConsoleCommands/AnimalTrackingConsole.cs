@@ -51,39 +51,58 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("reset"))
                 {
-                    if (_params[1].ToLower().Equals("all"))
+                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    if (_cInfo != null)
                     {
-                        for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+                        string _sql = string.Format("SELECT lastAnimals FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        if (_result.Rows.Count != 0)
                         {
-                            string _id = PersistentContainer.Instance.Players.SteamIDs[i];
-                            PersistentPlayer p = PersistentContainer.Instance.Players[_id];
+                            DateTime _lastAnimals;
+                            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastAnimals);
+                            if (_lastAnimals.ToString() != "10/29/2000 7:30:00 AM")
                             {
-                                PersistentContainer.Instance.Players[_id].LastAnimal = DateTime.Now.AddYears(-1);
+                                _sql = string.Format("UPDATE Players SET lastAnimals = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _cInfo.playerId);
+                                SQL.FastQuery(_sql, "AnimalTrackingConsole");
+                                SdtdConsole.Instance.Output("Animal tracking delay reset.");
                             }
-                        }
-                        PersistentContainer.Instance.Save();
-                        SdtdConsole.Instance.Output("Animal tracking delay reset for all players.");
-                    }
-                    else
-                    {
-                        ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                        if (_cInfo != null)
-                        {
-                            PersistentContainer.Instance.Players[_params[1]].LastAnimal = DateTime.Now.AddYears(-1);
-                            PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output(string.Format("Animal tracking delay reset for {0}.", _cInfo.playerName));
                         }
                         else
                         {
-                            if (_params[1].Length != 17)
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}", _params[1]));
-                                return;
-                            }
-                            PersistentContainer.Instance.Players[_params[1]].LastAnimal = DateTime.Now.AddYears(-1);
-                            PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output(string.Format("Animal tracking delay reset for {0}.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a animal tracking delay to reset.", _params[1]));
                         }
+                        _result.Dispose();
+                    }
+                    else
+                    {
+                        if (_params[1].Length != 17)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}.", _params[1]));
+                            return;
+                        }
+                        string _id = SQL.EscapeString(_params[1]);
+                        string _sql = string.Format("SELECT lastAnimals FROM Players WHERE steamid = '{0}'", _id);
+                        DataTable _result = SQL.TQuery(_sql);
+                        if (_result.Rows.Count != 0)
+                        {
+                            DateTime _lastAnimals;
+                            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastAnimals);
+                            if (_lastAnimals.ToString() != "10/29/2000 7:30:00 AM")
+                            {
+                                _sql = string.Format("UPDATE Players SET lastAnimals = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _id);
+                                SQL.FastQuery(_sql, "AnimalTrackingConsole");
+                                SdtdConsole.Instance.Output("Animal tracking delay reset.");
+                            }
+                            else
+                            {
+                                SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a animal tracking delay to reset.", _params[1]));
+                            }
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a animal tracking delay to reset.", _params[1]));
+                        }
+                        _result.Dispose();
                     }
                 }
                 else

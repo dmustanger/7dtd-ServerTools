@@ -25,7 +25,7 @@ namespace ServerTools
                     {
                         if (Flag.Contains(_cInfo.entityId))
                         {
-                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, -1, z), null, false));
+                            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, -1, z), null, false));
                             Flag.Remove(_cInfo.entityId);
                         }
                         else

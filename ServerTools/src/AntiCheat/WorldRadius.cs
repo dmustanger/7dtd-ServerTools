@@ -71,7 +71,7 @@ namespace ServerTools
                 {
                     _vec3z = (int)_player.position.z + 6;
                 }
-                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_vec3x, -1, _vec3z), null, false));
+                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_vec3x, -1, _vec3z), null, false));
                 string _phrase790;
                 if (!Phrases.Dict.TryGetValue(790, out _phrase790))
                 {
@@ -103,7 +103,7 @@ namespace ServerTools
                 {
                     _vec3z = (int)_player.position.z + 6;
                 }
-                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_vec3x, -1, _vec3z), null, false));
+                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_vec3x, -1, _vec3z), null, false));
                 string _phrase790;
                 if (!Phrases.Dict.TryGetValue(790, out _phrase790))
                 {

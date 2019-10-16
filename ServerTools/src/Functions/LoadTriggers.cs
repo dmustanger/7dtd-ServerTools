@@ -214,7 +214,7 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"98\" default=\"wallet withdraw\" replacement=\"wallet withdraw\" />");
                     sw.WriteLine("        <trigger number=\"99\" default=\"transfer\" replacement=\"transfer\" />");
                     sw.WriteLine("        <trigger number=\"100\" default=\"join\" replacement=\"event\" />");
-                    sw.WriteLine("        <trigger number=\"101\" default=\"\" replacement=\"\" />");
+                    sw.WriteLine("        <trigger number=\"101\" default=\"mogul\" replacement=\"mogul\" />");
                     sw.WriteLine("        <trigger number=\"102\" default=\"setmarket\" replacement=\"setmarket\" />");
                     sw.WriteLine("        <trigger number=\"103\" default=\"market\" replacement=\"market\" />");
                     sw.WriteLine("        <trigger number=\"104\" default=\"infoticker\" replacement=\"infoticker\" />");
@@ -676,7 +676,7 @@ namespace ServerTools
                     }
                     if (kvp.Key == 101)
                     {
-                        
+                        Mogul.Command101 = kvp.Value[1];
                     }
                     if (kvp.Key == 102)
                     {

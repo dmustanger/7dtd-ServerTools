@@ -72,7 +72,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        _itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, 1, 1, true, null, 1);
+                        _itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, 1, 1, true, default(FastTags), 1);
                     }
                     if (_params[0].ToLower() == "all")
                     {
@@ -102,7 +102,7 @@ namespace ServerTools
                                     belongsPlayerId = _cInfo.entityId
                                 });
                                 world.SpawnEntityInWorld(entityItem);
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                                _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                                 SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
                                 string _phrase804;
@@ -148,7 +148,7 @@ namespace ServerTools
                                     belongsPlayerId = _cInfo.entityId
                                 });
                                 world.SpawnEntityInWorld(entityItem);
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                                _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                                 string _phrase804;
                                 if (!Phrases.Dict.TryGetValue(804, out _phrase804))

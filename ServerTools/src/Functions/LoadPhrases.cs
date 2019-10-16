@@ -251,7 +251,7 @@ namespace ServerTools
                 string _phrase102;
                 if (!Dict.TryGetValue(102, out _phrase102))
                 {
-                    _phrase102 = " can not add the clan {ClanName} because it already exists.";
+                    _phrase102 = " can not add the clan {ClanName} because it already exist.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"102\" Phrase=\"{0}\" />", _phrase102));
                 string _phrase103;
@@ -287,19 +287,19 @@ namespace ServerTools
                 string _phrase108;
                 if (!Dict.TryGetValue(108, out _phrase108))
                 {
-                    _phrase108 = " the player {PlayerName} was not found.";
+                    _phrase108 = " the player {Player} was not found.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"108\" Phrase=\"{0}\" />", _phrase108));
                 string _phrase109;
                 if (!Dict.TryGetValue(109, out _phrase109))
                 {
-                    _phrase109 = "{PlayerName} is already a member of a clan named {ClanName}.";
+                    _phrase109 = "{PlayerName} is already a member of a clan.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"109\" Phrase=\"{0}\" />", _phrase109));
                 string _phrase110;
                 if (!Dict.TryGetValue(110, out _phrase110))
                 {
-                    _phrase110 = "{PlayerName} already has a clan invitation.";
+                    _phrase110 = "{PlayerName} already has pending clan invites.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"110\" Phrase=\"{0}\" />", _phrase110));
                 string _phrase111;
@@ -329,7 +329,7 @@ namespace ServerTools
                 string _phrase115;
                 if (!Dict.TryGetValue(115, out _phrase115))
                 {
-                    _phrase115 = "Player {PlayerName} has declined the invite to the clan.";
+                    _phrase115 = "{PlayerName} has joined the clan.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"115\" Phrase=\"{0}\" />", _phrase115));
                 string _phrase116;
@@ -413,7 +413,7 @@ namespace ServerTools
                 string _phrase129;
                 if (!Dict.TryGetValue(129, out _phrase129))
                 {
-                    _phrase129 = " the clanName must be 2 - 6 characters.";
+                    _phrase129 = " the clanName must be longer than 2 characters.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"129\" Phrase=\"{0}\" />", _phrase129));
                 string _phrase130;
@@ -428,43 +428,37 @@ namespace ServerTools
                     _phrase131 = " your clan name has been changed by the owner to {ClanName}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"131\" Phrase=\"{0}\" />", _phrase131));
-                string _phrase132;
-                if (!Dict.TryGetValue(132, out _phrase132))
-                {
-                    _phrase132 = "Player {PlayerName} has been removed from the clan.";
-                }
-                sw.WriteLine(string.Format("        <Phrase id=\"132\" Phrase=\"{0}\" />", _phrase132));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ****************** Admins_Chat_Commands **************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 string _phrase201;
                 if (!Dict.TryGetValue(201, out _phrase201))
                 {
-                    _phrase201 = " player {Player} was not found.";
+                    _phrase201 = " player {PlayerName} was not found online.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"201\" Phrase=\"{0}\" />", _phrase201));
                 string _phrase202;
                 if (!Dict.TryGetValue(202, out _phrase202))
                 {
-                    _phrase202 = " player {Player} is already muted.";
+                    _phrase202 = " player {PlayerName} is already muted.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"202\" Phrase=\"{0}\" />", _phrase202));
                 string _phrase203;
                 if (!Dict.TryGetValue(203, out _phrase203))
                 {
-                    _phrase203 = " you have muted {Player} for 60 minutes.";
+                    _phrase203 = " you have muted {PlayerName} for 60 minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"203\" Phrase=\"{0}\" />", _phrase203));
                 string _phrase204;
                 if (!Dict.TryGetValue(204, out _phrase204))
                 {
-                    _phrase204 = " player {Player} is not muted.";
+                    _phrase204 = " player {PlayerName} is not muted.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"204\" Phrase=\"{0}\" />", _phrase204));
                 string _phrase205;
                 if (!Dict.TryGetValue(205, out _phrase205))
                 {
-                    _phrase205 = " you have unmuted {Player}.";
+                    _phrase205 = " you have unmuted {PlayerName}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"205\" Phrase=\"{0}\" />", _phrase205));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1082,7 +1076,7 @@ namespace ServerTools
                 string _phrase628;
                 if (!Dict.TryGetValue(628, out _phrase628))
                 {
-                    _phrase628 = " {PlayerName} would like to teleport to you. Type {CommandPrivate}{Command60} in chat to accept the request.";
+                    _phrase628 = " would like to teleport to you. Type {CommandPrivate}{Command60} in chat to accept the request.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"628\" Phrase=\"{0}\" />", _phrase628));
                 string _phrase629;
@@ -1337,7 +1331,7 @@ namespace ServerTools
                 string _phrase781;
                 if (!Dict.TryGetValue(781, out _phrase781))
                 {
-                    _phrase781 = " saved your current {Vehicle} for retrieval.";
+                    _phrase781 = " saved your current vehicle for retrieval.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"781\" Phrase=\"{0}\" />", _phrase781));
                 string _phrase782;

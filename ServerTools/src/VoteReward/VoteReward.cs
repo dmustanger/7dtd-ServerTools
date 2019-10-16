@@ -228,27 +228,38 @@ namespace ServerTools
             }
             else
             {
-                DateTime _lastVoteReward = PersistentContainer.Instance.Players[_cInfo.playerId].LastVote;
-                TimeSpan varTime = DateTime.Now - _lastVoteReward;
-                double fractionalHours = varTime.TotalHours;
-                int _timepassed = (int)fractionalHours;
-                if (_timepassed >= Delay_Between_Uses)
+                string _sql = string.Format("SELECT lastVoteReward FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                DateTime _lastVoteReward;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastVoteReward);
+                _result.Dispose();
+                if (_lastVoteReward.ToString() == "10/29/2000 7:30:00 AM")
                 {
                     CheckSite(_cInfo);
                 }
                 else
                 {
-                    int _timeleft = Delay_Between_Uses - _timepassed;
-                    string _phrase602;
-                    if (!Phrases.Dict.TryGetValue(602, out _phrase602))
+                    TimeSpan varTime = DateTime.Now - _lastVoteReward;
+                    double fractionalHours = varTime.TotalHours;
+                    int _timepassed = (int)fractionalHours;
+                    if (_timepassed >= Delay_Between_Uses)
                     {
-                        _phrase602 = " you can only use {CommandPrivate}{Command46} once every {DelayBetweenRewards} hours. Time remaining: {TimeRemaining} hour(s).";
+                        CheckSite(_cInfo);
                     }
-                    _phrase602 = _phrase602.Replace("{DelayBetweenRewards}", Delay_Between_Uses.ToString());
-                    _phrase602 = _phrase602.Replace("{TimeRemaining}", _timeleft.ToString());
-                    _phrase602 = _phrase602.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                    _phrase602 = _phrase602.Replace("{Command46}", Command46);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase602 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    else
+                    {
+                        int _timeleft = Delay_Between_Uses - _timepassed;
+                        string _phrase602;
+                        if (!Phrases.Dict.TryGetValue(602, out _phrase602))
+                        {
+                            _phrase602 = " you can only use {CommandPrivate}{Command46} once every {DelayBetweenRewards} hours. Time remaining: {TimeRemaining} hour(s).";
+                        }
+                        _phrase602 = _phrase602.Replace("{DelayBetweenRewards}", Delay_Between_Uses.ToString());
+                        _phrase602 = _phrase602.Replace("{TimeRemaining}", _timeleft.ToString());
+                        _phrase602 = _phrase602.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                        _phrase602 = _phrase602.Replace("{Command46}", Command46);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase602 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
                 }
             }
         }
@@ -313,20 +324,29 @@ namespace ServerTools
             }
             else
             {
+                string _sql = string.Format("UPDATE Players SET lastVoteReward = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                SQL.FastQuery(_sql, "VoteReward");
                 if (Weekly_Votes > 0)
                 {
-                    DateTime _lastVoteWeek = PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek;
-                    TimeSpan varTime = DateTime.Now - _lastVoteWeek;
+                    _sql = string.Format("SELECT lastVoteWeekly FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    DataTable _result = SQL.TQuery(_sql);
+                    DateTime _lastVoteWeekly;
+                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastVoteWeekly);
+                    _result.Dispose();
+                    TimeSpan varTime = DateTime.Now - _lastVoteWeekly;
                     double fractionalDays = varTime.TotalDays;
                     int _timepassed = (int)fractionalDays;
                     if (_timepassed < 7)
                     {
-                        int _voteWeekCount = PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount;
-                        if (_voteWeekCount + 1 == Weekly_Votes)
+                        _sql = string.Format("SELECT weeklyVoteCount FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result2 = SQL.TQuery(_sql);
+                        int _weeklyVoteCount;
+                        int.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _weeklyVoteCount);
+                        _result2.Dispose();
+                        if (_weeklyVoteCount + 1 == Weekly_Votes)
                         {
-                            PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
-                            PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
-                            PersistentContainer.Instance.Save();
+                            _sql = string.Format("UPDATE Players SET weeklyVoteCount = 1, lastVoteWeekly = {0} WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                            SQL.FastQuery(_sql, "VoteReward");
                             ItemOrBlockRandom(_cInfo);
                             string _phrase704;
                             if (!Phrases.Dict.TryGetValue(704, out _phrase704))
@@ -337,17 +357,17 @@ namespace ServerTools
                         }
                         else
                         {
-                            PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = _voteWeekCount + 1;
-                            PersistentContainer.Instance.Save();
-                            int _remainingVotes = Weekly_Votes - _voteWeekCount + 1;
-                            DateTime _date2 = _lastVoteWeek.AddDays(7);
+                            _sql = string.Format("UPDATE Players SET weeklyVoteCount = {0} WHERE steamid = '{1}'", _weeklyVoteCount + 1, _cInfo.playerId);
+                            SQL.FastQuery(_sql, "VoteReward");
+                            int _remainingVotes = Weekly_Votes - _weeklyVoteCount + 1;
+                            DateTime _date2 = _lastVoteWeekly.AddDays(7);
                             string _phrase705;
                             if (!Phrases.Dict.TryGetValue(705, out _phrase705))
                             {
                                 _phrase705 = " you have voted {Votes} time since {Date}. You need {Count} more votes before {Date2} to reach the bonus.";
                             }
-                            _phrase705 = _phrase705.Replace("{Votes}", _voteWeekCount + 1.ToString());
-                            _phrase705 = _phrase705.Replace("{Date}", _lastVoteWeek.ToString());
+                            _phrase705 = _phrase705.Replace("{Votes}", _weeklyVoteCount + 1.ToString());
+                            _phrase705 = _phrase705.Replace("{Date}", _lastVoteWeekly.ToString());
                             _phrase705 = _phrase705.Replace("{Count}", _remainingVotes.ToString());
                             _phrase705 = _phrase705.Replace("{Date2}", _date2.ToString());
                             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase705 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -355,9 +375,8 @@ namespace ServerTools
                     }
                     else
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
-                        PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
-                        PersistentContainer.Instance.Save();
+                        _sql = string.Format("UPDATE Players SET weeklyVoteCount = 1, lastVoteWeekly = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                        SQL.FastQuery(_sql, "VoteReward");
                         int _remainingVotes = Weekly_Votes - 1;
                         DateTime _date2 = DateTime.Now.AddDays(7);
                         string _phrase705;
@@ -408,7 +427,7 @@ namespace ServerTools
                 {
                     quality = 1;
                 }
-                ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item).type, quality, quality, false, null, 1);
+                ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item).type, quality, quality, false, default(FastTags), 1);
                 Give(_cInfo, _itemValue, _count);
             }
         }
@@ -430,30 +449,37 @@ namespace ServerTools
                     belongsPlayerId = _cInfo.entityId
                 });
                 world.SpawnEntityInWorld(entityItem);
-                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
             }
-            PersistentContainer.Instance.Players[_cInfo.playerId].LastVote = DateTime.Now;
-            PersistentContainer.Instance.Save();
         }
 
         private static void Entity(ClientInfo _cInfo)
         {
             Entityspawn(_cInfo);
+            string _sql2 = string.Format("UPDATE Players SET lastVoteReward = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+            SQL.FastQuery(_sql2, "VoteReward");
             if (Weekly_Votes > 0)
             {
-                DateTime _lastVoteWeek = PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek;
-                TimeSpan varTime = DateTime.Now - _lastVoteWeek;
+                string _sql = string.Format("SELECT lastVoteWeekly FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                DateTime _lastVoteWeekly;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastVoteWeekly);
+                _result.Dispose();
+                TimeSpan varTime = DateTime.Now - _lastVoteWeekly;
                 double fractionalDays = varTime.TotalDays;
                 int _timepassed = (int)fractionalDays;
                 if (_timepassed < 7)
                 {
-                    int _voteWeekCount = PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount;
-                    if (_voteWeekCount + 1 == Weekly_Votes)
+                    _sql = string.Format("SELECT weeklyVoteCount FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    DataTable _result2 = SQL.TQuery(_sql);
+                    int _weeklyVoteCount;
+                    int.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _weeklyVoteCount);
+                    _result2.Dispose();
+                    if (_weeklyVoteCount + 1 == Weekly_Votes)
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
-                        PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
-                        PersistentContainer.Instance.Save();
+                        _sql = string.Format("UPDATE Players SET weeklyVoteCount = 1, lastVoteWeekly = {0} WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                        SQL.FastQuery(_sql, "VoteReward");
                         Entityspawn(_cInfo);
                         string _phrase704;
                         if (!Phrases.Dict.TryGetValue(704, out _phrase704))
@@ -464,17 +490,17 @@ namespace ServerTools
                     }
                     else
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = _voteWeekCount + 1;
-                        PersistentContainer.Instance.Save();
-                        int _remainingVotes = Weekly_Votes - _voteWeekCount + 1;
-                        DateTime _date2 = _lastVoteWeek.AddDays(7);
+                        _sql = string.Format("UPDATE Players SET weeklyVoteCount = {0} WHERE steamid = '{1}'", _weeklyVoteCount + 1, _cInfo.playerId);
+                        SQL.FastQuery(_sql, "VoteReward");
+                        int _remainingVotes = Weekly_Votes - _weeklyVoteCount + 1;
+                        DateTime _date2 = _lastVoteWeekly.AddDays(7);
                         string _phrase705;
                         if (!Phrases.Dict.TryGetValue(705, out _phrase705))
                         {
                             _phrase705 = " you have voted {Votes} time since {Date}. You need {Count} more votes before {Date2} to reach the bonus.";
                         }
-                        _phrase705 = _phrase705.Replace("{Votes}", _voteWeekCount + 1.ToString());
-                        _phrase705 = _phrase705.Replace("{Date}", _lastVoteWeek.ToString());
+                        _phrase705 = _phrase705.Replace("{Votes}", _weeklyVoteCount + 1.ToString());
+                        _phrase705 = _phrase705.Replace("{Date}", _lastVoteWeekly.ToString());
                         _phrase705 = _phrase705.Replace("{Count}", _remainingVotes.ToString());
                         _phrase705 = _phrase705.Replace("{Date2}", _date2.ToString());
                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase705 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -482,9 +508,8 @@ namespace ServerTools
                 }
                 else
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].VoteWeekCount = 1;
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek = DateTime.Now;
-                    PersistentContainer.Instance.Save();
+                    _sql = string.Format("UPDATE Players SET weeklyVoteCount = 1, lastVoteWeekly = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                    SQL.FastQuery(_sql, "VoteReward");
                     int _remainingVotes = Weekly_Votes - 1;
                     DateTime _date2 = DateTime.Now.AddDays(7);
                     string _phrase705;
@@ -546,8 +571,6 @@ namespace ServerTools
                         }
                         counter++;
                     }
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LastVote = DateTime.Now;
-                    PersistentContainer.Instance.Save();
                     if (counter == entityTypesCollection.Count + 1)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Failed to spawn entity Id {0} as a reward. Check your entity spawn list in console.", Entity_Id));

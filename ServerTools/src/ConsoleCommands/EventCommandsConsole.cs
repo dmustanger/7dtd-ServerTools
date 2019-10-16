@@ -257,7 +257,7 @@ namespace ServerTools
                                             int.TryParse(_cords[0], out x);
                                             int.TryParse(_cords[1], out y);
                                             int.TryParse(_cords[2], out z);
-                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                                            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                                             Event.PlayersTeam.Remove(_player.Key);
                                             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", the event has ended. Thank you for playing.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                         }
@@ -453,7 +453,7 @@ namespace ServerTools
                                         int.TryParse(_cords[0], out x);
                                         int.TryParse(_cords[1], out y);
                                         int.TryParse(_cords[2], out z);
-                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                                         _sql = string.Format("UPDATE Players SET eventReturn = 'Unknown', eventSpawn = 'false', eventRespawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                                         SQL.FastQuery(_sql, "EventCommandsConsole");
                                         Event.PlayersTeam.Remove(_params[1]);

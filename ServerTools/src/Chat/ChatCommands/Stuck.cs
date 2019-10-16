@@ -10,7 +10,7 @@ namespace ServerTools
         public static int Delay_Between_Uses = 60;
         public static string Command90 = "stuck";
 
-        public static void Exec(ClientInfo _cInfo)
+        public static void Delay(ClientInfo _cInfo, string _playerName, bool _announce)
         {
             Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             if (_player.AttachedToEntity != null)
@@ -18,53 +18,94 @@ namespace ServerTools
                 _player.AttachedToEntity.Detach();
                 return;
             }
+            bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
                 CheckLP(_cInfo);
             }
             else
             {
-                DateTime _lastStuck = PersistentContainer.Instance.Players[_cInfo.playerId].LastStuck;
-                TimeSpan varTime = DateTime.Now - _lastStuck;
-                double fractionalMinutes = varTime.TotalMinutes;
-                int _timepassed = (int)fractionalMinutes;
-                if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                string _sql = string.Format("SELECT lastMarket FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                DateTime _lastStuck;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastStuck);
+                _result.Dispose();
+                if (_lastStuck.ToString() == "10/29/2000 7:30:00 AM")
                 {
-                    if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                    CheckLP(_cInfo);
+                }
+                else
+                {
+                    TimeSpan varTime = DateTime.Now - _lastStuck;
+                    double fractionalMinutes = varTime.TotalMinutes;
+                    int _timepassed = (int)fractionalMinutes;
+                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                     {
-                        DateTime _dt;
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                        if (DateTime.Now < _dt)
+                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            int _delay = Delay_Between_Uses / 2;
-                            Time(_cInfo, _timepassed, _delay);
-                            return;
+                            DateTime _dt;
+                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                            if (DateTime.Now < _dt)
+                            {
+                                _donator = true;
+                                int _newDelay = Delay_Between_Uses / 2;
+                                if (_timepassed >= _newDelay)
+                                {
+                                    CheckLP(_cInfo);
+                                }
+                                else
+                                {
+                                    int _timeleft = _newDelay - _timepassed;
+                                    string _phrase920;
+                                    if (!Phrases.Dict.TryGetValue(920, out _phrase920))
+                                    {
+                                        _phrase920 = " you can only use {CommandPrivate}{Command90} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                    }
+                                    _phrase920 = _phrase920.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                                    _phrase920 = _phrase920.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    _phrase920 = _phrase920.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase920 = _phrase920.Replace("{Command90}", Command90);
+                                    if (_announce)
+                                    {
+                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase920 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                    }
+                                    else
+                                    {
+                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase920 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (!_donator)
+                    {
+                        if (_timepassed >= Delay_Between_Uses)
+                        {
+                            CheckLP(_cInfo);
+                        }
+                        else
+                        {
+                            int _timeleft = Delay_Between_Uses - _timepassed;
+                            string _phrase920;
+                            if (!Phrases.Dict.TryGetValue(920, out _phrase920))
+                            {
+                                _phrase920 = " you can only use {CommandPrivate}{Command90} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                            }
+                            _phrase920 = _phrase920.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                            _phrase920 = _phrase920.Replace("{TimeRemaining}", _timeleft.ToString());
+                            _phrase920 = _phrase920.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase920 = _phrase920.Replace("{Command90}", Command90);
+                            if (_announce)
+                            {
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase920 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            }
+                            else
+                            {
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase920 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            }
                         }
                     }
                 }
-                Time(_cInfo, _timepassed, Delay_Between_Uses);
-            }
-        }
-
-        public static void Time(ClientInfo _cInfo, int _timepassed, int _delay)
-        {
-            if (_timepassed >= _delay)
-            {
-                CheckLP(_cInfo);
-            }
-            else
-            {
-                int _timeleft = _delay - _timepassed;
-                string _phrase920;
-                if (!Phrases.Dict.TryGetValue(920, out _phrase920))
-                {
-                    _phrase920 = " you can only use {CommandPrivate}{Command90} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                }
-                _phrase920 = _phrase920.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase920 = _phrase920.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase920 = _phrase920.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                _phrase920 = _phrase920.Replace("{Command90}", Command90);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase920 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -84,7 +125,7 @@ namespace ServerTools
             {
                 if (CheckStuck(_player))
                 {
-                    TeleToSurface(_cInfo, _player);
+                    Exec(_cInfo, _player);
                 }
                 else
                 {
@@ -130,17 +171,17 @@ namespace ServerTools
             return true;
         }
 
-        public static void TeleToSurface(ClientInfo _cInfo, EntityPlayer _player)
+        public static void Exec(ClientInfo _cInfo, EntityPlayer _player)
         {
-            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player.position.x, -1, (int)_player.position.z), null, false));
+            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3((int)_player.position.x, -1, (int)_player.position.z), null, false));
             string _phrase922;
             if (!Phrases.Dict.TryGetValue(922, out _phrase922))
             {
                 _phrase922 = " sending you to the world surface. If you are still stuck, contact an administrator.";
             }
             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase922 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-            PersistentContainer.Instance.Players[_cInfo.playerId].LastStuck = DateTime.Now;
-            PersistentContainer.Instance.Save();
+            string _sql = string.Format("UPDATE Players SET lastStuck = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+            SQL.FastQuery(_sql, "Stuck");
         }
     }
 }

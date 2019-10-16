@@ -441,7 +441,12 @@ namespace ServerTools
 
         public static void ReturnToPosition(ClientInfo _cInfo)
         {
-            DateTime _respawnTime = PersistentContainer.Instance.Players[_cInfo.playerId].ZoneDeathTime;
+            bool _donator = false;
+            string _sql = string.Format("SELECT respawnTime FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            DateTime _respawnTime;
+            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _respawnTime);
+            _result.Dispose();
             TimeSpan varTime = DateTime.Now - _respawnTime;
             double fractionalMinutes = varTime.TotalMinutes;
             int _timepassed = (int)fractionalMinutes;
@@ -453,6 +458,7 @@ namespace ServerTools
                     ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                     if (DateTime.Now < _dt)
                     {
+                        _donator = true;
                         if (_timepassed <= 6)
                         {
                             string _deathPos;
@@ -463,7 +469,7 @@ namespace ServerTools
                                 int.TryParse(_cords[0], out x);
                                 int.TryParse(_cords[1], out y);
                                 int.TryParse(_cords[2], out z);
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                                 Victim.Remove(_cInfo.entityId);
                             }
                         }
@@ -480,36 +486,38 @@ namespace ServerTools
                             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase811 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             Victim.Remove(_cInfo.entityId);
                         }
-                        return;
                     }
                 }
             }
-            if (_timepassed <= 3)
+            if (!_donator)
             {
-                string _deathPos;
-                if (Victim.TryGetValue(_cInfo.entityId, out _deathPos))
+                if (_timepassed <= 3)
                 {
-                    int x, y, z;
-                    string[] _cords = _deathPos.Split(',');
-                    int.TryParse(_cords[0], out x);
-                    int.TryParse(_cords[1], out y);
-                    int.TryParse(_cords[2], out z);
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                    string _deathPos;
+                    if (Victim.TryGetValue(_cInfo.entityId, out _deathPos))
+                    {
+                        int x, y, z;
+                        string[] _cords = _deathPos.Split(',');
+                        int.TryParse(_cords[0], out x);
+                        int.TryParse(_cords[1], out y);
+                        int.TryParse(_cords[2], out z);
+                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
+                        Victim.Remove(_cInfo.entityId);
+                    }
+                }
+                else
+                {
+                    string _phrase606;
+                    if (!Phrases.Dict.TryGetValue(606, out _phrase606))
+                    {
+                        _phrase606 = " you can only use {CommandPrivate}{Command50} for three minutes after being killed in a pve zone. Time has expired.";
+                    }
+                    _phrase606 = _phrase606.Replace("{PlayerName}", _cInfo.playerName);
+                    _phrase606 = _phrase606.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase606 = _phrase606.Replace("{Command50}", Command50);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase606 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     Victim.Remove(_cInfo.entityId);
                 }
-            }
-            else
-            {
-                string _phrase606;
-                if (!Phrases.Dict.TryGetValue(606, out _phrase606))
-                {
-                    _phrase606 = " you can only use {CommandPrivate}{Command50} for three minutes after being killed in a pve zone. Time has expired.";
-                }
-                _phrase606 = _phrase606.Replace("{PlayerName}", _cInfo.playerName);
-                _phrase606 = _phrase606.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                _phrase606 = _phrase606.Replace("{Command50}", Command50);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase606 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                Victim.Remove(_cInfo.entityId);
             }
         }
 

@@ -154,78 +154,133 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void Exec(ClientInfo _cInfo)
+        public static void Check(ClientInfo _cInfo, bool _announce, string _playerName)
         {
+            bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    CommandCost(_cInfo);
+                    CommandCost(_cInfo, _announce);
                 }
                 else
                 {
-                    Tele(_cInfo);
+                    Tele(_cInfo, _announce);
                 }
             }
             else
             {
-                DateTime _lastTravel = PersistentContainer.Instance.Players[_cInfo.playerId].LastTravel;
-                TimeSpan varTime = DateTime.Now - _lastTravel;
-                double fractionalMinutes = varTime.TotalMinutes;
-                int _timepassed = (int)fractionalMinutes;
-                if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                string _sql = string.Format("SELECT lastTravel FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                DateTime _lastTravel;
+                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastTravel);
+                _result.Dispose();
+                if (_lastTravel.ToString() == "10/29/2000 7:30:00 AM")
                 {
-                    if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                    if (Wallet.IsEnabled && Command_Cost >= 1)
                     {
-                        DateTime _dt;
-                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                        if (DateTime.Now < _dt)
+                        CommandCost(_cInfo, _announce);
+                    }
+                    else
+                    {
+                        Tele(_cInfo, _announce);
+                    }
+                }
+                else
+                {
+                    TimeSpan varTime = DateTime.Now - _lastTravel;
+                    double fractionalMinutes = varTime.TotalMinutes;
+                    int _timepassed = (int)fractionalMinutes;
+                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                    {
+                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                         {
-                            int _delay = Delay_Between_Uses / 2;
-                            Time(_cInfo, _timepassed, _delay);
-                            return;
+                            DateTime _dt;
+                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                            if (DateTime.Now < _dt)
+                            {
+                                _donator = true;
+                                int _newDelay = Delay_Between_Uses / 2;
+                                if (_timepassed >= _newDelay)
+                                {
+                                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                                    {
+                                        CommandCost(_cInfo, _announce);
+                                    }
+                                    else
+                                    {
+                                        Tele(_cInfo, _announce);
+                                    }
+                                }
+                                else
+                                {
+                                    int _timeleft = _newDelay - _timepassed;
+                                    string _phrase605;
+                                    if (!Phrases.Dict.TryGetValue(605, out _phrase605))
+                                    {
+                                        _phrase605 = " you can only use {CommandPrivate}{Command49} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                    }
+                                    _phrase605 = _phrase605.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                                    _phrase605 = _phrase605.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    _phrase605 = _phrase605.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase605 = _phrase605.Replace("{Command49}", Command49);
+                                    if (_announce)
+                                    {
+                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase605 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                    }
+                                    else
+                                    {
+                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase605 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (!_donator)
+                    {
+                        if (_timepassed >= Delay_Between_Uses)
+                        {
+                            if (Wallet.IsEnabled && Command_Cost >= 1)
+                            {
+                                CommandCost(_cInfo, _announce);
+                            }
+                            else
+                            {
+                                Tele(_cInfo, _announce);
+                            }
+                        }
+                        else
+                        {
+                            int _timeleft = Delay_Between_Uses - _timepassed;
+                            string _phrase605;
+                            if (!Phrases.Dict.TryGetValue(605, out _phrase605))
+                            {
+                                _phrase605 = " you can only use {CommandPrivate}{Command49} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                            }
+                            _phrase605 = _phrase605.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                            _phrase605 = _phrase605.Replace("{TimeRemaining}", _timeleft.ToString());
+                            _phrase605 = _phrase605.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase605 = _phrase605.Replace("{Command49}", Command49);
+                            if (_announce)
+                            {
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase605 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            }
+                            else
+                            {
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase605 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            }
                         }
                     }
                 }
-                Time(_cInfo, _timepassed, Delay_Between_Uses);
             }
         }
 
-        public static void Time(ClientInfo _cInfo, int _timepassed, int _delay)
+        public static void CommandCost(ClientInfo _cInfo, bool _announce)
         {
-            if (_timepassed >= _delay)
-            {
-                if (Wallet.IsEnabled && Command_Cost >= 1)
-                {
-                    CommandCost(_cInfo);
-                }
-                else
-                {
-                    Tele(_cInfo);
-                }
-            }
-            else
-            {
-                int _timeleft = _delay - _timepassed;
-                string _phrase605;
-                if (!Phrases.Dict.TryGetValue(605, out _phrase605))
-                {
-                    _phrase605 = " you can only use {CommandPrivate}{Command49} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                }
-                _phrase605 = _phrase605.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase605 = _phrase605.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase605 = _phrase605.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                _phrase605 = _phrase605.Replace("{Command49}", Command49);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase605 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-            }
-        }
-
-        public static void CommandCost(ClientInfo _cInfo)
-        {
-            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
+            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
             if (_currentCoins >= Command_Cost)
             {
-                Tele(_cInfo);
+                Tele(_cInfo, _announce);
             }
             else
             {
@@ -239,7 +294,7 @@ namespace ServerTools
             }
         }
 
-        public static void Tele(ClientInfo _cInfo)
+        public static void Tele(ClientInfo _cInfo, bool _announce)
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             Flag.Clear();
@@ -668,13 +723,14 @@ namespace ServerTools
                                 return;
                             }
                         }
-                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(xDest, yDest, zDest), null, false));
+                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(xDest, yDest, zDest), null, false));
+                        string _sql;
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
                             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                         }
-                        PersistentContainer.Instance.Players[_cInfo.playerId].LastTravel = DateTime.Now;
-                        PersistentContainer.Instance.Save();
+                        _sql = string.Format("UPDATE Players SET lastTravel = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
+                        SQL.FastQuery(_sql, "Travel");
                         string _phrase603;
                         if (!Phrases.Dict.TryGetValue(603, out _phrase603))
                         {

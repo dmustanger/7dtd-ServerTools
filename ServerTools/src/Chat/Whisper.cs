@@ -34,8 +34,8 @@ namespace ServerTools
             else
             {
                 ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _msg + "[-]", _cInfo.entityId, _cInfo.playerName, EChatType.Whisper, null);
-                PersistentContainer.Instance.Players[_cInfo1.playerId].LastWhisper = _cInfo.playerId;
-                PersistentContainer.Instance.Save();
+                string _sql = string.Format("UPDATE Players SET lastwhisper = '{0}' WHERE steamid = '{1}'", _cInfo.playerId, _cInfo1.playerId);
+                SQL.FastQuery(_sql, "Whisper");
             }
         }
 
@@ -49,8 +49,11 @@ namespace ServerTools
             {
                 _message = _message.Replace(Command123 + " ", "");
             }
-            string _lastwhisper = PersistentContainer.Instance.Players[_cInfo.playerId].LastWhisper;
-            if (_lastwhisper == "")
+            string _sql = string.Format("SELECT lastwhisper FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            string _lastwhisper = _result.Rows[0].ItemArray.GetValue(0).ToString();
+            _result.Dispose();
+            if (_lastwhisper == "Unknown")
             {
                 string _phrase15;
                 if (!Phrases.Dict.TryGetValue(15, out _phrase15))
@@ -62,8 +65,8 @@ namespace ServerTools
             else
             {
 
-                ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_lastwhisper);
-                if (_cInfo2 == null)
+                ClientInfo _cInfo1 = ConnectionManager.Instance.Clients.ForPlayerId(_lastwhisper);
+                if (_cInfo1 == null)
                 {
                     string _phrase16;
                     if (!Phrases.Dict.TryGetValue(16, out _phrase16))
@@ -74,9 +77,9 @@ namespace ServerTools
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, _cInfo.playerName, EChatType.Whisper, null);
-                    PersistentContainer.Instance.Players[_cInfo2.playerId].LastWhisper = _cInfo.playerId;
-                    PersistentContainer.Instance.Save();
+                    ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, _cInfo.playerName, EChatType.Whisper, null);
+                    _sql = string.Format("UPDATE Players SET lastwhisper = '{0}' WHERE steamid = '{1}'", _cInfo.playerId, _cInfo1.playerId);
+                    SQL.FastQuery(_sql, "Whisper");
                 }
             }
         }

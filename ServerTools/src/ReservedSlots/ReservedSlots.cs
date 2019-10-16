@@ -205,7 +205,7 @@ namespace ServerTools
 
         public static void OpenSlot()
         {
-            List<string> _sessionList = new List<string>(PlayerOperations.Session.Keys);
+            List<string> _sessionList = new List<string>(Players.Session.Keys);
             for (int i = 0; i < _sessionList.Count; i++)
             {
                 string _player = _sessionList[i];
@@ -218,7 +218,7 @@ namespace ServerTools
                         if (!Dict.ContainsKey(_cInfo.playerId))
                         {
                             DateTime _dateTime;
-                            PlayerOperations.Session.TryGetValue(_cInfo.playerId, out _dateTime);
+                            Players.Session.TryGetValue(_cInfo.playerId, out _dateTime);
                             TimeSpan varTime = DateTime.Now - _dateTime;
                             double fractionalMinutes = varTime.TotalMinutes;
                             int _timepassed = (int)fractionalMinutes;
@@ -242,7 +242,7 @@ namespace ServerTools
                             if (DateTime.Now > _dt)
                             {
                                 DateTime _dateTime;
-                                PlayerOperations.Session.TryGetValue(_cInfo.playerId, out _dateTime);
+                                Players.Session.TryGetValue(_cInfo.playerId, out _dateTime);
                                 TimeSpan varTime = DateTime.Now - _dateTime;
                                 double fractionalMinutes = varTime.TotalMinutes;
                                 int _timepassed = (int)fractionalMinutes;

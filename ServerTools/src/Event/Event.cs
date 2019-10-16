@@ -9,10 +9,9 @@ namespace ServerTools
         public static bool Open = false, Invited = false, Cancel = false, Extend = false, Return = false;
         public static string Command100 = "join";
         public static Dictionary<string, int> SetupStage = new Dictionary<string, int>();
-        public static Dictionary<string, int> SaveSlot = new Dictionary<string, int>();
-        public static Dictionary<string, int> PlayersTeam = new Dictionary<string, int>();
         public static Dictionary<string, string> SetupName = new Dictionary<string, string>();
-        public static string Admin = null, OpenEventName = "";
+        public static Dictionary<string, int> PlayersTeam = new Dictionary<string, int>();
+        public static string Admin = null;
         private static int TeamCount = 1;
 
         public static void CheckOpen()
@@ -62,7 +61,7 @@ namespace ServerTools
                 PlayersTeam.Add(_cInfo.playerId, TeamCount);
                 string _message = " you are on team {Team}.";
                 _message = _message.Replace("{Team}", TeamCount.ToString());
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 if (TeamCount == _eventTeams)
                 {
                     TeamCount = 1;
@@ -89,7 +88,7 @@ namespace ServerTools
                                 int.TryParse(_cords[0], out _x);
                                 int.TryParse(_cords[1], out _y);
                                 int.TryParse(_cords[2], out _z);
-                                _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+                                _cInfo2.SendPackage(new NetPackageTeleportPlayer(new Vector3(_x, _y, _z), null, false));
                                 ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + ", you have been sent to your event spawn point.[-]", _cInfo2.entityId, _cInfo2.playerName, EChatType.Whisper, null);
                             }
                             else
@@ -148,7 +147,7 @@ namespace ServerTools
                 int.TryParse(_cords[0], out _x);
                 int.TryParse(_cords[1], out _y);
                 int.TryParse(_cords[2], out _z);
-                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+                _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(_x, _y, _z), null, false));
             }
         }
 
@@ -214,12 +213,12 @@ namespace ServerTools
                         _result.Dispose();
                         _sql = string.Format("UPDATE Players SET eventReturn = 'Unknown' WHERE steamid = '{0}'", _player.Key);
                         SQL.FastQuery(_sql, "Event");
-                        int _x, _y, _z;
+                        int x, y, z;
                         string[] _cords = _pos.Split(',');
-                        int.TryParse(_cords[0], out _x);
-                        int.TryParse(_cords[1], out _y);
-                        int.TryParse(_cords[2], out _z);
-                        _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+                        int.TryParse(_cords[0], out x);
+                        int.TryParse(_cords[1], out y);
+                        int.TryParse(_cords[2], out z);
+                        _cInfo2.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                         PlayersTeam.Remove(_player.Key);
                         ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + ", the current event has ended and event players have been sent back to their return points.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -243,12 +242,12 @@ namespace ServerTools
             DataTable _result = SQL.TQuery(_sql);
             string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
             _result.Dispose();
-            int _x, _y, _z;
+            int x, y, z;
             string[] _cords = _pos.Split(',');
-            int.TryParse(_cords[0], out _x);
-            int.TryParse(_cords[1], out _y);
-            int.TryParse(_cords[2], out _z);
-            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+            int.TryParse(_cords[0], out x);
+            int.TryParse(_cords[1], out y);
+            int.TryParse(_cords[2], out z);
+            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
             _sql = string.Format("UPDATE Players SET eventReturn = 'Unknown', return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
             SQL.FastQuery(_sql, "Event");
             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", the event ended while you were offline or not spawned. You have been sent to your return point.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -270,12 +269,12 @@ namespace ServerTools
                     DataTable _result2 = SQL.TQuery(_sql);
                     string _pos = _result2.Rows[0].ItemArray.GetValue(0).ToString();
                     _result2.Dispose();
-                    int _x, _y, _z;
+                    int x, y, z;
                     string[] _cords = _pos.Split(',');
-                    int.TryParse(_cords[0], out _x);
-                    int.TryParse(_cords[1], out _y);
-                    int.TryParse(_cords[2], out _z);
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+                    int.TryParse(_cords[0], out x);
+                    int.TryParse(_cords[1], out y);
+                    int.TryParse(_cords[2], out z);
+                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
                     _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
                     SQL.FastQuery(_sql, "Event");
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you have been sent to your event spawn point.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);

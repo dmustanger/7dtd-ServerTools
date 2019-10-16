@@ -6,7 +6,7 @@ namespace ServerTools
 {
     class KillNotice
     {
-        public static bool IsEnabled = false, IsRunning = false, Show_Level = false;
+        public static bool IsEnabled = false, IsRunning = false;
         private const string file = "KillNotice.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static Dictionary<string, string> dict = new Dictionary<string, string>();

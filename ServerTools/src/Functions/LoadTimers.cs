@@ -71,17 +71,17 @@ namespace ServerTools
             {
                 Log.Out("Dupe Log enabled");
             }
-            if (GodMode.IsEnabled)
+            if (GodModeFlight.IsEnabled)
             {
-                Log.Out("God mode detector enabled");
+                Log.Out("God mode enabled");
             }
             if (HatchElevator.IsEnabled)
             {
-                Log.Out("Hatch elevator detector enabled");
+                Log.Out("Hatch elevator enabled");
             }
             if (InventoryCheck.IsEnabled)
             {
-                Log.Out("Invalid item detector enabled");
+                Log.Out("Invalid item kicker enabled");
             }
             if (Jail.IsEnabled)
             {
@@ -349,7 +349,7 @@ namespace ServerTools
             }
             if (Zones.IsEnabled)
             {
-                Log.Out("Zone enabled");
+                Log.Out("Zone protection enabled");
             }
         }
 
@@ -887,7 +887,7 @@ namespace ServerTools
 
         public static void Init2(object sender, ElapsedEventArgs e)
         {
-            PlayerOperations.PlayerCheck();
+            Players.PlayerCheck();
         }
     }
 }

@@ -197,7 +197,7 @@ namespace ServerTools
                 }
                 Load(2);
             }
-            else if (_state == 2)
+            if (_state == 2)
             {
                 try
                 {
@@ -209,7 +209,7 @@ namespace ServerTools
                 }
                 Load(3);
             }
-            else if (_state == 3)
+            if (_state == 3)
             {
                 try
                 {
@@ -221,19 +221,7 @@ namespace ServerTools
                 }
                 Load(4);
             }
-            else if (_state == 4)
-            {
-                try
-                {
-                    StateManager.Awake();
-                }
-                catch (XmlException e)
-                {
-                    Log.Out("[ServerTools] Failed to load the persistent database bin file. Restart the server and check for errors. Error = {0}", e.Message);
-                }
-                Load(5);
-            }
-            else if (_state == 5)
+            if (_state == 4)
             {
                 try
                 {
@@ -243,9 +231,9 @@ namespace ServerTools
                 {
                     Log.Out("[ServerTools] Failed to load the tools. Restart the server and check for errors. Error = {0}", e.Message);
                 }
-                Load(6);
+                Load(5);
             }
-            else if (_state == 6)
+            if (_state == 5)
             {
                 try
                 {
@@ -255,9 +243,9 @@ namespace ServerTools
                 {
                     Log.Out("[ServerTools] Failed to load the EventTriggers.xml. Check for errors in the file. Error = {0}", e.Message);
                 }
-                Load(7);
+                Load(6);
             }
-            else if (_state == 7)
+            if (_state == 6)
             {
                 try
                 {
@@ -275,9 +263,9 @@ namespace ServerTools
                 {
                     Log.Out("[ServerTools] Failed to load the HowToSetup.xml. Error = {0}", e.Message);
                 }
-                Load(8);
+                Load(7);
             }
-            else if (_state == 8)
+            if (_state == 7)
             {
                 if (Fps.IsEnabled)
                 {
@@ -290,18 +278,17 @@ namespace ServerTools
                         Log.Out("[ServerTools] Failed to set the target fps. Error = {0}", e.Message);
                     }
                 }
-                Load(9);
+                Load(8);
             }
-            else if (_state == 9)
-            {
-                RestartVote.Startup = true;
-                Load(10);
-            }
-            else if (_state == 10)
+            if (_state == 8)
             {
                 Timers.LogAlert();
                 Timers.LoadAlert();
-                Load(11);
+                Load(9);
+            }
+            if (_state == 9)
+            {
+                RestartVote.Startup = true;
             }
         }
     }

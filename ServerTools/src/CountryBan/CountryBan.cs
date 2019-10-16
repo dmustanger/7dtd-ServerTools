@@ -1,7 +1,6 @@
-﻿using MaxMind.Db;
+﻿using Geotargeting;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Reflection;
 
 namespace ServerTools
@@ -10,33 +9,31 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         private static string _assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        private static string _dbPath = string.Format("{0}/GeoLite2-Country.mmdb", _assemblyFolder);
+        private static string _dbPath = string.Format("{0}/GeoLiteCity.dat", _assemblyFolder);
         public static List<string> BannedCountries = new List<string>();
+        private static LookupService reader;
 
-        public static bool IsCountryBanned (ClientInfo _cInfo)
-        {
-            if (BannedCountries.Contains(Get(_cInfo.ip)))
-            {
-                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Players from your country are not allowed\"", _cInfo.playerId), (ClientInfo)null);
-                return true;
-            }
-            return false;
-        }
-        
-        public static string Get(string _ip)
+        public static void Load ()
         {
             if (File.Exists(_dbPath))
             {
-                using (var _reader = new Reader(_dbPath))
-                {
-                    var ip = IPAddress.Parse(_ip);
-                    var data = _reader.Find<Dictionary<string, object>>(ip);
-                    Log.Out("[SERVERTOOLS]" + data.Keys.ToString());
-
-                    return "Unknown";
-                }
+                reader = new LookupService(_dbPath, LookupService.GEOIP_STANDARD);
             }
-            return "Unknown";
+            else
+            {
+                IsEnabled = false;
+            }
+        }
+
+        public static bool IsCountryBanned (ClientInfo _cInfo)
+        {
+            Location _location = reader.getLocation(_cInfo.ip);
+            if (BannedCountries.Contains(_location.countryCode))
+            {
+                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Players from {1} are not allowed\"", _cInfo.playerId, _location.countryCode), (ClientInfo)null);
+                return true;
+            }
+            return false;
         }
     }
 }

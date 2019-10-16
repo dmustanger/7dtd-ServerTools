@@ -113,7 +113,7 @@ namespace ServerTools
 
         public static void Alert(string _message, int _count)
         {
-            ChatHook.ChatMessage(null, "[FF0000]" + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             if (_count > 1)
             {
                 Alert(_message, _count - 1);

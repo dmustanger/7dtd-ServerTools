@@ -11,12 +11,22 @@ namespace ServerTools
         public static int Delay_Between_Uses = 120, Command_Cost = 0;
         public static string Command77 = "bike", Command78 = "minibike", Command79 = "motorbike", Command80 = "jeep", Command81 = "gyro";
 
-        public static void Exec(ClientInfo _cInfo, int _vehicle)
+        public static void VehicleDelay(ClientInfo _cInfo, string _playerName, int _vehicle)
         {
+            string _sql = string.Format("SELECT steamid FROM Vehicles WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            if (_result.Rows.Count == 0)
+            {
+                string _steamid = SQL.EscapeString(_cInfo.playerId);
+                _sql = string.Format("INSERT INTO Vehicles (steamid) VALUES ('{0}')", _steamid);
+                SQL.FastQuery(_sql, "VehicleTeleport");
+            }
+            _result.Dispose();
             Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             Entity _attachedEntity = _player.AttachedToEntity;
             if (_attachedEntity == null)
             {
+                bool _donator = false;
                 if (Delay_Between_Uses < 1)
                 {
                     if (Wallet.IsEnabled && Command_Cost >= 1)
@@ -25,32 +35,35 @@ namespace ServerTools
                     }
                     else
                     {
-                        TeleVehicle(_cInfo, _player, _vehicle);
+                        Exec2(_cInfo, _player, _vehicle);
                     }
                 }
                 else
                 {
-                    DateTime _lastVehicle = new DateTime();
                     if (_vehicle == 1)
                     {
-                        _lastVehicle = PersistentContainer.Instance.Players[_cInfo.playerId].LastBike;
+                        _sql = string.Format("SELECT lastBike FROM Vehicles WHERE steamid = '{0}'", _cInfo.playerId);
                     }
-                    else if (_vehicle == 2)
+                    if (_vehicle == 2)
                     {
-                        _lastVehicle = PersistentContainer.Instance.Players[_cInfo.playerId].LastMiniBike;
+                        _sql = string.Format("SELECT lastMiniBike FROM Vehicles WHERE steamid = '{0}'", _cInfo.playerId);
                     }
-                    else if (_vehicle == 3)
+                    if (_vehicle == 3)
                     {
-                        _lastVehicle = PersistentContainer.Instance.Players[_cInfo.playerId].LastMotorBike;
+                        _sql = string.Format("SELECT lastMotorBike FROM Vehicles WHERE steamid = '{0}'", _cInfo.playerId);
                     }
-                    else if (_vehicle == 4)
+                    if (_vehicle == 4)
                     {
-                        _lastVehicle = PersistentContainer.Instance.Players[_cInfo.playerId].LastJeep;
+                        _sql = string.Format("SELECT lastJeep FROM Vehicles WHERE steamid = '{0}'", _cInfo.playerId);
                     }
-                    else if (_vehicle == 5)
+                    if (_vehicle == 5)
                     {
-                        _lastVehicle = PersistentContainer.Instance.Players[_cInfo.playerId].LastGyro;
+                        _sql = string.Format("SELECT lastGyro FROM Vehicles WHERE steamid = '{0}'", _cInfo.playerId);
                     }
+                    _result = SQL.TQuery(_sql);
+                    DateTime _lastVehicle;
+                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastVehicle);
+                    _result.Dispose();
                     TimeSpan varTime = DateTime.Now - _lastVehicle;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
@@ -62,55 +75,74 @@ namespace ServerTools
                             ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                             if (DateTime.Now < _dt)
                             {
-                                int _delay = Delay_Between_Uses / 2;
-                                Time(_cInfo, _player, _vehicle, _timepassed, _delay);
-                                return;
+                                _donator = true;
+                                int _newDelay = Delay_Between_Uses / 2;
+                                if (_timepassed >= _newDelay)
+                                {
+                                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                                    {
+                                        CommandCost(_cInfo, _player, _vehicle);
+                                    }
+                                    else
+                                    {
+                                        Exec2(_cInfo, _player, _vehicle);
+                                    }
+                                }
+                                else
+                                {
+                                    int _timeleft = _newDelay - _timepassed;
+                                    string _phrase786;
+                                    if (!Phrases.Dict.TryGetValue(786, out _phrase786))
+                                    {
+                                        _phrase786 = " you can only use vehicle teleport once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                                    }
+                                    _phrase786 = _phrase786.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                                    _phrase786 = _phrase786.Replace("{TimeRemaining}", _timeleft.ToString());
+                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase786 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
                             }
                         }
                     }
-                    Time(_cInfo, _player, _vehicle, _timepassed, Delay_Between_Uses);
+                    if (!_donator)
+                    {
+                        if (_timepassed >= Delay_Between_Uses)
+                        {
+                            if (Wallet.IsEnabled && Command_Cost >= 1)
+                            {
+                                CommandCost(_cInfo, _player, _vehicle);
+                            }
+                            else
+                            {
+                                Exec2(_cInfo, _player, _vehicle);
+                            }
+                        }
+                        else
+                        {
+                            int _timeleft = Delay_Between_Uses - _timepassed;
+                            string _phrase786;
+                            if (!Phrases.Dict.TryGetValue(786, out _phrase786))
+                            {
+                                _phrase786 = " you can only use vehicle teleport once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                            }
+                            _phrase786 = _phrase786.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
+                            _phrase786 = _phrase786.Replace("{TimeRemaining}", _timeleft.ToString());
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase786 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        }
+                    }
                 }
             }
             else
             {
-                SaveVehicle(_cInfo, _player, _vehicle, _attachedEntity.entityId);
+                Exec1(_cInfo, _player, _vehicle);
             }
         }
-
-        public static void Time(ClientInfo _cInfo, Entity _player, int _vehicle, int _timepassed, int _delay)
-        {
-            if (_timepassed >= _delay)
-            {
-                if (Wallet.IsEnabled && Command_Cost >= 1)
-                {
-                    CommandCost(_cInfo, _player, _vehicle);
-                }
-                else
-                {
-                    TeleVehicle(_cInfo, _player, _vehicle);
-                }
-            }
-            else
-            {
-                int _timeleft = _delay - _timepassed;
-                string _phrase786;
-                if (!Phrases.Dict.TryGetValue(786, out _phrase786))
-                {
-                    _phrase786 = " you can only use vehicle teleport once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                }
-                _phrase786 = _phrase786.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase786 = _phrase786.Replace("{TimeRemaining}", _timeleft.ToString());
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase786 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-            }
-        }
-
 
         public static void CommandCost(ClientInfo _cInfo, Entity _player, int _vehicle)
         {
-            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
+            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
             if (_currentCoins >= Command_Cost)
             {
-                TeleVehicle(_cInfo, _player, _vehicle);
+                Exec2(_cInfo, _player, _vehicle);
             }
             else
             {
@@ -124,7 +156,7 @@ namespace ServerTools
             }
         }
 
-        public static void SaveVehicle(ClientInfo _cInfo, Entity _player, int _vehicle, int _vehicleId)
+        public static void Exec1(ClientInfo _cInfo, Entity _player, int _vehicle)
         {
             if (Inside_Claim)
             {
@@ -137,7 +169,78 @@ namespace ServerTools
                 PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
                 PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_player.entityId);
                 EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
-                if (!(_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally))
+                if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+                {
+                    string _vehicleName = "";
+                    string _messageName = "";
+                    if (_vehicle == 1)
+                    {
+                        _vehicleName = "vehicleBicycle";
+                        _messageName = "bike";
+                    }
+                    if (_vehicle == 2)
+                    {
+                        _vehicleName = "vehicleMinibike";
+                        _messageName = "minibike";
+                    }
+                    if (_vehicle == 3)
+                    {
+                        _vehicleName = "vehicleMotorcycle";
+                        _messageName = "motorbike";
+                    }
+                    if (_vehicle == 4)
+                    {
+                        _vehicleName = "vehicle4x4Truck";
+                        _messageName = "jeep";
+                    }
+                    if (_vehicle == 5)
+                    {
+                        _vehicleName = "vehicleGyrocopter";
+                        _messageName = "gyro";
+                    }
+                    if (_player.AttachedToEntity.EntityClass.entityClassName.ToString() == _vehicleName)
+                    {
+                        string _phrase781;
+                        if (!Phrases.Dict.TryGetValue(781, out _phrase781))
+                        {
+                            _phrase781 = " saved your current vehicle for retrieval.";
+                        }
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase781 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        string _sql = "";
+                        if (_vehicle == 1)
+                        {
+                            _sql = string.Format("UPDATE Vehicles SET bikeId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
+                        }
+                        if (_vehicle == 2)
+                        {
+                            _sql = string.Format("UPDATE Vehicles SET miniBikeId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
+                        }
+                        if (_vehicle == 3)
+                        {
+                            _sql = string.Format("UPDATE Vehicles SET motorBikeId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
+                        }
+                        if (_vehicle == 4)
+                        {
+                            _sql = string.Format("UPDATE Vehicles SET jeepId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
+                        }
+                        if (_vehicle == 5)
+                        {
+                            _sql = string.Format("UPDATE Vehicles SET gyroId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
+                        }
+                        SQL.FastQuery(_sql, "VehicleTeleport");
+                    }
+                    else
+                    {
+                        string _phrase787;
+                        if (!Phrases.Dict.TryGetValue(787, out _phrase787))
+                        {
+                            _phrase787 = " you are on the wrong vehicle to save it with this command. You are using a {Vehicle}.";
+                        }
+                        _phrase787 = _phrase787.Replace("{Vehicle}", _messageName);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase787 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                }
+                else
                 {
                     string _phrase780;
                     if (!Phrases.Dict.TryGetValue(780, out _phrase780))
@@ -145,102 +248,109 @@ namespace ServerTools
                         _phrase780 = " you have not claimed this space or a friend. You can only save your vehicle inside a claimed space.";
                     }
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase780 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    return;
                 }
-            }
-            string _entityName = "", _vehicleName = "";
-            if (_vehicle == 1)
-            {
-                _entityName = "vehicleBicycle";
-                _vehicleName = "bike";
-            }
-            else if (_vehicle == 2)
-            {
-                _entityName = "vehicleMinibike";
-                _vehicleName = "minibike";
-            }
-            else if (_vehicle == 3)
-            {
-                _entityName = "vehicleMotorcycle";
-                _vehicleName = "motorbike";
-            }
-            else if (_vehicle == 4)
-            {
-                _entityName = "vehicle4x4Truck";
-                _vehicleName = "jeep";
-            }
-            else if (_vehicle == 5)
-            {
-                _entityName = "vehicleGyrocopter";
-                _vehicleName = "gyro";
-            }
-            if (_player.AttachedToEntity.EntityClass.entityClassName.ToString() == _entityName)
-            {
-                if (_vehicle == 1)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].BikeId = _vehicleId;
-                }
-                else if (_vehicle == 2)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].MiniBikeId = _vehicleId;
-                }
-                else if (_vehicle == 3)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].MotorBikeId = _vehicleId;
-                }
-                else if (_vehicle == 4)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].JeepId = _vehicleId;
-                }
-                else if (_vehicle == 5)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].GyroId = _vehicleId;
-                }
-                PersistentContainer.Instance.Save();
-                string _phrase781;
-                if (!Phrases.Dict.TryGetValue(781, out _phrase781))
-                {
-                    _phrase781 = " saved your current {Vehicle} for retrieval.";
-                    _phrase781 = _phrase781.Replace("{Vehicle}", _vehicleName);
-                }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase781 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                string _phrase787;
-                if (!Phrases.Dict.TryGetValue(787, out _phrase787))
-                {
-                    _phrase787 = " you are on the wrong vehicle to save it with this command. You are using a {Vehicle}.";
-                }
-                _phrase787 = _phrase787.Replace("{Vehicle}", _vehicleName);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase787 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                string _vehicleName = "";
+                    string _messageName = "";
+                    if (_vehicle == 1)
+                    {
+                        _vehicleName = "vehicleBicycle";
+                        _messageName = "bike";
+                    }
+                    if (_vehicle == 2)
+                    {
+                        _vehicleName = "vehicleMinibike";
+                        _messageName = "minibike";
+                    }
+                    if (_vehicle == 3)
+                    {
+                        _vehicleName = "vehicleMotorcycle";
+                        _messageName = "motorbike";
+                    }
+                    if (_vehicle == 4)
+                    {
+                        _vehicleName = "vehicle4x4Truck";
+                        _messageName = "jeep";
+                    }
+                    if (_vehicle == 5)
+                    {
+                        _vehicleName = "vehicleGyrocopter";
+                        _messageName = "gyro";
+                    }
+                    if (_player.AttachedToEntity.name == _vehicleName)
+                    {
+                        string _phrase781;
+                        if (!Phrases.Dict.TryGetValue(781, out _phrase781))
+                        {
+                            _phrase781 = " saved your current vehicle for retrieval.";
+                        }
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase781 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        string _sql = "";
+                        if (_vehicle == 1)
+                        {
+                            _sql = string.Format("UPDATE Vehicles SET bikeId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
+                        }
+                        if (_vehicle == 2)
+                        {
+                            _sql = string.Format("UPDATE Vehicles SET miniBikeId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
+                        }
+                        if (_vehicle == 3)
+                        {
+                            _sql = string.Format("UPDATE Vehicles SET motorBikeId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
+                        }
+                        if (_vehicle == 4)
+                        {
+                            _sql = string.Format("UPDATE Vehicles SET jeepId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
+                        }
+                        if (_vehicle == 5)
+                        {
+                            _sql = string.Format("UPDATE Vehicles SET gyroId = {0} WHERE steamid = '{1}'", _player.AttachedToEntity.entityId, _cInfo.playerId);
+                        }
+                        SQL.FastQuery(_sql, "VehicleTeleport");
+                    }
+                    else
+                    {
+                    string _phrase787;
+                        if (!Phrases.Dict.TryGetValue(787, out _phrase787))
+                        {
+                            _phrase787 = " you are on the wrong vehicle to save it with this command. You are using a {Vehicle}.";
+                        }
+                        _phrase787 = _phrase787.Replace("{Vehicle}", _messageName);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase787 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
             }
         }
 
-        public static void TeleVehicle(ClientInfo _cInfo, Entity _player, int _vehicle)
+        public static void Exec2(ClientInfo _cInfo, Entity _player, int _vehicle)
         {
-            int _vehicleId = 0;
+            string _sql = "";
             if (_vehicle == 1)
             {
-                _vehicleId = PersistentContainer.Instance.Players[_cInfo.playerId].BikeId;
+                _sql = string.Format("SELECT bikeId FROM Vehicles WHERE steamid = '{0}'", _cInfo.playerId);
             }
-            else if (_vehicle == 2)
+            if (_vehicle == 2)
             {
-                _vehicleId = PersistentContainer.Instance.Players[_cInfo.playerId].MiniBikeId;
+                _sql = string.Format("SELECT miniBikeId FROM Vehicles WHERE steamid = '{0}'", _cInfo.playerId);
             }
-            else if (_vehicle == 3)
+            if (_vehicle == 3)
             {
-                _vehicleId = PersistentContainer.Instance.Players[_cInfo.playerId].MotorBikeId;
+                _sql = string.Format("SELECT motorBikeId FROM Vehicles WHERE steamid = '{0}'", _cInfo.playerId);
             }
-            else if (_vehicle == 4)
+            if (_vehicle == 4)
             {
-                _vehicleId = PersistentContainer.Instance.Players[_cInfo.playerId].JeepId;
+                _sql = string.Format("SELECT jeepId FROM Vehicles WHERE steamid = '{0}'", _cInfo.playerId);
             }
-            else if (_vehicle == 5)
+            if (_vehicle == 5)
             {
-                _vehicleId = PersistentContainer.Instance.Players[_cInfo.playerId].GyroId;
+                _sql = string.Format("SELECT gyroId FROM Vehicles WHERE steamid = '{0}'", _cInfo.playerId);
             }
-            if (_vehicleId != 0)
+            DataTable _result = SQL.TQuery(_sql);
+            int _Id;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _Id);
+            _result.Dispose();
+            if (_Id != 0)
             {
                 List<Entity> Entities = GameManager.Instance.World.Entities.list;
                 for (int i = 0; i < Entities.Count; i++)
@@ -248,7 +358,7 @@ namespace ServerTools
                     Entity _entity = Entities[i];
                     if (!_entity.IsClientControlled())
                     {
-                        if (_entity.entityId == _vehicleId)
+                        if (_entity.entityId == _Id)
                         {
                             if ((_player.position.x - _entity.position.x) * (_player.position.x - _entity.position.x) + (_player.position.z - _entity.position.z) * (_player.position.z - _entity.position.z) <= 50 * 50)
                             {
@@ -268,25 +378,26 @@ namespace ServerTools
                                     }
                                     if (_vehicle == 1)
                                     {
-                                        PersistentContainer.Instance.Players[_cInfo.playerId].LastBike = DateTime.Now;
+                                        _sql = string.Format("UPDATE Vehicles SET lastBike = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                                     }
                                     if (_vehicle == 2)
                                     {
-                                        PersistentContainer.Instance.Players[_cInfo.playerId].LastMiniBike = DateTime.Now;
+                                        _sql = string.Format("UPDATE Vehicles SET lastMiniBike = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                                     }
                                     if (_vehicle == 3)
                                     {
-                                        PersistentContainer.Instance.Players[_cInfo.playerId].LastMotorBike = DateTime.Now;
+                                        _sql = string.Format("UPDATE Vehicles SET lastMotorBike = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                                     }
                                     if (_vehicle == 4)
                                     {
-                                        PersistentContainer.Instance.Players[_cInfo.playerId].LastJeep = DateTime.Now;
+                                        _sql = string.Format("UPDATE Vehicles SET lastJeep = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                                     }
                                     if (_vehicle == 5)
                                     {
-                                        PersistentContainer.Instance.Players[_cInfo.playerId].LastGyro = DateTime.Now;
+                                        _sql = string.Format("UPDATE Vehicles SET lastGyro = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                                     }
-                                    PersistentContainer.Instance.Save();
+
+                                    SQL.FastQuery(_sql, "VehicleTeleport");
                                     return;
                                 }
                                 else

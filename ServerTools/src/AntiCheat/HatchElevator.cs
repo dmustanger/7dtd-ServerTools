@@ -58,8 +58,8 @@ namespace ServerTools
                                                 int heightChange = (_lastY - y);
                                                 if (heightChange < -6)
                                                 {
-                                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("buff " + "brokenLeg", true));
-                                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("buff " + "stunned", true));
+                                                    _cInfo.SendPackage(new NetPackageConsoleCmdClient("buff " + "brokenLeg", true));
+                                                    _cInfo.SendPackage(new NetPackageConsoleCmdClient("buff " + "stunned", true));
                                                     LastPositionY[Id] = y;
                                                     Flag.Remove(Id);
                                                     string _phrase720;

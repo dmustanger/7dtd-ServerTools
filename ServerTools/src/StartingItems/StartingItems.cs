@@ -199,7 +199,7 @@ namespace ServerTools
             World world = GameManager.Instance.World;
             foreach (KeyValuePair<string, int[]> kvp in startItemList)
             {
-                ItemValue _itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], false, null, 1);
+                ItemValue _itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], false, default(FastTags), 1);
                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                 {
                     entityClass = EntityClass.FromString("item"),
@@ -211,12 +211,12 @@ namespace ServerTools
                     belongsPlayerId = _cInfo.entityId
                 });
                 world.SpawnEntityInWorld(entityItem);
-                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                 Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
             }
-            PersistentContainer.Instance.Players[_cInfo.playerId].StartingItems = true;
-            PersistentContainer.Instance.Save();
+            string _sql = string.Format("UPDATE Players SET startingItems = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
+            SQL.FastQuery(_sql, "StartingItems");
         }
     }
 }

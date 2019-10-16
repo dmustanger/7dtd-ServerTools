@@ -53,11 +53,6 @@ namespace ServerTools
                 }
                 else if (_params.Count == 2)
                 {
-                    if (_params[0].Length < 1 || _params[0].Length > 17)
-                    {
-                        SdtdConsole.Instance.Output(string.Format("Can not adjust wallet: Invalid Id {0}", _params[1]));
-                        return;
-                    }
                     if (_params[1].Length < 1 || _params[1].Length > 5)
                     {
                         SdtdConsole.Instance.Output(string.Format("Can not adjust wallet. Value {0} is invalid", _params[1]));
@@ -71,24 +66,62 @@ namespace ServerTools
                     }
                     else
                     {
-                        PersistentPlayer p = PersistentContainer.Instance.Players[_params[0]];
-                        if (p != null)
+                        string _steamid = SQL.EscapeString(_params[0]);
+                        string _sql = string.Format("SELECT playerSpentCoins FROM Players WHERE steamid = '{0}'", _steamid);
+                        DataTable _result = SQL.TQuery(_sql);
+                        if (_result.Rows.Count != 0)
                         {
-                            Wallet.AddCoinsToWallet(_params[0], _adjustCoins);
+                            Wallet.AddCoinsToWallet(_steamid, _adjustCoins);
                             if (_adjustCoins >= 0)
                             {
-                                SdtdConsole.Instance.Output(string.Format("Added {0} {1} to player id {2} wallet", _params[1], Wallet.Coin_Name, _params[0]));
+                                SdtdConsole.Instance.Output(string.Format("Added {0} {1} to player id {2} wallet", _params[1], Wallet.Coin_Name, _steamid));
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("Subtracted {0} {1} from player id {2} wallet", _params[1], Wallet.Coin_Name, _params[0]));
+                                SdtdConsole.Instance.Output(string.Format("Subtracted {0} {1} from player id {2} wallet", _params[1], Wallet.Coin_Name, _steamid));
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Player id not found: {0}", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("Player id not found: {0}", _steamid));
                         }
+                        _result.Dispose();
                     }
+                }
+                else if (_params.Count == 1)
+                {
+                    string _steamid = SQL.EscapeString(_params[0]);
+                    string _sql = string.Format("SELECT playerSpentCoins, zkills, kills, deaths FROM Players WHERE steamid = '{0}'", _steamid);
+                    DataTable _result = SQL.TQuery(_sql);
+                    if (_result.Rows.Count != 0)
+                    {
+                        int currentCoins;
+                        World world = GameManager.Instance.World;
+                        int _playerSpentCoins;
+                        int _zkills;
+                        int _kills;
+                        int _deaths;
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _playerSpentCoins);
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _zkills);
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _kills);
+                        int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _deaths);
+                        int gameMode = world.GetGameMode();
+                        if (gameMode == 7)
+                        {
+                            currentCoins = (_zkills * Wallet.Zombie_Kills) + (_kills * Wallet.Player_Kills) - (_deaths * Wallet.Deaths) + _playerSpentCoins;
+                        }
+                        else
+                        {
+                            currentCoins = (_zkills * Wallet.Zombie_Kills) - (_deaths * Wallet.Deaths) + _playerSpentCoins;
+                        }
+                        SdtdConsole.Instance.Output(string.Format("Wallet for id {0}: {1} {2}", _params[0], currentCoins, Wallet.Coin_Name));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Player id not found: {0}", _steamid));
+                    }
+                    _result.Dispose();
                 }
                 else
                 {

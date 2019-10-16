@@ -34,20 +34,19 @@ namespace ServerTools
                 }
                 if (_params.Count == 1)
                 {
-                    ClientInfo _cInfo = _senderInfo.RemoteClientInfo;
                     ClientInfo _cInfo2 = ConsoleHelper.ParseParamIdOrName(_params[0]);
                     if (_cInfo2 != null)
                     {
                         EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
                         if ((int)_player2.position.y < 13)
                         {
-                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player2.position.x, 0, (int)_player2.position.z), null, false));
+                            _senderInfo.RemoteClientInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3((int)_player2.position.x, 0, (int)_player2.position.z), null, false));
                             SdtdConsole.Instance.Output(string.Format("Teleport successful"));
                             return;
                         }
                         else
                         {
-                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player2.position.x, (int)_player2.position.y - 10, (int)_player2.position.z), null, false));
+                            _senderInfo.RemoteClientInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3((int)_player2.position.x, (int)_player2.position.y - 10, (int)_player2.position.z), null, false));
                             SdtdConsole.Instance.Output(string.Format("Teleport successful"));
                             return;
                         }

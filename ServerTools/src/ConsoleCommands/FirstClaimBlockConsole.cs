@@ -50,33 +50,47 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("reset"))
                 {
-                    if (_params[1].ToLower().Equals("all"))
+                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    if (_cInfo != null)
                     {
-                        for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+                        string _sql = string.Format("SELECT firstClaim FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result = SQL.TQuery(_sql);
+                        bool _firstClaim;
+                        bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _firstClaim);
+                        _result.Dispose();
+                        if (_firstClaim)
                         {
-                            string _id = PersistentContainer.Instance.Players.SteamIDs[i];
-                            PersistentPlayer p = PersistentContainer.Instance.Players[_id];
-                            {
-                                PersistentContainer.Instance.Players[_id].FirstClaimBlock = false;
-                            }
-                        }
-                        PersistentContainer.Instance.Save();
-                        SdtdConsole.Instance.Output("First claim block reset for all players.");
-                    }
-                    else
-                    {
-                        PersistentPlayer p = PersistentContainer.Instance.Players[_params[1]];
-                        if (p != null)
-                        {
-                            PersistentContainer.Instance.Players[_params[1]].FirstClaimBlock = false;
-                            PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output(string.Format("First claim block reset for {0}.", _params[1]));
+                            _sql = string.Format("UPDATE Players SET firstClaim = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                            SQL.FastQuery(_sql, "FirstClaimBlockConsole");
+                            SdtdConsole.Instance.Output("Players first claim block reset.");
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not reset player. Invalid Id {0}.", _params[1]));
-                            return;
+                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a first claim block to reset.", _params[1]));
                         }
+                    }
+                    else if (_params[1].Length == 17)
+                    {
+                        string _id = SQL.EscapeString(_params[1]);
+                        string _sql = string.Format("SELECT firstClaim FROM Players WHERE steamid = '{0}'", _id);
+                        DataTable _result = SQL.TQuery(_sql);
+                        bool _firstClaim;
+                        bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _firstClaim);
+                        _result.Dispose();
+                        if (_firstClaim)
+                        {
+                            _sql = string.Format("UPDATE Players SET firstClaim = 'false' WHERE steamid = '{0}'", _id);
+                            SQL.FastQuery(_sql, "FirstClaimBlockConsole");
+                            SdtdConsole.Instance.Output("Players first claim block reset.");
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a first claim block to reset.", _params[1]));
+                        }
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}.", _params[1]));
                     }
                 }
                 else

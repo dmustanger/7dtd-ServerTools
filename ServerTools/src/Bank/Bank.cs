@@ -21,12 +21,16 @@ namespace ServerTools
 
         public static void Check(ClientInfo _cInfo)
         {
-            int _bank = PersistentContainer.Instance.Players[_cInfo.playerId].Bank;
+            string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int _bank;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
+            _result.Dispose();
             if (TransferId.ContainsKey(_cInfo.playerId))
             {
                 int _id;
                 TransferId.TryGetValue(_cInfo.playerId, out _id);
-                string _message = " your bank account is worth {Value}. Transfer Id is {Id}.";
+                string _message = ", your bank account is worth {Value}. Transfer Id is {Id}.";
                 _message = _message.Replace("{Value}", _bank.ToString());
                 _message = _message.Replace("{Id}", _id.ToString());
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -41,8 +45,12 @@ namespace ServerTools
         {
             int _rndId = random.Next(1000, 5001);
             TransferId.Add(_cInfo.playerId, _rndId);
-            int _bank = PersistentContainer.Instance.Players[_cInfo.playerId].Bank;
-            string _message = " your bank account is worth {Value}. Transfer Id is {Id}.";
+            string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+            DataTable _result = SQL.TQuery(_sql);
+            int _bank;
+            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
+            _result.Dispose();
+            string _message = ", your bank account is worth {Value}. Transfer Id is {Id}.";
             _message = _message.Replace("{Value}", _bank.ToString());
             _message = _message.Replace("{Id}", _rndId.ToString());
             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -133,8 +141,26 @@ namespace ServerTools
                                     {
                                         Vector3i vec3i = SecureLoot.ToWorldPos();
                                         EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                        if ((vec3i.x - _player.position.x) * (vec3i.x - _player.position.x) + (vec3i.z - _player.position.z) * (vec3i.z - _player.position.z) <= 2 * 2)
+                                        if ((vec3i.x - _player.position.x) * (vec3i.x - _player.position.x) + (vec3i.z - _player.position.z) * (vec3i.z - _player.position.z) <= 1.5 * 1.5)
                                         {
+                                            int _playerCount = ConnectionManager.Instance.ClientCount();
+                                            if (_playerCount > 1)
+                                            {
+                                                List<ClientInfo> ClientInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                                                for (int k = 0; k < ClientInfoList.Count; k++)
+                                                {
+                                                    ClientInfo _cInfo2 = ClientInfoList[k];
+                                                    if (_cInfo != _cInfo2)
+                                                    {
+                                                        EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
+                                                        if ((vec3i.x - _player2.position.x) * (vec3i.x - _player2.position.x) + (vec3i.z - _player2.position.z) * (vec3i.z - _player2.position.z) <= 8 * 8)
+                                                        {
+                                                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " you are too close to another player to deposit from your chest in to the bank.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                                            return;
+                                                        }
+                                                    }
+                                                }
+                                            }
                                             ItemStack[] items = SecureLoot.items;
                                             int slotNumber = 0;
                                             foreach (ItemStack item in items)
@@ -147,7 +173,11 @@ namespace ServerTools
                                                     {
                                                         if (item.count >= _coinAmount)
                                                         {
-                                                            int _bank = PersistentContainer.Instance.Players[_cInfo.playerId].Bank;
+                                                            string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                                            DataTable _result = SQL.TQuery(_sql);
+                                                            int _bank;
+                                                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
+                                                            _result.Dispose();
                                                             int _percent = Deposit_Fee / 100;
                                                             double _fee = _coinAmount * _percent;
                                                             int _newCoin = _coinAmount - (int)_fee;
@@ -159,18 +189,18 @@ namespace ServerTools
                                                                 ItemValue _itemValue = ItemClass.GetItem(Ingame_Coin, false);
                                                                 if (_itemValue.type == ItemValue.None.type)
                                                                 {
-                                                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " the bank coin is not setup correctly, contact the server Admin.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " the bank coin is not setup correctly, contact the server Admin.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                                                     Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0}", Ingame_Coin));
                                                                     return;
                                                                 }
                                                                 else
                                                                 {
-                                                                    _itemValue = new ItemValue(ItemClass.GetItem(Ingame_Coin).type, 1, 1, false, null, 1);
+                                                                    _itemValue = new ItemValue(ItemClass.GetItem(Ingame_Coin).type, 1, 1, false, default(FastTags), 1);
                                                                 }
                                                                 ItemStack itemStack = new ItemStack(_itemValue, _newCount);
                                                                 SecureLoot.UpdateSlot(slotNumber, itemStack);
-                                                                PersistentContainer.Instance.Players[_cInfo.playerId].Bank = _bank + _newCoin;
-                                                                PersistentContainer.Instance.Save();
+                                                                _sql = string.Format("UPDATE Players SET bank = {0} WHERE steamid = '{1}'", _bank + _newCoin, _cInfo.playerId);
+                                                                SQL.FastQuery(_sql, "Bank");
                                                                 using (StreamWriter sw = new StreamWriter(filepath, true))
                                                                 {
                                                                     sw.WriteLine(string.Format("{0}: {1} has added {2} to their bank account.", DateTime.Now, _cInfo.playerName, _newCoin));
@@ -190,7 +220,6 @@ namespace ServerTools
                                                                 _message = _message.Replace("{Limit}", Limit.ToString());
                                                                 _message = _message.Replace("{Value}", _bank.ToString());
                                                                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                                                return;
                                                             }
                                                         }
                                                         else
@@ -198,7 +227,6 @@ namespace ServerTools
                                                             string _message = " there is not enough {Name} in the secure loot to deposit this value.";
                                                             _message = _message.Replace("{Name}", Ingame_Coin);
                                                             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                                            return;
                                                         }
                                                     }
                                                 }
@@ -214,17 +242,17 @@ namespace ServerTools
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you input an invalid integer. Type " + ChatHook.Command_Private + Command95 + " #.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you input an invalid integer. Type " + ChatHook.Command_Private + Command95 + " #.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             if (Found)
             {
-                string _message = " there is not enough {Name} in the secure loot to deposit this value.";
+                string _message = ", there is not enough {Value} in the secure loot to deposit this value.";
                 _message = _message.Replace("{Name}", Ingame_Coin);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you do not have enough in the secure loot to deposit that much into your bank.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you do not have enough in the secure loot to deposit that much into your bank.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -233,7 +261,11 @@ namespace ServerTools
             int _coinAmount;
             if (int.TryParse(_amount, out _coinAmount))
             {
-                int _bank = PersistentContainer.Instance.Players[_cInfo.playerId].Bank;
+                string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                int _bank;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
+                _result.Dispose();
                 if (_bank >= _coinAmount)
                 {
                     ItemClass _class = ItemClass.GetItemClass(Ingame_Coin, false);
@@ -242,7 +274,7 @@ namespace ServerTools
                         Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0}", Ingame_Coin));
                         return;
                     }
-                    ItemValue _item = new ItemValue(ItemClass.GetItem(Ingame_Coin).type, 1, 1, false, null, 1);
+                    ItemValue _item = new ItemValue(ItemClass.GetItem(Ingame_Coin).type, 1, 1, false, default(FastTags), 1);
                     int _maxAllowed = ItemClass.list[_item.type].Stacknumber.Value;
                     if (_coinAmount <= _maxAllowed)
                     {
@@ -260,11 +292,12 @@ namespace ServerTools
                                 belongsPlayerId = _cInfo.entityId
                             });
                             world.SpawnEntityInWorld(entityItem);
-                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+
+                            _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
                             world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                            PersistentContainer.Instance.Players[_cInfo.playerId].Bank = _bank - _coinAmount;
-                            PersistentContainer.Instance.Save();
-                            string _message = " you have received your {Name}. If your inventory is full, check the ground.";
+                            _sql = string.Format("UPDATE Players SET bank = {0} WHERE steamid = '{1}'", _bank - _coinAmount, _cInfo.playerId);
+                            SQL.FastQuery(_sql, "Bank");
+                            string _message = ", you have received your {Name}. If your inventory is full, check the ground.";
                             _message = _message.Replace("{Name}", Ingame_Coin);
                             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             using (StreamWriter sw = new StreamWriter(filepath, true))
@@ -278,19 +311,19 @@ namespace ServerTools
                     }
                     else
                     {
-                        string _message = " you can only withdraw a full stack at a time. The maximum stack size is {Max}.";
+                        string _message = ", you can only withdraw a full stack at a time. The maximum stack size is {Max}.";
                         _message = _message.Replace("{Max}", _maxAllowed.ToString());
                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " your bank account does not have enough to withdraw that value.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", your bank account does not have enough to withdraw that value.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you input an invalid integer. Type " + ChatHook.Command_Private + Command96 + " #.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you input an invalid integer. Type " + ChatHook.Command_Private + Command96 + " #.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -299,22 +332,27 @@ namespace ServerTools
             int _coinAmount;
             if (int.TryParse(_amount, out _coinAmount))
             {
-                int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
+                int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
                 if (_currentCoins >= _coinAmount)
                 {
-                    int _bank = PersistentContainer.Instance.Players[_cInfo.playerId].Bank;
-                    int _playerCoins = PersistentContainer.Instance.Players[_cInfo.playerId].PlayerCoins;
+                    string _sql = string.Format("SELECT bank, playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                    DataTable _result = SQL.TQuery(_sql);
+                    int _bank;
+                    int _playerSpentCoins;
+                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
+                    int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _playerSpentCoins);
+                    _result.Dispose();
                     double _percent = _coinAmount * 0.05;
                     int _newCoin = _coinAmount - (int)_percent;
-                    if (_bank + _newCoin <= Limit)
+                    double _newLimit = Limit + (Limit * 0.05);
+                    if (_bank + _coinAmount <= (int)_newLimit)
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].Bank = _bank + _newCoin;
-                        PersistentContainer.Instance.Players[_cInfo.playerId].PlayerCoins = _playerCoins - _newCoin;
-                        PersistentContainer.Instance.Save();
-                        string _message = " deposited {Value} {Name} from your wallet to your bank account. 5% fee was applied.";
+                        _sql = string.Format("UPDATE Players SET bank = {0}, playerSpentCoins = {1} WHERE steamid = '{2}'", _bank + _newCoin, _playerSpentCoins - _coinAmount, _cInfo.playerId);
+                        SQL.FastQuery(_sql, "Bank");
+                        string _message = "deposited {Value} {Name} from your wallet to your bank account. 5% fee was applied.";
                         _message = _message.Replace("{Value}", _coinAmount.ToString());
                         _message = _message.Replace("{Name}", Wallet.Coin_Name);
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         using (StreamWriter sw = new StreamWriter(filepath, true))
                         {
                             sw.WriteLine(string.Format("{0}: {1} has added {2} to their bank account from their wallet.", DateTime.Now, _cInfo.playerName, _newCoin));
@@ -325,20 +363,20 @@ namespace ServerTools
                     }
                     else
                     {
-                        string _message = " your bank can not hold this much. The bank can hold {Limit} total. You currently have {Value}.";
+                        string _message = "your bank can not hold this much. The bank can hold {Limit} total. You currently have {Value}.";
                         _message = _message.Replace("{Limit}", Limit.ToString());
                         _message = _message.Replace("{Value}", _bank.ToString());
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " your wallet does not have enough to deposit that value.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", your wallet does not have enough to deposit that value.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you input an invalid integer. Type " + ChatHook.Command_Private + Command97 + " #.", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you input an invalid integer. Type " + ChatHook.Command_Private + Command97 + " #.", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -347,16 +385,20 @@ namespace ServerTools
             int _coinAmount;
             if (int.TryParse(_amount, out _coinAmount))
             {
-                int _bank = PersistentContainer.Instance.Players[_cInfo.playerId].Bank;
-                int _playerCoins = PersistentContainer.Instance.Players[_cInfo.playerId].PlayerCoins;
+                string _sql = string.Format("SELECT bank, playerSpentCoins FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                DataTable _result = SQL.TQuery(_sql);
+                int _bank;
+                int _playerSpentCoins;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _playerSpentCoins);
+                _result.Dispose();
                 if (_bank >= _coinAmount)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].Bank = _bank - _coinAmount;
-                    PersistentContainer.Instance.Players[_cInfo.playerId].PlayerCoins = _playerCoins + _coinAmount;
-                    PersistentContainer.Instance.Save();
-                    string _message = " you have received your {Name}. It has gone to your wallet.";
+                    _sql = string.Format("UPDATE Players SET bank = {0}, playerSpentCoins = {1} WHERE steamid = '{2}'", _bank - _coinAmount, _playerSpentCoins + _coinAmount, _cInfo.playerId);
+                    SQL.FastQuery(_sql, "Bank");
+                    string _message = "you have received your {Name}. It has gone to your wallet.";
                     _message = _message.Replace("{Name}", Wallet.Coin_Name);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     using (StreamWriter sw = new StreamWriter(filepath, true))
                     {
                         sw.WriteLine(string.Format("{0}: {1} has removed {2} from their bank account into their wallet.", DateTime.Now, _cInfo.playerName, _coinAmount));
@@ -367,12 +409,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " your bank account does not have enough to withdraw that value.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", your bank account does not have enough to withdraw that value.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you input an invalid integer. Type " + ChatHook.Command_Private + Command98 + " #.", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you input an invalid integer. Type " + ChatHook.Command_Private + Command98 + " #.", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -390,7 +432,11 @@ namespace ServerTools
                     {
                         if (TransferId.ContainsValue(_id))
                         {
-                            int _bank = PersistentContainer.Instance.Players[_cInfo.playerId].Bank;
+                            string _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result = SQL.TQuery(_sql);
+                            int _bank;
+                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _bank);
+                            _result.Dispose();
                             if (_bank >= _amount)
                             {
                                 foreach (KeyValuePair<string, int> _accountInfo in TransferId)
@@ -401,18 +447,23 @@ namespace ServerTools
                                         if (_cInfo1 != null)
                                         {
                                             TransferId.Remove(_cInfo1.playerId);
-                                            int _bank1 = PersistentContainer.Instance.Players[_cInfo1.playerId].Bank;
-                                            PersistentContainer.Instance.Players[_cInfo1.playerId].Bank = _bank1 + _amount;
-                                            PersistentContainer.Instance.Players[_cInfo.playerId].Bank = _bank - _amount;
-                                            PersistentContainer.Instance.Save();
+                                            _sql = string.Format("UPDATE Players SET bank = {0} WHERE steamid = '{1}'", _bank - _amount, _cInfo.playerId);
+                                            SQL.FastQuery(_sql, "Bank");
+                                            _sql = string.Format("SELECT bank FROM Players WHERE steamid = '{0}'", _cInfo1.playerId);
+                                            DataTable _result1 = SQL.TQuery(_sql);
+                                            int _bank1;
+                                            int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _bank1);
+                                            _result1.Dispose();
+                                            _sql = string.Format("UPDATE Players SET bank = {0} WHERE steamid = '{1}'", _bank1 + _amount, _cInfo1.playerId);
+                                            SQL.FastQuery(_sql, "Bank");
                                             string _message = " you have sent {Value} from your bank to player {PlayerName}.";
                                             _message = _message.Replace("{Value}", _amount.ToString());
                                             _message = _message.Replace("{PlayerName}", _cInfo1.playerName);
-                                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                             _message = " you have received {Value} in to your bank from player {PlayerName}.";
                                             _message = _message.Replace("{Value}", _amount.ToString());
                                             _message = _message.Replace("{PlayerName}", _cInfo.playerName);
-                                            ChatHook.ChatMessage(_cInfo1, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                            ChatHook.ChatMessage(_cInfo1, ChatHook.Player_Name_Color + _cInfo.playerName + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                             return;
                                         }
                                     }
@@ -420,27 +471,27 @@ namespace ServerTools
                             }
                             else
                             {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you do not have enough in your bank account to make this transfer.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you do not have enough in your bank account to make this transfer.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                         else
                         {
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you input an invalid transfer Id. Ask for the transfer Id from the player you want to transfer to.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you input an invalid transfer Id. Ask for the transfer Id from the player you want to transfer to.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
                     {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you input an invalid transfer. Type " + ChatHook.Command_Private + Command99 + " Id #. Get the Id from the player you are transferring to.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you input an invalid transfer. Type " + ChatHook.Command_Private + Command99 + " Id #. Get the Id from the player you are transferring to.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you input an invalid transfer. Type " + ChatHook.Command_Private + Command99 + " Id #. Get the Id from the player you are transferring to.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you input an invalid transfer. Type " + ChatHook.Command_Private + Command99 + " Id #. Get the Id from the player you are transferring to.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you input an invalid transfer. Type " + ChatHook.Command_Private + Command99 + " Id #. Get the Id from the player you are transferring to.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you input an invalid transfer. Type " + ChatHook.Command_Private + Command99 + " Id #. Get the Id from the player you are transferring to.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }
