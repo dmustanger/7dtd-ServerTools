@@ -475,7 +475,7 @@ namespace ServerTools
                         int[] _integerValues;
                         if (dict1.TryGetValue(_id, out _integerValues))
                         {
-                            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
                             int _newAmount = _integerValues[2] * _count;
                             if (_currentCoins >= _newAmount)
                             {
@@ -502,7 +502,7 @@ namespace ServerTools
         public static void ShopPurchase(ClientInfo _cInfo, string _itemName, int _count, int _quality, int _price, string _playerName, int currentCoins)
         {
             World world = GameManager.Instance.World;
-            ItemValue itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, false, default(FastTags), 1);
+            ItemValue itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, false, null, 1);
             var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
             {
                 entityClass = EntityClass.FromString("item"),
@@ -514,7 +514,7 @@ namespace ServerTools
                 belongsPlayerId = _cInfo.entityId
             });
             world.SpawnEntityInWorld(entityItem);
-            _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
+            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
             world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _price);
             Log.Out(string.Format("Sold {0} to {1}.", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name, _cInfo.playerName));

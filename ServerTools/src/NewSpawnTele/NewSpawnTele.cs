@@ -43,11 +43,7 @@ namespace ServerTools
 
         public static void TeleNewSpawn(ClientInfo _cInfo)
         {
-            string _sql = string.Format("SELECT newSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            bool _newSpawn;
-            bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _newSpawn);
-            _result.Dispose();
+            bool _newSpawn = PersistentContainer.Instance.Players[_cInfo.playerId].NewSpawn;
             if (!_newSpawn)
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
@@ -60,18 +56,17 @@ namespace ServerTools
             if (Return)
             {
                 Vector3 Vec3 = _player.position;
-                string _position = _player.position.x + "," + _player.position.y + "," + _player.position.z;
-                string _sql1 = string.Format("UPDATE Players SET newTeleSpawn = '{0}' WHERE steamid = '{1}'", _position, _cInfo.playerId);
-                SQL.FastQuery(_sql1, "NewSpawnTele");
+                string _position = (int)_player.position.x + "," + (int)_player.position.y + "," + (int)_player.position.z;
+                PersistentContainer.Instance.Players[_cInfo.playerId].NewSpawnPosition = _position;
             }
             string[] _cords = New_Spawn_Tele_Position.Split(',');
             int x, y, z;
             int.TryParse(_cords[0], out x);
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
-            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
-            string _sql2 = string.Format("UPDATE Players SET newSpawn = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
-            SQL.FastQuery(_sql2, "NewSpawnTele");
+            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+            PersistentContainer.Instance.Players[_cInfo.playerId].NewSpawn = true;
+            PersistentContainer.Instance.Save();
             if (!Return)
             {
                 string _phrase526;
@@ -96,11 +91,8 @@ namespace ServerTools
 
         public static void ReturnPlayer(ClientInfo _cInfo)
         {
-            string _sql = string.Format("SELECT newTeleSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
-            _result.Dispose();
-            if (_pos != ("Unknown"))
+            string _pos = PersistentContainer.Instance.Players[_cInfo.playerId].NewSpawnPosition;
+            if (_pos != "")
             {
                 string[] _cords = { };
                 if (New_Spawn_Tele_Position.Contains(","))
@@ -121,9 +113,9 @@ namespace ServerTools
                     int.TryParse(_oldCords[0], out x);
                     int.TryParse(_oldCords[1], out y);
                     int.TryParse(_oldCords[2], out z);
-                    _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
-                    _sql = string.Format("UPDATE Players SET newTeleSpawn = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
-                    SQL.FastQuery(_sql, "NewSpawnTele");
+                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                    PersistentContainer.Instance.Players[_cInfo.playerId].NewSpawnPosition = "";
+                    PersistentContainer.Instance.Save();
                     string _phrase530;
                     if (!Phrases.Dict.TryGetValue(530, out _phrase530))
                     {

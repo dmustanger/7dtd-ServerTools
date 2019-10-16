@@ -17,36 +17,25 @@ namespace ServerTools
 
         public static void Check(ClientInfo _cInfo, string _message)
         {
-            string _sql = string.Format("SELECT lastLog FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            DateTime _lastLog;
-            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastLog);
-            _result.Dispose();
-            if (_lastLog.ToString() != "10/29/2000 7:30:00 AM")
+            DateTime _lastLog = PersistentContainer.Instance.Players[_cInfo.playerId].LastLog;
+            TimeSpan varTime = DateTime.Now - _lastLog;
+            double fractionalMinutes = varTime.TotalMinutes;
+            int _timepassed = (int)fractionalMinutes;
+            if (_timepassed >= Delay)
             {
-                TimeSpan varTime = DateTime.Now - _lastLog;
-                double fractionalMinutes = varTime.TotalMinutes;
-                int _timepassed = (int)fractionalMinutes;
-                if (_timepassed >= Delay)
-                {
-                    Exec(_cInfo, _message);
-                }
-                else
-                {
-                    int _timeleft = Delay - _timepassed;
-                    string _phrase795;
-                    if (!Phrases.Dict.TryGetValue(795, out _phrase795))
-                    {
-                        _phrase795 = " you can only make a report once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                    }
-                    _phrase795 = _phrase795.Replace("{DelayBetweenUses}", Delay.ToString());
-                    _phrase795 = _phrase795.Replace("{TimeRemaining}", _timeleft.ToString());
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase795 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
+                Exec(_cInfo, _message);
             }
             else
             {
-                Exec(_cInfo, _message);
+                int _timeleft = Delay - _timepassed;
+                string _phrase795;
+                if (!Phrases.Dict.TryGetValue(795, out _phrase795))
+                {
+                    _phrase795 = " you can only make a report once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                _phrase795 = _phrase795.Replace("{DelayBetweenUses}", Delay.ToString());
+                _phrase795 = _phrase795.Replace("{TimeRemaining}", _timeleft.ToString());
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase795 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -85,9 +74,9 @@ namespace ServerTools
                 _phrase797 = " your report has been sent to online administrators and logged.";
             }
             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase797 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-            string _sql = string.Format("UPDATE Players SET lastLog = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-            SQL.FastQuery(_sql, "Report");
-            Log.Out(string.Format("[SERVERTOOLS] Report sent by player name {0}", _cInfo.playerName));
+            PersistentContainer.Instance.Players[_cInfo.playerId].LastLog = DateTime.Now;
+            PersistentContainer.Instance.Save();
+            Log.Out(string.Format("[SERVERTOOLS] Report sent by player name {0} and saved to the report logs", _cInfo.playerName));
         }
     }
 }

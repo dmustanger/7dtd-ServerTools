@@ -64,11 +64,22 @@ namespace ServerTools
                                         if (_cInfo != null)
                                         {
                                             Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed minibike id {0}. Closest player is {1}", _entity.entityId, _cInfo.playerName));
+                                            continue;
                                         }
                                         else
                                         {
                                             Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed minibike id {0}", _entity.entityId));
+                                            continue;
                                         }
+                                    }
+                                }
+                                if (_name == "vehicleMinibike" || _name == "vehicleBicycle" || _name == "vehicleMotorcycle" || _name == "vehicle4x4Truck" || _name == "vehicleGyrocopter")
+                                {
+                                    if ((int)_entity.position.y >= 2000)
+                                    {
+                                        GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
+                                        Log.Out("[SERVERTOOLS] Entity cleanup: Removed {0} with entity id {1}", _name, _entity.entityId);
+                                        continue;
                                     }
                                 }
                             }

@@ -16,10 +16,12 @@ namespace ServerTools
             return "Usage:\n" +
                    "  1. Gimme off\n" +
                    "  2. Gimme on\n" +
+                   "  3. Gimme reset all\n" +
                    "  3. Gimme reset <steamId/entityId/playerName>\n" +
                    "1. Turn off gimme\n" +
                    "2. Turn on gimme\n" +
-                   "3. Reset the delay of a player's gimme command\n";
+                   "3. Reset the delay of all players\n" +
+                   "4. Reset the delay of a player\n";
         }
         public override string[] GetCommands()
         {
@@ -50,43 +52,34 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("reset"))
                 {
-                    if (_params[1].Length < 1)
+                    if (_params[1].ToLower().Equals("all"))
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}", _params[1]));
-                        return;
-                    }
-                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
-                    string _id;
-                    if (_cInfo != null)
-                    {
-                        _id = _cInfo.playerId;
+                        for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+                        {
+                            string _id = PersistentContainer.Instance.Players.SteamIDs[i];
+                            PersistentPlayer p = PersistentContainer.Instance.Players[_id];
+                            {
+                                PersistentContainer.Instance.Players[_id].LastGimme = DateTime.Now.AddYears(-1);
+                            }
+                        }
+                        PersistentContainer.Instance.Save();
+                        SdtdConsole.Instance.Output("Gimme delay reset for all players.");
                     }
                     else
                     {
-                        if (_params[1].Length != 17)
+                        PersistentPlayer p = PersistentContainer.Instance.Players[_params[1]];
+                        if (p != null)
                         {
-                            SdtdConsole.Instance.Output(string.Format("You can only use a player id or their name if online. Can not add Id: Invalid Id {0}", _params[1]));
-                            return;
+                            PersistentContainer.Instance.Players[_params[1]].LastGimme = DateTime.Now.AddYears(-1);
+                            PersistentContainer.Instance.Save();
+                            SdtdConsole.Instance.Output(string.Format("Gimme delay reset for {0}.", _params[1]));
                         }
                         else
                         {
-                            _id = _params[1];
+                            SdtdConsole.Instance.Output(string.Format("Can not reset player. Invalid Id {0}.", _params[1]));
+                            return;
                         }
-
                     }
-                    string _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _id);
-                    DataTable _result = SQL.TQuery(_sql);
-                    if (_result.Rows.Count != 0)
-                    {
-                        _sql = string.Format("UPDATE Players SET last_gimme = '10/29/2000 7:30:00 AM' WHERE steamid = '{0}'", _id);
-                        SQL.FastQuery(_sql, "GimmeConsole");
-                        SdtdConsole.Instance.Output(string.Format("Gimme delay reset for steamid {0}.", _id));
-                    }
-                    else
-                    {
-                        SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a Gimme delay to reset.", _params[1]));
-                    }
-                    _result.Dispose();
                 }
                 else
                 {

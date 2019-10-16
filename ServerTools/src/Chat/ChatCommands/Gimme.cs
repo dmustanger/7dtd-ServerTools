@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Xml;
 using UnityEngine;
@@ -9,8 +8,7 @@ namespace ServerTools
 {
     public class Gimme
     {
-        public static bool IsEnabled = false, IsRunning = false, Always_Show_Response = false,
-            Zombies = false;
+        public static bool IsEnabled = false, IsRunning = false, Zombies = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
         public static string Command24 = "gimme", Command25 = "gimmie";
         private const string file = "GimmeItems.xml";
@@ -83,34 +81,51 @@ namespace ServerTools
                         XmlElement _line = (XmlElement)subChild;
                         if (!_line.HasAttribute("item"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring items entry because of missing item attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing item attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("secondaryname"))
                         {
                             updateConfig = true;
                         }
-                        if (!_line.HasAttribute("min"))
+                        if (!_line.HasAttribute("minCount"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring items entry because of missing min attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing minCount attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("max"))
+                        if (!_line.HasAttribute("maxCount"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring items entry because of missing max attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing maxCount attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        int _min = 1;
-                        int _max = 1;
-                        if (!int.TryParse(_line.GetAttribute("min"), out _min))
+                        if (!_line.HasAttribute("minQuality"))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring items entry because of invalid (non-numeric) value for 'min' attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing minQuality attribute: {0}", subChild.OuterXml));
+                        }
+                        if (!_line.HasAttribute("maxQuality"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing maxQuality attribute: {0}", subChild.OuterXml));
+                        }
+                        int _minCount = 1, _maxCount = 1, _minQuality = 1, _maxQuality = 1;
+                        if (!int.TryParse(_line.GetAttribute("minCount"), out _minCount))
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (non-numeric) value for 'minCount' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("max"), out _max))
+                        if (!int.TryParse(_line.GetAttribute("maxCount"), out _maxCount))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring items entry because of invalid (non-numeric) value for 'max' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (non-numeric) value for 'maxCount' attribute: {0}", subChild.OuterXml));
                             continue;
+                        }
+                        if (!int.TryParse(_line.GetAttribute("minQuality"), out _minQuality))
+                        {
+
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (non-numeric) value for 'minQuality' attribute: {0}", subChild.OuterXml));
+                        }
+                        if (!int.TryParse(_line.GetAttribute("maxQuality"), out _maxQuality))
+                        {
+
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (non-numeric) value for 'maxQuality' attribute: {0}", subChild.OuterXml));
                         }
                         string _item = _line.GetAttribute("item");
                         ItemClass _class = ItemClass.GetItemClass(_item, true);
@@ -131,7 +146,7 @@ namespace ServerTools
                         }
                         if (!dict.ContainsKey(_item))
                         {
-                            int[] _c = new int[] { _min, _max };
+                            int[] _c = new int[] { _minCount, _maxCount, _minQuality, _maxQuality };
                             dict.Add(_item, _c);
                         }
                         if (!dict1.ContainsKey(_item))
@@ -163,38 +178,37 @@ namespace ServerTools
                         string _name;
                         if (dict1.TryGetValue(kvp.Key, out _name))
                         {
-                            sw.WriteLine(string.Format("        <item item=\"{0}\" secondaryname=\"{1}\" min=\"{2}\" max=\"{3}\" />", kvp.Key, _name, kvp.Value[0], kvp.Value[1]));
+                            sw.WriteLine(string.Format("        <item item=\"{0}\" secondaryname=\"{1}\" minCount=\"{2}\" maxCount=\"{3}\" minQuality=\"{4}\" maxQuality=\"{5}\" />", kvp.Key, _name, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
                         }
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <item item=\"drinkJarBoiledWater\" secondaryname=\"Bottled Water\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"drinkJarBeer\" secondaryname=\"Beer\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"foodCanChicken\" secondaryname=\"Can of Chicken\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"foodcanChili\" secondaryname=\"Can of Chilli\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"foodCropCorn\" secondaryname=\"Corn\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"foodCropPotato\" secondaryname=\"Potato\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"medicalBandage\" secondaryname=\"First Aid Bandage\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"drugPainkillers\" secondaryname=\"Pain Killers\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"resourceScrapBrass\" secondaryname=\"Scrap Brass\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"drugAntibiotics\" secondaryname=\"Antibiotics\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"foodMoldyBread\" secondaryname=\"Moldy Bread\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"resourceOil\" secondaryname=\"Oil\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"foodCornMeal\" secondaryname=\"Cornmeal\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"foodCropBlueberries\" secondaryname=\"Blueberries\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"foodCanHam\" secondaryname=\"Can of Ham\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"resourceCropCoffeeBeans\" secondaryname=\"Coffee Beans\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"casinoCoin\" secondaryname=\"Casino Coins\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"meleeBoneShiv\" secondaryname=\"Bone Shiv\" min=\"1\" max=\"1\" />");
-                    sw.WriteLine("        <item item=\"foodCanDogfood\" secondaryname=\"Can of Dog Food\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"foodBlueberryPie\" secondaryname=\"Blueberry Pie\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"foodCanPeas\" secondaryname=\"Can of Peas\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"foodCanCatfood\" secondaryname=\"Can of Cat Food\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"resourceScrapIron\" secondaryname=\"Scrap Iron\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"resourceCropGoldenrodPlant\" secondaryname=\"Goldenrod Plant\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"resourceClayLump\" secondaryname=\"Lumps of Clay\" min=\"1\" max=\"5\" />");
-                    sw.WriteLine("        <item item=\"foodRottingFlesh\" secondaryname=\"Rotting Flesh\" min=\"1\" max=\"5\" />");
+                    sw.WriteLine("        <item item=\"drinkJarBoiledWater\" secondaryname=\"Bottled Water\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"drinkJarBeer\" secondaryname=\"Beer\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"foodCanChicken\" secondaryname=\"Can of Chicken\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"foodcanChili\" secondaryname=\"Can of Chilli\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"foodCropCorn\" secondaryname=\"Corn\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"foodCropPotato\" secondaryname=\"Potato\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"medicalBandage\" secondaryname=\"First Aid Bandage\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"drugPainkillers\" secondaryname=\"Pain Killers\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"resourceScrapBrass\" secondaryname=\"Scrap Brass\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"drugAntibiotics\" secondaryname=\"Antibiotics\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"foodMoldyBread\" secondaryname=\"Moldy Bread\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"resourceOil\" secondaryname=\"Oil\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"foodCornMeal\" secondaryname=\"Cornmeal\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"foodCropBlueberries\" secondaryname=\"Blueberries\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"resourceCropCoffeeBeans\" secondaryname=\"Coffee Beans\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"casinoCoin\" secondaryname=\"Casino Coins\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"meleeToolKnifeBone\" secondaryname=\"Bone Shiv\" minCount=\"1\" maxCount=\"1\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"foodCanDogfood\" secondaryname=\"Can of Dog Food\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"foodBlueberryPie\" secondaryname=\"Blueberry Pie\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"foodCanPeas\" secondaryname=\"Can of Peas\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"foodCanCatfood\" secondaryname=\"Can of Cat Food\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"resourceScrapIron\" secondaryname=\"Scrap Iron\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"resourceCropGoldenrodPlant\" secondaryname=\"Goldenrod Plant\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"resourceClayLump\" secondaryname=\"Lumps of Clay\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <item item=\"foodRottingFlesh\" secondaryname=\"Rotting Flesh\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
                 }
                 sw.WriteLine("    </items>");
                 sw.WriteLine("</Gimme>");
@@ -222,126 +236,78 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void Checkplayer(ClientInfo _cInfo, bool _announce, string _playerName)
+        public static void Exec(ClientInfo _cInfo)
         {
-            bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    CommandCost(_cInfo, _announce);
+                    CommandCost(_cInfo);
                 }
                 else
                 {
-                    GiveItem(_cInfo, _announce);
+                    ZCheck(_cInfo);
                 }
             }
             else
             {
-                string _sql = string.Format("SELECT last_gimme FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TQuery(_sql);
-                if (_result.Rows.Count > 0)
+                DateTime _lastgimme = PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme;
+                TimeSpan varTime = DateTime.Now - _lastgimme;
+                double fractionalMinutes = varTime.TotalMinutes;
+                int _timepassed = (int)fractionalMinutes;
+                if (ReservedSlots.IsEnabled)
                 {
-                    DateTime _lastgimme;
-                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastgimme);
-                    _result.Dispose();
-                    TimeSpan varTime = DateTime.Now - _lastgimme;
-                    double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
-                    if (ReservedSlots.IsEnabled)
+                    if (ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                     {
-                        if (ReservedSlots.Reduced_Delay && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        DateTime _dt;
+                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                        if (DateTime.Now < _dt)
                         {
-                            DateTime _dt;
-                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                            if (DateTime.Now < _dt)
-                            {
-                                _donator = true;
-                                int _newDelay = Delay_Between_Uses / 2;
-                                if (_timepassed >= _newDelay)
-                                {
-                                    if (Wallet.IsEnabled && Command_Cost >= 1)
-                                    {
-                                        CommandCost(_cInfo, _announce);
-                                    }
-                                    else
-                                    {
-                                        GiveItem(_cInfo, _announce);
-                                    }
-                                }
-                                else
-                                {
-                                    int _timeleft = _newDelay - _timepassed;
-                                    string _phrase6;
-                                    if (!Phrases.Dict.TryGetValue(6, out _phrase6))
-                                    {
-                                        _phrase6 = " you can only use {CommandPrivate}{Command24} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                    }
-                                    _phrase6 = _phrase6.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                    _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
-                                    _phrase6 = _phrase6.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                                    _phrase6 = _phrase6.Replace("{Command24}", Command24);
-                                    if (_announce)
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color  + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                    }
-                                    else
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color  + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (!_donator)
-                    {
-                        if (_timepassed >= Delay_Between_Uses)
-                        {
-                            if (Wallet.IsEnabled && Command_Cost >= 1)
-                            {
-                                CommandCost(_cInfo, _announce);
-                            }
-                            else
-                            {
-                                GiveItem(_cInfo, _announce);
-                            }
-                        }
-                        else
-                        {
-                            int _timeleft = Delay_Between_Uses - _timepassed;
-                            string _phrase6;
-                            if (!Phrases.Dict.TryGetValue(6, out _phrase6))
-                            {
-                                _phrase6 = " you can only use {CommandPrivate}{Command24} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                            }
-                            _phrase6 = _phrase6.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                            _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
-                            _phrase6 = _phrase6.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                            _phrase6 = _phrase6.Replace("{Command24}", Command24);
-                            if (_announce)
-                            {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color  + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            }
-                            else
-                            {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color  + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
+                            int _delay = Delay_Between_Uses / 2;
+                            Time(_cInfo, _timepassed, _delay);
+                            return;
                         }
                     }
                 }
-                else
-                {
-                    _result.Dispose();
-                }
+                Time(_cInfo, _timepassed, Delay_Between_Uses);
             }
         }
 
-        public static void CommandCost(ClientInfo _cInfo, bool _announce)
+        public static void Time(ClientInfo _cInfo, int _timepassed, int _delay)
         {
-            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+            if (_timepassed >= _delay)
+            {
+                if (Wallet.IsEnabled && Command_Cost >= 1)
+                {
+                    CommandCost(_cInfo);
+                }
+                else
+                {
+                    ZCheck(_cInfo);
+                }
+            }
+            else
+            {
+                int _timeleft = _delay - _timepassed;
+                string _phrase6;
+                if (!Phrases.Dict.TryGetValue(6, out _phrase6))
+                {
+                    _phrase6 = " you can only use {CommandPrivate}{Command24} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                _phrase6 = _phrase6.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase6 = _phrase6.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase6 = _phrase6.Replace("{Command24}", Command24);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+        }
+
+        public static void CommandCost(ClientInfo _cInfo)
+        {
+            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
             if (_currentCoins >= Command_Cost)
             {
-                GiveItem(_cInfo, _announce);
+                ZCheck(_cInfo);
             }
             else
             {
@@ -351,49 +317,48 @@ namespace ServerTools
                     _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color  + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        private static void GiveItem(ClientInfo _cInfo, bool _announce)
+        private static void ZCheck(ClientInfo _cInfo)
         {
             if (Zombies)
             {
                 int itemOrEntity = random.Next(1, 9);
                 if (itemOrEntity != 4)
                 {
-                    RandomItem(_cInfo, _announce);
+                    RandomItem(_cInfo);
                 }
                 else
                 {
-                    RandomZombie(_cInfo, _announce);
+                    RandomZombie(_cInfo);
                 }
             }
             else
             {
-                RandomItem(_cInfo, _announce);
+                RandomItem(_cInfo);
             }
         }
 
-        private static void RandomItem(ClientInfo _cInfo, bool _announce)
+        private static void RandomItem(ClientInfo _cInfo)
         {
             string _randomItem = list.RandomObject();
             ItemValue _itemValue = ItemClass.GetItem(_randomItem, false);
             _itemValue = new ItemValue(_itemValue.type, false);
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            int _quality = 1;
-            if (_itemValue.HasQuality)
+            int[] _itemData;
+            if (dict.TryGetValue(_randomItem, out _itemData))
             {
-                _quality = random.Next(1, 7);
-                _itemValue.Quality = _quality;
-            }
-            int[] _counts;
-            if (dict.TryGetValue(_randomItem, out _counts))
-            {
-                int _count = random.Next(_counts[0], _counts[1] + 1);
+                int _count = random.Next(_itemData[0], _itemData[1] + 1);
                 ItemStack _itemDrop = new ItemStack(_itemValue, _count);
+                int _qualityMin = 1, _qualityMax = 1;
+                if (_itemValue.HasQuality)
+                {
+                    _qualityMin = _itemData[2];
+                    _qualityMax = _itemData[3];
+                }
                 ItemValue itemValue;
-                itemValue = new ItemValue(ItemClass.GetItem(_randomItem).type, _quality, _quality, false, default(FastTags), 1);
+                itemValue = new ItemValue(ItemClass.GetItem(_randomItem).type, _qualityMin, _qualityMax, false, null, 1);
                 World world = GameManager.Instance.World;
                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                 {
@@ -406,7 +371,7 @@ namespace ServerTools
                     belongsPlayerId = _cInfo.entityId
                 });
                 world.SpawnEntityInWorld(entityItem);
-                _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
+                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                 string _phrase7;
                 if (!Phrases.Dict.TryGetValue(7, out _phrase7))
@@ -419,25 +384,17 @@ namespace ServerTools
                 {
                     _phrase7 = _phrase7.Replace("{ItemName}", _name);
                 }
-                if (_announce)
-                {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase7 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                }
-                else
-                {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase7 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                string _sql;
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase7 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 }
-                _sql = string.Format("UPDATE Players SET last_gimme = '{0}' WHERE steamid = '{1}'", DateTime.Now.ToString(), _cInfo.playerId);
-                SQL.FastQuery(_sql, "Gimme");
+                PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+                PersistentContainer.Instance.Save();
             }
         }
 
-        private static void RandomZombie(ClientInfo _cInfo, bool _announce)
+        private static void RandomZombie(ClientInfo _cInfo)
         {
             Log.Out("[SERVERTOOLS] Spawning zombie for player's gimme");
             int _rndZ = random.Next(1, 4);
@@ -458,21 +415,13 @@ namespace ServerTools
             {
                 _phrase807 = "OH NO! How did that get in there? You have received a zombie.";
             }
-            if (_announce)
-            {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase807 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-            }
-            else
-            {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase807 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-            }
-            string _sql;
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase807 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             if (Wallet.IsEnabled && Command_Cost >= 1)
             {
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
             }
-            _sql = string.Format("UPDATE Players SET last_gimme = '{0}' WHERE steamid = '{1}'", DateTime.Now.ToString(), _cInfo.playerId);
-            SQL.FastQuery(_sql, "Gimme");
+            PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+            PersistentContainer.Instance.Save();
         }
     }
 }

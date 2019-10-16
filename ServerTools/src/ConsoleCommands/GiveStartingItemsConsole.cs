@@ -65,7 +65,7 @@ namespace ServerTools
                 World world = GameManager.Instance.World;
                 foreach (KeyValuePair<string, int[]> kvp in StartingItems.startItemList)
                 {
-                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], true, default(FastTags), 1);
+                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], true, null, 1);
                     var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                     {
                         entityClass = EntityClass.FromString("item"),
@@ -77,7 +77,7 @@ namespace ServerTools
                         belongsPlayerId = _cInfo.entityId
                     });
                     world.SpawnEntityInWorld(entityItem);
-                    _cInfo.SendPackage(new NetPackageEntityCollect(entityItem.entityId, _cInfo.entityId));
+                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                     world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                     SdtdConsole.Instance.Output(string.Format("Spawned starting item {0} for {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
                     Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));

@@ -61,22 +61,10 @@ namespace ServerTools
             if (Mute.Count >= Votes_Needed)
             {
                 MutePlayer.Mutes.Add(_playerMute.playerId);
-                string _name = SQL.EscapeString(_playerMute.playerName);
-                if (_name.Contains("!") || _name.Contains("@") || _name.Contains("#") || _name.Contains("$") || _name.Contains("%") || _name.Contains("^") || _name.Contains("&") || _name.Contains("*") || _name.Contains("'") || _name.Contains(";"))
-                {
-                    _name = _name.Replace("!", "");
-                    _name = _name.Replace("@", "");
-                    _name = _name.Replace("#", "");
-                    _name = _name.Replace("$", "");
-                    _name = _name.Replace("%", "");
-                    _name = _name.Replace("^", "");
-                    _name = _name.Replace("&", "");
-                    _name = _name.Replace("*", "");
-                    _name = _name.Replace("'", "");
-                    _name = _name.Replace(";", "");
-                }
-                string _sql = string.Format("UPDATE Players SET muteTime = 60, muteName = '{0}', muteDate = '{1}' WHERE steamid = '{2}'", _name, DateTime.Now, _playerMute.playerId);
-                SQL.FastQuery(_sql, "MuteVote");
+                PersistentContainer.Instance.Players[_playerMute.playerId].MuteTime = 60;
+                PersistentContainer.Instance.Players[_playerMute.playerId].MuteName = _playerMute.playerName;
+                PersistentContainer.Instance.Players[_playerMute.playerId].MuteDate = DateTime.Now;
+                PersistentContainer.Instance.Save();
                 string _phrase777;
                 if (!Phrases.Dict.TryGetValue(777, out _phrase777))
                 {

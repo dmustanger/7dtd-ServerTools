@@ -8,14 +8,14 @@ namespace ServerTools
 {
     public class TeleportHome
     {
-        public static bool IsEnabled = false, Set_Home2_Enabled = false, Set_Home2_Reserved_Only = false, PvP_Check = false, Zombie_Check = false, Vehicle = false;
+        public static bool IsEnabled = false, Set_Home2_Enabled = false, Set_Home2_Reserved_Only = false, Home2_Delay = false, PvP_Check = false, Zombie_Check = false, Vehicle = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
         public static string Command1 = "sethome", Command2 = "home", Command3 = "fhome", Command4 = "delhome", Command5 = "sethome2", 
             Command6 = "home2", Command7 = "fhome2", Command8 = "delhome2", Command9 = "go";
         public static Dictionary<int, DateTime> Invite = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> FriendPosition = new Dictionary<int, string>();
 
-        public static void SetHome(ClientInfo _cInfo, string _playerName, bool _announce)
+        public static void SetHome1(ClientInfo _cInfo)
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
@@ -32,21 +32,14 @@ namespace ServerTools
                 if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                 {
                     string _sposition = x + "," + y + "," + z;
-                    string _sql = string.Format("UPDATE Players SET homeposition = '{0}' WHERE steamid = '{1}'", _sposition, _cInfo.playerId);
-                    SQL.FastQuery(_sql, "TeleportHome");
+                    PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1 = _sposition;
+                    PersistentContainer.Instance.Save();
                     string _phrase10;
                     if (!Phrases.Dict.TryGetValue(10, out _phrase10))
                     {
                         _phrase10 = " your home has been saved.";
                     }
-                    if (_announce)
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase10 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    }
-                    else
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase10 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase10 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -55,14 +48,7 @@ namespace ServerTools
                     {
                         _phrase817 = " you are not inside your own or a friend's claimed space. You can not save this as your home.";
                     }
-                    if (_announce)
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase817 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    }
-                    else
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase817 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase817 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -71,7 +57,7 @@ namespace ServerTools
             }
         }
 
-        public static void Check(ClientInfo _cInfo, string _playerName, bool _announce)
+        public static void Exec1(ClientInfo _cInfo)
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
@@ -84,170 +70,100 @@ namespace ServerTools
                         if (!Phrases.Dict.TryGetValue(826, out _phrase826))
                         {
                             _phrase826 = " you can not teleport home with a vehicle.";
-                            if (_announce)
-                            {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            }
-                            else
-                            {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                         return;
                     }
                 }
-                string _sql = string.Format("SELECT homeposition, lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TQuery(_sql);
-                DateTime _lastsethome;
-                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _lastsethome);
-                string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
-                _result.Dispose();
-                if (_pos == "Unknown")
+                string _homePos = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1;
+                if (_homePos == "")
                 {
                     string _phrase11;
                     if (!Phrases.Dict.TryGetValue(11, out _phrase11))
                     {
                         _phrase11 = " you do not have a home saved.";
                     }
-                    if (_announce)
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase11 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    }
-                    else
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase11 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase11 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    bool _donator = false;
                     if (Delay_Between_Uses < 1)
                     {
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
-                            CommandCost(_cInfo, _pos, _announce);
+                            CommandCost(_cInfo, _homePos);
                         }
                         else
                         {
-                            Home(_cInfo, _pos, _announce);
+                            TeleHome1(_cInfo, _homePos);
                         }
                     }
                     else
                     {
-                        if (_lastsethome.ToString() == "10/29/2000 7:30:00 AM")
+                        DateTime _lastsethome = PersistentContainer.Instance.Players[_cInfo.playerId].LastHome1;
+                        TimeSpan varTime = DateTime.Now - _lastsethome;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        int _timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                         {
-                            if (Wallet.IsEnabled && Command_Cost >= 1)
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                CommandCost(_cInfo, _pos, _announce);
-                            }
-                            else
-                            {
-                                Home(_cInfo, _pos, _announce);
-                            }
-                        }
-                        else
-                        {
-                            TimeSpan varTime = DateTime.Now - _lastsethome;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
-                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                            {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        _donator = true;
-                                        int _newDelay = Delay_Between_Uses / 2;
-                                        if (_timepassed >= _newDelay)
-                                        {
-                                            if (Wallet.IsEnabled && Command_Cost >= 1)
-                                            {
-                                                CommandCost(_cInfo, _pos, _announce);
-                                            }
-                                            else
-                                            {
-                                                Home(_cInfo, _pos, _announce);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            int _timeleft = _newDelay - _timepassed;
-                                            string _phrase13;
-                                            if (!Phrases.Dict.TryGetValue(13, out _phrase13))
-                                            {
-                                                _phrase13 = " you can only use {CommandPrivate}{Command2} or {CommandPrivate}{Command6} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                            }
-                                            _phrase13 = _phrase13.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                            _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
-                                            _phrase13 = _phrase13.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                                            _phrase13 = _phrase13.Replace("{Command2}", Command2);
-                                            _phrase13 = _phrase13.Replace("{Command6}", Command6);
-                                            if (_announce)
-                                            {
-                                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                            }
-                                            else
-                                            {
-                                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (!_donator)
-                            {
-                                if (_timepassed >= Delay_Between_Uses)
-                                {
-                                    if (Wallet.IsEnabled && Command_Cost >= 1)
-                                    {
-                                        CommandCost(_cInfo, _pos, _announce);
-                                    }
-                                    else
-                                    {
-                                        Home(_cInfo, _pos, _announce);
-                                    }
-                                }
-                                else
-                                {
-                                    int _timeleft = Delay_Between_Uses - _timepassed;
-                                    string _phrase13;
-                                    if (!Phrases.Dict.TryGetValue(13, out _phrase13))
-                                    {
-                                        _phrase13 = " you can only use {CommandPrivate}{Command2} or {CommandPrivate}{Command6} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                    }
-                                    _phrase13 = _phrase13.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                                    _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
-                                    _phrase13 = _phrase13.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                                    _phrase13 = _phrase13.Replace("{Command2}", Command2);
-                                    _phrase13 = _phrase13.Replace("{Command6}", Command6);
-                                    if (_announce)
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                    }
-                                    else
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
+                                    int _delay = Delay_Between_Uses / 2;
+                                    Time1(_cInfo, _homePos, _timepassed, _delay);
+                                    return;
                                 }
                             }
                         }
+                        Time1(_cInfo, _homePos, _timepassed, Delay_Between_Uses);
                     }
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", you can not use home commands while signed up for or inside an event.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you can not use home commands while signed up for or inside an event.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        public static void CommandCost(ClientInfo _cInfo, string _pos, bool _announce)
+        public static void Time1(ClientInfo _cInfo, string _pos, int _timepassed, int _delay)
         {
-            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+            if (_timepassed >= _delay)
+            {
+                if (Wallet.IsEnabled && Command_Cost >= 1)
+                {
+                    CommandCost(_cInfo, _pos);
+                }
+                else
+                {
+                    TeleHome1(_cInfo, _pos);
+                }
+            }
+            else
+            {
+                int _timeleft = _delay - _timepassed;
+                string _phrase13;
+                if (!Phrases.Dict.TryGetValue(13, out _phrase13))
+                {
+                    _phrase13 = " you can only use {CommandPrivate}{Command2} or {CommandPrivate}{Command6} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                _phrase13 = _phrase13.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase13 = _phrase13.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase13 = _phrase13.Replace("{Command2}", Command2);
+                _phrase13 = _phrase13.Replace("{Command6}", Command6);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+        }
+
+        public static void CommandCost(ClientInfo _cInfo, string _pos)
+        {
+            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
             if (_currentCoins >= Command_Cost)
             {
-                Home(_cInfo, _pos, _announce);
+                TeleHome1(_cInfo, _pos);
             }
             else
             {
@@ -261,7 +177,7 @@ namespace ServerTools
             }
         }
 
-        private static void Home(ClientInfo _cInfo, string _pos, bool _announce)
+        private static void TeleHome1(ClientInfo _cInfo, string _pos)
         {
             int x, y, z;
             string[] _cords = _pos.Split(',');
@@ -283,49 +199,31 @@ namespace ServerTools
                     return;
                 }
             }
-            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
-            string _sql;
+            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
             if (Wallet.IsEnabled && Command_Cost >= 1)
             {
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
             }
-            _sql = string.Format("UPDATE Players SET lastsethome = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-            SQL.FastQuery(_sql, "TeleportHome");
+            PersistentContainer.Instance.Players[_cInfo.playerId].LastHome1 = DateTime.Now;
+            PersistentContainer.Instance.Save();
         }
 
-        public static void DelHome(ClientInfo _cInfo, string _playerName, bool _announce)
+        public static void DelHome1(ClientInfo _cInfo)
         {
-            string _sql = string.Format("SELECT homeposition FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
-            _result.Dispose();
-            if (_pos != "Unknown")
+            string _homePos = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1;
+            if (_homePos != "")
             {
-                if (_announce)
-                {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", deleted home.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                }
-                else
-                {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", deleted home.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                _sql = string.Format("UPDATE Players SET homeposition = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
-                SQL.FastQuery(_sql, "TeleportHome");
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " deleted saved home position.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1 = "";
+                PersistentContainer.Instance.Save();
             }
             else
             {
-                if (_announce)
-                {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", no home to delete.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                }
-                else
-                {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", no home to delete.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", no home to delete.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        public static void SetHome2(ClientInfo _cInfo, string _playerName, bool _announce)
+        public static void SetHome2(ClientInfo _cInfo)
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
@@ -342,21 +240,14 @@ namespace ServerTools
                 if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                 {
                     string _sposition = x + "," + y + "," + z;
-                    string _sql = string.Format("UPDATE Players SET homeposition2 = '{0}' WHERE steamid = '{1}'", _sposition, _cInfo.playerId);
-                    SQL.FastQuery(_sql, "TeleportHome");
+                    PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1 = _sposition;
+                    PersistentContainer.Instance.Save();
                     string _phrase607;
                     if (!Phrases.Dict.TryGetValue(607, out _phrase607))
                     {
                         _phrase607 = " your home2 has been saved.";
                     }
-                    if (_announce)
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase607 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    }
-                    else
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase607 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase607 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -365,23 +256,16 @@ namespace ServerTools
                     {
                         _phrase817 = " you are not inside your own or a friend's claimed space. You can not save this as your home.";
                     }
-                    if (_announce)
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase817 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    }
-                    else
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase817 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase817 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", you can not use home commands while signed up for or inside an event.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you can not use home commands while signed up for or inside an event.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        public static void Check2(ClientInfo _cInfo, string _playerName, bool _announce)
+        public static void Exec2(ClientInfo _cInfo)
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
@@ -394,170 +278,108 @@ namespace ServerTools
                         if (!Phrases.Dict.TryGetValue(826, out _phrase826))
                         {
                             _phrase826 = " you can not teleport home with a vehicle.";
-                            if (_announce)
-                            {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            }
-                            else
-                            {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                         return;
                     }
                 }
-                string _sql = string.Format("SELECT homeposition2, lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TQuery(_sql);
-                string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
-                DateTime _lastsethome;
-                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _lastsethome);
-                _result.Dispose();
-                if (_pos == "Unknown")
+                string _homePos2 = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2;
+                if (_homePos2 == "")
                 {
                     string _phrase11;
                     if (!Phrases.Dict.TryGetValue(11, out _phrase11))
                     {
                         _phrase11 = " you do not have a home saved.";
                     }
-                    if (_announce)
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase11 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    }
-                    else
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase11 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase11 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    bool _donator = false;
                     if (Delay_Between_Uses < 1)
                     {
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
-                            CommandCost2(_cInfo, _pos, _announce);
+                            CommandCost2(_cInfo, _homePos2);
                         }
                         else
                         {
-                            Home2(_cInfo, _pos, _announce);
+                            Home2(_cInfo, _homePos2);
                         }
                     }
                     else
                     {
-                        if (_lastsethome.ToString() == "10/29/2000 7:30:00 AM")
+                        DateTime _lastsethome = new DateTime();
+                        if (Home2_Delay)
                         {
-                            if (Wallet.IsEnabled && Command_Cost >= 1)
-                            {
-                                CommandCost2(_cInfo, _pos, _announce);
-                            }
-                            else
-                            {
-                                Home2(_cInfo, _pos, _announce);
-                            }
+                            _lastsethome = PersistentContainer.Instance.Players[_cInfo.playerId].LastHome2;
                         }
                         else
                         {
-                            TimeSpan varTime = DateTime.Now - _lastsethome;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
-                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                            _lastsethome = PersistentContainer.Instance.Players[_cInfo.playerId].LastHome1;
+                        }
+                        TimeSpan varTime = DateTime.Now - _lastsethome;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        int _timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                        {
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        _donator = true;
-                                        int _newDelay = Delay_Between_Uses / 2;
-                                        if (_timepassed >= _newDelay)
-                                        {
-                                            if (Wallet.IsEnabled && Command_Cost >= 1)
-                                            {
-                                                CommandCost2(_cInfo, _pos, _announce);
-                                            }
-                                            else
-                                            {
-                                                Home2(_cInfo, _pos, _announce);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            int _timeleft = _newDelay - _timepassed;
-                                            string _phrase13;
-                                            if (!Phrases.Dict.TryGetValue(13, out _phrase13))
-                                            {
-                                                _phrase13 = " you can only use {CommandPrivate}{Command2} or {CommandPrivate}{Command6} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                            }
-                                            _phrase13 = _phrase13.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                            _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
-                                            _phrase13 = _phrase13.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                                            _phrase13 = _phrase13.Replace("{Command2}", Command2);
-                                            _phrase13 = _phrase13.Replace("{Command6}", Command6);
-                                            if (_announce)
-                                            {
-                                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                            }
-                                            else
-                                            {
-                                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (!_donator)
-                            {
-                                if (_timepassed >= Delay_Between_Uses)
-                                {
-                                    if (Wallet.IsEnabled && Command_Cost >= 1)
-                                    {
-                                        CommandCost2(_cInfo, _pos, _announce);
-                                    }
-                                    else
-                                    {
-                                        Home2(_cInfo, _pos, _announce);
-                                    }
-                                }
-                                else
-                                {
-                                    int _timeleft = Delay_Between_Uses - _timepassed;
-                                    string _phrase13;
-                                    if (!Phrases.Dict.TryGetValue(13, out _phrase13))
-                                    {
-                                        _phrase13 = " you can only use {CommandPrivate}{Command2} or {CommandPrivate}{Command6} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                    }
-                                    _phrase13 = _phrase13.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                                    _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
-                                    _phrase13 = _phrase13.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                                    _phrase13 = _phrase13.Replace("{Command2}", Command2);
-                                    _phrase13 = _phrase13.Replace("{Command6}", Command6);
-                                    if (_announce)
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                    }
-                                    else
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
+                                    int _delay = Delay_Between_Uses / 2;
+                                    Time2(_cInfo, _homePos2, _timepassed, _delay);
+                                    return;
                                 }
                             }
                         }
+                        Time2(_cInfo, _homePos2, _timepassed, Delay_Between_Uses);
                     }
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", you can not use home commands while signed up for or inside an event.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you can not use home commands while signed up for or inside an event.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        public static void CommandCost2(ClientInfo _cInfo, string _pos, bool _announce)
+        public static void Time2(ClientInfo _cInfo, string _pos, int _timepassed, int _delay)
         {
-            int currentCoins = Wallet.GetcurrentCoins(_cInfo);
+            if (_timepassed >= _delay)
+            {
+                if (Wallet.IsEnabled && Command_Cost >= 1)
+                {
+                    CommandCost2(_cInfo, _pos);
+                }
+                else
+                {
+                    Home2(_cInfo, _pos);
+                }
+            }
+            else
+            {
+                int _timeleft = _delay - _timepassed;
+                string _phrase13;
+                if (!Phrases.Dict.TryGetValue(13, out _phrase13))
+                {
+                    _phrase13 = " you can only use {CommandPrivate}{Command2} or {CommandPrivate}{Command6} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                _phrase13 = _phrase13.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase13 = _phrase13.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase13 = _phrase13.Replace("{Command2}", Command2);
+                _phrase13 = _phrase13.Replace("{Command6}", Command6);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+        }
+
+        public static void CommandCost2(ClientInfo _cInfo, string _pos)
+        {
+            int currentCoins = Wallet.GetCurrentCoins(_cInfo);
             if (currentCoins >= Command_Cost)
             {
-                Home2(_cInfo, _pos, _announce);
+                Home2(_cInfo, _pos);
             }
             else
             {
@@ -571,7 +393,7 @@ namespace ServerTools
             }
         }
 
-        private static void Home2(ClientInfo _cInfo, string _pos, bool _announce)
+        private static void Home2(ClientInfo _cInfo, string _pos)
         {
             int x, y, z;
             string[] _cords = _pos.Split(',');
@@ -593,65 +415,38 @@ namespace ServerTools
                     return;
                 }
             }
-            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
+            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
-            string _sql = string.Format("UPDATE Players SET lastsethome = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-            SQL.FastQuery(_sql, "TeleportHome");
+            PersistentContainer.Instance.Players[_cInfo.playerId].LastHome2 = DateTime.Now;
+            PersistentContainer.Instance.Save();
         }
 
-        public static void DelHome2(ClientInfo _cInfo, string _playerName, bool _announce)
+        public static void DelHome2(ClientInfo _cInfo)
         {
-            string _sql = string.Format("SELECT homeposition2 FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-            DataTable _result = SQL.TQuery(_sql);
-            string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
-            _result.Dispose();
-            if (_pos != "Unknown")
+            string _homePos2 = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2;
+            if (_homePos2 != "")
             {
-                if (_announce)
+                string _phrase609;
+                if (!Phrases.Dict.TryGetValue(609, out _phrase609))
                 {
-                    string _phrase609;
-                    if (!Phrases.Dict.TryGetValue(609, out _phrase609))
-                    {
-                        _phrase609 = " your home2 has been removed.";
-                    }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase609 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    _phrase609 = " your home2 has been removed.";
                 }
-                else
-                {
-                    string _phrase609;
-                    if (!Phrases.Dict.TryGetValue(609, out _phrase609))
-                    {
-                        _phrase609 = " your home2 has been removed.";
-                    }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase609 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                _sql = string.Format("UPDATE Players SET homeposition2 = 'Unknown' WHERE steamid = '{0}'", _cInfo.playerId);
-                SQL.FastQuery(_sql, "TeleportHome");
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase609 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2 = "";
+                PersistentContainer.Instance.Save();
             }
             else
             {
-                if (_announce)
+                string _phrase608;
+                if (!Phrases.Dict.TryGetValue(608, out _phrase608))
                 {
-                    string _phrase608;
-                    if (!Phrases.Dict.TryGetValue(608, out _phrase608))
-                    {
-                        _phrase608 = " you do not have a home2 saved.";
-                    }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase608 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    _phrase608 = " you do not have a home2 saved.";
                 }
-                else
-                {
-                    string _phrase608;
-                    if (!Phrases.Dict.TryGetValue(608, out _phrase608))
-                    {
-                        _phrase608 = " you do not have a home2 saved.";
-                    }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase608 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase608 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        public static void FCheck(ClientInfo _cInfo, string _playerName, bool _announce)
+        public static void FExec1(ClientInfo _cInfo)
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
@@ -664,26 +459,13 @@ namespace ServerTools
                         if (!Phrases.Dict.TryGetValue(826, out _phrase826))
                         {
                             _phrase826 = " you can not teleport home with a vehicle.";
-                            if (_announce)
-                            {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            }
-                            else
-                            {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                         return;
                     }
                 }
-                World world = GameManager.Instance.World;
-                string _sql = string.Format("SELECT homeposition, lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TQuery(_sql);
-                string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
-                DateTime _lastsethome;
-                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _lastsethome);
-                _result.Dispose();
-                if (_pos == "Unknown")
+                string _homePos1 = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1;
+                if (_homePos1 == "")
                 {
                     string _phrase11;
                     if (!Phrases.Dict.TryGetValue(11, out _phrase11))
@@ -691,145 +473,88 @@ namespace ServerTools
                         _phrase11 = " you do not have a home saved.";
                     }
                     _phrase11 = _phrase11.Replace("{PlayerName}", _cInfo.playerName);
-                    if (_announce)
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase11 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    }
-                    else
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase11 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase11 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    bool _donator = false;
                     if (Delay_Between_Uses < 1)
                     {
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
-                            FCommandCost(_cInfo, _pos, _announce);
+                            FCommandCost1(_cInfo, _homePos1);
                         }
                         else
                         {
-                            FHome(_cInfo, _pos, _announce);
+                            FHome1(_cInfo, _homePos1);
                         }
                     }
                     else
                     {
-                        if (_lastsethome.ToString() == "10/29/2000 7:30:00 AM")
+                        DateTime _lastsethome = PersistentContainer.Instance.Players[_cInfo.playerId].LastHome1;
+                        TimeSpan varTime = DateTime.Now - _lastsethome;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        int _timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                         {
-                            if (Wallet.IsEnabled && Command_Cost >= 1)
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                FCommandCost(_cInfo, _pos, _announce);
-                            }
-                            else
-                            {
-                                FHome(_cInfo, _pos, _announce);
-                            }
-                        }
-                        else
-                        {
-                            TimeSpan varTime = DateTime.Now - _lastsethome;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
-                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                            {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        _donator = true;
-                                        int _newDelay = Delay_Between_Uses / 2;
-                                        if (_timepassed >= _newDelay)
-                                        {
-                                            if (Wallet.IsEnabled && Command_Cost >= 1)
-                                            {
-                                                FCommandCost(_cInfo, _pos, _announce);
-                                            }
-                                            else
-                                            {
-                                                FHome(_cInfo, _pos, _announce);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            int _timeleft = _newDelay - _timepassed;
-                                            string _phrase13;
-                                            if (!Phrases.Dict.TryGetValue(13, out _phrase13))
-                                            {
-                                                _phrase13 = " you can only use {CommandPrivate}{Command2} or {CommandPrivate}{Command6} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                            }
-                                            _phrase13 = _phrase13.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                            _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
-                                            _phrase13 = _phrase13.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                                            _phrase13 = _phrase13.Replace("{Command2}", Command2);
-                                            _phrase13 = _phrase13.Replace("{Command6}", Command6);
-                                            if (_announce)
-                                            {
-                                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                            }
-                                            else
-                                            {
-                                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (!_donator)
-                            {
-                                if (_timepassed >= Delay_Between_Uses)
-                                {
-                                    if (Wallet.IsEnabled && Command_Cost >= 1)
-                                    {
-                                        FCommandCost(_cInfo, _pos, _announce);
-                                    }
-                                    else
-                                    {
-                                        FHome(_cInfo, _pos, _announce);
-                                    }
-                                }
-                                else
-                                {
-                                    int _timeleft = Delay_Between_Uses - _timepassed;
-                                    string _phrase815;
-                                    if (!Phrases.Dict.TryGetValue(815, out _phrase815))
-                                    {
-                                        _phrase815 = " you can only use {CommandPrivate}{Command3} or {CommandPrivate}{Command7} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                    }
-                                    _phrase815 = _phrase815.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                                    _phrase815 = _phrase815.Replace("{TimeRemaining}", _timeleft.ToString());
-                                    _phrase815 = _phrase815.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                                    _phrase815 = _phrase815.Replace("{Command3}", Command3);
-                                    _phrase815 = _phrase815.Replace("{Command7}", Command7);
-                                    if (_announce)
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase815 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                    }
-                                    else
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase815 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
+                                    int _delay = Delay_Between_Uses / 2;
+
+                                    FTime1(_cInfo, _homePos1, _timepassed, _delay);
+                                    return;
                                 }
                             }
                         }
+                        FTime1(_cInfo, _homePos1, _timepassed, Delay_Between_Uses);
                     }
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", you can not use home commands while signed up for or inside an event.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you can not use home commands while signed up for or inside an event.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        public static void FCommandCost(ClientInfo _cInfo, string _pos, bool _announce)
+        public static void FTime1(ClientInfo _cInfo, string _pos, int _timepassed, int _delay)
         {
-            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+            if (_timepassed >= _delay)
+            {
+                if (Wallet.IsEnabled && Command_Cost >= 1)
+                {
+                    FCommandCost1(_cInfo, _pos);
+                }
+                else
+                {
+                    FHome1(_cInfo, _pos);
+                }
+            }
+            else
+            {
+                int _timeleft = _delay - _timepassed;
+                string _phrase13;
+                if (!Phrases.Dict.TryGetValue(13, out _phrase13))
+                {
+                    _phrase13 = " you can only use {CommandPrivate}{Command2} or {CommandPrivate}{Command6} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                _phrase13 = _phrase13.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase13 = _phrase13.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase13 = _phrase13.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase13 = _phrase13.Replace("{Command2}", Command2);
+                _phrase13 = _phrase13.Replace("{Command6}", Command6);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase13 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+        }
+
+        public static void FCommandCost1(ClientInfo _cInfo, string _pos)
+        {
+            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
             if (_currentCoins >= Command_Cost)
             {
-                FHome(_cInfo, _pos, _announce);
+                FHome1(_cInfo, _pos);
             }
             else
             {
@@ -843,7 +568,7 @@ namespace ServerTools
             }
         }
 
-        private static void FHome(ClientInfo _cInfo, string _pos, bool _announce)
+        private static void FHome1(ClientInfo _cInfo, string _pos)
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             if (PvP_Check)
@@ -866,10 +591,10 @@ namespace ServerTools
             int.TryParse(_cords[0], out x);
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
-            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
+            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
-            string _sql = string.Format("UPDATE Players SET lastsethome = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-            SQL.FastQuery(_sql, "TeleportHome");
+            PersistentContainer.Instance.Players[_cInfo.playerId].LastHome1 = DateTime.Now;
+            PersistentContainer.Instance.Save();
             string _phrase818;
             if (!Phrases.Dict.TryGetValue(818, out _phrase818))
             {
@@ -878,7 +603,7 @@ namespace ServerTools
             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase818 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
-        public static void FCheck2(ClientInfo _cInfo, string _playerName, bool _announce)
+        public static void FExec2(ClientInfo _cInfo)
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
@@ -892,171 +617,109 @@ namespace ServerTools
                         if (!Phrases.Dict.TryGetValue(826, out _phrase826))
                         {
                             _phrase826 = " you can not teleport home with a vehicle.";
-                            if (_announce)
-                            {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            }
-                            else
-                            {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                         return;
                     }
                 }
-                World world = GameManager.Instance.World;
-                string _sql = string.Format("SELECT homeposition2, lastsethome FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TQuery(_sql);
-                string _pos = _result.Rows[0].ItemArray.GetValue(0).ToString();
-                DateTime _lastsethome;
-                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _lastsethome);
-                _result.Dispose();
-                if (_pos == "Unknown")
+                string _homePos2 = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2;
+                if (_homePos2 == "")
                 {
                     string _phrase608;
                     if (!Phrases.Dict.TryGetValue(608, out _phrase608))
                     {
                         _phrase608 = " you do not have a home2 saved.";
                     }
-                    if (_announce)
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase608 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    }
-                    else
-                    {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase608 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    }
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase608 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    bool _donator = false;
                     if (Delay_Between_Uses < 1)
                     {
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
-                            FCommandCost2(_cInfo, _pos, _announce);
+                            FCommandCost2(_cInfo, _homePos2);
                         }
                         else
                         {
-                            FHome2(_cInfo, _pos, _announce);
+                            FHome2(_cInfo, _homePos2);
                         }
                     }
                     else
                     {
-                        if (_lastsethome.ToString() == "10/29/2000 7:30:00 AM")
+                        DateTime _lastsethome = new DateTime();
+                        if (Home2_Delay)
                         {
-                            if (Wallet.IsEnabled && Command_Cost >= 1)
-                            {
-                                FCommandCost2(_cInfo, _pos, _announce);
-                            }
-                            else
-                            {
-                                FHome2(_cInfo, _pos, _announce);
-                            }
+                            _lastsethome = PersistentContainer.Instance.Players[_cInfo.playerId].LastHome2;
                         }
                         else
                         {
-                            TimeSpan varTime = DateTime.Now - _lastsethome;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
-                            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                            _lastsethome = PersistentContainer.Instance.Players[_cInfo.playerId].LastHome1;
+                        }
+                        TimeSpan varTime = DateTime.Now - _lastsethome;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        int _timepassed = (int)fractionalMinutes;
+                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
+                        {
+                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                                DateTime _dt;
+                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        _donator = true;
-                                        int _newDelay = Delay_Between_Uses / 2;
-                                        if (_timepassed >= _newDelay)
-                                        {
-                                            if (Wallet.IsEnabled && Command_Cost >= 1)
-                                            {
-                                                FCommandCost2(_cInfo, _pos, _announce);
-                                            }
-                                            else
-                                            {
-                                                FHome2(_cInfo, _pos, _announce);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            int _timeleft = _newDelay - _timepassed;
-                                            string _phrase815;
-                                            if (!Phrases.Dict.TryGetValue(815, out _phrase815))
-                                            {
-                                                _phrase815 = " you can only use {CommandPrivate}{Command3} or {CommandPrivate}{Command7} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                            }
-                                            _phrase815 = _phrase815.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                            _phrase815 = _phrase815.Replace("{TimeRemaining}", _timeleft.ToString());
-                                            _phrase815 = _phrase815.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                                            _phrase815 = _phrase815.Replace("{Command3}", Command3);
-                                            _phrase815 = _phrase815.Replace("{Command7}", Command7);
-                                            if (_announce)
-                                            {
-                                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase815 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                            }
-                                            else
-                                            {
-                                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase815 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (!_donator)
-                            {
-                                if (_timepassed >= Delay_Between_Uses)
-                                {
-                                    if (Wallet.IsEnabled && Command_Cost >= 1)
-                                    {
-                                        FCommandCost2(_cInfo, _pos, _announce);
-                                    }
-                                    else
-                                    {
-                                        FHome2(_cInfo, _pos, _announce);
-                                    }
-                                }
-                                else
-                                {
-                                    int _timeleft = Delay_Between_Uses - _timepassed;
-                                    string _phrase815;
-                                    if (!Phrases.Dict.TryGetValue(815, out _phrase815))
-                                    {
-                                        _phrase815 = " you can only use {CommandPrivate}{Command3} or {CommandPrivate}{Command7} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                    }
-                                    _phrase815 = _phrase815.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                                    _phrase815 = _phrase815.Replace("{TimeRemaining}", _timeleft.ToString());
-                                    _phrase815 = _phrase815.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                                    _phrase815 = _phrase815.Replace("{Command3}", Command3);
-                                    _phrase815 = _phrase815.Replace("{Command7}", Command7);
-                                    if (_announce)
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase815 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                    }
-                                    else
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase815 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
+                                    int _delay = Delay_Between_Uses / 2;
+                                    FTime2(_cInfo, _homePos2, _timepassed, _delay);
+                                    return;
                                 }
                             }
                         }
+                        FTime2(_cInfo, _homePos2, _timepassed, Delay_Between_Uses);
                     }
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", you can not use home commands while signed up for or inside an event.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you can not use home commands while signed up for or inside an event.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        public static void FCommandCost2(ClientInfo _cInfo, string _pos, bool _announce)
+        public static void FTime2(ClientInfo _cInfo, string _pos, int _timepassed, int _delay)
         {
-            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+            if (_timepassed >= _delay)
+            {
+                if (Wallet.IsEnabled && Command_Cost >= 1)
+                {
+                    FCommandCost2(_cInfo, _pos);
+                }
+                else
+                {
+                    FHome2(_cInfo, _pos);
+                }
+            }
+            else
+            {
+
+                int _timeleft = _delay - _timepassed;
+                string _phrase815;
+                if (!Phrases.Dict.TryGetValue(815, out _phrase815))
+                {
+                    _phrase815 = " you can only use {CommandPrivate}{Command3} or {CommandPrivate}{Command7} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                _phrase815 = _phrase815.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase815 = _phrase815.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase815 = _phrase815.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase815 = _phrase815.Replace("{Command3}", Command3);
+                _phrase815 = _phrase815.Replace("{Command7}", Command7);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase815 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+        }
+
+        public static void FCommandCost2(ClientInfo _cInfo, string _pos)
+        {
+            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
             if (_currentCoins >= Command_Cost)
             {
-                FHome2(_cInfo, _pos, _announce);
+                FHome2(_cInfo, _pos);
             }
             else
             {
@@ -1070,7 +733,7 @@ namespace ServerTools
             }
         }
 
-        private static void FHome2(ClientInfo _cInfo, string _pos, bool _announce)
+        private static void FHome2(ClientInfo _cInfo, string _pos)
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             FriendInvite(_cInfo, _player.position, _pos);
@@ -1093,10 +756,17 @@ namespace ServerTools
                     return;
                 }
             }
-            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
+            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
-            string _sql = string.Format("UPDATE Players SET lastsethome = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-            SQL.FastQuery(_sql, "TeleportHome");
+            if (Home2_Delay)
+            {
+                PersistentContainer.Instance.Players[_cInfo.playerId].LastHome1 = DateTime.Now;
+            }
+            else
+            {
+                PersistentContainer.Instance.Players[_cInfo.playerId].LastHome2 = DateTime.Now;
+            }
+            PersistentContainer.Instance.Save();
             string _phrase818;
             if (!Phrases.Dict.TryGetValue(818, out _phrase818))
             {
@@ -1162,17 +832,17 @@ namespace ServerTools
                         int.TryParse(_cords[0], out x);
                         int.TryParse(_cords[1], out y);
                         int.TryParse(_cords[2], out z);
-                        _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                         Invite.Remove(_cInfo.entityId);
                         FriendPosition.Remove(_cInfo.entityId);
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", sending you to your friend's home.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " sending you to your friend's home.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
                     Invite.Remove(_cInfo.entityId);
                     FriendPosition.Remove(_cInfo.entityId);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", you have run out of time to accept your friend's home invitation.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have run out of time to accept your friend's home invitation.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }

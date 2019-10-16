@@ -13,9 +13,8 @@ namespace ServerTools
         public static Dictionary<int, DateTime> DeathTime = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> LastDeathPos = new Dictionary<int, string>();
 
-        public static void DeathDelay(ClientInfo _cInfo, bool _announce, string _playerName)
+        public static void Exec(ClientInfo _cInfo, bool _announce, string _playerName)
         {
-            bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
@@ -29,114 +28,66 @@ namespace ServerTools
             }
             else
             {
-                string _sql = string.Format("SELECT lastDied FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TQuery(_sql);
-                DateTime _lastDied;
-                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastDied);
-                _result.Dispose();
-                if (_lastDied.ToString() == "10/29/2000 7:30:00 AM")
+                DateTime _lastDied = PersistentContainer.Instance.Players[_cInfo.playerId].LastDied;
+                TimeSpan varTime = DateTime.Now - _lastDied;
+                double fractionalMinutes = varTime.TotalMinutes;
+                int _timepassed = (int)fractionalMinutes;
+                if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
                 {
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                     {
-                        CommandCost(_cInfo, _announce);
-                    }
-                    else
-                    {
-                        TeleportPlayer(_cInfo, _announce);
-                    }
-                }
-                else
-                {
-                    TimeSpan varTime = DateTime.Now - _lastDied;
-                    double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
-                    if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                    {
-                        if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                        DateTime _dt;
+                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                        if (DateTime.Now < _dt)
                         {
-                            DateTime _dt;
-                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                            if (DateTime.Now < _dt)
-                            {
-                                _donator = true;
-                                int _newDelay = Delay_Between_Uses / 2;
-                                if (_timepassed >= _newDelay)
-                                {
-                                    if (Wallet.IsEnabled && Command_Cost >= 1)
-                                    {
-                                        CommandCost(_cInfo, _announce);
-                                    }
-                                    else
-                                    {
-                                        TeleportPlayer(_cInfo, _announce);
-                                    }
-                                }
-                                else
-                                {
-                                    int _timeleft = _newDelay - _timepassed;
-                                    string _phrase735;
-                                    if (!Phrases.Dict.TryGetValue(735, out _phrase735))
-                                    {
-                                        _phrase735 = " you can only use {CommandPrivate}{Command61} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                    }
-                                    _phrase735 = _phrase735.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                    _phrase735 = _phrase735.Replace("{TimeRemaining}", _timeleft.ToString());
-                                    _phrase735 = _phrase735.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                                    _phrase735 = _phrase735.Replace("{Command61}", Command61);
-                                    if (_announce)
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase735 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                    }
-                                    else
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase735 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (!_donator)
-                    {
-                        if (_timepassed >= Delay_Between_Uses)
-                        {
-                            if (Wallet.IsEnabled && Command_Cost >= 1)
-                            {
-                                CommandCost(_cInfo, _announce);
-                            }
-                            else
-                            {
-                                TeleportPlayer(_cInfo, _announce);
-                            }
-                        }
-                        else
-                        {
-                            int _timeleft = Delay_Between_Uses - _timepassed;
-                            string _phrase735;
-                            if (!Phrases.Dict.TryGetValue(735, out _phrase735))
-                            {
-                                _phrase735 = " you can only use {CommandPrivate}{Command61} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                            }
-                            _phrase735 = _phrase735.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                            _phrase735 = _phrase735.Replace("{TimeRemaining}", _timeleft.ToString());
-                            _phrase735 = _phrase735.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                            _phrase735 = _phrase735.Replace("{Command61}", Command61);
-                            if (_announce)
-                            {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase735 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            }
-                            else
-                            {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase735 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
+                            int _newDelay = Delay_Between_Uses / 2;
+                            Time(_cInfo, _playerName, _announce, _timepassed, _newDelay);
+                            return;
                         }
                     }
                 }
             }
         }
 
+        public static void Time(ClientInfo _cInfo, string _playerName, bool _announce, int _timepassed, int _delay)
+        {
+            if (_timepassed >= _delay)
+            {
+                if (Wallet.IsEnabled && Command_Cost >= 1)
+                {
+                    CommandCost(_cInfo, _announce);
+                }
+                else
+                {
+                    TeleportPlayer(_cInfo, _announce);
+                }
+            }
+            else
+            {
+                int _timeleft = _delay - _timepassed;
+                string _phrase735;
+                if (!Phrases.Dict.TryGetValue(735, out _phrase735))
+                {
+                    _phrase735 = " you can only use {CommandPrivate}{Command61} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                _phrase735 = _phrase735.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase735 = _phrase735.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase735 = _phrase735.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase735 = _phrase735.Replace("{Command61}", Command61);
+                if (_announce)
+                {
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase735 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                }
+                else
+                {
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase735 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
+            }
+        }
+
         public static void CommandCost(ClientInfo _cInfo, bool _announce)
         {
-            int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
             if (_currentCoins >= Command_Cost)
             {
                 TeleportPlayer(_cInfo, _announce);
@@ -186,15 +137,15 @@ namespace ServerTools
                             int.TryParse(_cords[0], out x);
                             int.TryParse(_cords[1], out y);
                             int.TryParse(_cords[2], out z);
-                            _cInfo.SendPackage(new NetPackageTeleportPlayer(new Vector3(x, y, z), null, false));
+                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                            DeathTime.Remove(_cInfo.entityId);
                             LastDeathPos.Remove(_cInfo.entityId);
-                            string _sql;
                             if (Wallet.IsEnabled && Command_Cost >= 1)
                             {
                                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                             }
-                            _sql = string.Format("UPDATE Players SET lastDied = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
-                            SQL.FastQuery(_sql, "DeathSpot");
+                            PersistentContainer.Instance.Players[_cInfo.playerId].LastDied = DateTime.Now;
+                            PersistentContainer.Instance.Save();
                             string _phrase736;
                             if (!Phrases.Dict.TryGetValue(736, out _phrase736))
                             {

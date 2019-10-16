@@ -83,7 +83,7 @@ namespace ServerTools
         public static void EndGame(ClientInfo _cInfo, EntityPlayer _player)
         {
             DateTime _time;
-            Players.Session.TryGetValue(_cInfo.playerId, out _time);
+            PlayerOperations.Session.TryGetValue(_cInfo.playerId, out _time);
             TimeSpan varTime = DateTime.Now - _time;
             double fractionalMinutes = varTime.TotalMinutes;
             int _timepassed = (int)fractionalMinutes;
@@ -284,7 +284,7 @@ namespace ServerTools
             {
                 if (_extraLives < Max_Extra_Lives)
                 {
-                    int _currentCoins = Wallet.GetcurrentCoins(_cInfo);
+                    int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
                     int _cost = Life_Price * _extraLives;
                     if (_currentCoins >= _cost)
                     {

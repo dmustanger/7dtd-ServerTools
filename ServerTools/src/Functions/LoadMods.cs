@@ -10,10 +10,6 @@ namespace ServerTools
         {
             Timers.TimerStart();
             Timers.Timer2Start();
-            if (CountryBan.IsEnabled)
-            {
-                CountryBan.Load();
-            }
             string _sql = "SELECT pollOpen FROM Polls WHERE pollOpen = 'true'";
             DataTable _result = SQL.TQuery(_sql);
             if (_result.Rows.Count > 0)
@@ -21,11 +17,6 @@ namespace ServerTools
                 PollConsole.Check();
             }
             _result.Dispose();
-            if (ClanManager.IsEnabled)
-            {
-                ClanManager.GetClans();
-                ClanManager.BuildList();
-            }
             if (!ClanManager.IsEnabled)
             {
                 ClanManager.Clans.Clear();
@@ -171,6 +162,14 @@ namespace ServerTools
             {
                 ChatColorPrefix.Load();
             }
+            if (KillNotice.IsRunning && !KillNotice.IsEnabled)
+            {
+                KillNotice.Unload();
+            }
+            if (!KillNotice.IsRunning && KillNotice.IsEnabled)
+            {
+                KillNotice.Load();
+            }
             if (LoadTriggers.IsRunning)
             {
                 LoadTriggers.Unload();
@@ -178,6 +177,14 @@ namespace ServerTools
             if (!LoadTriggers.IsRunning)
             {
                 LoadTriggers.Load();
+            }
+            if (ClanManager.IsEnabled)
+            {
+                ClanManager.ClanList();
+            }
+            if (AuctionBox.IsEnabled)
+            {
+                AuctionBox.AuctionList();
             }
             if (MutePlayer.IsEnabled)
             {

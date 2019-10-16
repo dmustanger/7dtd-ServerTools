@@ -1,5 +1,40 @@
 ﻿CHANGELOG
 
+18.0.1
+Built using Alpha 18.0 experimental assets
+Expect some bugs with this release. We have changed a lot of code
+
+Do not use an old database with this release. You must delete them and start a new one
+
+Added option to Set Home allowing home2 to have its own delay or not
+Added quality option to Gimme items. Set the min and max possible in the xml
+Added View_Distances tool. Forces tree distance, view distance and point of view of clients. Allows
+clients to set their own within limits to prevent exploits
+Added missing phrases to the phrase file
+Added old data storage method using serialization to a bin file. Using two methods of data save
+Added Mute tool in the config
+Added Block_Commands option to Mute tool. Blocks a player using commands while muted
+Added fail safe to block muted players from using commands to circumvent chat mute
+Added chat command /auctionlist. Shows the items the current player has in auction
+Fixed various chat responses missing player names and locations
+Fixed Hardcore mode resetting a player upon reaching their last death
+Fixed donation status preventing commands from operating correctly
+Fixed KillNotice.xml not loading correctly
+Changed internal code for phrase system
+Changed phrase 109, 110, 115, 129, 132, 201, 203
+Changed wallet system to be stored in a static manner, allowing admins to change values without altering
+existing player wallets. PVE mode is now calculated with player kills against their total
+Changed some saved data to the old method to help with sql database lockups and busy responses
+Changed High_Ping_Kicker to check ping values every 5 seconds
+Changed counter and messages during shutdown to be red by default
+Updated internal code to function with new framework
+Updated library for zip operations tied to the auto backup tool
+Updated library for countryban
+Removed chat response when a command is not valid and now allow it to display. This was blocking other mods
+Removed MySql option. You must use the built in SqLite
+Removed option to announce chat command responses by using the Command_Public. Default !
+Removed Hardcore tool temporarily
+
 13.1
 Added Under_Water tool. Detects if a player is submerged under two blocks of water. Teleports the player to 
 the surface of their location. Helps prevent building under water
