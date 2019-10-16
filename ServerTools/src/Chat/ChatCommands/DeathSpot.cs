@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using UnityEngine;
 
 namespace ServerTools
@@ -13,17 +12,17 @@ namespace ServerTools
         public static Dictionary<int, DateTime> DeathTime = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> LastDeathPos = new Dictionary<int, string>();
 
-        public static void Exec(ClientInfo _cInfo, bool _announce, string _playerName)
+        public static void Exec(ClientInfo _cInfo)
         {
             if (Delay_Between_Uses < 1)
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    CommandCost(_cInfo, _announce);
+                    CommandCost(_cInfo);
                 }
                 else
                 {
-                    TeleportPlayer(_cInfo, _announce);
+                    TeleportPlayer(_cInfo);
                 }
             }
             else
@@ -41,25 +40,26 @@ namespace ServerTools
                         if (DateTime.Now < _dt)
                         {
                             int _newDelay = Delay_Between_Uses / 2;
-                            Time(_cInfo, _playerName, _announce, _timepassed, _newDelay);
+                            Time(_cInfo, _timepassed, _newDelay);
                             return;
                         }
                     }
                 }
+                Time(_cInfo, _timepassed, Delay_Between_Uses);
             }
         }
 
-        public static void Time(ClientInfo _cInfo, string _playerName, bool _announce, int _timepassed, int _delay)
+        public static void Time(ClientInfo _cInfo, int _timepassed, int _delay)
         {
             if (_timepassed >= _delay)
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    CommandCost(_cInfo, _announce);
+                    CommandCost(_cInfo);
                 }
                 else
                 {
-                    TeleportPlayer(_cInfo, _announce);
+                    TeleportPlayer(_cInfo);
                 }
             }
             else
@@ -74,23 +74,16 @@ namespace ServerTools
                 _phrase735 = _phrase735.Replace("{TimeRemaining}", _timeleft.ToString());
                 _phrase735 = _phrase735.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase735 = _phrase735.Replace("{Command61}", Command61);
-                if (_announce)
-                {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase735 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                }
-                else
-                {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase735 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase735 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        public static void CommandCost(ClientInfo _cInfo, bool _announce)
+        public static void CommandCost(ClientInfo _cInfo)
         {
             int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
             if (_currentCoins >= Command_Cost)
             {
-                TeleportPlayer(_cInfo, _announce);
+                TeleportPlayer(_cInfo);
             }
             else
             {
@@ -104,7 +97,7 @@ namespace ServerTools
             }
         }
 
-        private static void TeleportPlayer(ClientInfo _cInfo, bool _announce)
+        private static void TeleportPlayer(ClientInfo _cInfo)
         {
             if (DeathTime.ContainsKey(_cInfo.entityId))
             {
@@ -152,14 +145,7 @@ namespace ServerTools
                                 _phrase736 = " teleporting you to your last death position. You can use this again in {DelayBetweenUses} minutes.";
                             }
                             _phrase736 = _phrase736.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                            if (_announce)
-                            {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase736 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            }
-                            else
-                            {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase736 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase736 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else

@@ -6,10 +6,10 @@ namespace ServerTools
 {
     public class Animals
     {
-        public static bool IsEnabled = false, Always_Show_Response = false;
+        public static bool IsEnabled = false;
         public static string Command30 = "trackanimal", Command31 = "track";
         public static int Delay_Between_Uses = 60, Minimum_Spawn_Radius = 40, Maximum_Spawn_Radius = 60, Command_Cost = 0;
-        public static string Animal_List = "81,82,83,84";
+        public static string Animal_List = "82,83,84,85";
         private static Random rnd = new Random();
 
         public static void Exec(ClientInfo _cInfo)

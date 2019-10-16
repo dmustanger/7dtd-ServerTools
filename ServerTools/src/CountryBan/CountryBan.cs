@@ -1,6 +1,7 @@
-﻿using MaxMind.GeoIP2;
+﻿using MaxMind.Db;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Reflection;
 
 namespace ServerTools
@@ -21,15 +22,18 @@ namespace ServerTools
             }
             return false;
         }
-
+        
         public static string Get(string _ip)
         {
             if (File.Exists(_dbPath))
             {
-                using (var _reader = new DatabaseReader(_dbPath))
+                using (var _reader = new Reader(_dbPath))
                 {
-                    var _country = _reader.Country(_ip);
-                    return _country.Country.IsoCode;
+                    var ip = IPAddress.Parse(_ip);
+                    var data = _reader.Find<Dictionary<string, object>>(ip);
+                    Log.Out("[SERVERTOOLS]" + data.Keys.ToString());
+
+                    return "Unknown";
                 }
             }
             return "Unknown";

@@ -440,31 +440,31 @@ namespace ServerTools
                 string _phrase201;
                 if (!Dict.TryGetValue(201, out _phrase201))
                 {
-                    _phrase201 = " player {NameOrId} was not found.";
+                    _phrase201 = " player {Player} was not found.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"201\" Phrase=\"{0}\" />", _phrase201));
                 string _phrase202;
                 if (!Dict.TryGetValue(202, out _phrase202))
                 {
-                    _phrase202 = " player {NameOrId} is already muted.";
+                    _phrase202 = " player {Player} is already muted.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"202\" Phrase=\"{0}\" />", _phrase202));
                 string _phrase203;
                 if (!Dict.TryGetValue(203, out _phrase203))
                 {
-                    _phrase203 = " you have muted {PlayerName} for 60 minutes.";
+                    _phrase203 = " you have muted {Player} for 60 minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"203\" Phrase=\"{0}\" />", _phrase203));
                 string _phrase204;
                 if (!Dict.TryGetValue(204, out _phrase204))
                 {
-                    _phrase204 = " player {PlayerName} is not muted.";
+                    _phrase204 = " player {Player} is not muted.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"204\" Phrase=\"{0}\" />", _phrase204));
                 string _phrase205;
                 if (!Dict.TryGetValue(205, out _phrase205))
                 {
-                    _phrase205 = " you have unmuted {PlayerName}.";
+                    _phrase205 = " you have unmuted {Player}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"205\" Phrase=\"{0}\" />", _phrase205));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -1082,7 +1082,7 @@ namespace ServerTools
                 string _phrase628;
                 if (!Dict.TryGetValue(628, out _phrase628))
                 {
-                    _phrase628 = " would like to teleport to you. Type {CommandPrivate}{Command60} in chat to accept the request.";
+                    _phrase628 = " {PlayerName} would like to teleport to you. Type {CommandPrivate}{Command60} in chat to accept the request.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"628\" Phrase=\"{0}\" />", _phrase628));
                 string _phrase629;

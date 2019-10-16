@@ -35,10 +35,9 @@ namespace ServerTools
             FastQuery("CREATE TABLE IF NOT EXISTS Players (" +
                 "steamid TEXT PRIMARY KEY ON CONFLICT REPLACE, " +
                 "playername TEXT DEFAULT 'Unknown', " +
-                "last_joined TEXT DEFAULT 'Never', " +
-                "sessionTime INTEGER DEFAULT 0, " +
                 "countryban TEXT DEFAULT 'false', " +
                 "return TEXT DEFAULT 'false', " +
+                "eventReturn TEXT DEFAULT 'false', " +
                 "eventRespawn TEXT DEFAULT 'false', " +
                 "eventSpawn TEXT DEFAULT 'false', " +
                 "extraLives INTEGER DEFAULT 0 " +
@@ -86,7 +85,7 @@ namespace ServerTools
                 "playerName TEXT NOT NULL " +
                 ");", "SQLiteDatabase");
             FastQuery("CREATE TABLE IF NOT EXISTS Tracking (" +
-                "Id INTEGER PRIMARY KEY, " +
+                "trackid INTEGER PRIMARY KEY, " +
                 "dateTime TEXT DEFAULT '10/29/2000 7:30:00 AM', " +
                 "position TEXT NOT NULL, " +
                 "steamId TEXT NOT NULL, " +
@@ -107,7 +106,7 @@ namespace ServerTools
             _result.Dispose();
             if (_version != SQL.Sql_version)
             {
-                UpdateSQL.Exec(_version);
+                //UpdateSQL.Exec(_version);
             }
         }
 

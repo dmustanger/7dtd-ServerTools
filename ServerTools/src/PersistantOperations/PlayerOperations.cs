@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 
 namespace ServerTools
 {
@@ -35,9 +34,9 @@ namespace ServerTools
                                         {
                                             Zones.ZoneCheck(_cInfo, _player);
                                         }
-                                        if (GodModeFlight.IsEnabled)
+                                        if (GodMode.IsEnabled)
                                         {
-                                            GodModeFlight.GodCheck(_cInfo);
+                                            GodMode.GodCheck(_cInfo);
                                         }
                                     }
                                     else if (_player.IsDead())
@@ -92,8 +91,8 @@ namespace ServerTools
                                             }
                                             if (Event.Open && Event.PlayersTeam.ContainsKey(_cInfo.playerId))
                                             {
-                                                PersistentContainer.Instance.Players[_cInfo.playerId].EventRespawn = true;
-                                                PersistentContainer.Instance.Save();
+                                                string _sql = string.Format("UPDATE Players SET eventReturn = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
+                                                SQL.FastQuery(_sql, "Players");
                                             }
                                         }
                                     }

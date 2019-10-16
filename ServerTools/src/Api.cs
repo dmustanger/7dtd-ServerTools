@@ -22,7 +22,6 @@ namespace ServerTools
             ModEvents.PlayerDisconnected.RegisterHandler(PlayerDisconnected);
             ModEvents.ChatMessage.RegisterHandler(ChatMessage);
             ModEvents.GameStartDone.RegisterHandler(GameStartDone);
-            ModEvents.EntityKilled.RegisterHandler(EntityKilled);
         }
 
         public void GameAwake()
@@ -53,7 +52,7 @@ namespace ServerTools
         {
             if (_cInfo != null)
             {
-                if (CountryBan.IsEnabled && _cInfo.ip != "127.0.0.1" && !_cInfo.ip.StartsWith("192.168"))
+                if (CountryBan.IsEnabled)
                 {
                     if (CountryBan.IsCountryBanned(_cInfo))
                     {
@@ -173,41 +172,54 @@ namespace ServerTools
                     {
                         if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
                         {
-                            if (Hardcore.IsEnabled)
-                            {
-                                Hardcore.Check(_cInfo);
-                            }
+                            //if (Hardcore.IsEnabled)
+                            //{
+                            //    Hardcore.Check(_cInfo);
+                            //}
                         }
                         else
                         {
-                            bool _eventOver = PersistentContainer.Instance.Players[_cInfo.playerId].EventOver;
-                            bool _eventSpawn = PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn;
-                            bool _eventRespawn = PersistentContainer.Instance.Players[_cInfo.playerId].EventRespawn;
-                            if (_eventOver)
-                            {
-                                if (_eventSpawn)
-                                {
-                                    PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn = false;
-                                    PersistentContainer.Instance.Save();
-                                }
-                                Event.EventOver(_cInfo);
-                            }
-                            else if (_eventSpawn)
-                            {
-                                Event.EventSpawn(_cInfo);
-                            }
-                            else if (_eventRespawn)
+                            _sql = string.Format("SELECT eventRespawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result1 = SQL.TQuery(_sql);
+                            bool _eventRespawn;
+                            bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _eventRespawn);
+                            _result1.Dispose();
+                            if (_eventRespawn)
                             {
                                 Event.Died(_cInfo);
+                            }
+                            else
+                            {
+                                _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                DataTable _result2 = SQL.TQuery(_sql);
+                                bool _return1 = false, _return2 = false;
+                                bool.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
+                                bool.TryParse(_result2.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                                _result2.Dispose();
+                                if (_return1)
+                                {
+                                    if (_return2)
+                                    {
+                                        _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                        SQL.FastQuery(_sql, "API");
+                                    }
+                                    _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                    SQL.FastQuery(_sql, "API");
+                                    Event.EventSpawn(_cInfo);
+                                }
+                                else if (_return2)
+                                {
+                                    Event.EventSpawn(_cInfo);
+                                }
                             }
                         }
                     }
                     else
                     {
-                        if (Hardcore.IsEnabled)
-                        {
-                            Hardcore.Check(_cInfo);
-                        }
+                        //if (Hardcore.IsEnabled)
+                        //{
+                        //    Hardcore.Check(_cInfo);
+                        //}
                     }
                     PersistentContainer.Instance.Players[_cInfo.playerId].ZombieKills = _zCount;
                     PersistentContainer.Instance.Players[_cInfo.playerId].PlayerKills = _deathCount;
@@ -233,38 +245,62 @@ namespace ServerTools
                             {
                                 Wallet.ClearWallet(_cInfo);
                             }
-                            if (Hardcore.IsEnabled)
+                            ///if (Hardcore.IsEnabled)
+                            ///{
+                            ///    Hardcore.Check(_cInfo);
+                            ///}
+                            string _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result1 = SQL.TQuery(_sql);
+                            bool _return1 = false, _return2 = false;
+                            bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
+                            bool.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                            _result1.Dispose();
+                            if (_return1)
                             {
-                                Hardcore.Check(_cInfo);
-                            }
-                            bool _eventOver = PersistentContainer.Instance.Players[_cInfo.playerId].EventOver;
-                            if (_eventOver)
-                            {
-                                PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn = false;
-                                PersistentContainer.Instance.Players[_cInfo.playerId].EventRespawn = false;
-                                PersistentContainer.Instance.Save();
-                                Event.EventOver(_cInfo);
+                                if (_return2)
+                                {
+                                    _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                    SQL.FastQuery(_sql, "API");
+                                }
+                                _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                SQL.FastQuery(_sql, "API");
+                                Event.EventSpawn(_cInfo);
                             }
                         }
                         else
                         {
-                            bool _eventOver = PersistentContainer.Instance.Players[_cInfo.playerId].EventOver;
-                            bool _eventSpawn = PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn;
-                            bool _eventRespawn = PersistentContainer.Instance.Players[_cInfo.playerId].EventRespawn;
-                            if (_eventOver)
-                            {
-                                PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn = false;
-                                PersistentContainer.Instance.Players[_cInfo.playerId].EventRespawn = false;
-                                PersistentContainer.Instance.Save();
-                                Event.EventOver(_cInfo);
-                            }
-                            else if (_eventSpawn)
-                            {
-                                Event.EventSpawn(_cInfo);
-                            }
-                            else if (_eventSpawn)
+                            string _sql = string.Format("SELECT eventRespawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                            DataTable _result = SQL.TQuery(_sql);
+                            bool _eventRespawn;
+                            bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventRespawn);
+                            _result.Dispose();
+                            if (_eventRespawn)
                             {
                                 Event.Died(_cInfo);
+                            }
+                            else
+                            {
+                                _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                                DataTable _result1 = SQL.TQuery(_sql);
+                                bool _return1 = false, _return2 = false;
+                                bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
+                                bool.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                                _result1.Dispose();
+                                if (_return1)
+                                {
+                                    if (_return2)
+                                    {
+                                        _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                        SQL.FastQuery(_sql, "API");
+                                    }
+                                    _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                    SQL.FastQuery(_sql, "API");
+                                    Event.EventSpawn(_cInfo);
+                                }
+                                else if (_return2)
+                                {
+                                    Event.EventSpawn(_cInfo);
+                                }
                             }
                         }
                     }
@@ -274,21 +310,30 @@ namespace ServerTools
                         {
                             Wallet.ClearWallet(_cInfo);
                         }
-                        if (Hardcore.IsEnabled)
+                        //if (Hardcore.IsEnabled)
+                        //{
+                        //    Hardcore.Check(_cInfo);
+                        //}
+                        string _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
+                        DataTable _result1 = SQL.TQuery(_sql);
+                        bool _return1 = false, _return2 = false;
+                        bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
+                        bool.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                        _result1.Dispose();
+                        if (_return1)
                         {
-                            Hardcore.Check(_cInfo);
-                        }
-                        bool _eventOver = PersistentContainer.Instance.Players[_cInfo.playerId].EventOver;
-                        if (_eventOver)
-                        {
-                            PersistentContainer.Instance.Players[_cInfo.playerId].EventSpawn = false;
-                            PersistentContainer.Instance.Players[_cInfo.playerId].EventRespawn = false;
-                            PersistentContainer.Instance.Save();
-                            Event.EventOver(_cInfo);
+                            if (_return2)
+                            {
+                                _sql = string.Format("UPDATE Players SET eventSpawn = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                                SQL.FastQuery(_sql, "API");
+                            }
+                            _sql = string.Format("UPDATE Players SET return = 'false' WHERE steamid = '{0}'", _cInfo.playerId);
+                            SQL.FastQuery(_sql, "API");
+                            Event.EventSpawn(_cInfo);
                         }
                     }
-                    PersistentContainer.Instance.Players[_cInfo.playerId].PlayerDeaths = XUiM_Player.GetDeaths(_player);
-                    PersistentContainer.Instance.Save();
+                    string _sql2 = string.Format("UPDATE Hardcore SET deaths = {0} WHERE steamid = '{1}'", XUiM_Player.GetDeaths(_player), _cInfo.playerId);
+                    SQL.FastQuery(_sql2, "API");
                     if (Zones.IsEnabled && Zones.Victim.ContainsKey(_cInfo.entityId))
                     {
                         ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " type /return to teleport back to your death position. There is a time limit.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -331,6 +376,7 @@ namespace ServerTools
                 }
                 if (NewPlayer.IsEnabled)
                 {
+                    Log.Out(string.Format("[ST] New player execute"));
                     NewPlayer.Exec(_cInfo);
                 }
                 if (NewSpawnTele.IsEnabled)
@@ -464,7 +510,6 @@ namespace ServerTools
                     {
                         Zones.reminder.Remove(_cInfo.entityId);
                     }
-                    Log.Out(string.Format("[SERVERTOOLS] Player Disconnected. Shutdown Bool: {0}.", _bShutdown));
                 }
                 catch (Exception e)
                 {
@@ -482,11 +527,6 @@ namespace ServerTools
         public void GameShutdown()
         {
             StateManager.Shutdown();
-        }
-
-        public void EntityKilled(Entity _ent1, Entity _ent2)
-        {
-            Log.Out(string.Format("[SERVERTOOLS] Test Entity {0} with name {1} killed Entity {2} with name {3}.", _ent1.entityId, _ent1.name, _ent2.entityId, _ent2.name));
         }
     }
 }

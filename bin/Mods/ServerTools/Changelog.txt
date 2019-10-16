@@ -1,5 +1,19 @@
 ﻿CHANGELOG
 
+18.0.2
+Built using Alpha 18 experimental assets
+
+Do not use an old database with this release. You must delete it and start a new one
+
+Fixed Auto Backup failure
+Fixed Deathspot tool not working for non reserved players
+Fixed Event tool failing to utilize the database properly
+Fixed SQLiteException from chat operations while in a clan
+Fixed Friend Teleport invitation showing the wrong name in chat
+Fixed default Animal Tracking numbers to avoid improper spawn
+Updated phrase 201,202,203,204,205,628
+Removed Always Show Response option from Animal Tracking
+
 18.0.1
 Built using Alpha 18.0 experimental assets
 Expect some bugs with this release. We have changed a lot of code
@@ -29,7 +43,6 @@ Changed High_Ping_Kicker to check ping values every 5 seconds
 Changed counter and messages during shutdown to be red by default
 Updated internal code to function with new framework
 Updated library for zip operations tied to the auto backup tool
-Updated library for countryban
 Removed chat response when a command is not valid and now allow it to display. This was blocking other mods
 Removed MySql option. You must use the built in SqLite
 Removed option to announce chat command responses by using the Command_Public. Default !

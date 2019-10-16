@@ -34,6 +34,7 @@ namespace ServerTools
         private int gyroId;
         private int voteWeekCount;
         private int hardcoreExtraLives;
+        private int deaths;
         private DateTime messageTime;
         private DateTime lastJoined;
         private DateTime respawnTime;
@@ -71,9 +72,6 @@ namespace ServerTools
         private DateTime lastVote;
         private DateTime lastVoteWeek;
         private DateTime zoneDeathTime;
-        private bool eventRespawn;
-        private bool eventSpawn;
-        private bool eventOver;
         private bool clanOwner;
         private bool clanOfficer;
         private bool firstClaimBlock;
@@ -409,6 +407,18 @@ namespace ServerTools
             set
             {
                 hardcoreExtraLives = value;
+            }
+        }
+
+        public int Deaths
+        {
+            get
+            {
+                return deaths;
+            }
+            set
+            {
+                deaths = value;
             }
         }
 
@@ -853,42 +863,6 @@ namespace ServerTools
             set
             {
                 zoneDeathTime = value;
-            }
-        }
-
-        public bool EventRespawn
-        {
-            get
-            {
-                return eventRespawn;
-            }
-            set
-            {
-                eventRespawn = value;
-            }
-        }
-
-        public bool EventSpawn
-        {
-            get
-            {
-                return eventSpawn;
-            }
-            set
-            {
-                eventSpawn = value;
-            }
-        }
-
-        public bool EventOver
-        {
-            get
-            {
-                return eventOver;
-            }
-            set
-            {
-                eventOver = value;
             }
         }
 
