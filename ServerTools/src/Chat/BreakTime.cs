@@ -15,7 +15,7 @@ namespace ServerTools
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
                 Break_Message = Break_Message.Replace("{Time}", Break_Time.ToString());
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + Break_Message + "[-]", 33, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + Break_Message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
     }

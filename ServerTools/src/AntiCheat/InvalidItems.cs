@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class InventoryCheck
     {
-        public static bool IsEnabled = false, IsRunning = false, Announce_Invalid_Stack = false, Ban_Player = false, Dev_Items = false, Hidden_Items = false, Chest_Checker = false;
+        public static bool IsEnabled = false, IsRunning = false, Announce_Invalid_Stack = false, Ban_Player = false, Chest_Checker = false;
         public static int Admin_Level = 0, Days_Before_Log_Delete = 5;
         private static string file = "InvalidItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -119,7 +119,6 @@ namespace ServerTools
                 else
                 {
                     sw.WriteLine(string.Format("        <item itemName=\"air\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrDirt\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"terrOrePotassiumNitrate\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"terrOreIron\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"terrOreLead\" />"));
@@ -196,7 +195,7 @@ namespace ServerTools
                                 ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + _phrase3 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 ChatLog.Log(_phrase3, LoadConfig.Server_Response_Name);
                             }
-                            if (IsEnabled && ((dict.Contains(_name) || Dev_Items && _itemValue.ItemClass.CreativeMode == EnumCreativeMode.Dev || Hidden_Items && _itemValue.ItemClass.CreativeMode == EnumCreativeMode.None)))
+                            if (IsEnabled && dict.Contains(_name))
                             {
                                 if (Ban_Player)
                                 {
@@ -307,7 +306,7 @@ namespace ServerTools
                                 ChatLog.Log(_phrase3, LoadConfig.Server_Response_Name);
                                 ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + _phrase3 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
-                            if (IsEnabled && ((dict.Contains(_name) || Dev_Items && _itemValue.ItemClass.CreativeMode == EnumCreativeMode.Dev || Hidden_Items && _itemValue.ItemClass.CreativeMode == EnumCreativeMode.None)))
+                            if (IsEnabled && dict.Contains(_name))
                             {
                                 if (Ban_Player)
                                 {

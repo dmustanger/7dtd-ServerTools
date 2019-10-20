@@ -178,11 +178,7 @@ namespace ServerTools
         {
             if (startItemList.Count > 0)
             {
-                string _sql = string.Format("SELECT startingItems FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TQuery(_sql);
-                bool _startingItems;
-                bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _startingItems);
-                _result.Dispose();
+                bool _startingItems = PersistentContainer.Instance.Players[_cInfo.playerId].StartingItems;
                 if (!_startingItems)
                 {
                     Exec(_cInfo);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using UnityEngine;
 
@@ -100,7 +99,7 @@ namespace ServerTools
 
         public static void MarketTele(ClientInfo _cInfo)
         {
-            if (SetMarket.Market_Position != "0,0,0")
+            if (SetMarket.Market_Position != "0,0,0" || SetMarket.Market_Position != "0 0 0" || SetMarket.Market_Position != "")
             {
                 int x, y, z;
                 if (Return)
@@ -145,7 +144,7 @@ namespace ServerTools
                     }
                     _cords = SetMarket.Market_Position.Split(',').ToArray();
                 }
-                else
+                else if (SetLobby.Lobby_Position.Contains(" "))
                 {
                     _cords = SetMarket.Market_Position.Split(' ').ToArray();
                 }

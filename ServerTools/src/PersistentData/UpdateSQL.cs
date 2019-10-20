@@ -6,6 +6,11 @@ namespace ServerTools
     {
         public static void Exec(int _version)
         {
+            if (_version == 1)
+            {
+                
+            }
+            SQL.FastQuery("UPDATE Config SET sql_version = 2 WHERE sql_version = 1", "UpdateSQL");
             CheckVersion();
         }
 

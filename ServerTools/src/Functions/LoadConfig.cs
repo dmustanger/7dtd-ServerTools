@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        public const string version = "18.0.11";
+        public const string version = "18.0.3";
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
 
@@ -937,6 +937,38 @@ namespace ServerTools
                                 continue;
                             }
                             break;
+                            //case "Flying":
+                            //if (!_line.HasAttribute("Enable"))
+                            //{
+                            //    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                            //    continue;
+                            //}
+                            //if (!bool.TryParse(_line.GetAttribute("Enable"), out Flying.IsEnabled))
+                            //{
+                            //    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of invalid (true/false) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                            //    continue;
+                            //}
+                            //if (!_line.HasAttribute("Admin_Level"))
+                            //{
+                            //    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                            //    continue;
+                            //}
+                            //if (!int.TryParse(_line.GetAttribute("Admin_Level"), out Flying.Admin_Level))
+                            //{
+                            //    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                            //    continue;
+                            //}
+                            //if (!_line.HasAttribute("Flags"))
+                            //{
+                            //    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of missing 'Flags' attribute: {0}", subChild.OuterXml));
+                            //    continue;
+                            //}
+                            //if (!int.TryParse(_line.GetAttribute("Flags"), out Flying.Flags))
+                            //{
+                            //    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of invalid (non-numeric) value for 'Flags' attribute: {0}", subChild.OuterXml));
+                            //    continue;
+                            //}
+                            //break;
                             case "FPS":
                             if (!_line.HasAttribute("Enable"))
                             {
@@ -1235,26 +1267,6 @@ namespace ServerTools
                             if (!int.TryParse(_line.GetAttribute("Admin_Level"), out InventoryCheck.Admin_Level))
                             {
                                 Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Item_Kicker entry because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
-                                continue;
-                            }
-                            if (!_line.HasAttribute("Dev_Items"))
-                            {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Item_Kicker entry because of missing 'Dev_Items' attribute: {0}", subChild.OuterXml));
-                                continue;
-                            }
-                            if (!bool.TryParse(_line.GetAttribute("Dev_Items"), out InventoryCheck.Dev_Items))
-                            {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Item_Kicker entry because of invalid (true/false) value for 'Dev_Items' attribute: {0}", subChild.OuterXml));
-                                continue;
-                            }
-                            if (!_line.HasAttribute("Hidden_Items"))
-                            {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Item_Kicker entry because of missing 'Hidden_Items' attribute: {0}", subChild.OuterXml));
-                                continue;
-                            }
-                            if (!bool.TryParse(_line.GetAttribute("Hidden_Items"), out InventoryCheck.Hidden_Items))
-                            {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Invalid_Item_Kicker entry because of invalid (true/false) value for 'Hidden_Items' attribute: {0}", subChild.OuterXml));
                                 continue;
                             }
                             if (!_line.HasAttribute("Chest_Checker"))
@@ -3029,6 +3041,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Dupe_Log\" Enable=\"{0}\" />", DupeLog.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Entity_Cleanup\" Enable=\"{0}\" Falling_Blocks=\"{1}\" Falling_Tree=\"{2}\" Entity_Underground=\"{3}\" Delete_MiniBikes=\"{4}\" />", EntityCleanup.IsEnabled, EntityCleanup.BlockIsEnabled, EntityCleanup.FallingTreeEnabled, EntityCleanup.Underground, EntityCleanup.MiniBikes));
                 sw.WriteLine(string.Format("        <Tool Name=\"First_Claim_Block\" Enable=\"{0}\" />", FirstClaimBlock.IsEnabled));
+                //sw.WriteLine(string.Format("        <Tool Name=\"Flying\" Enable=\"{0}\" Admin_Level=\"{1}\" Flags=\"{2}\" />", Flying.IsEnabled, Flying.Admin_Level, Flying.Flags));
                 sw.WriteLine(string.Format("        <Tool Name=\"FPS\" Enable=\"{0}\" Set_Target=\"{1}\" />", Fps.IsEnabled, Fps.Set_Target));
                 sw.WriteLine(string.Format("        <Tool Name=\"Friend_Teleport\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" PvP_Check=\"{3}\" Zombie_Check=\"{4}\" />", FriendTeleport.IsEnabled, FriendTeleport.Delay_Between_Uses, FriendTeleport.Command_Cost, FriendTeleport.PvP_Check, FriendTeleport.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Gimme\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Zombies=\"{2}\" Command_Cost=\"{3}\" />", Gimme.IsEnabled, Gimme.Delay_Between_Uses, Gimme.Zombies, Gimme.Command_Cost));
@@ -3038,7 +3051,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"High_Ping_Kicker\" Enable=\"{0}\" Max_Ping=\"{1}\" Samples_Needed=\"{2}\" />", HighPingKicker.IsEnabled, HighPingKicker.Max_Ping, HighPingKicker.Samples_Needed));
                 sw.WriteLine(string.Format("        <Tool Name=\"Hordes\" Enable=\"{0}\" />", Hordes.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Info_Ticker\" Enable=\"{0}\" Delay_Between_Messages=\"{1}\" Random=\"{2}\" />", InfoTicker.IsEnabled, Timers.Infoticker_Delay, InfoTicker.Random));
-                sw.WriteLine(string.Format("        <Tool Name=\"Invalid_Item_Kicker\" Enable=\"{0}\" Ban=\"{1}\" Admin_Level=\"{2}\" Dev_Items=\"{3}\" Hidden_Items=\"{4}\" Chest_Checker=\"{5}\" />", InventoryCheck.IsEnabled, InventoryCheck.Ban_Player, InventoryCheck.Admin_Level, InventoryCheck.Dev_Items, InventoryCheck.Hidden_Items, InventoryCheck.Chest_Checker));
+                sw.WriteLine(string.Format("        <Tool Name=\"Invalid_Item_Kicker\" Enable=\"{0}\" Ban=\"{1}\" Admin_Level=\"{2}\" Chest_Checker=\"{3}\" />", InventoryCheck.IsEnabled, InventoryCheck.Ban_Player, InventoryCheck.Admin_Level, InventoryCheck.Chest_Checker));
                 sw.WriteLine(string.Format("        <Tool Name=\"Jail\" Enable=\"{0}\" Jail_Size=\"{1}\" Jail_Position=\"{2}\" Jail_Shock=\"{3}\" />", Jail.IsEnabled, Jail.Jail_Size, Jail.Jail_Position, Jail.Jail_Shock));
                 sw.WriteLine(string.Format("        <Tool Name=\"Kick_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", KickVote.IsEnabled, KickVote.Players_Online, KickVote.Votes_Needed));
                 sw.WriteLine(string.Format("        <Tool Name=\"Kill_Notice\" Enable=\"{0}\" />", KillNotice.IsEnabled));

@@ -144,7 +144,7 @@ namespace ServerTools
                     }
                     _cords = SetLobby.Lobby_Position.Split(',').ToArray();
                 }
-                else
+                else if (SetLobby.Lobby_Position.Contains(" "))
                 {
                     _cords = SetLobby.Lobby_Position.Split(' ').ToArray();
                 }

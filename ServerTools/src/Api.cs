@@ -181,8 +181,11 @@ namespace ServerTools
                         {
                             _sql = string.Format("SELECT eventRespawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                             DataTable _result1 = SQL.TQuery(_sql);
-                            bool _eventRespawn;
-                            bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _eventRespawn);
+                            bool _eventRespawn = false;
+                            if (_result1.Rows.Count > 0)
+                            {
+                                bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _eventRespawn);
+                            }
                             _result1.Dispose();
                             if (_eventRespawn)
                             {
@@ -193,8 +196,11 @@ namespace ServerTools
                                 _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                                 DataTable _result2 = SQL.TQuery(_sql);
                                 bool _return1 = false, _return2 = false;
-                                bool.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
-                                bool.TryParse(_result2.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                                if (_result2.Rows.Count > 0)
+                                {
+                                    bool.TryParse(_result2.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
+                                    bool.TryParse(_result2.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                                }
                                 _result2.Dispose();
                                 if (_return1)
                                 {
@@ -252,8 +258,11 @@ namespace ServerTools
                             string _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                             DataTable _result1 = SQL.TQuery(_sql);
                             bool _return1 = false, _return2 = false;
-                            bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
-                            bool.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                            if (_result1.Rows.Count > 0)
+                            {
+                                bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
+                                bool.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                            }
                             _result1.Dispose();
                             if (_return1)
                             {
@@ -271,8 +280,11 @@ namespace ServerTools
                         {
                             string _sql = string.Format("SELECT eventRespawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                             DataTable _result = SQL.TQuery(_sql);
-                            bool _eventRespawn;
-                            bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventRespawn);
+                            bool _eventRespawn = false;
+                            if (_result.Rows.Count > 0)
+                            {
+                                bool.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventRespawn);
+                            }
                             _result.Dispose();
                             if (_eventRespawn)
                             {
@@ -283,8 +295,11 @@ namespace ServerTools
                                 _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                                 DataTable _result1 = SQL.TQuery(_sql);
                                 bool _return1 = false, _return2 = false;
-                                bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
-                                bool.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                                if (_result1.Rows.Count > 0)
+                                {
+                                    bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
+                                    bool.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                                }
                                 _result1.Dispose();
                                 if (_return1)
                                 {
@@ -317,8 +332,11 @@ namespace ServerTools
                         string _sql = string.Format("SELECT return, eventSpawn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                         DataTable _result1 = SQL.TQuery(_sql);
                         bool _return1 = false, _return2 = false;
-                        bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
-                        bool.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                        if (_result1.Rows.Count > 0)
+                        {
+                            bool.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _return1);
+                            bool.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _return2);
+                        }
                         _result1.Dispose();
                         if (_return1)
                         {

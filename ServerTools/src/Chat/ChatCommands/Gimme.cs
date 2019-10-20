@@ -357,8 +357,7 @@ namespace ServerTools
                     _qualityMin = _itemData[2];
                     _qualityMax = _itemData[3];
                 }
-                ItemValue itemValue;
-                itemValue = new ItemValue(ItemClass.GetItem(_randomItem).type, _qualityMin, _qualityMax, false, null, 1);
+                ItemValue itemValue = new ItemValue(ItemClass.GetItem(_randomItem).type, _qualityMin, _qualityMax, false, null, 1);
                 World world = GameManager.Instance.World;
                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                 {

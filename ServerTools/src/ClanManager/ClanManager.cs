@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Data;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ServerTools
 {
@@ -16,37 +16,55 @@ namespace ServerTools
         {
             string _clanList = ("Clan names are:");
             int _counter = 0;
-            foreach (KeyValuePair<string,string> i in Clans)
+            if (Clans.Count > 0)
             {
-                _counter++;
-                if (_counter == Clans.Count)
+                foreach (KeyValuePair<string, string> i in Clans)
                 {
-                    _clanList = string.Format("{0} {1}", _clanList, i.Key);
+                    _counter++;
+                    if (_counter == Clans.Count)
+                    {
+                        _clanList = string.Format("{0} {1}", _clanList, i.Value);
+                    }
+                    else
+                    {
+                        _clanList = string.Format("{0} {1},", _clanList, i.Value);
+                    }
                 }
-                else
-                {
-                    _clanList = string.Format("{0} {1},", _clanList, i.Key);
-                }
+                return _clanList;
             }
-            return _clanList;
+            else
+            {
+                _clanList = ("No clans were found");
+                return _clanList;
+            }
         }
 
         public static void ClanList()
         {
-            for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
+            try
             {
-                string _id = PersistentContainer.Instance.Players.SteamIDs[i];
-                PersistentPlayer p = PersistentContainer.Instance.Players[_id];
+                for (int i = 0; i < PersistentContainer.Instance.Players.SteamIDs.Count; i++)
                 {
-                    if (p.ClanName != "")
+                    string _id = PersistentContainer.Instance.Players.SteamIDs[i];
+                    PersistentPlayer p = PersistentContainer.Instance.Players[_id];
                     {
-                        if (p.ClanOwner)
+                        if (p != null && p.ClanName != null)
                         {
-                            Clans.Add(_id, p.ClanName);
+                            if (p.ClanName.Length > 0)
+                            {
+                                if (p.ClanOwner)
+                                {
+                                    Clans.Add(_id, p.ClanName);
+                                }
+                                ClanMember.Add(_id);
+                            }
                         }
-                        ClanMember.Add(_id);
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in ClanManager build list: {0}.", e.Message));
             }
         }
 
@@ -58,21 +76,22 @@ namespace ServerTools
             }
             else
             {
-                string _clan = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
                 bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner;
                 if (_clanOwner)
                 {
+                    string _clan = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
                     string _phrase101;
                     if (!Phrases.Dict.TryGetValue(101, out _phrase101))
                     {
                         _phrase101 = " you have already created the clan {ClanName}.";
                     }
                     _phrase101 = _phrase101.Replace("{ClanName}", _clan.ToString());
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase101 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase101 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    if (_clan != "")
+                    string _clan = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
+                    if (_clan != null && _clan.Length > 0)
                     {
                         string _phrase103;
                         if (!Phrases.Dict.TryGetValue(103, out _phrase103))
@@ -80,11 +99,11 @@ namespace ServerTools
                             _phrase103 = " you are currently a member of the clan {ClanName}.";
                         }
                         _phrase103 = _phrase103.Replace("{ClanName}", _clan.ToString());
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase103 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase103 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
-                        if (Clans.ContainsKey(_clanName))
+                        if (Clans.ContainsValue(_clanName))
                         {
                             string _phrase102;
                             if (!Phrases.Dict.TryGetValue(102, out _phrase102))
@@ -92,7 +111,7 @@ namespace ServerTools
                                 _phrase102 = " can not add the clan {ClanName} because it already exist.";
                             }
                             _phrase102 = _phrase102.Replace("{ClanName}", _clanName);
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase102 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase102 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                         else
                         {
@@ -102,14 +121,14 @@ namespace ServerTools
                                 if (!Phrases.Dict.TryGetValue(129, out _phrase129))
                                 {
                                     _phrase129 = " the clanName must be 2 - 6 characters.";
-                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase129 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase129 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase129 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase129 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                             else
                             {
                                 ClanMember.Add(_cInfo.playerId);
-                                Clans.Add(_clanName, _cInfo.playerId);
+                                Clans.Add(_cInfo.playerId, _clanName);
                                 PersistentContainer.Instance.Players[_cInfo.playerId].ClanName = _clanName;
                                 PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner = true;
                                 PersistentContainer.Instance.Players[_cInfo.playerId].ClanOfficer = true;
@@ -120,7 +139,7 @@ namespace ServerTools
                                     _phrase104 = " you have added the clan {ClanName}.";
                                 }
                                 _phrase104 = _phrase104.Replace("{ClanName}", _clanName);
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase104 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase104 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
@@ -138,7 +157,7 @@ namespace ServerTools
                 {
                     _phrase105 = " you are not the owner of any clans.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase105 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase105 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -151,14 +170,13 @@ namespace ServerTools
                     string _id = PersistentContainer.Instance.Players.SteamIDs[i];
                     PersistentPlayer p = PersistentContainer.Instance.Players[_id];
                     {
-                        if (p.ClanName == _clanName)
+                        if (p.ClanName != null && p.ClanName == _clanName)
                         {
                             PersistentContainer.Instance.Players[_id].ClanName = "";
                             PersistentContainer.Instance.Players[_id].ClanOfficer = false;
                             ClanMember.Remove(_id);
-                            Clans.Remove(_id);
                             ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_id);
-                            if (_cInfo2 != null)
+                            if (_cInfo2 != null && _cInfo != _cInfo2)
                             {
                                 string _phrase121;
                                 if (!Phrases.Dict.TryGetValue(121, out _phrase121))
@@ -166,7 +184,7 @@ namespace ServerTools
                                     _phrase121 = " you have been removed from the clan {ClanName}.";
                                 }
                                 _phrase121 = _phrase121.Replace("{ClanName}", _clanName);
-                                ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + _phrase121 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + LoadConfig.Chat_Response_Color + _phrase121 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                         else if (p.ClanInvite == _clanName)
@@ -176,39 +194,41 @@ namespace ServerTools
                     }
                 }
                 PersistentContainer.Instance.Save();
+                ClanMember.Remove(_cInfo.playerId);
+                Clans.Remove(_cInfo.playerId);
                 string _phrase106;
                 if (!Phrases.Dict.TryGetValue(106, out _phrase106))
                 {
                     _phrase106 = " you have removed the clan {ClanName}.";
                 }
                 _phrase106 = _phrase106.Replace("{ClanName}", _clanName);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase106 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase106 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        public static void ClanRename(ClientInfo _cInfo1, string _clanName)
+        public static void ClanRename(ClientInfo _cInfo, string _clanName)
         {
             if (_clanName.Length < 2 || _clanName.Length > 6)
             {
-                ChatHook.ChatMessage(_cInfo1, ChatHook.Player_Name_Color + "The clan name is too short or too long. It must be 2 - 6 characters." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + "The clan name is too short or too long. It must be 2 - 6 characters." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                bool _clanOwner = PersistentContainer.Instance.Players[_cInfo1.playerId].ClanOwner;
+                bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner;
                 if (_clanOwner)
                 {
                     if (!Clans.ContainsValue(_clanName))
                     {
-                        string _oldClanName = PersistentContainer.Instance.Players[_cInfo1.playerId].ClanName;
-                        foreach (KeyValuePair<string, string> _clan in Clans)
+                        string _oldClanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
+                        for (int i = 0; i < ClanMember.Count; i++)
                         {
-                            if (_clan.Value == _oldClanName)
+                            string _clanMember = ClanMember[i];
+                            if (PersistentContainer.Instance.Players[_clanMember].ClanName == _oldClanName)
                             {
-                                Clans.Remove(_clan.Key);
-                                Clans.Add(_clan.Key, _clanName);
-                                PersistentContainer.Instance.Players[_clan.Key].ClanName = _clanName;
-                                ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clan.Key);
-                                if (_cInfo2 != null && _cInfo1 != _cInfo2)
+                                PersistentContainer.Instance.Players[_clanMember].ClanName = _clanName;
+                                PersistentContainer.Instance.Save();
+                                ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clanMember);
+                                if (_cInfo2 != null && _cInfo != _cInfo2)
                                 {
                                     string _phrase131;
                                     if (!Phrases.Dict.TryGetValue(131, out _phrase131))
@@ -216,18 +236,19 @@ namespace ServerTools
                                         _phrase131 = " your clan name has been changed by the owner to {ClanName}.";
                                     }
                                     _phrase131 = _phrase131.Replace("{ClanName}", _clanName);
-                                    ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + _phrase131 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + LoadConfig.Chat_Response_Color + _phrase131 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                         }
                         PersistentContainer.Instance.Save();
+                        Clans[_cInfo.playerId] = _clanName;
                         string _phrase130;
                         if (!Phrases.Dict.TryGetValue(130, out _phrase130))
                         {
                             _phrase130 = " you have changed your clan name to {ClanName}.";
                         }
                         _phrase130 = _phrase130.Replace("{ClanName}", _clanName);
-                        ChatHook.ChatMessage(_cInfo1, ChatHook.Player_Name_Color + _cInfo1.playerName + _phrase130 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase130 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
@@ -236,8 +257,8 @@ namespace ServerTools
                         {
                             _phrase102 = " can not add the clan {ClanName} because it already exists.";
                         }
-                        _phrase102 = _phrase102.Replace("{PlayerName}", _cInfo1.playerName);
-                        ChatHook.ChatMessage(_cInfo1, ChatHook.Player_Name_Color + _cInfo1.playerName + _phrase102 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        _phrase102 = _phrase102.Replace("{PlayerName}", _cInfo.playerName);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase102 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
@@ -247,8 +268,8 @@ namespace ServerTools
                     {
                         _phrase105 = " you are not the owner of any clans.";
                     }
-                    _phrase105 = _phrase105.Replace("{PlayerName}", _cInfo1.playerName);
-                    ChatHook.ChatMessage(_cInfo1, ChatHook.Player_Name_Color + _cInfo1.playerName + _phrase105 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    _phrase105 = _phrase105.Replace("{PlayerName}", _cInfo.playerName);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase105 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -264,7 +285,7 @@ namespace ServerTools
                     _phrase107 = " you do not have permissions to use this command.";
                 }
                 _phrase107 = _phrase107.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase107 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase107 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -280,14 +301,14 @@ namespace ServerTools
                             _phrase108 = " the player {PlayerName} was not found.";
                         }
                         _phrase108 = _phrase108.Replace("{Player}", _playerName);
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase108 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase108 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         return;
                     }
                 }
                 else
                 {
                     string _newMemberClanName = PersistentContainer.Instance.Players[_newMember.playerId].ClanName;
-                    if (_newMemberClanName != "")
+                    if (_newMemberClanName != null && _newMemberClanName.Length > 0)
                     {
                         string _phrase109;
                         if (!Phrases.Dict.TryGetValue(109, out _phrase109))
@@ -301,7 +322,7 @@ namespace ServerTools
                     else
                     {
                         string _clanInvite = PersistentContainer.Instance.Players[_newMember.playerId].ClanInvite;
-                        if (_clanInvite != "")
+                        if (_clanInvite != null && _clanInvite.Length > 0)
                         {
                             string _phrase110;
                             if (!Phrases.Dict.TryGetValue(110, out _phrase110))
@@ -332,8 +353,8 @@ namespace ServerTools
                             _phrase112 = _phrase112.Replace("{ClanName}", _clanName);
                             PersistentContainer.Instance.Players[_cInfo.playerId].ClanInvite = _clanName;
                             PersistentContainer.Instance.Save();
-                            ChatHook.ChatMessage(_newMember, LoadConfig.Chat_Response_Color + _newMember.playerName + _phrase111 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase112 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_newMember, LoadConfig.Chat_Response_Color + _newMember.playerName + LoadConfig.Chat_Response_Color + _phrase111 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase112 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
@@ -343,27 +364,27 @@ namespace ServerTools
         public static void InviteAccept(ClientInfo _cInfo)
         {
             string _clanInvite = PersistentContainer.Instance.Players[_cInfo.playerId].ClanInvite;
-            if (_clanInvite == "")
+            if (_clanInvite != null && _clanInvite.Length == 0)
             {
                 string _phrase113;
                 if (!Phrases.Dict.TryGetValue(113, out _phrase113))
                 {
                     _phrase113 = " you have not been invited to any clans.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase113 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase113 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                Clans.Add(_cInfo.playerId, _clanInvite);
                 ClanMember.Add(_cInfo.playerId);
                 PersistentContainer.Instance.Players[_cInfo.playerId].ClanInvite = "";
                 PersistentContainer.Instance.Players[_cInfo.playerId].ClanName = _clanInvite;
                 PersistentContainer.Instance.Save();
-                foreach (KeyValuePair<string, string> _clan in Clans)
+                for (int i = 0; i < ClanMember.Count; i++)
                 {
-                    if (_clan.Value == _clanInvite)
+                    string _clanMember = ClanMember[i];
+                    if (PersistentContainer.Instance.Players[_clanMember].ClanName == _clanInvite)
                     {
-                        ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clan.Key);
+                        ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clanMember);
                         if (_cInfo2 != null)
                         {
                             string _phrase115;
@@ -382,7 +403,7 @@ namespace ServerTools
         public static void InviteDecline(ClientInfo _cInfo)
         {
             string _clanInvite = PersistentContainer.Instance.Players[_cInfo.playerId].ClanInvite;
-            if (_clanInvite == "")
+            if (_clanInvite != null && _clanInvite.Length == 0)
             {
                 string _phrase113;
                 if (!Phrases.Dict.TryGetValue(113, out _phrase113))
@@ -401,11 +422,12 @@ namespace ServerTools
                     _phrase116 = " you have declined the invite to the clan.";
                 }
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase116 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                foreach (KeyValuePair<string, string> _clan in Clans)
+                for (int i = 0; i < ClanMember.Count; i++)
                 {
-                    if (_clan.Value == _clanInvite)
+                    string _clanMember = ClanMember[i];
+                    if (PersistentContainer.Instance.Players[_clanMember].ClanName == _clanInvite)
                     {
-                        ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clan.Key);
+                        ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clanMember);
                         if (_cInfo2 != null)
                         {
                             string _phrase115;
@@ -453,7 +475,7 @@ namespace ServerTools
                 }
                 string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
                 string _clanName2 = PersistentContainer.Instance.Players[_PlayertoRemove.playerId].ClanName;
-                if (_clanName != _clanName2)
+                if (_clanName2 != null && _clanName != _clanName2)
                 {
                     string _phrase117;
                     if (!Phrases.Dict.TryGetValue(117, out _phrase117))
@@ -478,7 +500,6 @@ namespace ServerTools
                     }
                     else
                     {
-                        Clans.Remove(_PlayertoRemove.playerId);
                         ClanMember.Remove(_PlayertoRemove.playerId);
                         PersistentContainer.Instance.Players[_PlayertoRemove.playerId].ClanName = "";
                         PersistentContainer.Instance.Players[_PlayertoRemove.playerId].ClanOfficer = false;
@@ -501,11 +522,12 @@ namespace ServerTools
                             _phrase121 = _phrase121.Replace("{ClanName}", _clanName);
                             ChatHook.ChatMessage(_PlayertoRemove, ChatHook.Player_Name_Color + _PlayertoRemove.playerName + _phrase121 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
-                        foreach (KeyValuePair<string, string> _clan in Clans)
+                        for (int i = 0; i < ClanMember.Count; i++)
                         {
-                            if (_clan.Value == _clanName)
+                            string _clanMember = ClanMember[i];
+                            if (PersistentContainer.Instance.Players[_clanMember].ClanName == _clanName)
                             {
-                                ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clan.Key);
+                                ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clanMember);
                                 if (_cInfo2 != null && _cInfo != _cInfo2)
                                 {
                                     string _phrase132;
@@ -553,7 +575,7 @@ namespace ServerTools
                 {
                     string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
                     string _clanName2 = PersistentContainer.Instance.Players[_playertoPromote.playerId].ClanName;
-                    if (_clanName != _clanName2)
+                    if (_clanName2 == null || _clanName != _clanName2)
                     {
                         string _phrase117;
                         if (!Phrases.Dict.TryGetValue(117, out _phrase117))
@@ -623,7 +645,7 @@ namespace ServerTools
                 {
                     string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
                     string _clanName2 = PersistentContainer.Instance.Players[_membertoDemote.playerId].ClanName;
-                    if (_clanName != _clanName2)
+                    if (_clanName2 == null || _clanName != _clanName2)
                     {
                         string _phrase117;
                         if (!Phrases.Dict.TryGetValue(117, out _phrase117))
@@ -678,7 +700,7 @@ namespace ServerTools
             else
             {
                 string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
-                if (_clanName == "")
+                if (_clanName == null || _clanName == "")
                 {
                     string _phrase127;
                     if (!Phrases.Dict.TryGetValue(127, out _phrase127))
@@ -689,7 +711,6 @@ namespace ServerTools
                 }
                 else
                 {
-                    Clans.Remove(_cInfo.playerId);
                     ClanMember.Remove(_cInfo.playerId);
                     PersistentContainer.Instance.Players[_cInfo.playerId].ClanName = "";
                     PersistentContainer.Instance.Save();
@@ -700,11 +721,12 @@ namespace ServerTools
                     }
                     _phrase121 = _phrase121.Replace("{ClanName}", _clanName);
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase121 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    foreach (KeyValuePair<string, string> _clan in Clans)
+                    for (int i = 0; i < ClanMember.Count; i++)
                     {
-                        if (_clan.Value == _clanName)
+                        string _clanMember = ClanMember[i];
+                        if (PersistentContainer.Instance.Players[_clanMember].ClanName == _clanName)
                         {
-                            ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clan.Key);
+                            ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_clanMember);
                             if (_cInfo2 != null)
                             {
                                 string _phrase115;

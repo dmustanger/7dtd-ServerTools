@@ -1,5 +1,23 @@
 ﻿CHANGELOG
 
+18.0.3
+Built using Alpha 18 experimental assets
+
+Do not use an old database with this release. You must delete it and start a new one
+
+Added to EntityCleanup verifying entity is spawned
+Added Market to the load notice list displayed on server startup in the log
+Fixed MuteVote allowing voting of an already muted player
+Fixed various bugs with the Clan system
+Fixed Autoshutdown backup process triggering enabled tools
+Fixed Waypoint database error on command use
+Fixed the chat system for applying clan tags, color prefix and normal player color prefix
+Fixed /sethome2 replacing the /sethome location
+Fixed StartingItems error on login
+Fixed SQL error on player respawn
+Fixed AutoBackup error. Compression option is now functioning
+Removed claim check when teleporting to a waypoint
+
 18.0.2
 Built using Alpha 18 experimental assets
 

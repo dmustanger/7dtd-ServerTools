@@ -91,7 +91,7 @@ namespace ServerTools
                     {
                         if (Wallet.IsEnabled && Command_Cost >= 1)
                         {
-                            CommandCost(_cInfo, _homePos);
+                            CommandCost1(_cInfo, _homePos);
                         }
                         else
                         {
@@ -134,7 +134,7 @@ namespace ServerTools
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    CommandCost(_cInfo, _pos);
+                    CommandCost1(_cInfo, _pos);
                 }
                 else
                 {
@@ -158,7 +158,7 @@ namespace ServerTools
             }
         }
 
-        public static void CommandCost(ClientInfo _cInfo, string _pos)
+        public static void CommandCost1(ClientInfo _cInfo, string _pos)
         {
             int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
             if (_currentCoins >= Command_Cost)
@@ -240,7 +240,7 @@ namespace ServerTools
                 if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
                 {
                     string _sposition = x + "," + y + "," + z;
-                    PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1 = _sposition;
+                    PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2 = _sposition;
                     PersistentContainer.Instance.Save();
                     string _phrase607;
                     if (!Phrases.Dict.TryGetValue(607, out _phrase607))

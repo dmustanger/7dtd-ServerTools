@@ -10,7 +10,8 @@ namespace ServerTools
         private const string file = "EventTriggers.xml";
         public static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         public static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static Dictionary<int, string[]> dict = new Dictionary<int, string[]>();
+        public static Dictionary<int, string[]> dict = new Dictionary<int, string[]>();
+        public static List<string> list = new List<string>();
 
         public static void Load()
         {
@@ -54,6 +55,7 @@ namespace ServerTools
                 if (childNode.Name == "triggers")
                 {
                     dict.Clear();
+                    list.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -88,9 +90,9 @@ namespace ServerTools
                             continue;
                         }
                         string[] _c = { _line.GetAttribute("default"), _line.GetAttribute("replacement") };
-                        if (!dict.ContainsValue(_c))
+                        if (!list.Contains(_c[1]))
                         {
-                            dict.Add(_number, _c);
+                            list.Add(_c[1]);
                         }
                     }
                 }

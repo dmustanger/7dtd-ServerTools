@@ -14,14 +14,14 @@ namespace ServerTools
             try
             {
                 List<Entity> Entities = GameManager.Instance.World.Entities.list;
-                for (int i = 0; i < Entities.Count; i++)
+                if (Entities != null)
                 {
-                    Entity _entity = Entities[i];
-                    if (_entity != null)
+                    for (int i = 0; i < Entities.Count; i++)
                     {
-                        if (!_entity.IsClientControlled())
+                        Entity _entity = Entities[i];
+                        if (_entity != null)
                         {
-                            try
+                            if (!_entity.IsClientControlled() && _entity.IsSpawned())
                             {
                                 string _name = EntityClass.list[_entity.entityClass].entityClassName;
                                 if (BlockIsEnabled && _name == "fallingBlock")
@@ -36,17 +36,14 @@ namespace ServerTools
                                     Log.Out("[SERVERTOOLS] Entity cleanup: Removed falling tree");
                                     continue;
                                 }
-                                if (Underground)
+                                EntityType _type = _entity.entityType;
+                                if ((_type == EntityType.Zombie || _type == EntityType.Animal) && Underground)
                                 {
-                                    EntityType _type = _entity.entityType;
-                                    if (_type == EntityType.Zombie || _type == EntityType.Animal)
+                                    if ((int)_entity.position.y <= -10)
                                     {
-                                        if ((int)_entity.position.y <= -10)
-                                        {
-                                            GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                            Log.Out("[SERVERTOOLS] Entity cleanup: Removed {0} with entity id {1}", _name, _entity.entityId);
-                                            continue;
-                                        }
+                                        GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
+                                        Log.Out("[SERVERTOOLS] Entity cleanup: Removed {0} with entity id {1}", _name, _entity.entityId);
+                                        continue;
                                     }
                                 }
                                 if (MiniBikes && _name == "vehicleMinibike")
@@ -73,19 +70,6 @@ namespace ServerTools
                                         }
                                     }
                                 }
-                                if (_name == "vehicleMinibike" || _name == "vehicleBicycle" || _name == "vehicleMotorcycle" || _name == "vehicle4x4Truck" || _name == "vehicleGyrocopter")
-                                {
-                                    if ((int)_entity.position.y >= 2000)
-                                    {
-                                        GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                        Log.Out("[SERVERTOOLS] Entity cleanup: Removed {0} with entity id {1}", _name, _entity.entityId);
-                                        continue;
-                                    }
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                Log.Out(string.Format("[SERVERTOOLS] Entity cleanup failed: {0}", e.Message));
                             }
                         }
                     }
