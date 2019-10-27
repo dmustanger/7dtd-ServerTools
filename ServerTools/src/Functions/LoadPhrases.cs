@@ -936,15 +936,6 @@ namespace ServerTools
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"605\" Phrase=\"{0}\" />", _phrase605));
                 sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- ******************* Zone_Protection ******************** -->");
-                sw.WriteLine("        <!-- ******************************************************** -->");
-                string _phrase606;
-                if (!Dict.TryGetValue(606, out _phrase606))
-                {
-                    _phrase606 = " you can only use {CommandPrivate}{Command50} for three minutes after being killed in a pve zone. Time has expired.";
-                }
-                sw.WriteLine(string.Format("        <Phrase id=\"606\" Phrase=\"{0}\" />", _phrase606));
-                sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- *********************** Set_Home2 ********************** -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 string _phrase607;
@@ -1127,7 +1118,7 @@ namespace ServerTools
                 string _phrase701;
                 if (!Dict.TryGetValue(701, out _phrase701))
                 {
-                    _phrase701 = "Thank you for your vote {PlayerName}. You can vote and receive another reward in {VoteDelay} hours.";
+                    _phrase701 = "Thank you for your vote. You can vote and receive another reward in {VoteDelay} hours.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"701\" Phrase=\"{0}\" />", _phrase701));
                 string _phrase702;
@@ -1139,7 +1130,7 @@ namespace ServerTools
                 string _phrase703;
                 if (!Dict.TryGetValue(703, out _phrase703))
                 {
-                    _phrase703 = " reward items were sent to your inventory. If it is full, check the ground.";
+                    _phrase703 = "Reward items were sent to your inventory. If it is full, check the ground.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"703\" Phrase=\"{0}\" />", _phrase703));
                 string _phrase704;
@@ -1472,7 +1463,7 @@ namespace ServerTools
                 string _phrase811;
                 if (!Dict.TryGetValue(811, out _phrase811))
                 {
-                    _phrase811 = " you can only use {CommandPrivate}{Command50} for six minutes after being killed in a pve zone. Time has expired.";
+                    _phrase811 = " you can only use {CommandPrivate}{Command50} for {Time} minutes after being killed in a pve zone. Time has expired.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"811\" Phrase=\"{0}\" />", _phrase811));
                 string _phrase812;
@@ -1490,7 +1481,7 @@ namespace ServerTools
                 string _phrase814;
                 if (!Dict.TryGetValue(814, out _phrase814))
                 {
-                    _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    _phrase814 = " you do not have enough {Currency} in your wallet to run this command.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"814\" Phrase=\"{0}\" />", _phrase814));
                 string _phrase815;
@@ -1526,7 +1517,7 @@ namespace ServerTools
                 string _phrase820;
                 if (!Dict.TryGetValue(820, out _phrase820))
                 {
-                    _phrase820 = " you are too close to a zombie. Command unavailable.";
+                    _phrase820 = " you are too close to a hostile zombie or animal. Command unavailable.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"820\" Phrase=\"{0}\" />", _phrase820));
                 string _phrase821;

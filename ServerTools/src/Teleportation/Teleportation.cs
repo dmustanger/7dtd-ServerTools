@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace ServerTools
 {
@@ -9,26 +7,31 @@ namespace ServerTools
 
         public static bool ZCheck(ClientInfo _cInfo, EntityPlayer _player)
         {
-            World world = GameManager.Instance.World;
-            List<Entity> Entities = world.Entities.list;
+            Entity _ent1 = GameManager.Instance.World.Players.dict[_cInfo.entityId] as Entity;
+            List<Entity> Entities = GameManager.Instance.World.Entities.list;
             for (int i = 0; i < Entities.Count; i++)
             {
-                Entity _entity = Entities[i];
-                if (_entity != null)
+                Entity _ent2 = Entities[i];
+                if (_ent2 != null && _ent1 != _ent2 && _ent2.IsSpawned() && !_ent2.IsClientControlled())
                 {
-                    EntityType _type = _entity.entityType;
-                    if (_type == EntityType.Zombie)
+                    string _tags = _ent2.EntityClass.Tags.ToString();
+                    if (_tags.Contains("zombie") || _tags.Contains("hostile"))
                     {
-                        Vector3 _pos2 = _entity.GetPosition();
-                        if (((int)_player.position.x - (int)_pos2.x) * ((int)_player.position.x - (int)_pos2.x) + ((int)_player.position.z - (int)_pos2.z) * ((int)_player.position.z - (int)_pos2.z) <= 40 * 40)
+                        float distanceSq = _ent2.GetDistanceSq(_ent1.position);
+                        if (distanceSq <= 80f * 80f)
                         {
-                            string _phrase820;
-                            if (!Phrases.Dict.TryGetValue(820, out _phrase820))
+                            EntityAlive _entAlive1 = GameManager.Instance.World.Players.dict[_cInfo.entityId] as EntityAlive;
+                            EntityAlive _entAlive2 = GameManager.Instance.World.Entities.dict[_ent2.entityId] as EntityAlive;
+                            if (_entAlive1 == _entAlive2.GetAttackTarget())
                             {
-                                _phrase820 = " you are too close to a zombie. Command unavailable.";
+                                string _phrase820;
+                                if (!Phrases.Dict.TryGetValue(820, out _phrase820))
+                                {
+                                    _phrase820 = " you are too close to a hostile zombie or animal. Command unavailable.";
+                                }
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase820 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                return true;
                             }
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase820 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            return true;
                         }
                     }
                 }
@@ -38,29 +41,24 @@ namespace ServerTools
 
         public static bool PCheck(ClientInfo _cInfo, EntityPlayer _player)
         {
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-            for (int i = 0; i < _cInfoList.Count; i++)
+            Entity _ent1 = GameManager.Instance.World.Players.dict[_cInfo.entityId] as Entity;
+            List<EntityPlayer> _playerList = GameManager.Instance.World.Players.list;
+            for (int i = 0; i < _playerList.Count; i++)
             {
-                ClientInfo _cInfo2 = _cInfoList[i];
-                if (_cInfo2 != null)
+                EntityPlayer _entPlayer2 = _playerList[i];
+                if (_entPlayer2 != null && _player != _entPlayer2 && !_entPlayer2.IsDead() && _entPlayer2.Spawned && !_player.IsFriendsWith(_entPlayer2))
                 {
-                    EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
-                    if (_player2 != null)
+                    Entity _ent2 = GameManager.Instance.World.Players.dict[_entPlayer2.entityId] as Entity;
+                    float distanceSq = _ent2.GetDistanceSq(_ent1.position);
+                    if (distanceSq <= 160f * 160f)
                     {
-                        Vector3 _pos2 = _player2.GetPosition();
-                        if (((int)_player.position.x - (int)_pos2.x) * ((int)_player.position.x - (int)_pos2.x) + ((int)_player.position.z - (int)_pos2.z) * ((int)_player.position.z - (int)_pos2.z) <= 60 * 60)
+                        string _phrase819;
+                        if (!Phrases.Dict.TryGetValue(819, out _phrase819))
                         {
-                            if (!_player.IsFriendsWith(_player2))
-                            {
-                                string _phrase819;
-                                if (!Phrases.Dict.TryGetValue(819, out _phrase819))
-                                {
-                                    _phrase819 = " you are too close to a player that is not a friend. Command unavailable.";
-                                }
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase819 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                return true;
-                            }
+                            _phrase819 = " you are too close to a player that is not a friend. Command unavailable.";
                         }
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase819 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        return true;
                     }
                 }
             }

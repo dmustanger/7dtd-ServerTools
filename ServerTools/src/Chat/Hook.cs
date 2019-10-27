@@ -67,7 +67,6 @@ namespace ServerTools
                         if (_timepassed < 60)
                         {
                             PersistentContainer.Instance.Players[_cInfo.playerId].MessageCount = _count + 1;
-                            PersistentContainer.Instance.Players[_cInfo.playerId].MessageTime = DateTime.Now;
                             PersistentContainer.Instance.Save();
                         }
                         else
@@ -946,6 +945,8 @@ namespace ServerTools
                         {
                             if (_message.ToLower() == (Shop.Command57))
                             {
+                                EntityPlayerLocal _player = GameManager.Instance.World.Players.dict[_cInfo.entityId] as EntityPlayerLocal;
+                                LocalPlayerUI.GetUIForPlayer(_player).nguiWindowManager.GetWindow(EnumNGUIWindow.InGameHUD).GetComponent<NGuiWdwInGameHUD>().ShowInfoText("The shop is full of lovely items. Type ### to buy", 30);
                                 Shop.PosCheck(_cInfo, _mainName, _message, 1, 0);
                             }
                             else
@@ -1270,56 +1271,28 @@ namespace ServerTools
                             if (AuctionBox.No_Admins)
                             {
                                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                                if (Admin.PermissionLevel > Admin_Level)
-                                {
-                                    _message = _message.ToLower().Replace(AuctionBox.Command73 + " ", "");
-                                    {
-                                        int _purchase;
-                                        if (int.TryParse(_message, out _purchase))
-                                        {
-
-                                            string _sql = string.Format("SELECT * FROM Auction WHERE auctionid = {0}", _purchase);
-                                            DataTable _result = SQL.TQuery(_sql);
-                                            if (_result.Rows.Count > 0)
-                                            {
-                                                AuctionBox.WalletCheck(_cInfo, _purchase);
-                                            }
-                                            else
-                                            {
-                                                ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have used an auction item # that does not exist or has sold. Type " + ChatHook.Command_Private + AuctionBox.Command71 + ".[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                            }
-                                            _result.Dispose();
-                                        }
-                                    }
-                                }
-                                else
+                                if (Admin.PermissionLevel <= Admin_Level)
                                 {
                                     string _chatMessage = ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " the auction is disabled for your tier.[-]";
                                     ChatMessage(_cInfo, _chatMessage, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    return false;
                                 }
                             }
-                            else
+                            _message = _message.ToLower().Replace(AuctionBox.Command73 + " ", "");
                             {
-                                _message = _message.ToLower().Replace(AuctionBox.Command73 + " ", "");
+                                int _purchase;
+                                if (int.TryParse(_message, out _purchase))
                                 {
-                                    int _purchase;
-                                    if (int.TryParse(_message, out _purchase))
+                                    if (AuctionBox.AuctionItems.ContainsKey(_purchase))
                                     {
-                                        string _sql = string.Format("SELECT steamid FROM Auction WHERE auctionid = {0}", _purchase);
-                                        DataTable _result = SQL.TQuery(_sql);
-                                        if (_result.Rows.Count > 0)
-                                        {
-                                            AuctionBox.WalletCheck(_cInfo, _purchase);
-                                        }
-                                        else
-                                        {
-                                            ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have used an auction item # that does not exist or has sold. Type " + ChatHook.Command_Private + AuctionBox.Command71 + ".[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                        }
-                                        _result.Dispose();
+                                        AuctionBox.WalletCheck(_cInfo, _purchase);
+                                    }
+                                    else
+                                    {
+                                        ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have used an auction item # that does not exist or has sold. Type " + ChatHook.Command_Private + AuctionBox.Command71 + ".[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                             }
-                            return false;
                         }
                         if (AuctionBox.IsEnabled && _message.ToLower().StartsWith(AuctionBox.Command74))
                         {
@@ -1729,7 +1702,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends)({1}) {2}[-]", _param1, _param2, _mainName), _type, _recipientEntityIds);
+                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Friends){1} {2}[-]", _param1, _param2, _mainName), _type, _recipientEntityIds);
                     }
                 }
                 else if (_type == EChatType.Party)
@@ -1740,7 +1713,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party)({1}) {2}[-]", _param1, _param2, _mainName), _type, _recipientEntityIds);
+                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}(Party){1} {2}[-]", _param1, _param2, _mainName), _type, _recipientEntityIds);
                     }
                 }
                 else
@@ -1751,7 +1724,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}({1}) {2}[-]", _param1, _param2, _mainName), _type, _recipientEntityIds);
+                        ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0}{1} {2}[-]", _param1, _param2, _mainName), _type, _recipientEntityIds);
                     }
                 }
             }
@@ -1759,15 +1732,15 @@ namespace ServerTools
             {
                 if (_type == EChatType.Friends)
                 {
-                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("(Friends)({0}) {1}[-]", _param2, _mainName), _type, _recipientEntityIds);
+                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("(Friends){0} {1}[-]", _param2, _mainName), _type, _recipientEntityIds);
                 }
                 else if (_type == EChatType.Party)
                 {
-                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("(Party)({0}) {1}[-]", _param2, _mainName), _type, _recipientEntityIds);
+                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("(Party){0} {1}[-]", _param2, _mainName), _type, _recipientEntityIds);
                 }
                 else
                 {
-                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("({0}) {1}[-]", _param2, _mainName), _type, _recipientEntityIds);
+                    ChatMessage(_cInfo, _message, _senderId, _mainName = string.Format("{0} {1}[-]", _param2, _mainName), _type, _recipientEntityIds);
                 }
             }
         }

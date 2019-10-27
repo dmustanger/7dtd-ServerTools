@@ -21,7 +21,66 @@ namespace ServerTools
             ModEvents.PlayerSpawnedInWorld.RegisterHandler(PlayerSpawnedInWorld);
             ModEvents.PlayerDisconnected.RegisterHandler(PlayerDisconnected);
             ModEvents.ChatMessage.RegisterHandler(ChatMessage);
+            ModEvents.GameMessage.RegisterHandler(GameMessage);
             ModEvents.GameStartDone.RegisterHandler(GameStartDone);
+        }
+
+        private static bool GameMessage(ClientInfo _cInfo, EnumGameMessages _type, string _msg, string _mainName, bool _localizeMain, string _secondaryName, bool _localizeSecondary)
+        {
+            if (_type == EnumGameMessages.EntityWasKilled)
+            {
+                ClientInfo _cInfo1 = ConsoleHelper.ParseParamIdOrName(_mainName);
+                if (_cInfo1 != null)
+                {
+                    EntityPlayer _player1 = GameManager.Instance.World.Players.dict[_cInfo1.entityId];
+                    if (_player1 != null)
+                    {
+                        if (!string.IsNullOrEmpty(_secondaryName) && _mainName != _secondaryName)
+                        {
+                            ClientInfo _cInfo2 = ConsoleHelper.ParseParamIdOrName(_secondaryName);
+                            if (_cInfo2 != null)
+                            {
+                                EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
+                                if (_player2 != null)
+                                {
+                                    if (KillNotice.IsEnabled)
+                                    {
+                                        string _holdingItem = _player2.inventory.holdingItem.Name;
+                                        ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
+                                        if (_itemValue.type != ItemValue.None.type)
+                                        {
+                                            _holdingItem = _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name;
+                                        }
+                                        KillNotice.Notice(_cInfo1, _cInfo2, _holdingItem);
+                                    }
+                                    if (Bounties.IsEnabled)
+                                    {
+                                        Bounties.PlayerKilled(_player1, _player2, _cInfo1, _cInfo2);
+                                    }
+                                    if (Zones.IsEnabled)
+                                    {
+                                        Zones.Check(_cInfo1, _cInfo2);
+                                    }
+                                }
+                            }
+                        }
+                        if (DeathSpot.IsEnabled)
+                        {
+                            DeathSpot.PlayerKilled(_player1);
+                        }
+                        if (Wallet.IsEnabled && Wallet.Lose_On_Death)
+                        {
+                            Wallet.ClearWallet(_cInfo1);
+                        }
+                        if (Event.Open && Event.PlayersTeam.ContainsKey(_cInfo1.playerId))
+                        {
+                            string _sql = string.Format("UPDATE Players SET eventReturn = 'true' WHERE steamid = '{0}'", _cInfo1.playerId);
+                            SQL.FastQuery(_sql, "Players");
+                        }
+                    }
+                }
+            }
+            return true;
         }
 
         public void GameAwake()
@@ -29,7 +88,7 @@ namespace ServerTools
 
         }
 
-        public void SavePlayerData(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
+        public static void SavePlayerData(ClientInfo _cInfo, PlayerDataFile _playerDataFile)
         {
             if (_cInfo != null && _playerDataFile != null)
             {
@@ -48,7 +107,7 @@ namespace ServerTools
             }
         }
 
-        public void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)
+        public static void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)
         {
             if (_cInfo != null)
             {
@@ -138,7 +197,7 @@ namespace ServerTools
             }
         }
 
-        public void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
+        public static void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
         {
             if (_cInfo != null)
             {
@@ -234,10 +293,6 @@ namespace ServerTools
                 }
                 if (_respawnReason == RespawnType.Died)
                 {
-                    if (PlayerOperations.Died.Contains(_cInfo.entityId))
-                    {
-                        PlayerOperations.Died.Remove(_cInfo.entityId);
-                    }
                     if (Bloodmoon.Show_On_Login && Bloodmoon.Show_On_Respawn)
                     {
                         Bloodmoon.GetBloodmoon(_cInfo, false);
@@ -354,12 +409,18 @@ namespace ServerTools
                     SQL.FastQuery(_sql2, "API");
                     if (Zones.IsEnabled && Zones.Victim.ContainsKey(_cInfo.entityId))
                     {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " type /return to teleport back to your death position. There is a time limit.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                        PersistentContainer.Instance.Players[_cInfo.playerId].RespawnTime = DateTime.Now;
+                        string _response = " type {CommandPrivate}{Command50} to teleport back to your death position. There is a time limit.";
+                        _response = _response.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                        _response = _response.Replace("{Command50}", Zones.Command50);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _response + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        PersistentContainer.Instance.Players[_cInfo.playerId].ZoneDeathTime = DateTime.Now;
                         PersistentContainer.Instance.Save();
                         if (Zones.Forgive.ContainsKey(_cInfo.entityId))
                         {
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " type /forgive to release your killer from jail.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            string _response2 = " type {CommandPrivate}{Command55} to release your killer from jail.";
+                            _response2 = _response2.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _response2 = _response2.Replace("{Command55}", Jail.Command55);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _response2 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
@@ -441,9 +502,9 @@ namespace ServerTools
             return ChatHook.Hook(_cInfo, _type, _senderId, _msg, _mainName, _localizeMain, _recipientEntityIds);
         }
 
-        public void PlayerDisconnected(ClientInfo _cInfo, bool _bShutdown)
+        public static void PlayerDisconnected(ClientInfo _cInfo, bool _bShutdown)
         {
-            if (_cInfo != null)
+            if (_cInfo != null && _cInfo.entityId != -1)
             {
                 try
                 {

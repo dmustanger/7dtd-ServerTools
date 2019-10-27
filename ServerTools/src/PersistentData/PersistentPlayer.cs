@@ -37,7 +37,6 @@ namespace ServerTools
         private int deaths;
         private DateTime messageTime;
         private DateTime lastJoined;
-        private DateTime respawnTime;
         private DateTime lastGimme;
         private DateTime auctionSellDate;
         private DateTime auctionCancelTime;
@@ -443,18 +442,6 @@ namespace ServerTools
             set
             {
                 lastJoined = value;
-            }
-        }
-
-        public DateTime RespawnTime
-        {
-            get
-            {
-                return respawnTime;
-            }
-            set
-            {
-                respawnTime = value;
             }
         }
 

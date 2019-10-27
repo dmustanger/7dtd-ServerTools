@@ -856,13 +856,10 @@ namespace ServerTools
             if (Dict.TryGetValue(_message, out _r))
             {
                 string[] _responseSplit = _r[0].Split('^');
-                foreach (string _response in _responseSplit)
+                for (int i = 0; i < _responseSplit.Length; i++)
                 {
-                    if (_response.StartsWith(" "))
-                    {
-                        _response.Remove(0, 1);
-                    }
-                    string _responseAdj = _response;
+                    string _response = _responseSplit[i];
+                    string _responseAdj = _response.Trim();
                     _responseAdj = _responseAdj.Replace("{EntityId}", _cInfo.entityId.ToString());
                     _responseAdj = _responseAdj.Replace("{SteamId}", _cInfo.playerId);
                     _responseAdj = _responseAdj.Replace("{PlayerName}", _playerName);

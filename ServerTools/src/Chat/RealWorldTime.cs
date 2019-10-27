@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ServerTools
 {
@@ -22,7 +24,15 @@ namespace ServerTools
             }
             _phrase765 = _phrase765.Replace("{Time}", _time.ToShortTimeString());
             _phrase765 = _phrase765.Replace("{TimeZone}", Time_Zone);
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase765 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
+            for (int i = 0; i < _cInfoList.Count; i++)
+            {
+                ClientInfo _cInfo = _cInfoList[i];
+                if (_cInfo != null)
+                {
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase765 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
+            }
         }
     }
 }

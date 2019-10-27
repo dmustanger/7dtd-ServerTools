@@ -1,5 +1,25 @@
 ﻿CHANGELOG
 
+18.1.1
+Built using Alpha 18.1 experimental assets
+Functioning with 18.0 stable and 18.1 experimental
+
+Fixed CountryBan null ref log error from clients joining with internal ip
+Fixed RealWorldTime not working
+Fixed /return command for Zones
+Fixed potential error report on player disconnect if they failed to connect initally
+Fixed Zone reminder delay option
+Fixed CustomCommands using ^ to separate multiple responses 
+Fixed Auction purchase not responding correctly
+Fixed Home commands causing errors
+Fixed accepting or declining a clan invitation
+Fixed teleport checks for players and zombies responding in global chat
+Fixed teleport check misreading distance from other players
+Changed internal code for detection of player on player kills
+Changed phrase 701,703,811,814,820
+Changed AutoBackup to use 64bit application, hopefully avoiding max file size complications
+Removed () from automatically applying to the chat color prefix
+
 18.0.3
 Built using Alpha 18 experimental assets
 

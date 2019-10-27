@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using UnityEngine;
 
@@ -76,7 +75,7 @@ namespace ServerTools
                     }
                 }
                 string _homePos = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1;
-                if (_homePos == "")
+                if (string.IsNullOrEmpty(_homePos))
                 {
                     string _phrase11;
                     if (!Phrases.Dict.TryGetValue(11, out _phrase11))
@@ -211,7 +210,7 @@ namespace ServerTools
         public static void DelHome1(ClientInfo _cInfo)
         {
             string _homePos = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1;
-            if (_homePos != "")
+            if (!string.IsNullOrEmpty(_homePos))
             {
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " deleted saved home position.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1 = "";
@@ -219,7 +218,7 @@ namespace ServerTools
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", no home to delete.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " no home to delete.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -284,7 +283,7 @@ namespace ServerTools
                     }
                 }
                 string _homePos2 = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2;
-                if (_homePos2 == "")
+                if (string.IsNullOrEmpty(_homePos2))
                 {
                     string _phrase11;
                     if (!Phrases.Dict.TryGetValue(11, out _phrase11))
@@ -424,7 +423,7 @@ namespace ServerTools
         public static void DelHome2(ClientInfo _cInfo)
         {
             string _homePos2 = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2;
-            if (_homePos2 != "")
+            if (!string.IsNullOrEmpty(_homePos2))
             {
                 string _phrase609;
                 if (!Phrases.Dict.TryGetValue(609, out _phrase609))
@@ -465,7 +464,7 @@ namespace ServerTools
                     }
                 }
                 string _homePos1 = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1;
-                if (_homePos1 == "")
+                if (string.IsNullOrEmpty(_homePos1))
                 {
                     string _phrase11;
                     if (!Phrases.Dict.TryGetValue(11, out _phrase11))
@@ -623,7 +622,7 @@ namespace ServerTools
                     }
                 }
                 string _homePos2 = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2;
-                if (_homePos2 == "")
+                if (string.IsNullOrEmpty(_homePos2))
                 {
                     string _phrase608;
                     if (!Phrases.Dict.TryGetValue(608, out _phrase608))

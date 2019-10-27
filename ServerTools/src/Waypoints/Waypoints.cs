@@ -8,7 +8,7 @@ namespace ServerTools
 {
     class Waypoint
     {
-        public static bool IsEnabled = false, PvP_Check, Zombie_Check = false, Vehicle = false;
+        public static bool IsEnabled = false, PvP_Check= false, Zombie_Check = false, Vehicle = false;
         public static int Delay_Between_Uses = 0, Max_Waypoints = 2, Donator_Max_Waypoints = 4, Command_Cost = 0;
         public static string Command10 = "goway", Command106 = "waypoint", Command107 = "way", Command108 = "wp", Command109 = "fwaypoint", Command110 = "fway", Command111 = "fwp", 
             Command112 = "waypointsave", Command113 = "waysave", Command114 = "ws", Command115 = "waypointdel", Command116 = "waydel", Command117 = "wd";

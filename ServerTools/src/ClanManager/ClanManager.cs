@@ -120,8 +120,7 @@ namespace ServerTools
                                 string _phrase129;
                                 if (!Phrases.Dict.TryGetValue(129, out _phrase129))
                                 {
-                                    _phrase129 = " the clanName must be 2 - 6 characters.";
-                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase129 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    _phrase129 = " the clan name must be 2 - 6 characters.";
                                 }
                                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase129 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
@@ -187,7 +186,7 @@ namespace ServerTools
                                 ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + LoadConfig.Chat_Response_Color + _phrase121 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
-                        else if (p.ClanInvite == _clanName)
+                        else if (p.ClanInvite != null && p.ClanInvite == _clanName)
                         {
                             PersistentContainer.Instance.Players[_id].ClanInvite = "";
                         }
@@ -364,7 +363,7 @@ namespace ServerTools
         public static void InviteAccept(ClientInfo _cInfo)
         {
             string _clanInvite = PersistentContainer.Instance.Players[_cInfo.playerId].ClanInvite;
-            if (_clanInvite != null && _clanInvite.Length == 0)
+            if (_clanInvite == null || _clanInvite.Length == 0)
             {
                 string _phrase113;
                 if (!Phrases.Dict.TryGetValue(113, out _phrase113))
@@ -403,7 +402,7 @@ namespace ServerTools
         public static void InviteDecline(ClientInfo _cInfo)
         {
             string _clanInvite = PersistentContainer.Instance.Players[_cInfo.playerId].ClanInvite;
-            if (_clanInvite != null && _clanInvite.Length == 0)
+            if (_clanInvite == null || _clanInvite.Length == 0)
             {
                 string _phrase113;
                 if (!Phrases.Dict.TryGetValue(113, out _phrase113))
@@ -475,7 +474,7 @@ namespace ServerTools
                 }
                 string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
                 string _clanName2 = PersistentContainer.Instance.Players[_PlayertoRemove.playerId].ClanName;
-                if (_clanName2 != null && _clanName != _clanName2)
+                if (_clanName2 == null || _clanName != _clanName2)
                 {
                     string _phrase117;
                     if (!Phrases.Dict.TryGetValue(117, out _phrase117))
@@ -755,7 +754,7 @@ namespace ServerTools
             bool _clanOwner = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOwner;
             bool _clanOfficer = PersistentContainer.Instance.Players[_cInfo.playerId].ClanOfficer;
             string _commands = ("Available clan commands are:");
-            if (!_clanOwner && !_clanOfficer && _clanName == "" && _clanInvite == "")
+            if (string.IsNullOrEmpty(_clanName))
             {
                 _commands = string.Format("{0} {1}{2} ClanName", _commands, ChatHook.Command_Private, ClanManager.Command33);
             }
@@ -771,12 +770,12 @@ namespace ServerTools
                 _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command35);
                 _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command38);
             }
-            if (_clanInvite != "")
+            if (!string.IsNullOrEmpty(_clanInvite))
             {
                 _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command36);
                 _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command37);
             }
-            if (!_clanOwner && _clanName != "")
+            if (!_clanOwner && !string.IsNullOrEmpty(_clanName))
             {
                 _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command41);
             }
@@ -784,6 +783,7 @@ namespace ServerTools
             {
                 _commands = string.Format("{0} {1}{2} or {3}{4}", _commands, ChatHook.Command_Private, ClanManager.Command43, ChatHook.Command_Private, ClanManager.Command124);
             }
+            _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, ClanManager.Command125);
             return _commands;
         }
 

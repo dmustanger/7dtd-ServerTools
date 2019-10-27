@@ -36,6 +36,7 @@ namespace ServerTools
         {
             try
             {
+                Log.Out("[SERVERTOOLS] Started Auto Backup");
                 string[] _files = Directory.GetFiles(saveDirectory, "*", SearchOption.AllDirectories);
                 string _parentDirectory = Directory.GetParent(saveDirectory).FullName;
                 Pathfinding.Ionic.Zlib.CompressionLevel _compression = Pathfinding.Ionic.Zlib.CompressionLevel.Default;
@@ -52,39 +53,32 @@ namespace ServerTools
                     _compression = Pathfinding.Ionic.Zlib.CompressionLevel.BestCompression;
                 }
                 ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Starting world backup..." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                string _destination;
                 if (Destination == "")
                 {
-                    using (Pathfinding.Ionic.Zip.ZipFile zip = new Pathfinding.Ionic.Zip.ZipFile(_parentDirectory + string.Format("_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"))))
-                    {
-                        zip.CompressionLevel =  _compression;
-                        foreach (var _c in _files)
-                        {
-                            zip.AddFile(_c);
-                        }
-                        zip.Save(Path.ChangeExtension(_parentDirectory + string.Format("_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm")), ".zip"));
-                        Log.Out(string.Format("[SERVERTOOLS] World backup completed successfully. File is located and named {0}", _parentDirectory + "_" + DateTime.Now + ".zip"));
-                    }
+                    _destination = _parentDirectory + string.Format("_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
                 }
                 else
                 {
-                    using (Pathfinding.Ionic.Zip.ZipFile zip = new Pathfinding.Ionic.Zip.ZipFile(Destination + string.Format("_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"))))
+                    _destination = Destination + string.Format("_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
+                    if (!Directory.Exists(Destination))
                     {
-                        if (!Directory.Exists(Destination))
-                        {
-                            Directory.CreateDirectory(Destination);
-                            Log.Out(string.Format("[SERVERTOOLS] World backup destination folder not found. The folder has been created at {0} and backup resumed", Destination));
-                        }
-                        zip.CompressionLevel = _compression;
-                        foreach (var _c in _files)
-                        {
-                            zip.AddFile(_c);
-                        }
-                        zip.Save(Path.ChangeExtension(Destination + string.Format("_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm")), ".zip"));
-                        Log.Out(string.Format("[SERVERTOOLS] World backup completed successfully. File is located and named {0}", Destination + "_" + DateTime.Now + ".zip"));
+                        Directory.CreateDirectory(Destination);
+                        Log.Out(string.Format("[SERVERTOOLS] World backup destination folder not found. The folder has been created at {0} and backup resumed", Destination));
                     }
                 }
-                Log.Out(string.Format("[SERVERTOOLS] World backup completed successfully. File is located and named {0}", _parentDirectory + "_" + DateTime.Now + ".zip"));
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "World backup completed successfully" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                using (Pathfinding.Ionic.Zip.ZipFile zip = new Pathfinding.Ionic.Zip.ZipFile(_destination))
+                {
+                    zip.UseZip64WhenSaving = Pathfinding.Ionic.Zip.Zip64Option.Always;
+                    zip.CompressionLevel = _compression;
+                    foreach (var _c in _files)
+                    {
+                        zip.AddFile(_c);
+                    }
+                    zip.Save(Path.ChangeExtension(_destination, ".zip"));
+                    Log.Out(string.Format("[SERVERTOOLS] World backup completed successfully. File is located and named {0}", _destination + "_" + DateTime.Now + ".zip"));
+                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "World backup completed successfully" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                }
             }
             catch (Exception e)
             {

@@ -238,15 +238,17 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
+            ItemValue _currency = new ItemValue(ItemClass.GetItem(TraderInfo.CurrencyItem, false).type, 1, 1, false, null, 1);
+            PlayerDataFile _playerDataFile = _cInfo.latestPlayerData;
             if (Delay_Between_Uses < 1)
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    CommandCost(_cInfo);
+                    CommandCost(_cInfo, _currency, _playerDataFile);
                 }
                 else
                 {
-                    ZCheck(_cInfo);
+                    ZCheck(_cInfo, _currency, _playerDataFile);
                 }
             }
             else
@@ -264,26 +266,26 @@ namespace ServerTools
                         if (DateTime.Now < _dt)
                         {
                             int _delay = Delay_Between_Uses / 2;
-                            Time(_cInfo, _timepassed, _delay);
+                            Time(_cInfo, _timepassed, _delay, _currency, _playerDataFile);
                             return;
                         }
                     }
                 }
-                Time(_cInfo, _timepassed, Delay_Between_Uses);
+                Time(_cInfo, _timepassed, Delay_Between_Uses, _currency, _playerDataFile);
             }
         }
 
-        public static void Time(ClientInfo _cInfo, int _timepassed, int _delay)
+        public static void Time(ClientInfo _cInfo, int _timepassed, int _delay, ItemValue _currency, PlayerDataFile _playerDataFile)
         {
             if (_timepassed >= _delay)
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    CommandCost(_cInfo);
+                    CommandCost(_cInfo, _currency, _playerDataFile);
                 }
                 else
                 {
-                    ZCheck(_cInfo);
+                    ZCheck(_cInfo, _currency, _playerDataFile);
                 }
             }
             else
@@ -298,50 +300,73 @@ namespace ServerTools
                 _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
                 _phrase6 = _phrase6.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase6 = _phrase6.Replace("{Command24}", Command24);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase6 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase6 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        public static void CommandCost(ClientInfo _cInfo)
+        public static void CommandCost(ClientInfo _cInfo, ItemValue _currency, PlayerDataFile _playerDataFile)
         {
-            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
-            if (_currentCoins >= Command_Cost)
+            int _currencyCount = 0;
+            ItemStack[] bagSlots = _playerDataFile.bag;
+            for (int i = 0; i < bagSlots.Length; i++)
             {
-                ZCheck(_cInfo);
+                if (!bagSlots[i].IsEmpty())
+                {
+                    if (bagSlots[i].itemValue == _currency)
+                    {
+                        _currencyCount = _currencyCount + bagSlots[i].count;
+                    }
+                }
+            }
+            ItemStack[] invSlots = _playerDataFile.inventory;
+            for (int j = 0; j < _playerDataFile.inventory.Length; j++)
+            {
+                if (!invSlots[j].IsEmpty())
+                {
+                    if (invSlots[j].itemValue == _currency)
+                    {
+                        _currencyCount = _currencyCount + invSlots[j].count;
+                    }
+                }
+            }
+            //int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
+            if (_currencyCount >= Command_Cost)
+            {
+                ZCheck(_cInfo, _currency, _playerDataFile);
             }
             else
             {
                 string _phrase814;
                 if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    _phrase814 = " you do not have enough {Currency} in your wallet to run this command.";
                 }
-                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                _phrase814 = _phrase814.Replace("{Currency}", TraderInfo.CurrencyItem);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        private static void ZCheck(ClientInfo _cInfo)
+        private static void ZCheck(ClientInfo _cInfo, ItemValue _currency, PlayerDataFile _playerDataFile)
         {
             if (Zombies)
             {
                 int itemOrEntity = random.Next(1, 9);
                 if (itemOrEntity != 4)
                 {
-                    RandomItem(_cInfo);
+                    RandomItem(_cInfo, _currency, _playerDataFile);
                 }
                 else
                 {
-                    RandomZombie(_cInfo);
+                    RandomZombie(_cInfo, _currency, _playerDataFile);
                 }
             }
             else
             {
-                RandomItem(_cInfo);
+                RandomItem(_cInfo, _currency, _playerDataFile);
             }
         }
 
-        private static void RandomItem(ClientInfo _cInfo)
+        private static void RandomItem(ClientInfo _cInfo, ItemValue _currency, PlayerDataFile _playerDataFile)
         {
             string _randomItem = list.RandomObject();
             ItemValue _itemValue = ItemClass.GetItem(_randomItem, false);
@@ -350,20 +375,19 @@ namespace ServerTools
             if (dict.TryGetValue(_randomItem, out _itemData))
             {
                 int _count = random.Next(_itemData[0], _itemData[1] + 1);
-                ItemStack _itemDrop = new ItemStack(_itemValue, _count);
                 int _qualityMin = 1, _qualityMax = 1;
                 if (_itemValue.HasQuality)
                 {
                     _qualityMin = _itemData[2];
                     _qualityMax = _itemData[3];
                 }
-                ItemValue itemValue = new ItemValue(ItemClass.GetItem(_randomItem).type, _qualityMin, _qualityMax, false, null, 1);
+                _itemValue = new ItemValue(_itemValue.type, _qualityMin, _qualityMax, false, null, 1);
                 World world = GameManager.Instance.World;
                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                 {
                     entityClass = EntityClass.FromString("item"),
                     id = EntityFactory.nextEntityID++,
-                    itemStack = new ItemStack(itemValue, _count),
+                    itemStack = new ItemStack(_itemValue, _count),
                     pos = world.Players.dict[_cInfo.entityId].position,
                     rot = new Vector3(20f, 0f, 20f),
                     lifetime = 60f,
@@ -383,7 +407,7 @@ namespace ServerTools
                 {
                     _phrase7 = _phrase7.Replace("{ItemName}", _name);
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase7 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase7 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
@@ -393,7 +417,7 @@ namespace ServerTools
             }
         }
 
-        private static void RandomZombie(ClientInfo _cInfo)
+        private static void RandomZombie(ClientInfo _cInfo, ItemValue _currency, PlayerDataFile _playerDataFile)
         {
             Log.Out("[SERVERTOOLS] Spawning zombie for player's gimme");
             int _rndZ = random.Next(1, 4);
@@ -414,7 +438,7 @@ namespace ServerTools
             {
                 _phrase807 = "OH NO! How did that get in there? You have received a zombie.";
             }
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase807 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase807 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             if (Wallet.IsEnabled && Command_Cost >= 1)
             {
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);

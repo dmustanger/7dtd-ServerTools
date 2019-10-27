@@ -15,7 +15,7 @@ namespace ServerTools
             if (Admin.PermissionLevel > Admin_Level)
             {
                 EntityAlive _player = (EntityAlive)GameManager.Instance.World.GetEntity(_cInfo.entityId);
-                if (_player.Buffs.HasBuff("god"))
+                if (_player != null && _player.Buffs.HasBuff("god"))
                 {
                     ChatHook.ChatMessage(null, "[FF0000]" + "Cheater! Player " + _cInfo.playerName + " detected using god mode!" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     EntityPlayer _entPlayer = GameManager.Instance.World.Players.dict[_cInfo.entityId];

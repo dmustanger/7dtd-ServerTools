@@ -15,10 +15,13 @@ namespace ServerTools
 
         public static bool IsCountryBanned (ClientInfo _cInfo)
         {
-            if (BannedCountries.Contains(Get(_cInfo.ip)))
+            if (!_cInfo.ip.StartsWith("192.168"))
             {
-                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Players from your country are not allowed\"", _cInfo.playerId), (ClientInfo)null);
-                return true;
+                if (BannedCountries.Contains(Get(_cInfo.ip)))
+                {
+                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 10 years \"Players from your country are not allowed\"", _cInfo.playerId), (ClientInfo)null);
+                    return true;
+                }
             }
             return false;
         }

@@ -124,6 +124,7 @@ namespace ServerTools
         {
             Log.Out("[SERVERTOOLS] Detected server still operating after shutdown. Attempting shutdown.");
             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Detected server still operating after shutdown. Attempting shutdown."));
+            ThreadManager.Shutdown();
             Application.Quit();
         }
     }

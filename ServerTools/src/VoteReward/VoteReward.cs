@@ -255,40 +255,56 @@ namespace ServerTools
 
         private static void CheckSite(ClientInfo _cInfo)
         {
-            ServicePointManager.ServerCertificateValidationCallback += (send, certificate, chain, sslPolicyErrors) => { return true; };
-            var VoteUrl = string.Format("https://7daystodie-servers.com/api/?object=votes&element=claim&key={0}&steamid={1}", Uri.EscapeUriString(API_Key), Uri.EscapeUriString(_cInfo.playerId));
-            using (var NewVote = new WebClient())
+            try
             {
-                string VoteResult = NewVote.DownloadString(VoteUrl);
-                if (VoteResult == "0")
+                ServicePointManager.ServerCertificateValidationCallback += (send, certificate, chain, sslPolicyErrors) => { return true; };
+                var VoteUrl = string.Format("https://7daystodie-servers.com/api/?object=votes&element=claim&key={0}&steamid={1}", Uri.EscapeUriString(API_Key), Uri.EscapeUriString(_cInfo.playerId));
+                //var VoteUrl = string.Format("https://7daystodie-servers.com/api/?object=votes&element=claim&key={0}&username={1}", Uri.EscapeUriString(API_Key), Uri.EscapeUriString(_cInfo.playerName));
+                using (var NewVote = new WebClient())
                 {
-                    NoVote(_cInfo);
-                }
-                else if (VoteResult == "1")
-                {
-                    if (Reward_Entity)
+                    string VoteResult = NewVote.DownloadString(VoteUrl);
+                    if (VoteResult == "0")
                     {
-                        Entity(_cInfo);
+                        NoVote(_cInfo);
                     }
-                    else
+                    else if (VoteResult == "1")
                     {
-                        ItemOrBlockCounter(_cInfo, Reward_Count);
+                        try
+                        {
+                            if (Reward_Entity)
+                            {
+                                Entity(_cInfo);
+                            }
+                            else
+                            {
+                                ItemOrBlockCounter(_cInfo, Reward_Count);
+                            }
+                            PersistentContainer.Instance.Players[_cInfo.playerId].LastVote = DateTime.Now;
+                            PersistentContainer.Instance.Save();
+                        }
+                        catch
+                        {
+                            Log.Error("[SERVERTOOLS] Vote reward failed to spawn the reward for players");
+                        }
                     }
-                }
-                else
-                {
-                    string _phrase702;
-                    if (!Phrases.Dict.TryGetValue(702, out _phrase702))
+                    else if (VoteResult == "2")
                     {
-                        _phrase702 = "Unable to get a result from the website, {PlayerName}. Please try {CommandPrivate}{Command46} again.";
+                        string _phrase702;
+                        if (!Phrases.Dict.TryGetValue(702, out _phrase702))
+                        {
+                            _phrase702 = "Unable to get a result from the website, {PlayerName}. Please try {CommandPrivate}{Command46} again.";
+                        }
+                        _phrase702 = _phrase702.Replace("{PlayerName}", _cInfo.playerName);
+                        _phrase702 = _phrase702.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                        _phrase702 = _phrase702.Replace("{Command46}", Command46);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase702 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    _phrase702 = _phrase702.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase702 = _phrase702.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                    _phrase702 = _phrase702.Replace("{Command46}", Command46);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase702 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
-
+            catch
+            {
+                Log.Error("[SERVERTOOLS] Vote reward failed to communicate with the website");
+            }
         }
 
         private static void NoVote(ClientInfo _cInfo)
@@ -374,17 +390,16 @@ namespace ServerTools
                 string _phrase701;
                 if (!Phrases.Dict.TryGetValue(701, out _phrase701))
                 {
-                    _phrase701 = "Thank you for your vote {PlayerName}. You can vote and receive another reward in {VoteDelay} hours.";
+                    _phrase701 = "Thank you for your vote. You can vote and receive another reward in {VoteDelay} hours.";
                 }
-                _phrase701 = _phrase701.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase701 = _phrase701.Replace("{VoteDelay}", Delay_Between_Uses.ToString());
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase701 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 string _phrase703;
                 if (!Phrases.Dict.TryGetValue(703, out _phrase703))
                 {
-                    _phrase703 = " reward items were sent to your inventory. If it is full, check the ground.";
+                    _phrase703 = "Reward items were sent to your inventory. If it is full, check the ground.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase703 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase703 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -433,8 +448,6 @@ namespace ServerTools
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
             }
-            PersistentContainer.Instance.Players[_cInfo.playerId].LastVote = DateTime.Now;
-            PersistentContainer.Instance.Save();
         }
 
         private static void Entity(ClientInfo _cInfo)
@@ -501,9 +514,8 @@ namespace ServerTools
             string _phrase701;
             if (!Phrases.Dict.TryGetValue(701, out _phrase701))
             {
-                _phrase701 = "Thank you for your vote {PlayerName}. You can vote and receive another reward in {VoteDelay} hours.";
+                _phrase701 = "Thank you for your vote. You can vote and receive another reward in {VoteDelay} hours.";
             }
-            _phrase701 = _phrase701.Replace("{PlayerName}", _cInfo.playerName);
             _phrase701 = _phrase701.Replace("{VoteDelay}", Delay_Between_Uses.ToString());
             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase701 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
@@ -546,8 +558,6 @@ namespace ServerTools
                         }
                         counter++;
                     }
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LastVote = DateTime.Now;
-                    PersistentContainer.Instance.Save();
                     if (counter == entityTypesCollection.Count + 1)
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Failed to spawn entity Id {0} as a reward. Check your entity spawn list in console.", Entity_Id));
