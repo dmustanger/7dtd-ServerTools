@@ -1,4 +1,5 @@
 ﻿
+using System.Diagnostics;
 using UnityEngine;
 
 namespace ServerTools
@@ -96,8 +97,9 @@ namespace ServerTools
         public static void Stop()
         {
             Log.Out("[SERVERTOOLS] Running shutdown.");
-            Application.Quit();
+            Timers.Timer2Stop();
             Shutdown = true;
+            Application.Quit();
         }
 
         public static void Kick30()
@@ -124,8 +126,11 @@ namespace ServerTools
         {
             Log.Out("[SERVERTOOLS] Detected server still operating after shutdown. Attempting shutdown.");
             SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Detected server still operating after shutdown. Attempting shutdown."));
-            ThreadManager.Shutdown();
-            Application.Quit();
+            Process process = Process.GetCurrentProcess();
+            if (process != null)
+            {
+                process.Kill();
+            }
         }
     }
 }

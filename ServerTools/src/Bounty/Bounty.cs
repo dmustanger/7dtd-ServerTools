@@ -135,7 +135,7 @@ namespace ServerTools
                     {
                         string _clanName1 = PersistentContainer.Instance.Players[_cInfo1.playerId].ClanName;
                         string _clanName2 = PersistentContainer.Instance.Players[_cInfo2.playerId].ClanName;
-                        if (_clanName1 != "Unknown" && _clanName2 != "Unknown")
+                        if (string.IsNullOrEmpty(_clanName1) && string.IsNullOrEmpty(_clanName2))
                         {
                             if (_clanName1 == _clanName2)
                             {
@@ -148,7 +148,7 @@ namespace ServerTools
                 int _victimBountyHunter = PersistentContainer.Instance.Players[_cInfo1.playerId].BountyHunter;
                 if (_victimBounty > 0)
                 {
-                    int _killerCoins = PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerCoins;
+                    int _killerWallet = PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet;
                     int _killerBounty = PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty;
                     int _killerBountyHunter = PersistentContainer.Instance.Players[_cInfo2.playerId].BountyHunter;
                     if (Kill_Streak > 0)
@@ -156,7 +156,7 @@ namespace ServerTools
                         int _victimBountyPlus = _victimBounty + Bonus;
                         if (_killerBountyHunter + 1 > Kill_Streak)
                         {
-                            PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerCoins = _killerCoins + _victimBountyPlus;
+                            PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet = _killerWallet + _victimBountyPlus;
                             PersistentContainer.Instance.Players[_cInfo2.playerId].BountyHunter = _killerBountyHunter + 1;
                             PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty = _killerBounty + Bonus;
                             string _phrase913;
@@ -177,7 +177,7 @@ namespace ServerTools
                         }
                         else if (_killerBountyHunter + 1 == Kill_Streak)
                         {
-                            PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerCoins = _killerCoins + _victimBountyPlus;
+                            PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet = _killerWallet + _victimBountyPlus;
                             PersistentContainer.Instance.Players[_cInfo2.playerId].BountyHunter = _killerBountyHunter + 1;
                             PersistentContainer.Instance.Players[_cInfo2.playerId].Bounty = _killerBounty + Bonus;
                             string _phrase913;
@@ -198,7 +198,7 @@ namespace ServerTools
                         }
                         else if (_killerBountyHunter + 1 < Kill_Streak)
                         {
-                            PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerCoins = _killerCoins + _victimBounty;
+                            PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet = _killerWallet + _victimBounty;
                             PersistentContainer.Instance.Players[_cInfo2.playerId].BountyHunter = _killerBountyHunter + 1;
                         }
                         if (_victimBountyHunter >= Kill_Streak)
@@ -218,7 +218,7 @@ namespace ServerTools
                     }
                     else if (Kill_Streak <= 0)
                     {
-                        PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerCoins = _killerCoins + _victimBounty;
+                        PersistentContainer.Instance.Players[_cInfo2.playerId].PlayerWallet = _killerWallet + _victimBounty;
                     }
                     PersistentContainer.Instance.Players[_cInfo1.playerId].Bounty = 0;
                     PersistentContainer.Instance.Players[_cInfo1.playerId].BountyHunter = 0;

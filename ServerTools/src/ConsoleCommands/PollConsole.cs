@@ -22,7 +22,7 @@ namespace ServerTools
         {
             return "Usage:\n" +
                 "  1. Poll new <time> <message>\n" +
-                "  2. Poll close <true/false>\n" +
+                "  2. Poll close <True/False>\n" +
                 "  3. Poll check\n" +
                 "  4. Poll last\n" +
                 "  5. Poll reopen <time>\n" +
@@ -128,7 +128,7 @@ namespace ServerTools
                     bool _announce = false;
                     if (!bool.TryParse(_params[1], out _announce))
                     {
-                        SdtdConsole.Instance.Output(string.Format("Invalid true/false argument: {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("Invalid True/False argument: {0}", _params[1]));
                         return;
                     }
                     else

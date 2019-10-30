@@ -17,12 +17,15 @@ namespace ServerTools
                 try
                 {
                     IsRunning = true;
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Starting world backup process");
                     Log.Out("[SERVERTOOLS] Starting world backup process");
                     string _parentDirectory = Directory.GetParent(saveDirectory).FullName;
                     string[] _files = Directory.GetFiles(_parentDirectory, "*.zip");
                     DeleteFiles(_files);
-                    Log.Out("[SERVERTOOLS] Backup has begun");
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Old backup clean up complete");
+                    Log.Out("[SERVERTOOLS] Old backup clean up complete");
                     compressDirectory(saveDirectory, Destination);
+                    IsRunning = false;
                 }
                 catch (Exception e)
                 {
@@ -36,7 +39,6 @@ namespace ServerTools
         {
             try
             {
-                Log.Out("[SERVERTOOLS] Started Auto Backup");
                 string[] _files = Directory.GetFiles(saveDirectory, "*", SearchOption.AllDirectories);
                 string _parentDirectory = Directory.GetParent(saveDirectory).FullName;
                 Pathfinding.Ionic.Zlib.CompressionLevel _compression = Pathfinding.Ionic.Zlib.CompressionLevel.Default;
@@ -76,16 +78,15 @@ namespace ServerTools
                         zip.AddFile(_c);
                     }
                     zip.Save(Path.ChangeExtension(_destination, ".zip"));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] World backup completed successfully. File is located and named {0}", _destination + "_" + DateTime.Now + ".zip"));
                     Log.Out(string.Format("[SERVERTOOLS] World backup completed successfully. File is located and named {0}", _destination + "_" + DateTime.Now + ".zip"));
                     ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "World backup completed successfully" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
             }
             catch (Exception e)
             {
-                IsRunning = false;
                 Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Run: {0}.", e));
             }
-            IsRunning = false;
         }
 
         public static void DeleteFiles(string[] _files)
@@ -103,7 +104,6 @@ namespace ServerTools
                     }
                 }
             }
-            Log.Out("[SERVERTOOLS] Old backup clean up complete");
         }
     }
 }

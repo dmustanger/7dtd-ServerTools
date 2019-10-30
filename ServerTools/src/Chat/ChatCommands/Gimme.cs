@@ -239,16 +239,17 @@ namespace ServerTools
         public static void Exec(ClientInfo _cInfo)
         {
             ItemValue _currency = new ItemValue(ItemClass.GetItem(TraderInfo.CurrencyItem, false).type, 1, 1, false, null, 1);
-            PlayerDataFile _playerDataFile = _cInfo.latestPlayerData;
+            PlayerDataFile _playerDataFile = new PlayerDataFile();
+            _playerDataFile.Load(GameUtils.GetPlayerDataDir(), _cInfo.playerId.Trim());
             if (Delay_Between_Uses < 1)
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    CommandCost(_cInfo, _currency, _playerDataFile);
+                    CommandCost(_cInfo);
                 }
                 else
                 {
-                    ZCheck(_cInfo, _currency, _playerDataFile);
+                    ZCheck(_cInfo);
                 }
             }
             else
@@ -281,11 +282,11 @@ namespace ServerTools
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    CommandCost(_cInfo, _currency, _playerDataFile);
+                    CommandCost(_cInfo);
                 }
                 else
                 {
-                    ZCheck(_cInfo, _currency, _playerDataFile);
+                    ZCheck(_cInfo);
                 }
             }
             else
@@ -304,35 +305,11 @@ namespace ServerTools
             }
         }
 
-        public static void CommandCost(ClientInfo _cInfo, ItemValue _currency, PlayerDataFile _playerDataFile)
+        public static void CommandCost(ClientInfo _cInfo)
         {
-            int _currencyCount = 0;
-            ItemStack[] bagSlots = _playerDataFile.bag;
-            for (int i = 0; i < bagSlots.Length; i++)
+            if (Wallet.GetCurrentCoins(_cInfo) >= Command_Cost)
             {
-                if (!bagSlots[i].IsEmpty())
-                {
-                    if (bagSlots[i].itemValue == _currency)
-                    {
-                        _currencyCount = _currencyCount + bagSlots[i].count;
-                    }
-                }
-            }
-            ItemStack[] invSlots = _playerDataFile.inventory;
-            for (int j = 0; j < _playerDataFile.inventory.Length; j++)
-            {
-                if (!invSlots[j].IsEmpty())
-                {
-                    if (invSlots[j].itemValue == _currency)
-                    {
-                        _currencyCount = _currencyCount + invSlots[j].count;
-                    }
-                }
-            }
-            //int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
-            if (_currencyCount >= Command_Cost)
-            {
-                ZCheck(_cInfo, _currency, _playerDataFile);
+                ZCheck(_cInfo);
             }
             else
             {
@@ -346,27 +323,27 @@ namespace ServerTools
             }
         }
 
-        private static void ZCheck(ClientInfo _cInfo, ItemValue _currency, PlayerDataFile _playerDataFile)
+        private static void ZCheck(ClientInfo _cInfo)
         {
             if (Zombies)
             {
                 int itemOrEntity = random.Next(1, 9);
                 if (itemOrEntity != 4)
                 {
-                    RandomItem(_cInfo, _currency, _playerDataFile);
+                    RandomItem(_cInfo);
                 }
                 else
                 {
-                    RandomZombie(_cInfo, _currency, _playerDataFile);
+                    RandomZombie(_cInfo);
                 }
             }
             else
             {
-                RandomItem(_cInfo, _currency, _playerDataFile);
+                RandomItem(_cInfo);
             }
         }
 
-        private static void RandomItem(ClientInfo _cInfo, ItemValue _currency, PlayerDataFile _playerDataFile)
+        private static void RandomItem(ClientInfo _cInfo)
         {
             string _randomItem = list.RandomObject();
             ItemValue _itemValue = ItemClass.GetItem(_randomItem, false);
@@ -417,7 +394,7 @@ namespace ServerTools
             }
         }
 
-        private static void RandomZombie(ClientInfo _cInfo, ItemValue _currency, PlayerDataFile _playerDataFile)
+        private static void RandomZombie(ClientInfo _cInfo)
         {
             Log.Out("[SERVERTOOLS] Spawning zombie for player's gimme");
             int _rndZ = random.Next(1, 4);

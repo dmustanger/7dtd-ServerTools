@@ -1,5 +1,18 @@
 ﻿CHANGELOG
 
+18.1.2
+Built using Alpha 18.1 experimental assets
+Functioning with 18.0 stable and 18.1 experimental
+
+Added more data points for delays in custom commands allowing up to 20 commands with delays
+Fixed chat command /claninvite bug that made accepting not work
+Fixed chat command /waysave saving names with a space in it
+Fixed chat command /shop
+Changed EntityCleanup to automatically send backpacks to the surface if detected too low
+Changed fail safe when a hanging server is detected after shutdown. Now forces .exe to close
+Changed Wallet system to calculate properly and blocks negative wallets automatically
+Updated phrase 581,583
+
 18.1.1
 Built using Alpha 18.1 experimental assets
 Functioning with 18.0 stable and 18.1 experimental

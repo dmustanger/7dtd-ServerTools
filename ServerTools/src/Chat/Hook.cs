@@ -938,21 +938,19 @@ namespace ServerTools
                         }
                         if (Wallet.IsEnabled && _message.ToLower() == Wallet.Command56)
                         {
-                            Wallet.WalletValue(_cInfo, _mainName);
+                            Wallet.CurrentValue(_cInfo);
                             return false;
                         }
                         if (Shop.IsEnabled && _message.ToLower().StartsWith(Shop.Command57))
                         {
                             if (_message.ToLower() == (Shop.Command57))
                             {
-                                EntityPlayerLocal _player = GameManager.Instance.World.Players.dict[_cInfo.entityId] as EntityPlayerLocal;
-                                LocalPlayerUI.GetUIForPlayer(_player).nguiWindowManager.GetWindow(EnumNGUIWindow.InGameHUD).GetComponent<NGuiWdwInGameHUD>().ShowInfoText("The shop is full of lovely items. Type ### to buy", 30);
-                                Shop.PosCheck(_cInfo, _mainName, _message, 1, 0);
+                                Shop.PosCheck(_cInfo, _message, 1, 0);
                             }
                             else
                             {
                                 _message = _message.ToLower().Replace(Shop.Command57 + " ", "");
-                                Shop.PosCheck(_cInfo, _mainName, _message, 2, 0);
+                                Shop.PosCheck(_cInfo, _message, 2, 0);
                             }
                             return false;
                         }
@@ -960,7 +958,7 @@ namespace ServerTools
                         {
                             if (_message.ToLower() == (Shop.Command58))
                             {
-                                Shop.PosCheck(_cInfo, _mainName, _message, 3, 1);
+                                Shop.PosCheck(_cInfo, _message, 3, 1);
                             }
                             else if (_message.ToLower().StartsWith(Shop.Command58 + " "))
                             {
@@ -972,7 +970,7 @@ namespace ServerTools
                                     int _count;
                                     if (int.TryParse(b, out _count))
                                     {
-                                        Shop.PosCheck(_cInfo, _mainName, a, 3, _count);
+                                        Shop.PosCheck(_cInfo, a, 3, _count);
                                     }
                                     else
                                     {
@@ -988,7 +986,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    Shop.PosCheck(_cInfo, _mainName, _message, 3, 1);
+                                    Shop.PosCheck(_cInfo, _message, 3, 1);
                                 }
                             }
                             else
@@ -1576,7 +1574,7 @@ namespace ServerTools
                             {
                                 _message = _message.ToLower().Replace(Waypoint.Command108 + " ", "");
                             }
-                            Waypoint.Delay(_cInfo, _message);
+                            Waypoint.TeleDelay(_cInfo, _message);
                             return false;
                         }
                         if (Waypoint.IsEnabled && (_message.StartsWith(Waypoint.Command109 + " ") || _message.StartsWith(Waypoint.Command110 + " ") || _message.StartsWith(Waypoint.Command111 + " ")))
@@ -1662,7 +1660,7 @@ namespace ServerTools
                         _message = _message.ToLower();
                         if (CustomCommands.IsEnabled && CustomCommands.Dict.ContainsKey(_message))
                         {
-                            CustomCommands.Exec(_cInfo, _message, _mainName, _announce);
+                            CustomCommands.Exec(_cInfo, _message);
                             return false;
                         }
                         if (MutePlayer.IsEnabled && MutePlayer.Mutes.Contains(_cInfo.playerId))

@@ -857,19 +857,19 @@ namespace ServerTools
                 string _phrase581;
                 if (!Dict.TryGetValue(581, out _phrase581))
                 {
-                    _phrase581 = " you have a maximum {DonatorCount} waypoints.";
+                    _phrase581 = " you have a maximum {Count} waypoints.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"581\" Phrase=\"{0}\" />", _phrase581));
                 string _phrase582;
                 if (!Dict.TryGetValue(582, out _phrase582))
                 {
-                    _phrase582 = " you have a maximum {NormalCount} waypoints.";
+                    _phrase582 = " you have a maximum {Count} waypoints.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"582\" Phrase=\"{0}\" />", _phrase582));
                 string _phrase583;
                 if (!Dict.TryGetValue(583, out _phrase583))
                 {
-                    _phrase583 = " waypoint {Waypoint} has been deleted.";
+                    _phrase583 = " waypoint {Name} has been deleted.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"583\" Phrase=\"{0}\" />", _phrase583));
                 string _phrase584;

@@ -130,19 +130,19 @@ namespace ServerTools
                             bool _result1, _result2, _result3; ;
                             if (!bool.TryParse(_circle, out _result1))
                             {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper true/false for circle attribute: {0}.", subChild.OuterXml));
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for circle attribute: {0}.", subChild.OuterXml));
                                 continue;
                             }
                             string _pve = _line.GetAttribute("PvE");
                             if (!bool.TryParse(_pve, out _result2))
                             {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper true/false for PvE attribute: {0}.", subChild.OuterXml));
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for PvE attribute: {0}.", subChild.OuterXml));
                                 continue;
                             }
                             string _noZ = _line.GetAttribute("noZombie");
                             if (!bool.TryParse(_noZ, out _result3))
                             {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper true/false for noZombie attribute: {0}.", subChild.OuterXml));
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for noZombie attribute: {0}.", subChild.OuterXml));
                                 continue;
                             }
 

@@ -165,10 +165,20 @@ namespace ServerTools
                     sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"whisper Visit YourSiteHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"whisper The Teamspeak3 info is YourInfoHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Number=\"6\" Trigger=\"spawnz\" Response=\"ser {EntityId} 40 @ 4 11 14 ^ whisper Zombies have spawn around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"7\" Trigger=\"discord\" Response=\"whisper The discord channel is .\" DelayBetweenUses=\"20\" Hidden=\"true\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"8\" Trigger=\"test1\" Response=\"Your command here\" DelayBetweenUses=\"30\" Hidden=\"true\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"9\" Trigger=\"test2\" Response=\"Your command here\" DelayBetweenUses=\"40\" Hidden=\"true\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"10\" Trigger=\"test3\" Response=\"Your command here\" DelayBetweenUses=\"40\" Hidden=\"true\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"7\" Trigger=\"discord\" Response=\"whisper The discord channel is ...\" DelayBetweenUses=\"20\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"8\" Trigger=\"cc8\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"9\" Trigger=\"cc9\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"10\" Trigger=\"cc10\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"11\" Trigger=\"cc11\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"12\" Trigger=\"cc12\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"13\" Trigger=\"cc13\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"14\" Trigger=\"cc14\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"15\" Trigger=\"cc15\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"16\" Trigger=\"cc16\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"17\" Trigger=\"cc17\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"18\" Trigger=\"cc18\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"19\" Trigger=\"cc19\" Response=\"First command ^ Second command ^ Third Command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"20\" Trigger=\"cc20\" Response=\"First command ^ Second command ^ Third Command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
                 }
                 sw.WriteLine("    </Commands>");
                 sw.WriteLine("</CustomCommands>");
@@ -492,257 +502,140 @@ namespace ServerTools
             return _commandsAdmin;
         }
 
-        public static void Exec(ClientInfo _cInfo, string _message, string _playerName, bool _announce)
+        public static void Exec(ClientInfo _cInfo, string _message)
         {
             int[] _c;
             if (Dict1.TryGetValue(_message, out _c))
             {
-                if (_c[1] <= 0)
+                if (_c[0] > 20 || _c[1] <= 0)
                 {
-                    Permission(_cInfo, _message, _playerName, _announce, _c);
+                    Permission(_cInfo, _message, _c);
                 }
                 else
                 {
-                    int _timepassed = 0;
+                    DateTime _lastUse = DateTime.Now;
                     if (_c[0] == 1)
                     {
-                        DateTime _customCommand1 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand1;
-                        TimeSpan varTime = DateTime.Now - _customCommand1;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
-                                {
-                                    int _newDelay = _c[1] / 2;
-                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
-                                    return;
-                                }
-                            }
-                        }
-                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand1;
                     }
                     else if (_c[0] == 2)
                     {
-                        DateTime _customCommand2 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand2;
-                        TimeSpan varTime = DateTime.Now - _customCommand2;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
-                                {
-                                    int _newDelay = _c[1] / 2;
-                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
-                                    return;
-                                }
-                            }
-                        }
-                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand2;
                     }
                     else if (_c[0] == 3)
                     {
-                        DateTime _customCommand3 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand3;
-                        TimeSpan varTime = DateTime.Now - _customCommand3;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
-                                {
-                                    int _newDelay = _c[1] / 2;
-                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
-                                    return;
-                                }
-                            }
-                        }
-                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand3;
                     }
                     else if (_c[0] == 4)
                     {
-                        DateTime _customCommand4 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand4;
-                        TimeSpan varTime = DateTime.Now - _customCommand4;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
-                                {
-                                    int _newDelay = _c[1] / 2;
-                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
-                                    return;
-                                }
-                            }
-                        }
-                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand4;
                     }
                     else if (_c[0] == 5)
                     {
-                        DateTime _customCommand5 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand5;
-                        TimeSpan varTime = DateTime.Now - _customCommand5;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
-                                {
-                                    int _newDelay = _c[1] / 2;
-                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
-                                    return;
-                                }
-                            }
-                        }
-                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand5;
                     }
                     else if (_c[0] == 6)
                     {
-                        DateTime _customCommand6 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand6;
-                        TimeSpan varTime = DateTime.Now - _customCommand6;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
-                                {
-                                    int _newDelay = _c[1] / 2;
-                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
-                                    return;
-                                }
-                            }
-                        }
-                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand6;
                     }
                     else if (_c[0] == 7)
                     {
-                        DateTime _customCommand7 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand7;
-                        TimeSpan varTime = DateTime.Now - _customCommand7;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
-                                {
-                                    int _newDelay = _c[1] / 2;
-                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
-                                    return;
-                                }
-                            }
-                        }
-                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand7;
                     }
                     else if (_c[0] == 8)
                     {
-                        DateTime _customCommand8 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand8;
-                        TimeSpan varTime = DateTime.Now - _customCommand8;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
-                                {
-                                    int _newDelay = _c[1] / 2;
-                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
-                                    return;
-                                }
-                            }
-                        }
-                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand8;
                     }
                     else if (_c[0] == 9)
                     {
-                        DateTime _customCommand9 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand9;
-                        TimeSpan varTime = DateTime.Now - _customCommand9;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
-                                {
-                                    int _newDelay = _c[1] / 2;
-                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
-                                    return;
-                                }
-                            }
-                        }
-                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand9;
                     }
                     else if (_c[0] == 10)
                     {
-                        DateTime _customCommand10 = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand10;
-                        TimeSpan varTime = DateTime.Now - _customCommand10;
-                        double fractionalMinutes = varTime.TotalMinutes;
-                        _timepassed = (int)fractionalMinutes;
-                        if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
-                                if (DateTime.Now < _dt)
-                                {
-                                    int _newDelay = _c[1] / 2;
-                                    Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _newDelay, _c);
-                                    return;
-                                }
-                            }
-                        }
-                        Timepass(_cInfo, _message, _playerName, _announce, _timepassed, _c[1], _c);
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand10;
                     }
+                    else if (_c[0] == 11)
+                    {
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand11;
+                    }
+                    else if (_c[0] == 12)
+                    {
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand12;
+                    }
+                    else if (_c[0] == 13)
+                    {
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand13;
+                    }
+                    else if (_c[0] == 14)
+                    {
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand14;
+                    }
+                    else if (_c[0] == 15)
+                    {
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand15;
+                    }
+                    else if (_c[0] == 16)
+                    {
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand16;
+                    }
+                    else if (_c[0] == 17)
+                    {
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand17;
+                    }
+                    else if (_c[0] == 18)
+                    {
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand18;
+                    }
+                    else if (_c[0] == 19)
+                    {
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand19;
+                    }
+                    else if (_c[0] == 20)
+                    {
+                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand20;
+                    }
+                    Delay(_cInfo, _message, _c, _lastUse);
                 }
             }
         }
 
-        public static void Timepass(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int _timepassed, int _delay, int[] _c)
+        public static void Delay(ClientInfo _cInfo, string _message, int[] _c, DateTime _lastUse)
         {
-            if (_timepassed >= _delay)
+            TimeSpan varTime = DateTime.Now - _lastUse;
+            double fractionalMinutes = varTime.TotalMinutes;
+            int _timePassed = (int)fractionalMinutes;
+            if (ReservedSlots.IsEnabled && ReservedSlots.Reduced_Delay)
             {
-                Permission(_cInfo, _message, _playerName, _announce, _c);
+                if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+                {
+                    DateTime _dt;
+                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                    if (DateTime.Now < _dt)
+                    {
+                        int _newDelay = _c[1] / 2;
+                        TimePass(_cInfo, _message, _timePassed, _newDelay, _c);
+                        return;
+                    }
+                }
+            }
+            TimePass(_cInfo, _message, _timePassed, _c[1], _c);
+        }
+
+        public static void TimePass(ClientInfo _cInfo, string _message, int _timePassed, int _delay, int[] _c)
+        {
+            if (_timePassed >= _delay)
+            {
+                Permission(_cInfo, _message, _c);
             }
             else
             {
-                int _timeleft1 = _delay - _timepassed;
-                Response(_cInfo, _message, _playerName, _announce, _timeleft1, _delay);
+                int _timeleft = _delay - _timePassed;
+                Response(_cInfo, _message, _timeleft, _delay);
             }
         }
 
 
-        public static void Response(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int _timeleft, int _newDelay)
+        public static void Response(ClientInfo _cInfo, string _message, int _timeLeft, int _newDelay)
         {
             string _phrase616;
             if (!Phrases.Dict.TryGetValue(616, out _phrase616))
@@ -752,23 +645,16 @@ namespace ServerTools
             _phrase616 = _phrase616.Replace("{CommandPrivate}", ChatHook.Command_Private);
             _phrase616 = _phrase616.Replace("{Command15}", Command15);
             _phrase616 = _phrase616.Replace("{DelayBetweenUses}", _newDelay.ToString());
-            _phrase616 = _phrase616.Replace("{TimeRemaining}", _timeleft.ToString());
-            if (_announce)
-            {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase616 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-            }
-            else
-            {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase616 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-            }
+            _phrase616 = _phrase616.Replace("{TimeRemaining}", _timeLeft.ToString());
+            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase616 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
-        public static void Permission(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int[] _c)
+        public static void Permission(ClientInfo _cInfo, string _message, int[] _c)
         {
             string[] _command = { _message };
             if (GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo.playerId))
             {
-                CommandCost(_cInfo, _message, _playerName, _announce, _c);
+                CommandCost(_cInfo, _message, _c);
             }
             else
             {
@@ -782,15 +668,15 @@ namespace ServerTools
             }
         }
 
-        public static void CommandCost(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int[] _c)
+        public static void CommandCost(ClientInfo _cInfo, string _message, int[] _c)
         {
-            if (_c[2] > 0)
+            if (Wallet.IsEnabled && _c[2] > 0)
             {
                 int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
                 if (_currentCoins >= _c[2])
                 {
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _c[2]);
-                    CommandExecute(_cInfo, _message, _playerName, _announce, _c);
+                    CommandExecute(_cInfo, _message, _c);
                 }
                 else
                 {
@@ -805,53 +691,96 @@ namespace ServerTools
             }
             else
             {
-                CommandExecute(_cInfo, _message, _playerName, _announce, _c);
+                CommandExecute(_cInfo, _message, _c);
             }
         }
 
-        public static void CommandExecute(ClientInfo _cInfo, string _message, string _playerName, bool _announce, int[] _c)
+        public static void CommandExecute(ClientInfo _cInfo, string _message, int[] _c)
         {
-            if (_c[0] == 1)
+            if (_c[0] < 21 && _c[1] > 0)
             {
-                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand1 = DateTime.Now;
+                if (_c[0] == 1)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand1 = DateTime.Now;
+                }
+                else if (_c[0] == 2)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand2 = DateTime.Now;
+                }
+                else if (_c[0] == 3)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand3 = DateTime.Now;
+                }
+                else if (_c[0] == 4)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand4 = DateTime.Now;
+                }
+                else if (_c[0] == 5)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand5 = DateTime.Now;
+                }
+                else if (_c[0] == 6)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand6 = DateTime.Now;
+                }
+                else if (_c[0] == 7)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand7 = DateTime.Now;
+                }
+                else if (_c[0] == 8)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand8 = DateTime.Now;
+                }
+                else if (_c[0] == 9)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand9 = DateTime.Now;
+                }
+                else if (_c[0] == 10)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand10 = DateTime.Now;
+                }
+                else if (_c[0] == 11)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand11 = DateTime.Now;
+                }
+                else if (_c[0] == 12)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand12 = DateTime.Now;
+                }
+                else if (_c[0] == 13)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand13 = DateTime.Now;
+                }
+                else if (_c[0] == 14)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand14 = DateTime.Now;
+                }
+                else if (_c[0] == 15)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand15 = DateTime.Now;
+                }
+                else if (_c[0] == 16)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand16 = DateTime.Now;
+                }
+                else if (_c[0] == 17)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand17 = DateTime.Now;
+                }
+                else if (_c[0] == 18)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand18 = DateTime.Now;
+                }
+                else if (_c[0] == 19)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand19 = DateTime.Now;
+                }
+                else if (_c[0] == 20)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand20 = DateTime.Now;
+                }
+                PersistentContainer.Instance.Save();
             }
-            else if (_c[0] == 2)
-            {
-                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand2 = DateTime.Now;
-            }
-            else if (_c[0] == 3)
-            {
-                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand3 = DateTime.Now;
-            }
-            else if (_c[0] == 4)
-            {
-                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand4 = DateTime.Now;
-            }
-            else if (_c[0] == 5)
-            {
-                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand5 = DateTime.Now;
-            }
-            else if (_c[0] == 6)
-            {
-                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand6 = DateTime.Now;
-            }
-            else if (_c[0] == 7)
-            {
-                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand7 = DateTime.Now;
-            }
-            else if (_c[0] == 8)
-            {
-                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand8 = DateTime.Now;
-            }
-            else if (_c[0] == 9)
-            {
-                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand9 = DateTime.Now;
-            }
-            else if (_c[0] == 10)
-            {
-                PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand10 = DateTime.Now;
-            }
-            PersistentContainer.Instance.Save();
             string[] _r;
             if (Dict.TryGetValue(_message, out _r))
             {
@@ -862,7 +791,7 @@ namespace ServerTools
                     string _responseAdj = _response.Trim();
                     _responseAdj = _responseAdj.Replace("{EntityId}", _cInfo.entityId.ToString());
                     _responseAdj = _responseAdj.Replace("{SteamId}", _cInfo.playerId);
-                    _responseAdj = _responseAdj.Replace("{PlayerName}", _playerName);
+                    _responseAdj = _responseAdj.Replace("{PlayerName}", _cInfo.playerName);
                     if (_responseAdj.ToLower().StartsWith("global "))
                     {
                         _responseAdj = _responseAdj.Replace("Global ", "");

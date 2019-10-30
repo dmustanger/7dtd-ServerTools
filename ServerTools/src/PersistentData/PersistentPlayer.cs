@@ -8,10 +8,7 @@ namespace ServerTools
     {
         private readonly string steamId;
         [OptionalField]
-        private int playerDeaths;
-        private int playerKills;
-        private int zombieKills;
-        private int playerCoins;
+        private int playerWallet;
         private int bank;
         private int messageCount;
         private int totalTimePlayed;
@@ -34,7 +31,6 @@ namespace ServerTools
         private int gyroId;
         private int voteWeekCount;
         private int hardcoreExtraLives;
-        private int deaths;
         private DateTime messageTime;
         private DateTime lastJoined;
         private DateTime lastGimme;
@@ -63,6 +59,16 @@ namespace ServerTools
         private DateTime customCommand8;
         private DateTime customCommand9;
         private DateTime customCommand10;
+        private DateTime customCommand11;
+        private DateTime customCommand12;
+        private DateTime customCommand13;
+        private DateTime customCommand14;
+        private DateTime customCommand15;
+        private DateTime customCommand16;
+        private DateTime customCommand17;
+        private DateTime customCommand18;
+        private DateTime customCommand19;
+        private DateTime customCommand20;
         private DateTime lastBike;
         private DateTime lastMiniBike;
         private DateTime lastMotorBike;
@@ -97,51 +103,15 @@ namespace ServerTools
         private string highPingImmuneName;
         private string newSpawnPosition;
 
-        public int PlayerDeaths
+        public int PlayerWallet
         {
             get
             {
-                return playerDeaths;
+                return playerWallet;
             }
             set
             {
-                playerDeaths = value;
-            }
-        }
-
-        public int PlayerKills
-        {
-            get
-            {
-                return playerKills;
-            }
-            set
-            {
-                playerKills = value;
-            }
-        }
-
-        public int ZombieKills
-        {
-            get
-            {
-                return zombieKills;
-            }
-            set
-            {
-                zombieKills = value;
-            }
-        }
-
-        public int PlayerCoins
-        {
-            get
-            {
-                return playerCoins;
-            }
-            set
-            {
-                playerCoins = value;
+                playerWallet = value;
             }
         }
 
@@ -406,18 +376,6 @@ namespace ServerTools
             set
             {
                 hardcoreExtraLives = value;
-            }
-        }
-
-        public int Deaths
-        {
-            get
-            {
-                return deaths;
-            }
-            set
-            {
-                deaths = value;
             }
         }
 
@@ -754,6 +712,126 @@ namespace ServerTools
             set
             {
                 customCommand10 = value;
+            }
+        }
+
+        public DateTime CustomCommand11
+        {
+            get
+            {
+                return customCommand11;
+            }
+            set
+            {
+                customCommand11 = value;
+            }
+        }
+
+        public DateTime CustomCommand12
+        {
+            get
+            {
+                return customCommand12;
+            }
+            set
+            {
+                customCommand12 = value;
+            }
+        }
+
+        public DateTime CustomCommand13
+        {
+            get
+            {
+                return customCommand13;
+            }
+            set
+            {
+                customCommand13 = value;
+            }
+        }
+
+        public DateTime CustomCommand14
+        {
+            get
+            {
+                return customCommand14;
+            }
+            set
+            {
+                customCommand14 = value;
+            }
+        }
+
+        public DateTime CustomCommand15
+        {
+            get
+            {
+                return customCommand15;
+            }
+            set
+            {
+                customCommand15 = value;
+            }
+        }
+
+        public DateTime CustomCommand16
+        {
+            get
+            {
+                return customCommand16;
+            }
+            set
+            {
+                customCommand16 = value;
+            }
+        }
+
+        public DateTime CustomCommand17
+        {
+            get
+            {
+                return customCommand17;
+            }
+            set
+            {
+                customCommand17 = value;
+            }
+        }
+
+        public DateTime CustomCommand18
+        {
+            get
+            {
+                return customCommand18;
+            }
+            set
+            {
+                customCommand18 = value;
+            }
+        }
+
+        public DateTime CustomCommand19
+        {
+            get
+            {
+                return customCommand19;
+            }
+            set
+            {
+                customCommand19 = value;
+            }
+        }
+
+        public DateTime CustomCommand20
+        {
+            get
+            {
+                return customCommand20;
+            }
+            set
+            {
+                customCommand20 = value;
             }
         }
 

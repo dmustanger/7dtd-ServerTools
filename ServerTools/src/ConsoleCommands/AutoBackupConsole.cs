@@ -38,10 +38,7 @@ namespace ServerTools
                 }
                 if (_params.Count == 0)
                 {
-                    SdtdConsole.Instance.Output(string.Format("World backup has been initiated"));
                     AutoBackup.Exec();
-                    Timers._tBS = 0;
-                    SdtdConsole.Instance.Output(string.Format("World backup completed"));
                     return;
                 }
                 else if (_params[0].ToLower().Equals("off"))

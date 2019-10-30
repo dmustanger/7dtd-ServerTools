@@ -10,6 +10,7 @@ namespace ServerTools
 
         public static void GetBloodmoon(ClientInfo _cInfo, bool _announce)
         {
+            int _bMoonFrequency = GamePrefs.GetInt(EnumGamePrefs.BloodMoonFrequency);
             int _daysRemaining = Day7.DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()));
             string _phrase301;
             string _phrase305;

@@ -23,6 +23,7 @@ namespace ServerTools
                         {
                             if (!_entity.IsClientControlled() && _entity.IsSpawned())
                             {
+                                string _tags = _entity.EntityClass.Tags.ToString();
                                 string _name = EntityClass.list[_entity.entityClass].entityClassName;
                                 if (BlockIsEnabled && _name == "fallingBlock")
                                 {
@@ -30,14 +31,13 @@ namespace ServerTools
                                     Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed falling block id {0}", _entity.entityId));
                                     continue;
                                 }
-                                if (FallingTreeEnabled && _name == "fallingTree")
+                                else if (FallingTreeEnabled && _name == "fallingTree")
                                 {
                                     GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
                                     Log.Out("[SERVERTOOLS] Entity cleanup: Removed falling tree");
                                     continue;
                                 }
-                                EntityType _type = _entity.entityType;
-                                if ((_type == EntityType.Zombie || _type == EntityType.Animal) && Underground)
+                                else if ((_tags.Contains("zombie") || _tags.Contains("animal")) && Underground)
                                 {
                                     if ((int)_entity.position.y <= -10)
                                     {
@@ -46,7 +46,7 @@ namespace ServerTools
                                         continue;
                                     }
                                 }
-                                if (MiniBikes && _name == "vehicleMinibike")
+                                else if (MiniBikes && _name == "vehicleMinibike")
                                 {
                                     Vector3 _vec = _entity.position;
                                     GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
@@ -61,14 +61,18 @@ namespace ServerTools
                                         if (_cInfo != null)
                                         {
                                             Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed minibike id {0}. Closest player is {1}", _entity.entityId, _cInfo.playerName));
-                                            continue;
                                         }
                                         else
                                         {
                                             Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed minibike id {0}", _entity.entityId));
-                                            continue;
                                         }
                                     }
+                                    continue;
+                                }
+                                else if (_name == "Backpack")
+                                {
+                                    _entity.SetPosition(new Vector3((int)_entity.position.x, -1, (int)_entity.position.y), true);
+                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Backpack detected below ground and sent to the surface at {0}", (int)_entity.position.x, -1, (int)_entity.position.y));
                                 }
                             }
                         }

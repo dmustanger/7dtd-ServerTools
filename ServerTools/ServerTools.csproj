@@ -187,8 +187,8 @@
     <Compile Include="src\Chat\Motd.cs" />
     <Compile Include="src\ClaimBlock\FirstClaimBlock.cs" />
     <Compile Include="src\ClanManager\ClanManager.cs" />
-    <Compile Include="src\ShopAndWallet\Shop.cs" />
-    <Compile Include="src\ShopAndWallet\Wallet.cs" />
+    <Compile Include="src\Shop\Shop.cs" />
+    <Compile Include="src\Wallet\Wallet.cs" />
     <Compile Include="src\ConsoleCommands\%40AdminConsole.cs" />
     <Compile Include="src\ConsoleCommands\FamilyShareConsole.cs" />
     <Compile Include="src\ConsoleCommands\GiveBlockConsole.cs" />
@@ -264,7 +264,7 @@
     </Reference>
     <Reference Include="Pathfinding.Ionic.Zip.Reduced, Version=1.9.1.9000, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\7dtd-binaries\Pathfinding.Ionic.Zip.Reduced.dll</HintPath>
+      <HintPath>..\..\7dtd-ServerTools-master-18.0.3\7dtd-binaries\Pathfinding.Ionic.Zip.Reduced.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
