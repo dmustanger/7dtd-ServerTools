@@ -160,7 +160,7 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"42\" default=\"clancommands\" replacement=\"clancommands\" />");
                     sw.WriteLine("        <trigger number=\"43\" default=\"clanchat\" replacement=\"clanchat\" />");
                     sw.WriteLine("        <trigger number=\"44\" default=\"clanrename\" replacement=\"clanrename\" />");
-                    sw.WriteLine("        <trigger number=\"45\" default=\"reserved\" replacement=\"reserved\" />");
+                    sw.WriteLine("        <trigger number=\"45\" default=\"\" replacement=\"\" />");
                     sw.WriteLine("        <trigger number=\"46\" default=\"reward\" replacement=\"reward\" />");
                     sw.WriteLine("        <trigger number=\"47\" default=\"shutdown\" replacement=\"shutdown\" />");
                     sw.WriteLine("        <trigger number=\"48\" default=\"adminlist\" replacement=\"adminlist\" />");
@@ -454,7 +454,7 @@ namespace ServerTools
                     }
                     if (kvp.Key == 45)
                     {
-                        ReservedSlots.Command45 = kvp.Value[1];
+                        
                     }
                     if (kvp.Key == 46)
                     {

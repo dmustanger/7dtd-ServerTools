@@ -227,12 +227,7 @@ namespace ServerTools
                     _phrase20 = "Sorry {PlayerName} server is at max capacity and this slot is reserved.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"20\" Phrase=\"{0}\" />", _phrase20));
-                string _phrase21;
-                if (!Dict.TryGetValue(21, out _phrase21))
-                {
-                    _phrase21 = "Sorry {PlayerName} server is at max capacity and your reserved status has expired.";
-                }
-                sw.WriteLine(string.Format("        <Phrase id=\"21\" Phrase=\"{0}\" />", _phrase21));
+                //21 available
                 string _phrase22;
                 if (!Dict.TryGetValue(22, out _phrase22))
                 {
@@ -860,12 +855,7 @@ namespace ServerTools
                     _phrase581 = " you have a maximum {Count} waypoints.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"581\" Phrase=\"{0}\" />", _phrase581));
-                string _phrase582;
-                if (!Dict.TryGetValue(582, out _phrase582))
-                {
-                    _phrase582 = " you have a maximum {Count} waypoints.";
-                }
-                sw.WriteLine(string.Format("        <Phrase id=\"582\" Phrase=\"{0}\" />", _phrase582));
+                //_phrase582 available
                 string _phrase583;
                 if (!Dict.TryGetValue(583, out _phrase583))
                 {

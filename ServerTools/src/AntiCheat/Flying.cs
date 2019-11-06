@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -24,7 +25,7 @@ namespace ServerTools
                     AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                     if (Admin.PermissionLevel > Admin_Level)
                     {
-                        EntityAlive _player = GameManager.Instance.World.GetEntity(_cInfo.entityId) as EntityAlive;
+                        Entity _player = GameManager.Instance.World.GetEntity(_cInfo.entityId) as Entity;
                         if (_player.IsFlyMode.Value && _player.AttachedToEntity == null)
                         {
                             int _x = (int)_player.position.x;

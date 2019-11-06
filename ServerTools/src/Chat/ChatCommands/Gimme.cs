@@ -238,9 +238,6 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            ItemValue _currency = new ItemValue(ItemClass.GetItem(TraderInfo.CurrencyItem, false).type, 1, 1, false, null, 1);
-            PlayerDataFile _playerDataFile = new PlayerDataFile();
-            _playerDataFile.Load(GameUtils.GetPlayerDataDir(), _cInfo.playerId.Trim());
             if (Delay_Between_Uses < 1)
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
@@ -267,16 +264,16 @@ namespace ServerTools
                         if (DateTime.Now < _dt)
                         {
                             int _delay = Delay_Between_Uses / 2;
-                            Time(_cInfo, _timepassed, _delay, _currency, _playerDataFile);
+                            Time(_cInfo, _timepassed, _delay);
                             return;
                         }
                     }
                 }
-                Time(_cInfo, _timepassed, Delay_Between_Uses, _currency, _playerDataFile);
+                Time(_cInfo, _timepassed, Delay_Between_Uses);
             }
         }
 
-        public static void Time(ClientInfo _cInfo, int _timepassed, int _delay, ItemValue _currency, PlayerDataFile _playerDataFile)
+        public static void Time(ClientInfo _cInfo, int _timepassed, int _delay)
         {
             if (_timepassed >= _delay)
             {

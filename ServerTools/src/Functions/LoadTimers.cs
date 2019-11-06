@@ -351,6 +351,10 @@ namespace ServerTools
             {
                 Log.Out("Vote reward enabled");
             }
+            if (Wallet.IsEnabled)
+            {
+                Log.Out("Wallet enabled");
+            }
             if (Waypoint.IsEnabled)
             {
                 Log.Out("Waypoints enabled");
@@ -585,14 +589,10 @@ namespace ServerTools
                 if (ReservedSlots.IsEnabled)
                 {
                     _rS++;
-                    if (_rS >= 120)
+                    if (_rS >= 60)
                     {
                         _rS = 0;
-                        int _playerCount = ConnectionManager.Instance.ClientCount();
-                        if (_playerCount >= API.MaxPlayers - ReservedSlots.Admin_Slots)
-                        {
-                            ReservedSlots.OpenSlot();
-                        }
+                        ReservedSlots.PlayerCount();
                     }
                 }
                 else

@@ -27,65 +27,11 @@ namespace ServerTools
                     ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                     if (DateTime.Now < _dt)
                     {
-                        _sql = string.Format("SELECT steamid, wayPointName, position FROM Waypoints WHERE steamid = '{0}' LIMIT {1}", _cInfo.playerId, Donator_Max_Waypoints);
-                        DataTable _result1 = SQL.TQuery(_sql);
-                        foreach (DataRow row in _result1.Rows)
-                        {
-                            string _name = row[1].ToString();
-                            int x, y, z;
-                            string[] _cords = row[2].ToString().Split(',');
-                            int.TryParse(_cords[0], out x);
-                            int.TryParse(_cords[1], out y);
-                            int.TryParse(_cords[2], out z);
-                            string _message = "Waypoint {Name} @ {X} {Y} {Z}";
-                            _message = _message.Replace("{Name}", _name);
-                            _message = _message.Replace("{X}", x.ToString());
-                            _message = _message.Replace("{Y}", y.ToString());
-                            _message = _message.Replace("{Z}", z.ToString());
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                        }
-                    }
-                    else
-                    {
-                        _sql = string.Format("SELECT steamid, wayPointName, position FROM Waypoints WHERE steamid = '{0}' LIMIT {1}", _cInfo.playerId, Max_Waypoints);
-                        DataTable _result1 = SQL.TQuery(_sql);
-                        foreach (DataRow row in _result1.Rows)
-                        {
-                            string _name = row[1].ToString();
-                            int x, y, z;
-                            string[] _cords = row[2].ToString().Split(',');
-                            int.TryParse(_cords[0], out x);
-                            int.TryParse(_cords[1], out y);
-                            int.TryParse(_cords[2], out z);
-                            string _message = "Waypoint {Name} @ {X} {Y} {Z}";
-                            _message = _message.Replace("{Name}", _name);
-                            _message = _message.Replace("{X}", x.ToString());
-                            _message = _message.Replace("{Y}", y.ToString());
-                            _message = _message.Replace("{Z}", z.ToString());
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                        }
+                        ListResult(_cInfo, Donator_Max_Waypoints);
+                        return;
                     }
                 }
-                else
-                {
-                    _sql = string.Format("SELECT steamid, wayPointName, position FROM Waypoints WHERE steamid = '{0}' LIMIT {1}", _cInfo.playerId, Max_Waypoints);
-                    DataTable _result1 = SQL.TQuery(_sql);
-                    foreach (DataRow row in _result1.Rows)
-                    {
-                        string _name = row[1].ToString();
-                        int x, y, z;
-                        string[] _cords = row[2].ToString().Split(',');
-                        int.TryParse(_cords[0], out x);
-                        int.TryParse(_cords[1], out y);
-                        int.TryParse(_cords[2], out z);
-                        string _message = "Waypoint {Name} @ {X} {Y} {Z}";
-                        _message = _message.Replace("{Name}", _name);
-                        _message = _message.Replace("{X}", x.ToString());
-                        _message = _message.Replace("{Y}", y.ToString());
-                        _message = _message.Replace("{Z}", z.ToString());
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                }
+                ListResult(_cInfo, Max_Waypoints);
             }
             else
             {
@@ -97,6 +43,31 @@ namespace ServerTools
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase585 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             _result.Dispose();
+        }
+
+        public static void ListResult(ClientInfo _cInfo, int _waypointLimit)
+        {
+            string _sql = string.Format("SELECT steamid, wayPointName, position FROM Waypoints WHERE steamid = '{0}' LIMIT {1}", _cInfo.playerId, _waypointLimit);
+            DataTable _result1 = SQL.TQuery(_sql);
+            foreach (DataRow row in _result1.Rows)
+            {
+                string _name = row[1].ToString();
+                int x, y, z;
+                string[] _cords = row[2].ToString().Split(',');
+                int.TryParse(_cords[0], out x);
+                int.TryParse(_cords[1], out y);
+                int.TryParse(_cords[2], out z);
+                string _message = "Waypoint {Name} @ {X} {Y} {Z}";
+                _message = _message.Replace("{Name}", _name);
+                _message = _message.Replace("{X}", x.ToString());
+                _message = _message.Replace("{Y}", y.ToString());
+                _message = _message.Replace("{Z}", z.ToString());
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                
+            }
+            string _message2 = "Waypoint Limit = {Limit}";
+            _message2 = _message2.Replace("{Limit}", _waypointLimit.ToString());
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message2 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void TeleDelay(ClientInfo _cInfo, string _waypoint)
@@ -127,7 +98,15 @@ namespace ServerTools
                     string _sql = string.Format("SELECT lastWaypoint FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                     DataTable _result = SQL.TQuery(_sql);
                     DateTime _lastWaypoint;
-                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastWaypoint);
+                    if (_result.Rows.Count == 0)
+                    {
+                        SQL.FastQuery(string.Format("INSERT INTO Players (steamid, playername) VALUES ('{0}', '{1}')", _cInfo.playerId, _cInfo.playerName), null);
+                        DateTime.TryParse("10/29/2000 7:30:00 AM", out _lastWaypoint);
+                    }
+                    else
+                    {
+                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastWaypoint);
+                    }
                     _result.Dispose();
                     if (_lastWaypoint.ToString() == "10/29/2000 7:30:00 AM")
                     {
@@ -278,7 +257,7 @@ namespace ServerTools
                 EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
                 if (_owner == EnumLandClaimOwner.None)
                 {
-                    WayPointTotal(_cInfo, _waypoint);
+                    ReservedCheck(_cInfo, _waypoint);
                 }
                 else
                 {
@@ -296,7 +275,7 @@ namespace ServerTools
             }
         }
 
-        private static void WayPointTotal(ClientInfo _cInfo, string _waypoint)
+        private static void ReservedCheck(ClientInfo _cInfo, string _waypoint)
         {
             string _sql = string.Format("SELECT steamid FROM Waypoints WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
@@ -379,7 +358,6 @@ namespace ServerTools
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
-                bool _donator = false;
                 if (Delay_Between_Uses < 1)
                 {
                     FClaimCheck(_cInfo, _waypoint);
@@ -408,52 +386,39 @@ namespace ServerTools
                                 ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                                 if (DateTime.Now < _dt)
                                 {
-                                    _donator = true;
                                     int _newDelay = Delay_Between_Uses / 2;
-                                    if (_timepassed >= _newDelay)
-                                    {
-                                        FClaimCheck(_cInfo, _waypoint);
-                                    }
-                                    else
-                                    {
-                                        int _timeleft = _newDelay - _timepassed;
-                                        string _phrase575;
-                                        if (!Phrases.Dict.TryGetValue(575, out _phrase575))
-                                        {
-                                            _phrase575 = " you can only use waypoints once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                        }
-                                        _phrase575 = _phrase575.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                        _phrase575 = _phrase575.Replace("{TimeRemaining}", _timeleft.ToString());
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase575 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
+                                    FTime(_cInfo, _waypoint, _timepassed, _newDelay);
+                                    return;
                                 }
                             }
                         }
-                        if (!_donator)
-                        {
-                            if (_timepassed >= Delay_Between_Uses)
-                            {
-                                FClaimCheck(_cInfo, _waypoint);
-                            }
-                            else
-                            {
-                                int _timeleft = Delay_Between_Uses - _timepassed;
-                                string _phrase575;
-                                if (!Phrases.Dict.TryGetValue(575, out _phrase575))
-                                {
-                                    _phrase575 = " you can only use waypoints once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                                }
-                                _phrase575 = _phrase575.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                                _phrase575 = _phrase575.Replace("{TimeRemaining}", _timeleft.ToString());
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase575 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
-                        }
+                        FTime(_cInfo, _waypoint, _timepassed, Delay_Between_Uses);
                     }
                 }
             }
             else
             {
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you can not use waypoint commands while signed up for or in an event.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+        }
+
+        private static void FTime(ClientInfo _cInfo, string _waypoint, int _timepassed, int _delay)
+        {
+            if (_timepassed >= _delay)
+            {
+                FClaimCheck(_cInfo, _waypoint);
+            }
+            else
+            {
+                int _timeleft = _delay - _timepassed;
+                string _phrase575;
+                if (!Phrases.Dict.TryGetValue(575, out _phrase575))
+                {
+                    _phrase575 = " you can only use waypoints once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                }
+                _phrase575 = _phrase575.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase575 = _phrase575.Replace("{TimeRemaining}", _timeleft.ToString());
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase575 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

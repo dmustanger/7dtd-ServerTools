@@ -59,7 +59,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    Exec(_cInfo);
+                    MarketTele(_cInfo);
                 }
             }
             else
@@ -74,7 +74,7 @@ namespace ServerTools
                 _phrase560 = _phrase560.Replace("{TimeRemaining}", _timeleft.ToString());
                 _phrase560 = _phrase560.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase560 = _phrase560.Replace("{Command103}", MarketChat.Command103);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase560 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase560 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -83,7 +83,7 @@ namespace ServerTools
             int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
             if (_currentCoins >= Command_Cost)
             {
-                Exec(_cInfo);
+                MarketTele(_cInfo);
             }
             else
             {
@@ -93,7 +93,7 @@ namespace ServerTools
                     _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -101,28 +101,28 @@ namespace ServerTools
         {
             if (SetMarket.Market_Position != "0,0,0" || SetMarket.Market_Position != "0 0 0" || SetMarket.Market_Position != "")
             {
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                if (PvP_Check)
+                {
+                    if (Teleportation.PCheck(_cInfo, _player))
+                    {
+                        return;
+                    }
+                }
+                if (Zombie_Check)
+                {
+                    if (Teleportation.ZCheck(_cInfo, _player))
+                    {
+                        return;
+                    }
+                }
                 int x, y, z;
                 if (Return)
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                     Vector3 _position = _player.GetPosition();
                     x = (int)_position.x;
                     y = (int)_position.y;
                     z = (int)_position.z;
-                    if (PvP_Check)
-                    {
-                        if (Teleportation.PCheck(_cInfo, _player))
-                        {
-                            return;
-                        }
-                    }
-                    if (Zombie_Check)
-                    {
-                        if (Teleportation.ZCheck(_cInfo, _player))
-                        {
-                            return;
-                        }
-                    }
                     string _mposition = x + "," + y + "," + z;
                     MarketPlayers.Add(_cInfo.entityId);
                     PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = _mposition;
@@ -133,7 +133,7 @@ namespace ServerTools
                     }
                     _phrase561 = _phrase561.Replace("{CommandPrivate}", ChatHook.Command_Private);
                     _phrase561 = _phrase561.Replace("{Command51}", MarketChat.Command51);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase561 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase561 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 string[] _cords = { };
                 if (SetMarket.Market_Position.Contains(","))
@@ -144,7 +144,7 @@ namespace ServerTools
                     }
                     _cords = SetMarket.Market_Position.Split(',').ToArray();
                 }
-                else if (SetLobby.Lobby_Position.Contains(" "))
+                else if (SetMarket.Market_Position.Contains(" "))
                 {
                     _cords = SetMarket.Market_Position.Split(' ').ToArray();
                 }
@@ -157,7 +157,7 @@ namespace ServerTools
                 {
                     _phrase562 = " sent you to the market.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase562 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase562 + "[-]",-1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
@@ -172,7 +172,7 @@ namespace ServerTools
                 {
                     _phrase563 = " the market position is not set.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase563 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase563 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -214,7 +214,7 @@ namespace ServerTools
                     {
                         _phrase555 = " sent you back to your saved location.";
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase555 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase555 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -223,12 +223,12 @@ namespace ServerTools
                     {
                         _phrase564 = " you are outside the market. Get inside it and try again.";
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase564 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase564 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " you have no saved return point.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " you have no saved return point.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

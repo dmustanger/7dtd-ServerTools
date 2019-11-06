@@ -27,7 +27,7 @@ namespace ServerTools
                 Admin = null;
                 if (_cInfo != null)
                 {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", not enough players signed up for the event. The setup has been cleared.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", not enough players signed up for the event. The setup has been cleared.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "The event did not get enough players signed up to begin and has been cancelled.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
@@ -46,7 +46,7 @@ namespace ServerTools
                 string _eventReturn = SQL.EscapeString(_sposition);
                 string _sql = string.Format("UPDATE Players SET eventReturn = '{0}' WHERE steamid = {1}", _eventReturn, _cInfo.playerId);
                 SQL.FastQuery(_sql, "Event");
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you have signed up for the event and your current location has been saved for return.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + ", you have signed up for the event and your current location has been saved for return.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 _sql = string.Format("SELECT eventid, eventName, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventAdmin = '{0}' AND eventActive = 'true'", Admin);
                 DataTable _result1 = SQL.TQuery(_sql);
                 int _eventid;

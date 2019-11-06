@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using UnityEngine;
 
@@ -19,7 +18,6 @@ namespace ServerTools
 
         public static void Delay(ClientInfo _cInfo, string _price)
         {
-            bool _donator = false;
             if (Delay_Between_Uses < 1)
             {
                 CheckBox(_cInfo, _price);
@@ -38,52 +36,38 @@ namespace ServerTools
                         ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                         if (DateTime.Now < _dt)
                         {
-                            _donator = true;
                             int _newDelay = Delay_Between_Uses / 2;
-                            if (_timepassed >= _newDelay)
-                            {
-                                CheckBox(_cInfo, _price);
-                            }
-                            else
-                            {
-                                int _timeleft = _newDelay - _timepassed;
-                                string _phrase900;
-                                if (!Phrases.Dict.TryGetValue(900, out _phrase900))
-                                {
-                                    _phrase900 = " you can only use {CommandPrivate}{Command74} {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
-                                }
-                                _phrase900 = _phrase900.Replace("{DelayBetweenUses}", _newDelay.ToString());
-                                _phrase900 = _phrase900.Replace("{TimeRemaining}", _timeleft.ToString());
-                                _phrase900 = _phrase900.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                                _phrase900 = _phrase900.Replace("{Command74}", Command74);
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase900 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
+                            Time(_cInfo, _timepassed, _newDelay, _price);
+                            return;
                         }
                     }
                 }
-                if (!_donator)
-                {
-                    if (_timepassed >= Delay_Between_Uses)
-                    {
-                        CheckBox(_cInfo, _price);
-                    }
-                    else
-                    {
-                        int _timeleft = Delay_Between_Uses - _timepassed;
-                        string _phrase900;
-                        if (!Phrases.Dict.TryGetValue(900, out _phrase900))
-                        {
-                            _phrase900 = " you can only use {CommandPrivate}{Command74} {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
-                        }
-                        _phrase900 = _phrase900.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                        _phrase900 = _phrase900.Replace("{TimeRemaining}", _timeleft.ToString());
-                        _phrase900 = _phrase900.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                        _phrase900 = _phrase900.Replace("{Command74}", Command74);
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase900 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                }
+                Time(_cInfo, _timepassed, Delay_Between_Uses, _price);
             }
         }
+
+        public static void Time(ClientInfo _cInfo, int _timepassed, int _delay, string _price)
+        {
+            if (_timepassed >= _delay)
+            {
+                CheckBox(_cInfo, _price);
+            }
+            else
+            {
+                int _timeleft = _delay - _timepassed;
+                string _phrase900;
+                if (!Phrases.Dict.TryGetValue(900, out _phrase900))
+                {
+                    _phrase900 = " you can only use {CommandPrivate}{Command74} {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
+                }
+                _phrase900 = _phrase900.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase900 = _phrase900.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase900 = _phrase900.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase900 = _phrase900.Replace("{Command74}", Command74);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase900 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+        }
+
 
         public static void CheckBox(ClientInfo _cInfo, string _price)
         {
@@ -93,7 +77,7 @@ namespace ServerTools
                 _message = _message.Replace("{Value}", _cInfo.entityId.ToString());
                 _message = _message.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _message = _message.Replace("{Command72}", Command72);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -102,7 +86,6 @@ namespace ServerTools
                 {
                     if (_p > 0)
                     {
-                        bool _itemFound = false;
                         ChunkClusterList chunklist = GameManager.Instance.World.ChunkClusters;
                         for (int i = 0; i < chunklist.Count; i++)
                         {
@@ -121,67 +104,52 @@ namespace ServerTools
                                         Vector3i vec3i = SecureLoot.ToWorldPos();
                                         if ((vec3i.x - _player.position.x) * (vec3i.x - _player.position.x) + (vec3i.z - _player.position.z) * (vec3i.z - _player.position.z) <= 2.5 * 2.5)
                                         {
-                                            List<string> boxUsers = SecureLoot.GetUsers();
-                                            if (!boxUsers.Contains(_cInfo.playerId) && !SecureLoot.GetOwner().Equals(_cInfo.playerId))
+                                            if (SecureLoot.IsUserAllowed(_cInfo.playerId) && !SecureLoot.IsUserAccessing())
                                             {
-                                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " the secure chest near you is not yours. You can only auction an item through a secure chest you have placed.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                                return;
-                                            }
-                                            ItemStack[] items = SecureLoot.items;
-                                            int count = 0;
-                                            int slotNumber = 0;
-                                            foreach (ItemStack item in items)
-                                            {
-                                                if (!item.IsEmpty())
+                                                ItemStack[] items = SecureLoot.items;
+                                                ItemStack _item = items[0];
+                                                if (_item != null && !_item.IsEmpty())
                                                 {
-                                                    if (count < 1)
+                                                    ItemClass _itemClass = ItemClass.list[_item.itemValue.type];
+                                                    string _itemName = _item.itemValue.ItemClass.GetLocalizedItemName() ?? _item.itemValue.ItemClass.GetItemName();
+                                                    SecureLoot.UpdateSlot(0, ItemStack.Empty.Clone());
+                                                    AuctionItems.Add(_cInfo.entityId, _cInfo.playerId);
+                                                    PersistentContainer.Instance.Players[_cInfo.playerId].AuctionId = _cInfo.entityId;
+                                                    PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemName = _itemName;
+                                                    PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemCount = _item.count;
+                                                    PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemQuality = _item.itemValue.Quality;
+                                                    PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemPrice = _p;
+                                                    PersistentContainer.Instance.Players[_cInfo.playerId].AuctionCancelTime = DateTime.Now;
+                                                    PersistentContainer.Instance.Save();
+                                                    string _message = " your auction item {Name} has been removed from the secure loot and added to the auction.";
+                                                    _message = _message.Replace("{Name}", _itemName);
+                                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                                    Log.Out(string.Format("{0} has added {1} {2}, {3} quality to the auction for {4} {5}.", _cInfo.playerName, _item.count, _itemName, _item.itemValue.Quality, _price, Wallet.Coin_Name));
+                                                    using (StreamWriter sw = new StreamWriter(filepath, true))
                                                     {
-                                                        _itemFound = true;
-                                                        ItemClass _itemClass = ItemClass.list[item.itemValue.type];
-                                                        string _itemName = _itemClass.GetItemName();
-                                                        SecureLoot.UpdateSlot(slotNumber, ItemStack.Empty.Clone());
-                                                        AuctionItems.Add(_cInfo.entityId, _cInfo.playerId);
-                                                        PersistentContainer.Instance.Players[_cInfo.playerId].AuctionId = _cInfo.entityId;
-                                                        PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemName = _itemName;
-                                                        PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemCount = item.count;
-                                                        PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemQuality = item.itemValue.Quality;
-                                                        PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemPrice = _p;
-                                                        PersistentContainer.Instance.Players[_cInfo.playerId].AuctionCancelTime = DateTime.Now;
-                                                        PersistentContainer.Instance.Save();
-                                                        string _message = " your auction item {Name} has been removed from the secure loot and added to the auction.";
-                                                        _message = _message.Replace("{Name}", _itemName);
-                                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                                        Log.Out(string.Format("{0} has added {1} {2}, {3} quality to the auction for {4} {5}.", _cInfo.playerName, item.count, _itemName, item.itemValue.Quality, _price, Wallet.Coin_Name));
-                                                        using (StreamWriter sw = new StreamWriter(filepath, true))
-                                                        {
-                                                            sw.WriteLine(string.Format("{0}: {1} has added {2} {3}, {4} quality to the auction for {5} {6}.", DateTime.Now, _cInfo.playerName, item.count, _itemName, item.itemValue.Quality, _price, Wallet.Coin_Name));
-                                                            sw.WriteLine();
-                                                            sw.Flush();
-                                                            sw.Close();
-                                                        }
-                                                        count++;
+                                                        sw.WriteLine(string.Format("{0}: {1} has added {2} {3}, {4} quality to the auction for {5} {6}.", DateTime.Now, _cInfo.playerName, _item.count, _itemName, _item.itemValue.Quality, _price, Wallet.Coin_Name));
+                                                        sw.WriteLine();
+                                                        sw.Flush();
+                                                        sw.Close();
                                                     }
+                                                    return;
                                                 }
-                                                slotNumber++;
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                        if (!_itemFound)
-                        {
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " no item was found in a secure chest near you." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                        }
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " no item was found in the first slot of the secure chest near you." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you need to input a price greater than zero. This is not a transfer system.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you need to input a price greater than zero. This is not a transfer system.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " your sell price must be an integer and greater than zero.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " your sell price must be an integer and greater than zero.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -210,7 +178,7 @@ namespace ServerTools
                         _message = _message.Replace("{Quality}", _auctionQuality.ToString());
                         _message = _message.Replace("{Price}", _auctionPrice.ToString());
                         _message = _message.Replace("{Name}", Wallet.Coin_Name);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
@@ -220,13 +188,13 @@ namespace ServerTools
                         _message = _message.Replace("{Item}", _auctionName);
                         _message = _message.Replace("{Price}", _auctionPrice.ToString());
                         _message = _message.Replace("{Name}", Wallet.Coin_Name);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             if (!_auctionItemsFound)
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " no items are currently for sale.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " no items are currently for sale.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
             
@@ -246,25 +214,17 @@ namespace ServerTools
                     }
                     else
                     {
-                        int _missing;
-                        if (_currentCoins >= 0)
-                        {
-                            _missing = _itemPrice - _currentCoins;
-                        }
-                        else
-                        {
-                            _missing = _itemPrice + _currentCoins;
-                        }
+                        int _missing = _itemPrice - _currentCoins;
                         string _message = " you can not make this purchase. You need {Value} more {Name}.";
                         _message = _message.Replace("{Value}", _missing.ToString());
                         _message = _message.Replace("{Name}", Wallet.Coin_Name);
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " this # could not be found. Please check the auction list by typing " + ChatHook.Command_Private + Command71 + ".[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " this # could not be found. Please check the auction list by typing " + ChatHook.Command_Private + Command71 + ".[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -301,13 +261,14 @@ namespace ServerTools
                 world.SpawnEntityInWorld(entityItem);
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _auctionPrice);
                 string _message = " you have purchased {Count} {ItemName} from the auction for {Value} {CoinName}.";
                 _message = _message.Replace("{Count}", _auctionCount.ToString());
                 _message = _message.Replace("{ItemName}", _auctionName);
                 _message = _message.Replace("{Value}", _auctionPrice.ToString());
                 _message = _message.Replace("{CoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 double _percent = _auctionPrice * 0.05;
                 int _newCoin2 = _auctionPrice - (int)_percent;
                 AuctionItems.Remove(_purchase);
@@ -319,11 +280,11 @@ namespace ServerTools
                 PersistentContainer.Instance.Players[_steamId].AuctionSellDate = DateTime.Now;
                 PersistentContainer.Instance.Save();
                 Wallet.AddCoinsToWallet(_steamId, _newCoin2);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " seller has received the funds in their wallet.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " seller has received the funds in their wallet.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_steamId);
                 if (_cInfo2 != null)
                 {
-                    ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + LoadConfig.Chat_Response_Color + " your auction item was purchased and the value placed in your wallet.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + LoadConfig.Chat_Response_Color + " your auction item was purchased and the value placed in your wallet.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 using (StreamWriter sw = new StreamWriter(filepath, true))
                 {
@@ -381,7 +342,7 @@ namespace ServerTools
                     PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemPrice = 0;
                     PersistentContainer.Instance.Players[_cInfo.playerId].AuctionCancelTime = DateTime.Now;
                     PersistentContainer.Instance.Save();
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " your auction item has returned to you.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " your auction item has returned to you.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     using (StreamWriter sw = new StreamWriter(filepath, true))
                     {
                         sw.WriteLine(string.Format("{0}: {1} has cancelled their auction entry # {2}.", DateTime.Now, _cInfo.playerName, _cInfo.entityId));
@@ -396,12 +357,12 @@ namespace ServerTools
                     string _message = " you must wait {Time1} minutes before you can cancel your auction item. Be careful what you sell. Time remaining: {Time2} minutes.[-]";
                     _message = _message.Replace("{Time1}", Cancel_Time.ToString());
                     _message = _message.Replace("{Time2}", _timeleft.ToString());
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have no items in the auction.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have no items in the auction.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

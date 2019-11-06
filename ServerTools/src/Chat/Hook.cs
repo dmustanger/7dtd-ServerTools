@@ -214,12 +214,12 @@ namespace ServerTools
                         {
                             _message = _message.Replace(Command_Private, "");
                         }
-                        if (Whisper.IsEnabled && _message.ToLower().StartsWith(Whisper.Command122))
+                        if (Whisper.IsEnabled && (_message.ToLower().StartsWith(Whisper.Command120) || _message.ToLower().StartsWith(Whisper.Command121)))
                         {
                             Whisper.Send(_cInfo, _message);
                             return false;
                         }
-                        if (Whisper.IsEnabled && _message.ToLower().StartsWith(Whisper.Command123))
+                        if (Whisper.IsEnabled && (_message.ToLower().StartsWith(Whisper.Command122) || _message.ToLower().StartsWith(Whisper.Command123)))
                         {
                             Whisper.Reply(_cInfo, _message);
                             return false;
@@ -853,33 +853,6 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (ReservedSlots.Reserved_Check && _message.ToLower() == ReservedSlots.Command45)
-                        {
-                            if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
-                            {
-                                DateTime _dt;
-                                if (ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt))
-                                {
-                                    if (DateTime.Now < _dt)
-                                    {
-                                        string _chatMessage = ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " your reserved status expires on {DateTime}.[-]";
-                                        _chatMessage = _chatMessage.Replace("{DateTime}", _dt.ToString());
-                                        ChatMessage(_cInfo, _chatMessage, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                    else
-                                    {
-                                        string _chatMessage = ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " your reserved status has expired on {DateTime}.[-]";
-                                        _chatMessage = _chatMessage.Replace("{DateTime}", _dt.ToString());
-                                        ChatMessage(_cInfo, _chatMessage, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have not donated. Expiration date unavailable.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
-                            return false;
-                        }
                         if (VoteReward.IsEnabled && _message.ToLower() == VoteReward.Command46)
                         {
                             ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " checking for your vote.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -1273,7 +1246,7 @@ namespace ServerTools
                                 {
                                     string _chatMessage = ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " the auction is disabled for your tier.[-]";
                                     ChatMessage(_cInfo, _chatMessage, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    return false;
+                                    
                                 }
                             }
                             _message = _message.ToLower().Replace(AuctionBox.Command73 + " ", "");
@@ -1291,6 +1264,7 @@ namespace ServerTools
                                     }
                                 }
                             }
+                            return false;
                         }
                         if (AuctionBox.IsEnabled && _message.ToLower().StartsWith(AuctionBox.Command74))
                         {
@@ -1316,27 +1290,13 @@ namespace ServerTools
                         }
                         if (Fps.IsEnabled && _message.ToLower() == Fps.Command75)
                         {
-                            if (_announce)
-                            {
-                                Fps.FPS(_cInfo, _announce);
-                            }
-                            else
-                            {
-                                Fps.FPS(_cInfo, _announce);
-                                return false;
-                            }
+                            Fps.FPS(_cInfo, _announce);
+                            return false;
                         }
                         if (Loc.IsEnabled && _message.ToLower() == Loc.Command76)
                         {
-                            if (_announce)
-                            {
-                                Loc.Exec(_cInfo);
-                            }
-                            else
-                            {
-                                Loc.Exec(_cInfo);
-                                return false;
-                            }
+                            Loc.Exec(_cInfo);
+                            return false;
                         }
                         if (VehicleTeleport.IsEnabled)
                         {
@@ -1345,22 +1305,22 @@ namespace ServerTools
                                 VehicleTeleport.Exec(_cInfo, 1);
                                 return false;
                             }
-                            if (VehicleTeleport.Mini_Bike && _message.ToLower() == VehicleTeleport.Command78)
+                            else if (VehicleTeleport.Mini_Bike && _message.ToLower() == VehicleTeleport.Command78)
                             {
                                 VehicleTeleport.Exec(_cInfo, 2);
                                 return false;
                             }
-                            if (VehicleTeleport.Motor_Bike && _message.ToLower() == VehicleTeleport.Command79)
+                            else if (VehicleTeleport.Motor_Bike && _message.ToLower() == VehicleTeleport.Command79)
                             {
                                 VehicleTeleport.Exec(_cInfo, 3);
                                 return false;
                             }
-                            if (VehicleTeleport.Jeep && _message.ToLower() == VehicleTeleport.Command80)
+                            else if (VehicleTeleport.Jeep && _message.ToLower() == VehicleTeleport.Command80)
                             {
                                 VehicleTeleport.Exec(_cInfo, 4);
                                 return false;
                             }
-                            if (VehicleTeleport.Gyro && _message.ToLower() == VehicleTeleport.Command81)
+                            else if (VehicleTeleport.Gyro && _message.ToLower() == VehicleTeleport.Command81)
                             {
                                 VehicleTeleport.Exec(_cInfo, 5);
                                 return false;
@@ -1473,7 +1433,7 @@ namespace ServerTools
                         }
                         if (Bank.IsEnabled && _message.ToLower() == Bank.Command94)
                         {
-                            Bank.Check(_cInfo);
+                            Bank.CurrentBankAndId(_cInfo);
                             return false;
                         }
                         if (Bank.IsEnabled && _message.ToLower().StartsWith(Bank.Command95 + " "))
@@ -1498,7 +1458,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " the server has wallet to bank account transfers turned off.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " the server has wallet to bank account transfers turned off.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                         if (Bank.IsEnabled && Wallet.IsEnabled && _message.ToLower().StartsWith(Bank.Command98 + " "))
@@ -1511,7 +1471,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " the server has bank account to wallet transfers turned off.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " the server has bank account to wallet transfers turned off.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                         if (Bank.IsEnabled && _message.ToLower().StartsWith(Bank.Command99 + " "))
@@ -1657,14 +1617,9 @@ namespace ServerTools
                         //    Hardcore.BuyLives(_cInfo);
                         //    return false;
                         //}
-                        _message = _message.ToLower();
-                        if (CustomCommands.IsEnabled && CustomCommands.Dict.ContainsKey(_message))
+                        if (CustomCommands.IsEnabled && CustomCommands.Dict.ContainsKey(_message = _message.ToLower()))
                         {
                             CustomCommands.Exec(_cInfo, _message);
-                            return false;
-                        }
-                        if (MutePlayer.IsEnabled && MutePlayer.Mutes.Contains(_cInfo.playerId))
-                        {
                             return false;
                         }
                     }

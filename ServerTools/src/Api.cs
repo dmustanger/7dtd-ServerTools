@@ -51,7 +51,7 @@ namespace ServerTools
                                             ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
                                             if (_itemValue.type != ItemValue.None.type)
                                             {
-                                                _holdingItem = _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name;
+                                                _holdingItem = _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName();
                                             }
                                             KillNotice.Notice(_cInfo1, _cInfo2, _holdingItem);
                                         }
@@ -155,37 +155,34 @@ namespace ServerTools
                         _phrase452 = _phrase452.Replace("{Seconds}", _seconds.ToString());
                         SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase452), (ClientInfo)null);
                     }
-                    if (ReservedSlots.IsEnabled)
+                    if (ReservedSlots.IsEnabled && ReservedSlots.Kicked.ContainsKey(_cInfo.playerName))
                     {
-                        if (ReservedSlots.Kicked.ContainsKey(_cInfo.playerName))
+                        DateTime _dateTime;
+                        ReservedSlots.Kicked.TryGetValue(_cInfo.playerId, out _dateTime);
+                        TimeSpan varTime = DateTime.Now - _dateTime;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        int _timepassed = (int)fractionalMinutes;
+                        if (_timepassed <= 5)
                         {
-                            DateTime _dateTime;
-                            ReservedSlots.Kicked.TryGetValue(_cInfo.playerId, out _dateTime);
-                            TimeSpan varTime = DateTime.Now - _dateTime;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
-                            if (_timepassed <= 5)
+                            int _timeleft = 5 - _timepassed;
+                            string _phrase22;
+                            if (!Phrases.Dict.TryGetValue(22, out _phrase22))
                             {
-                                int _timeleft = 5 - _timepassed;
-                                string _phrase22;
-                                if (!Phrases.Dict.TryGetValue(22, out _phrase22))
-                                {
-                                    _phrase22 = "Sorry {PlayerName} you have reached the max session time. Please wait {TimeRemaining} minutes before rejoining.";
-                                }
-                                _phrase22 = _phrase22.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase22 = _phrase22.Replace("{TimeRemaining}", _timeleft.ToString());
-                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase22), (ClientInfo)null);
+                                _phrase22 = "Sorry {PlayerName} you have reached the max session time. Please wait {TimeRemaining} minutes before rejoining.";
                             }
-                            else
-                            {
-                                ReservedSlots.Kicked.Remove(_cInfo.playerId);
-                                ReservedSlots.CheckReservedSlot(_cInfo);
-                            }
+                            _phrase22 = _phrase22.Replace("{PlayerName}", _cInfo.playerName);
+                            _phrase22 = _phrase22.Replace("{TimeRemaining}", _timeleft.ToString());
+                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase22), (ClientInfo)null);
                         }
                         else
                         {
-                            ReservedSlots.CheckReservedSlot(_cInfo);
+                            ReservedSlots.Kicked.Remove(_cInfo.playerId);
+                            ReservedSlots.PlayerCount();
                         }
+                    }
+                    else
+                    {
+                        ReservedSlots.PlayerCount();
                     }
                     if (CredentialCheck.IsEnabled)
                     {
@@ -563,7 +560,7 @@ namespace ServerTools
                     {
                         Travel.Flag.Remove(_cInfo.entityId);
                     }
-                    if (Wallet.IsEnabled)
+                    if (Wallet.IsEnabled && Wallet.Session_Bonus > 0)
                     {
                         DateTime _time;
                         if (PlayerOperations.Session.TryGetValue(_cInfo.playerId, out _time))

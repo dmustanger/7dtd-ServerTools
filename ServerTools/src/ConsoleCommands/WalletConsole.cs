@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Xml;
 
 namespace ServerTools
@@ -11,23 +12,28 @@ namespace ServerTools
         {
             return "[ServerTools]- Enable, Disable, Add, Reduce, Check Wallet.";
         }
+
         public override string GetHelp()
         {
             return "Usage:\n" +
                    "  1. Wallet off\n" +
                    "  2. Wallet on\n" +
-                   "  3. Wallet <steamId> <value>\n" +
-                   "  4. Wallet <steamId>\n" +
+                   "  3. Wallet all <value>\n" +
+                   "  4. Wallet <steamId> <value>\n" +
+                   "  5. Wallet <steamId>\n" +
                    "1. Turn off wallet\n" +
                    "2. Turn on wallet\n" +
-                   "3. Add to or reduce a player's wallet value.\n" +
-                   "4. Check player's wallet value.\n";
+                   "3. Add to or reduce all online player's wallet value.\n" +
+                   "4. Add to or reduce a player's wallet value.\n" +
+                   "5. Check player's wallet value.\n";
                    
         }
+
         public override string[] GetCommands()
         {
             return new string[] { "st-Wallet", "wallet" };
         }
+
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
             try
@@ -42,14 +48,41 @@ namespace ServerTools
                     Wallet.IsEnabled = false;
                     LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Wallet has been set to off"));
-                    return;
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
                     Wallet.IsEnabled = true;
                     LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Wallet has been set to on"));
-                    return;
+                }
+                else if (_params[0].ToLower().Equals("all"))
+                {
+                    int _adjustCoins;
+                    if (!int.TryParse(_params[1], out _adjustCoins))
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Can not adjust wallet. Value {0} is invalid", _params[1]));
+                    }
+                    else
+                    {
+                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                        for (int i = 0; i < _cInfoList.Count; i++)
+                        {
+                            ClientInfo _cInfo = _cInfoList[i];
+                            if (_cInfo != null)
+                            {
+                                if (_adjustCoins >= 0)
+                                {
+                                    Wallet.AddCoinsToWallet(_cInfo.playerId, _adjustCoins);
+                                    SdtdConsole.Instance.Output(string.Format("Added {0} {1} to player id {2} wallet", _params[1], Wallet.Coin_Name, _params[0]));
+                                }
+                                else
+                                {
+                                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _adjustCoins);
+                                    SdtdConsole.Instance.Output(string.Format("Subtracted {0} {1} from player id {2} wallet", _params[1], Wallet.Coin_Name, _params[0]));
+                                }
+                            }
+                        }
+                    }
                 }
                 else if (_params.Count == 2)
                 {
@@ -67,7 +100,6 @@ namespace ServerTools
                     if (!int.TryParse(_params[1], out _adjustCoins))
                     {
                         SdtdConsole.Instance.Output(string.Format("Can not adjust wallet. Value {0} is invalid", _params[1]));
-                        return;
                     }
                     else
                     {

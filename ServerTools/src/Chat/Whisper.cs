@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Linq;
+﻿using System.Linq;
 
 namespace ServerTools
 {
@@ -18,10 +17,17 @@ namespace ServerTools
             {
                 _message = _message.Replace(Command121 + " ", "");
             }
-            string _nameId = _message.ElementAt(0).ToString();
-            string _msg = _message.ElementAt(1).ToString();
-            ClientInfo _cInfo1 = ConsoleHelper.ParseParamIdOrName(_nameId);
-            if (_cInfo1 == null)
+            Log.Out(string.Format("_message = {0}", _message));
+            string _nameId = _message.Split(' ').First();
+            _message = _message.Replace(_nameId, "");
+            Log.Out(string.Format("_nameId = {0}, _message {1}", _nameId, _message));
+            if (string.IsNullOrEmpty(_nameId) || string.IsNullOrEmpty(_message))
+            {
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + "Invalid name, id or message used to whisper" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                return;
+            }
+            ClientInfo _recipientInfo = ConsoleHelper.ParseParamIdOrName(_nameId);
+            if (_recipientInfo == null)
             {
                 string _phrase14;
                 if (!Phrases.Dict.TryGetValue(14, out _phrase14))
@@ -29,12 +35,12 @@ namespace ServerTools
                     _phrase14 = " player {TargetName} was not found.";
                 }
                 _phrase14 = _phrase14.Replace("{TargetName}", _nameId);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase14 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase14 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _msg + "[-]", _cInfo.entityId, _cInfo.playerName, EChatType.Whisper, null);
-                PersistentContainer.Instance.Players[_cInfo1.playerId].LastWhisper = _cInfo.playerId;
+                ChatHook.ChatMessage(_recipientInfo, LoadConfig.Chat_Response_Color + "(Whisper) " + _message + "[-]", -1, _cInfo.playerName, EChatType.Whisper, null);
+                PersistentContainer.Instance.Players[_recipientInfo.playerId].LastWhisper = _cInfo.playerId;
                 PersistentContainer.Instance.Save();
             }
         }
@@ -50,18 +56,17 @@ namespace ServerTools
                 _message = _message.Replace(Command123 + " ", "");
             }
             string _lastwhisper = PersistentContainer.Instance.Players[_cInfo.playerId].LastWhisper;
-            if (_lastwhisper == "")
+            if (string.IsNullOrEmpty(_lastwhisper))
             {
                 string _phrase15;
                 if (!Phrases.Dict.TryGetValue(15, out _phrase15))
                 {
                     _phrase15 = " no one has pm'd you.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase15 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase15 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-
                 ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_lastwhisper);
                 if (_cInfo2 == null)
                 {
@@ -70,11 +75,11 @@ namespace ServerTools
                     {
                         _phrase16 = " the player is not online.";
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase16 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase16 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, _cInfo.playerName, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + "(Whisper) " + _message + "[-]", -1, _cInfo.playerName, EChatType.Whisper, null);
                     PersistentContainer.Instance.Players[_cInfo2.playerId].LastWhisper = _cInfo.playerId;
                     PersistentContainer.Instance.Save();
                 }

@@ -98,7 +98,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        _itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, min, max, true, null, 1);
+                        _itemValue = new ItemValue(ItemClass.GetItem(_params[1]).type, min, max, false, null, 1);
                     }
                     if (_params[0].ToLower() == "all")
                     {

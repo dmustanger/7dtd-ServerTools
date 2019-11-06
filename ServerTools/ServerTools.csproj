@@ -128,6 +128,7 @@
     <Compile Include="src\Event\Event.cs" />
     <Compile Include="src\Functions\LoadProcess.cs" />
     <Compile Include="src\Functions\LoadTriggers.cs" />
+    <Compile Include="src\NetPackage\RemoveItems\RemoveItems.cs" />
     <Compile Include="src\PersistantOperations\PlayerOperations.cs" />
     <Compile Include="src\PersistentData\PersistentContainer.cs" />
     <Compile Include="src\PersistentData\PersistentPlayer.cs" />
@@ -242,11 +243,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="7dtd-server-fixes, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\7dtd-binaries\7dtd-server-fixes.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\7dtd-binaries\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>

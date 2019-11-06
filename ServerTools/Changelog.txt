@@ -1,5 +1,23 @@
 ﻿CHANGELOG
 
+18.1.3
+Built using Alpha 18.1 experimental assets
+Functioning with 18.0 stable and 18.1 experimental
+
+Added console command wallet all. Adjusts all online player wallets at the same time
+Fixed using player id in /claninvite to invite players to a clan
+Fixed chat command /market causing stack overflow when command cost was above 0
+Fixed and improved code for Bank deposit and withdrawl
+Fixed Player_Log format and added cosmetic item mods
+Fixed Whisper tool not working. Use the player name or id
+Changed Custom_Command permissions. Each command can turn on or off permission via the xml
+Changed code for Player_Logs improving it and ST no longer needs Allocs Fixes
+Changed Bank tool to no longer have a limit
+Changed Reserved_Slots system to avoid kicking too many people and function better
+Changed code for Auction_Box to clean it up. Takes item from first slot of secure loot
+Removed Reserved_Check option and corresponding chat command /reserved
+Removed phrase 582
+
 18.1.2
 Built using Alpha 18.1 experimental assets
 Functioning with 18.0 stable and 18.1 experimental

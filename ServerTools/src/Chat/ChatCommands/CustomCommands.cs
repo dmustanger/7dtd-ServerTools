@@ -87,6 +87,15 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Custom Commands entry because of missing a Hidden attribute: {0}", subChild.OuterXml));
                             continue;
                         }
+                        bool _boolTest = false;
+                        if (!_line.HasAttribute("Permission"))
+                        {
+                            if (!bool.TryParse(_line.GetAttribute("Permission"), out _boolTest))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Custom Commands entry because of invalid (True/False) value for 'Permission' attribute: {0}", subChild.OuterXml));
+                                continue;
+                            }
+                        }
                         int _delay = 0;
                         if (_line.HasAttribute("DelayBetweenUses"))
                         {
@@ -112,9 +121,10 @@ namespace ServerTools
                             }
                         }
                         string _trigger = _line.GetAttribute("Trigger");
-                        string _response1 = _line.GetAttribute("Response");
+                        string _response = _line.GetAttribute("Response");
                         string _hidden = _line.GetAttribute("Hidden");
-                        string[] _s = { _response1, _hidden };
+                        string _permission = _line.GetAttribute("Permission");
+                        string[] _s = { _response, _hidden, _permission };
                         int[] _c = { _number, _delay, _cost };
                         if (!Dict.ContainsKey(_trigger))
                         {
@@ -153,32 +163,32 @@ namespace ServerTools
                         int[] _value;
                         if (Dict1.TryGetValue(kvp.Key, out _value))
                         {
-                            sw.WriteLine(string.Format("        <Command Number=\"{0}\" Trigger=\"{1}\" Response=\"{2}\" DelayBetweenUses=\"{3}\" Hidden=\"{4}\" Cost=\"{5}\" />", _value[0], kvp.Key, kvp.Value[0], _value[1], kvp.Value[1], _value[2]));
+                            sw.WriteLine(string.Format("        <Command Number=\"{0}\" Trigger=\"{1}\" Response=\"{2}\" DelayBetweenUses=\"{3}\" Hidden=\"{4}\" Permission=\"{5}\" Cost=\"{6}\" />", _value[0], kvp.Key, kvp.Value[0], _value[1], kvp.Value[1], kvp.Value[2], _value[2]));
                         }
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <Command Number=\"1\" Trigger=\"help\" Response=\"global Type " + ChatHook.Command_Private + Command15 + " for a list of chat commands.\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"2\" Trigger=\"info\" Response=\"global Server Info: \" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"3\" Trigger=\"rules\" Response=\"whisper Visit YourSiteHere to see the rules.\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"whisper Visit YourSiteHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"whisper The Teamspeak3 info is YourInfoHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"6\" Trigger=\"spawnz\" Response=\"ser {EntityId} 40 @ 4 11 14 ^ whisper Zombies have spawn around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"7\" Trigger=\"discord\" Response=\"whisper The discord channel is ...\" DelayBetweenUses=\"20\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"8\" Trigger=\"cc8\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"9\" Trigger=\"cc9\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"10\" Trigger=\"cc10\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"11\" Trigger=\"cc11\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"12\" Trigger=\"cc12\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"13\" Trigger=\"cc13\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"14\" Trigger=\"cc14\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"15\" Trigger=\"cc15\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"16\" Trigger=\"cc16\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"17\" Trigger=\"cc17\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"18\" Trigger=\"cc18\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"19\" Trigger=\"cc19\" Response=\"First command ^ Second command ^ Third Command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"20\" Trigger=\"cc20\" Response=\"First command ^ Second command ^ Third Command\" DelayBetweenUses=\"0\" Hidden=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"1\" Trigger=\"help\" Response=\"global Type " + ChatHook.Command_Private + Command15 + " for a list of chat commands.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"2\" Trigger=\"info\" Response=\"global Server Info: \" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"3\" Trigger=\"rules\" Response=\"whisper Visit YourSiteHere to see the rules.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"4\" Trigger=\"website\" Response =\"whisper Visit YourSiteHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"5\" Trigger=\"teamspeak\" Response=\"whisper The Teamspeak3 info is YourInfoHere.\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"6\" Trigger=\"spawnz\" Response=\"ser {EntityId} 40 @ 4 11 14 ^ whisper Zombies have spawn around you.\" DelayBetweenUses=\"60\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"7\" Trigger=\"discord\" Response=\"whisper The discord channel is ...\" DelayBetweenUses=\"20\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"8\" Trigger=\"cc8\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"9\" Trigger=\"cc9\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"10\" Trigger=\"cc10\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"11\" Trigger=\"cc11\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"12\" Trigger=\"cc12\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"13\" Trigger=\"cc13\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"14\" Trigger=\"cc14\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"15\" Trigger=\"cc15\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"16\" Trigger=\"cc16\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"17\" Trigger=\"cc17\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"18\" Trigger=\"cc18\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"19\" Trigger=\"cc19\" Response=\"First command ^ Second command ^ Third Command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"20\" Trigger=\"cc20\" Response=\"First command ^ Second command ^ Third Command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
                 }
                 sw.WriteLine("    </Commands>");
                 sw.WriteLine("</CustomCommands>");
@@ -270,10 +280,6 @@ namespace ServerTools
             if (VoteReward.IsEnabled)
             {
                 _commands_2 = string.Format("{0} {1}{2}", _commands_2, ChatHook.Command_Private, VoteReward.Command46);
-            }
-            if (ReservedSlots.Reserved_Check)
-            {
-                _commands_2 = string.Format("{0} {1}{2}", _commands_2, ChatHook.Command_Private, ReservedSlots.Command45);
             }
             if (AutoShutdown.IsEnabled)
             {
@@ -504,102 +510,106 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo, string _message)
         {
-            int[] _c;
-            if (Dict1.TryGetValue(_message, out _c))
+            string[] _c;
+            if (Dict.TryGetValue(_message, out _c))
             {
-                if (_c[0] > 20 || _c[1] <= 0)
+                int[] _c1;
+                if (Dict1.TryGetValue(_message, out _c1))
                 {
-                    Permission(_cInfo, _message, _c);
-                }
-                else
-                {
-                    DateTime _lastUse = DateTime.Now;
-                    if (_c[0] == 1)
+                    if (_c1[0] > 20 || _c1[1] <= 0)
                     {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand1;
+                        Permission(_cInfo, _message, _c, _c1);
                     }
-                    else if (_c[0] == 2)
+                    else
                     {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand2;
+                        DateTime _lastUse = DateTime.Now;
+                        if (_c1[0] == 1)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand1;
+                        }
+                        else if (_c1[0] == 2)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand2;
+                        }
+                        else if (_c1[0] == 3)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand3;
+                        }
+                        else if (_c1[0] == 4)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand4;
+                        }
+                        else if (_c1[0] == 5)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand5;
+                        }
+                        else if (_c1[0] == 6)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand6;
+                        }
+                        else if (_c1[0] == 7)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand7;
+                        }
+                        else if (_c1[0] == 8)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand8;
+                        }
+                        else if (_c1[0] == 9)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand9;
+                        }
+                        else if (_c1[0] == 10)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand10;
+                        }
+                        else if (_c1[0] == 11)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand11;
+                        }
+                        else if (_c1[0] == 12)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand12;
+                        }
+                        else if (_c1[0] == 13)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand13;
+                        }
+                        else if (_c1[0] == 14)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand14;
+                        }
+                        else if (_c1[0] == 15)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand15;
+                        }
+                        else if (_c1[0] == 16)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand16;
+                        }
+                        else if (_c1[0] == 17)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand17;
+                        }
+                        else if (_c1[0] == 18)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand18;
+                        }
+                        else if (_c1[0] == 19)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand19;
+                        }
+                        else if (_c1[0] == 20)
+                        {
+                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand20;
+                        }
+                        Delay(_cInfo, _message, _c, _c1, _lastUse);
                     }
-                    else if (_c[0] == 3)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand3;
-                    }
-                    else if (_c[0] == 4)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand4;
-                    }
-                    else if (_c[0] == 5)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand5;
-                    }
-                    else if (_c[0] == 6)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand6;
-                    }
-                    else if (_c[0] == 7)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand7;
-                    }
-                    else if (_c[0] == 8)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand8;
-                    }
-                    else if (_c[0] == 9)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand9;
-                    }
-                    else if (_c[0] == 10)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand10;
-                    }
-                    else if (_c[0] == 11)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand11;
-                    }
-                    else if (_c[0] == 12)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand12;
-                    }
-                    else if (_c[0] == 13)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand13;
-                    }
-                    else if (_c[0] == 14)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand14;
-                    }
-                    else if (_c[0] == 15)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand15;
-                    }
-                    else if (_c[0] == 16)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand16;
-                    }
-                    else if (_c[0] == 17)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand17;
-                    }
-                    else if (_c[0] == 18)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand18;
-                    }
-                    else if (_c[0] == 19)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand19;
-                    }
-                    else if (_c[0] == 20)
-                    {
-                        _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand20;
-                    }
-                    Delay(_cInfo, _message, _c, _lastUse);
                 }
             }
         }
 
-        public static void Delay(ClientInfo _cInfo, string _message, int[] _c, DateTime _lastUse)
+        public static void Delay(ClientInfo _cInfo, string _message, string[] _c, int[] _c1, DateTime _lastUse)
         {
             TimeSpan varTime = DateTime.Now - _lastUse;
             double fractionalMinutes = varTime.TotalMinutes;
@@ -612,20 +622,20 @@ namespace ServerTools
                     ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
                     if (DateTime.Now < _dt)
                     {
-                        int _newDelay = _c[1] / 2;
-                        TimePass(_cInfo, _message, _timePassed, _newDelay, _c);
+                        int _newDelay = _c1[1] / 2;
+                        TimePass(_cInfo, _message, _timePassed, _newDelay, _c, _c1);
                         return;
                     }
                 }
             }
-            TimePass(_cInfo, _message, _timePassed, _c[1], _c);
+            TimePass(_cInfo, _message, _timePassed, _c1[1], _c, _c1);
         }
 
-        public static void TimePass(ClientInfo _cInfo, string _message, int _timePassed, int _delay, int[] _c)
+        public static void TimePass(ClientInfo _cInfo, string _message, int _timePassed, int _delay, string[] _c, int[] _c1)
         {
             if (_timePassed >= _delay)
             {
-                Permission(_cInfo, _message, _c);
+                Permission(_cInfo, _message, _c, _c1);
             }
             else
             {
@@ -649,34 +659,41 @@ namespace ServerTools
             ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase616 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
-        public static void Permission(ClientInfo _cInfo, string _message, int[] _c)
+        public static void Permission(ClientInfo _cInfo, string _message, string[] _c, int[] _c1)
         {
-            string[] _command = { _message };
-            if (GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo.playerId))
+            if (_c[2].ToLower() == "true")
             {
-                CommandCost(_cInfo, _message, _c);
+                string[] _command = { _message };
+                if (GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo.playerId))
+                {
+                    CommandCost(_cInfo, _message, _c1);
+                }
+                else
+                {
+                    string _phrase827;
+                    if (!Phrases.Dict.TryGetValue(827, out _phrase827))
+                    {
+                        _phrase827 = " you do not have permission to use {Command}.";
+                    }
+                    _phrase827 = _phrase827.Replace("{Command}", _message);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase827 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
             }
             else
             {
-                string _phrase827;
-                if (!Phrases.Dict.TryGetValue(827, out _phrase827))
-                {
-                    _phrase827 = " you do not have permission to use {Command}.";
-                }
-                _phrase827 = _phrase827.Replace("{Command}", _message);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase827 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                CommandCost(_cInfo, _message, _c1);
             }
         }
 
-        public static void CommandCost(ClientInfo _cInfo, string _message, int[] _c)
+        public static void CommandCost(ClientInfo _cInfo, string _message, int[] _c1)
         {
-            if (Wallet.IsEnabled && _c[2] > 0)
+            if (Wallet.IsEnabled && _c1[2] > 0)
             {
                 int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
-                if (_currentCoins >= _c[2])
+                if (_currentCoins >= _c1[2])
                 {
-                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _c[2]);
-                    CommandExecute(_cInfo, _message, _c);
+                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _c1[2]);
+                    CommandExecute(_cInfo, _message, _c1);
                 }
                 else
                 {
@@ -691,91 +708,91 @@ namespace ServerTools
             }
             else
             {
-                CommandExecute(_cInfo, _message, _c);
+                CommandExecute(_cInfo, _message, _c1);
             }
         }
 
-        public static void CommandExecute(ClientInfo _cInfo, string _message, int[] _c)
+        public static void CommandExecute(ClientInfo _cInfo, string _message, int[] _c1)
         {
-            if (_c[0] < 21 && _c[1] > 0)
+            if (_c1[0] < 21 && _c1[1] > 0)
             {
-                if (_c[0] == 1)
+                if (_c1[0] == 1)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand1 = DateTime.Now;
                 }
-                else if (_c[0] == 2)
+                else if (_c1[0] == 2)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand2 = DateTime.Now;
                 }
-                else if (_c[0] == 3)
+                else if (_c1[0] == 3)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand3 = DateTime.Now;
                 }
-                else if (_c[0] == 4)
+                else if (_c1[0] == 4)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand4 = DateTime.Now;
                 }
-                else if (_c[0] == 5)
+                else if (_c1[0] == 5)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand5 = DateTime.Now;
                 }
-                else if (_c[0] == 6)
+                else if (_c1[0] == 6)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand6 = DateTime.Now;
                 }
-                else if (_c[0] == 7)
+                else if (_c1[0] == 7)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand7 = DateTime.Now;
                 }
-                else if (_c[0] == 8)
+                else if (_c1[0] == 8)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand8 = DateTime.Now;
                 }
-                else if (_c[0] == 9)
+                else if (_c1[0] == 9)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand9 = DateTime.Now;
                 }
-                else if (_c[0] == 10)
+                else if (_c1[0] == 10)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand10 = DateTime.Now;
                 }
-                else if (_c[0] == 11)
+                else if (_c1[0] == 11)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand11 = DateTime.Now;
                 }
-                else if (_c[0] == 12)
+                else if (_c1[0] == 12)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand12 = DateTime.Now;
                 }
-                else if (_c[0] == 13)
+                else if (_c1[0] == 13)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand13 = DateTime.Now;
                 }
-                else if (_c[0] == 14)
+                else if (_c1[0] == 14)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand14 = DateTime.Now;
                 }
-                else if (_c[0] == 15)
+                else if (_c1[0] == 15)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand15 = DateTime.Now;
                 }
-                else if (_c[0] == 16)
+                else if (_c1[0] == 16)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand16 = DateTime.Now;
                 }
-                else if (_c[0] == 17)
+                else if (_c1[0] == 17)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand17 = DateTime.Now;
                 }
-                else if (_c[0] == 18)
+                else if (_c1[0] == 18)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand18 = DateTime.Now;
                 }
-                else if (_c[0] == 19)
+                else if (_c1[0] == 19)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand19 = DateTime.Now;
                 }
-                else if (_c[0] == 20)
+                else if (_c1[0] == 20)
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand20 = DateTime.Now;
                 }

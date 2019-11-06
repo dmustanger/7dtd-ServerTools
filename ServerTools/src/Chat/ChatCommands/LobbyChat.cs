@@ -74,7 +74,7 @@ namespace ServerTools
                 _phrase550 = _phrase550.Replace("{TimeRemaining}", _timeleft.ToString());
                 _phrase550 = _phrase550.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase550 = _phrase550.Replace("{Command88}", Command88);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase550 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase550 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -93,7 +93,7 @@ namespace ServerTools
                     _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -101,28 +101,28 @@ namespace ServerTools
         {
             if (SetLobby.Lobby_Position != "0,0,0" || SetLobby.Lobby_Position != "0 0 0" || SetLobby.Lobby_Position != "")
             {
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                if (PvP_Check)
+                {
+                    if (Teleportation.PCheck(_cInfo, _player))
+                    {
+                        return;
+                    }
+                }
+                if (Zombie_Check)
+                {
+                    if (Teleportation.ZCheck(_cInfo, _player))
+                    {
+                        return;
+                    }
+                }
                 int x, y, z;
                 if (Return)
                 {
-                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                     Vector3 _position = _player.GetPosition();
                     x = (int)_position.x;
                     y = (int)_position.y;
                     z = (int)_position.z;
-                    if (PvP_Check)
-                    {
-                        if (Teleportation.PCheck(_cInfo, _player))
-                        {
-                            return;
-                        }
-                    }
-                    if (Zombie_Check)
-                    {
-                        if (Teleportation.ZCheck(_cInfo, _player))
-                        {
-                            return;
-                        }
-                    }
                     string _pposition = x + "," + y + "," + z;
                     LobbyPlayers.Add(_cInfo.entityId);
                     PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = _pposition;
@@ -133,7 +133,7 @@ namespace ServerTools
                     }
                     _phrase552 = _phrase552.Replace("{CommandPrivate}", ChatHook.Command_Private);
                     _phrase552 = _phrase552.Replace("{Command53}", Command53);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase552 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase552 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 string[] _cords = { };
                 if (SetLobby.Lobby_Position.Contains(","))
@@ -156,7 +156,7 @@ namespace ServerTools
                 int.TryParse(_cords[0], out x);
                 int.TryParse(_cords[1], out y);
                 int.TryParse(_cords[2], out z);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase553 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase553 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
@@ -172,7 +172,7 @@ namespace ServerTools
                 {
                     _phrase554 = " the lobby position is not set.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase554 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase554 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -214,7 +214,7 @@ namespace ServerTools
                     {
                         _phrase555 = " sent you back to your saved location.";
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase555 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase555 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -223,12 +223,12 @@ namespace ServerTools
                     {
                         _phrase556 = " you are outside the lobby. Get inside it and try again.";
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase556 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase556 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " you have no saved return point[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " you have no saved return point[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }
