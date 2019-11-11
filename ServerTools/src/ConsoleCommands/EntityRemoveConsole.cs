@@ -7,19 +7,19 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Removes a entity from the game";
+            return "[ServerTools]-Removes an entity from the game";
         }
 
         public override string GetHelp()
         {
-            return "Removes a entity from the game.\n" +
-                "Usage: entityremove <entityId>\n" +
-                "Usage; er <entityid>";
+            return "Removes an entity from the game.\n" +
+                "Usage: EntityRemove <EntityId>\n" +
+                "Usage; er <EntityId>";
         }
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-EntityRemove", "entityremove", "er" };
+            return new string[] { "st-EntityRemove", "entityremove", "st-er", "er" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

@@ -80,7 +80,7 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo)
         {
-            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
+            int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
             if (_currentCoins >= Command_Cost)
             {
                 TeleportPlayer(_cInfo);

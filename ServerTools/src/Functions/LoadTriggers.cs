@@ -160,7 +160,7 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"42\" default=\"clancommands\" replacement=\"clancommands\" />");
                     sw.WriteLine("        <trigger number=\"43\" default=\"clanchat\" replacement=\"clanchat\" />");
                     sw.WriteLine("        <trigger number=\"44\" default=\"clanrename\" replacement=\"clanrename\" />");
-                    sw.WriteLine("        <trigger number=\"45\" default=\"\" replacement=\"\" />");
+                    sw.WriteLine("        <trigger number=\"45\" default=\"clanrequest\" replacement=\"clanrequest\" />");
                     sw.WriteLine("        <trigger number=\"46\" default=\"reward\" replacement=\"reward\" />");
                     sw.WriteLine("        <trigger number=\"47\" default=\"shutdown\" replacement=\"shutdown\" />");
                     sw.WriteLine("        <trigger number=\"48\" default=\"adminlist\" replacement=\"adminlist\" />");
@@ -184,7 +184,7 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"66\" default=\"restartvote\" replacement=\"restartvote\" />");
                     sw.WriteLine("        <trigger number=\"67\" default=\"mutevote\" replacement=\"mutevote\" />");
                     sw.WriteLine("        <trigger number=\"68\" default=\"kickvote\" replacement=\"kickvote\" />");
-                    sw.WriteLine("        <trigger number=\"69\" default=\"\" replacement=\"\" />");
+                    sw.WriteLine("        <trigger number=\"69\" default=\"reserved\" replacement=\"reserved\" />");
                     sw.WriteLine("        <trigger number=\"70\" default=\"yes\" replacement=\"yes\" />");
                     sw.WriteLine("        <trigger number=\"71\" default=\"auction\" replacement=\"auction\" />");
                     sw.WriteLine("        <trigger number=\"72\" default=\"auction cancel\" replacement=\"auction cancel\" />");
@@ -454,7 +454,7 @@ namespace ServerTools
                     }
                     if (kvp.Key == 45)
                     {
-                        
+                        ClanManager.Command45 = kvp.Value[1];
                     }
                     if (kvp.Key == 46)
                     {
@@ -550,7 +550,7 @@ namespace ServerTools
                     }
                     if (kvp.Key == 69)
                     {
-
+                        ReservedSlots.Command69 = kvp.Value[1];
                     }
                     if (kvp.Key == 70)
                     {

@@ -1,5 +1,47 @@
 ﻿CHANGELOG
 
+18.1.4
+Built using Alpha 18.1 experimental assets
+Functioning with 18.0 stable and 18.1 experimental
+
+Added Message_Color tool. Controls the color of general messages in chat
+Added Poll tool to the config
+Added option to Chat_Flood_Protection called Wait_Time. The time players wait after spamming
+Added option to Bank called Player_Transfers. Allows player transfers between bank accounts
+Added chat command /clanrequest. Sends a request to join a clan. Only clan owners can accept
+Added chat command /reserved to display the time remaining
+Added trigger clanrequest to slot #45
+Added trigger reserved to slot #69
+Added option to Lobby called Donor_Only. Locks the command to donors
+Added option to Market called Donor_Only. Locks the command to donors
+Added Bicycles, MotorBikes, Jeeps, Gyros as options to Entity_Cleanup
+Added Set_Home_Extended to the config
+Added Wallet_Extended to the config
+Added console commands to delete a clan, a player from a clan or show a list of clans
+Added console commands to cancel, clear an auction or show the list
+Added console command EntityTeleport. Can not be used on players or bags
+Added console command EntityRotate. Can not be used on players. Entity rotates away from the user
+Fixed console command to check a player's wallet value
+Fixed console command to reset player profiles
+Fixed console command response for mute list
+Fixed console command vote reset
+Fixed Auction_Box inserting improper item names, failing to allow cancel or sale later
+Fixed Bank going in to negative values
+Fixed Reserved Slots process
+Fixed Bank bug on deposit
+Fixed Error in New Player que process
+Changed Zone tool. Use multiple commands in the response field separated by ^
+Changed tool name Normal_Player_Name_Coloring to Normal_Player_Chat_Prefix
+Changed Auto_Shutdown to also check for dusk on the day of the bloodmoon and wait if it is
+Changed Weather_Vote tool. Players can only start a new vote once an hour
+Updated phrase #22,970
+Removed option Days_Until_Horde from Auto_Shutdown
+Removed option Days_Until_Horde from Day7
+Removed Hatch_Elevator tool. Redundant after game updates
+Removed View_Distances tool
+Removed Session tool
+Removed phrase #581
+
 18.1.3
 Built using Alpha 18.1 experimental assets
 Functioning with 18.0 stable and 18.1 experimental

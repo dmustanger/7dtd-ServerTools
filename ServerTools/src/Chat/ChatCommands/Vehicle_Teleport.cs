@@ -107,8 +107,7 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo, Entity _player, int _vehicle)
         {
-            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
-            if (_currentCoins >= Command_Cost)
+            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
             {
                 TeleVehicle(_cInfo, _player, _vehicle);
             }

@@ -165,8 +165,7 @@ namespace ServerTools
         {
             if (Wallet.IsEnabled && Command_Cost >= 1)
             {
-                int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
-                if (_currentCoins >= Command_Cost)
+                if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
                 {
                     Exec(_cInfo, _waypoint);
                 }
@@ -314,13 +313,13 @@ namespace ServerTools
             }
             else
             {
-                string _phrase581;
-                if (!Phrases.Dict.TryGetValue(581, out _phrase581))
+                string _phrase579;
+                if (!Phrases.Dict.TryGetValue(579, out _phrase579))
                 {
-                    _phrase581 = " you have a maximum {Count} waypoints.";
+                    _phrase579 = " you have a maximum {Count} waypoints.";
                 }
-                _phrase581 = _phrase581.Replace("{Count}", _waypointTotal.ToString());
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase581 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                _phrase579 = _phrase579.Replace("{Count}", _waypointTotal.ToString());
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase579 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -451,8 +450,7 @@ namespace ServerTools
 
         private static void FCommandCost(ClientInfo _cInfo, string _waypoint, EntityPlayer _player)
         {
-            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
-            if (_currentCoins >= Command_Cost)
+            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
             {
                 FExec(_cInfo, _waypoint, _player);
             }

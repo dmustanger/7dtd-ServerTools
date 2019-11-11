@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using UnityEngine;
 
@@ -8,13 +7,21 @@ namespace ServerTools
 {
     class LobbyChat
     {
-        public static bool IsEnabled = false, Return = false, PvP_Check = false, Zombie_Check = false;
+        public static bool IsEnabled = false, Return = false, PvP_Check = false, Zombie_Check = false, Donor_Only = false;
         public static int Delay_Between_Uses = 5, Lobby_Size = 25, Command_Cost = 0;
-        public static string Command53 = "lobbyback", Command54 = "lback", Command88 = "lobby";
+        public static string Command53 = "lobbyback", Command54 = "lback", Command87 = "setlobby", Command88 = "lobby";
         public static List<int> LobbyPlayers = new List<int>();
 
         public static void Exec(ClientInfo _cInfo)
         {
+            if (Donor_Only && ReservedSlots.IsEnabled)
+            {
+                if (!ReservedSlots.DonorCheck(_cInfo))
+                {
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " this command is locked to donors only" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    return;
+                }
+            }
             if (Delay_Between_Uses < 1)
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
@@ -49,7 +56,7 @@ namespace ServerTools
             }
         }
 
-        public static void Time(ClientInfo _cInfo, int _timepassed, int _delay)
+        private static void Time(ClientInfo _cInfo, int _timepassed, int _delay)
         {
             if (_timepassed >= _delay)
             {
@@ -78,10 +85,9 @@ namespace ServerTools
             }
         }
 
-        public static void CommandCost(ClientInfo _cInfo)
+        private static void CommandCost(ClientInfo _cInfo)
         {
-            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
-            if (_currentCoins >= Command_Cost)
+            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
             {
                 LobbyTele(_cInfo);
             }
@@ -97,7 +103,7 @@ namespace ServerTools
             }
         }
 
-        public static void LobbyTele(ClientInfo _cInfo)
+        private static void LobbyTele(ClientInfo _cInfo)
         {
             if (SetLobby.Lobby_Position != "0,0,0" || SetLobby.Lobby_Position != "0 0 0" || SetLobby.Lobby_Position != "")
             {

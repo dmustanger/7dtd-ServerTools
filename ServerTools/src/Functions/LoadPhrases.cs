@@ -231,7 +231,7 @@ namespace ServerTools
                 string _phrase22;
                 if (!Dict.TryGetValue(22, out _phrase22))
                 {
-                    _phrase22 = "Sorry {PlayerName} you have reached the max session time. Please wait {TimeRemaining} minutes before rejoining.";
+                    _phrase22 = "Sorry {PlayerName} you have been kicked with the longest session time. Please wait {TimeRemaining} minutes before rejoining.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"22\" Phrase=\"{0}\" />", _phrase22));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -849,12 +849,7 @@ namespace ServerTools
                     _phrase580 = " this is not a valid waypoint.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"580\" Phrase=\"{0}\" />", _phrase580));
-                string _phrase581;
-                if (!Dict.TryGetValue(581, out _phrase581))
-                {
-                    _phrase581 = " you have a maximum {Count} waypoints.";
-                }
-                sw.WriteLine(string.Format("        <Phrase id=\"581\" Phrase=\"{0}\" />", _phrase581));
+                //_phrase581 available
                 //_phrase582 available
                 string _phrase583;
                 if (!Dict.TryGetValue(583, out _phrase583))
@@ -1799,7 +1794,7 @@ namespace ServerTools
                 string _phrase970;
                 if (!Dict.TryGetValue(970, out _phrase970))
                 {
-                    _phrase970 = " you have sent too many messages in one minute. Wait 60 seconds.";
+                    _phrase970 = " you have sent too many messages in too short a time. Your chat function is locked temporarily.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"970\" Phrase=\"{0}\" />", _phrase970));
                 string _phrase971;

@@ -68,7 +68,7 @@ namespace ServerTools
                             ClientInfo _cInfo2 = ClientInfoList[i];
                             if (_cInfo2 != null)
                             {
-                                PersistentContainer.Instance.Players[_cInfo2.playerId].LastVote = DateTime.Now;
+                                PersistentContainer.Instance.Players[_cInfo2.playerId].LastVote = DateTime.Now.AddYears(-1);
                                 PersistentContainer.Instance.Save();
                                 SdtdConsole.Instance.Output(string.Format("Vote reward delay reset for {0}.", _cInfo2.playerName));
                             }
@@ -94,7 +94,7 @@ namespace ServerTools
                         ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                         if (_cInfo != null)
                         {
-                            PersistentContainer.Instance.Players[_cInfo.playerId].LastVote = DateTime.Now;
+                            PersistentContainer.Instance.Players[_cInfo.playerId].LastVote = DateTime.Now.AddYears(-1);
                             PersistentContainer.Instance.Save();
                             SdtdConsole.Instance.Output(string.Format("Vote reward delay reset for {0}.", _cInfo.playerName));
                         }

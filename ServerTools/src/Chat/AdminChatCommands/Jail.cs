@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using UnityEngine;
 
 namespace ServerTools
@@ -29,10 +28,9 @@ namespace ServerTools
             else
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                Vector3 _position = _player.GetPosition();
-                int x = (int)_position.x;
-                int y = (int)_position.y;
-                int z = (int)_position.z;
+                int x = (int)_player.position.x;
+                int y = (int)_player.position.y;
+                int z = (int)_player.position.z;
                 string _sposition = x + "," + y + "," + z;
                 Jail_Position = _sposition;
                 string _phrase502;

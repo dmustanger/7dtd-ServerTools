@@ -33,14 +33,14 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    ChatHook.Normal_Player_Name_Coloring = false;
+                    ChatHook.Normal_Player_Chat_Prefix = false;
                     LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Normal player coloring has been set to off"));
                     return;
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    ChatHook.Normal_Player_Name_Coloring = true;
+                    ChatHook.Normal_Player_Chat_Prefix = true;
                     LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Normal player coloring has been set to on"));
                     return;

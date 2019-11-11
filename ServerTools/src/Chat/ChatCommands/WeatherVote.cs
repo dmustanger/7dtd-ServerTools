@@ -9,43 +9,56 @@ namespace ServerTools
         public static int Players_Online = 5, Votes_Needed = 3;
         public static string Command62 = "weathervote", Command63 = "sun", Command64 = "rain", Command65 = "snow";
         private static string _weather = "";
-        public static List<int> sun = new List<int>();
-        public static List<int> rain = new List<int>();
-        public static List<int> snow = new List<int>();
+        public static List<int> Sun = new List<int>();
+        public static List<int> Rain = new List<int>();
+        public static List<int> Snow = new List<int>();
+        public static DateTime LastVote = new DateTime();
 
-        public static void CallForVote1(ClientInfo _cInfo)
+        public static void CallForVote(ClientInfo _cInfo)
         {
             if (!VoteOpen)
             {
-                int _playerCount = ConnectionManager.Instance.ClientCount();
-                if (_playerCount >= Players_Online)
+                DateTime _lastVote = PersistentContainer.Instance.LastWeather;
+                TimeSpan varTime = DateTime.Now - _lastVote;
+                double fractionalMinutes = varTime.TotalMinutes;
+                int _timepassed = (int)fractionalMinutes;
+                if (_timepassed >= 60)
                 {
-                    string _phrase611;
-                    if (!Phrases.Dict.TryGetValue(611, out _phrase611))
+                    int _playerCount = ConnectionManager.Instance.ClientCount();
+                    if (_playerCount >= Players_Online)
                     {
-                        _phrase611 = "A vote to change the weather has begun and will close in 60 seconds.";
+                        string _phrase611;
+                        if (!Phrases.Dict.TryGetValue(611, out _phrase611))
+                        {
+                            _phrase611 = "A vote to change the weather has begun and will close in 60 seconds.";
+                        }
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase611 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        string _phrase615;
+                        if (!Phrases.Dict.TryGetValue(615, out _phrase615))
+                        {
+                            _phrase615 = "Type {CommandPrivate}{Command63}, {CommandPrivate}{Command64} or {CommandPrivate}{Command65} to cast your vote.";
+                        }
+                        _phrase615 = _phrase615.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                        _phrase615 = _phrase615.Replace("{Command63}", Command63);
+                        _phrase615 = _phrase615.Replace("{Command64}", Command64);
+                        _phrase615 = _phrase615.Replace("{Command65}", Command65);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase615 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        VoteOpen = true;
                     }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase611 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    string _phrase615;
-                    if (!Phrases.Dict.TryGetValue(615, out _phrase615))
+                    else
                     {
-                        _phrase615 = "Type {CommandPrivate}{Command63}, {CommandPrivate}{Command64} or {CommandPrivate}{Command65} to cast your vote.";
+                        string _phrase933;
+                        if (!Phrases.Dict.TryGetValue(933, out _phrase933))
+                        {
+                            _phrase933 = " not enough players are online to start a weather vote.";
+                        }
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase933 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    _phrase615 = _phrase615.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                    _phrase615 = _phrase615.Replace("{Command63}", Command63);
-                    _phrase615 = _phrase615.Replace("{Command64}", Command64);
-                    _phrase615 = _phrase615.Replace("{Command65}", Command65);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase615 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    VoteOpen = true;
                 }
                 else
                 {
-                    string _phrase933;
-                    if (!Phrases.Dict.TryGetValue(933, out _phrase933))
-                    {
-                        _phrase933 = " not enough players are online to start a weather vote.";
-                    }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase933 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    int _timeleft = 60 - _timepassed;
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + "Wait thirty minutes before starting a new vote to change the weather. " + _timeleft + " minutes remaining." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -59,11 +72,11 @@ namespace ServerTools
             }
         }
 
-        public static void CallForVote2()
+        public static void ProcessWeatherVote()
         {
-            if (sun.Count + rain.Count + snow.Count >= Votes_Needed)
+            if (Sun.Count + Rain.Count + Snow.Count >= Votes_Needed)
             {
-                if (sun.Count > rain.Count && sun.Count > snow.Count)
+                if (Sun.Count > Rain.Count && Sun.Count > Snow.Count)
                 {
                     ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Clear skies ahead.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     SdtdConsole.Instance.ExecuteSync("weather rain 0", (ClientInfo)null);
@@ -74,7 +87,7 @@ namespace ServerTools
                     VoteOpen = false;
                     _weather = "sun";
                 }
-                if (rain.Count > sun.Count && rain.Count > snow.Count)
+                if (Rain.Count > Sun.Count && Rain.Count > Snow.Count)
                 {
                     Random rnd = new Random();
                     int _rndWeather = rnd.Next(1, 4);
@@ -98,7 +111,7 @@ namespace ServerTools
                     VoteOpen = false;
                     _weather = "rain";
                 }
-                if (snow.Count > sun.Count && snow.Count > rain.Count)
+                if (Snow.Count > Sun.Count && Snow.Count > Rain.Count)
                 {
                     Random rnd = new Random();
                     int _rndWeather = rnd.Next(1, 4);
@@ -122,7 +135,7 @@ namespace ServerTools
                     VoteOpen = false;
                     _weather = "snow";
                 }
-                if (sun.Count == 0 && rain.Count == 0 && snow.Count == 0)
+                if (Sun.Count == 0 && Rain.Count == 0 && Snow.Count == 0)
                 {
                     string _phrase612;
                     if (!Phrases.Dict.TryGetValue(612, out _phrase612))
@@ -130,7 +143,7 @@ namespace ServerTools
                         _phrase612 = "Weather vote complete, but no votes were cast. No changes were made.";
                     }
                     ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase612 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    sun.Clear(); rain.Clear(); snow.Clear();
+                    Sun.Clear(); Rain.Clear(); Snow.Clear();
                     VoteOpen = false;
                     _weather = "";
                 }
@@ -145,9 +158,9 @@ namespace ServerTools
                         }
                         _phrase613 = _phrase613.Replace("{Weather}", _weather.ToString());
                         ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase613 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                        sun.Clear(); rain.Clear(); snow.Clear();
+                        Sun.Clear(); Rain.Clear(); Snow.Clear();
                     }
-                    else if (sun.Count > 0 && rain.Count > 0 && snow.Count > 0)
+                    else if (Sun.Count > 0 && Rain.Count > 0 && Snow.Count > 0)
                     {
                         string _phrase614;
                         if (!Phrases.Dict.TryGetValue(614, out _phrase614))
@@ -155,11 +168,13 @@ namespace ServerTools
                             _phrase614 = "Weather vote was a tie. No changes were made.";
                         }
                         ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase614 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                        sun.Clear(); rain.Clear(); snow.Clear();
+                        Sun.Clear(); Rain.Clear(); Snow.Clear();
                     }
                     VoteOpen = false;
                     _weather = "";
                 }
+                PersistentContainer.Instance.LastWeather = DateTime.Now;
+                PersistentContainer.Instance.Save();
             }
             else
             {

@@ -11,6 +11,8 @@ namespace ServerTools
         private PersistentPlayers players;
         private static PersistentContainer instance;
 
+        private DateTime lastWeather;
+
         public PersistentPlayers Players
         {
             get
@@ -67,6 +69,18 @@ namespace ServerTools
                 }
             }
             return false;
+        }
+
+        public DateTime LastWeather
+        {
+            get
+            {
+                return lastWeather;
+            }
+            set
+            {
+                lastWeather = value;
+            }
         }
     }
 }

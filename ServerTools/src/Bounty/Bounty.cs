@@ -69,7 +69,7 @@ namespace ServerTools
                             {
                                 _cost = Minimum_Bounty;
                             }
-                            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
+                            int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
                             if (_currentCoins >= _cost)
                             {
                                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _cost);
@@ -102,7 +102,7 @@ namespace ServerTools
                     ClientInfo _cInfo1 = ConnectionManager.Instance.Clients.ForEntityId(_id);
                     if (_cInfo1 != null)
                     {
-                        int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
+                        int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
                         if (_currentCoins >= Minimum_Bounty)
                         {
                             Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Minimum_Bounty);

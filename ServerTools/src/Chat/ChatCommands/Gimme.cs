@@ -304,7 +304,7 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo)
         {
-            if (Wallet.GetCurrentCoins(_cInfo) >= Command_Cost)
+            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
             {
                 ZCheck(_cInfo);
             }

@@ -88,7 +88,7 @@ namespace ServerTools
                 {
                     if (_params[0].Length < 1 || _params[0].Length > 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not adjust wallet: Invalid Id {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("Can not adjust wallet: Invalid Id {0}", _params[0]));
                         return;
                     }
                     if (_params[1].Length < 1 || _params[1].Length > 5)
@@ -121,6 +121,21 @@ namespace ServerTools
                             SdtdConsole.Instance.Output(string.Format("Player id not found: {0}", _params[0]));
                         }
                     }
+                }
+                else if (_params.Count == 1)
+                {
+                    if (_params[0].Length < 1 || _params[0].Length > 17)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Can not check wallet value: Invalid Id {0}", _params[0]));
+                        return;
+                    }
+                    int _currentWallet = Wallet.GetCurrentCoins(_params[0]);
+                    string _playerName = PersistentContainer.Instance.Players[_params[0]].PlayerName;
+                    if (string.IsNullOrEmpty(_playerName))
+                    {
+                        _playerName = "Unknown";
+                    }
+                    SdtdConsole.Instance.Output(string.Format("Player with id {0}, named {1}, has a wallet value of: {2}", _params[0], _playerName, _currentWallet));
                 }
                 else
                 {

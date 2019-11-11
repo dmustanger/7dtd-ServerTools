@@ -67,8 +67,7 @@ namespace ServerTools
                     {
                         if (_lottoValue > 0)
                         {
-                            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
-                            if (_currentCoins >= _lottoValue)
+                            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= _lottoValue)
                             {
                                 OpenLotto = true;
                                 LottoValue = _lottoValue;
@@ -131,8 +130,7 @@ namespace ServerTools
         {
             if (OpenLotto)
             {
-                int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
-                if (_currentCoins >= LottoValue)
+                if (Wallet.GetCurrentCoins(_cInfo.playerId) >= LottoValue)
                 {
                     if (!LottoEntries.Contains(_cInfo))
                     {

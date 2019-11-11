@@ -9,6 +9,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Reduced_Delay = false, Admin_Slot = false;
         public static int Session_Time = 30, Admin_Level = 0;
+        public static string Command69 = "reserved";
         public static Dictionary<string, DateTime> Dict = new Dictionary<string, DateTime>();
         public static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
         public static Dictionary<string, DateTime> Kicked = new Dictionary<string, DateTime>();
@@ -174,7 +175,6 @@ namespace ServerTools
             if (_playerCount >= _maxPlayer)
             {
                 OpenSlot();
-                _operating = true;
             }
         }
 
@@ -182,42 +182,51 @@ namespace ServerTools
         {
             if (!_operating)
             {
-                List<string> _sessionList = new List<string>(PlayerOperations.Session.Keys);
-                for (int i = 0; i < _sessionList.Count; i++)
+                try
                 {
-                    string _player = _sessionList[i];
-                    ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_player);
-                    if (_cInfo != null)
+                    _operating = true;
+                    List<string> _sessionList = new List<string>(PlayerOperations.Session.Keys);
+                    for (int i = 0; i < _sessionList.Count; i++)
                     {
-                        AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                        if (Admin.PermissionLevel > Admin_Level)
+                        string _player = _sessionList[i];
+                        ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_player);
+                        if (_cInfo != null)
                         {
-                            continue;
-                        }
-                        if (Dict.ContainsKey(_cInfo.playerId))
-                        {
-                            DateTime _dt;
-                            Dict.TryGetValue(_cInfo.playerId, out _dt);
-                            if (DateTime.Now < _dt)
+                            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                            if (Admin.PermissionLevel <= Admin_Level)
                             {
                                 continue;
                             }
+                            else if (Dict.ContainsKey(_cInfo.playerId))
+                            {
+                                DateTime _dt;
+                                Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                if (DateTime.Now < _dt)
+                                {
+                                    continue;
+                                }
+                            }
+                            Time(_cInfo);
                         }
-                        Time(_cInfo);
                     }
+                    if (_playerToKick1 != null)
+                    {
+                        Kick(_playerToKick1);
+                    }
+                    else
+                    {
+                        Kick(_playerToKick2);
+                    }
+                    _longestTime = 0;
+                    _playerToKick1 = null;
+                    _playerToKick2 = null;
+                    _operating = false;
                 }
-                if (_playerToKick1 != null)
+                catch (Exception e)
                 {
-                    Kick(_playerToKick1);
+                    _operating = false;
+                    Log.Out(string.Format("[SERVERTOOLS] Error in Reserved Slots: {0}.", e.Message));
                 }
-                else
-                {
-                    Kick(_playerToKick2);
-                }
-                _longestTime = 0;
-                _playerToKick1 = null;
-                _playerToKick2 = null;
-                _operating = false;
             }
         }
 
@@ -254,6 +263,47 @@ namespace ServerTools
                 }
                 _phrase20 = _phrase20.Replace("{PlayerName}", _cInfo.playerName);
                 SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase20), (ClientInfo)null);
+            }
+        }
+
+        public static bool DonorCheck(ClientInfo _cInfo)
+        {
+            if (Dict.ContainsKey(_cInfo.playerId))
+            {
+                DateTime _dt;
+                Dict.TryGetValue(_cInfo.playerId, out _dt);
+                if (DateTime.Now < _dt)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static void ReservedStatus(ClientInfo _cInfo)
+        {
+            if (Dict.ContainsKey(_cInfo.playerId))
+            {
+                DateTime _dt;
+                if (Dict.TryGetValue(_cInfo.playerId, out _dt))
+                {
+                    if (DateTime.Now < _dt)
+                    {
+                        string _response = ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " your reserved status expires on {DateTime}.[-]";
+                        _response = _response.Replace("{DateTime}", _dt.ToString());
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                    else
+                    {
+                        string _response = ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " your reserved status has expired on {DateTime}.[-]";
+                        _response = _response.Replace("{DateTime}", _dt.ToString());
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                }
+            }
+            else
+            {
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have not donated. Expiration date unavailable.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

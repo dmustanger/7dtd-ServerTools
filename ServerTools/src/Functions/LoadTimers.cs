@@ -10,7 +10,7 @@ namespace ServerTools
             Shutdown_Delay = 60, Infoticker_Delay = 60, _sSC = 0, _sSCD = 0,
             Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0, _eventTime = 0;
         private static int timer1SecondInstanceCount, timerHalfSecondInstanceCount, _wV, _pSC, _b, _pL, _mC, _wSD, _iT, _rVS, _kV, _mV, _bT, _cC,
-            _rS, _rV, _eC, _wL, _rWT, _rE, _aSB, _wR, _nA, _jR, _h, _l, _eI, _eO, _zR, _nP, _sC, _tP, _fC;
+            _rS, _rV, _eC, _wL, _rWT, _rE, _autoShutdownBloodmoon, _autoShutdownBloodmoonOver, _wR, _nA, _jR, _h, _l, _eI, _eO, _zR, _nP, _sC, _tP, _fC;
         private static System.Timers.Timer t1 = new System.Timers.Timer();
         private static System.Timers.Timer t2 = new System.Timers.Timer();
 
@@ -79,10 +79,6 @@ namespace ServerTools
             {
                 Log.Out("God mode detector enabled");
             }
-            if (HatchElevator.IsEnabled)
-            {
-                Log.Out("Hatch elevator detector enabled");
-            }
             if (InventoryCheck.IsEnabled)
             {
                 Log.Out("Invalid item detector enabled");
@@ -118,7 +114,7 @@ namespace ServerTools
             {
                 Log.Out("Chat color and prefix enabled");
             }
-            if (ChatHook.Normal_Player_Name_Coloring)
+            if (ChatHook.Normal_Player_Chat_Prefix)
             {
                 Log.Out("Normal Player chat color and prefix enabled");
             }
@@ -376,10 +372,6 @@ namespace ServerTools
         {
             if (!StopServer.Shutdown)
             {
-                if (HatchElevator.IsEnabled)
-                {
-                    HatchElevator.AutoHatchCheck();
-                }
                 if (Jail.IsEnabled)
                 {
                     Jail.StatusCheck();
@@ -409,7 +401,7 @@ namespace ServerTools
                         if (_wV >= 60)
                         {
                             _wV = 0;
-                            WeatherVote.CallForVote2();
+                            WeatherVote.ProcessWeatherVote();
                         }
                     }
                 }
@@ -540,7 +532,7 @@ namespace ServerTools
                     if (_rE >= 5)
                     {
                         _rE = 0;
-                        EntityCleanup.ZombieCheck();
+                        Zones.HostileCheck();
                     }
                 }
                 else
@@ -703,13 +695,13 @@ namespace ServerTools
                 {
                     _wSD = 0;
                 }
-                if (AutoShutdown.IsEnabled && !AutoShutdown.Bloodmoon && !StopServer.stopServerCountingDown)
+                if (AutoShutdown.IsEnabled && !AutoShutdown.Bloodmoon && !AutoShutdown.BloodmoonOver && !StopServer.stopServerCountingDown)
                 {
                     _sD++;
                     if (!Event.Open && _sD >= Shutdown_Delay * 60)
                     {
                         _sD = 0;
-                        AutoShutdown.CheckBloodmoon();
+                        AutoShutdown.BloodmoonCheck();
                     }
                 }
                 else
@@ -718,16 +710,26 @@ namespace ServerTools
                 }
                 if (AutoShutdown.Bloodmoon)
                 {
-                    _aSB++;
-                    if (_aSB >= 900)
+                    _autoShutdownBloodmoon++;
+                    if (_autoShutdownBloodmoon >= 300)
                     {
-                        _aSB = 0;
-                        AutoShutdown.CheckBloodmoon();
+                        _autoShutdownBloodmoon = 0;
+                        AutoShutdown.BloodmoonCheck();
                     }
                 }
-                else
+                if (AutoShutdown.BloodmoonOver)
                 {
-                    _aSB = 0;
+                    _autoShutdownBloodmoonOver++;
+                    if (_autoShutdownBloodmoonOver == 1)
+                    {
+                        AutoShutdown.BloodmoonOverAlert();
+                    }
+                    else if (_autoShutdownBloodmoonOver >= 1800)
+                    {
+                        _autoShutdownBloodmoonOver = 0;
+                        AutoShutdown.BloodmoonOver = false;
+                        AutoShutdown.Auto_Shutdown();
+                    }
                 }
                 if (InfoTicker.IsEnabled)
                 {

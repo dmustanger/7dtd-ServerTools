@@ -1,26 +1,17 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace ServerTools
 {
     public class Day7
     {
         public static bool IsEnabled = false;
-        public static int Days_Until_Horde = 7;
         public static string Command16 = "day7", Command17 = "day";
 
         public static void GetInfo(ClientInfo _cInfo, bool _announce)
         {
             string _fps = GameManager.Instance.fps.Counter.ToString();
             int _playerCount = ConnectionManager.Instance.ClientCount();
-            int _zombies = 0;
-            int _animals = 0;
-            int _bicycles = 0;
-            int _miniBikes = 0;
-            int _motorcycles = 0;
-            int _4x4 = 0;
-            int _gyros = 0;
-            int _supplyCrates = 0;
+            int _zombies = 0, _animals = 0, _bicycles = 0, _miniBikes = 0, _motorcycles = 0, _4x4 = 0, _gyros = 0, _supplyCrates = 0;
             int _daysRemaining = DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()));
             List<Entity> _entities = GameManager.Instance.World.Entities.list;
             foreach (Entity _e in _entities)
@@ -29,12 +20,12 @@ namespace ServerTools
                 {
                     continue;
                 }
-                EntityType _type = _e.entityType;
-                if (_type == EntityType.Zombie && _e.IsAlive())
+                string _tags = _e.EntityClass.Tags.ToString();
+                if (_tags.Contains("zombie") && _e.IsAlive())
                 {
                     _zombies = _zombies + 1;
                 }
-                else if (_type == EntityType.Animal && _e.IsAlive())
+                else if (_tags.Contains("animal") && _e.IsAlive())
                 {
                     _animals = _animals + 1;
                 }
@@ -67,13 +58,7 @@ namespace ServerTools
                     }
                 }
             }
-            string _phrase300;
-            string _phrase301;
-            string _phrase302;
-            string _phrase303;
-            string _phrase304;
-            string _phrase305;
-            string _phrase306;
+            string _phrase300, _phrase301, _phrase302, _phrase303, _phrase304, _phrase305, _phrase306;
             if (!Phrases.Dict.TryGetValue(300, out _phrase300))
             {
                 _phrase300 = "Server FPS: {Fps}";
@@ -155,14 +140,15 @@ namespace ServerTools
 
         public static int DaysRemaining(int _daysUntilHorde)
         {
-            if (_daysUntilHorde <= Days_Until_Horde)
+            int _daysUntil = GamePrefs.GetInt(EnumGamePrefs.BloodMoonFrequency);
+            if (_daysUntilHorde <= _daysUntil)
             {
-                int _daysLeft = Days_Until_Horde - _daysUntilHorde;
+                int _daysLeft = _daysUntil - _daysUntilHorde;
                 return _daysLeft;
             }
             else
             {
-                int _daysLeft = _daysUntilHorde - Days_Until_Horde;
+                int _daysLeft = _daysUntilHorde - _daysUntil;
                 return DaysRemaining(_daysLeft);
             }
         }

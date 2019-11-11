@@ -10,7 +10,7 @@ namespace ServerTools
         {
             string Entry_Message2 = Entry_Message;
             Entry_Message2 = Entry_Message2.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + Entry_Message2 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + Entry_Message2 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
         }
     }
 }

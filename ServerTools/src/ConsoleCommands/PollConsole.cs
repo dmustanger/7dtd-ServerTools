@@ -7,6 +7,7 @@ namespace ServerTools
 {
     class PollConsole : ConsoleCmdAbstract
     {
+        public static bool IsEnabled = false;
         public static string Command91 = "pollyes", Command92 = "pollno", Command93 = "poll";
         public static List<string> PolledYes = new List<string>();
         public static List<string> PolledNo = new List<string>();
@@ -41,6 +42,11 @@ namespace ServerTools
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
+            if (!IsEnabled)
+            {
+                SdtdConsole.Instance.Output(string.Format("Polling is disabled. You must enable the tool first", _params.Count));
+                return;
+            }
             try
             {
                 if (_params[0] == "new")

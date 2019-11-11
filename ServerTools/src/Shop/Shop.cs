@@ -469,7 +469,7 @@ namespace ServerTools
                         int[] _integerValues;
                         if (dict1.TryGetValue(_id, out _integerValues))
                         {
-                            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
+                            int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
                             int _newAmount = _integerValues[2] * _count;
                             if (_currentCoins >= _newAmount)
                             {

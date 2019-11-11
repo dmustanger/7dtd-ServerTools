@@ -127,7 +127,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"terrIce\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"terrFertileDirt\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"terrFertileGrass\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrFertileFarmland\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"terrOreSilver\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"terrOreCoal\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"terrainFiller\" />"));
@@ -135,7 +134,6 @@ namespace ServerTools
                     sw.WriteLine(string.Format("        <item itemName=\"terrDestroyedWoodDebris\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"terrOreOilDeposit\" />"));
                     sw.WriteLine(string.Format("        <item itemName=\"terrOreDiamond\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrFertileFarmland\" />"));
                 }
                 sw.WriteLine("    </Items>");
                 sw.WriteLine("</InvalidItems>");

@@ -5,8 +5,8 @@ namespace ServerTools
 {
     public static class AutoShutdown
     {
-        public static bool IsEnabled = false, Alert_On_Login = false, Bloodmoon = false, Kick_Login = false;
-        public static int Countdown_Timer = 2, Days_Until_Horde = 7;
+        public static bool IsEnabled = false, Alert_On_Login = false, Bloodmoon = false, BloodmoonOver = false, Kick_Login = false;
+        public static int Countdown_Timer = 2;
         public static string Command47 = "shutdown";
         public static List<DateTime> timerStart = new List<DateTime>();
 
@@ -16,20 +16,28 @@ namespace ServerTools
             timerStart.Add(DateTime.Now);
         }
 
-        public static void CheckBloodmoon()
+        public static void BloodmoonCheck()
         {
-            ulong _worldTime = GameManager.Instance.World.worldTime;
-            int _daysUntilHorde = Days_Until_Horde - GameUtils.WorldTimeToDays(_worldTime) % Days_Until_Horde;
-            int _worldHours = (int)(_worldTime / 1000UL) % 24;
-            if (SkyManager.BloodMoon())
+            int _daysRemaining = Day7.DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()));
+            int _duskTime = (int)SkyManager.GetDuskTime();
+            int _timeInMinutes = (int)SkyManager.GetTimeOfDayAsMinutes();
+            if (SkyManager.BloodMoon() || (_daysRemaining == 0 && _timeInMinutes > _duskTime))
             {
                 Bloodmoon = true;
+                return;
             }
-            else
+            else if (Bloodmoon)
             {
                 Bloodmoon = false;
-                Auto_Shutdown();
+                BloodmoonOver = true;
+                return;
             }
+            Auto_Shutdown();
+        }
+
+        public static void BloodmoonOverAlert()
+        {
+            ChatHook.ChatMessage(null, "[FF0000]Auto shutdown detected the bloodmoon has ended. Fifteen minutes remain before auto shutdown initiates[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
         }
 
         public static void Auto_Shutdown()

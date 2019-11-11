@@ -689,7 +689,7 @@ namespace ServerTools
         {
             if (Wallet.IsEnabled && _c1[2] > 0)
             {
-                int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
+                int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
                 if (_currentCoins >= _c1[2])
                 {
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _c1[2]);
@@ -714,140 +714,132 @@ namespace ServerTools
 
         public static void CommandExecute(ClientInfo _cInfo, string _message, int[] _c1)
         {
-            if (_c1[0] < 21 && _c1[1] > 0)
+            try
             {
-                if (_c1[0] == 1)
+                if (_c1[0] < 21 && _c1[1] > 0)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand1 = DateTime.Now;
-                }
-                else if (_c1[0] == 2)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand2 = DateTime.Now;
-                }
-                else if (_c1[0] == 3)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand3 = DateTime.Now;
-                }
-                else if (_c1[0] == 4)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand4 = DateTime.Now;
-                }
-                else if (_c1[0] == 5)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand5 = DateTime.Now;
-                }
-                else if (_c1[0] == 6)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand6 = DateTime.Now;
-                }
-                else if (_c1[0] == 7)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand7 = DateTime.Now;
-                }
-                else if (_c1[0] == 8)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand8 = DateTime.Now;
-                }
-                else if (_c1[0] == 9)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand9 = DateTime.Now;
-                }
-                else if (_c1[0] == 10)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand10 = DateTime.Now;
-                }
-                else if (_c1[0] == 11)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand11 = DateTime.Now;
-                }
-                else if (_c1[0] == 12)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand12 = DateTime.Now;
-                }
-                else if (_c1[0] == 13)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand13 = DateTime.Now;
-                }
-                else if (_c1[0] == 14)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand14 = DateTime.Now;
-                }
-                else if (_c1[0] == 15)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand15 = DateTime.Now;
-                }
-                else if (_c1[0] == 16)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand16 = DateTime.Now;
-                }
-                else if (_c1[0] == 17)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand17 = DateTime.Now;
-                }
-                else if (_c1[0] == 18)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand18 = DateTime.Now;
-                }
-                else if (_c1[0] == 19)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand19 = DateTime.Now;
-                }
-                else if (_c1[0] == 20)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand20 = DateTime.Now;
-                }
-                PersistentContainer.Instance.Save();
-            }
-            string[] _r;
-            if (Dict.TryGetValue(_message, out _r))
-            {
-                string[] _responseSplit = _r[0].Split('^');
-                for (int i = 0; i < _responseSplit.Length; i++)
-                {
-                    string _response = _responseSplit[i];
-                    string _responseAdj = _response.Trim();
-                    _responseAdj = _responseAdj.Replace("{EntityId}", _cInfo.entityId.ToString());
-                    _responseAdj = _responseAdj.Replace("{SteamId}", _cInfo.playerId);
-                    _responseAdj = _responseAdj.Replace("{PlayerName}", _cInfo.playerName);
-                    if (_responseAdj.ToLower().StartsWith("global "))
+                    if (_c1[0] == 1)
                     {
-                        _responseAdj = _responseAdj.Replace("Global ", "");
-                        _responseAdj = _responseAdj.Replace("global ", "");
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand1 = DateTime.Now;
                     }
-                    else if (_responseAdj.ToLower().StartsWith("whisper "))
+                    else if (_c1[0] == 2)
                     {
-                        _responseAdj = _responseAdj.Replace("Whisper ", "");
-                        _responseAdj = _responseAdj.Replace("whisper ", "");
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand2 = DateTime.Now;
                     }
-                    else if (_responseAdj.StartsWith("tele ") || _responseAdj.StartsWith("tp ") || _responseAdj.StartsWith("teleportplayer "))
+                    else if (_c1[0] == 3)
                     {
-                        try
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand3 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 4)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand4 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 5)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand5 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 6)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand6 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 7)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand7 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 8)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand8 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 9)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand9 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 10)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand10 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 11)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand11 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 12)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand12 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 13)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand13 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 14)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand14 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 15)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand15 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 16)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand16 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 17)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand17 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 18)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand18 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 19)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand19 = DateTime.Now;
+                    }
+                    else if (_c1[0] == 20)
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand20 = DateTime.Now;
+                    }
+                    PersistentContainer.Instance.Save();
+                }
+                string[] _r;
+                if (Dict.TryGetValue(_message, out _r))
+                {
+                    string[] _responseSplit = _r[0].Split('^');
+                    for (int i = 0; i < _responseSplit.Length; i++)
+                    {
+                        string _responseAdj = _responseSplit[i].Trim();
+                        _responseAdj = _responseAdj.Replace("{EntityId}", _cInfo.entityId.ToString());
+                        _responseAdj = _responseAdj.Replace("{SteamId}", _cInfo.playerId);
+                        _responseAdj = _responseAdj.Replace("{PlayerName}", _cInfo.playerName);
+                        if (_responseAdj.ToLower().StartsWith("global "))
                         {
-                            SdtdConsole.Instance.ExecuteSync(_responseAdj, _cInfo);
-                            if (Zones.ZoneExit.ContainsKey(_cInfo.entityId))
+                            _responseAdj = _responseAdj.Replace("Global ", "");
+                            _responseAdj = _responseAdj.Replace("global ", "");
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        }
+                        else if (_responseAdj.ToLower().StartsWith("whisper "))
+                        {
+                            _responseAdj = _responseAdj.Replace("Whisper ", "");
+                            _responseAdj = _responseAdj.Replace("whisper ", "");
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        }
+                        else if (_responseAdj.StartsWith("tele ") || _responseAdj.StartsWith("tp ") || _responseAdj.StartsWith("teleportplayer "))
+                        {
+                            SdtdConsole.Instance.ExecuteSync(_responseAdj, null);
+                            if (Zones.IsEnabled && Zones.ZoneExit.ContainsKey(_cInfo.entityId))
                             {
                                 Zones.ZoneExit.Remove(_cInfo.entityId);
                             }
                         }
-                        catch (Exception e)
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.Run: {0}.", e));
-                        }
-                    }
-                    else
-                    {
-                        try
+                        else
                         {
                             SdtdConsole.Instance.ExecuteSync(_responseAdj, null);
                         }
-                        catch (Exception e)
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.Run: {0}.", e));
-                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.CommandExecute: {0}.", e));
             }
         }
     }

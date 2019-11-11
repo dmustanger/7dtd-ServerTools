@@ -7,13 +7,21 @@ namespace ServerTools
 {
     class MarketChat
     {
-        public static bool IsEnabled = false, Return = false, PvP_Check = false, Zombie_Check = false;
+        public static bool IsEnabled = false, Return = false, PvP_Check = false, Zombie_Check = false, Donor_Only = false;
         public static int Delay_Between_Uses = 5, Market_Size = 25, Command_Cost = 0;
         public static string Command51 = "marketback", Command52 = "mback", Command102 = "setmarket", Command103 = "market";
         public static List<int> MarketPlayers = new List<int>();
 
         public static void Exec(ClientInfo _cInfo)
         {
+            if (Donor_Only && ReservedSlots.IsEnabled)
+            {
+                if (!ReservedSlots.DonorCheck(_cInfo))
+                {
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " this command is locked to donors only" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    return;
+                }
+            }
             if (Delay_Between_Uses < 1)
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
@@ -80,8 +88,7 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo)
         {
-            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
-            if (_currentCoins >= Command_Cost)
+            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
             {
                 MarketTele(_cInfo);
             }

@@ -7,40 +7,62 @@ namespace ServerTools
     {
         private static bool IsRunning = false;
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
+        //private static List<int> Died = new List<int>();
 
         public static void PlayerCheck()
         {
             if (!IsRunning)
             {
                 IsRunning = true;
-                if (ConnectionManager.Instance.ClientCount() > 0)
+                try
                 {
-                    List<EntityPlayer> EntityPlayerList = GameManager.Instance.World.Players.list;
-                    for (int i = 0; i < EntityPlayerList.Count; i++)
+                    if (ConnectionManager.Instance.ClientCount() > 0)
                     {
-                        EntityPlayer _player = EntityPlayerList[i];
-                        if (_player != null)
+                        List<EntityPlayer> EntityPlayerList = GameManager.Instance.World.Players.list;
+                        for (int i = 0; i < EntityPlayerList.Count; i++)
                         {
-                            ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_player.entityId);
-                            if (_cInfo != null)
+                            EntityPlayer _player = EntityPlayerList[i];
+                            if (_player != null)
                             {
-                                if (!_player.IsDead() && _player.Spawned)
+                                //if (Died.Contains(_player.entityId))
+                                //{
+                                //    continue;
+                                //}
+                                ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_player.entityId);
+                                if (_cInfo != null)
                                 {
-                                    if (Zones.IsEnabled)
+                                    if (!_player.IsDead() && _player.Spawned)
                                     {
-                                        Zones.ZoneCheck(_cInfo, _player);
+                                        if (Zones.IsEnabled)
+                                        {
+                                            Zones.ZoneCheck(_cInfo, _player);
+                                        }
+                                        if (GodMode.IsEnabled)
+                                        {
+                                            GodMode.GodCheck(_cInfo);
+                                        }
                                     }
-                                    if (GodMode.IsEnabled)
-                                    {
-                                        GodMode.GodCheck(_cInfo);
-                                    }
+                                    //else if (_player.IsDead())
+                                    //{
+                                    //    EntityAlive _playerAlive = _player as EntityAlive;
+                                    //    if (_playerAlive != null)
+                                    //    {
+                                    //
+                                    //    }
+                                    //    Died.Add(_player.entityId);
+                                    //}
                                 }
                             }
                         }
                     }
                 }
+                catch (Exception e)
+                {
+                    IsRunning = false;
+                    Log.Out(string.Format("[SERVERTOOLS] Error in PlayerOperations: {0}.", e.Message));
+                }
+                IsRunning = false;
             }
-            IsRunning = false;
         }
 
         public static void SessionTime(ClientInfo _cInfo)

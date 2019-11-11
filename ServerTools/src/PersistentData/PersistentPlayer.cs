@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace ServerTools
@@ -10,11 +11,7 @@ namespace ServerTools
         [OptionalField]
         private int playerWallet;
         private int bank;
-        private int messageCount;
         private int totalTimePlayed;
-        private int treeDistance;
-        private int viewDistance;
-        private int fieldOfView;
         private int auctionId;
         private int auctionItemCount;
         private int auctionItemQuality;
@@ -31,7 +28,6 @@ namespace ServerTools
         private int gyroId;
         private int voteWeekCount;
         private int hardcoreExtraLives;
-        private DateTime messageTime;
         private DateTime lastJoined;
         private DateTime lastGimme;
         private DateTime auctionSellDate;
@@ -84,12 +80,8 @@ namespace ServerTools
         private bool highPingImmune;
         private bool newSpawn;
         private bool startingItems;
-        private string eventSignUpPosition;
-        private string eventName1;
-        private string eventName2;
-        private string eventName3;
-        private string eventName4;
-        private string eventName5;
+        private bool auctionReturn;
+        private string playerName;
         private string auctionItemName;
         private string clanName;
         private string clanInvite;
@@ -102,6 +94,7 @@ namespace ServerTools
         private string lastWhisper;
         private string highPingImmuneName;
         private string newSpawnPosition;
+        private List<string[]> clanRequestToJoin;
 
         public int PlayerWallet
         {
@@ -127,18 +120,6 @@ namespace ServerTools
             }
         }
 
-        public int MessageCount
-        {
-            get
-            {
-                return messageCount;
-            }
-            set
-            {
-                messageCount = value;
-            }
-        }
-
         public int TotalTimePlayed
         {
             get
@@ -148,42 +129,6 @@ namespace ServerTools
             set
             {
                 totalTimePlayed = value;
-            }
-        }
-
-        public int TreeDistance
-        {
-            get
-            {
-                return treeDistance;
-            }
-            set
-            {
-                treeDistance = value;
-            }
-        }
-
-        public int ViewDistance
-        {
-            get
-            {
-                return viewDistance;
-            }
-            set
-            {
-                viewDistance = value;
-            }
-        }
-
-        public int FieldOfView
-        {
-            get
-            {
-                return fieldOfView;
-            }
-            set
-            {
-                fieldOfView = value;
             }
         }
 
@@ -376,18 +321,6 @@ namespace ServerTools
             set
             {
                 hardcoreExtraLives = value;
-            }
-        }
-
-        public DateTime MessageTime
-        {
-            get
-            {
-                return messageTime;
-            }
-            set
-            {
-                messageTime = value;
             }
         }
 
@@ -1015,75 +948,27 @@ namespace ServerTools
             }
         }
 
-        public string EventSignUpPosition
+        public bool AuctionReturn
         {
             get
             {
-                return eventSignUpPosition;
+                return auctionReturn;
             }
             set
             {
-                eventSignUpPosition = value;
+                auctionReturn = value;
             }
         }
 
-        public string EventName1
+        public string PlayerName
         {
             get
             {
-                return eventName1;
+                return playerName;
             }
             set
             {
-                eventName1 = value;
-            }
-        }
-
-        public string EventName2
-        {
-            get
-            {
-                return eventName2;
-            }
-            set
-            {
-                eventName2 = value;
-            }
-        }
-
-        public string EventName3
-        {
-            get
-            {
-                return eventName3;
-            }
-            set
-            {
-                eventName3 = value;
-            }
-        }
-
-        public string EventName4
-        {
-            get
-            {
-                return eventName4;
-            }
-            set
-            {
-                eventName4 = value;
-            }
-        }
-
-        public string EventName5
-        {
-            get
-            {
-                return eventName5;
-            }
-            set
-            {
-                eventName5 = value;
+                playerName = value;
             }
         }
 
@@ -1228,6 +1113,18 @@ namespace ServerTools
             set
             {
                 newSpawnPosition = value;
+            }
+        }
+
+        public List<string[]> ClanRequestToJoin
+        {
+            get
+            {
+                return clanRequestToJoin;
+            }
+            set
+            {
+                clanRequestToJoin = value;
             }
         }
 

@@ -6,8 +6,9 @@ namespace ServerTools
 {
     class EntityCleanup
     {
-        public static bool IsEnabled = false, BlockIsEnabled = false, FallingTreeEnabled = false, Underground = false, MiniBikes = false;
-        private static int _xMinCheck, _yMinCheck, _zMinCheck, _xMaxCheck, _yMaxCheck, _zMaxCheck;
+        public static bool IsEnabled = false, BlockIsEnabled = false, FallingTreeEnabled = false, Underground = false, Bicycles = false, MiniBikes = false, 
+            MotorBikes = false, Jeeps = false, Gyros = false;
+        private static List<int> Tree = new List<int>();
 
         public static void EntityCheck()
         {
@@ -23,7 +24,7 @@ namespace ServerTools
                         {
                             if (!_entity.IsClientControlled() && _entity.IsSpawned())
                             {
-                                string _tags = _entity.EntityClass.Tags.ToString();
+                                
                                 string _name = EntityClass.list[_entity.entityClass].entityClassName;
                                 if (BlockIsEnabled && _name == "fallingBlock")
                                 {
@@ -33,18 +34,54 @@ namespace ServerTools
                                 }
                                 else if (FallingTreeEnabled && _name == "fallingTree")
                                 {
-                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                    Log.Out("[SERVERTOOLS] Entity cleanup: Removed falling tree");
-                                    continue;
-                                }
-                                else if ((_tags.Contains("zombie") || _tags.Contains("animal")) && Underground)
-                                {
-                                    if ((int)_entity.position.y <= -10)
+                                    if (Tree.Contains(_entity.entityId))
                                     {
+                                        Tree.Remove(_entity.entityId);
                                         GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                        Log.Out("[SERVERTOOLS] Entity cleanup: Removed {0} with entity id {1}", _name, _entity.entityId);
+                                        Log.Out("[SERVERTOOLS] Entity cleanup: Removed falling tree");
                                         continue;
                                     }
+                                    else
+                                    {
+                                        Tree.Add(_entity.entityId);
+                                        continue;
+                                    }
+                                }
+                                else if (Underground)
+                                {
+                                    string _tags = _entity.EntityClass.Tags.ToString();
+                                    if (_tags.Contains("zombie") || _tags.Contains("animal"))
+                                    {
+                                        if ((int)_entity.position.y <= -10)
+                                        {
+                                            GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
+                                            Log.Out("[SERVERTOOLS] Entity cleanup: Removed {0} with entity id {1}", _name, _entity.entityId);
+                                            continue;
+                                        }
+                                    }
+                                }
+                                else if (Bicycles && _name == "vehicleBicycle")
+                                {
+                                    Vector3 _vec = _entity.position;
+                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
+                                    EntityPlayer _douche = GameManager.Instance.World.GetClosestPlayer((int)_vec.x, (int)_vec.y, (int)_vec.z, -1, 10);
+                                    if (_douche == null)
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed bicycle id {0}", _entity.entityId));
+                                    }
+                                    else
+                                    {
+                                        ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_douche.entityId);
+                                        if (_cInfo != null)
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed bicycle id {0}. Closest player is {1}", _entity.entityId, _cInfo.playerName));
+                                        }
+                                        else
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed bicycle id {0}", _entity.entityId));
+                                        }
+                                    }
+                                    continue;
                                 }
                                 else if (MiniBikes && _name == "vehicleMinibike")
                                 {
@@ -69,10 +106,74 @@ namespace ServerTools
                                     }
                                     continue;
                                 }
-                                else if (_name == "Backpack")
+                                else if (MotorBikes && _name == "vehicleMotorcycle")
                                 {
-                                    _entity.SetPosition(new Vector3((int)_entity.position.x, -1, (int)_entity.position.y), true);
-                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Backpack detected below ground and sent to the surface at {0}", (int)_entity.position.x, -1, (int)_entity.position.y));
+                                    Vector3 _vec = _entity.position;
+                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
+                                    EntityPlayer _douche = GameManager.Instance.World.GetClosestPlayer((int)_vec.x, (int)_vec.y, (int)_vec.z, -1, 10);
+                                    if (_douche == null)
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed motorcycle id {0}", _entity.entityId));
+                                    }
+                                    else
+                                    {
+                                        ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_douche.entityId);
+                                        if (_cInfo != null)
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed motorcycle id {0}. Closest player is {1}", _entity.entityId, _cInfo.playerName));
+                                        }
+                                        else
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed motorcycle id {0}", _entity.entityId));
+                                        }
+                                    }
+                                    continue;
+                                }
+                                else if (Jeeps && _name == "vehicle4x4Truck")
+                                {
+                                    Vector3 _vec = _entity.position;
+                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
+                                    EntityPlayer _douche = GameManager.Instance.World.GetClosestPlayer((int)_vec.x, (int)_vec.y, (int)_vec.z, -1, 10);
+                                    if (_douche == null)
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed jeep id {0}", _entity.entityId));
+                                    }
+                                    else
+                                    {
+                                        ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_douche.entityId);
+                                        if (_cInfo != null)
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed jeep id {0}. Closest player is {1}", _entity.entityId, _cInfo.playerName));
+                                        }
+                                        else
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed jeep id {0}", _entity.entityId));
+                                        }
+                                    }
+                                    continue;
+                                }
+                                else if (Gyros && _name == "vehicleGyrocopter")
+                                {
+                                    Vector3 _vec = _entity.position;
+                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
+                                    EntityPlayer _douche = GameManager.Instance.World.GetClosestPlayer((int)_vec.x, (int)_vec.y, (int)_vec.z, -1, 10);
+                                    if (_douche == null)
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed gyrocopter id {0}", _entity.entityId));
+                                    }
+                                    else
+                                    {
+                                        ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_douche.entityId);
+                                        if (_cInfo != null)
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed gyrocopter id {0}. Closest player is {1}", _entity.entityId, _cInfo.playerName));
+                                        }
+                                        else
+                                        {
+                                            Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed gyrocopter id {0}", _entity.entityId));
+                                        }
+                                    }
+                                    continue;
                                 }
                             }
                         }
@@ -82,437 +183,6 @@ namespace ServerTools
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in EntityCleanup.EntityCheck: {0}.", e));
-            }
-        }
-
-        public static void ZombieCheck()
-        {
-            try
-            {
-                if (Zones.Box1.Count > 0)
-                {
-                    for (int i = 0; i < Zones.Box1.Count; i++)
-                    {
-                        string[] _box1 = Zones.Box1[i];
-                        bool[] _box2 = Zones.Box2[i];
-                        if (_box2[2])
-                        {
-                            List<Entity> Entities = GameManager.Instance.World.Entities.list;
-                            for (int j = 0; j < Entities.Count; j++)
-                            {
-                                Entity _entity = Entities[j];
-                                if (_entity != null)
-                                {
-                                    if (!_entity.IsClientControlled() && !_entity.IsDead())
-                                    {
-                                        EntityType _type = _entity.entityType;
-                                        if (_type == EntityType.Zombie)
-                                        {
-                                            Vector3 _vec = _entity.position;
-                                            int _X = (int)_entity.position.x;
-                                            int _Y = (int)_entity.position.y;
-                                            int _Z = (int)_entity.position.z;
-                                            int xMin, yMin, zMin;
-                                            string[] _corner1 = _box1[0].Split(',');
-                                            int.TryParse(_corner1[0], out xMin);
-                                            int.TryParse(_corner1[1], out yMin);
-                                            int.TryParse(_corner1[2], out zMin);
-                                            if (!_box2[0])
-                                            {
-                                                int xMax, yMax, zMax;
-                                                string[] _corner2 = _box1[1].Split(',');
-                                                int.TryParse(_corner2[0], out xMax);
-                                                int.TryParse(_corner2[1], out yMax);
-                                                int.TryParse(_corner2[2], out zMax);
-                                                if (xMin >= 0 & xMax >= 0)
-                                                {
-                                                    if (xMin < xMax)
-                                                    {
-                                                        if (_X >= xMin)
-                                                        {
-                                                            _xMinCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _xMinCheck = 0;
-                                                        }
-                                                        if (_X <= xMax)
-                                                        {
-                                                            _xMaxCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _xMaxCheck = 0;
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        if (_X <= xMin)
-                                                        {
-                                                            _xMinCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _xMinCheck = 0;
-                                                        }
-                                                        if (_X >= xMax)
-                                                        {
-                                                            _xMaxCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _xMaxCheck = 0;
-                                                        }
-                                                    }
-                                                }
-                                                else if (xMin <= 0 & xMax <= 0)
-                                                {
-                                                    if (xMin < xMax)
-                                                    {
-                                                        if (_X >= xMin)
-                                                        {
-                                                            _xMinCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _xMinCheck = 0;
-                                                        }
-                                                        if (_X <= xMax)
-                                                        {
-                                                            _xMaxCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _xMaxCheck = 0;
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        if (_X <= xMin)
-                                                        {
-                                                            _xMinCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _xMinCheck = 0;
-                                                        }
-                                                        if (_X >= xMax)
-                                                        {
-                                                            _xMaxCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _xMaxCheck = 0;
-                                                        }
-                                                    }
-                                                }
-                                                else if (xMin <= 0 & xMax >= 0)
-                                                {
-                                                    if (_X >= xMin)
-                                                    {
-                                                        _xMinCheck = 1;
-                                                    }
-                                                    else
-                                                    {
-                                                        _xMinCheck = 0;
-                                                    }
-                                                    if (_X <= xMax)
-                                                    {
-                                                        _xMaxCheck = 1;
-                                                    }
-                                                    else
-                                                    {
-                                                        _xMaxCheck = 0;
-                                                    }
-                                                }
-                                                else if (xMin >= 0 & xMax <= 0)
-                                                {
-                                                    if (_X <= xMin)
-                                                    {
-                                                        _xMinCheck = 1;
-                                                    }
-                                                    else
-                                                    {
-                                                        _xMinCheck = 0;
-                                                    }
-                                                    if (_X >= xMax)
-                                                    {
-                                                        _xMaxCheck = 1;
-                                                    }
-                                                    else
-                                                    {
-                                                        _xMaxCheck = 0;
-                                                    }
-                                                }
-                                                if (yMin >= 0 & yMax >= 0)
-                                                {
-                                                    if (yMin < yMax)
-                                                    {
-                                                        if (_Y >= yMin)
-                                                        {
-                                                            _yMinCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _yMinCheck = 0;
-                                                        }
-                                                        if (_Y <= yMax)
-                                                        {
-                                                            _yMaxCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _yMaxCheck = 0;
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        if (_Y <= yMin)
-                                                        {
-                                                            _yMinCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _yMinCheck = 0;
-                                                        }
-                                                        if (_Y >= yMax)
-                                                        {
-                                                            _yMaxCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _yMaxCheck = 0;
-                                                        }
-                                                    }
-                                                }
-                                                else if (yMin <= 0 & yMax <= 0)
-                                                {
-                                                    if (yMin < yMax)
-                                                    {
-                                                        if (_Y >= yMin)
-                                                        {
-                                                            _yMinCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _yMinCheck = 0;
-                                                        }
-                                                        if (_Y <= yMax)
-                                                        {
-                                                            _yMaxCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _yMaxCheck = 0;
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        if (_Y <= yMin)
-                                                        {
-                                                            _yMinCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _yMinCheck = 0;
-                                                        }
-                                                        if (_Y >= yMax)
-                                                        {
-                                                            _yMaxCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _yMaxCheck = 0;
-                                                        }
-                                                    }
-                                                }
-                                                else if (yMin <= 0 & yMax >= 0)
-                                                {
-                                                    if (_Y >= yMin)
-                                                    {
-                                                        _yMinCheck = 1;
-                                                    }
-                                                    else
-                                                    {
-                                                        _yMinCheck = 0;
-                                                    }
-                                                    if (_Y <= yMax)
-                                                    {
-                                                        _yMaxCheck = 1;
-                                                    }
-                                                    else
-                                                    {
-                                                        _yMaxCheck = 0;
-                                                    }
-                                                }
-                                                else if (yMin >= 0 & yMax <= 0)
-                                                {
-                                                    if (_Y <= yMin)
-                                                    {
-                                                        _yMinCheck = 1;
-                                                    }
-                                                    else
-                                                    {
-                                                        _yMinCheck = 0;
-                                                    }
-                                                    if (_Y >= yMax)
-                                                    {
-                                                        _yMaxCheck = 1;
-                                                    }
-                                                    else
-                                                    {
-                                                        _yMaxCheck = 0;
-                                                    }
-                                                }
-                                                if (zMin >= 0 & zMax >= 0)
-                                                {
-                                                    if (zMin < zMax)
-                                                    {
-                                                        if (_Z >= zMin)
-                                                        {
-                                                            _zMinCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _zMinCheck = 0;
-                                                        }
-                                                        if (_Z <= zMax)
-                                                        {
-                                                            _zMaxCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _zMaxCheck = 0;
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        if (_Z <= zMin)
-                                                        {
-                                                            _zMinCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _zMinCheck = 0;
-                                                        }
-                                                        if (_Z >= zMax)
-                                                        {
-                                                            _zMaxCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _zMaxCheck = 0;
-                                                        }
-                                                    }
-                                                }
-                                                else if (zMin <= 0 & zMax <= 0)
-                                                {
-                                                    if (zMin < zMax)
-                                                    {
-                                                        if (_Z >= zMin)
-                                                        {
-                                                            _zMinCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _zMinCheck = 0;
-                                                        }
-                                                        if (_Z <= zMax)
-                                                        {
-                                                            _zMaxCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _zMaxCheck = 0;
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        if (_Z <= zMin)
-                                                        {
-                                                            _zMinCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _zMinCheck = 0;
-                                                        }
-                                                        if (_Z >= zMax)
-                                                        {
-                                                            _zMaxCheck = 1;
-                                                        }
-                                                        else
-                                                        {
-                                                            _zMaxCheck = 0;
-                                                        }
-                                                    }
-                                                }
-                                                else if (zMin <= 0 & zMax >= 0)
-                                                {
-                                                    if (_Z >= zMin)
-                                                    {
-                                                        _zMinCheck = 1;
-                                                    }
-                                                    else
-                                                    {
-                                                        _zMinCheck = 0;
-                                                    }
-                                                    if (_Z <= zMax)
-                                                    {
-                                                        _zMaxCheck = 1;
-                                                    }
-                                                    else
-                                                    {
-                                                        _zMaxCheck = 0;
-                                                    }
-                                                }
-                                                else if (zMin >= 0 & zMax <= 0)
-                                                {
-                                                    if (_Z <= zMin)
-                                                    {
-                                                        _zMinCheck = 1;
-                                                    }
-                                                    else
-                                                    {
-                                                        _zMinCheck = 0;
-                                                    }
-                                                    if (_Z >= zMax)
-                                                    {
-                                                        _zMaxCheck = 1;
-                                                    }
-                                                    else
-                                                    {
-                                                        _zMaxCheck = 0;
-                                                    }
-                                                }
-                                                if (_xMinCheck == 1 & _yMinCheck == 1 & _zMinCheck == 1 & _xMaxCheck == 1 & _yMaxCheck == 1 & _zMaxCheck == 1)
-                                                {
-                                                    GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                                    Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed zombie from protected zone @ {0} {1} {2}", _X, _Y, _Z));
-                                                }
-                                            }
-                                            else
-                                            {
-                                                int _radius;
-                                                if (int.TryParse(_box1[1], out _radius))
-                                                {
-                                                    if ((xMin - _X) * (xMin - _X) + (zMin - _Z) * (zMin - _Z) <= _radius * _radius)
-                                                    {
-                                                        GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed zombie from protected zone @ {0} {1} {2}", _X, _Y, _Z));
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in EntityCleanup.ZombieCheck: {0}.", e));
             }
         }
     }

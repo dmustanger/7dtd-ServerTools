@@ -155,11 +155,11 @@ namespace ServerTools
                                     double fractionalMinutes = varTime.TotalMinutes;
                                     int _timepassed = (int)fractionalMinutes;
                                     int _timeleft = _muteTime - _timepassed;
-                                    SdtdConsole.Instance.Output(string.Format("Jailed player: steam Id {0} named {1} for {2} more minutes.", _id, _muteName, _timeleft));
+                                    SdtdConsole.Instance.Output(string.Format("Muted player: steam Id {0} named {1} for {2} more minutes.", _id, _muteName, _timeleft));
                                 }
                                 else if (_muteTime == -1)
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("Jailed player: steam Id {0} named {1} forever.", _id, _muteName));
+                                    SdtdConsole.Instance.Output(string.Format("Muted player: steam Id {0} named {1} forever.", _id, _muteName));
                                 }
                             }
                         }

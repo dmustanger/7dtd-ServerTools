@@ -132,7 +132,7 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo, string _message)
         {
-            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
+            int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
             if (Command_Cost >= 1)
             {
                 if (_currentCoins >= Command_Cost)

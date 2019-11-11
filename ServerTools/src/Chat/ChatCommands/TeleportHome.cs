@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class TeleportHome
     {
-        public static bool IsEnabled = false, Set_Home2_Enabled = false, Set_Home2_Reserved_Only = false, Home2_Delay = false, PvP_Check = false, Zombie_Check = false, Vehicle = false;
+        public static bool IsEnabled = false, Set_Home2_Enabled = false, Set_Home2_Reserved_Only = false, Home2_Delay = false, PvP_Check = false, Zombie_Check = false, Vehicle_Check = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
         public static string Command1 = "sethome", Command2 = "home", Command3 = "fhome", Command4 = "delhome", Command5 = "sethome2", 
             Command6 = "home2", Command7 = "fhome2", Command8 = "delhome2", Command9 = "go";
@@ -60,19 +60,9 @@ namespace ServerTools
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
-                if (Vehicle)
+                if (VehicleCheck(_cInfo))
                 {
-                    Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    if (_player.AttachedToEntity != null)
-                    {
-                        string _phrase826;
-                        if (!Phrases.Dict.TryGetValue(826, out _phrase826))
-                        {
-                            _phrase826 = " you can not teleport home with a vehicle.";
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                        }
-                        return;
-                    }
+                    return;
                 }
                 string _homePos = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1;
                 if (string.IsNullOrEmpty(_homePos))
@@ -159,8 +149,7 @@ namespace ServerTools
 
         public static void CommandCost1(ClientInfo _cInfo, string _pos)
         {
-            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
-            if (_currentCoins >= Command_Cost)
+            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
             {
                 TeleHome1(_cInfo, _pos);
             }
@@ -268,19 +257,9 @@ namespace ServerTools
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
-                if (Vehicle)
+                if (VehicleCheck(_cInfo))
                 {
-                    Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    if (_player.AttachedToEntity != null)
-                    {
-                        string _phrase826;
-                        if (!Phrases.Dict.TryGetValue(826, out _phrase826))
-                        {
-                            _phrase826 = " you can not teleport home with a vehicle.";
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                        }
-                        return;
-                    }
+                    return;
                 }
                 string _homePos2 = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2;
                 if (string.IsNullOrEmpty(_homePos2))
@@ -375,8 +354,7 @@ namespace ServerTools
 
         public static void CommandCost2(ClientInfo _cInfo, string _pos)
         {
-            int currentCoins = Wallet.GetCurrentCoins(_cInfo);
-            if (currentCoins >= Command_Cost)
+            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
             {
                 Home2(_cInfo, _pos);
             }
@@ -449,19 +427,9 @@ namespace ServerTools
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
-                if (Vehicle)
+                if (VehicleCheck(_cInfo))
                 {
-                    Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    if (_player.AttachedToEntity != null)
-                    {
-                        string _phrase826;
-                        if (!Phrases.Dict.TryGetValue(826, out _phrase826))
-                        {
-                            _phrase826 = " you can not teleport home with a vehicle.";
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                        }
-                        return;
-                    }
+                    return;
                 }
                 string _homePos1 = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1;
                 if (string.IsNullOrEmpty(_homePos1))
@@ -550,8 +518,7 @@ namespace ServerTools
 
         public static void FCommandCost1(ClientInfo _cInfo, string _pos)
         {
-            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
-            if (_currentCoins >= Command_Cost)
+            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
             {
                 FHome1(_cInfo, _pos);
             }
@@ -606,20 +573,9 @@ namespace ServerTools
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
-                if (Vehicle)
+                if (VehicleCheck(_cInfo))
                 {
-                    Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    Entity _attachedEntity = _player.AttachedToEntity;
-                    if (_attachedEntity != null)
-                    {
-                        string _phrase826;
-                        if (!Phrases.Dict.TryGetValue(826, out _phrase826))
-                        {
-                            _phrase826 = " you can not teleport home with a vehicle.";
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                        }
-                        return;
-                    }
+                    return;
                 }
                 string _homePos2 = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2;
                 if (string.IsNullOrEmpty(_homePos2))
@@ -715,8 +671,7 @@ namespace ServerTools
 
         public static void FCommandCost2(ClientInfo _cInfo, string _pos)
         {
-            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
-            if (_currentCoins >= Command_Cost)
+            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
             {
                 FHome2(_cInfo, _pos);
             }
@@ -844,6 +799,22 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have run out of time to accept your friend's home invitation.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
+        }
+
+        public static bool VehicleCheck(ClientInfo _cInfo)
+        {
+            Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            if (_player.AttachedToEntity != null)
+            {
+                string _phrase826;
+                if (!Phrases.Dict.TryGetValue(826, out _phrase826))
+                {
+                    _phrase826 = " you can not teleport home with a vehicle.";
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
+                return true;
+            }
+            return false;
         }
     }
 }

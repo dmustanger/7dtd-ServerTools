@@ -222,8 +222,7 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo)
         {
-            int _currentCoins = Wallet.GetCurrentCoins(_cInfo);
-            if (_currentCoins >= Command_Cost)
+            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
             {
                 Tele(_cInfo);
             }

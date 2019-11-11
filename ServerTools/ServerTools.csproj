@@ -46,7 +46,6 @@
     <Compile Include="src\AntiCheat\Flying.cs" />
     <Compile Include="src\AntiCheat\GodMode.cs" />
     <Compile Include="src\AntiCheat\PlayerDamage.cs" />
-    <Compile Include="src\AntiCheat\ViewDistances.cs" />
     <Compile Include="src\AutoBackup\AutoBackup.cs" />
     <Compile Include="src\Bank\Bank.cs" />
     <Compile Include="src\Bloodmoon_Warrior\Bloodmoon_Warrior.cs" />
@@ -60,6 +59,8 @@
     <Compile Include="src\ConsoleCommands\BanPlayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\DonorConsole.cs" />
     <Compile Include="src\ConsoleCommands\ChatColorPrefixConsole.cs" />
+    <Compile Include="src\ConsoleCommands\EntityRotate.cs" />
+    <Compile Include="src\ConsoleCommands\EntityTeleport.cs" />
     <Compile Include="src\ConsoleCommands\KillEnt.cs" />
     <Compile Include="src\ConsoleCommands\TeleportUnderPlayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\TrackingConsole.cs" />
@@ -96,7 +97,6 @@
     <Compile Include="src\ConsoleCommands\InfoTickerConsole.cs" />
     <Compile Include="src\ConsoleCommands\HordesConsole.cs" />
     <Compile Include="src\ConsoleCommands\HighPingKickerConsole.cs" />
-    <Compile Include="src\ConsoleCommands\HatchElevatorDetectorConsole.cs" />
     <Compile Include="src\ConsoleCommands\HardcoreConsole.cs" />
     <Compile Include="src\ConsoleCommands\GimmeConsole.cs" />
     <Compile Include="src\ConsoleCommands\FriendTeleportConsole.cs" />
@@ -137,7 +137,6 @@
     <Compile Include="src\PersistentData\UpdateSQL.cs" />
     <Compile Include="src\Hardcore\Hardcore.cs" />
     <Compile Include="src\AntiCheat\CredentialCheck.cs" />
-    <Compile Include="src\AntiCheat\HatchElevator.cs" />
     <Compile Include="src\AntiCheat\TeleportCheck.cs" />
     <Compile Include="src\AntiCheat\WorldRadius.cs" />
     <Compile Include="src\AntiCheat\PlayerStatCheck.cs" />
