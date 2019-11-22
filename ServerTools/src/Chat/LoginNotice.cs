@@ -12,7 +12,7 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false;
         private const string file = "LoginNotice.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static Dictionary<string, string> dict = new Dictionary<string, string>();
+        public static Dictionary<string, string> dict = new Dictionary<string, string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
 
@@ -146,16 +146,13 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void PlayerCheck(ClientInfo _cInfo)
+        public static void PlayerNotice(ClientInfo _cInfo)
         {
-            if (dict.ContainsKey(_cInfo.playerId))
+            string _message;
+            if (dict.TryGetValue(_cInfo.playerId, out _message))
             {
-                string _message;
-                if (dict.TryGetValue(_cInfo.playerId, out _message))
-                {
-                    _message = _message.Replace("{PlayerName}", _cInfo.playerName);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                }
+                _message = _message.Replace("{PlayerName}", _cInfo.playerName);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
     }

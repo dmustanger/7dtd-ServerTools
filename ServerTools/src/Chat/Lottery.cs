@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 
 namespace ServerTools
 {
@@ -183,8 +181,8 @@ namespace ServerTools
 
         public static void StartLotto()
         {
-            Random rnd = new Random();
-            int _random = rnd.Next(LottoEntries.Count + 1);
+            System.Random rnd = new System.Random();
+            int _random = rnd.Next(0, LottoEntries.Count + 1);
             ClientInfo _winner = LottoEntries[_random];
             int _winnings;
             if (LottoEntries.Count == 10)

@@ -45,6 +45,8 @@ namespace ServerTools
         private DateTime lastHome1;
         private DateTime lastHome2;
         private DateTime lastTravel;
+        private DateTime lastPrayer;
+        private DateTime lastScout;
         private DateTime customCommand1;
         private DateTime customCommand2;
         private DateTime customCommand3;
@@ -81,6 +83,7 @@ namespace ServerTools
         private bool newSpawn;
         private bool startingItems;
         private bool auctionReturn;
+        private bool hardcore;
         private string playerName;
         private string auctionItemName;
         private string clanName;
@@ -528,6 +531,30 @@ namespace ServerTools
             }
         }
 
+        public DateTime LastPrayer
+        {
+            get
+            {
+                return lastPrayer;
+            }
+            set
+            {
+                lastPrayer = value;
+            }
+        }
+
+        public DateTime LastScout
+        {
+            get
+            {
+                return lastScout;
+            }
+            set
+            {
+                lastScout = value;
+            }
+        }
+
         public DateTime CustomCommand1
         {
             get
@@ -957,6 +984,18 @@ namespace ServerTools
             set
             {
                 auctionReturn = value;
+            }
+        }
+
+        public bool Hardcore
+        {
+            get
+            {
+                return hardcore;
+            }
+            set
+            {
+                hardcore = value;
             }
         }
 

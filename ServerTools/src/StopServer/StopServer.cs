@@ -1,6 +1,4 @@
-﻿
-using System.Diagnostics;
-using UnityEngine;
+﻿using System.Diagnostics;
 
 namespace ServerTools
 {
@@ -99,7 +97,7 @@ namespace ServerTools
             Log.Out("[SERVERTOOLS] Running shutdown.");
             Timers.Timer2Stop();
             Shutdown = true;
-            Application.Quit();
+            UnityEngine.Application.Quit();
         }
 
         public static void Kick30()

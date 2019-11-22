@@ -242,21 +242,17 @@ namespace ServerTools
                 _commands_1 = string.Format("{0} {1}{2}", _commands_1, ChatHook.Command_Private, TeleportHome.Command3);
                 _commands_1 = string.Format("{0} {1}{2}", _commands_1, ChatHook.Command_Private, TeleportHome.Command4);
             }
-            if (Day7.IsEnabled)
-            {
-                _commands_1 = string.Format("{0} {1}{2}", _commands_1, ChatHook.Command_Private, Day7.Command16);
-            }
-            if (Bloodmoon.IsEnabled)
-            {
-                _commands_1 = string.Format("{0} {1}{2}", _commands_1, ChatHook.Command_Private, Bloodmoon.Command18);
-            }
-            if (Whisper.IsEnabled)
-            {
-                _commands_1 = string.Format("{0} {1}{2} {3}{4}", _commands_1, ChatHook.Command_Private, Whisper.Command120, ChatHook.Command_Private, Whisper.Command122);
-            }
             if (ClanManager.IsEnabled)
             {
                 _commands_1 = string.Format("{0} {1}{2}", _commands_1, ChatHook.Command_Private, ClanManager.Command42);
+            }
+            if (ClanManager.IsEnabled)
+            {
+                _commands_1 = string.Format("{0} {1}{2}", _commands_1, ChatHook.Command_Private, ClanManager.Command125);
+            }
+            if (ClanManager.IsEnabled && !ClanManager.ClanMember.Contains(_cInfo.playerId))
+            {
+                _commands_1 = string.Format("{0} {1}{2}", _commands_1, ChatHook.Command_Private, ClanManager.Command45);
             }
             return _commands_1;
         }
@@ -448,13 +444,49 @@ namespace ServerTools
             {
                 _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, PlayerList.Command89);
             }
-            if (ClanManager.IsEnabled)
+            if (Bloodmoon.IsEnabled)
             {
-                _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, ClanManager.Command125);
+                _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, Bloodmoon.Command18);
             }
-            if (Hardcore.IsEnabled && Hardcore.Max_Extra_Lives > 0)
+            if (Whisper.IsEnabled)
             {
-                _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, Hardcore.Command126);
+                _commands_6 = string.Format("{0} {1}{2} {3}{4}", _commands_6, ChatHook.Command_Private, Whisper.Command120, ChatHook.Command_Private, Whisper.Command122);
+            }
+            if (Hardcore.IsEnabled)
+            {
+                if (!Hardcore.Optional)
+                {
+                    _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, Hardcore.Command11);
+                    _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, Hardcore.Command12);
+                    if (Hardcore.Max_Extra_Lives > 0)
+                    {
+                        _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, Hardcore.Command101);
+                    }
+                    
+                }
+                else if (PersistentContainer.Instance.Players[_cInfo.playerId].Hardcore)
+                {
+                    _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, Hardcore.Command11);
+                    _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, Hardcore.Command12);
+                    _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, Hardcore.Command127);
+                    if (Hardcore.Max_Extra_Lives > 0)
+                    {
+                        _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, Hardcore.Command101);
+                    }
+                }
+                else
+                {
+                    _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, Hardcore.Command11);
+                    _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, Hardcore.Command128);
+                }
+            }
+            if (ReservedSlots.IsEnabled && ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
+            {
+                _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, ReservedSlots.Command69);
+            }
+            if (Day7.IsEnabled)
+            {
+                _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, Day7.Command16);
             }
             return _commands_6;
         }
@@ -473,7 +505,7 @@ namespace ServerTools
                         if (!_result)
                         {
                             string _c = kvp.Key;
-                            _commandsCustom = string.Format("{0} /{1}", _commandsCustom, _c);
+                            _commandsCustom = string.Format("{0} {1}{2}", _commandsCustom, ChatHook.Command_Private, _c);
                         }
                     }
                 }

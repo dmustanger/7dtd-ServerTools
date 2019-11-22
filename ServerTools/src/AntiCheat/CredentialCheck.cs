@@ -128,17 +128,17 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void AccCheck(ClientInfo _cInfo)
+        public static bool AccCheck(ClientInfo _cInfo)
         {
             if (_cInfo != null)
             {
                 if (!OmittedPlayers.ContainsKey(_cInfo.playerId))
                 {
-                    if (Family_Share)
+                    GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
+                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                    if (Admin.PermissionLevel > Admin_Level)
                     {
-                        GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
-                        AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                        if (Admin.PermissionLevel > Admin_Level)
+                        if (Family_Share)
                         {
                             if (_cInfo.ownerId != _cInfo.playerId)
                             {
@@ -150,40 +150,44 @@ namespace ServerTools
                                     sw.Flush();
                                     sw.Close();
                                 }
+                                return false;
                             }
                         }
-                    }
-                    if (Bad_Id)
-                    {
-                        if (_cInfo.ownerId.Length != 17 || !_cInfo.ownerId.StartsWith("7656119") || _cInfo.playerId.Length != 17 || !_cInfo.playerId.StartsWith("7656119"))
+                        if (Bad_Id)
                         {
-                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using an invalid Id\"", _cInfo.playerId), (ClientInfo)null);
-                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                            if (_cInfo.ownerId.Length != 17 || !_cInfo.ownerId.StartsWith("7656119") || _cInfo.playerId.Length != 17 || !_cInfo.playerId.StartsWith("7656119"))
                             {
-                                sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with an invalid Id", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
-                                sw.WriteLine();
-                                sw.Flush();
-                                sw.Close();
+                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using an invalid Id\"", _cInfo.playerId), (ClientInfo)null);
+                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                {
+                                    sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with an invalid Id", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
+                                    sw.WriteLine();
+                                    sw.Flush();
+                                    sw.Close();
+                                }
+                                return false;
                             }
                         }
-                    }
-                    if (No_Internal)
-                    {
-                        string IP = _cInfo.ip;
-                        if (IP.StartsWith("192.168"))
+                        if (No_Internal)
                         {
-                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using an invalid IP\"", _cInfo.playerId), (ClientInfo)null);
-                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                            string IP = _cInfo.ip;
+                            if (IP.StartsWith("192.168"))
                             {
-                                sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with an invalid IP", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
-                                sw.WriteLine();
-                                sw.Flush();
-                                sw.Close();
+                                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have been kicked for using an invalid IP\"", _cInfo.playerId), (ClientInfo)null);
+                                using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                {
+                                    sw.WriteLine(string.Format("{0}: Player name {1} with ownerId {2} playerId {3} IP Address {4} connected with an invalid IP", DateTime.Now, _cInfo.playerName, _cInfo.ownerId, _cInfo.playerId, _cInfo.ip));
+                                    sw.WriteLine();
+                                    sw.Flush();
+                                    sw.Close();
+                                }
+                                return false;
                             }
                         }
                     }
                 }
             }
+            return true;
         }
     }
 }

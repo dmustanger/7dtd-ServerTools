@@ -216,7 +216,7 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"98\" default=\"wallet withdraw\" replacement=\"wallet withdraw\" />");
                     sw.WriteLine("        <trigger number=\"99\" default=\"transfer\" replacement=\"transfer\" />");
                     sw.WriteLine("        <trigger number=\"100\" default=\"join\" replacement=\"event\" />");
-                    sw.WriteLine("        <trigger number=\"101\" default=\"\" replacement=\"\" />");
+                    sw.WriteLine("        <trigger number=\"101\" default=\"buy life\" replacement=\"buy life\" />");
                     sw.WriteLine("        <trigger number=\"102\" default=\"setmarket\" replacement=\"setmarket\" />");
                     sw.WriteLine("        <trigger number=\"103\" default=\"market\" replacement=\"market\" />");
                     sw.WriteLine("        <trigger number=\"104\" default=\"infoticker\" replacement=\"infoticker\" />");
@@ -241,7 +241,11 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"123\" default=\"rm\" replacement=\"rm\" />");
                     sw.WriteLine("        <trigger number=\"124\" default=\"cc\" replacement=\"cc\" />");
                     sw.WriteLine("        <trigger number=\"125\" default=\"clanlist\" replacement=\"clanlist\" />");
-                    sw.WriteLine("        <trigger number=\"126\" default=\"life\" replacement=\"life\" />");
+                    sw.WriteLine("        <trigger number=\"126\" default=\"pray\" replacement=\"pray\" />");
+                    sw.WriteLine("        <trigger number=\"127\" default=\"hardcore\" replacement=\"hardcore\" />");
+                    sw.WriteLine("        <trigger number=\"128\" default=\"hardcore on\" replacement=\"hardcore on\" />");
+                    sw.WriteLine("        <trigger number=\"129\" default=\"scoutplayer\" replacement=\"scoutplayer\" />");
+                    sw.WriteLine("        <trigger number=\"130\" default=\"scout\" replacement=\"scout\" />");
                 }
                 sw.WriteLine("    </triggers>");
                 sw.WriteLine("</Event>");
@@ -280,505 +284,521 @@ namespace ServerTools
                     {
                         TeleportHome.Command1 = kvp.Value[1];
                     }
-                    if (kvp.Key == 2)
+                    else if (kvp.Key == 2)
                     {
                         TeleportHome.Command2 = kvp.Value[1];
                     }
-                    if (kvp.Key == 3)
+                    else if (kvp.Key == 3)
                     {
                         TeleportHome.Command3 = kvp.Value[1];
                     }
-                    if (kvp.Key == 4)
+                    else if (kvp.Key == 4)
                     {
                         TeleportHome.Command4 = kvp.Value[1];
                     }
-                    if (kvp.Key == 5)
+                    else if (kvp.Key == 5)
                     {
                         TeleportHome.Command5 = kvp.Value[1];
                     }
-                    if (kvp.Key == 6)
+                    else if (kvp.Key == 6)
                     {
                         TeleportHome.Command6 = kvp.Value[1];
                     }
-                    if (kvp.Key == 7)
+                    else if (kvp.Key == 7)
                     {
                         TeleportHome.Command7 = kvp.Value[1];
                     }
-                    if (kvp.Key == 8)
+                    else if (kvp.Key == 8)
                     {
                         TeleportHome.Command8 = kvp.Value[1];
                     }
-                    if (kvp.Key == 9)
+                    else if (kvp.Key == 9)
                     {
                         TeleportHome.Command9 = kvp.Value[1];
                     }
-                    if (kvp.Key == 10)
+                    else if (kvp.Key == 10)
                     {
                         Waypoint.Command10 = kvp.Value[1];
                     }
-                    if (kvp.Key == 11)
+                    else if (kvp.Key == 11)
                     {
                         Hardcore.Command11 = kvp.Value[1];
                     }
-                    if (kvp.Key == 12)
+                    else if (kvp.Key == 12)
                     {
                         Hardcore.Command12 = kvp.Value[1];
                     }
-                    if (kvp.Key == 13)
+                    else if (kvp.Key == 13)
                     {
                         MutePlayer.Command13 = kvp.Value[1];
                     }
-                    if (kvp.Key == 14)
+                    else if (kvp.Key == 14)
                     {
                         MutePlayer.Command14 = kvp.Value[1];
                     }
-                    if (kvp.Key == 15)
+                    else if (kvp.Key == 15)
                     {
                         CustomCommands.Command15 = kvp.Value[1];
                     }
-                    if (kvp.Key == 16)
+                    else if (kvp.Key == 16)
                     {
                         Day7.Command16 = kvp.Value[1];
                     }
-                    if (kvp.Key == 17)
+                    else if (kvp.Key == 17)
                     {
                         Day7.Command17 = kvp.Value[1];
                     }
-                    if (kvp.Key == 18)
+                    else if (kvp.Key == 18)
                     {
                         Bloodmoon.Command18 = kvp.Value[1];
                     }
-                    if (kvp.Key == 19)
+                    else if (kvp.Key == 19)
                     {
                         Bloodmoon.Command19 = kvp.Value[1];
                     }
-                    if (kvp.Key == 20)
+                    else if (kvp.Key == 20)
                     {
                         Suicide.Command20 = kvp.Value[1];
                     }
-                    if (kvp.Key == 21)
+                    else if (kvp.Key == 21)
                     {
                         Suicide.Command21 = kvp.Value[1];
                     }
-                    if (kvp.Key == 22)
+                    else if (kvp.Key == 22)
                     {
                         Suicide.Command22 = kvp.Value[1];
                     }
-                    if (kvp.Key == 23)
+                    else if (kvp.Key == 23)
                     {
                         Suicide.Command23 = kvp.Value[1];
                     }
-                    if (kvp.Key == 24)
+                    else if (kvp.Key == 24)
                     {
                         Gimme.Command24 = kvp.Value[1];
                     }
-                    if (kvp.Key == 25)
+                    else if (kvp.Key == 25)
                     {
                         Gimme.Command25 = kvp.Value[1];
                     }
-                    if (kvp.Key == 26)
+                    else if (kvp.Key == 26)
                     {
                         Jail.Command26 = kvp.Value[1];
                     }
-                    if (kvp.Key == 27)
+                    else if (kvp.Key == 27)
                     {
                         Jail.Command27 = kvp.Value[1];
                     }
-                    if (kvp.Key == 28)
+                    else if (kvp.Key == 28)
                     {
                         Jail.Command28 = kvp.Value[1];
                     }
-                    if (kvp.Key == 29)
+                    else if (kvp.Key == 29)
                     {
                         NewSpawnTele.Command29 = kvp.Value[1];
                     }
-                    if (kvp.Key == 30)
+                    else if (kvp.Key == 30)
                     {
                         Animals.Command30 = kvp.Value[1];
                     }
-                    if (kvp.Key == 31)
+                    else if (kvp.Key == 31)
                     {
                         Animals.Command31 = kvp.Value[1];
                     }
-                    if (kvp.Key == 32)
+                    else if (kvp.Key == 32)
                     {
                         FirstClaimBlock.Command32 = kvp.Value[1];
                     }
-                    if (kvp.Key == 33)
+                    else if (kvp.Key == 33)
                     {
                         ClanManager.Command33 = kvp.Value[1];
                     }
-                    if (kvp.Key == 34)
+                    else if (kvp.Key == 34)
                     {
                         ClanManager.Command34 = kvp.Value[1];
                     }
-                    if (kvp.Key == 35)
+                    else if (kvp.Key == 35)
                     {
                         ClanManager.Command35 = kvp.Value[1];
                     }
-                    if (kvp.Key == 36)
+                    else if (kvp.Key == 36)
                     {
                         ClanManager.Command36 = kvp.Value[1];
                     }
-                    if (kvp.Key == 37)
+                    else if (kvp.Key == 37)
                     {
                         ClanManager.Command37 = kvp.Value[1];
                     }
-                    if (kvp.Key == 38)
+                    else if (kvp.Key == 38)
                     {
                         ClanManager.Command38 = kvp.Value[1];
                     }
-                    if (kvp.Key == 39)
+                    else if (kvp.Key == 39)
                     {
                         ClanManager.Command39 = kvp.Value[1];
                     }
-                    if (kvp.Key == 40)
+                    else if (kvp.Key == 40)
                     {
                         ClanManager.Command40 = kvp.Value[1];
                     }
-                    if (kvp.Key == 41)
+                    else if (kvp.Key == 41)
                     {
                         ClanManager.Command41 = kvp.Value[1];
                     }
-                    if (kvp.Key == 42)
+                    else if (kvp.Key == 42)
                     {
                         ClanManager.Command42 = kvp.Value[1];
                     }
-                    if (kvp.Key == 43)
+                    else if (kvp.Key == 43)
                     {
                         ClanManager.Command43 = kvp.Value[1];
                     }
-                    if (kvp.Key == 44)
+                    else if (kvp.Key == 44)
                     {
                         ClanManager.Command44 = kvp.Value[1];
                     }
-                    if (kvp.Key == 45)
+                    else if (kvp.Key == 45)
                     {
                         ClanManager.Command45 = kvp.Value[1];
                     }
-                    if (kvp.Key == 46)
+                    else if (kvp.Key == 46)
                     {
                         VoteReward.Command46 = kvp.Value[1];
                     }
-                    if (kvp.Key == 47)
+                    else if (kvp.Key == 47)
                     {
                         AutoShutdown.Command47 = kvp.Value[1];
                     }
-                    if (kvp.Key == 48)
+                    else if (kvp.Key == 48)
                     {
                         AdminList.Command48 = kvp.Value[1];
                     }
-                    if (kvp.Key == 49)
+                    else if (kvp.Key == 49)
                     {
                         Travel.Command49 = kvp.Value[1];
                     }
-                    if (kvp.Key == 50)
+                    else if (kvp.Key == 50)
                     {
                         Zones.Command50 = kvp.Value[1];
                     }
-                    if (kvp.Key == 51)
+                    else if (kvp.Key == 51)
                     {
                         MarketChat.Command51 = kvp.Value[1];
                     }
-                    if (kvp.Key == 52)
+                    else if (kvp.Key == 52)
                     {
                         MarketChat.Command52 = kvp.Value[1];
                     }
-                    if (kvp.Key == 53)
+                    else if (kvp.Key == 53)
                     {
                         LobbyChat.Command53 = kvp.Value[1];
                     }
-                    if (kvp.Key == 54)
+                    else if (kvp.Key == 54)
                     {
                         LobbyChat.Command54 = kvp.Value[1];
                     }
-                    if (kvp.Key == 55)
+                    else if (kvp.Key == 55)
                     {
                         Jail.Command55 = kvp.Value[1];
                     }
-                    if (kvp.Key == 56)
+                    else if (kvp.Key == 56)
                     {
                         Wallet.Command56 = kvp.Value[1];
                     }
-                    if (kvp.Key == 57)
+                    else if (kvp.Key == 57)
                     {
                         Shop.Command57 = kvp.Value[1];
                     }
-                    if (kvp.Key == 58)
+                    else if (kvp.Key == 58)
                     {
                         Shop.Command58 = kvp.Value[1];
                     }
-                    if (kvp.Key == 59)
+                    else if (kvp.Key == 59)
                     {
                         FriendTeleport.Command59 = kvp.Value[1];
                     }
-                    if (kvp.Key == 60)
+                    else if (kvp.Key == 60)
                     {
                         FriendTeleport.Command60 = kvp.Value[1];
                     }
-                    if (kvp.Key == 61)
+                    else if (kvp.Key == 61)
                     {
                         DeathSpot.Command61 = kvp.Value[1];
                     }
-                    if (kvp.Key == 62)
+                    else if (kvp.Key == 62)
                     {
                         WeatherVote.Command62 = kvp.Value[1];
                     }
-                    if (kvp.Key == 63)
+                    else if (kvp.Key == 63)
                     {
                         WeatherVote.Command63 = kvp.Value[1];
                     }
-                    if (kvp.Key == 64)
+                    else if (kvp.Key == 64)
                     {
                         WeatherVote.Command64 = kvp.Value[1];
                     }
-                    if (kvp.Key == 65)
+                    else if (kvp.Key == 65)
                     {
                         WeatherVote.Command65 = kvp.Value[1];
                     }
-                    if (kvp.Key == 66)
+                    else if (kvp.Key == 66)
                     {
                         RestartVote.Command66 = kvp.Value[1];
                     }
-                    if (kvp.Key == 67)
+                    else if (kvp.Key == 67)
                     {
                         MuteVote.Command67 = kvp.Value[1];
                     }
-                    if (kvp.Key == 68)
+                    else if (kvp.Key == 68)
                     {
                         KickVote.Command68 = kvp.Value[1];
                     }
-                    if (kvp.Key == 69)
+                    else if (kvp.Key == 69)
                     {
                         ReservedSlots.Command69 = kvp.Value[1];
                     }
-                    if (kvp.Key == 70)
+                    else if (kvp.Key == 70)
                     {
                         RestartVote.Command70 = kvp.Value[1];
                     }
-                    if (kvp.Key == 71)
+                    else if (kvp.Key == 71)
                     {
                         AuctionBox.Command71 = kvp.Value[1];
                     }
-                    if (kvp.Key == 72)
+                    else if (kvp.Key == 72)
                     {
                         AuctionBox.Command72 = kvp.Value[1];
                     }
-                    if (kvp.Key == 73)
+                    else if (kvp.Key == 73)
                     {
                         AuctionBox.Command73 = kvp.Value[1];
                     }
-                    if (kvp.Key == 74)
+                    else if (kvp.Key == 74)
                     {
                         AuctionBox.Command74 = kvp.Value[1];
                     }
-                    if (kvp.Key == 75)
+                    else if (kvp.Key == 75)
                     {
                         Fps.Command75 = kvp.Value[1];
                     }
-                    if (kvp.Key == 76)
+                    else if (kvp.Key == 76)
                     {
                         Loc.Command76 = kvp.Value[1];
                     }
-                    if (kvp.Key == 77)
+                    else if (kvp.Key == 77)
                     {
                         VehicleTeleport.Command77 = kvp.Value[1];
                     }
-                    if (kvp.Key == 78)
+                    else if (kvp.Key == 78)
                     {
                         VehicleTeleport.Command78 = kvp.Value[1];
                     }
-                    if (kvp.Key == 79)
+                    else if (kvp.Key == 79)
                     {
                         VehicleTeleport.Command79 = kvp.Value[1];
                     }
-                    if (kvp.Key == 80)
+                    else if (kvp.Key == 80)
                     {
                         VehicleTeleport.Command80 = kvp.Value[1];
                     }
-                    if (kvp.Key == 81)
+                    else if (kvp.Key == 81)
                     {
                         VehicleTeleport.Command81 = kvp.Value[1];
                     }
-                    if (kvp.Key == 82)
+                    else if (kvp.Key == 82)
                     {
                         Report.Command82 = kvp.Value[1];
                     }
-                    if (kvp.Key == 83)
+                    else if (kvp.Key == 83)
                     {
                         Bounties.Command83 = kvp.Value[1];
                     }
-                    if (kvp.Key == 84)
+                    else if (kvp.Key == 84)
                     {
                         Lottery.Command84 = kvp.Value[1];
                     }
-                    if (kvp.Key == 85)
+                    else if (kvp.Key == 85)
                     {
                         Lottery.Command85 = kvp.Value[1];
                     }
-                    if (kvp.Key == 86)
+                    else if (kvp.Key == 86)
                     {
                         NewSpawnTele.Command86 = kvp.Value[1];
                     }
-                    if (kvp.Key == 87)
+                    else if (kvp.Key == 87)
                     {
                         SetLobby.Command87 = kvp.Value[1];
                     }
-                    if (kvp.Key == 88)
+                    else if (kvp.Key == 88)
                     {
                         LobbyChat.Command88 = kvp.Value[1];
                     }
-                    if (kvp.Key == 89)
+                    else if (kvp.Key == 89)
                     {
                         PlayerList.Command89 = kvp.Value[1];
                     }
-                    if (kvp.Key == 90)
+                    else if (kvp.Key == 90)
                     {
                         Stuck.Command90 = kvp.Value[1];
                     }
-                    if (kvp.Key == 91)
+                    else if (kvp.Key == 91)
                     {
                         PollConsole.Command91 = kvp.Value[1];
                     }
-                    if (kvp.Key == 92)
+                    else if (kvp.Key == 92)
                     {
                         PollConsole.Command92 = kvp.Value[1];
                     }
-                    if (kvp.Key == 93)
+                    else if (kvp.Key == 93)
                     {
                         PollConsole.Command93 = kvp.Value[1];
                     }
-                    if (kvp.Key == 94)
+                    else if (kvp.Key == 94)
                     {
                         Bank.Command94 = kvp.Value[1];
                     }
-                    if (kvp.Key == 95)
+                    else if (kvp.Key == 95)
                     {
                         Bank.Command95 = kvp.Value[1];
                     }
-                    if (kvp.Key == 96)
+                    else if (kvp.Key == 96)
                     {
                         Bank.Command96 = kvp.Value[1];
                     }
-                    if (kvp.Key == 97)
+                    else if (kvp.Key == 97)
                     {
                         Bank.Command97 = kvp.Value[1];
                     }
-                    if (kvp.Key == 98)
+                    else if (kvp.Key == 98)
                     {
                         Bank.Command98 = kvp.Value[1];
                     }
-                    if (kvp.Key == 99)
+                    else if (kvp.Key == 99)
                     {
                         Bank.Command99 = kvp.Value[1];
                     }
-                    if (kvp.Key == 100)
+                    else if (kvp.Key == 100)
                     {
                         Event.Command100 = kvp.Value[1];
                     }
-                    if (kvp.Key == 101)
+                    else if (kvp.Key == 101)
                     {
-                        
+                        Hardcore.Command101 = kvp.Value[1];
                     }
-                    if (kvp.Key == 102)
+                    else if (kvp.Key == 102)
                     {
                         MarketChat.Command102 = kvp.Value[1];
                     }
-                    if (kvp.Key == 103)
+                    else if (kvp.Key == 103)
                     {
                         MarketChat.Command103 = kvp.Value[1];
                     }
-                    if (kvp.Key == 104)
+                    else if (kvp.Key == 104)
                     {
                         InfoTicker.Command104 = kvp.Value[1];
                     }
-                    if (kvp.Key == 105)
+                    else if (kvp.Key == 105)
                     {
                         Session.Command105 = kvp.Value[1];
                     }
-                    if (kvp.Key == 106)
+                    else if (kvp.Key == 106)
                     {
                         Waypoint.Command106 = kvp.Value[1];
                     }
-                    if (kvp.Key == 107)
+                    else if (kvp.Key == 107)
                     {
                         Waypoint.Command107 = kvp.Value[1];
                     }
-                    if (kvp.Key == 108)
+                    else if (kvp.Key == 108)
                     {
                         Waypoint.Command108 = kvp.Value[1];
                     }
-                    if (kvp.Key == 109)
+                    else if (kvp.Key == 109)
                     {
                         Waypoint.Command109 = kvp.Value[1];
                     }
-                    if (kvp.Key == 110)
+                    else if (kvp.Key == 110)
                     {
                         Waypoint.Command110 = kvp.Value[1];
                     }
-                    if (kvp.Key == 111)
+                    else if (kvp.Key == 111)
                     {
                         Waypoint.Command111 = kvp.Value[1];
                     }
-                    if (kvp.Key == 112)
+                    else if (kvp.Key == 112)
                     {
                         Waypoint.Command112 = kvp.Value[1];
                     }
-                    if (kvp.Key == 113)
+                    else if (kvp.Key == 113)
                     {
                         Waypoint.Command113 = kvp.Value[1];
                     }
-                    if (kvp.Key == 114)
+                    else if (kvp.Key == 114)
                     {
                         Waypoint.Command114 = kvp.Value[1];
                     }
-                    if (kvp.Key == 115)
+                    else if (kvp.Key == 115)
                     {
                         Waypoint.Command115 = kvp.Value[1];
                     }
-                    if (kvp.Key == 116)
+                    else if (kvp.Key == 116)
                     {
                         Waypoint.Command116 = kvp.Value[1];
                     }
-                    if (kvp.Key == 117)
+                    else if (kvp.Key == 117)
                     {
                         Waypoint.Command117 = kvp.Value[1];
                     }
-                    if (kvp.Key == 118)
+                    else if (kvp.Key == 118)
                     {
                         AdminChat.Command118 = kvp.Value[1];
                     }
-                    if (kvp.Key == 119)
+                    else if (kvp.Key == 119)
                     {
                         AdminChat.Command119 = kvp.Value[1];
                     }
-                    if (kvp.Key == 120)
+                    else if (kvp.Key == 120)
                     {
                         Whisper.Command120 = kvp.Value[1];
                     }
-                    if (kvp.Key == 121)
+                    else if (kvp.Key == 121)
                     {
                         Whisper.Command121 = kvp.Value[1];
                     }
-                    if (kvp.Key == 122)
+                    else if (kvp.Key == 122)
                     {
                         Whisper.Command122 = kvp.Value[1];
                     }
-                    if (kvp.Key == 123)
+                    else if (kvp.Key == 123)
                     {
                         Whisper.Command123 = kvp.Value[1];
                     }
-                    if (kvp.Key == 124)
+                    else if (kvp.Key == 124)
                     {
                         ClanManager.Command124 = kvp.Value[1];
                     }
-                    if (kvp.Key == 125)
+                    else if (kvp.Key == 125)
                     {
                         ClanManager.Command125 = kvp.Value[1];
                     }
-                    if (kvp.Key == 126)
+                    else if (kvp.Key == 126)
                     {
-                        Hardcore.Command126 = kvp.Value[1];
+                        Prayer.Command126 = kvp.Value[1];
+                    }
+                    else if (kvp.Key == 127)
+                    {
+                        Hardcore.Command127 = kvp.Value[1];
+                    }
+                    else if (kvp.Key == 128)
+                    {
+                        Hardcore.Command128 = kvp.Value[1];
+                    }
+                    else if (kvp.Key == 129)
+                    {
+                        ScoutPlayer.Command129 = kvp.Value[1];
+                    }
+                    else if (kvp.Key == 130)
+                    {
+                        ScoutPlayer.Command130 = kvp.Value[1];
                     }
                 }
             }

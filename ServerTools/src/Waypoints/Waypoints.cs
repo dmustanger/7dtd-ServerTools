@@ -49,49 +49,37 @@ namespace ServerTools
         {
             string _sql = string.Format("SELECT steamid, wayPointName, position FROM Waypoints WHERE steamid = '{0}' LIMIT {1}", _cInfo.playerId, _waypointLimit);
             DataTable _result1 = SQL.TQuery(_sql);
-            foreach (DataRow row in _result1.Rows)
+            if (_result1.Rows.Count > 0)
             {
-                string _name = row[1].ToString();
-                int x, y, z;
-                string[] _cords = row[2].ToString().Split(',');
-                int.TryParse(_cords[0], out x);
-                int.TryParse(_cords[1], out y);
-                int.TryParse(_cords[2], out z);
-                string _message = "Waypoint {Name} @ {X} {Y} {Z}";
-                _message = _message.Replace("{Name}", _name);
-                _message = _message.Replace("{X}", x.ToString());
-                _message = _message.Replace("{Y}", y.ToString());
-                _message = _message.Replace("{Z}", z.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                
+                foreach (DataRow row in _result1.Rows)
+                {
+                    string _name = row[1].ToString();
+                    int x, y, z;
+                    string[] _cords = row[2].ToString().Split(',');
+                    int.TryParse(_cords[0], out x);
+                    int.TryParse(_cords[1], out y);
+                    int.TryParse(_cords[2], out z);
+                    string _message = "Waypoint {Name} @ {X} {Y} {Z}";
+                    _message = _message.Replace("{Name}", _name);
+                    _message = _message.Replace("{X}", x.ToString());
+                    _message = _message.Replace("{Y}", y.ToString());
+                    _message = _message.Replace("{Z}", z.ToString());
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+
+                }
+                string _message2 = "Waypoint Limit = {Limit}";
+                _message2 = _message2.Replace("{Limit}", _waypointLimit.ToString());
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message2 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
-            string _message2 = "Waypoint Limit = {Limit}";
-            _message2 = _message2.Replace("{Limit}", _waypointLimit.ToString());
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message2 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void TeleDelay(ClientInfo _cInfo, string _waypoint)
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
-                if (Vehicle)
-                {
-                    Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    Entity _attachedEntity = _player.AttachedToEntity;
-                    if (_attachedEntity != null)
-                    {
-                        string _phrase587;
-                        if (!Phrases.Dict.TryGetValue(587, out _phrase587))
-                        {
-                            _phrase587 = " you can not teleport to a waypoint with a vehicle.";
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase587 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                        }
-                        return;
-                    }
-                }
                 if (Delay_Between_Uses < 1)
                 {
-                    CommandCost(_cInfo, _waypoint);
+                    Checks(_cInfo, _waypoint);
                 }
                 else
                 {
@@ -110,7 +98,7 @@ namespace ServerTools
                     _result.Dispose();
                     if (_lastWaypoint.ToString() == "10/29/2000 7:30:00 AM")
                     {
-                        CommandCost(_cInfo, _waypoint);
+                        Checks(_cInfo, _waypoint);
                     }
                     else
                     {
@@ -145,7 +133,7 @@ namespace ServerTools
         {
             if (_timepassed >= _delay)
             {
-                CommandCost(_cInfo, _waypoint);
+                Checks(_cInfo, _waypoint);
             }
             else
             {
@@ -153,13 +141,67 @@ namespace ServerTools
                 string _phrase575;
                 if (!Phrases.Dict.TryGetValue(575, out _phrase575))
                 {
-                    _phrase575 = " you can only use waypoints once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase575 = " you can only use {CommandPrivate}{Command106} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
+                _phrase575 = _phrase575.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase575 = _phrase575.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase575 = _phrase575.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase575 = _phrase575.Replace("{Command106}", Command106);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase575 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
+
+        private static void Checks(ClientInfo _cInfo, string _waypoint)
+        {
+            World world = GameManager.Instance.World;
+            EntityPlayer _player = world.Players.dict[_cInfo.entityId];
+            if (Vehicle)
+            {
+                Entity _attachedEntity = _player.AttachedToEntity;
+                if (_attachedEntity != null)
+                {
+                    string _phrase587;
+                    if (!Phrases.Dict.TryGetValue(587, out _phrase587))
+                    {
+                        _phrase587 = " you can not teleport to a waypoint with a vehicle.";
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase587 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                    return;
+                }
+            }
+            if (PvP_Check)
+            {
+                if (Teleportation.PCheck(_cInfo, _player))
+                {
+                    return;
+                }
+            }
+            if (Zombie_Check)
+            {
+                if (Teleportation.ZCheck(_cInfo, _player))
+                {
+                    return;
+                }
+            }
+            Vector3 _position = _player.GetPosition();
+            int x = (int)_position.x;
+            int y = (int)_position.y;
+            int z = (int)_position.z;
+            Vector3i _vec3i = new Vector3i(x, y, z);
+            if (!Claimed(_cInfo, _vec3i))
+            {
+                CommandCost(_cInfo, _waypoint);
+            }
+            else
+            {
+                string _phrase576;
+                if (!Phrases.Dict.TryGetValue(576, out _phrase576))
+                {
+                    _phrase576 = " you can only use a waypoint that is outside of a claimed space.";
+                }
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase576 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+        }       
 
         private static void CommandCost(ClientInfo _cInfo, string _waypoint)
         {
@@ -192,21 +234,13 @@ namespace ServerTools
             DataTable _result = SQL.TQuery(_sql);
             if (_result.Rows.Count > 0)
             {
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                if (PvP_Check)
+                string _phrase577;
+                if (!Phrases.Dict.TryGetValue(577, out _phrase577))
                 {
-                    if (Teleportation.PCheck(_cInfo, _player))
-                    {
-                        return;
-                    }
+                    _phrase577 = "Traveling to waypoint {Waypoint}.";
                 }
-                if (Zombie_Check)
-                {
-                    if (Teleportation.ZCheck(_cInfo, _player))
-                    {
-                        return;
-                    }
-                }
+                _phrase577 = _phrase577.Replace("{Waypoint}", _waypoint);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase577 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 int x, y, z;
                 string _position = _result.Rows[0].ItemArray.GetValue(0).ToString();
                 string[] _cordsplit = _position.Split(',');
@@ -220,13 +254,6 @@ namespace ServerTools
                 {
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 }
-                string _phrase577;
-                if (!Phrases.Dict.TryGetValue(577, out _phrase577))
-                {
-                    _phrase577 = "Traveling to waypoint {Waypoint}.";
-                }
-                _phrase577 = _phrase577.Replace("{Waypoint}", _waypoint);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase577 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -251,10 +278,7 @@ namespace ServerTools
                 int y = (int)_position.y;
                 int z = (int)_position.z;
                 Vector3i _vec3i = new Vector3i(x, y, z);
-                PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
-                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_player.entityId);
-                EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
-                if (_owner == EnumLandClaimOwner.None)
+                if (!Claimed(_cInfo, _vec3i))
                 {
                     ReservedCheck(_cInfo, _waypoint);
                 }
@@ -272,6 +296,18 @@ namespace ServerTools
             {
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you can not use waypoint commands while signed up for or in an event.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
+        }
+
+        private static bool Claimed(ClientInfo _cInfo, Vector3i _position)
+        {
+            PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
+            PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_cInfo.entityId);
+            EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
+            if (_owner == EnumLandClaimOwner.None)
+            {
+                return false;
+            }
+            return true;
         }
 
         private static void ReservedCheck(ClientInfo _cInfo, string _waypoint)
@@ -292,7 +328,7 @@ namespace ServerTools
             _result.Dispose();
         }
 
-        public static void SavePoint(ClientInfo _cInfo, string _waypoint, int _count, int _waypointTotal)
+        private static void SavePoint(ClientInfo _cInfo, string _waypoint, int _count, int _waypointTotal)
         {
             if (_count < _waypointTotal && _waypointTotal > 0)
             {
@@ -359,18 +395,26 @@ namespace ServerTools
             {
                 if (Delay_Between_Uses < 1)
                 {
-                    FClaimCheck(_cInfo, _waypoint);
+                    FChecks(_cInfo, _waypoint);
                 }
                 else
                 {
                     string _sql = string.Format("SELECT lastWaypoint FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
                     DataTable _result = SQL.TQuery(_sql);
                     DateTime _lastWaypoint;
-                    DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastWaypoint);
+                    if (_result.Rows.Count == 0)
+                    {
+                        SQL.FastQuery(string.Format("INSERT INTO Players (steamid, playername) VALUES ('{0}', '{1}')", _cInfo.playerId, _cInfo.playerName), null);
+                        DateTime.TryParse("10/29/2000 7:30:00 AM", out _lastWaypoint);
+                    }
+                    else
+                    {
+                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _lastWaypoint);
+                    }
                     _result.Dispose();
                     if (_lastWaypoint.ToString() == "10/29/2000 7:30:00 AM")
                     {
-                        FClaimCheck(_cInfo, _waypoint);
+                        FChecks(_cInfo, _waypoint);
                     }
                     else
                     {
@@ -405,7 +449,7 @@ namespace ServerTools
         {
             if (_timepassed >= _delay)
             {
-                FClaimCheck(_cInfo, _waypoint);
+                FChecks(_cInfo, _waypoint);
             }
             else
             {
@@ -421,21 +465,32 @@ namespace ServerTools
             }
         }
 
-        private static void FClaimCheck(ClientInfo _cInfo, string _waypoint)
+        private static void FChecks(ClientInfo _cInfo, string _waypoint)
         {
             World world = GameManager.Instance.World;
             EntityPlayer _player = world.Players.dict[_cInfo.entityId];
+            if (PvP_Check)
+            {
+                if (Teleportation.PCheck(_cInfo, _player))
+                {
+                    return;
+                }
+            }
+            if (Zombie_Check)
+            {
+                if (Teleportation.ZCheck(_cInfo, _player))
+                {
+                    return;
+                }
+            }
             Vector3 _position = _player.GetPosition();
             int x = (int)_position.x;
             int y = (int)_position.y;
             int z = (int)_position.z;
             Vector3i _vec3i = new Vector3i(x, y, z);
-            PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
-            PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_player.entityId);
-            EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
-            if (_owner == EnumLandClaimOwner.None)
+            if (!Claimed(_cInfo, _vec3i))
             {
-                FCommandCost(_cInfo, _waypoint, _player);
+                FCommandCost(_cInfo, _waypoint, _position);
             }
             else
             {
@@ -448,11 +503,11 @@ namespace ServerTools
             }
         }
 
-        private static void FCommandCost(ClientInfo _cInfo, string _waypoint, EntityPlayer _player)
+        private static void FCommandCost(ClientInfo _cInfo, string _waypoint, Vector3 _position)
         {
             if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
             {
-                FExec(_cInfo, _waypoint, _player);
+                FExec(_cInfo, _waypoint, _position);
             }
             else
             {
@@ -466,28 +521,14 @@ namespace ServerTools
             }
         }
 
-        private static void FExec(ClientInfo _cInfo, string _waypoint, EntityPlayer _player)
+        private static void FExec(ClientInfo _cInfo, string _waypoint, Vector3 _playerPos)
         {
             string _sql = string.Format("SELECT position FROM Waypoints WHERE steamid = '{0}' AND wayPointName = '{1}'", _cInfo.playerId, _waypoint);
             DataTable _result = SQL.TQuery(_sql);
             string _position = _result.Rows[0].ItemArray.GetValue(0).ToString();
             if (_result.Rows.Count > 0)
             {
-                if (PvP_Check)
-                {
-                    if (Teleportation.PCheck(_cInfo, _player))
-                    {
-                        return;
-                    }
-                }
-                if (Zombie_Check)
-                {
-                    if (Teleportation.ZCheck(_cInfo, _player))
-                    {
-                        return;
-                    }
-                }
-                FriendInvite(_cInfo, _player.position, _position);
+                FriendInvite(_cInfo, _playerPos, _position);
                 int x, y, z;
                 string[] _cordsplit = _position.Split(',');
                 int.TryParse(_cordsplit[0], out x);
@@ -522,13 +563,12 @@ namespace ServerTools
             int x = (int)_position.x;
             int y = (int)_position.y;
             int z = (int)_position.z;
-            World world = GameManager.Instance.World;
-            EntityPlayer _player = world.Players.dict[_cInfo.entityId];
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
             for (int i = 0; i < _cInfoList.Count; i++)
             {
                 ClientInfo _cInfo2 = _cInfoList[i];
-                EntityPlayer _player2 = world.Players.dict[_cInfo2.entityId];
+                EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
                 if (_player2 != null)
                 {
                     if (_player.IsFriendsWith(_player2))

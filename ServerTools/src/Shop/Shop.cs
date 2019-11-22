@@ -31,11 +31,11 @@ namespace ServerTools
         {
             if (!IsEnabled && IsRunning)
             {
-                fileWatcher.Dispose();
-                IsRunning = false;
                 dict.Clear();
                 dict1.Clear();
                 categories.Clear();
+                fileWatcher.Dispose();
+                IsRunning = false;
             }
         }
 
@@ -171,9 +171,9 @@ namespace ServerTools
                         {
                             _quality = 1;
                         }
-                        if (_quality > 200)
+                        else if (_quality > 600)
                         {
-                            _quality = 200;
+                            _quality = 600;
                         }
                         if (!dict.ContainsKey(_item))
                         {
@@ -459,37 +459,38 @@ namespace ServerTools
                 _phrase620 = _phrase620.Replace("{Command58}", Command58);
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase620 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
-            else
+            else if (dict.ContainsKey(_id))
             {
-                if (dict.ContainsKey(_id))
+                string[] _stringValues;
+                if (dict.TryGetValue(_id, out _stringValues))
                 {
-                    string[] _stringValues;
-                    if (dict.TryGetValue(_id, out _stringValues))
+                    int[] _integerValues;
+                    if (dict1.TryGetValue(_id, out _integerValues))
                     {
-                        int[] _integerValues;
-                        if (dict1.TryGetValue(_id, out _integerValues))
+                        int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
+                        int _newAmount = _integerValues[2] * _count;
+                        if (_currentCoins >= _newAmount)
                         {
-                            int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
-                            int _newAmount = _integerValues[2] * _count;
-                            if (_currentCoins >= _newAmount)
+                            int _newCount = _integerValues[0] * _count;
+                            ShopPurchase(_cInfo, _stringValues[0], _newCount, _integerValues[1], _newAmount, _currentCoins);
+                        }
+                        else
+                        {
+                            string _phrase621;
+                            if (!Phrases.Dict.TryGetValue(621, out _phrase621))
                             {
-                                int _newCount = _integerValues[0] * _count;
-                                ShopPurchase(_cInfo, _stringValues[0], _newCount, _integerValues[1], _newAmount, _currentCoins);
+                                _phrase621 = " you do not have enough {Name}. Your wallet balance is {Value}.";
                             }
-                            else
-                            {
-                                string _phrase621;
-                                if (!Phrases.Dict.TryGetValue(621, out _phrase621))
-                                {
-                                    _phrase621 = " you do not have enough {Name}. Your wallet balance is {Value}.";
-                                }
-                                _phrase621 = _phrase621.Replace("{Name}", Wallet.Coin_Name);
-                                _phrase621 = _phrase621.Replace("{Value}", _currentCoins.ToString());
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase621 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
+                            _phrase621 = _phrase621.Replace("{Name}", Wallet.Coin_Name);
+                            _phrase621 = _phrase621.Replace("{Value}", _currentCoins.ToString());
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase621 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
+            }
+            else
+            {
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Item not found for shop purchase" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -497,25 +498,35 @@ namespace ServerTools
         {
             World world = GameManager.Instance.World;
             ItemValue itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, false, null, 1);
-            var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+            int _maxAllowed = itemValue.ItemClass.Stacknumber.Value;
+            if (_count <= _maxAllowed)
             {
-                entityClass = EntityClass.FromString("item"),
-                id = EntityFactory.nextEntityID++,
-                itemStack = new ItemStack(itemValue, _count),
-                pos = world.Players.dict[_cInfo.entityId].position,
-                rot = new Vector3(20f, 0f, 20f),
-                lifetime = 60f,
-                belongsPlayerId = _cInfo.entityId
-            });
-            world.SpawnEntityInWorld(entityItem);
-            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-            world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-            Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _price);
-            Log.Out(string.Format("Sold {0} to {1}.", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name, _cInfo.playerName));
-            string _message = "{Count} {Item} was purchased through the shop. If your bag is full, check the ground.";
-            _message = _message.Replace("{Count}", _count.ToString());
-            _message = _message.Replace("{Item}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                {
+                    entityClass = EntityClass.FromString("item"),
+                    id = EntityFactory.nextEntityID++,
+                    itemStack = new ItemStack(itemValue, _count),
+                    pos = world.Players.dict[_cInfo.entityId].position,
+                    rot = new Vector3(20f, 0f, 20f),
+                    lifetime = 60f,
+                    belongsPlayerId = _cInfo.entityId
+                });
+                world.SpawnEntityInWorld(entityItem);
+                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _price);
+                Log.Out(string.Format("Sold {0} to {1}.", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name, _cInfo.playerName));
+                string _message = "{Count} {Item} was purchased through the shop. If your bag is full, check the ground.";
+                _message = _message.Replace("{Count}", _count.ToString());
+                _message = _message.Replace("{Item}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+            else
+            {
+                string _message = " you can only withdraw a full stack at a time. The maximum stack size is {Max}.";
+                _message = _message.Replace("{Max}", _maxAllowed.ToString());
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
         }
     }
 }

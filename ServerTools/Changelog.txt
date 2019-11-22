@@ -1,5 +1,31 @@
 ﻿CHANGELOG
 
+18.1.5
+Built using Alpha 18.2 experimental assets
+Functioning with 18.1 stable and 18.2 experimental
+
+Added Hardcore tool. Limited lives and can buy extras. Set Optional true so players must turn it on
+Added Prayer tool. Players type /pray and receive one buff from a custom list in Prayers.xml
+Added Scout_Player tool. /scout looks for a nearby hostile player and returns the approx distance
+Added claim check when using waypoint and home teleports 
+Added server shutdown fail safe despite auto shutdown being enabled
+Added equipment check to Invalid_Item_Kicker
+Fixed Wallet, Bank and Wallet option Bank_Transfer needing to be on for basic bank functions
+Fixed Player_Log logging the date for the players health and shifting the stats out of place
+Fixed Player_Log not committing to all players and failing to show the inventory
+Fixed Weather_Vote using the wrong players needed to start the vote
+Fixed Private_Message not working
+Changed Invalid_Item_Kicker to ban the player if they ignore the warnings to drop the item
+Changed some internal tool operations to make them more efficient
+Changed Shop to allow buying a max stack at a time to prevent errors
+Changed EventTrigger.xml 126 to 101 and relabeled it 'buy life'
+Changed EventTrigger.xml 126 to 'pray'
+Changed EventTrigger.xml 127 to 'hardcore on'
+Changed EventTrigger.xml 128 to 'scoutplayer'
+Changed EventTrigger.xml 129 to 'scout'
+Changed chat hook code to prevent repeating messages from Message_Color tool
+Updated phrase 575,817,949
+
 18.1.4
 Built using Alpha 18.1 experimental assets
 Functioning with 18.0 stable and 18.1 experimental

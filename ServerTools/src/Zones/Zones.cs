@@ -22,6 +22,7 @@ namespace ServerTools
         public static List<int> ZonePvE = new List<int>();
         public static List<string[]> Box1 = new List<string[]>();
         public static List<bool[]> Box2 = new List<bool[]>();
+        public static List<Rect> TestBox = new List<Rect>();
         private const string file = "Zones.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
@@ -66,6 +67,7 @@ namespace ServerTools
                 {
                     Box1.Clear();
                     Box2.Clear();
+                    TestBox.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -144,7 +146,6 @@ namespace ServerTools
                                 Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for noZombie attribute: {0}.", subChild.OuterXml));
                                 continue;
                             }
-
                             string[] box1 = { _line.GetAttribute("corner1"), _line.GetAttribute("corner2"), _line.GetAttribute("entryMessage"), _line.GetAttribute("exitMessage"),
                             _line.GetAttribute("response"), _line.GetAttribute("reminderNotice") };
                             bool[] box2 = { _result1, _result2, _result3 };
@@ -320,118 +321,85 @@ namespace ServerTools
 
         public static void ZoneCheck(ClientInfo _cInfo, EntityPlayer _player)
         {
-            if (Zones.Box1.Count > 0)
+            if (Box1.Count > 0)
             {
-                int _flagCount = 0;
                 int _X = (int)_player.position.x;
                 int _Y = (int)_player.position.y;
                 int _Z = (int)_player.position.z;
-                for (int i = 0; i < Zones.Box1.Count; i++)
+                for (int i = 0; i < Box1.Count; i++)
                 {
-                    string[] _box = Zones.Box1[i];
-                    bool[] _box2 = Zones.Box2[i];
-                    if (Zones.BoxCheck(_box, _X, _Y, _Z, _box2))
+                    string[] _box1 = Box1[i];
+                    bool[] _box2 = Box2[i];
+                    if (BoxCheck(_box1, _X, _Y, _Z, _box2))
                     {
-                        if (!Zones.ZoneExit.ContainsKey(_player.entityId))
+                        if (ZoneExit.ContainsKey(_player.entityId))
                         {
-                            for (int j = 0; j < Zones.Box1.Count; j++)
+                            string _exitMsg;
+                            if (ZoneExit.TryGetValue(_player.entityId, out _exitMsg))
                             {
-                                string[] _box3 = Zones.Box1[j];
-                                bool[] _box4 = Zones.Box2[j];
-                                if (Zones.BoxCheck(_box3, _X, _Y, _Z, _box4))
+                                if (_exitMsg != _box1[3])
                                 {
-                                    Zones.ZoneExit.Add(_player.entityId, _box3[3]);
-                                    if (_box4[1])
+                                    if (Zone_Message)
                                     {
-                                        ZonePvE.Add(_player.entityId);
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _box1[2] + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     }
-                                    if (Zones.Zone_Message)
+                                    if (_box1[4] != "")
                                     {
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _box3[2] + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        Response(_cInfo, _box1[4]);
                                     }
-                                    if (_box3[4] != "")
-                                    {
-                                        Zones.Response(_cInfo, _box3[4]);
-                                    }
-                                    Zones.reminder.Add(_player.entityId, DateTime.Now);
-                                    Zones.reminderMsg.Add(_player.entityId, _box3[5]);
-                                    return;
+                                    ZoneExit[_player.entityId] = _box1[3];
+                                    reminder[_player.entityId] = DateTime.Now;
+                                    reminderMsg[_player.entityId] = _box1[5];
                                 }
                             }
                         }
                         else
                         {
-                            string _exitMsg;
-                            if (Zones.ZoneExit.TryGetValue(_player.entityId, out _exitMsg))
+                            if (Zone_Message)
                             {
-                                if (_exitMsg != _box[3])
-                                {
-                                    for (int j = 0; j < Zones.Box1.Count; j++)
-                                    {
-                                        string[] _box3 = Zones.Box1[j];
-                                        bool[] _box4 = Zones.Box2[j];
-                                        if (Zones.BoxCheck(_box3, _X, _Y, _Z, _box4))
-                                        {
-                                            Zones.ZoneExit[_player.entityId] = _box3[3];
-                                            if (_box4[1])
-                                            {
-                                                if (!ZonePvE.Contains(_player.entityId))
-                                                {
-                                                    ZonePvE.Add(_player.entityId);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                if (ZonePvE.Contains(_player.entityId))
-                                                {
-                                                    ZonePvE.Remove(_player.entityId);
-                                                }
-                                            }
-                                            if (Zones.Zone_Message)
-                                            {
-                                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _box3[2] + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                            }
-                                            if (_box3[4] != "")
-                                            {
-                                                Zones.Response(_cInfo, _box3[4]);
-                                            }
-                                            Zones.reminder[_player.entityId] = DateTime.Now;
-                                            Zones.reminderMsg[_player.entityId] = _box3[5];
-                                            return;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    return;
-                                }
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _box1[2] + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            }
+                            if (_box1[4] != "")
+                            {
+                                Response(_cInfo, _box1[4]);
+                            }
+                            ZoneExit.Add(_player.entityId, _box1[3]);
+                            reminder.Add(_player.entityId, DateTime.Now);
+                            reminderMsg.Add(_player.entityId, _box1[5]);
+                        }
+                        if (_box2[1])
+                        {
+                            if (!ZonePvE.Contains(_player.entityId))
+                            {
+                                ZonePvE.Add(_player.entityId);
+                            }
+                        }
+                        else if (ZonePvE.Contains(_player.entityId))
+                        {
+                            ZonePvE.Remove(_player.entityId);
+                        }
+                        return;
+                    }
+                }
+                if (ZoneExit.ContainsKey(_player.entityId))
+                {
+                    if (Zone_Message)
+                    {
+                        string _msg;
+                        if (ZoneExit.TryGetValue(_player.entityId, out _msg))
+                        {
+                            if (_msg != "")
+                            {
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _msg + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
-                    else
+                    ZoneExit.Remove(_player.entityId);
+                    reminder.Remove(_player.entityId);
+                    reminderMsg.Remove(_player.entityId);
+                    if (ZonePvE.Contains(_player.entityId))
                     {
-                        _flagCount++;
-                        if (_flagCount == Zones.Box1.Count && Zones.ZoneExit.ContainsKey(_player.entityId))
-                        {
-                            if (Zones.Zone_Message)
-                            {
-                                string _msg;
-                                if (Zones.ZoneExit.TryGetValue(_player.entityId, out _msg))
-                                {
-                                    if (_msg != "")
-                                    {
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _msg + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                }
-                            }
-                            Zones.ZoneExit.Remove(_player.entityId);
-                            if (ZonePvE.Contains(_player.entityId))
-                            {
-                                ZonePvE.Remove(_player.entityId);
-                            }
-                            Zones.reminder.Remove(_player.entityId);
-                            Zones.reminderMsg.Remove(_player.entityId);
-                        }
+                        ZonePvE.Remove(_player.entityId);
                     }
                 }
             }
@@ -570,7 +538,7 @@ namespace ServerTools
         public static bool BoxCheck(string[] _box, int _X, int _Y, int _Z, bool[] _box2)
         {
             string[] _corner1 = _box[0].Split(',');
-            int xMin, yMin, zMin, xMax, yMax, zMax;;
+            int xMin, yMin, zMin, xMax, yMax, zMax;
             int.TryParse(_corner1[0], out xMin);
             int.TryParse(_corner1[1], out yMin);
             int.TryParse(_corner1[2], out zMin);
@@ -606,14 +574,14 @@ namespace ServerTools
             {
                 if (xMin < xMax)
                 {
-                    if (_X < xMin && _X > xMax)
+                    if (_X < xMin || _X > xMax)
                     {
                         return false;
                     }
                 }
                 else
                 {
-                    if (_X > xMin && _X < xMax)
+                    if (_X > xMin || _X < xMax)
                     {
                         return false;
                     }
@@ -623,14 +591,14 @@ namespace ServerTools
             {
                 if (xMin < xMax)
                 {
-                    if (_X < xMin && _X > xMax)
+                    if (_X < xMin || _X > xMax)
                     {
                         return false;
                     }
                 }
                 else
                 {
-                    if (_X <= xMin && _X >= xMax)
+                    if (_X > xMin || _X < xMax)
                     {
                         return false;
                     }
@@ -638,14 +606,14 @@ namespace ServerTools
             }
             else if (xMin <= 0 && xMax >= 0)
             {
-                if (_X < xMin && _X > xMax)
+                if (_X < xMin || _X > xMax)
                 {
                     return false;
                 }
             }
             else if (xMin >= 0 && xMax <= 0)
             {
-                if (_X > xMin && _X < xMax)
+                if (_X > xMin || _X < xMax)
                 {
                     return false;
                 }
@@ -654,14 +622,14 @@ namespace ServerTools
             {
                 if (yMin < yMax)
                 {
-                    if (_Y < yMin && _Y > yMax)
+                    if (_Y < yMin || _Y > yMax)
                     {
                         return false;
                     }
                 }
                 else
                 {
-                    if (_Y > yMin && _Y < yMax)
+                    if (_Y > yMin || _Y < yMax)
                     {
                         return false;
                     }
@@ -671,14 +639,14 @@ namespace ServerTools
             {
                 if (yMin < yMax)
                 {
-                    if (_Y < yMin && _Y > yMax)
+                    if (_Y < yMin || _Y > yMax)
                     {
                         return false;
                     }
                 }
                 else
                 {
-                    if (_Y > yMin && _Y < yMax)
+                    if (_Y > yMin || _Y < yMax)
                     {
                         return false;
                     }
@@ -686,14 +654,14 @@ namespace ServerTools
             }
             else if (yMin <= 0 && yMax >= 0)
             {
-                if (_Y < yMin && _Y > yMax)
+                if (_Y < yMin || _Y > yMax)
                 {
                     return false;
                 }
             }
             else if (yMin >= 0 && yMax <= 0)
             {
-                if (_Y > yMin && _Y < yMax)
+                if (_Y > yMin || _Y < yMax)
                 {
                     return false;
                 }
@@ -702,14 +670,14 @@ namespace ServerTools
             {
                 if (zMin < zMax)
                 {
-                    if (_Z < zMin && _Z > zMax)
+                    if (_Z < zMin || _Z > zMax)
                     {
                         return false;
                     }
                 }
                 else
                 {
-                    if (_Z > zMin && _Z < zMax)
+                    if (_Z > zMin || _Z < zMax)
                     {
                         return false;
                     }
@@ -719,14 +687,14 @@ namespace ServerTools
             {
                 if (zMin < zMax)
                 {
-                    if (_Z < zMin && _Z > zMax)
+                    if (_Z < zMin || _Z > zMax)
                     {
                         return false;
                     }
                 }
                 else
                 {
-                    if (_Z > zMin && _Z < zMax)
+                    if (_Z > zMin || _Z < zMax)
                     {
                         return false;
                     }
@@ -734,14 +702,14 @@ namespace ServerTools
             }
             else if (zMin <= 0 && zMax >= 0)
             {
-                if (_Z < zMin && _Z > zMax)
+                if (_Z < zMin || _Z > zMax)
                 {
                     return false;
                 }
             }
             else if (zMin >= 0 && zMax <= 0)
             {
-                if (_Z > zMin && _Z < zMax)
+                if (_Z > zMin || _Z < zMax)
                 {
                     return false;
                 }
@@ -765,47 +733,44 @@ namespace ServerTools
                             for (int j = 0; j < Entities.Count; j++)
                             {
                                 Entity _entity = Entities[j];
-                                if (_entity != null)
+                                if (_entity != null && !_entity.IsClientControlled() && !_entity.IsDead())
                                 {
-                                    if (!_entity.IsClientControlled() && !_entity.IsDead())
+                                    string _tags = _entity.EntityClass.Tags.ToString();
+                                    if (_tags.Contains("zombie") || _tags.Contains("hostile"))
                                     {
-                                        string _tags = _entity.EntityClass.Tags.ToString();
-                                        if (_tags.Contains("zombie") || _tags.Contains("hostile"))
+                                        Vector3 _vec = _entity.position;
+                                        int _X = (int)_entity.position.x;
+                                        int _Y = (int)_entity.position.y;
+                                        int _Z = (int)_entity.position.z;
+                                        int xMin, yMin, zMin;
+                                        string[] _corner1 = _box1[0].Split(',');
+                                        int.TryParse(_corner1[0], out xMin);
+                                        int.TryParse(_corner1[1], out yMin);
+                                        int.TryParse(_corner1[2], out zMin);
+                                        if (!_box2[0])
                                         {
-                                            Vector3 _vec = _entity.position;
-                                            int _X = (int)_entity.position.x;
-                                            int _Y = (int)_entity.position.y;
-                                            int _Z = (int)_entity.position.z;
-                                            int xMin, yMin, zMin;
-                                            string[] _corner1 = _box1[0].Split(',');
-                                            int.TryParse(_corner1[0], out xMin);
-                                            int.TryParse(_corner1[1], out yMin);
-                                            int.TryParse(_corner1[2], out zMin);
-                                            if (!_box2[0])
+                                            int xMax, yMax, zMax;
+                                            string[] _corner2 = _box1[1].Split(',');
+                                            int.TryParse(_corner2[0], out xMax);
+                                            int.TryParse(_corner2[1], out yMax);
+                                            int.TryParse(_corner2[2], out zMax);
+                                            if (VectorCheck(xMin, yMin, zMin, xMax, yMax, zMax, _X, _Y, _Z))
                                             {
-                                                int xMax, yMax, zMax;
-                                                string[] _corner2 = _box1[1].Split(',');
-                                                int.TryParse(_corner2[0], out xMax);
-                                                int.TryParse(_corner2[1], out yMax);
-                                                int.TryParse(_corner2[2], out zMax);
-                                                if (VectorCheck(xMin, yMin, zMin, xMax, yMax, zMax, _X, _Y, _Z))
+                                                string _name = EntityClass.list[_entity.entityClass].entityClassName;
+                                                GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
+                                                Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed {0} from protected zone @ {1} {2} {3}", _name, _X, _Y, _Z));
+                                            }
+                                        }
+                                        else
+                                        {
+                                            int _radius;
+                                            if (int.TryParse(_box1[1], out _radius))
+                                            {
+                                                if ((xMin - _X) * (xMin - _X) + (zMin - _Z) * (zMin - _Z) <= _radius * _radius)
                                                 {
                                                     string _name = EntityClass.list[_entity.entityClass].entityClassName;
                                                     GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
                                                     Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed {0} from protected zone @ {1} {2} {3}", _name, _X, _Y, _Z));
-                                                }
-                                            }
-                                            else
-                                            {
-                                                int _radius;
-                                                if (int.TryParse(_box1[1], out _radius))
-                                                {
-                                                    if ((xMin - _X) * (xMin - _X) + (zMin - _Z) * (zMin - _Z) <= _radius * _radius)
-                                                    {
-                                                        string _name = EntityClass.list[_entity.entityClass].entityClassName;
-                                                        GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
-                                                        Log.Out(string.Format("[SERVERTOOLS] Entity cleanup: Removed {0} from protected zone @ {1} {2} {3}", _name, _X, _Y, _Z));
-                                                    }
                                                 }
                                             }
                                         }

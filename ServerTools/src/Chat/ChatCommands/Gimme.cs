@@ -273,7 +273,7 @@ namespace ServerTools
             }
         }
 
-        public static void Time(ClientInfo _cInfo, int _timepassed, int _delay)
+        private static void Time(ClientInfo _cInfo, int _timepassed, int _delay)
         {
             if (_timepassed >= _delay)
             {
@@ -302,21 +302,28 @@ namespace ServerTools
             }
         }
 
-        public static void CommandCost(ClientInfo _cInfo)
+        private static void CommandCost(ClientInfo _cInfo)
         {
-            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+            if (Wallet.IsEnabled && Command_Cost > 0)
             {
-                ZCheck(_cInfo);
+                if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+                {
+                    ZCheck(_cInfo);
+                }
+                else
+                {
+                    string _phrase814;
+                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
+                    {
+                        _phrase814 = " you do not have enough {Currency} in your wallet to run this command.";
+                    }
+                    _phrase814 = _phrase814.Replace("{Currency}", TraderInfo.CurrencyItem);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
             }
             else
             {
-                string _phrase814;
-                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                {
-                    _phrase814 = " you do not have enough {Currency} in your wallet to run this command.";
-                }
-                _phrase814 = _phrase814.Replace("{Currency}", TraderInfo.CurrencyItem);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ZCheck(_cInfo);
             }
         }
 

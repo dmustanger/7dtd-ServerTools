@@ -13,8 +13,7 @@ namespace ServerTools
         public static Dictionary<string, DateTime> Dict = new Dictionary<string, DateTime>();
         public static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
         public static Dictionary<string, DateTime> Kicked = new Dictionary<string, DateTime>();
-        private static string file = "ReservedSlots.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private static string file = "ReservedSlots.xml", filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static int _longestTime = 0;
         private static ClientInfo _playerToKick1 = null, _playerToKick2 = null;
@@ -32,13 +31,13 @@ namespace ServerTools
         public static void Unload()
         {
             Dict.Clear();
+            Dict1.Clear();
             fileWatcher.Dispose();
             IsRunning = false;
         }
 
         private static void LoadXml()
         {
-            bool _update = false;
             if (!Utils.FileExists(filePath))
             {
                 UpdateXml();
@@ -59,6 +58,7 @@ namespace ServerTools
                 if (childNode.Name == "Players")
                 {
                     Dict.Clear();
+                    Dict1.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -73,32 +73,24 @@ namespace ServerTools
                         XmlElement _line = (XmlElement)subChild;
                         if (!_line.HasAttribute("SteamId"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player entry because of missing 'SteamId' attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of missing 'SteamId' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("Name"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player entry because of missing 'Name' attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of missing 'Name' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("Expires"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player entry because of missing 'Expires' attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of missing 'Expires' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         DateTime _dt;
-                        if (_line.GetAttribute("Expires") == "")
+                        if (!DateTime.TryParse(_line.GetAttribute("Expires"), out _dt))
                         {
-                            _dt = DateTime.Parse("10/29/2050 7:30:00 AM");
-                            _update = true;
-                        }
-                        else
-                        {
-                            if (!DateTime.TryParse(_line.GetAttribute("Expires"), out _dt))
-                            {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Player entry because of invalid (date) value for 'Expires' attribute: {0}", subChild.OuterXml));
-                                continue;
-                            }
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ReservedSlots entry because of invalid (date) value for 'Expires' attribute: {0}", subChild.OuterXml));
+                            continue;
                         }
                         if (!Dict.ContainsKey(_line.GetAttribute("SteamId")))
                         {
@@ -110,10 +102,6 @@ namespace ServerTools
                         }
                     }
                 }
-            }
-            if (_update)
-            {
-                UpdateXml();
             }
         }
 
@@ -164,21 +152,7 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void PlayerCount()
-        {
-            int _playerCount = ConnectionManager.Instance.ClientCount();
-            int _maxPlayer = API.MaxPlayers;
-            if (Admin_Slot)
-            {
-                _maxPlayer = API.MaxPlayers - 2;
-            }
-            if (_playerCount >= _maxPlayer)
-            {
-                OpenSlot();
-            }
-        }
-
-        private static void OpenSlot()
+        public static void OpenSlot()
         {
             if (!_operating)
             {
@@ -192,12 +166,11 @@ namespace ServerTools
                         ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_player);
                         if (_cInfo != null)
                         {
-                            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                            if (Admin.PermissionLevel <= Admin_Level)
+                            if (AdminCheck(_cInfo))
                             {
                                 continue;
                             }
-                            else if (Dict.ContainsKey(_cInfo.playerId))
+                            else if (DonorCheck(_cInfo))
                             {
                                 DateTime _dt;
                                 Dict.TryGetValue(_cInfo.playerId, out _dt);
@@ -213,7 +186,7 @@ namespace ServerTools
                     {
                         Kick(_playerToKick1);
                     }
-                    else
+                    else if (_playerToKick2 != null)
                     {
                         Kick(_playerToKick2);
                     }
@@ -225,7 +198,7 @@ namespace ServerTools
                 catch (Exception e)
                 {
                     _operating = false;
-                    Log.Out(string.Format("[SERVERTOOLS] Error in Reserved Slots: {0}.", e.Message));
+                    Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlots.OpenSlot: {0}.", e.Message));
                 }
             }
         }
@@ -305,6 +278,16 @@ namespace ServerTools
             {
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have not donated. Expiration date unavailable.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
+        }
+
+        public static bool AdminCheck(ClientInfo _cInfo)
+        {
+            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+            if (Admin.PermissionLevel <= Admin_Level)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

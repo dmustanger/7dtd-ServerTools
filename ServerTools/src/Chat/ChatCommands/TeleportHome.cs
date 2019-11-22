@@ -18,17 +18,13 @@ namespace ServerTools
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
-                World world = GameManager.Instance.World;
-                EntityPlayer _player = world.Players.dict[_cInfo.entityId];
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 Vector3 _position = _player.GetPosition();
                 int x = (int)_position.x;
                 int y = (int)_position.y;
                 int z = (int)_position.z;
                 Vector3i _vec3i = new Vector3i(x, y, z);
-                PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
-                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_player.entityId);
-                EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
-                if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+                if (Claimed(_cInfo, _vec3i))
                 {
                     string _sposition = x + "," + y + "," + z;
                     PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1 = _sposition;
@@ -45,7 +41,7 @@ namespace ServerTools
                     string _phrase817;
                     if (!Phrases.Dict.TryGetValue(817, out _phrase817))
                     {
-                        _phrase817 = " you are not inside your own or a friend's claimed space. You can not save this as your home.";
+                        _phrase817 = " you are not inside your own or an ally's claimed space. You can not save this as your home.";
                     }
                     ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase817 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -60,10 +56,6 @@ namespace ServerTools
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
-                if (VehicleCheck(_cInfo))
-                {
-                    return;
-                }
                 string _homePos = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1;
                 if (string.IsNullOrEmpty(_homePos))
                 {
@@ -78,13 +70,9 @@ namespace ServerTools
                 {
                     if (Delay_Between_Uses < 1)
                     {
-                        if (Wallet.IsEnabled && Command_Cost >= 1)
+                        if (Checks(_cInfo))
                         {
-                            CommandCost1(_cInfo, _homePos);
-                        }
-                        else
-                        {
-                            TeleHome1(_cInfo, _homePos);
+                            Cost1(_cInfo, _homePos);
                         }
                     }
                     else
@@ -117,17 +105,13 @@ namespace ServerTools
             }
         }
 
-        public static void Time1(ClientInfo _cInfo, string _pos, int _timepassed, int _delay)
+        private static void Time1(ClientInfo _cInfo, string _pos, int _timepassed, int _delay)
         {
             if (_timepassed >= _delay)
             {
-                if (Wallet.IsEnabled && Command_Cost >= 1)
+                if (Checks(_cInfo))
                 {
-                    CommandCost1(_cInfo, _pos);
-                }
-                else
-                {
-                    TeleHome1(_cInfo, _pos);
+                    Cost1(_cInfo, _pos);
                 }
             }
             else
@@ -147,21 +131,28 @@ namespace ServerTools
             }
         }
 
-        public static void CommandCost1(ClientInfo _cInfo, string _pos)
+        private static void Cost1(ClientInfo _cInfo, string _pos)
         {
-            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+            if (Wallet.IsEnabled && Command_Cost >= 1)
             {
-                TeleHome1(_cInfo, _pos);
+                if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+                {
+                    TeleHome1(_cInfo, _pos);
+                }
+                else
+                {
+                    string _phrase814;
+                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
+                    {
+                        _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    }
+                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
             }
             else
             {
-                string _phrase814;
-                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                {
-                    _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
-                }
-                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                TeleHome1(_cInfo, _pos);
             }
         }
 
@@ -172,21 +163,6 @@ namespace ServerTools
             int.TryParse(_cords[0], out x);
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (PvP_Check)
-            {
-                if (Teleportation.PCheck(_cInfo, _player))
-                {
-                    return;
-                }
-            }
-            if (Zombie_Check)
-            {
-                if (Teleportation.ZCheck(_cInfo, _player))
-                {
-                    return;
-                }
-            }
             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
             if (Wallet.IsEnabled && Command_Cost >= 1)
             {
@@ -215,17 +191,13 @@ namespace ServerTools
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
-                World world = GameManager.Instance.World;
-                EntityPlayer _player = world.Players.dict[_cInfo.entityId];
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 Vector3 _position = _player.GetPosition();
                 int x = (int)_position.x;
                 int y = (int)_position.y;
                 int z = (int)_position.z;
                 Vector3i _vec3i = new Vector3i(x, y, z);
-                PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
-                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_player.entityId);
-                EnumLandClaimOwner _owner = world.GetLandClaimOwner(_vec3i, _persistentPlayerData);
-                if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+                if (Claimed(_cInfo, _vec3i))
                 {
                     string _sposition = x + "," + y + "," + z;
                     PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2 = _sposition;
@@ -257,10 +229,6 @@ namespace ServerTools
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
-                if (VehicleCheck(_cInfo))
-                {
-                    return;
-                }
                 string _homePos2 = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2;
                 if (string.IsNullOrEmpty(_homePos2))
                 {
@@ -275,13 +243,9 @@ namespace ServerTools
                 {
                     if (Delay_Between_Uses < 1)
                     {
-                        if (Wallet.IsEnabled && Command_Cost >= 1)
+                        if (Checks(_cInfo))
                         {
-                            CommandCost2(_cInfo, _homePos2);
-                        }
-                        else
-                        {
-                            Home2(_cInfo, _homePos2);
+                            Cost2(_cInfo, _homePos2);
                         }
                     }
                     else
@@ -326,13 +290,9 @@ namespace ServerTools
         {
             if (_timepassed >= _delay)
             {
-                if (Wallet.IsEnabled && Command_Cost >= 1)
+                if (Checks(_cInfo))
                 {
-                    CommandCost2(_cInfo, _pos);
-                }
-                else
-                {
-                    Home2(_cInfo, _pos);
+                    Cost2(_cInfo, _pos);
                 }
             }
             else
@@ -352,21 +312,28 @@ namespace ServerTools
             }
         }
 
-        public static void CommandCost2(ClientInfo _cInfo, string _pos)
+        private static void Cost2(ClientInfo _cInfo, string _pos)
         {
-            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+            if (Wallet.IsEnabled && Command_Cost >= 1)
             {
-                Home2(_cInfo, _pos);
+                if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+                {
+                    Home2(_cInfo, _pos);
+                }
+                else
+                {
+                    string _phrase814;
+                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
+                    {
+                        _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    }
+                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
             }
             else
             {
-                string _phrase814;
-                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                {
-                    _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
-                }
-                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Home2(_cInfo, _pos);
             }
         }
 
@@ -377,23 +344,11 @@ namespace ServerTools
             int.TryParse(_cords[0], out x);
             int.TryParse(_cords[1], out y);
             int.TryParse(_cords[2], out z);
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (PvP_Check)
-            {
-                if (Teleportation.PCheck(_cInfo, _player))
-                {
-                    return;
-                }
-            }
-            if (Zombie_Check)
-            {
-                if (Teleportation.ZCheck(_cInfo, _player))
-                {
-                    return;
-                }
-            }
             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-            Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+            if (Wallet.IsEnabled && Command_Cost >= 1)
+            {
+                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+            }
             PersistentContainer.Instance.Players[_cInfo.playerId].LastHome2 = DateTime.Now;
             PersistentContainer.Instance.Save();
         }
@@ -427,10 +382,6 @@ namespace ServerTools
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
-                if (VehicleCheck(_cInfo))
-                {
-                    return;
-                }
                 string _homePos1 = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1;
                 if (string.IsNullOrEmpty(_homePos1))
                 {
@@ -446,13 +397,9 @@ namespace ServerTools
                 {
                     if (Delay_Between_Uses < 1)
                     {
-                        if (Wallet.IsEnabled && Command_Cost >= 1)
+                        if (Checks(_cInfo))
                         {
-                            FCommandCost1(_cInfo, _homePos1);
-                        }
-                        else
-                        {
-                            FHome1(_cInfo, _homePos1);
+                            FCost1(_cInfo, _homePos1);
                         }
                     }
                     else
@@ -490,13 +437,9 @@ namespace ServerTools
         {
             if (_timepassed >= _delay)
             {
-                if (Wallet.IsEnabled && Command_Cost >= 1)
+                if (Checks(_cInfo))
                 {
-                    FCommandCost1(_cInfo, _pos);
-                }
-                else
-                {
-                    FHome1(_cInfo, _pos);
+                    FCost1(_cInfo, _pos);
                 }
             }
             else
@@ -516,67 +459,62 @@ namespace ServerTools
             }
         }
 
-        public static void FCommandCost1(ClientInfo _cInfo, string _pos)
+        public static void FCost1(ClientInfo _cInfo, string _pos)
         {
-            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+            if (Wallet.IsEnabled && Command_Cost > 0)
             {
-                FHome1(_cInfo, _pos);
+                if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+                {
+                    FHome1(_cInfo, _pos);
+                }
+                else
+                {
+                    string _phrase814;
+                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
+                    {
+                        _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    }
+                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
             }
             else
             {
-                string _phrase814;
-                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                {
-                    _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
-                }
-                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                FHome1(_cInfo, _pos);
             }
         }
 
         private static void FHome1(ClientInfo _cInfo, string _pos)
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (PvP_Check)
+            if (_player != null)
             {
-                if (Teleportation.PCheck(_cInfo, _player))
+                FriendInvite(_cInfo, _player.position, _pos);
+                int x, y, z;
+                string[] _cords = _pos.Split(',');
+                int.TryParse(_cords[0], out x);
+                int.TryParse(_cords[1], out y);
+                int.TryParse(_cords[2], out z);
+                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    return;
+                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 }
-            }
-            if (Zombie_Check)
-            {
-                if (Teleportation.ZCheck(_cInfo, _player))
+                PersistentContainer.Instance.Players[_cInfo.playerId].LastHome1 = DateTime.Now;
+                PersistentContainer.Instance.Save();
+                string _phrase818;
+                if (!Phrases.Dict.TryGetValue(818, out _phrase818))
                 {
-                    return;
+                    _phrase818 = " you are traveling home.";
                 }
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase818 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
-            FriendInvite(_cInfo, _player.position, _pos);
-            int x, y, z;
-            string[] _cords = _pos.Split(',');
-            int.TryParse(_cords[0], out x);
-            int.TryParse(_cords[1], out y);
-            int.TryParse(_cords[2], out z);
-            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-            Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
-            PersistentContainer.Instance.Players[_cInfo.playerId].LastHome1 = DateTime.Now;
-            PersistentContainer.Instance.Save();
-            string _phrase818;
-            if (!Phrases.Dict.TryGetValue(818, out _phrase818))
-            {
-                _phrase818 = " you are traveling home.";
-            }
-            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase818 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void FExec2(ClientInfo _cInfo)
         {
             if (!Event.PlayersTeam.ContainsKey(_cInfo.playerId))
             {
-                if (VehicleCheck(_cInfo))
-                {
-                    return;
-                }
                 string _homePos2 = PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2;
                 if (string.IsNullOrEmpty(_homePos2))
                 {
@@ -591,13 +529,9 @@ namespace ServerTools
                 {
                     if (Delay_Between_Uses < 1)
                     {
-                        if (Wallet.IsEnabled && Command_Cost >= 1)
+                        if (Checks(_cInfo))
                         {
-                            FCommandCost2(_cInfo, _homePos2);
-                        }
-                        else
-                        {
-                            FHome2(_cInfo, _homePos2);
+                            FCost2(_cInfo, _homePos2);
                         }
                     }
                     else
@@ -642,18 +576,13 @@ namespace ServerTools
         {
             if (_timepassed >= _delay)
             {
-                if (Wallet.IsEnabled && Command_Cost >= 1)
+                if (Checks(_cInfo))
                 {
-                    FCommandCost2(_cInfo, _pos);
-                }
-                else
-                {
-                    FHome2(_cInfo, _pos);
+                    FCost2(_cInfo, _pos);
                 }
             }
             else
             {
-
                 int _timeleft = _delay - _timepassed;
                 string _phrase815;
                 if (!Phrases.Dict.TryGetValue(815, out _phrase815))
@@ -669,64 +598,63 @@ namespace ServerTools
             }
         }
 
-        public static void FCommandCost2(ClientInfo _cInfo, string _pos)
+        public static void FCost2(ClientInfo _cInfo, string _pos)
         {
-            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+            if (Wallet.IsEnabled && Command_Cost > 0)
             {
-                FHome2(_cInfo, _pos);
+                if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
+                {
+                    FHome2(_cInfo, _pos);
+                }
+                else
+                {
+                    string _phrase814;
+                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
+                    {
+                        _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    }
+                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
             }
             else
             {
-                string _phrase814;
-                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                {
-                    _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
-                }
-                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                FHome2(_cInfo, _pos);
             }
         }
 
         private static void FHome2(ClientInfo _cInfo, string _pos)
         {
             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            FriendInvite(_cInfo, _player.position, _pos);
-            int x, y, z;
-            string[] _cords = _pos.Split(',');
-            int.TryParse(_cords[0], out x);
-            int.TryParse(_cords[1], out y);
-            int.TryParse(_cords[2], out z);
-            if (PvP_Check)
+            if (_player != null)
             {
-                if (Teleportation.PCheck(_cInfo, _player))
+                FriendInvite(_cInfo, _player.position, _pos);
+                int x, y, z;
+                string[] _cords = _pos.Split(',');
+                int.TryParse(_cords[0], out x);
+                int.TryParse(_cords[1], out y);
+                int.TryParse(_cords[2], out z);
+                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    return;
+                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
                 }
-            }
-            if (Zombie_Check)
-            {
-                if (Teleportation.ZCheck(_cInfo, _player))
+                if (Home2_Delay)
                 {
-                    return;
+                    PersistentContainer.Instance.Players[_cInfo.playerId].LastHome1 = DateTime.Now;
                 }
+                else
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].LastHome2 = DateTime.Now;
+                }
+                PersistentContainer.Instance.Save();
+                string _phrase818;
+                if (!Phrases.Dict.TryGetValue(818, out _phrase818))
+                {
+                    _phrase818 = " you are traveling home.";
+                }
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase818 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
-            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-            Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
-            if (Home2_Delay)
-            {
-                PersistentContainer.Instance.Players[_cInfo.playerId].LastHome1 = DateTime.Now;
-            }
-            else
-            {
-                PersistentContainer.Instance.Players[_cInfo.playerId].LastHome2 = DateTime.Now;
-            }
-            PersistentContainer.Instance.Save();
-            string _phrase818;
-            if (!Phrases.Dict.TryGetValue(818, out _phrase818))
-            {
-                _phrase818 = " you are traveling home.";
-            }
-            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase818 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void FriendInvite(ClientInfo _cInfo, Vector3 _position, string _destination)
@@ -736,32 +664,35 @@ namespace ServerTools
             int z = (int)_position.z;
             World world = GameManager.Instance.World;
             EntityPlayer _player = world.Players.dict[_cInfo.entityId];
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-            for (int i = 0; i < _cInfoList.Count; i++)
+            if (_player != null)
             {
-                ClientInfo _cInfo2 = _cInfoList[i];
-                EntityPlayer _player2 = world.Players.dict[_cInfo2.entityId];
-                if (_player2 != null)
+            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                for (int i = 0; i < _cInfoList.Count; i++)
                 {
-                    if (_player.IsFriendsWith(_player2))
+                    ClientInfo _cInfo2 = _cInfoList[i];
+                    EntityPlayer _player2 = world.Players.dict[_cInfo2.entityId];
+                    if (_player2 != null)
                     {
-                        if ((x - (int)_player2.position.x) * (x - (int)_player2.position.x) + (z - (int)_player2.position.z) * (z - (int)_player2.position.z) <= 10 * 10)
+                        if (_player.IsFriendsWith(_player2))
                         {
-                            string _response1 = " your friend {PlayerName} has invited you to their saved home. Type {CommandPrivate}{Command9} to accept the request.";
-                            _response1 = _response1.Replace("{PlayerName}", _cInfo.playerName);
-                            _response1 = _response1.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                            _response1 = _response1.Replace("{Command9}", Command9);
-                            string _response2 = " invited your friend {PlayerName} to your saved home.[-]";
-                            _response2 = _response2.Replace("{PlayerName}", _cInfo2.playerName);
-                            ChatHook.ChatMessage(_cInfo2, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _response1 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _response2 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            if (Invite.ContainsKey(_cInfo2.entityId))
+                            if ((x - (int)_player2.position.x) * (x - (int)_player2.position.x) + (z - (int)_player2.position.z) * (z - (int)_player2.position.z) <= 10 * 10)
                             {
-                                Invite.Remove(_cInfo2.entityId);
-                                FriendPosition.Remove(_cInfo2.entityId);
+                                string _response1 = " your friend {PlayerName} has invited you to their saved home. Type {CommandPrivate}{Command9} to accept the request.";
+                                _response1 = _response1.Replace("{PlayerName}", _cInfo.playerName);
+                                _response1 = _response1.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                _response1 = _response1.Replace("{Command9}", Command9);
+                                string _response2 = " invited your friend {PlayerName} to your saved home.[-]";
+                                _response2 = _response2.Replace("{PlayerName}", _cInfo2.playerName);
+                                ChatHook.ChatMessage(_cInfo2, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _response1 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _response2 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                if (Invite.ContainsKey(_cInfo2.entityId))
+                                {
+                                    Invite.Remove(_cInfo2.entityId);
+                                    FriendPosition.Remove(_cInfo2.entityId);
+                                }
+                                Invite.Add(_cInfo2.entityId, DateTime.Now);
+                                FriendPosition.Add(_cInfo2.entityId, _destination);
                             }
-                            Invite.Add(_cInfo2.entityId, DateTime.Now);
-                            FriendPosition.Add(_cInfo2.entityId, _destination);
                         }
                     }
                 }
@@ -801,7 +732,71 @@ namespace ServerTools
             }
         }
 
-        public static bool VehicleCheck(ClientInfo _cInfo)
+        private static bool Checks(ClientInfo _cInfo)
+        {
+            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+            if (_player != null)
+            {
+                Vector3 _position = _player.GetPosition();
+                int x = (int)_position.x;
+                int y = (int)_position.y;
+                int z = (int)_position.z;
+                Vector3i _vec3i = new Vector3i(x, y, z);
+                if (VehicleCheck(_cInfo))
+                {
+                    return false;
+                }
+                if (PvP_Check)
+                {
+                    if (Teleportation.PCheck(_cInfo, _player))
+                    {
+                        return false;
+                    }
+                }
+                if (Zombie_Check)
+                {
+                    if (Teleportation.ZCheck(_cInfo, _player))
+                    {
+                        return false;
+                    }
+                }
+                PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
+                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_cInfo.entityId);
+                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_vec3i, _persistentPlayerData);
+                if (_owner != EnumLandClaimOwner.None && _owner != EnumLandClaimOwner.Ally && _owner != EnumLandClaimOwner.Self)
+                {
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you are in another player's claimed space not owned by you or an ally. Unable to teleport home from here." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static bool Claimed(ClientInfo _cInfo, Vector3i _position)
+        {
+            PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
+            PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_cInfo.entityId);
+            EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
+            if (_owner == EnumLandClaimOwner.Self || _owner == EnumLandClaimOwner.Ally)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static bool ClaimedByNone(ClientInfo _cInfo, Vector3i _position)
+        {
+            PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
+            PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_cInfo.entityId);
+            EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
+            if (_owner == EnumLandClaimOwner.None)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static bool VehicleCheck(ClientInfo _cInfo)
         {
             Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             if (_player.AttachedToEntity != null)

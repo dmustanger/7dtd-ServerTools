@@ -21,104 +21,51 @@ namespace ServerTools
                         Directory.CreateDirectory(API.ConfigPath);
                         Log.Out(string.Format("[ServerTools] Created directory {0}", API.ConfigPath));
                     }
-                    else
-                    {
-                        Log.Out("[ServerTools] Directory found");
-                    }
-                    Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/ChatLogs"));
+                    Log.Out(string.Format("[ServerTools] Checking for log directories"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/ChatLogs"))
                     {
                         Directory.CreateDirectory(API.ConfigPath + "/Logs/ChatLogs");
-                        Log.Out(string.Format("[ServerTools] Created directory {0}", API.ConfigPath + "/Logs/ChatLogs"));
                     }
-                    else
-                    {
-                        Log.Out("[ServerTools] Directory found");
-                    }
-                    Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/DetectionLogs"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/DetectionLogs"))
                     {
                         Directory.CreateDirectory(API.ConfigPath + "/Logs/DetectionLogs");
-                        Log.Out(string.Format("[ServerTools] Created directory {0}", API.ConfigPath + "/Logs/DetectionLogs"));
                     }
-                    else
-                    {
-                        Log.Out("[ServerTools] Directory found");
-                    }
-                    Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/BountyLogs"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/BountyLogs"))
                     {
                         Directory.CreateDirectory(API.ConfigPath + "/Logs/BountyLogs");
-                        Log.Out(string.Format("[ServerTools] Created directory {0}", API.ConfigPath + "/Logs/BountyLogs"));
                     }
-                    else
-                    {
-                        Log.Out("[ServerTools] Directory found");
-                    }
-                    Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/AuctionLog"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/AuctionLog"))
                     {
                         Directory.CreateDirectory(API.ConfigPath + "/Logs/AuctionLog");
-                        Log.Out(string.Format("[ServerTools] Created directory {0}", API.ConfigPath + "/Logs/AuctionLog"));
                     }
-                    else
-                    {
-                        Log.Out("[ServerTools] Directory found");
-                    }
-                    Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/BankLogs"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/BankLogs"))
                     {
                         Directory.CreateDirectory(API.ConfigPath + "/Logs/BankLogs");
-                        Log.Out(string.Format("[ServerTools] Created directory {0}", API.ConfigPath + "/Logs/BankLogs"));
                     }
-                    else
-                    {
-                        Log.Out("[ServerTools] Directory found");
-                    }
-                    Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/DupeLogs"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/DupeLogs"))
                     {
                         Directory.CreateDirectory(API.ConfigPath + "/Logs/DupeLogs");
-                        Log.Out(string.Format("[ServerTools] Created directory {0}", API.ConfigPath + "/Logs/DupeLogs"));
                     }
-                    else
-                    {
-                        Log.Out("[ServerTools] Directory found");
-                    }
-                    Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/PlayerLogs"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/PlayerLogs"))
                     {
                         Directory.CreateDirectory(API.ConfigPath + "/Logs/PlayerLogs");
-                        Log.Out(string.Format("[ServerTools] Created directory {0}", API.ConfigPath + "/Logs/PlayerLogs"));
                     }
-                    else
-                    {
-                        Log.Out("[ServerTools] Directory found");
-                    }
-                    Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/PlayerReports"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/PlayerReports"))
                     {
                         Directory.CreateDirectory(API.ConfigPath + "/Logs/PlayerReports");
-                        Log.Out(string.Format("[ServerTools] Created directory {0}", API.ConfigPath + "/Logs/PlayerReports"));
                     }
-                    else
-                    {
-                        Log.Out("[ServerTools] Directory found");
-                    }
-                    Log.Out(string.Format("[ServerTools] Checking for logs directory {0}", API.ConfigPath + "/Logs/PollLogs"));
                     if (!Directory.Exists(API.ConfigPath + "/Logs/PollLogs"))
                     {
                         Directory.CreateDirectory(API.ConfigPath + "/Logs/PollLogs");
-                        Log.Out(string.Format("[ServerTools] Created directory {0}", API.ConfigPath + "/Logs/PollLogs"));
                     }
-                    else
+                    if (!Directory.Exists(API.ConfigPath + "/Logs/CommandLogs"))
                     {
-                        Log.Out("[ServerTools] Directory found");
+                        Directory.CreateDirectory(API.ConfigPath + "/Logs/CommandLogs");
                     }
-
-
-                    string[] files = Directory.GetFiles(API.ConfigPath + "/Logs/DetectionLogs");
+                    Log.Out(string.Format("[ServerTools] Directory check completed"));
+                    Log.Out(string.Format("[ServerTools] Deleting old logs"));
                     int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
+                    string[] files = Directory.GetFiles(API.ConfigPath + "/Logs/DetectionLogs");
                     foreach (string file in files)
                     {
                         FileInfo fi = new FileInfo(file);
@@ -190,6 +137,25 @@ namespace ServerTools
                             fi.Delete();
                         }
                     }
+                    files = Directory.GetFiles(API.ConfigPath + "/Logs/ChatLogs");
+                    foreach (string file in files)
+                    {
+                        FileInfo fi = new FileInfo(file);
+                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
+                        {
+                            fi.Delete();
+                        }
+                    }
+                    files = Directory.GetFiles(API.ConfigPath + "/Logs/CommandLogs");
+                    foreach (string file in files)
+                    {
+                        FileInfo fi = new FileInfo(file);
+                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
+                        {
+                            fi.Delete();
+                        }
+                    }
+                    Log.Out(string.Format("[ServerTools] Log clean up completed"));
                 }
                 catch (XmlException e)
                 {
@@ -219,7 +185,7 @@ namespace ServerTools
                 {
                     Log.Out("[ServerTools] Failed to connect to an sql database. ST requires this to operate. Error = {0}", e.Message);
                 }
-                Load(4);
+                //Load(4);
             }
             else if (_state == 4)
             {
@@ -301,7 +267,6 @@ namespace ServerTools
             {
                 Timers.LogAlert();
                 Timers.LoadAlert();
-                Load(11);
             }
         }
     }

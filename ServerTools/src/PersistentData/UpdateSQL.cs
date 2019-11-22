@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 
 namespace ServerTools
 {
@@ -6,12 +7,19 @@ namespace ServerTools
     {
         public static void Exec(int _version)
         {
-            if (_version == 1)
+            try
             {
-                
+                if (_version == 1)
+                {
+                    SQLiteDatabase.FastQuery("ALTER TABLE Hardcore ADD extraLives INTEGER DEFAULT 0;", "UpdateSQL");
+                }
+                //SQL.FastQuery("UPDATE Config SET sql_version = 2 WHERE sql_version = 1", "UpdateSQL");
+                CheckVersion();
             }
-            SQL.FastQuery("UPDATE Config SET sql_version = 2 WHERE sql_version = 1", "UpdateSQL");
-            CheckVersion();
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in UpdateSQL.Exec: {0}.", e));
+            }
         }
 
         private static void CheckVersion()
@@ -26,7 +34,7 @@ namespace ServerTools
             }
             else
             {
-                LoadProcess.Load(3);
+                LoadProcess.Load(4);
             }
         }
     }

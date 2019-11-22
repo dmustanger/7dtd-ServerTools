@@ -816,7 +816,7 @@ namespace ServerTools
                 string _phrase575;
                 if (!Dict.TryGetValue(575, out _phrase575))
                 {
-                    _phrase575 = " you can only use waypoints once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase575 = " you can only use {CommandPrivate}{Command106} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"575\" Phrase=\"{0}\" />", _phrase575));
                 string _phrase576;
@@ -1484,7 +1484,7 @@ namespace ServerTools
                 string _phrase817;
                 if (!Dict.TryGetValue(817, out _phrase817))
                 {
-                    _phrase817 = " you are not inside your own or a friend's claimed space. You can not save this as your home.";
+                    _phrase817 = " you are not inside your own or an ally's claimed space. You can not save this as your home.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"817\" Phrase=\"{0}\" />", _phrase817));
                 string _phrase818;
@@ -1725,7 +1725,7 @@ namespace ServerTools
                 string _phrase949;
                 if (!Dict.TryGetValue(949, out _phrase949))
                 {
-                    _phrase949 = " hardcore mode is enabled! You have {Lives} lives remaining...";
+                    _phrase949 = "Hardcore mode is enabled! You have {Lives} lives remaining...";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"949\" Phrase=\"{0}\" />", _phrase949));
                 string _phrase950;

@@ -40,7 +40,7 @@ namespace ServerTools
                 "eventReturn TEXT DEFAULT 'false', " +
                 "eventRespawn TEXT DEFAULT 'false', " +
                 "eventSpawn TEXT DEFAULT 'false', " +
-                "extraLives INTEGER DEFAULT 0, " +
+                "extraLives TEXT NOT NULL, " +
                 "lastWaypoint TEXT DEFAULT '10/29/2000 7:30:00 AM' " +
                 ");", "SQLiteDatabase");
             FastQuery("CREATE TABLE IF NOT EXISTS Waypoints (" +
@@ -107,7 +107,11 @@ namespace ServerTools
             _result.Dispose();
             if (_version != SQL.Sql_version)
             {
-                //UpdateSQL.Exec(_version);
+                UpdateSQL.Exec(_version);
+            }
+            else
+            {
+                LoadProcess.Load(4);
             }
         }
 

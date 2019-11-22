@@ -24,10 +24,6 @@ namespace ServerTools
                             EntityPlayer _player = EntityPlayerList[i];
                             if (_player != null)
                             {
-                                //if (Died.Contains(_player.entityId))
-                                //{
-                                //    continue;
-                                //}
                                 ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_player.entityId);
                                 if (_cInfo != null)
                                 {
@@ -42,15 +38,6 @@ namespace ServerTools
                                             GodMode.GodCheck(_cInfo);
                                         }
                                     }
-                                    //else if (_player.IsDead())
-                                    //{
-                                    //    EntityAlive _playerAlive = _player as EntityAlive;
-                                    //    if (_playerAlive != null)
-                                    //    {
-                                    //
-                                    //    }
-                                    //    Died.Add(_player.entityId);
-                                    //}
                                 }
                             }
                         }

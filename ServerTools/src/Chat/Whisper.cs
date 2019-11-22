@@ -17,10 +17,8 @@ namespace ServerTools
             {
                 _message = _message.Replace(Command121 + " ", "");
             }
-            Log.Out(string.Format("_message = {0}", _message));
             string _nameId = _message.Split(' ').First();
             _message = _message.Replace(_nameId, "");
-            Log.Out(string.Format("_nameId = {0}, _message {1}", _nameId, _message));
             if (string.IsNullOrEmpty(_nameId) || string.IsNullOrEmpty(_message))
             {
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + "Invalid name, id or message used to whisper" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);

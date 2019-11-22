@@ -170,6 +170,14 @@ namespace ServerTools
             {
                 KillNotice.Load();
             }
+            if (!Prayer.IsRunning && Prayer.IsEnabled)
+            {
+                Prayer.Load();
+            }
+            if (Prayer.IsRunning && !Prayer.IsEnabled)
+            {
+                Prayer.Unload();
+            }
             if (LoadTriggers.IsRunning)
             {
                 LoadTriggers.Unload();

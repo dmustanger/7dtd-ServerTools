@@ -9,8 +9,9 @@ namespace ServerTools
             Delay_Between_World_Saves = 15, Stop_Server_Time = 1, _newCount = 0,
             Shutdown_Delay = 60, Infoticker_Delay = 60, _sSC = 0, _sSCD = 0,
             Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0, _eventTime = 0;
-        private static int timer1SecondInstanceCount, timerHalfSecondInstanceCount, _wV, _pSC, _b, _pL, _mC, _wSD, _iT, _rVS, _kV, _mV, _bT, _cC,
-            _rS, _rV, _eC, _wL, _rWT, _rE, _autoShutdownBloodmoon, _autoShutdownBloodmoonOver, _wR, _nA, _jR, _h, _l, _eI, _eO, _zR, _nP, _sC, _tP, _fC;
+        private static int timer1SecondInstanceCount, timerHalfSecondInstanceCount, timer2Second, timer5Second, 
+            timer10Second, timer60Second, _wV, _b, _pL, _wSD, _iT, _rVS, _kV, _mV, _bT, _cC, _rV, _wL, _nA, _h, 
+            _l, _eI, _eO, _zR, _sC, _tP, _autoShutdownBloodmoon, _autoShutdownBloodmoonOver;
         private static System.Timers.Timer t1 = new System.Timers.Timer();
         private static System.Timers.Timer t2 = new System.Timers.Timer();
 
@@ -191,6 +192,10 @@ namespace ServerTools
             {
                 Log.Out("Bloodmoon enabled");
             }
+            if (BloodmoonWarrior.IsEnabled)
+            {
+                Log.Out("Bloodmoon warrior enabled");
+            }
             if (Bounties.IsEnabled)
             {
                 Log.Out("Bounties enabled");
@@ -211,6 +216,10 @@ namespace ServerTools
             {
                 Log.Out("Clan manager enabled");
             }
+            if (CommandLog.IsEnabled)
+            {
+                Log.Out("Command log enabled");
+            }
             if (CustomCommands.IsEnabled)
             {
                 Log.Out("Custom commands enabled");
@@ -223,9 +232,13 @@ namespace ServerTools
             {
                 Log.Out("Death spot enabled");
             }
+            if (EntityCleanup.IsEnabled)
+            {
+                Log.Out("Entity cleanup enabled");
+            }
             if (EntityCleanup.Underground)
             {
-                Log.Out("Entity underground cleanup enabled");
+                Log.Out("Entity cleanup underground enabled");
             }
             if (EntityCleanup.FallingTreeEnabled)
             {
@@ -307,6 +320,14 @@ namespace ServerTools
             {
                 Log.Out("Night alert enabled");
             }
+            if (Prayer.IsEnabled)
+            {
+                Log.Out("Prayer enabled");
+            }
+            if (Whisper.IsEnabled)
+            {
+                Log.Out("Private message enabled");
+            }
             if (RealWorldTime.IsEnabled)
             {
                 Log.Out("Real world time enabled");
@@ -380,77 +401,83 @@ namespace ServerTools
                 {
                     UnderWater.Exec();
                 }
-                if (Jail.Jailed.Count > 0)
+                timer2Second++;
+                if (timer2Second >= 2)
                 {
-                    _jR++;
-                    if (_jR >= 60)
+                    if (WorldRadius.IsEnabled)
                     {
-                        _jR = 0;
+                        WorldRadius.Exec();
+                    }
+                    if (Flying.IsEnabled)
+                    {
+                        Flying.Exec();
+                    }
+                    timer2Second = 0;
+                }
+                timer5Second++;
+                if (timer5Second >= 5)
+                {
+                    if (API.Que.Count > 0)
+                    {
+                        API.NewPlayerExec();
+                    }
+                    if (Zones.IsEnabled)
+                    {
+                        Zones.HostileCheck();
+                    }
+                    if (PlayerStatCheck.IsEnabled)
+                    {
+                        PlayerStatCheck.PlayerStat();
+                    }
+                    timer5Second = 0;
+                }
+                timer10Second++;
+                if (timer10Second >= 10)
+                {
+                    if (EntityCleanup.IsEnabled)
+                    {
+                        EntityCleanup.EntityCheck();
+                    }
+                    timer10Second = 0;
+                }
+                timer60Second++;
+                if (timer60Second >= 60)
+                {
+                    if (Jail.IsEnabled && Jail.Jailed.Count > 0)
+                    {
                         Jail.Clear();
                     }
-                }
-                else
-                {
-                    _jR = 0;
-                }
-                if (WeatherVote.IsEnabled)
-                {
-                    if (WeatherVote.VoteOpen)
+                    if (MutePlayer.IsEnabled && MutePlayer.Mutes.Count > 0)
                     {
-                        _wV++;
-                        if (_wV >= 60)
+                        MutePlayer.Clear();
+                    }
+                    if (RealWorldTime.IsEnabled)
+                    {
+                        RealWorldTime.Time();
+                    }
+                    if (ReservedSlots.IsEnabled)
+                    {
+                        int _playerCount = ConnectionManager.Instance.ClientCount();
+                        if (_playerCount >= API.MaxPlayers - 1)
                         {
-                            _wV = 0;
-                            WeatherVote.ProcessWeatherVote();
+                            ReservedSlots.OpenSlot();
                         }
+                    }
+                    timer60Second = 0;
+                }
+
+                if (WeatherVote.IsEnabled && WeatherVote.VoteOpen)
+                {
+                    _wV++;
+                    if (_wV >= 60)
+                    {
+                        _wV = 0;
+                        WeatherVote.ProcessWeatherVote();
                     }
                 }
                 else
                 {
                     _wV = 0;
-                }
-                if (MutePlayer.IsEnabled && MutePlayer.Mutes.Count > 0)
-                {
-                    _mC++;
-                    if (_mC >= 60)
-                    {
-                        _mC = 0;
-                        MutePlayer.Clear();
-                    }
-                }
-                else
-                {
-                    _mC = 0;
-                }
-                if (RealWorldTime.IsEnabled)
-                {
-                    _rWT++;
-                    if (_rWT >= Real_Time_Delay * 60)
-                    {
-                        _rWT = 0;
-                        RealWorldTime.Time();
-                    }
-                }
-                else
-                {
-                    _rWT = 0;
-                }
-                if (Lottery.IsEnabled && Lottery.OpenLotto)
-                {
-                    _l++;
-                    if (_l == 3300)
-                    {
-                        Lottery.Alert();
-                    }
-                    if (_l >= 3600)
-                    {
-                        _l = 0;
-                        Lottery.StartLotto();
-                    }
-                }
-                else
-                {
-                    _l = 0;
                 }
                 if (RestartVote.IsEnabled)
                 {
@@ -500,6 +527,23 @@ namespace ServerTools
                 {
                     _kV = 0;
                 }
+                if (Lottery.IsEnabled && Lottery.OpenLotto)
+                {
+                    _l++;
+                    if (_l == 3300)
+                    {
+                        Lottery.Alert();
+                    }
+                    if (_l >= 3600)
+                    {
+                        _l = 0;
+                        Lottery.StartLotto();
+                    }
+                }
+                else
+                {
+                    _l = 0;
+                }
                 if (Hordes.IsEnabled)
                 {
                     _h++;
@@ -512,32 +556,6 @@ namespace ServerTools
                 else
                 {
                     _h = 0;
-                }
-                if (EntityCleanup.IsEnabled && (EntityCleanup.BlockIsEnabled || EntityCleanup.FallingTreeEnabled || EntityCleanup.Underground || EntityCleanup.MiniBikes))
-                {
-                    _eC++;
-                    if (_eC >= 10)
-                    {
-                        _eC = 0;
-                        EntityCleanup.EntityCheck();
-                    }
-                }
-                else
-                {
-                    _eC = 0;
-                }
-                if (Zones.IsEnabled)
-                {
-                    _rE++;
-                    if (_rE >= 5)
-                    {
-                        _rE = 0;
-                        Zones.HostileCheck();
-                    }
-                }
-                else
-                {
-                    _rE = 0;
                 }
                 if (NightAlert.IsEnabled)
                 {
@@ -564,32 +582,6 @@ namespace ServerTools
                 else
                 {
                     _wL = 0;
-                }
-                if (PlayerStatCheck.IsEnabled)
-                {
-                    _pSC++;
-                    if (_pSC >= 5)
-                    {
-                        _pSC = 0;
-                        PlayerStatCheck.PlayerStat();
-                    }
-                }
-                else
-                {
-                    _pSC = 0;
-                }
-                if (ReservedSlots.IsEnabled)
-                {
-                    _rS++;
-                    if (_rS >= 60)
-                    {
-                        _rS = 0;
-                        ReservedSlots.PlayerCount();
-                    }
-                }
-                else
-                {
-                    _rS = 0;
                 }
                 if (Bloodmoon.IsEnabled & Bloodmoon.Auto_Show)
                 {
@@ -724,11 +716,11 @@ namespace ServerTools
                     {
                         AutoShutdown.BloodmoonOverAlert();
                     }
-                    else if (_autoShutdownBloodmoonOver >= 1800)
+                    else if (_autoShutdownBloodmoonOver >= 900)
                     {
                         _autoShutdownBloodmoonOver = 0;
                         AutoShutdown.BloodmoonOver = false;
-                        AutoShutdown.Auto_Shutdown();
+                        AutoShutdown.Shutdown();
                     }
                 }
                 if (InfoTicker.IsEnabled)
@@ -743,19 +735,6 @@ namespace ServerTools
                 else
                 {
                     _iT = 0;
-                }
-                if (WorldRadius.IsEnabled)
-                {
-                    _wR++;
-                    if (_wR >= 2)
-                    {
-                        _wR = 0;
-                        WorldRadius.Exec();
-                    }
-                }
-                else
-                {
-                    _wR = 0;
                 }
                 if (Event.Invited)
                 {
@@ -830,19 +809,6 @@ namespace ServerTools
                 {
                     _tBS = 0;
                 }
-                if (API.Que.Count > 0)
-                {
-                    _nP++;
-                    if (_nP >= 5)
-                    {
-                        API.NewPlayerExec();
-                        _nP = 0;
-                    }
-                }
-                else
-                {
-                    _nP = 0;
-                }
                 if (BreakTime.IsEnabled)
                 {
                     _bT++;
@@ -882,21 +848,8 @@ namespace ServerTools
                 {
                     _cC = 0;
                 }
-                if (Flying.IsEnabled)
-                {
-                    _fC++;
-                    if (_fC >= 2)
-                    {
-                        _fC = 0;
-                        Flying.Exec();
-                    }
-                }
-                else
-                {
-                    _fC = 0;
-                }
             }
-            if (StopServer.Shutdown)
+            else
             {
                 _sC++;
                 if (_sC >= 60)
@@ -904,10 +857,6 @@ namespace ServerTools
                     _sC = 0;
                     StopServer.FailSafe();
                 }
-            }
-            else
-            {
-                _sC = 0;
             }
         }
 

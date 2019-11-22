@@ -58,7 +58,7 @@ namespace ServerTools
                 else
                 {
                     int _timeleft = 60 - _timepassed;
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + "Wait thirty minutes before starting a new vote to change the weather. " + _timeleft + " minutes remaining." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Wait thirty minutes before starting a new vote to change the weather. " + _timeleft + " minutes remaining." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else

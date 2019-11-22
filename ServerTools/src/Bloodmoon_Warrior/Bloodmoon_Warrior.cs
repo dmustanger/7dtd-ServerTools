@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace ServerTools
 {
-    class Bloodmoon_Warrior
+    class BloodmoonWarrior
     {
         public static bool IsEnabled = false;
+        public static string Command127 = "hardcore on";
+        public static List<Chunk> WarriorList = new List<Chunk>();
 
 
     }

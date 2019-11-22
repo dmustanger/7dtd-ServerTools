@@ -1007,10 +1007,6 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (ChatLog.IsEnabled)
-                    {
-                        ChatLog.Log(_message, _cInfo.playerName);
-                    }
                 }
                 else
                 {
