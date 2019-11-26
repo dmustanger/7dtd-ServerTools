@@ -14,13 +14,10 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (Donor_Only && ReservedSlots.IsEnabled)
+            if (Donor_Only && ReservedSlots.IsEnabled && !ReservedSlots.DonorCheck(_cInfo.playerId))
             {
-                if (!ReservedSlots.DonorCheck(_cInfo))
-                {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " this command is locked to donors only" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    return;
-                }
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " this command is locked to donors only" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                return;
             }
             if (Delay_Between_Uses < 1)
             {

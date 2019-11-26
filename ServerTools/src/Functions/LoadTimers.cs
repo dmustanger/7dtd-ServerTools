@@ -1,4 +1,5 @@
-﻿using System.Timers;
+﻿using System.Collections.Generic;
+using System.Timers;
 
 namespace ServerTools
 {
@@ -9,8 +10,8 @@ namespace ServerTools
             Delay_Between_World_Saves = 15, Stop_Server_Time = 1, _newCount = 0,
             Shutdown_Delay = 60, Infoticker_Delay = 60, _sSC = 0, _sSCD = 0,
             Alert_Delay = 5, Real_Time_Delay = 60, Night_Time_Delay = 120, _sD = 0, _eventTime = 0;
-        private static int timer1SecondInstanceCount, timerHalfSecondInstanceCount, timer2Second, timer5Second, 
-            timer10Second, timer60Second, _wV, _b, _pL, _wSD, _iT, _rVS, _kV, _mV, _bT, _cC, _rV, _wL, _nA, _h, 
+        private static int timer1SecondInstanceCount, timerHalfSecondInstanceCount, timer2Second, timer5Second,
+            timer10Second, timer60Second, _wV, _b, _pL, _wSD, _iT, _rVS, _kV, _mV, _bT, _cC, _rV, _wL, _nA, _h,
             _l, _eI, _eO, _zR, _sC, _tP, _autoShutdownBloodmoon, _autoShutdownBloodmoonOver;
         private static System.Timers.Timer t1 = new System.Timers.Timer();
         private static System.Timers.Timer t2 = new System.Timers.Timer();
@@ -33,8 +34,9 @@ namespace ServerTools
             {
                 timer1Running = false;
                 t1.Stop();
+                t1.Close();
+                timer1SecondInstanceCount = 0;
             }
-            timer1SecondInstanceCount = 0;
         }
 
         public static void Timer2Start()
@@ -55,8 +57,26 @@ namespace ServerTools
             {
                 timer2Running = false;
                 t2.Stop();
+                t2.Close();
+                timerHalfSecondInstanceCount = 0;
             }
-            timerHalfSecondInstanceCount = 0;
+        }
+
+        public static void SingleUseTimer(int _delay, string _playerId, string _commands)
+        {
+            if (_delay > 120)
+            {
+                _delay = 120;
+            }
+            int _delayAdjusted = _delay * 1000;
+            System.Timers.Timer singleUseTimer = new System.Timers.Timer(_delayAdjusted);
+            singleUseTimer.AutoReset = false;
+            singleUseTimer.Start();
+            singleUseTimer.Elapsed += (sender, e) =>
+            {
+                Init3(sender, e, _playerId, _commands);
+                singleUseTimer.Close();
+            };
         }
 
         public static void LogAlert()
@@ -389,7 +409,7 @@ namespace ServerTools
             Log.Out("--------------------------------");
         }
 
-        public static void Init(object sender, ElapsedEventArgs e)
+        private static void Init(object sender, ElapsedEventArgs e)
         {
             if (!StopServer.Shutdown)
             {
@@ -412,15 +432,15 @@ namespace ServerTools
                     {
                         Flying.Exec();
                     }
+                    if (API.Que.Count > 0)
+                    {
+                        API.NewPlayerExec(API.Que[0]);
+                    }
                     timer2Second = 0;
                 }
                 timer5Second++;
                 if (timer5Second >= 5)
                 {
-                    if (API.Que.Count > 0)
-                    {
-                        API.NewPlayerExec();
-                    }
                     if (Zones.IsEnabled)
                     {
                         Zones.HostileCheck();
@@ -638,6 +658,7 @@ namespace ServerTools
                     {
                         if (_sSC == 1 && _sSCD == 30)
                         {
+                            StopServer.NoEntry = true;
                             StopServer.Kick30();
                         }
                     }
@@ -860,9 +881,14 @@ namespace ServerTools
             }
         }
 
-        public static void Init2(object sender, ElapsedEventArgs e)
+        private static void Init2(object sender, ElapsedEventArgs e)
         {
             PlayerOperations.PlayerCheck();
+        }
+
+        private static void Init3(object sender, ElapsedEventArgs e, string _playerId, string _commands)
+        {
+            CustomCommands.DelayedCommand(_playerId, _commands);
         }
     }
 }

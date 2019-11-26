@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEngine;
 
 namespace ServerTools
 {
@@ -10,87 +9,148 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         public static int Admin_Level = 0, Flags = 4;
-        public static Dictionary<int, int> Flag = new Dictionary<int, int>();
-        public static Dictionary<int, int[]> LastPositionXZ = new Dictionary<int, int[]>();
+        private static Dictionary<int, int> Flag = new Dictionary<int, int>();
+        private static Dictionary<int, float> OldY = new Dictionary<int, float>();
+        private static Dictionary<int, float[]> OldXZ = new Dictionary<int, float[]>();
 
         public static void Exec()
         {
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
-            for (int i = 0; i < _cInfoList.Count; i++)
+            try
             {
-                ClientInfo _cInfo = _cInfoList[i];
-                if (_cInfo != null)
+                if ((int)GameManager.Instance.fps.Counter > 4)
                 {
-                    GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
-                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                    if (Admin.PermissionLevel > Admin_Level)
+                    List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                    for (int i = 0; i < _cInfoList.Count; i++)
                     {
-                        Entity _player = GameManager.Instance.World.GetEntity(_cInfo.entityId) as Entity;
-                        if (_player.IsFlyMode.Value && _player.AttachedToEntity == null)
+                        ClientInfo _cInfo = _cInfoList[i];
+                        if (_cInfo != null)
                         {
-                            int _x = (int)_player.position.x;
-                            int _z = (int)_player.position.z;
-                            int[] _xz = { _x, _z };
-                            if (LastPositionXZ.ContainsKey(_cInfo.entityId))
+                            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                            if (Admin.PermissionLevel > Admin_Level)
                             {
-                                int[] _xzPos;
-                                LastPositionXZ.TryGetValue(_cInfo.entityId, out _xzPos);
-                                if (_xzPos != _xz)
+                                Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                if (_player != null && _player.IsSpawned())
                                 {
-                                    int _flags;
-                                    Flag.TryGetValue(_cInfo.entityId, out _flags);
-                                    if (_flags + 1 >= Flags)
+                                    float _x = _player.position.x;
+                                    float _y = _player.position.y;
+                                    float _z = _player.position.z;
+                                    if (_player.AttachedToEntity == null && (AirCheck(_x, _y, _z) || GroundCheck(_x, _y, _z)))
                                     {
-                                        LastPositionXZ.Remove(_cInfo.entityId);
-                                        Flag.Remove(_cInfo.entityId);
-                                        ChatHook.ChatMessage(null, "[FF0000]" + "Cheater! Player " + _cInfo.playerName + " detected flying!" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                        int _y = (int)_player.position.y;
-                                        Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, _x, _y, _z);
-                                        string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-                                        string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
-                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                        if (OldY.ContainsKey(_cInfo.entityId))
                                         {
-                                            sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, _x, _y, _z));
-                                            sw.WriteLine();
-                                            sw.Flush();
-                                            sw.Close();
+                                            float last_y_pos;
+                                            OldY.TryGetValue(_cInfo.entityId, out last_y_pos);
+                                            float y_change = (last_y_pos - _y);
+                                            if (y_change >= 4)
+                                            {
+                                                OldXZ.Remove(_cInfo.entityId);
+                                                Flag.Remove(_cInfo.entityId);
+                                            }
+                                            OldY[_cInfo.entityId] = _y;
                                         }
-                                        //Penalty(_cInfo);
+                                        else
+                                        {
+                                            OldY.Add(_cInfo.entityId, _y);
+                                        }
+                                        float[] _xz = { _x, _z };
+                                        if (OldXZ.ContainsKey(_cInfo.entityId))
+                                        {
+                                            float[] _xzPos;
+                                            OldXZ.TryGetValue(_cInfo.entityId, out _xzPos);
+                                            if (_xzPos != _xz)
+                                            {
+                                                int _flags;
+                                                Flag.TryGetValue(_cInfo.entityId, out _flags);
+                                                if (_flags + 1 >= Flags)
+                                                {
+                                                    OldXZ.Remove(_cInfo.entityId);
+                                                    Flag.Remove(_cInfo.entityId);
+                                                    ChatHook.ChatMessage(null, "[FF0000]" + "Cheater! Player " + _cInfo.playerName + " detected flying!" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                    Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, _x, _y, _z);
+                                                    string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+                                                    string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
+                                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                                    {
+                                                        sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, flying @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, _x, _y, _z));
+                                                        sw.WriteLine();
+                                                        sw.Flush();
+                                                        sw.Close();
+                                                    }
+                                                    Penalty(_cInfo);
+                                                }
+                                                else
+                                                {
+                                                    OldXZ[_cInfo.entityId] = _xz;
+                                                    Flag[_cInfo.entityId] = _flags + 1;
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            OldXZ.Add(_cInfo.entityId, _xz);
+                                            Flag.Add(_cInfo.entityId, 1);
+                                        }
                                     }
                                     else
                                     {
-                                        LastPositionXZ[_cInfo.entityId] = _xz;
-                                        Flag[_cInfo.entityId] = _flags + 1;
-                                        ChatHook.ChatMessage(null, "[FF0000]" + "[ST] Detected off ground and added one flag" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                        if (OldXZ.ContainsKey(_cInfo.entityId))
+                                        {
+                                            OldXZ.Remove(_cInfo.entityId);
+                                            Flag.Remove(_cInfo.entityId);
+                                        }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                LastPositionXZ.Add(_cInfo.entityId, _xz);
-                                Flag.Add(_cInfo.entityId, 1);
-                                ChatHook.ChatMessage(null, "[FF0000]" + "[ST] Detected off ground and added the first flag" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            }
-                        }
-                        else
-                        {
-                            if (LastPositionXZ.ContainsKey(_cInfo.entityId))
-                            {
-                                LastPositionXZ.Remove(_cInfo.entityId);
-                                Flag.Remove(_cInfo.entityId);
-                                ChatHook.ChatMessage(null, "[FF0000]" + "[ST] Detected on the ground and removed all flags" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            }
-                            else
-                            {
-                                ChatHook.ChatMessage(null, "[FF0000]" + "[ST] Detected on the ground. No flags to remove" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             }
                         }
                     }
                 }
             }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Flying.Exec: {0}.", e.Message));
+            }
         }
 
-        public static void Penalty(ClientInfo _cInfo)
+        private static bool AirCheck(float x, float y, float z)
+        {
+            for (float k = y - 1.8f; k <= (y + 1.5f); k++)
+            {
+                for (float i = x - 0.5f; i <= (x + 0.5f); i++)
+                {
+                    for (float j = z - 0.5f; j <= (z + 0.5f); j++)
+                    {
+                        BlockValue Block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
+                        if (Block.type != BlockValue.Air.type)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        private static bool GroundCheck(float x, float y, float z)
+        {
+            for (float k = y - 0.25f; k <= (y + 1f); k++)
+            {
+                for (float i = x - 0.5f; i <= (x + 0.5f); i++)
+                {
+                    for (float j = z - 0.5f; j <= (z + 0.5f); j++)
+                    {
+                        BlockValue block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
+                        MaterialBlock _material = Block.list[block.type].blockMaterial;
+                        if (block.type == BlockValue.Air.type || _material.IsLiquid || _material.IsPlant || block.Block.IsTerrainDecoration || block.Block.isMultiBlock)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        private static void Penalty(ClientInfo _cInfo)
         {
             string _message = "[FF0000]{PlayerName} has been banned for flying.";
             _message = _message.Replace("{PlayerName}", _cInfo.playerName);

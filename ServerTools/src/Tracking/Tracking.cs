@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ServerTools
@@ -28,7 +29,7 @@ namespace ServerTools
                             {
                                 _holdingItem = _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name;
                             }
-                            string _sql = string.Format("INSERT INTO Tracking (dateTime, position, steamId, playerName, holding) VALUES (DATETIME('NOW'), '{0}', '{1}', '{2}', '{3}')", _pos, _cInfo.playerId, _cInfo.playerName, _holdingItem);
+                            string _sql = string.Format("INSERT INTO Tracking (dateTime, position, steamId, playerName, holding) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')", DateTime.Now.ToString() ,_pos, _cInfo.playerId, _cInfo.playerName, _holdingItem);
                             SQL.FastQuery(_sql, "Tracking");
                         }
                     }
@@ -41,7 +42,8 @@ namespace ServerTools
             if (Tracking.IsEnabled)
             {
                 Log.Out("Database tracking log cleanup started");
-                string _sql = string.Format("DELETE FROM Tracking WHERE dateTime < DATETIME('NOW', '-{0} days')", Days_Before_Log_Delete);
+                string _sql = string.Format("DELETE FROM Tracking WHERE dateTime < DATETIME('{0}')", DateTime.Now.AddDays(Days_Before_Log_Delete * -1).ToString());
+                SQL.FastQuery(_sql, "Tracking");
                 Log.Out("Database tracking log cleanup complete");
             }
         }

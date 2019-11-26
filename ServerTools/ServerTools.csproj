@@ -62,6 +62,7 @@
     <Compile Include="src\ConsoleCommands\DonorConsole.cs" />
     <Compile Include="src\ConsoleCommands\ChatColorPrefixConsole.cs" />
     <Compile Include="src\ConsoleCommands\EntityRotate.cs" />
+    <Compile Include="src\ConsoleCommands\BackpackTeleport.cs" />
     <Compile Include="src\ConsoleCommands\EntityTeleport.cs" />
     <Compile Include="src\ConsoleCommands\KillEnt.cs" />
     <Compile Include="src\ConsoleCommands\TeleportUnderPlayerConsole.cs" />

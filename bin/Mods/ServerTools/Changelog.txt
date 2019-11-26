@@ -1,5 +1,19 @@
 ﻿CHANGELOG
 
+18.1.6
+Built using Alpha 18.2 experimental assets
+Functioning with 18.1 stable and 18.2 experimental
+
+Added Flight tool. Detects players flying in the air or colliding with blocks underground
+Added console commands for Bounties tool. Edit, remove or show a list of current bounties
+Added variable {Delay} to Custom_Commands. Ex. {Delay} 60 equals a 60 second delay. You can input
+a maximum of 120 seconds. If no time is entered it will default to 5 seconds
+Added oldDeaths to sql database
+Fixed chat command /score using the most recent hardcore death count instead of the old record
+Fixed Tracking tool not recording correctly
+Fixed Command_Log save folder name to allow file creation
+Changed API Player Login verification process and added fail safe
+
 18.1.5
 Built using Alpha 18.2 experimental assets
 Functioning with 18.1 stable and 18.2 experimental

@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        public const string version = "18.1.5";
+        public const string version = "18.1.6";
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
 
@@ -983,38 +983,38 @@ namespace ServerTools
                                 continue;
                             }
                             break;
-                            //case "Flying":
-                            //if (!_line.HasAttribute("Enable"))
-                            //{
-                            //    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
-                            //    continue;
-                            //}
-                            //if (!bool.TryParse(_line.GetAttribute("Enable"), out Flying.IsEnabled))
-                            //{
-                            //    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
-                            //    continue;
-                            //}
-                            //if (!_line.HasAttribute("Admin_Level"))
-                            //{
-                            //    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
-                            //    continue;
-                            //}
-                            //if (!int.TryParse(_line.GetAttribute("Admin_Level"), out Flying.Admin_Level))
-                            //{
-                            //    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
-                            //    continue;
-                            //}
-                            //if (!_line.HasAttribute("Flags"))
-                            //{
-                            //    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of missing 'Flags' attribute: {0}", subChild.OuterXml));
-                            //    continue;
-                            //}
-                            //if (!int.TryParse(_line.GetAttribute("Flags"), out Flying.Flags))
-                            //{
-                            //    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of invalid (non-numeric) value for 'Flags' attribute: {0}", subChild.OuterXml));
-                            //    continue;
-                            //}
-                            //break;
+                            case "Flying":
+                            if (!_line.HasAttribute("Enable"))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                continue;
+                            }
+                            if (!bool.TryParse(_line.GetAttribute("Enable"), out Flying.IsEnabled))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                continue;
+                            }
+                            if (!_line.HasAttribute("Admin_Level"))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(_line.GetAttribute("Admin_Level"), out Flying.Admin_Level))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                continue;
+                            }
+                            if (!_line.HasAttribute("Flags"))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of missing 'Flags' attribute: {0}", subChild.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(_line.GetAttribute("Flags"), out Flying.Flags))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Flying entry because of invalid (non-numeric) value for 'Flags' attribute: {0}", subChild.OuterXml));
+                                continue;
+                            }
+                            break;
                             case "FPS":
                             if (!_line.HasAttribute("Enable"))
                             {
@@ -3085,7 +3085,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Entity_Cleanup\" Enable=\"{0}\" Falling_Blocks=\"{1}\" Falling_Tree=\"{2}\" Entity_Underground=\"{3}\" Delete_Bicycles=\"{4}\" Delete_MiniBikes=\"{5}\" Delete_MotorBikes=\"{6}\" />", EntityCleanup.IsEnabled, EntityCleanup.BlockIsEnabled, EntityCleanup.FallingTreeEnabled, EntityCleanup.Underground, EntityCleanup.Bicycles, EntityCleanup.MiniBikes, EntityCleanup.MotorBikes));
                 sw.WriteLine(string.Format("        <Tool Name=\"Entity_Cleanup_Extended\" Delete_Jeeps=\"{0}\" Delete_Gyros=\"{1}\" />", EntityCleanup.Jeeps, EntityCleanup.Gyros));
                 sw.WriteLine(string.Format("        <Tool Name=\"First_Claim_Block\" Enable=\"{0}\" />", FirstClaimBlock.IsEnabled));
-                //sw.WriteLine(string.Format("        <Tool Name=\"Flying\" Enable=\"{0}\" Admin_Level=\"{1}\" Flags=\"{2}\" />", Flying.IsEnabled, Flying.Admin_Level, Flying.Flags));
+                sw.WriteLine(string.Format("        <Tool Name=\"Flying\" Enable=\"{0}\" Admin_Level=\"{1}\" Flags=\"{2}\" />", Flying.IsEnabled, Flying.Admin_Level, Flying.Flags));
                 sw.WriteLine(string.Format("        <Tool Name=\"FPS\" Enable=\"{0}\" Set_Target=\"{1}\" />", Fps.IsEnabled, Fps.Set_Target));
                 sw.WriteLine(string.Format("        <Tool Name=\"Friend_Teleport\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" PvP_Check=\"{3}\" Zombie_Check=\"{4}\" />", FriendTeleport.IsEnabled, FriendTeleport.Delay_Between_Uses, FriendTeleport.Command_Cost, FriendTeleport.PvP_Check, FriendTeleport.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Gimme\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Zombies=\"{2}\" Command_Cost=\"{3}\" />", Gimme.IsEnabled, Gimme.Delay_Between_Uses, Gimme.Zombies, Gimme.Command_Cost));

@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false;
         private static string file = string.Format("CommandLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string filePath = string.Format("{0}/Logs/CommandLog/{1}", API.ConfigPath, file);
+        private static string filePath = string.Format("{0}/Logs/CommandLogs/{1}", API.ConfigPath, file);
 
         public static void Exec(string _message, string _playerName)
         {

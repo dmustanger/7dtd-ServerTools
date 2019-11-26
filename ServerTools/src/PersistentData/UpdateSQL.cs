@@ -13,7 +13,11 @@ namespace ServerTools
                 {
                     SQLiteDatabase.FastQuery("ALTER TABLE Hardcore ADD extraLives INTEGER DEFAULT 0;", "UpdateSQL");
                 }
-                //SQL.FastQuery("UPDATE Config SET sql_version = 2 WHERE sql_version = 1", "UpdateSQL");
+                if (_version == 2)
+                {
+                    SQLiteDatabase.FastQuery("ALTER TABLE Hardcore ADD oldDeaths INTEGER DEFAULT 0;", "UpdateSQL");
+                }
+                SQL.FastQuery("UPDATE Config SET sql_version = 2 WHERE sql_version = 1", "UpdateSQL");
                 CheckVersion();
             }
             catch (Exception e)

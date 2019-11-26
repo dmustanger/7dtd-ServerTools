@@ -136,31 +136,33 @@ namespace ServerTools
 
         public static void FastQuery(string _sql, string _class)
         {
-            FQuery.Enqueue(_sql);
-            if (!FastQ)
+            try
             {
-                try
+                if (!FastQ)
                 {
-                    FastQ = true;
-                    connection.Open(); 
-                    cmd = new SQLiteCommand(FQuery.ElementAt(0), connection);
+                    connection.Open();
+                    cmd = new SQLiteCommand(_sql, connection);
                     cmd.ExecuteNonQuery();
-                }
-                catch (SQLiteException e)
-                {
-                    Log.Out(string.Format("[ServerTools] SQLiteException in SQLiteDatabase.FastQuery: {0}", e));
-                }
-                FQuery.Dequeue();
-                if (FQuery.Count > 0)
-                {
-                    cmd = new SQLiteCommand(FQuery.ElementAt(0), connection);
-                    cmd.ExecuteNonQuery();
+                    if (FQuery.Count > 0)
+                    {
+                        cmd = new SQLiteCommand(FQuery.ElementAt(0), connection);
+                        cmd.ExecuteNonQuery();
+                        FQuery.Dequeue();
+                    }
+                    else
+                    {
+                        connection.Close();
+                        FastQ = false;
+                    }
                 }
                 else
                 {
-                    connection.Close();
-                    FastQ = false;
+                    FQuery.Enqueue(_sql);
                 }
+            }
+            catch (SQLiteException e)
+            {
+                Log.Out(string.Format("[ServerTools] SQLiteException in SQLiteDatabase.FastQuery: {0}. Class source {1}", e, _class));
             }
         }
     }

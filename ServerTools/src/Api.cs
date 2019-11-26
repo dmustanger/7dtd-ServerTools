@@ -12,15 +12,16 @@ namespace ServerTools
         public static string ConfigPath = string.Format("{0}/ServerTools", GamePath);
         public static int MaxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
         public static List<ClientInfo> Que = new List<ClientInfo>();
+        public static List<string> Verified = new List<string>();
 
         public void InitMod()
         {
             ModEvents.GameAwake.RegisterHandler(GameAwake);
             ModEvents.GameStartDone.RegisterHandler(GameStartDone);
             ModEvents.GameShutdown.RegisterHandler(GameShutdown);
-            
+
             ModEvents.PlayerLogin.RegisterHandler(PlayerLogin);
-            //ModEvents.PlayerSpawning.RegisterHandler(PlayerSpawning);
+            ModEvents.PlayerSpawning.RegisterHandler(PlayerSpawning);
             ModEvents.PlayerSpawnedInWorld.RegisterHandler(PlayerSpawnedInWorld);
             ModEvents.ChatMessage.RegisterHandler(ChatMessage);
             ModEvents.GameMessage.RegisterHandler(GameMessage);
@@ -50,110 +51,159 @@ namespace ServerTools
 
         private static bool PlayerLogin(ClientInfo _cInfo, string _message, StringBuilder _stringBuild)
         {
-            if (_cInfo != null && _cInfo.playerId.Length == 17 && _cInfo.playerName != null)
+            try
             {
-                try
+                if (_cInfo.playerId != null && _cInfo.playerId.Length == 17)
                 {
-                    if (CountryBan.IsEnabled)
+                    if (!Verified.Contains(_cInfo.playerId))
                     {
-                        if (CountryBan.IsCountryBanned(_cInfo))
+                        Verified.Add(_cInfo.playerId);
+                        if (StopServer.NoEntry)
                         {
                             return false;
                         }
-                    }
-                    if (StopServer.NoEntry)
-                    {
-                        return false;
-                    }
-                    if (ReservedSlots.IsEnabled)
-                    {
-                        if (ReservedSlots.Kicked.ContainsKey(_cInfo.playerName))
+                        if (ReservedSlots.IsEnabled)
                         {
-                            DateTime _dateTime;
-                            ReservedSlots.Kicked.TryGetValue(_cInfo.playerId, out _dateTime);
-                            TimeSpan varTime = DateTime.Now - _dateTime;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
-                            if (_timepassed < 5)
+                            if (ReservedSlots.Kicked.ContainsKey(_cInfo.playerId))
                             {
-                                return false;
+                                DateTime _dateTime;
+                                ReservedSlots.Kicked.TryGetValue(_cInfo.playerId, out _dateTime);
+                                TimeSpan varTime = DateTime.Now - _dateTime;
+                                double fractionalMinutes = varTime.TotalMinutes;
+                                int _timepassed = (int)fractionalMinutes;
+                                if (_timepassed < 5)
+                                {
+                                    return false;
+                                }
+                                else
+                                {
+                                    ReservedSlots.Kicked.Remove(_cInfo.playerId);
+                                }
                             }
-                            else
+                            int _playerCount = ConnectionManager.Instance.ClientCount();
+                            if (_playerCount >= MaxPlayers - 1)
                             {
-                                ReservedSlots.Kicked.Remove(_cInfo.playerId);
+                                if (ReservedSlots.AdminCheck(_cInfo.playerId))
+                                {
+                                    ReservedSlots.OpenSlot();
+                                    return true;
+                                }
+                                else if (ReservedSlots.DonorCheck(_cInfo.playerId))
+                                {
+                                    ReservedSlots.OpenSlot();
+                                    return true;
+                                }
+                                else if (ReservedSlots.Session_Time > 0)
+                                {
+                                    ReservedSlots.OpenSlot();
+                                    return true;
+                                }
+                                else
+                                {
+                                    return false;
+                                }
                             }
                         }
-                        int _playerCount = ConnectionManager.Instance.ClientCount();
-                        if (_playerCount >= MaxPlayers - 1)
-                        {
-                            if (ReservedSlots.AdminCheck(_cInfo))
-                            {
-                                ReservedSlots.OpenSlot();
-                                return true;
-                            }
-                            else if (ReservedSlots.DonorCheck(_cInfo))
-                            {
-                                ReservedSlots.OpenSlot();
-                                return true;
-                            }
-                            else if (ReservedSlots.Session_Time > 0)
-                            {
-                                ReservedSlots.OpenSlot();
-                                return true;
-                            }
-                            else
-                            {
-                                return false;
-                            }
-                        }
+                        PersistentContainer.Instance.Players[_cInfo.playerId].LastJoined = DateTime.Now;
+                        PersistentContainer.Instance.Save();
+                        return true;
                     }
-                    if (CredentialCheck.IsEnabled)
-                    {
-                        if (!CredentialCheck.AccCheck(_cInfo))
-                        {
-                            return false;
-                        }
-                    }
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LastJoined = DateTime.Now;
-                    PersistentContainer.Instance.Save();
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerLogin: {0}.", e.Message));
                 }
             }
-            return false;
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerLogin: {0}.", e.Message));
+                return true;
+            }
+            return true;
         }
 
         private static void PlayerSpawning(ClientInfo _cInfo, int _chunkViewDim, PlayerProfile _playerProfile)
         {
-            if (_cInfo != null)
+            try
             {
-                try
+                if (_cInfo != null)
                 {
-                    
+                    if (CredentialCheck.IsEnabled && !CredentialCheck.AccCheck(_cInfo))
+                    {
+                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 years \"Auto detection has banned you for false credentials. Contact an admin if this is a mistake\"", _cInfo.playerId), (ClientInfo)null);
+                        return;
+                    }
+                    if (CountryBan.IsEnabled && CountryBan.IsCountryBanned(_cInfo))
+                    {
+                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 years \"Auto detection has banned your country or region code\"", _cInfo.playerId), (ClientInfo)null);
+                        return;
+                    }
+                    if (!Verified.Contains(_cInfo.playerId))
+                    {
+                        Verified.Add(_cInfo.playerId);
+                        if (StopServer.NoEntry)
+                        {
+                            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Server is restarting. Please come back soon\"", _cInfo.playerId), (ClientInfo)null);
+                        }
+                        if (ReservedSlots.IsEnabled)
+                        {
+                            if (ReservedSlots.Kicked.ContainsKey(_cInfo.playerId))
+                            {
+                                DateTime _dateTime;
+                                ReservedSlots.Kicked.TryGetValue(_cInfo.playerId, out _dateTime);
+                                TimeSpan varTime = DateTime.Now - _dateTime;
+                                double fractionalMinutes = varTime.TotalMinutes;
+                                int _timepassed = (int)fractionalMinutes;
+                                if (_timepassed < 5)
+                                {
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You were recently kicked by the reserved system, please return in {1} minutes\"", _cInfo.playerId, 5 - _timepassed), (ClientInfo)null);
+                                }
+                                else
+                                {
+                                    ReservedSlots.Kicked.Remove(_cInfo.playerId);
+                                }
+                            }
+                            int _playerCount = ConnectionManager.Instance.ClientCount();
+                            if (_playerCount >= MaxPlayers - 1)
+                            {
+                                if (ReservedSlots.AdminCheck(_cInfo.playerId))
+                                {
+                                    ReservedSlots.OpenSlot();
+                                }
+                                else if (ReservedSlots.DonorCheck(_cInfo.playerId))
+                                {
+                                    ReservedSlots.OpenSlot();
+                                }
+                                else if (ReservedSlots.Session_Time > 0)
+                                {
+                                    ReservedSlots.OpenSlot();
+                                }
+                                else
+                                {
+                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"This slot is reserved. Please try again later\"", _cInfo.playerId), (ClientInfo)null);
+                                }
+                            }
+                        }
+                        PersistentContainer.Instance.Players[_cInfo.playerId].LastJoined = DateTime.Now;
+                        PersistentContainer.Instance.Save();
+                    }
                 }
-                catch (Exception e)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerSpawning: {0}.", e.Message));
-                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerSpawning: {0}.", e.Message));
             }
         }
 
         private static void PlayerSpawnedInWorld(ClientInfo _cInfo, RespawnType _respawnReason, Vector3i _pos)
         {
-            if (_cInfo != null)
+            try
             {
-                try
+                if (_cInfo != null)
                 {
-                    PlayerOperations.SessionTime(_cInfo);
                     if (_respawnReason == RespawnType.EnterMultiplayer)
                     {
                         Que.Add(_cInfo);
                     }
                     else if (_respawnReason == RespawnType.JoinMultiplayer)
                     {
+                        PlayerOperations.SessionTime(_cInfo);
                         PersistentContainer.Instance.Players[_cInfo.playerId].PlayerName = _cInfo.playerName;
                         PersistentContainer.Instance.Save();
                         if (Hardcore.IsEnabled && !Hardcore.Optional)
@@ -269,6 +319,10 @@ namespace ServerTools
                     }
                     else if (_respawnReason == RespawnType.Died)
                     {
+                        if (!PlayerOperations.Session.ContainsKey(_cInfo.playerId))
+                        {
+                            PlayerOperations.SessionTime(_cInfo);
+                        }
                         if (Bloodmoon.IsEnabled && Bloodmoon.Show_On_Respawn)
                         {
                             Bloodmoon.GetBloodmoon(_cInfo);
@@ -426,10 +480,10 @@ namespace ServerTools
                         }
                     }
                 }
-                catch (Exception e)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerSpawnedInWorld: {0}.", e.Message));
-                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerSpawnedInWorld: {0}.", e.Message));
             }
         }
 
@@ -604,6 +658,10 @@ namespace ServerTools
                     {
                         Zones.reminder.Remove(_cInfo.entityId);
                     }
+                    if (!Verified.Contains(_cInfo.playerId))
+                    {
+                        Verified.Remove(_cInfo.playerId);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -635,80 +693,96 @@ namespace ServerTools
             }
         }
 
-        public static void NewPlayerExec()
+        public static void NewPlayerExec(ClientInfo _cInfo)
         {
-            ClientInfo _cInfo = Que[0];
-            if (_cInfo != null)
+            try
             {
-                try
+                if (_cInfo != null)
                 {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].PlayerName = _cInfo.playerName;
-                    PersistentContainer.Instance.Save();
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                    if (_player != null && _player.IsSpawned())
+                    if (_player != null)
                     {
-                        if (Motd.IsEnabled)
+                        if (_player.IsSpawned())
                         {
-                            Motd.Send(_cInfo);
-                        }
-                        if (Bloodmoon.IsEnabled)
-                        {
-                            Bloodmoon.GetBloodmoon(_cInfo);
-                        }
-                        if (NewPlayer.IsEnabled)
-                        {
-                            NewPlayer.Exec(_cInfo);
-                        }
-                        if (NewSpawnTele.IsEnabled)
-                        {
-                            NewSpawnTele.TeleNewSpawn(_cInfo);
-                        }
-                        if (StartingItems.IsEnabled)
-                        {
-                            if (!NewSpawnTele.IsEnabled)
+                            Que.RemoveAt(0);
+                            PlayerOperations.SessionTime(_cInfo);
+                            PersistentContainer.Instance.Players[_cInfo.playerId].PlayerName = _cInfo.playerName;
+                            PersistentContainer.Instance.Save();
+                            if (Motd.IsEnabled)
                             {
-                                StartingItems.StartingItemCheck(_cInfo);
+                                Motd.Send(_cInfo);
                             }
-                            else if (NewSpawnTele.IsEnabled && NewSpawnTele.New_Spawn_Tele_Position != "0,0,0")
+                            if (Bloodmoon.IsEnabled)
                             {
-                                StartingItems.Que.Add(_cInfo.playerId);
+                                Bloodmoon.GetBloodmoon(_cInfo);
                             }
-                            else if (NewSpawnTele.IsEnabled && NewSpawnTele.New_Spawn_Tele_Position == "0,0,0")
+                            if (NewPlayer.IsEnabled)
                             {
-                                StartingItems.StartingItemCheck(_cInfo);
+                                NewPlayer.Exec(_cInfo);
                             }
-                        }
-                        if (PollConsole.IsEnabled)
-                        {
-                            string _sql = "SELECT pollOpen FROM Polls WHERE pollOpen = 'true'";
-                            if (!string.IsNullOrEmpty(_sql))
+                            if (NewSpawnTele.IsEnabled)
                             {
-                                DataTable _result1 = SQL.TQuery(_sql);
-                                if (_result1.Rows.Count > 0 && !PollConsole.PolledYes.Contains(_cInfo.playerId) && !PollConsole.PolledNo.Contains(_cInfo.playerId))
+                                NewSpawnTele.TeleNewSpawn(_cInfo);
+                            }
+                            if (StartingItems.IsEnabled)
+                            {
+                                if (!NewSpawnTele.IsEnabled)
                                 {
-                                    PollConsole.Message(_cInfo);
+                                    StartingItems.StartingItemCheck(_cInfo);
                                 }
-                                _result1.Dispose();
+                                else if (NewSpawnTele.IsEnabled && NewSpawnTele.New_Spawn_Tele_Position != "0,0,0")
+                                {
+                                    StartingItems.Que.Add(_cInfo.playerId);
+                                }
+                                else if (NewSpawnTele.IsEnabled && NewSpawnTele.New_Spawn_Tele_Position == "0,0,0")
+                                {
+                                    StartingItems.StartingItemCheck(_cInfo);
+                                }
                             }
-                        }
-                        if (Hardcore.IsEnabled && !Hardcore.Optional)
-                        {
-                            string _sql = string.Format("SELECT * FROM Hardcore WHERE steamid = '{0}'", _cInfo.playerId);
-                            DataTable _result = SQL.TQuery(_sql);
-                            if (_result.Rows.Count == 0)
+                            if (PollConsole.IsEnabled)
                             {
-                                int _deaths = XUiM_Player.GetDeaths(_player);
-                                SQL.FastQuery(string.Format("INSERT INTO Hardcore (steamid, playerName, deaths) VALUES ('{0}', '{1}', {2})", _cInfo.playerId, _cInfo.playerName, _deaths), null);
+                                string _sql = "SELECT pollOpen FROM Polls WHERE pollOpen = 'true'";
+                                if (!string.IsNullOrEmpty(_sql))
+                                {
+                                    DataTable _result = SQL.TQuery(_sql);
+                                    if (_result.Rows.Count > 0 && !PollConsole.PolledYes.Contains(_cInfo.playerId) && !PollConsole.PolledNo.Contains(_cInfo.playerId))
+                                    {
+                                        PollConsole.Message(_cInfo);
+                                    }
+                                    _result.Dispose();
+                                }
                             }
-                            _result.Dispose();
+                            if (Hardcore.IsEnabled && !Hardcore.Optional)
+                            {
+                                string _sql = string.Format("SELECT * FROM Hardcore WHERE steamid = '{0}'", _cInfo.playerId);
+                                DataTable _result = SQL.TQuery(_sql);
+                                if (_result.Rows.Count == 0)
+                                {
+                                    int _deaths = XUiM_Player.GetDeaths(_player);
+                                    SQL.FastQuery(string.Format("INSERT INTO Hardcore (steamid, playerName, deaths) VALUES ('{0}', '{1}', {2})", _cInfo.playerId, _cInfo.playerName, _deaths), null);
+                                }
+                                _result.Dispose();
+                            }
                         }
+                        else if (Que.Count > 1)
+                        {
+                            NewPlayerExec(Que[1]);
+                        }
+                    }
+                    else
+                    {
                         Que.RemoveAt(0);
                     }
                 }
-                catch (Exception e)
+                else
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in API.NewPlayerExec: {0}.", e.Message));
+                    Que.RemoveAt(0);
                 }
+            }
+            catch (Exception e)
+            {
+                Que.RemoveAt(0);
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.NewPlayerExec: {0}.", e.Message));
             }
         }
     }

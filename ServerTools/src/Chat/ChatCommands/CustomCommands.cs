@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
+using System.Linq;
 using System.Xml;
 
 namespace ServerTools
@@ -187,7 +187,7 @@ namespace ServerTools
                     sw.WriteLine("        <Command Number=\"16\" Trigger=\"cc16\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Number=\"17\" Trigger=\"cc17\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Number=\"18\" Trigger=\"cc18\" Response=\"First command ^ Second command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
-                    sw.WriteLine("        <Command Number=\"19\" Trigger=\"cc19\" Response=\"First command ^ Second command ^ Third Command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
+                    sw.WriteLine("        <Command Number=\"19\" Trigger=\"cc19\" Response=\"First command ^ {Delay} 30 ^ Third Command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
                     sw.WriteLine("        <Command Number=\"20\" Trigger=\"cc20\" Response=\"First command ^ Second command ^ Third Command\" DelayBetweenUses=\"0\" Hidden=\"false\" Permission=\"false\" Cost=\"0\" />");
                 }
                 sw.WriteLine("    </Commands>");
@@ -462,7 +462,7 @@ namespace ServerTools
                     {
                         _commands_6 = string.Format("{0} {1}{2}", _commands_6, ChatHook.Command_Private, Hardcore.Command101);
                     }
-                    
+
                 }
                 else if (PersistentContainer.Instance.Players[_cInfo.playerId].Hardcore)
                 {
@@ -725,7 +725,7 @@ namespace ServerTools
                 if (_currentCoins >= _c1[2])
                 {
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _c1[2]);
-                    CommandExecute(_cInfo, _message, _c1);
+                    CommandDelay(_cInfo, _message, _c1);
                 }
                 else
                 {
@@ -740,11 +740,11 @@ namespace ServerTools
             }
             else
             {
-                CommandExecute(_cInfo, _message, _c1);
+                CommandDelay(_cInfo, _message, _c1);
             }
         }
 
-        public static void CommandExecute(ClientInfo _cInfo, string _message, int[] _c1)
+        public static void CommandDelay(ClientInfo _cInfo, string _message, int[] _c1)
         {
             try
             {
@@ -835,43 +835,133 @@ namespace ServerTools
                 string[] _r;
                 if (Dict.TryGetValue(_message, out _r))
                 {
-                    string[] _responseSplit = _r[0].Split('^');
-                    for (int i = 0; i < _responseSplit.Length; i++)
+                    string[] _commandsSplit = _r[0].Split('^');
+                    for (int i = 0; i < _commandsSplit.Length; i++)
                     {
-                        string _responseAdj = _responseSplit[i].Trim();
-                        _responseAdj = _responseAdj.Replace("{EntityId}", _cInfo.entityId.ToString());
-                        _responseAdj = _responseAdj.Replace("{SteamId}", _cInfo.playerId);
-                        _responseAdj = _responseAdj.Replace("{PlayerName}", _cInfo.playerName);
-                        if (_responseAdj.ToLower().StartsWith("global "))
+                        string _commandTrimmed = _commandsSplit[i].Trim();
+                        if (_commandTrimmed.StartsWith("{Delay}"))
                         {
-                            _responseAdj = _responseAdj.Replace("Global ", "");
-                            _responseAdj = _responseAdj.Replace("global ", "");
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                        }
-                        else if (_responseAdj.ToLower().StartsWith("whisper "))
-                        {
-                            _responseAdj = _responseAdj.Replace("Whisper ", "");
-                            _responseAdj = _responseAdj.Replace("whisper ", "");
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                        }
-                        else if (_responseAdj.StartsWith("tele ") || _responseAdj.StartsWith("tp ") || _responseAdj.StartsWith("teleportplayer "))
-                        {
-                            SdtdConsole.Instance.ExecuteSync(_responseAdj, null);
-                            if (Zones.IsEnabled && Zones.ZoneExit.ContainsKey(_cInfo.entityId))
+                            if (i < _commandsSplit.Length)
                             {
-                                Zones.ZoneExit.Remove(_cInfo.entityId);
+                                string _commandsRebuilt = "";
+                                for (int j = i; j < _commandsSplit.Length; j++)
+                                {
+                                    string _delayedCommandTrimmed = _commandsSplit[j].Trim();
+                                    if (j == i + 1)
+                                    {
+                                        _commandsRebuilt = _delayedCommandTrimmed;
+                                    }
+                                    else
+                                    {
+                                        _commandsRebuilt = _commandsRebuilt + " ^ " + _delayedCommandTrimmed;
+                                    }
+                                }
+                                string _timeString = _commandTrimmed.Split(' ').Skip(1).First();
+                                int _time = 5;
+                                int.TryParse(_timeString, out _time);
+                                Timers.SingleUseTimer(_time, _cInfo.playerId, _commandsRebuilt);
                             }
+                            return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.ExecuteSync(_responseAdj, null);
+                            CommandExec(_cInfo, _commandTrimmed);
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.CommandExecute: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.CommandDelay: {0}.", e));
+            }
+        }
+
+        public static void DelayedCommand(string _playerId, string _commands)
+        {
+            try
+            {
+                ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_playerId);
+                if (_cInfo != null)
+                {
+                    string[] _commandsSplit = _commands.Split('^');
+                    for (int i = 0; i < _commandsSplit.Length; i++)
+                    {
+                        string _commandTrimmed = _commandsSplit[i].Trim();
+                        if (_commandTrimmed.StartsWith("{Delay}"))
+                        {
+                            if (i < _commandsSplit.Length)
+                            {
+                                string _commandsRebuilt = "";
+                                for (int j = i + 1; j < _commandsSplit.Length; j++)
+                                {
+                                    string _delayedCommandTrimmed = _commandsSplit[j].Trim();
+                                    if (j == i + 1)
+                                    {
+                                        _commandsRebuilt = _delayedCommandTrimmed;
+                                    }
+                                    else
+                                    {
+                                        _commandsRebuilt = _commandsRebuilt + " ^ " + _delayedCommandTrimmed;
+                                    }
+                                }
+                                string _timeString = _commandTrimmed.Split(' ').Skip(1).First();
+                                int _time = 5;
+                                int.TryParse(_timeString, out _time);
+                                Timers.SingleUseTimer(_time, _cInfo.playerId, _commandsRebuilt);
+                            }
+                            return;
+                        }
+                        else
+                        {
+                            CommandExec(_cInfo, _commandTrimmed);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.DelayedCommand: {0}.", e));
+            }
+        }
+
+        public static void CommandExec(ClientInfo _cInfo, string _command)
+        {
+            try
+            {
+                if (_cInfo != null)
+                {
+                    _command = _command.Replace("{EntityId}", _cInfo.entityId.ToString());
+                    _command = _command.Replace("{SteamId}", _cInfo.playerId);
+                    _command = _command.Replace("{PlayerName}", _cInfo.playerName);
+                    if (_command.ToLower().StartsWith("global "))
+                    {
+                        _command = _command.Replace("Global ", "");
+                        _command = _command.Replace("global ", "");
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _command + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    }
+                    else if (_command.ToLower().StartsWith("whisper "))
+                    {
+                        _command = _command.Replace("Whisper ", "");
+                        _command = _command.Replace("whisper ", "");
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _command + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                    else if (_command.StartsWith("tele ") || _command.StartsWith("tp ") || _command.StartsWith("teleportplayer "))
+                    {
+                        SdtdConsole.Instance.ExecuteSync(_command, null);
+                        if (Zones.IsEnabled && Zones.ZoneExit.ContainsKey(_cInfo.entityId))
+                        {
+                            Zones.ZoneExit.Remove(_cInfo.entityId);
+                        }
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.ExecuteSync(_command, null);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.CommandExec: {0}.", e));
             }
         }
     }

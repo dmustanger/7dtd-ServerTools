@@ -11,8 +11,6 @@ namespace ServerTools
         public static int Delay_Between_Uses = 24, Admin_Level = 0, Cancel_Time = 15;
         public static string Command71 = "auction", Command72 = "auction cancel", Command73 = "auction buy", Command74 = "auction sell";
         public static Dictionary<int, string> AuctionItems = new Dictionary<int, string>();
-        private static DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
-        private static LinkedList<Chunk> chunkArray = new LinkedList<Chunk>();
         private static string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy")), filepath = string.Format("{0}/Logs/AuctionLog/{1}", API.ConfigPath, file);
 
         public static void Delay(ClientInfo _cInfo, string _price)
@@ -87,6 +85,8 @@ namespace ServerTools
                     {
                         if (_p > 0)
                         {
+                            LinkedList<Chunk> chunkArray = new LinkedList<Chunk>();
+                            DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
                             ChunkClusterList chunklist = GameManager.Instance.World.ChunkClusters;
                             for (int i = 0; i < chunklist.Count; i++)
                             {

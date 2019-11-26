@@ -166,11 +166,11 @@ namespace ServerTools
                         ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_player);
                         if (_cInfo != null)
                         {
-                            if (AdminCheck(_cInfo))
+                            if (AdminCheck(_cInfo.playerId))
                             {
                                 continue;
                             }
-                            else if (DonorCheck(_cInfo))
+                            else if (DonorCheck(_cInfo.playerId))
                             {
                                 DateTime _dt;
                                 Dict.TryGetValue(_cInfo.playerId, out _dt);
@@ -239,12 +239,12 @@ namespace ServerTools
             }
         }
 
-        public static bool DonorCheck(ClientInfo _cInfo)
+        public static bool DonorCheck(string _id)
         {
-            if (Dict.ContainsKey(_cInfo.playerId))
+            if (Dict.ContainsKey(_id))
             {
                 DateTime _dt;
-                Dict.TryGetValue(_cInfo.playerId, out _dt);
+                Dict.TryGetValue(_id, out _dt);
                 if (DateTime.Now < _dt)
                 {
                     return true;
@@ -280,9 +280,9 @@ namespace ServerTools
             }
         }
 
-        public static bool AdminCheck(ClientInfo _cInfo)
+        public static bool AdminCheck(string _id)
         {
-            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_id);
             if (Admin.PermissionLevel <= Admin_Level)
             {
                 return true;

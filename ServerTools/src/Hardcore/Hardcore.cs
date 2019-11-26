@@ -92,7 +92,7 @@ namespace ServerTools
                 int _newSession = _oldSession + _timepassed;
                 int _playerKills = _player.KilledPlayers, _zKills = _player.KilledZombies, _score = _player.Score;
                 string _session = string.Format("{0:00}", _newSession % 60);
-                _sql = string.Format("UPDATE Hardcore SET sessionTime = {0}, kills = {1}, zKills = {2}, score = {3}, deaths = {4}, playerName = {5}, extraLives = {6} WHERE steamid = '{7}'",
+                _sql = string.Format("UPDATE Hardcore SET sessionTime = {0}, kills = {1}, zKills = {2}, score = {3}, oldDeaths = {4}, playerName = {5}, extraLives = {6} WHERE steamid = '{7}'",
                     _newSession, _playerKills, _zKills, _score, _deaths, _cInfo.playerName, 0, _cInfo.playerId);
                 SQL.FastQuery(_sql, "Hardcore");
                 SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Hardcore Game Over: Zombie Kills {1}, Player Kills {2}, Deaths {3}, Score {4}, Playtime {5}\"",
@@ -219,7 +219,7 @@ namespace ServerTools
 
         public static void Score(ClientInfo _cInfo, bool _announce)
         {
-            string _sql = string.Format("SELECT sessionTime, kills, zKills, score, deaths, playerName From Hardcore WHERE steamid = '{0}'", _cInfo.playerId);
+            string _sql = string.Format("SELECT sessionTime, kills, zKills, score, oldDeaths, playerName From Hardcore WHERE steamid = '{0}'", _cInfo.playerId);
             DataTable _result = SQL.TQuery(_sql);
             if (_result.Rows.Count > 0)
             {

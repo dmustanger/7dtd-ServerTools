@@ -61,21 +61,21 @@ namespace ServerTools
                     {
                         if (int.TryParse(_params[1], out _range))
                         {
-                            List<string> PlayerId = new List<string>();
+                            List<string> PlayerInRange = new List<string>();
                             string _sql = string.Format("SELECT * FROM Tracking ORDER BY dateTime DESC");
                             DataTable _result = SQL.TQuery(_sql);
                             if (_result.Rows.Count > 0)
                             {
+                                bool _found = false;
                                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_senderInfo.RemoteClientInfo.entityId];
                                 SdtdConsole.Instance.Output(string.Format("Tracking results at a range of {0} blocks:", _range));
-                                bool _found = false;
                                 foreach (DataRow row in _result.Rows)
                                 {
                                     DateTime _dateTime;
-                                    DateTime.TryParse(row.ItemArray.GetValue(0).ToString(), out _dateTime);
+                                    DateTime.TryParse(row.ItemArray.GetValue(1).ToString(), out _dateTime);
                                     if (_dateTime.AddHours(_hours) >= DateTime.Now)
                                     {
-                                        string[] _cords = row.ItemArray.GetValue(1).ToString().Split(' ');
+                                        string[] _cords = row.ItemArray.GetValue(2).ToString().Split(' ');
                                         int _x, _y, _z;
                                         int.TryParse(_cords[0], out _x);
                                         int.TryParse(_cords[1], out _y);
@@ -84,19 +84,15 @@ namespace ServerTools
                                         if (RangeCheck(_player.position, _trackedVecPos, _range))
                                         {
                                             _found = true;
-                                            string _playerId = row.ItemArray.GetValue(2).ToString();
-                                            string _playerName = row.ItemArray.GetValue(3).ToString();
-                                            string _itemHeld = row.ItemArray.GetValue(4).ToString();
-                                            if (!PlayerId.Contains(_playerId))
+                                            string _playerId = row.ItemArray.GetValue(3).ToString();
+                                            string _playerName = row.ItemArray.GetValue(4).ToString();
+                                            string _itemHeld = row.ItemArray.GetValue(5).ToString();
+                                            if (!PlayerInRange.Contains(_playerId))
                                             {
-                                                PlayerId.Add(_playerId);
+                                                PlayerInRange.Add(_playerId);
                                                 SdtdConsole.Instance.Output(string.Format("Player: {0}, SteamId: {1}, Time: {2}, Position: {3} {4} {5}, Item Held: {6}", _playerName, _playerId, _dateTime, _x, _y, _z, _itemHeld));
                                             }
                                         }
-                                    }
-                                    else
-                                    {
-                                        break;
                                     }
                                 }
                                 if (!_found)
@@ -134,20 +130,20 @@ namespace ServerTools
                                 {
                                     if (int.TryParse(_params[4], out _worldZ))
                                     {
-                                        List<string> PlayerId = new List<string>();
                                         string _sql = string.Format("SELECT * FROM Tracking ORDER BY dateTime DESC");
                                         DataTable _result = SQL.TQuery(_sql);
                                         if (_result.Rows.Count > 0)
                                         {
-                                            SdtdConsole.Instance.Output(string.Format("Tracking results at a range of {0} blocks:", _range));
                                             bool _found = false;
+                                            List<string> PlayerInRange = new List<string>();
+                                            SdtdConsole.Instance.Output(string.Format("Tracking results at a range of {0} blocks:", _range));
                                             foreach (DataRow row in _result.Rows)
                                             {
                                                 DateTime _dateTime;
-                                                DateTime.TryParse(row.ItemArray.GetValue(0).ToString(), out _dateTime);
+                                                DateTime.TryParse(row.ItemArray.GetValue(1).ToString(), out _dateTime);
                                                 if (_dateTime.AddHours(_hours) >= DateTime.Now)
                                                 {
-                                                    string[] _cords = row.ItemArray.GetValue(1).ToString().Split(' ');
+                                                    string[] _cords = row.ItemArray.GetValue(2).ToString().Split(' ');
                                                     int _x, _y, _z;
                                                     int.TryParse(_cords[0], out _x);
                                                     int.TryParse(_cords[1], out _y);
@@ -157,19 +153,15 @@ namespace ServerTools
                                                     if (RangeCheck(_worldVecPos, _trackedVecPos, _range))
                                                     {
                                                         _found = true;
-                                                        string _playerId = row.ItemArray.GetValue(2).ToString();
-                                                        string _playerName = row.ItemArray.GetValue(3).ToString();
-                                                        string _itemHeld = row.ItemArray.GetValue(4).ToString();
-                                                        if (!PlayerId.Contains(_playerId))
+                                                        string _playerId = row.ItemArray.GetValue(3).ToString();
+                                                        string _playerName = row.ItemArray.GetValue(4).ToString();
+                                                        string _itemHeld = row.ItemArray.GetValue(5).ToString();
+                                                        if (!PlayerInRange.Contains(_playerId))
                                                         {
-                                                            PlayerId.Add(_playerId);
+                                                            PlayerInRange.Add(_playerId);
                                                             SdtdConsole.Instance.Output(string.Format("Player: {0}, SteamId: {1}, Time: {2}, Position: {3} {4} {5}, Item Held: {6}", _playerName, _playerId, _dateTime, _x, _y, _z, _itemHeld));
                                                         }
                                                     }
-                                                }
-                                                else
-                                                {
-                                                    break;
                                                 }
                                             }
                                             if (!_found)
