@@ -33,32 +33,31 @@ namespace ServerTools
                 }
                 if (_params[0] == "cancel")
                 {
-                    if (!StopServer.stopServerCountingDown)
+                    if (!StopServer.StopServerCountingDown)
                     {
                         SdtdConsole.Instance.Output("Stopserver is not running.");
                     }
                     else
                     {
-                        StopServer.stopServerCountingDown = false;
+                        StopServer.StopServerCountingDown = false;
                         StopServer.NoEntry = false;
+                        Lottery.ShuttingDown = false;
                         if (AutoShutdown.IsEnabled)
                         {
-                            AutoShutdown.ShutdownTime();
-                            Timers._sD = 0;
+                            Timers._autoShutdown = 0;
                         }
-                        Lottery.ShuttingDown = false;
                         SdtdConsole.Instance.Output("Stopserver has been cancelled.");
                     }
                 }
                 else
                 {
-                    if (StopServer.stopServerCountingDown)
+                    if (StopServer.StopServerCountingDown)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Server is already stopping in {0} mins", Timers._newCount));
+                        SdtdConsole.Instance.Output(string.Format("Server is already set to stop."));
                     }
                     else
                     {
-                        if (!int.TryParse(_params[0], out Timers.Stop_Server_Time))
+                        if (!int.TryParse(_params[0], out StopServer.Delay))
                         {
                             SdtdConsole.Instance.Output(string.Format("Invalid time specified: {0}", _params[0]));
                         }

@@ -30,7 +30,7 @@ public class @AdminsConsole : ConsoleCmdAbstract
         try
         {
             string _message = string.Join(" ", _params.ToArray());
-            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
+            List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
             for (int i = 0; i < _cInfoList.Count; i++)
             {
                 ClientInfo _player = _cInfoList[i];

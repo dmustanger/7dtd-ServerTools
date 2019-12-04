@@ -1553,7 +1553,7 @@ namespace ServerTools
                 string _phrase900;
                 if (!Dict.TryGetValue(900, out _phrase900))
                 {
-                    _phrase900 = " you can only use {CommandPrivate}{Command74} {DelayBetweenUses} hours after a sale. Time remaining: {TimeRemaining} hours.";
+                    _phrase900 = " you can only use {CommandPrivate}{Command74} {DelayBetweenUses} minutes after a sale. Time remaining: {TimeRemaining}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"900\" Phrase=\"{0}\" />", _phrase900));
                 sw.WriteLine("        <!-- ******************************************************** -->");

@@ -84,6 +84,7 @@ namespace ServerTools
         private bool startingItems;
         private bool auctionReturn;
         private bool hardcore;
+        private bool oldPlayer;
         private string playerName;
         private string auctionItemName;
         private string clanName;
@@ -996,6 +997,18 @@ namespace ServerTools
             set
             {
                 hardcore = value;
+            }
+        }
+
+        public bool OldPlayer
+        {
+            get
+            {
+                return oldPlayer;
+            }
+            set
+            {
+                oldPlayer = value;
             }
         }
 

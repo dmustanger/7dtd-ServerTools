@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Traderlist", "traderlist", "tl" };
+            return new string[] { "st-Traderlist", "traderlist", "st-tl", "tl" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -47,7 +47,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in TraderListConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in TraderListConsole.Execute: {0}.", e));
             }
         }
     }

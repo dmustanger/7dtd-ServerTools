@@ -1,5 +1,31 @@
 ﻿CHANGELOG
 
+18.1.7
+Built using Alpha 18.2 experimental assets
+Functioning with 18.1 stable and 18.2 experimental
+
+Added Bloodmoon_Warrior. If players stay the entire bloodmoon, don't leave and kill enough
+zombies, their death record is reduced by one. Can not go lower than 0 deaths
+Added general code clean ups and performance increases
+Added automatic bedroll check when detected dead. If bedroll position matches another player
+it will remove the bedroll itself to prevent respawn issues left by the developer
+Fixed Real_World_Time delay not working properly
+Fixed Lobby tool delay process operating for donors twice
+Fixed console commands for Bounties tool
+Fixed Starting Items spawning without a durability value
+Fixed bug in sqlite database updates causing Hardcore tool to register errors on a player death
+Fixed bug in Hardcore tool using the wrong sqlite format
+Changed Hardcore kick process after hitting the full death count
+Changed Hardcore and Player Reset tools to now remove active claims, friends and saved data
+Changed AutoBackup tool to delete old files based on total found. Set the max allowed
+Changed collision check and general code for chat command /stuck to improve accuracy
+Changed api for new players to use an independant timer and avoid operation over lap
+Changed Flying tool to improve speed and accuracy. Should help prevent false positives
+Changed one internal timer from a quarter second to half second interval
+Changed Auction_Box delay between sales to use minutes instead of hours
+Updated phrase 900
+Update HowToSetup.xml but not the console commands listed in it
+
 18.1.6
 Built using Alpha 18.2 experimental assets
 Functioning with 18.1 stable and 18.2 experimental

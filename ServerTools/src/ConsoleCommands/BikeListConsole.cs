@@ -43,7 +43,7 @@ namespace ServerTools
                         Entity _attachedPlayer = _entity.AttachedMainEntity;
                         if (_attachedPlayer != null)
                         {
-                            List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                            List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
                             for (int j = 0; j < _cInfoList.Count; j++)
                             {
                                 ClientInfo _cInfo = _cInfoList[j];

@@ -11,13 +11,28 @@ namespace ServerTools
             {
                 if (_version == 1)
                 {
-                    SQLiteDatabase.FastQuery("ALTER TABLE Hardcore ADD extraLives INTEGER DEFAULT 0;", "UpdateSQL");
+                    if (!MySqlDB.IsEnabled)
+                    {
+                        SQL.FastQuery("ALTER TABLE Hardcore ADD extraLives INTEGER DEFAULT 0;", "UpdateSQL");
+                    }
+                    else
+                    {
+                        SQL.FastQuery("ALTER TABLE Hardcore ADD extraLives INT DEFAULT 0;", "UpdateSQL");
+                    }
+                    SQL.FastQuery("UPDATE Config SET sql_version = 2 WHERE sql_version = 1", "UpdateSQL");
                 }
-                if (_version == 2)
+                else if (_version == 2)
                 {
-                    SQLiteDatabase.FastQuery("ALTER TABLE Hardcore ADD oldDeaths INTEGER DEFAULT 0;", "UpdateSQL");
+                    if (!MySqlDB.IsEnabled)
+                    {
+                        SQL.FastQuery("ALTER TABLE Hardcore ADD oldDeaths INTEGER DEFAULT 0;", "UpdateSQL");
+                    }
+                    else
+                    {
+                        SQL.FastQuery("ALTER TABLE Hardcore ADD oldDeaths INT DEFAULT 0;", "UpdateSQL");
+                    }
+                    SQL.FastQuery("UPDATE Config SET sql_version = 3 WHERE sql_version = 2", "UpdateSQL");
                 }
-                SQL.FastQuery("UPDATE Config SET sql_version = 2 WHERE sql_version = 1", "UpdateSQL");
                 CheckVersion();
             }
             catch (Exception e)
@@ -28,17 +43,24 @@ namespace ServerTools
 
         private static void CheckVersion()
         {
-            DataTable _result = SQL.TQuery("SELECT sql_version FROM Config");
-            int _version;
-            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _version);
-            _result.Dispose();
-            if (_version != SQL.Sql_version)
+            try
             {
-                Exec(_version);
+                DataTable _result = SQL.TypeQuery("SELECT sql_version FROM Config");
+                int _version;
+                int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _version);
+                _result.Dispose();
+                if (_version != SQL.Sql_version)
+                {
+                    Exec(_version);
+                }
+                else
+                {
+                    LoadProcess.Load(4);
+                }
             }
-            else
+            catch (Exception e)
             {
-                LoadProcess.Load(4);
+                Log.Out(string.Format("[SERVERTOOLS] Error in UpdateSQL.CheckVersion: {0}.", e));
             }
         }
     }

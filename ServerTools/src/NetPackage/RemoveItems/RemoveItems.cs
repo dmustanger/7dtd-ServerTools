@@ -45,6 +45,7 @@ namespace ServerTools
                                 Log.Out("[SERVERTOOLS] Test 4. Adjusting local player bag");
                                 EntityPlayerLocal _entityPlayerLocalAdjusted = Adjust(_entityPlayerLocal, _itemName, _count);
                                 Log.Out("[SERVERTOOLS] Test 5 Sending package");
+
                                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerInventory>().Setup(_entityPlayerLocalAdjusted, false, true, false));
                                 Log.Out("[SERVERTOOLS] Test 6 Operation complete");
                             }

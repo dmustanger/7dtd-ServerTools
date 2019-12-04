@@ -11,7 +11,7 @@ namespace ServerTools
             Timers.TimerStart();
             Timers.Timer2Start();
             string _sql = "SELECT pollOpen FROM Polls WHERE pollOpen = 'true'";
-            DataTable _result = SQL.TQuery(_sql);
+            DataTable _result = SQL.TypeQuery(_sql);
             if (_result.Rows.Count > 0)
             {
                 PollConsole.Check();
@@ -201,10 +201,6 @@ namespace ServerTools
             if (Jail.IsEnabled)
             {
                 Jail.JailList();
-            }
-            if (AutoShutdown.IsEnabled)
-            {
-                AutoShutdown.ShutdownTime();
             }
         }
     }

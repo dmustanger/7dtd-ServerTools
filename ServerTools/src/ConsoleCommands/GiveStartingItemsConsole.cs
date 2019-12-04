@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace ServerTools
 {
@@ -60,17 +61,26 @@ namespace ServerTools
 
         public static void Send(ClientInfo _cInfo)
         {
-            if (StartingItems.startItemList.Count > 0)
+            if (StartingItems.ItemList.Count > 0)
             {
                 World world = GameManager.Instance.World;
-                foreach (KeyValuePair<string, int[]> kvp in StartingItems.startItemList)
+                List<string> _itemList = StartingItems.ItemList.Keys.ToList();
+                for (int i = 0; i < _itemList.Count; i++)
                 {
-                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(kvp.Key).type, kvp.Value[1], kvp.Value[1], true, null, 1);
-                    var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                    string _item = _itemList[i];
+                    int[] _itemData;
+                    StartingItems.ItemList.TryGetValue(_item, out _itemData);
+                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item, false).type, false);
+                    if (_itemValue.HasQuality && _itemData[1] > 0)
+                    {
+                        _itemValue.Quality = _itemData[1];
+                    }
+                    EntityItem entityItem = new EntityItem();
+                    entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                     {
                         entityClass = EntityClass.FromString("item"),
                         id = EntityFactory.nextEntityID++,
-                        itemStack = new ItemStack(_itemValue, kvp.Value[0]),
+                        itemStack = new ItemStack(_itemValue, _itemData[0]),
                         pos = world.Players.dict[_cInfo.entityId].position,
                         rot = new Vector3(20f, 0f, 20f),
                         lifetime = 60f,
@@ -85,9 +95,9 @@ namespace ServerTools
                 string _phrase806;
                 if (!Phrases.Dict.TryGetValue(806, out _phrase806))
                 {
-                    _phrase806 = "you have received the starting items. Check your inventory. If full, check the ground.";
+                    _phrase806 = " you have received the starting items. Check your inventory. If full, check the ground.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase806 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase806 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

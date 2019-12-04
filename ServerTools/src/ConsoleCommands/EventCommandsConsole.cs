@@ -50,7 +50,7 @@ namespace ServerTools
                         return;
                     }
                     string _sql = string.Format("SELECT eventName FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", _steamId, _params[1]);
-                    DataTable _result = SQL.TQuery(_sql);
+                    DataTable _result = SQL.TypeQuery(_sql);
                     if (_result.Rows.Count == 0)
                     {
                         _result.Dispose();
@@ -100,14 +100,14 @@ namespace ServerTools
                             int z = (int)_position.z;
                             string _sposition = x + "," + y + "," + z;
                             string _sql = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", _steamId, _eventName);
-                            DataTable _result1 = SQL.TQuery(_sql);
+                            DataTable _result1 = SQL.TypeQuery(_sql);
                             int _eventid;
                             int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
                             int _eventTeams;
                             int.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _eventTeams);
                             _result1.Dispose();
                             _sql = string.Format("SELECT eventSpawn FROM EventSpawns WHERE eventid = {0}", _eventid);
-                            DataTable _result2 = SQL.TQuery(_sql);
+                            DataTable _result2 = SQL.TypeQuery(_sql);
                             int _count = _result2.Rows.Count + 1;
                             _result2.Dispose();
                             string _pos = SQL.EscapeString(_sposition);
@@ -138,14 +138,14 @@ namespace ServerTools
                             int z = (int)_position.z;
                             string _sposition = x + "," + y + "," + z;
                             string _sql = string.Format("SELECT eventid, eventTeams FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", _steamId, _eventName);
-                            DataTable _result1 = SQL.TQuery(_sql);
+                            DataTable _result1 = SQL.TypeQuery(_sql);
                             int _eventid;
                             int.TryParse(_result1.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
                             int _eventTeams;
                             int.TryParse(_result1.Rows[0].ItemArray.GetValue(1).ToString(), out _eventTeams);
                             _result1.Dispose();
                             _sql = string.Format("SELECT eventRespawn FROM EventSpawns WHERE eventid = {0} AND eventRespawn != null", _eventid);
-                            DataTable _result2 = SQL.TQuery(_sql);
+                            DataTable _result2 = SQL.TypeQuery(_sql);
                             int _count = _result2.Rows.Count + 1;
                             _result2.Dispose();
                             string _pos = SQL.EscapeString(_sposition);
@@ -181,7 +181,7 @@ namespace ServerTools
                         if (Event.Admin == _steamId)
                         {
                             string _sql = string.Format("SELECT eventName, eventInvite, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventAdmin = '{0}' AND eventActive = 'true'", Event.Admin);
-                            DataTable _result = SQL.TQuery(_sql);
+                            DataTable _result = SQL.TypeQuery(_sql);
                             string _eventName = _result.Rows[0].ItemArray.GetValue(0).ToString();
                             string _eventInvite = _result.Rows[0].ItemArray.GetValue(1).ToString();
                             int _eventTeams;
@@ -249,7 +249,7 @@ namespace ServerTools
                                         if (_player2.IsSpawned())
                                         {
                                             string _sql = string.Format("SELECT eventReturn FROM Players WHERE steamid = '{0}'", _steamId);
-                                            DataTable _result = SQL.TQuery(_sql);
+                                            DataTable _result = SQL.TypeQuery(_sql);
                                             string _position = _result.Rows[0].ItemArray.GetValue(0).ToString();
                                             _result.Dispose();
                                             int x, y, z;
@@ -317,7 +317,7 @@ namespace ServerTools
                 else if (_params[0].ToLower() == ("list"))
                 {
                     string _sql = string.Format("SELECT eventid, eventName, eventInvite, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventAdmin = '{0}'", _steamId);
-                    DataTable _result = SQL.TQuery(_sql);
+                    DataTable _result = SQL.TypeQuery(_sql);
                     if (_result.Rows.Count > 0)
                     {
                         foreach (DataRow row in _result.Rows)
@@ -354,7 +354,7 @@ namespace ServerTools
                     if (int.TryParse(_params[1], out _id))
                     {
                         string _sql = string.Format("SELECT eventName, eventInvite, eventTeams, eventPlayerCount, eventTime FROM Events WHERE eventAdmin = '{0}' AND eventid = {1}", _steamId, _id);
-                        DataTable _result = SQL.TQuery(_sql);
+                        DataTable _result = SQL.TypeQuery(_sql);
                         if (_result.Rows.Count > 0)
                         {
                             string _eventName = _result.Rows[0].ItemArray.GetValue(0).ToString();
@@ -445,7 +445,7 @@ namespace ServerTools
                                     if (_player.IsSpawned())
                                     {
                                         string _sql = string.Format("SELECT eventReturn FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                                        DataTable _result = SQL.TQuery(_sql);
+                                        DataTable _result = SQL.TypeQuery(_sql);
                                         string _position = _result.Rows[0].ItemArray.GetValue(0).ToString();
                                         _result.Dispose();
                                         int x, y, z;
@@ -512,7 +512,7 @@ namespace ServerTools
                                             Event.SetupStage.Remove(_steamId);
                                             Event.SetupName.Remove(_steamId);
                                             string _sql = string.Format("SELECT eventid, eventInvite FROM Events WHERE eventAdmin = '{0}' AND eventName = '{1}'", _steamId, _eventName);
-                                            DataTable _result = SQL.TQuery(_sql);
+                                            DataTable _result = SQL.TypeQuery(_sql);
                                             int _eventid;
                                             int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _eventid);
                                             string _eventInvite = _result.Rows[0].ItemArray.GetValue(1).ToString();
@@ -554,7 +554,7 @@ namespace ServerTools
                     if (int.TryParse(_params[1], out _id))
                     {
                         string _sql = string.Format("SELECT eventid FROM Events WHERE eventAdmin = '{0}'", _steamId);
-                        DataTable _result = SQL.TQuery(_sql);
+                        DataTable _result = SQL.TypeQuery(_sql);
                         if (_result.Rows.Count > 0)
                         {
                             _sql = string.Format("Delete FROM Events WHERE eventid = {0}", _id);

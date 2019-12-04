@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -64,7 +62,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                        List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
                         for (int i = 0; i < _cInfoList.Count; i++)
                         {
                             ClientInfo _cInfo = _cInfoList[i];

@@ -63,7 +63,7 @@ namespace ServerTools
                         {
                             List<string> PlayerInRange = new List<string>();
                             string _sql = string.Format("SELECT * FROM Tracking ORDER BY dateTime DESC");
-                            DataTable _result = SQL.TQuery(_sql);
+                            DataTable _result = SQL.TypeQuery(_sql);
                             if (_result.Rows.Count > 0)
                             {
                                 bool _found = false;
@@ -131,7 +131,7 @@ namespace ServerTools
                                     if (int.TryParse(_params[4], out _worldZ))
                                     {
                                         string _sql = string.Format("SELECT * FROM Tracking ORDER BY dateTime DESC");
-                                        DataTable _result = SQL.TQuery(_sql);
+                                        DataTable _result = SQL.TypeQuery(_sql);
                                         if (_result.Rows.Count > 0)
                                         {
                                             bool _found = false;

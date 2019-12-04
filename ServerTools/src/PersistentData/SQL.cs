@@ -5,22 +5,43 @@ namespace ServerTools
 {
     public class SQL
     {
-        public static int Sql_version = 2;
+        public static int Sql_version = 3;
 
         public static void Connect()
         {
-            SQLiteDatabase.SetConnection();
+            if (!MySqlDB.IsEnabled)
+            {
+                SQLiteDb.SetConnection();
+            }
+            else
+            {
+                //MySqlDB.SetConnection();
+            }
         }
 
         public static void FastQuery(string _sql, string _class)
         {
-            SQLiteDatabase.FastQuery(_sql, _class);
+            if (!MySqlDB.IsEnabled)
+            {
+                SQLiteDb.FastQuery(_sql, _class);
+            }
+            else
+            {
+                //MySqlDB.FastQuery(_sql, _class);
+            }
         }
 
-        public static DataTable TQuery(string _sql)
+        public static DataTable TypeQuery(string _sql)
         {
             DataTable dt = new DataTable();
-            dt = SQLiteDatabase.TypeQuery(_sql);
+            if (!MySqlDB.IsEnabled)
+            {
+                dt = SQLiteDb.TypeQuery(_sql);
+            }
+            else
+            {
+                //dt = MySqlDB.TypeQuery(_sql);
+            }
             return dt;
         }
 

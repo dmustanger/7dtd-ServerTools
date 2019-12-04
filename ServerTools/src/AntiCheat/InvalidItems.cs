@@ -421,8 +421,7 @@ namespace ServerTools
                         tiles = _c.GetTileEntities();
                         foreach (TileEntity tile in tiles.dict.Values)
                         {
-                            TileEntityType type = tile.GetTileEntityType();
-                            if (type.ToString().Equals("SecureLoot"))
+                            if (tile.GetTileEntityType().ToString().Equals("SecureLoot"))
                             {
                                 TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
                                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(SecureLoot.GetOwner());

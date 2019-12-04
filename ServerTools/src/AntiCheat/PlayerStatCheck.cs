@@ -16,7 +16,7 @@ namespace ServerTools
         {
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
-                List<ClientInfo> ClientInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                List<ClientInfo> ClientInfoList = PersistentOperations.ClientList();
                 for (int i = 0; i < ClientInfoList.Count; i++)
                 {
                     ClientInfo _cInfo = ClientInfoList[i];

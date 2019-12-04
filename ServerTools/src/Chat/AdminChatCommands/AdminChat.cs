@@ -21,7 +21,7 @@ namespace ServerTools
             }
             else
             {
-                List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
                 foreach (ClientInfo _cInfo in _cInfoList)
                 {
                     if (GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))

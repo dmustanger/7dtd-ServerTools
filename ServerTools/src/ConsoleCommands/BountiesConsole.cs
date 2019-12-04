@@ -68,7 +68,27 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 3, found {0}", _params.Count));
                         return;
                     }
-
+                    int _value;
+                    if (!int.TryParse(_params[2], out _value))
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Must input a valid interger: {0}", _params[2]));
+                        return;
+                    }
+                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    if (_cInfo != null)
+                    {
+                        Bounties.ConsoleEdit(_cInfo.playerId, _value);
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("No player found online with id or name: {0}. Checking steam id", _params[1]));
+                        if (_params[1].Length != 17)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Can not edit: Invalid steam id {0}", _params[1]));
+                            return;
+                        }
+                        Bounties.ConsoleEdit(_params[1], _value);
+                    }
                 }
                 else if (_params[0].ToLower().Equals("remove"))
                 {
@@ -77,7 +97,21 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
-
+                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
+                    if (_cInfo != null)
+                    {
+                        Bounties.ConsoleRemoveBounty(_cInfo.playerId);
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("No player found online with id or name: {0}. Checking steam id", _params[1]));
+                        if (_params[1].Length != 17)
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Can not remove: Invalid steam id {0}", _params[1]));
+                            return;
+                        }
+                        Bounties.ConsoleRemoveBounty(_params[1]);
+                    }
                 }
                 else if (_params[0].ToLower().Equals("list"))
                 {
@@ -86,7 +120,7 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
-
+                    Bounties.ConsoleBountyList();
                 }
                 else
                 {

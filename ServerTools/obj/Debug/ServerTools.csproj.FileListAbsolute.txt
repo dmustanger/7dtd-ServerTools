@@ -307,3 +307,11 @@ C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.1.6\bin\Mods\Ser
 C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.1.6\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
 C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.1.6\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.Cache
 C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.1.6\ServerTools\obj\Debug\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.1.7\bin\Mods\ServerTools\ModInfo.xml
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.1.7\bin\Mods\ServerTools\Changelog.txt
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.1.7\bin\Mods\ServerTools\ServerTools.dll.config
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.1.7\bin\Mods\ServerTools\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.1.7\ServerTools\obj\Debug\ServerTools.Properties.Resources.resources
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.1.7\ServerTools\obj\Debug\ServerTools.csproj.GenerateResource.Cache
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.1.7\ServerTools\obj\Debug\ServerTools.dll
+C:\Modding Mods\owncloud\development\7dtd-ServerTools-master-18.1.7\ServerTools\obj\Debug\ServerTools.csprojResolveAssemblyReference.cache

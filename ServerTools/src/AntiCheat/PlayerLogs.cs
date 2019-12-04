@@ -7,7 +7,7 @@ namespace ServerTools
     class PlayerLogs
     {
         public static bool IsEnabled = false;
-        public static int Days_Before_Log_Delete = 5;
+        public static int Delay = 60, Days_Before_Log_Delete = 5;
         private static string _file = string.Format("PlayerLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string _filepath = string.Format("{0}/Logs/PlayerLogs/{1}", API.ConfigPath, _file);
 

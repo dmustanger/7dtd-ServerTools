@@ -246,6 +246,8 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"128\" default=\"hardcore on\" replacement=\"hardcore on\" />");
                     sw.WriteLine("        <trigger number=\"129\" default=\"scoutplayer\" replacement=\"scoutplayer\" />");
                     sw.WriteLine("        <trigger number=\"130\" default=\"scout\" replacement=\"scout\" />");
+                    //sw.WriteLine("        <trigger number=\"131\" default=\"exit\" replacement=\"exit\" />");
+                    //sw.WriteLine("        <trigger number=\"132\" default=\"quit\" replacement=\"quit\" />");
                 }
                 sw.WriteLine("    </triggers>");
                 sw.WriteLine("</Event>");
@@ -799,6 +801,14 @@ namespace ServerTools
                     else if (kvp.Key == 130)
                     {
                         ScoutPlayer.Command130 = kvp.Value[1];
+                    }
+                    else if (kvp.Key == 131)
+                    {
+                        Exit.Command131 = kvp.Value[1];
+                    }
+                    else if (kvp.Key == 132)
+                    {
+                        Exit.Command132 = kvp.Value[1];
                     }
                 }
             }

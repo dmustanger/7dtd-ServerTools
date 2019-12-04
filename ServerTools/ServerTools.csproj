@@ -46,16 +46,17 @@
     <Compile Include="src\AntiCheat\Flying.cs" />
     <Compile Include="src\AntiCheat\GodMode.cs" />
     <Compile Include="src\AntiCheat\PlayerDamage.cs" />
-    <Compile Include="src\AutoBackup\AutoBackup.cs" />
-    <Compile Include="src\Bank\Bank.cs" />
-    <Compile Include="src\Bloodmoon_Warrior\Bloodmoon_Warrior.cs" />
+    <Compile Include="src\PersistentData\MySqlDB.cs" />
+    <Compile Include="src\Tools\AutoBackup\AutoBackup.cs" />
+    <Compile Include="src\Tools\Bank\Bank.cs" />
+    <Compile Include="src\Tools\Bloodmoon_Warrior\Bloodmoon_Warrior.cs" />
     <Compile Include="src\Chat\AdminChatCommands\SetMarket.cs" />
-    <Compile Include="src\Chat\BreakTime.cs" />
-    <Compile Include="src\Chat\ChatCommands\MarketChat.cs" />
-    <Compile Include="src\Chat\ChatCommands\Session.cs" />
+    <Compile Include="src\Chat\BreakTime\BreakTime.cs" />
+    <Compile Include="src\Chat\ChatTools\Market\MarketChat.cs" />
+    <Compile Include="src\Chat\ChatTools\Session\Session.cs" />
     <Compile Include="src\Chat\ChatColorPrefix\ChatColorPrefix.cs" />
-    <Compile Include="src\Chat\ChatCommands\ScoutPlayer.cs" />
-    <Compile Include="src\Chat\CommandLog.cs" />
+    <Compile Include="src\Chat\ChatTools\ScoutPlayer\ScoutPlayer.cs" />
+    <Compile Include="src\Chat\CommandLog\CommandLog.cs" />
     <Compile Include="src\ConsoleCommands\AdminChatCommandConsole.cs" />
     <Compile Include="src\ConsoleCommands\AutoBackupConsole.cs" />
     <Compile Include="src\ConsoleCommands\BanPlayerConsole.cs" />
@@ -128,71 +129,72 @@
     <Compile Include="src\ConsoleCommands\EventCommandsConsole.cs" />
     <Compile Include="src\ConsoleCommands\TraderListConsole.cs" />
     <Compile Include="src\ConsoleCommands\ZoneSetupConsole.cs" />
-    <Compile Include="src\Event\Event.cs" />
+    <Compile Include="src\Tools\CustomCommands\CustomCommands.cs" />
+    <Compile Include="src\Tools\Event\Event.cs" />
     <Compile Include="src\Functions\LoadProcess.cs" />
     <Compile Include="src\Functions\LoadTriggers.cs" />
     <Compile Include="src\NetPackage\RemoveItems\RemoveItems.cs" />
-    <Compile Include="src\PersistantOperations\PlayerOperations.cs" />
+    <Compile Include="src\PersistentOperations\PersistentOperations.cs" />
     <Compile Include="src\PersistentData\PersistentContainer.cs" />
     <Compile Include="src\PersistentData\PersistentPlayer.cs" />
     <Compile Include="src\PersistentData\PersistentPlayers.cs" />
     <Compile Include="src\PersistentData\StateManager.cs" />
     <Compile Include="src\PersistentData\UpdateSQL.cs" />
-    <Compile Include="src\Hardcore\Hardcore.cs" />
+    <Compile Include="src\Tools\Exit\Exit.cs" />
+    <Compile Include="src\Tools\Hardcore\Hardcore.cs" />
     <Compile Include="src\AntiCheat\CredentialCheck.cs" />
     <Compile Include="src\AntiCheat\TeleportCheck.cs" />
     <Compile Include="src\AntiCheat\WorldRadius.cs" />
     <Compile Include="src\AntiCheat\PlayerStatCheck.cs" />
     <Compile Include="src\AntiCheat\PlayerLogs.cs" />
     <Compile Include="src\AntiCheat\InvalidItems.cs" />
-    <Compile Include="src\Prayer\Prayer.cs" />
-    <Compile Include="src\Tracking\Tracking.cs" />
-    <Compile Include="src\UnderWater\UnderWater.cs" />
-    <Compile Include="src\Zones\Zones.cs" />
+    <Compile Include="src\Tools\Prayer\Prayer.cs" />
+    <Compile Include="src\Tools\Tracking\Tracking.cs" />
+    <Compile Include="src\Tools\UnderWater\UnderWater.cs" />
+    <Compile Include="src\Tools\Zones\Zones.cs" />
     <Compile Include="src\API.cs" />
-    <Compile Include="src\AuctionBox\AuctionBox.cs" />
-    <Compile Include="src\AutoShutdown\AutoShutdown.cs" />
-    <Compile Include="src\AutoSaveWorld\AutoSaveWorld.cs" />
-    <Compile Include="src\Bounty\Bounty.cs" />
+    <Compile Include="src\Tools\AuctionBox\AuctionBox.cs" />
+    <Compile Include="src\Tools\AutoShutdown\AutoShutdown.cs" />
+    <Compile Include="src\Tools\AutoSaveWorld\AutoSaveWorld.cs" />
+    <Compile Include="src\Tools\Bounties\Bounties.cs" />
     <Compile Include="src\Chat\AdminChatCommands\SetLobby.cs" />
-    <Compile Include="src\Chat\ChatCommands\Vehicle_Teleport.cs" />
+    <Compile Include="src\Chat\ChatTools\VehicleTeleport\Vehicle_Teleport.cs" />
     <Compile Include="src\Chat\AdminChatCommands\AdminChat.cs" />
     <Compile Include="src\Chat\AdminChatCommands\MutePlayer.cs" />
-    <Compile Include="src\Chat\BadWordFilter.cs" />
-    <Compile Include="src\Chat\ChatCommands\AdminList.cs" />
-    <Compile Include="src\Chat\ChatCommands\DeathSpot.cs" />
-    <Compile Include="src\Chat\ChatCommands\Bloodmoon.cs" />
-    <Compile Include="src\Chat\ChatCommands\Animals.cs" />
-    <Compile Include="src\Chat\ChatCommands\CustomCommands.cs" />
-    <Compile Include="src\Chat\ChatCommands\day7.cs" />
-    <Compile Include="src\Chat\ChatCommands\KickVote.cs" />
-    <Compile Include="src\Chat\ChatCommands\Loc.cs" />
-    <Compile Include="src\Chat\ChatCommands\Fps.cs" />
-    <Compile Include="src\Chat\ChatCommands\FriendTeleport.cs" />
-    <Compile Include="src\Chat\ChatCommands\Gimme.cs" />
+    <Compile Include="src\Chat\BadWordFilter\BadWordFilter.cs" />
+    <Compile Include="src\Chat\ChatTools\AdminList\AdminList.cs" />
+    <Compile Include="src\Chat\ChatTools\DeathSpot\DeathSpot.cs" />
+    <Compile Include="src\Chat\ChatTools\Bloodmoon\Bloodmoon.cs" />
+    <Compile Include="src\Chat\ChatTools\AnimalTracking\Animals.cs" />
+    <Compile Include="src\Chat\ChatTools\Day7\Day7.cs" />
+    <Compile Include="src\Chat\ChatTools\KickVote\KickVote.cs" />
+    <Compile Include="src\Chat\ChatTools\Location\Loc.cs" />
+    <Compile Include="src\Chat\ChatTools\FPS\Fps.cs" />
+    <Compile Include="src\Chat\ChatTools\FriendTeleport\FriendTeleport.cs" />
+    <Compile Include="src\Chat\ChatTools\Gimme\Gimme.cs" />
     <Compile Include="src\Chat\AdminChatCommands\Jail.cs" />
-    <Compile Include="src\Chat\ChatCommands\PlayerList.cs" />
-    <Compile Include="src\Chat\ChatCommands\Stuck.cs" />
-    <Compile Include="src\Chat\ChatCommands\Suicide.cs" />
-    <Compile Include="src\Chat\ChatCommands\MuteVote.cs" />
-    <Compile Include="src\Chat\ChatCommands\Report.cs" />
-    <Compile Include="src\Chat\ChatCommands\RestartVote.cs" />
-    <Compile Include="src\Chat\ChatCommands\TeleportHome.cs" />
-    <Compile Include="src\Chat\ChatCommands\Travel.cs" />
-    <Compile Include="src\Chat\ChatCommands\WeatherVote.cs" />
-    <Compile Include="src\Chat\LoginNotice.cs" />
-    <Compile Include="src\Chat\Lottery.cs" />
-    <Compile Include="src\Chat\NightTimeAlert.cs" />
-    <Compile Include="src\Chat\RealWorldTime.cs" />
-    <Compile Include="src\Chat\Whisper.cs" />
-    <Compile Include="src\Chat\Hook.cs" />
-    <Compile Include="src\Chat\InfoTicker.cs" />
-    <Compile Include="src\Chat\ChatLog.cs" />
-    <Compile Include="src\Chat\Motd.cs" />
-    <Compile Include="src\ClaimBlock\FirstClaimBlock.cs" />
-    <Compile Include="src\ClanManager\ClanManager.cs" />
-    <Compile Include="src\Shop\Shop.cs" />
-    <Compile Include="src\Wallet\Wallet.cs" />
+    <Compile Include="src\Chat\ChatTools\PlayerList\PlayerList.cs" />
+    <Compile Include="src\Chat\ChatTools\Stuck\Stuck.cs" />
+    <Compile Include="src\Chat\ChatTools\Suicide\Suicide.cs" />
+    <Compile Include="src\Chat\ChatTools\MuteVote\MuteVote.cs" />
+    <Compile Include="src\Chat\ChatTools\Report\Report.cs" />
+    <Compile Include="src\Chat\ChatTools\RestartVote\RestartVote.cs" />
+    <Compile Include="src\Chat\ChatTools\TeleHome\TeleportHome.cs" />
+    <Compile Include="src\Chat\ChatTools\Travel\Travel.cs" />
+    <Compile Include="src\Chat\ChatTools\WeatherVote\WeatherVote.cs" />
+    <Compile Include="src\Chat\LoginNotice\LoginNotice.cs" />
+    <Compile Include="src\Chat\ChatTools\Lottery\Lottery.cs" />
+    <Compile Include="src\Chat\NightTimeAlert\NightTimeAlert.cs" />
+    <Compile Include="src\Chat\RealWorldTime\RealWorldTime.cs" />
+    <Compile Include="src\Chat\ChatTools\Whisper\Whisper.cs" />
+    <Compile Include="src\Chat\Hook\Hook.cs" />
+    <Compile Include="src\Chat\InfoTicker\InfoTicker.cs" />
+    <Compile Include="src\Chat\ChatLog\ChatLog.cs" />
+    <Compile Include="src\Chat\MOTD\Motd.cs" />
+    <Compile Include="src\Tools\ClaimBlock\FirstClaimBlock.cs" />
+    <Compile Include="src\Tools\ClanManager\ClanManager.cs" />
+    <Compile Include="src\Tools\Shop\Shop.cs" />
+    <Compile Include="src\Tools\Wallet\Wallet.cs" />
     <Compile Include="src\ConsoleCommands\%40AdminConsole.cs" />
     <Compile Include="src\ConsoleCommands\FamilyShareConsole.cs" />
     <Compile Include="src\ConsoleCommands\GiveBlockConsole.cs" />
@@ -207,34 +209,33 @@
     <Compile Include="src\ConsoleCommands\StopServerCommandConsole.cs" />
     <Compile Include="src\ConsoleCommands\TempBanConsole.cs" />
     <Compile Include="src\ConsoleCommands\PollConsole.cs" />
-    <Compile Include="src\CountryBan\CountryBan.cs" />
-    <Compile Include="src\EntityCleanup\EntityCleanup.cs" />
+    <Compile Include="src\Tools\CountryBan\CountryBan.cs" />
+    <Compile Include="src\Tools\EntityCleanup\EntityCleanup.cs" />
     <Compile Include="src\Functions\LoadConfig.cs" />
     <Compile Include="src\Functions\LoadMods.cs" />
     <Compile Include="src\Functions\LoadPhrases.cs" />
     <Compile Include="src\ConsoleCommands\MaxPingConsole.cs" />
     <Compile Include="src\ConsoleCommands\PingImmunityConsole.cs" />
     <Compile Include="src\Functions\LoadTimers.cs" />
-    <Compile Include="src\HighPingKicker\HighPingKicker.cs" />
+    <Compile Include="src\Tools\HighPingKicker\HighPingKicker.cs" />
     <Compile Include="src\ConsoleCommands\EntityRemoveConsole.cs" />
-    <Compile Include="src\Hordes\Hordes.cs" />
+    <Compile Include="src\Tools\Hordes\Hordes.cs" />
     <Compile Include="src\HowTo\HowToSetup.cs" />
-    <Compile Include="src\Chat\ChatCommands\LobbyChat.cs" />
-    <Compile Include="src\KillNotice\KillNotice.cs" />
-    <Compile Include="src\NewPlayer\NewPlayer.cs" />
-    <Compile Include="src\NewSpawnTele\NewSpawnTele.cs" />
-    <Compile Include="src\OutputLog\SdtdLog.cs" />
+    <Compile Include="src\Chat\ChatTools\Lobby\LobbyChat.cs" />
+    <Compile Include="src\Chat\KillNotice\KillNotice.cs" />
+    <Compile Include="src\Chat\NewPlayer\NewPlayer.cs" />
+    <Compile Include="src\Tools\NewSpawnTele\NewSpawnTele.cs" />
     <Compile Include="src\PersistentData\SQL.cs" />
     <Compile Include="src\PersistentData\SQLiteDatabase.cs" />
     <Compile Include="src\ConsoleCommands\ResetPlayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\WatchlistConsole.cs" />
-    <Compile Include="src\ReservedSlots\ReservedSlots.cs" />
-    <Compile Include="src\StartingItems\StartingItems.cs" />
-    <Compile Include="src\StopServer\StopServer.cs" />
-    <Compile Include="src\Teleportation\Teleportation.cs" />
-    <Compile Include="src\VoteReward\VoteReward.cs" />
-    <Compile Include="src\Watchlist\Watchlist.cs" />
-    <Compile Include="src\Waypoints\Waypoints.cs" />
+    <Compile Include="src\Tools\ReservedSlots\ReservedSlots.cs" />
+    <Compile Include="src\Tools\StartingItems\StartingItems.cs" />
+    <Compile Include="src\Tools\StopServer\StopServer.cs" />
+    <Compile Include="src\Tools\Teleportation\Teleportation.cs" />
+    <Compile Include="src\Tools\VoteReward\VoteReward.cs" />
+    <Compile Include="src\Tools\Watchlist\Watchlist.cs" />
+    <Compile Include="src\Tools\Waypoints\Waypoints.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ModInfo.xml">
@@ -264,6 +265,7 @@
     <Reference Include="Pathfinding.Ionic.Zip.Reduced, Version=1.9.1.9000, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\7dtd-ServerTools-master-18.0.3\7dtd-binaries\Pathfinding.Ionic.Zip.Reduced.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -271,8 +273,7 @@
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.111.0\lib\net45\System.Data.SQLite.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.XML" />
+    <Reference Include="System.XML, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
     <Reference Include="UnityEngine">
       <HintPath>..\7dtd-binaries\UnityEngine.dll</HintPath>
       <Private>False</Private>
@@ -296,6 +297,7 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.111.0\build\net45\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net45\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

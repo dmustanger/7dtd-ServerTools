@@ -102,7 +102,7 @@ namespace ServerTools
                     }
                     if (_params[0].ToLower() == "all")
                     {
-                        List<ClientInfo> _cInfoList = ConnectionManager.Instance.Clients.List.ToList();
+                        List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
                         foreach (var _cInfo in _cInfoList)
                         {
                             if (_cInfo != null)

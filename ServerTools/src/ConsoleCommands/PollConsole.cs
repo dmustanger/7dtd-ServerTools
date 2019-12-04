@@ -67,7 +67,7 @@ namespace ServerTools
                         _params.RemoveRange(0, 2);
                         string _message = string.Join(" ", _params.ToArray());
                         string _sql = "SELECT pollTime, pollHours, pollMessage FROM Polls WHERE pollOpen = 'true'";
-                        DataTable _result = SQL.TQuery(_sql);
+                        DataTable _result = SQL.TypeQuery(_sql);
                         if (_result.Rows.Count > 0)
                         {
                             DateTime _pollTime;
@@ -140,7 +140,7 @@ namespace ServerTools
                     else
                     {
                         string _sql = "SELECT pollMessage, pollYes, pollNo FROM Polls WHERE pollOpen = 'true'";
-                        DataTable _result = SQL.TQuery(_sql);
+                        DataTable _result = SQL.TypeQuery(_sql);
                         if (_result.Rows.Count > 0)
                         {
                             int _pollYes;
@@ -167,7 +167,7 @@ namespace ServerTools
                                 sw.Close();
                             }
                             _sql = "SELECT pollMessage, pollYes, pollNo FROM Polls WHERE pollOpen = 'false'";
-                            DataTable _result1 = SQL.TQuery(_sql);
+                            DataTable _result1 = SQL.TypeQuery(_sql);
                             if (_result1.Rows.Count > 0)
                             {
                                 _sql = "DELETE FROM Polls WHERE pollOpen = 'false'";
@@ -197,7 +197,7 @@ namespace ServerTools
                     else
                     {
                         string _sql = "SELECT pollHours, pollMessage, pollYes, pollNo FROM Polls WHERE pollOpen = 'false'";
-                        DataTable _result = SQL.TQuery(_sql);
+                        DataTable _result = SQL.TypeQuery(_sql);
                         if (_result.Rows.Count > 0)
                         {
                             int _pollHours;
@@ -226,7 +226,7 @@ namespace ServerTools
                         return;
                     }
                     string _sql = "SELECT pollTime, pollHours, pollMessage FROM Polls WHERE pollOpen = 'true'";
-                    DataTable _result = SQL.TQuery(_sql);
+                    DataTable _result = SQL.TypeQuery(_sql);
                     if (_result.Rows.Count > 0)
                     {
                         SdtdConsole.Instance.Output("A poll is open. Can not open a new poll until it is closed");
@@ -234,7 +234,7 @@ namespace ServerTools
                     else
                     {
                         _sql = "SELECT pollTime, pollHours, pollMessage FROM Polls WHERE pollOpen = 'false'";
-                        DataTable _result1 = SQL.TQuery(_sql);
+                        DataTable _result1 = SQL.TypeQuery(_sql);
                         if (_result1.Rows.Count > 0)
                         {
                             int _hours;
@@ -258,7 +258,7 @@ namespace ServerTools
                         return;
                     }
                     string _sql = "SELECT pollTime, pollHours, pollMessage, pollYes, pollNo FROM Polls WHERE pollOpen = 'true'";
-                    DataTable _result = SQL.TQuery(_sql);
+                    DataTable _result = SQL.TypeQuery(_sql);
                     if (_result.Rows.Count > 0)
                     {
                         DateTime _pollTime;
@@ -301,7 +301,7 @@ namespace ServerTools
         public static void Message(ClientInfo _cInfo)
         {
             string _sql = "SELECT pollTime, pollHours, pollMessage, pollYes, pollNo FROM Polls WHERE pollOpen = 'true'";
-            DataTable _result = SQL.TQuery(_sql);
+            DataTable _result = SQL.TypeQuery(_sql);
             if (_result.Rows.Count > 0)
             {
                 DateTime _pollTime;
@@ -353,7 +353,7 @@ namespace ServerTools
         public static void VoteYes(ClientInfo _cInfo)
         {
             string _sql = "SELECT pollYes, pollNo FROM Polls WHERE pollOpen = 'true'";
-            DataTable _result = SQL.TQuery(_sql);
+            DataTable _result = SQL.TypeQuery(_sql);
             if (_result.Rows.Count > 0)
             {
                 if (PolledYes.Contains(_cInfo.playerId) || PolledNo.Contains(_cInfo.playerId))
@@ -399,7 +399,7 @@ namespace ServerTools
         public static void VoteNo(ClientInfo _cInfo)
         {
             string _sql = "SELECT pollYes, pollNo FROM Polls WHERE pollOpen = 'true'";
-            DataTable _result = SQL.TQuery(_sql);
+            DataTable _result = SQL.TypeQuery(_sql);
             if (_result.Rows.Count > 0)
             {
                 if (PolledYes.Contains(_cInfo.playerId) || PolledNo.Contains(_cInfo.playerId))
@@ -444,7 +444,7 @@ namespace ServerTools
         public static void Check()
         {
             string _sql = "SELECT pollTime, pollHours, pollMessage, pollYes, pollNo FROM Polls WHERE pollOpen = 'true'";
-            DataTable _result = SQL.TQuery(_sql);
+            DataTable _result = SQL.TypeQuery(_sql);
             if (_result.Rows.Count > 0)
             {
                 DateTime _pollTime;
