@@ -27,7 +27,9 @@ namespace ServerTools
                             ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_warrior.entityId);
                             if (_cInfo != null)
                             {
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Hades has called upon you. Survive this night and kill ten zombies to be rewarded by the king of the underworld." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                string _response = "Hades has called upon you. Survive this night and kill {ZombieCount} zombies to be rewarded by the king of the underworld.";
+                                _response = _response.Replace("{ZombieCount}", Zombies_Killed.ToString());
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }

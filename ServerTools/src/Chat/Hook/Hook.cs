@@ -28,7 +28,7 @@ namespace ServerTools
                         ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you are muted and blocked from commands.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         return false;
                     }
-                    else if ((_message.StartsWith(Command_Private) || _message.StartsWith(Command_Public)) && !LoadTriggers.list.Contains(_message))
+                    else if ((_message.StartsWith(Command_Private) || _message.StartsWith(Command_Public)) && !LoadTriggers.TriggerList.Contains(_message))
                     {
                         ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you are muted.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         return false;

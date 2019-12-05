@@ -10,8 +10,8 @@ namespace ServerTools
         private const string file = "EventTriggers.xml";
         public static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         public static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        public static Dictionary<int, string[]> dict = new Dictionary<int, string[]>();
-        public static List<string> list = new List<string>();
+        public static Dictionary<int, string[]> Dict = new Dictionary<int, string[]>();
+        public static List<string> TriggerList = new List<string>();
 
         public static void Load()
         {
@@ -27,7 +27,8 @@ namespace ServerTools
         {
             if (IsRunning)
             {
-                dict.Clear();
+                Dict.Clear();
+                TriggerList.Clear();
                 fileWatcher.Dispose();
                 IsRunning = false;
             }
@@ -54,8 +55,8 @@ namespace ServerTools
             {
                 if (childNode.Name == "triggers")
                 {
-                    dict.Clear();
-                    list.Clear();
+                    Dict.Clear();
+                    TriggerList.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -90,9 +91,13 @@ namespace ServerTools
                             continue;
                         }
                         string[] _c = { _line.GetAttribute("default"), _line.GetAttribute("replacement") };
-                        if (!list.Contains(_c[1]))
+                        if (!Dict.ContainsKey(_number))
                         {
-                            list.Add(_c[1]);
+                            Dict.Add(_number, _c);
+                        }
+                        if (!TriggerList.Contains(_c[1]))
+                        {
+                            TriggerList.Add(_c[1]);
                         }
                     }
                 }
@@ -107,9 +112,9 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Event>");
                 sw.WriteLine("    <triggers>");
-                if (dict.Count > 0)
+                if (Dict.Count > 0)
                 {
-                    foreach (KeyValuePair<int, string[]> kvp in dict)
+                    foreach (KeyValuePair<int, string[]> kvp in Dict)
                     {
                         sw.WriteLine(string.Format("        <trigger number=\"{0}\" default=\"{1}\" replacement=\"{2}\" />", kvp.Key, kvp.Value[0], kvp.Value[1]));
                     }
@@ -278,9 +283,9 @@ namespace ServerTools
 
         public static void Exec()
         {
-            if (dict.Count > 0)
+            if (Dict.Count > 0)
             {
-                foreach (KeyValuePair<int, string[]> kvp in dict)
+                foreach (KeyValuePair<int, string[]> kvp in Dict)
                 {
                     if (kvp.Key == 1)
                     {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using UnityEngine;
 
 namespace ServerTools
@@ -8,7 +7,7 @@ namespace ServerTools
     class VehicleTeleport
     {
         public static bool IsEnabled = false, Bike = false, Mini_Bike = false, Motor_Bike = false, Jeep = false, Gyro = false, Inside_Claim = true;
-        public static int Delay_Between_Uses = 120, Command_Cost = 0;
+        public static int Delay_Between_Uses = 120, Distance = 50, Command_Cost = 0;
         public static string Command77 = "bike", Command78 = "minibike", Command79 = "motorbike", Command80 = "jeep", Command81 = "gyro";
 
         public static void Exec(ClientInfo _cInfo, int _vehicle)
@@ -249,7 +248,7 @@ namespace ServerTools
                     {
                         if (_entity.entityId == _vehicleId)
                         {
-                            if ((_player.position.x - _entity.position.x) * (_player.position.x - _entity.position.x) + (_player.position.z - _entity.position.z) * (_player.position.z - _entity.position.z) <= 50 * 50)
+                            if ((_player.position.x - _entity.position.x) * (_player.position.x - _entity.position.x) + (_player.position.z - _entity.position.z) * (_player.position.z - _entity.position.z) <= Distance * Distance)
                             {
                                 if (_entity.AttachedToEntity == false)
                                 {

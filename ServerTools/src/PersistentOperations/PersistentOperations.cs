@@ -46,7 +46,7 @@ namespace ServerTools
                                     {
                                         API.Players.Remove(_cInfo);
                                     }
-                                    BedBugExec(_player);
+                                    BedBugExec(_cInfo, _player);
                                     if (BloodmoonWarrior.WarriorList.Contains(_cInfo.entityId))
                                     {
                                         BloodmoonWarrior.WarriorList.Remove(_cInfo.entityId);
@@ -78,7 +78,7 @@ namespace ServerTools
             }
         }
 
-        public static void BedBugExec(EntityPlayer _player)
+        public static void BedBugExec(ClientInfo _cInfo, EntityPlayer _player)
         {
             try
             {
@@ -94,16 +94,26 @@ namespace ServerTools
                         PersistentPlayerList _persistentPlayers = PersistentOperations.GetPersistentPlayerList();
                         if (_persistentPlayers != null)
                         {
+                            bool _bedBug = false;
                             List<string> _persistentPlayerList = _persistentPlayers.Players.Keys.ToList();
                             for (int j = 0; j < _persistentPlayerList.Count; j++)
                             {
                                 PersistentPlayerData _persistentPlayerData;
                                 _persistentPlayers.Players.TryGetValue(_persistentPlayerList[j], out _persistentPlayerData);
-                                if (_persistentPlayerData.BedrollPos.Equals(_bedrollPosition))
+                                if (_persistentPlayerData.EntityId != _cInfo.entityId && _persistentPlayerData.BedrollPos.Equals(_bedrollPosition))
                                 {
-                                    RemoveAndSetSpawnPointForAll(_bedrollPosition);
-                                    GameManager.Instance.World.SetBlockRPC(0, _bedrollPosition, BlockValue.Air);
+                                    _bedBug = true;
+                                    PersistentOperations.RemoveAndSetOneSpawnPoint(_persistentPlayerData);
                                 }
+                            }
+                            if (_bedBug)
+                            {
+                                PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_cInfo.playerId);
+                                if (_persistentPlayerData != null)
+                                {
+                                    PersistentOperations.RemoveAndSetOneSpawnPoint(_persistentPlayerData);
+                                }
+                                GameManager.Instance.World.SetBlockRPC(0, _bedrollPosition, BlockValue.Air);
                             }
                         }
                     }
@@ -254,9 +264,8 @@ namespace ServerTools
 
 
 
-        public static void RemoveAndSetSpawnPointForAll(Vector3i _pos)
+        public static void RemoveAndSetSpawnPointForAll(PersistentPlayerList _persistentPlayers)
         {
-            PersistentPlayerList _persistentPlayers = GameManager.Instance.persistentPlayers;
             if (_persistentPlayers != null)
             {
                 List<string> _persistentPlayerList = _persistentPlayers.Players.Keys.ToList();
@@ -264,27 +273,24 @@ namespace ServerTools
                 {
                     PersistentPlayerData _persistentPlayerData;
                     _persistentPlayers.Players.TryGetValue(_persistentPlayerList[i], out _persistentPlayerData);
-                    if (_persistentPlayerData.BedrollPos.Equals(_pos))
+                    _persistentPlayerData.ClearBedroll();
+                    EntityPlayer _entityPlayer = GetEntityPlayer(_persistentPlayerData.PlayerId);
+                    if (_entityPlayer != null)
                     {
-                        _persistentPlayerData.ClearBedroll();
-                        EntityPlayer _entityPlayer = GetEntityPlayer(_persistentPlayerData.PlayerId);
-                        if (_entityPlayer != null)
+                        GameManager.Instance.World.ObjectOnMapRemove(EnumMapObjectType.SleepingBag, _entityPlayer.entityId);
+                        ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.SleepingBag, _entityPlayer.entityId), false, -1, -1, -1, -1);
+                        if (_persistentPlayerData.LPBlocks != null && _persistentPlayerData.LPBlocks.Count > 0)
                         {
-                            GameManager.Instance.World.ObjectOnMapRemove(EnumMapObjectType.SleepingBag, _entityPlayer.entityId);
-                            ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.SleepingBag, _entityPlayer.entityId), false, -1, -1, -1, -1);
-                            if (_persistentPlayerData.LPBlocks != null && _persistentPlayerData.LPBlocks.Count > 0)
+                            int _x, _y, _z;
+                            if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(50f, 50f, 50f), true, true))
                             {
-                                int _x, _y, _z;
-                                if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(50f, 50f, 50f), true, true))
+                                _entityPlayer.SpawnPoints.Set(new Vector3i(_x, _y, _z));
+                            }
+                            else
+                            {
+                                if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(50f + 10f, 50f + 30f, 50f + 10f), true, true))
                                 {
                                     _entityPlayer.SpawnPoints.Set(new Vector3i(_x, _y, _z));
-                                }
-                                else
-                                {
-                                    if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(50f + 10f, 50f + 30f, 50f + 10f), true, true))
-                                    {
-                                        _entityPlayer.SpawnPoints.Set(new Vector3i(_x, _y, _z));
-                                    }
                                 }
                             }
                         }
@@ -294,9 +300,8 @@ namespace ServerTools
             }
         }
 
-        public static void RemoveSpawnPointForAll(Vector3i _pos)
+        public static void RemoveAllSpawnPoints(PersistentPlayerList _persistentPlayers)
         {
-            PersistentPlayerList _persistentPlayers = GameManager.Instance.persistentPlayers;
             if (_persistentPlayers != null)
             {
                 List<string> _persistentPlayerList = _persistentPlayers.Players.Keys.ToList();
@@ -304,76 +309,61 @@ namespace ServerTools
                 {
                     PersistentPlayerData _persistentPlayerData;
                     _persistentPlayers.Players.TryGetValue(_persistentPlayerList[i], out _persistentPlayerData);
-                    if (_persistentPlayerData.BedrollPos.Equals(_pos))
+                    EntityPlayer _entityPlayer = GetEntityPlayer(_persistentPlayerData.PlayerId);
+                    if (_entityPlayer != null)
                     {
-                        _persistentPlayerData.ClearBedroll();
-                        EntityPlayer _entityPlayer = GetEntityPlayer(_persistentPlayerData.PlayerId);
-                        if (_entityPlayer != null)
-                        {
-                            _entityPlayer.SpawnPoints.Clear();
-                        }
+                        _entityPlayer.SpawnPoints.Clear();
                     }
                 }
                 SavePersistentPlayerDataXML();
             }
         }
 
-        public static void RemoveAndSetOneSpawnPoint(string _playerId, Vector3i _pos)
+        public static void RemoveAndSetOneSpawnPoint(PersistentPlayerData _persistentPlayerData)
         {
-            PersistentPlayerList _persistentPlayerList = GameManager.Instance.persistentPlayers;
-            if (_persistentPlayerList != null)
+            if (_persistentPlayerData != null && _persistentPlayerData.BedrollPos != null)
             {
-                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerData(_playerId);
-                if (_persistentPlayerData != null)
+                _persistentPlayerData.ClearBedroll();
+                EntityPlayer _entityPlayer = GetEntityPlayer(_persistentPlayerData.PlayerId);
+                if (_entityPlayer != null)
                 {
-                    if (_persistentPlayerData.BedrollPos.Equals(_pos))
+                    GameManager.Instance.World.ObjectOnMapRemove(EnumMapObjectType.SleepingBag, _entityPlayer.entityId);
+                    ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.SleepingBag, _entityPlayer.entityId), false, -1, -1, -1, -1);
+                    if (_persistentPlayerData.LPBlocks != null && _persistentPlayerData.LPBlocks.Count > 0)
                     {
-                        _persistentPlayerData.ClearBedroll();
-                        EntityPlayer _entityPlayer = GetEntityPlayer(_persistentPlayerData.PlayerId);
-                        if (_entityPlayer != null)
+                        int _x, _y, _z;
+                        if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(50f, 50f, 50f), true, true))
                         {
-                            GameManager.Instance.World.ObjectOnMapRemove(EnumMapObjectType.SleepingBag, _entityPlayer.entityId);
-                            ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.SleepingBag, _entityPlayer.entityId), false, -1, -1, -1, -1);
-                            if (_persistentPlayerData.LPBlocks != null && _persistentPlayerData.LPBlocks.Count > 0)
+
+                            _entityPlayer.SpawnPoints.Set(new Vector3i(_x, _y, _z));
+                        }
+                        else
+                        {
+                            if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(50f + 10f, 50f + 30f, 50f + 10f), true, true))
                             {
-                                int _x, _y, _z;
-                                if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(50f, 50f, 50f), true, true))
-                                {
-                                    _entityPlayer.SpawnPoints.Set(new Vector3i(_x, _y, _z));
-                                }
-                                else
-                                {
-                                    if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(50f + 10f, 50f + 30f, 50f + 10f), true, true))
-                                    {
-                                        _entityPlayer.SpawnPoints.Set(new Vector3i(_x, _y, _z));
-                                    }
-                                }
+                                _entityPlayer.SpawnPoints.Set(new Vector3i(_x, _y, _z));
                             }
                         }
-                        SavePersistentPlayerDataXML();
                     }
                 }
+                else
+                {
+                    ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.SleepingBag, _persistentPlayerData.EntityId), false, -1, -1, -1, -1);
+                }
+                SavePersistentPlayerDataXML();
             }
         }
 
-        public static void RemoveOneSpawnPoint(string _playerId, Vector3i _pos)
+        public static void RemoveSpawnPoint(PersistentPlayerData _persistentPlayerData)
         {
-            PersistentPlayerList _persistentPlayerList = GameManager.Instance.persistentPlayers;
-            if (_persistentPlayerList != null)
+            if (_persistentPlayerData != null)
             {
-                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerData(_playerId);
-                if (_persistentPlayerData != null)
+                _persistentPlayerData.ClearBedroll();
+                SavePersistentPlayerDataXML();
+                EntityPlayer _entityPlayer = GetEntityPlayer(_persistentPlayerData.PlayerId);
+                if (_entityPlayer != null)
                 {
-                    if (_persistentPlayerData.BedrollPos.Equals(_pos))
-                    {
-                        _persistentPlayerData.ClearBedroll();
-                        SavePersistentPlayerDataXML();
-                        EntityPlayer _entityPlayer = GetEntityPlayer(_persistentPlayerData.PlayerId);
-                        if (_entityPlayer != null)
-                        {
-                            _entityPlayer.SpawnPoints.Clear();
-                        }
-                    }
+                    _entityPlayer.SpawnPoints.Clear();
                 }
             }
         }

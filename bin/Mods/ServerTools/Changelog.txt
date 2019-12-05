@@ -1,5 +1,14 @@
 ﻿CHANGELOG
 
+18.1.8
+Built using Alpha 18.2 stable assets
+Functioning with 18.2 stable and 18.2 experimental
+
+Added option to Vehicle_Teleport called Distance. Controls how far away the vehicle can be
+Fixed bedroll removal that was added to prevent the original bedroll removal
+Fixed EventTriggers.xml not applying custom trigger words for commands
+Fixed Bloodmoon warrior chat response. It now utilizes the Killed_Zombies value
+
 18.1.7
 Built using Alpha 18.2 experimental assets
 Functioning with 18.1 stable and 18.2 experimental

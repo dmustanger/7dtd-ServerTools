@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         private static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        public const string version = "18.1.7";
+        public const string version = "18.1.8";
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
 
@@ -2715,6 +2715,16 @@ namespace ServerTools
                                 Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry because of invalid (True/False) value for 'Inside_Claim' attribute: {0}", subChild.OuterXml));
                                 continue;
                             }
+                            if (!_line.HasAttribute("Distance"))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry because of missing 'Distance' attribute: {0}", subChild.OuterXml));
+                                continue;
+                            }
+                            if (!int.TryParse(_line.GetAttribute("Distance"), out VehicleTeleport.Distance))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry because of invalid (non-numeric) value for 'Distance' attribute: {0}", subChild.OuterXml));
+                                continue;
+                            }
                             if (!_line.HasAttribute("Delay_Between_Uses"))
                             {
                                 Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vehicle_Teleport entry because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
@@ -3265,7 +3275,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Tracking\" Enable=\"{0}\" Rate=\"{1}\" Days_Before_Log_Delete=\"{2}\" />", Tracking.IsEnabled, Tracking.Rate, Tracking.Days_Before_Log_Delete));
                 sw.WriteLine(string.Format("        <Tool Name=\"Travel\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" PvP_Check=\"{3}\" Zombie_Check=\"{4}\" />", Travel.IsEnabled, Travel.Delay_Between_Uses, Travel.Command_Cost, Travel.PvP_Check, Travel.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Under_Water\" Enable=\"{0}\" />", UnderWater.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Teleport\" Enable=\"{0}\" Bike=\"{1}\" Mini_Bike=\"{2}\" Motor_Bike=\"{3}\" Jeep=\"{4}\" Gyro=\"{5}\" Inside_Claim=\"{6}\" Delay_Between_Uses=\"{7}\" Command_Cost=\"{8}\" />", VehicleTeleport.IsEnabled, VehicleTeleport.Bike, VehicleTeleport.Mini_Bike, VehicleTeleport.Motor_Bike, VehicleTeleport.Jeep, VehicleTeleport.Gyro, VehicleTeleport.Inside_Claim, VehicleTeleport.Delay_Between_Uses, VehicleTeleport.Command_Cost));
+                sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Teleport\" Enable=\"{0}\" Bike=\"{1}\" Mini_Bike=\"{2}\" Motor_Bike=\"{3}\" Jeep=\"{4}\" Gyro=\"{5}\" Inside_Claim=\"{6}\" Distance=\"{7}\" Delay_Between_Uses=\"{8}\" Command_Cost=\"{9}\" />", VehicleTeleport.IsEnabled, VehicleTeleport.Bike, VehicleTeleport.Mini_Bike, VehicleTeleport.Motor_Bike, VehicleTeleport.Jeep, VehicleTeleport.Gyro, VehicleTeleport.Inside_Claim, VehicleTeleport.Distance, VehicleTeleport.Delay_Between_Uses, VehicleTeleport.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" Your_Voting_Site=\"{1}\" API_Key=\"{2}\" Delay_Between_Uses=\"{3}\" Reward_Count=\"{4}\" />", VoteReward.IsEnabled, VoteReward.Your_Voting_Site, VoteReward.API_Key, VoteReward.Delay_Between_Uses, VoteReward.Reward_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting_Extended\" Reward_Entity=\"{0}\" Entity_Id=\"{1}\" Weekly_Votes=\"{2}\" />", VoteReward.Reward_Entity, VoteReward.Entity_Id, VoteReward.Weekly_Votes));
                 sw.WriteLine(string.Format("        <Tool Name=\"Wallet\" Enable=\"{0}\" Coin_Name=\"{1}\" PVP=\"{2}\" Zombie_Kill_Value=\"{3}\" Player_Kill_Value=\"{4}\" Death_Penalty_Value=\"{5}\" />", Wallet.IsEnabled, Wallet.Coin_Name, Wallet.PVP, Wallet.Zombie_Kills, Wallet.Player_Kills, Wallet.Deaths));
