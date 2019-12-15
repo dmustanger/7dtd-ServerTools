@@ -83,7 +83,7 @@ namespace ServerTools
                                 _phrase730 = "The next auto shutdown is in [FF8000]{TimeLeft}.";
                             }
                             _phrase730 = _phrase730.Replace("{TimeLeft}", TimeLeft);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase730 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase730 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                         else
                         {

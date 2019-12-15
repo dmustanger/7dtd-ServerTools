@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 using UnityEngine;
 
 namespace ServerTools
@@ -39,14 +38,14 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    LobbyChat.IsEnabled = false;
+                    Lobby.IsEnabled = false;
                     LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Lobby has been set to off"));
                     return;
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    LobbyChat.IsEnabled = true;
+                    Lobby.IsEnabled = true;
                     LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Lobby has been set to on"));
                     return;
@@ -60,7 +59,7 @@ namespace ServerTools
                     int y = (int)_position.y;
                     int z = (int)_position.z;
                     string _lposition = x + "," + y + "," + z;
-                    SetLobby.Lobby_Position = _lposition;
+                    Lobby.Lobby_Position = _lposition;
                     string _phrase551;
                     if (!Phrases.Dict.TryGetValue(551, out _phrase551))
                     {

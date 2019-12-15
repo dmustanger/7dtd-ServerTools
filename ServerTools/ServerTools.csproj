@@ -45,17 +45,21 @@
     <Compile Include="src\AntiCheat\DupeLog.cs" />
     <Compile Include="src\AntiCheat\Flying.cs" />
     <Compile Include="src\AntiCheat\GodMode.cs" />
-    <Compile Include="src\AntiCheat\PlayerDamage.cs" />
+    <Compile Include="src\AntiCheat\DamageDetector.cs" />
+    <Compile Include="src\ConsoleCommands\SecureDoorAccess.cs" />
+    <Compile Include="src\ConsoleCommands\SecureVehicleAccess.cs" />
+    <Compile Include="src\ConsoleCommands\SecureLootAccess.cs" />
+    <Compile Include="src\Harmony\PatchTools.cs" />
+    <Compile Include="src\Harmony\Injections.cs" />
     <Compile Include="src\PersistentData\MySqlDB.cs" />
     <Compile Include="src\Tools\AutoBackup\AutoBackup.cs" />
     <Compile Include="src\Tools\Bank\Bank.cs" />
     <Compile Include="src\Tools\Bloodmoon_Warrior\Bloodmoon_Warrior.cs" />
-    <Compile Include="src\Chat\AdminChatCommands\SetMarket.cs" />
-    <Compile Include="src\Chat\BreakTime\BreakTime.cs" />
-    <Compile Include="src\Chat\ChatTools\Market\MarketChat.cs" />
-    <Compile Include="src\Chat\ChatTools\Session\Session.cs" />
-    <Compile Include="src\Chat\ChatColorPrefix\ChatColorPrefix.cs" />
-    <Compile Include="src\Chat\ChatTools\ScoutPlayer\ScoutPlayer.cs" />
+    <Compile Include="src\Tools\BreakTime\BreakTime.cs" />
+    <Compile Include="src\Tools\Market\Market.cs" />
+    <Compile Include="src\Tools\Session\Session.cs" />
+    <Compile Include="src\Tools\ChatColorPrefix\ChatColorPrefix.cs" />
+    <Compile Include="src\Tools\ScoutPlayer\ScoutPlayer.cs" />
     <Compile Include="src\Chat\CommandLog\CommandLog.cs" />
     <Compile Include="src\ConsoleCommands\AdminChatCommandConsole.cs" />
     <Compile Include="src\ConsoleCommands\AutoBackupConsole.cs" />
@@ -140,7 +144,7 @@
     <Compile Include="src\PersistentData\PersistentPlayers.cs" />
     <Compile Include="src\PersistentData\StateManager.cs" />
     <Compile Include="src\PersistentData\UpdateSQL.cs" />
-    <Compile Include="src\Tools\Exit\Exit.cs" />
+    <Compile Include="src\Tools\BattleLogger\BattleLogger.cs" />
     <Compile Include="src\Tools\Hardcore\Hardcore.cs" />
     <Compile Include="src\AntiCheat\CredentialCheck.cs" />
     <Compile Include="src\AntiCheat\TeleportCheck.cs" />
@@ -157,40 +161,39 @@
     <Compile Include="src\Tools\AutoShutdown\AutoShutdown.cs" />
     <Compile Include="src\Tools\AutoSaveWorld\AutoSaveWorld.cs" />
     <Compile Include="src\Tools\Bounties\Bounties.cs" />
-    <Compile Include="src\Chat\AdminChatCommands\SetLobby.cs" />
-    <Compile Include="src\Chat\ChatTools\VehicleTeleport\Vehicle_Teleport.cs" />
-    <Compile Include="src\Chat\AdminChatCommands\AdminChat.cs" />
-    <Compile Include="src\Chat\AdminChatCommands\MutePlayer.cs" />
-    <Compile Include="src\Chat\BadWordFilter\BadWordFilter.cs" />
-    <Compile Include="src\Chat\ChatTools\AdminList\AdminList.cs" />
-    <Compile Include="src\Chat\ChatTools\DeathSpot\DeathSpot.cs" />
-    <Compile Include="src\Chat\ChatTools\Bloodmoon\Bloodmoon.cs" />
-    <Compile Include="src\Chat\ChatTools\AnimalTracking\Animals.cs" />
-    <Compile Include="src\Chat\ChatTools\Day7\Day7.cs" />
-    <Compile Include="src\Chat\ChatTools\KickVote\KickVote.cs" />
-    <Compile Include="src\Chat\ChatTools\Location\Loc.cs" />
-    <Compile Include="src\Chat\ChatTools\FPS\Fps.cs" />
-    <Compile Include="src\Chat\ChatTools\FriendTeleport\FriendTeleport.cs" />
-    <Compile Include="src\Chat\ChatTools\Gimme\Gimme.cs" />
-    <Compile Include="src\Chat\AdminChatCommands\Jail.cs" />
-    <Compile Include="src\Chat\ChatTools\PlayerList\PlayerList.cs" />
-    <Compile Include="src\Chat\ChatTools\Stuck\Stuck.cs" />
-    <Compile Include="src\Chat\ChatTools\Suicide\Suicide.cs" />
-    <Compile Include="src\Chat\ChatTools\MuteVote\MuteVote.cs" />
-    <Compile Include="src\Chat\ChatTools\Report\Report.cs" />
-    <Compile Include="src\Chat\ChatTools\RestartVote\RestartVote.cs" />
-    <Compile Include="src\Chat\ChatTools\TeleHome\TeleportHome.cs" />
-    <Compile Include="src\Chat\ChatTools\Travel\Travel.cs" />
-    <Compile Include="src\Chat\ChatTools\WeatherVote\WeatherVote.cs" />
-    <Compile Include="src\Chat\LoginNotice\LoginNotice.cs" />
-    <Compile Include="src\Chat\ChatTools\Lottery\Lottery.cs" />
-    <Compile Include="src\Chat\NightTimeAlert\NightTimeAlert.cs" />
-    <Compile Include="src\Chat\RealWorldTime\RealWorldTime.cs" />
-    <Compile Include="src\Chat\ChatTools\Whisper\Whisper.cs" />
+    <Compile Include="src\Tools\VehicleTeleport\Vehicle_Teleport.cs" />
+    <Compile Include="src\Tools\AdminChat\AdminChat.cs" />
+    <Compile Include="src\Tools\Mute\Mute.cs" />
+    <Compile Include="src\Tools\BadWordFilter\BadWordFilter.cs" />
+    <Compile Include="src\Tools\AdminList\AdminList.cs" />
+    <Compile Include="src\Tools\DeathSpot\DeathSpot.cs" />
+    <Compile Include="src\Tools\Bloodmoon\Bloodmoon.cs" />
+    <Compile Include="src\Tools\AnimalTracking\Animals.cs" />
+    <Compile Include="src\Tools\Day7\Day7.cs" />
+    <Compile Include="src\Tools\KickVote\KickVote.cs" />
+    <Compile Include="src\Tools\Location\Loc.cs" />
+    <Compile Include="src\Tools\FPS\Fps.cs" />
+    <Compile Include="src\Tools\FriendTeleport\FriendTeleport.cs" />
+    <Compile Include="src\Tools\Gimme\Gimme.cs" />
+    <Compile Include="src\Tools\Jail\Jail.cs" />
+    <Compile Include="src\Tools\PlayerList\PlayerList.cs" />
+    <Compile Include="src\Tools\Stuck\Stuck.cs" />
+    <Compile Include="src\Tools\Suicide\Suicide.cs" />
+    <Compile Include="src\Tools\MuteVote\MuteVote.cs" />
+    <Compile Include="src\Tools\Report\Report.cs" />
+    <Compile Include="src\Tools\RestartVote\RestartVote.cs" />
+    <Compile Include="src\Tools\TeleHome\TeleportHome.cs" />
+    <Compile Include="src\Tools\Travel\Travel.cs" />
+    <Compile Include="src\Tools\WeatherVote\WeatherVote.cs" />
+    <Compile Include="src\Tools\LoginNotice\LoginNotice.cs" />
+    <Compile Include="src\Tools\Lottery\Lottery.cs" />
+    <Compile Include="src\Tools\NightTimeAlert\NightTimeAlert.cs" />
+    <Compile Include="src\Tools\RealWorldTime\RealWorldTime.cs" />
+    <Compile Include="src\Tools\Whisper\Whisper.cs" />
     <Compile Include="src\Chat\Hook\Hook.cs" />
-    <Compile Include="src\Chat\InfoTicker\InfoTicker.cs" />
+    <Compile Include="src\Tools\InfoTicker\InfoTicker.cs" />
     <Compile Include="src\Chat\ChatLog\ChatLog.cs" />
-    <Compile Include="src\Chat\MOTD\Motd.cs" />
+    <Compile Include="src\Tools\MOTD\Motd.cs" />
     <Compile Include="src\Tools\ClaimBlock\FirstClaimBlock.cs" />
     <Compile Include="src\Tools\ClanManager\ClanManager.cs" />
     <Compile Include="src\Tools\Shop\Shop.cs" />
@@ -221,9 +224,9 @@
     <Compile Include="src\ConsoleCommands\EntityRemoveConsole.cs" />
     <Compile Include="src\Tools\Hordes\Hordes.cs" />
     <Compile Include="src\HowTo\HowToSetup.cs" />
-    <Compile Include="src\Chat\ChatTools\Lobby\LobbyChat.cs" />
-    <Compile Include="src\Chat\KillNotice\KillNotice.cs" />
-    <Compile Include="src\Chat\NewPlayer\NewPlayer.cs" />
+    <Compile Include="src\Tools\Lobby\Lobby.cs" />
+    <Compile Include="src\Tools\KillNotice\KillNotice.cs" />
+    <Compile Include="src\Tools\NewPlayer\NewPlayer.cs" />
     <Compile Include="src\Tools\NewSpawnTele\NewSpawnTele.cs" />
     <Compile Include="src\PersistentData\SQL.cs" />
     <Compile Include="src\PersistentData\SQLiteDatabase.cs" />
@@ -247,6 +250,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="0Harmony, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lib.Harmony.1.2.0.1\lib\net45\0Harmony.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\7dtd-binaries\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>

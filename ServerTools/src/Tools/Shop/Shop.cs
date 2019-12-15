@@ -9,7 +9,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Inside_Market = false, Inside_Traders = false;
         public static int Delay_Between_Uses = 60;
-        public static string Command57 = "shop", Command58 = "buy";
+        public static string Command57 = "shop", Command58 = "shop buy";
         private const string file = "Shop.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<int, string[]> dict = new SortedDictionary<int, string[]>();
@@ -260,12 +260,12 @@ namespace ServerTools
                 if (Inside_Market && Inside_Traders)
                 {
                     int x, y, z;
-                    string[] _cords = SetMarket.Market_Position.Split(',');
+                    string[] _cords = Market.Market_Position.Split(',');
                     int.TryParse(_cords[0], out x);
                     int.TryParse(_cords[1], out y);
                     int.TryParse(_cords[2], out z);
                     Vector3i playerPos = new Vector3i((int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
-                    if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= MarketChat.Market_Size * MarketChat.Market_Size && GameManager.Instance.World.IsWithinTraderArea(playerPos))
+                    if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= (float)Market.Market_Size * (float)Market.Market_Size && GameManager.Instance.World.IsWithinTraderArea(playerPos))
                     {
                         PosCheck2(_cInfo, _categoryOrItem, _form, _count);
                     }
@@ -282,11 +282,11 @@ namespace ServerTools
                 else if (Inside_Market && !Inside_Traders)
                 {
                     int x, y, z;
-                    string[] _cords = SetMarket.Market_Position.Split(',');
+                    string[] _cords = Market.Market_Position.Split(',');
                     int.TryParse(_cords[0], out x);
                     int.TryParse(_cords[1], out y);
                     int.TryParse(_cords[2], out z);
-                    if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= MarketChat.Market_Size * MarketChat.Market_Size)
+                    if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= (float)Market.Market_Size * (float)Market.Market_Size)
                     {
                         PosCheck2(_cInfo, _categoryOrItem, _form, _count);
                     }

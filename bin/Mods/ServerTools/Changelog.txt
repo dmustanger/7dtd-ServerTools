@@ -1,5 +1,32 @@
 ﻿CHANGELOG
 
+18.2.0
+Built using Alpha 18.2 stable assets
+Functioning with 18.2 stable and 18.2 experimental
+
+Added Harmony injection methods to alter assembly after load
+Added Block_Logger. Enable to log the block name and position of each block placed
+Added Battle_Logger. If enabled, players must type /exit to leave the game while near a hostile
+player or they will drop their backpack, belt, equipment or all
+Added Damage_Detector. Catches players doing too much damage from hacks and bans them
+Added console command SecureChestAccess. Allows access to secure chests
+Added console command SecureDoorAccess. Allows access to secure doors
+Added console command SecureVehicleAccess. Allows access to secure vehicles
+Added a death count reduction of one to the player killed inside a zone marked pve and it
+will also reduce the killer's player kill count by one
+Fixed Gimme using the wrong item count for spawn versus chat response
+Fixed the config building with the wrong Bloodmoon_Warrior option named Zombie_Kills
+Changed Zones marked PvE true to give a warning to the player on a PvP attack
+Changed Auto_Backup to retain a max number of saves and delete the rest
+Changed Auto_Backup to use less threads during operation at the cost of overall speed
+Changed Auto_Shutdown message to use whisper instead of global when players connect(oops)
+Changed Reserved_Slots to allow the server to reach max player count. An open slot is not
+needed anymore
+Changed shutdown fail safe repeating every minute to fifteen seconds
+Changed default command to make a purchase from the shop to /shop buy instead of /buy
+Updated phrase 560,802
+Removed #119 from LoadTrigger.xml
+
 18.1.8
 Built using Alpha 18.2 stable assets
 Functioning with 18.2 stable and 18.2 experimental

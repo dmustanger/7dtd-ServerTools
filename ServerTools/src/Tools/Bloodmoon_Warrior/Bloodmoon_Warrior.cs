@@ -5,7 +5,7 @@ namespace ServerTools
     class BloodmoonWarrior
     {
         public static bool IsEnabled = false, BloodmoonStarted = false;
-        public static int Zombies_Killed = 10;
+        public static int Zombie_Kills = 10;
         public static List<int> WarriorList = new List<int>();
         public static Dictionary<int, int> KilledZombies = new Dictionary<int, int>();
 
@@ -28,7 +28,7 @@ namespace ServerTools
                             if (_cInfo != null)
                             {
                                 string _response = "Hades has called upon you. Survive this night and kill {ZombieCount} zombies to be rewarded by the king of the underworld.";
-                                _response = _response.Replace("{ZombieCount}", Zombies_Killed.ToString());
+                                _response = _response.Replace("{ZombieCount}", Zombie_Kills.ToString());
                                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
@@ -53,7 +53,7 @@ namespace ServerTools
                 {
                     int _killedZ;
                     KilledZombies.TryGetValue(_warrior, out _killedZ);
-                    if (_killedZ >= Zombies_Killed && _player.Died > 0)
+                    if (_killedZ >= Zombie_Kills && _player.Died > 0)
                     {
                         ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_warrior);
                         if (_cInfo != null)

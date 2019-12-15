@@ -111,7 +111,7 @@ namespace ServerTools
             };
         }
 
-        public static void ExitTool(string _id)
+        public static void BattleLogTool(string _id)
         {
             System.Timers.Timer exitTimer = new System.Timers.Timer(2000);
             exitTimer.AutoReset = false;
@@ -123,7 +123,7 @@ namespace ServerTools
             };
         }
 
-        public static void ExitToolPlayerExit(string _id)
+        public static void BattleLogPlayerExit(string _id)
         {
             System.Timers.Timer playerExitTimer = new System.Timers.Timer(15000);
             playerExitTimer.AutoReset = false;
@@ -144,9 +144,13 @@ namespace ServerTools
             {
                 Log.Out("Credential enabled");
             }
+            if (DamageDetector.IsEnabled)
+            {
+                Log.Out("Damage detector enabled");
+            }
             if (DupeLog.IsEnabled)
             {
-                Log.Out("Dupe Log enabled");
+                Log.Out("Dupe log enabled");
             }
             if (Flying.IsEnabled)
             {
@@ -178,7 +182,7 @@ namespace ServerTools
             }
             if (Watchlist.IsEnabled)
             {
-                Log.Out("Watchlist enabled");
+                Log.Out("Watch list enabled");
             }
             if (WorldRadius.IsEnabled)
             {
@@ -197,20 +201,20 @@ namespace ServerTools
             }
             if (VehicleTeleport.IsEnabled)
             {
-                Log.Out("------------------------------------");
+                Log.Out("-------------------------------------");
                 Log.Out("[SERVERTOOLS] Vehicle Teleport tools:");
-                Log.Out("------------------------------------");
+                Log.Out("-------------------------------------");
                 if (VehicleTeleport.Bike)
                 {
                     Log.Out("Bike enabled");
                 }
                 if (VehicleTeleport.Mini_Bike)
                 {
-                    Log.Out("MiniBike enabled");
+                    Log.Out("Mini bike enabled");
                 }
                 if (VehicleTeleport.Motor_Bike)
                 {
-                    Log.Out("MotorBike enabled");
+                    Log.Out("Motor bike enabled");
                 }
                 if (VehicleTeleport.Jeep)
                 {
@@ -320,7 +324,7 @@ namespace ServerTools
             {
                 Log.Out("Falling tree cleanup enabled");
             }
-            if (Exit.IsEnabled)
+            if (BattleLogger.IsEnabled)
             {
                 Log.Out("Exit enabled");
             }
@@ -360,7 +364,7 @@ namespace ServerTools
             {
                 Log.Out("Kill notice enabled");
             }
-            if (LobbyChat.IsEnabled)
+            if (Lobby.IsEnabled)
             {
                 Log.Out("Lobby enabled");
             }
@@ -376,7 +380,7 @@ namespace ServerTools
             {
                 Log.Out("Lottery enabled");
             }
-            if (MarketChat.IsEnabled)
+            if (Market.IsEnabled)
             {
                 Log.Out("Market enabled");
             }
@@ -384,7 +388,7 @@ namespace ServerTools
             {
                 Log.Out("Motd enabled");
             }
-            if (MutePlayer.IsEnabled)
+            if (Mute.IsEnabled)
             {
                 Log.Out("Mute enabled");
             }
@@ -527,17 +531,9 @@ namespace ServerTools
                     {
                         Jail.Clear();
                     }
-                    if (MutePlayer.IsEnabled && MutePlayer.Mutes.Count > 0)
+                    if (Mute.IsEnabled && Mute.Mutes.Count > 0)
                     {
-                        MutePlayer.Clear();
-                    }
-                    if (ReservedSlots.IsEnabled)
-                    {
-                        int _playerCount = ConnectionManager.Instance.ClientCount();
-                        if (_playerCount >= API.MaxPlayers - 1)
-                        {
-                            ReservedSlots.OpenSlot();
-                        }
+                        Mute.Clear();
                     }
                     if (BloodmoonWarrior.IsEnabled)
                     {
@@ -545,67 +541,45 @@ namespace ServerTools
                     }
                     timer60Second = 0;
                 }
-
                 if (WeatherVote.IsEnabled && WeatherVote.VoteOpen)
                 {
                     _weatherVote++;
                     if (_weatherVote >= 60)
                     {
                         _weatherVote = 0;
+                        WeatherVote.VoteOpen = false;
                         WeatherVote.ProcessWeatherVote();
                     }
                 }
-                else
+                if (RestartVote.IsEnabled && RestartVote.VoteOpen)
                 {
-                    _weatherVote = 0;
-                }
-                if (RestartVote.IsEnabled)
-                {
-                    if (RestartVote.VoteOpen)
+                    _restartVote++;
+                    if (_restartVote >= 60)
                     {
-                        _restartVote++;
-                        if (_restartVote >= 60)
-                        {
-                            _restartVote = 0;
-                            RestartVote.CallForVote2();
-                        }
+                        _restartVote = 0;
+                        RestartVote.VoteOpen = false;
+                        RestartVote.ProcessRestartVote();
                     }
                 }
-                else
+                if (MuteVote.IsEnabled && MuteVote.VoteOpen)
                 {
-                    _restartVote = 0;
-                }
-                if (MuteVote.IsEnabled)
-                {
-                    if (MuteVote.VoteOpen)
+                    _muteVote++;
+                    if (_muteVote >= 60)
                     {
-                        _muteVote++;
-                        if (_muteVote >= 60)
-                        {
-                            _muteVote = 0;
-                            MuteVote.VoteCount();
-                        }
+                        _muteVote = 0;
+                        MuteVote.VoteOpen = false;
+                        MuteVote.ProcessMuteVote();
                     }
                 }
-                else
+                if (KickVote.IsEnabled && KickVote.VoteOpen)
                 {
-                    _muteVote = 0;
-                }
-                if (KickVote.IsEnabled)
-                {
-                    if (KickVote.VoteOpen)
+                    _kickVote++;
+                    if (_kickVote >= 60)
                     {
-                        _kickVote++;
-                        if (_kickVote >= 60)
-                        {
-                            _kickVote = 0;
-                            KickVote.VoteCount();
-                        }
+                        _kickVote = 0;
+                        KickVote.VoteOpen = false;
+                        KickVote.ProcessKickVote();
                     }
-                }
-                else
-                {
-                    _kickVote = 0;
                 }
                 if (Lottery.IsEnabled && Lottery.OpenLotto)
                 {
@@ -946,14 +920,10 @@ namespace ServerTools
             else
             {
                 _shutdownFailSafe++;
-                if (_shutdownFailSafe >= 60)
+                if (_shutdownFailSafe >= 15)
                 {
                     _shutdownFailSafe = 0;
                     StopServer.FailSafe();
-                }
-                else
-                {
-                    _shutdownFailSafe = 0;
                 }
             }
         }
@@ -985,12 +955,12 @@ namespace ServerTools
 
         private static void Init7(object sender, ElapsedEventArgs e, string _id)
         {
-            Exit.ScanLog(_id);
+            BattleLogger.ScanLog(_id);
         }
 
         private static void Init8(object sender, ElapsedEventArgs e, string _id)
         {
-            Exit.PlayerExit(_id);
+            BattleLogger.PlayerExit(_id);
         }
     }
 }

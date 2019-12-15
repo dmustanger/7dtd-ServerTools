@@ -30,7 +30,7 @@ namespace ServerTools
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
-            if (MutePlayer.IsEnabled)
+            if (Mute.IsEnabled)
             {
                 try
                 {
@@ -62,7 +62,7 @@ namespace ServerTools
                         ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                         if (_cInfo != null)
                         {
-                            if (MutePlayer.Mutes.Contains(_cInfo.playerId))
+                            if (Mute.Mutes.Contains(_cInfo.playerId))
                             {
                                 SdtdConsole.Instance.Output(string.Format("Steam Id {0}, player name {1} is already muted.", _cInfo.playerId, _cInfo.playerName));
                                 return;
@@ -71,7 +71,7 @@ namespace ServerTools
                             {
                                 if (_muteTime == -1)
                                 {
-                                    MutePlayer.Mutes.Add(_cInfo.playerId);
+                                    Mute.Mutes.Add(_cInfo.playerId);
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = -1;
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteName = _cInfo.playerName;
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteDate = DateTime.Now;
@@ -81,7 +81,7 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    MutePlayer.Mutes.Add(_cInfo.playerId);
+                                    Mute.Mutes.Add(_cInfo.playerId);
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = _muteTime;
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteName = _cInfo.playerName;
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteDate = DateTime.Now;
@@ -110,14 +110,14 @@ namespace ServerTools
                             return;
                         }
                         string _id = _params[1];
-                        if (MutePlayer.Mutes.Contains(_id))
+                        if (Mute.Mutes.Contains(_id))
                         {
                             ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_id);
                             if (_cInfo != null)
                             {
                                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " you have been unmuted.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
-                            MutePlayer.Mutes.Remove(_id);
+                            Mute.Mutes.Remove(_id);
                             PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = 0;
                             PersistentContainer.Instance.Save();
                             SdtdConsole.Instance.Output(string.Format("Steam Id {0} has been unmuted.", _id));
@@ -136,16 +136,16 @@ namespace ServerTools
                             SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
                             return;
                         }
-                        if (MutePlayer.Mutes.Count == 0)
+                        if (Mute.Mutes.Count == 0)
                         {
                             SdtdConsole.Instance.Output(string.Format("No players are muted."));
                             return;
                         }
                         else
                         {
-                            for (int i = 0; i < MutePlayer.Mutes.Count; i++)
+                            for (int i = 0; i < Mute.Mutes.Count; i++)
                             {
-                                string _id = MutePlayer.Mutes[i];
+                                string _id = Mute.Mutes[i];
                                 int _muteTime = PersistentContainer.Instance.Players[_id].MuteTime;
                                 string _muteName = PersistentContainer.Instance.Players[_id].MuteName;
                                 if (_muteTime > 0)

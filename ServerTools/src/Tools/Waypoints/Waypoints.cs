@@ -302,12 +302,15 @@ namespace ServerTools
 
         private static bool Claimed(ClientInfo _cInfo, Vector3i _position)
         {
-            PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
-            PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_cInfo.entityId);
-            EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
-            if (_owner == EnumLandClaimOwner.None)
+            PersistentPlayerList _persistentPlayerList = PersistentOperations.GetPersistentPlayerList();
+            if (_persistentPlayerList != null)
             {
-                return false;
+                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_cInfo.entityId);
+                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
+                if (_owner == EnumLandClaimOwner.None)
+                {
+                    return false;
+                }
             }
             return true;
         }

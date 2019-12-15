@@ -350,12 +350,12 @@ namespace ServerTools
         public static string GetChatCommands4(ClientInfo _cInfo)
         {
             string _commands_4 = string.Format("{0}More Commands:", LoadConfig.Chat_Response_Color);
-            if (LobbyChat.IsEnabled)
+            if (Lobby.IsEnabled)
             {
-                _commands_4 = string.Format("{0} {1}{2}", _commands_4, ChatHook.Command_Private, LobbyChat.Command88);
-                if (LobbyChat.Return)
+                _commands_4 = string.Format("{0} {1}{2}", _commands_4, ChatHook.Command_Private, Lobby.Command88);
+                if (Lobby.Return)
                 {
-                    _commands_4 = string.Format("{0} {1}{2}", _commands_4, ChatHook.Command_Private, LobbyChat.Command53);
+                    _commands_4 = string.Format("{0} {1}{2}", _commands_4, ChatHook.Command_Private, Lobby.Command53);
                 }
             }
             if (Bounties.IsEnabled)
@@ -391,12 +391,12 @@ namespace ServerTools
         public static string GetChatCommands5(ClientInfo _cInfo)
         {
             string _commands_5 = string.Format("{0}More Commands:", LoadConfig.Chat_Response_Color);
-            if (MarketChat.IsEnabled)
+            if (Market.IsEnabled)
             {
-                _commands_5 = string.Format("{0} {1}{2}", _commands_5, ChatHook.Command_Private, MarketChat.Command103);
-                if (MarketChat.Return)
+                _commands_5 = string.Format("{0} {1}{2}", _commands_5, ChatHook.Command_Private, Market.Command103);
+                if (Market.Return)
                 {
-                    _commands_5 = string.Format("{0} {1}{2}", _commands_5, ChatHook.Command_Private, MarketChat.Command51);
+                    _commands_5 = string.Format("{0} {1}{2}", _commands_5, ChatHook.Command_Private, Market.Command51);
                 }
             }
             if (InfoTicker.IsEnabled)
@@ -525,16 +525,15 @@ namespace ServerTools
                     if (AdminChat.IsEnabled)
                     {
                         _commandsAdmin = string.Format("{0} @" + AdminChat.Command118, _commandsAdmin);
-                        _commandsAdmin = string.Format("{0} @" + AdminChat.Command119, _commandsAdmin);
                     }
                     if (Jail.IsEnabled)
                     {
                         _commandsAdmin = string.Format("{0} {1}{2}", _commandsAdmin, ChatHook.Command_Private, Jail.Command27);
                     }
-                    if (MutePlayer.IsEnabled)
+                    if (Mute.IsEnabled)
                     {
-                        _commandsAdmin = string.Format("{0} {1}{2}", _commandsAdmin, ChatHook.Command_Private, MutePlayer.Command13);
-                        _commandsAdmin = string.Format("{0} {1}{2}", _commandsAdmin, ChatHook.Command_Private, MutePlayer.Command14);
+                        _commandsAdmin = string.Format("{0} {1}{2}", _commandsAdmin, ChatHook.Command_Private, Mute.Command13);
+                        _commandsAdmin = string.Format("{0} {1}{2}", _commandsAdmin, ChatHook.Command_Private, Mute.Command14);
                     }
                 }
             }

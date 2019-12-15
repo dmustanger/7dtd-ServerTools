@@ -8,6 +8,7 @@ namespace ServerTools
     class PersistentOperations
     {
         private static bool IsRunning = false;
+        public static int MaxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
 
         public static void PlayerCheck()
@@ -46,7 +47,6 @@ namespace ServerTools
                                     {
                                         API.Players.Remove(_cInfo);
                                     }
-                                    BedBugExec(_cInfo, _player);
                                     if (BloodmoonWarrior.WarriorList.Contains(_cInfo.entityId))
                                     {
                                         BloodmoonWarrior.WarriorList.Remove(_cInfo.entityId);
@@ -75,53 +75,6 @@ namespace ServerTools
             if (!Session.ContainsKey(_cInfo.playerId))
             {
                 Session.Add(_cInfo.playerId, DateTime.Now);
-            }
-        }
-
-        public static void BedBugExec(ClientInfo _cInfo, EntityPlayer _player)
-        {
-            try
-            {
-                EntityBedrollPositionList _bedrollList = _player.SpawnPoints;
-                if (_bedrollList != null)
-                {
-                    Vector3i _bedrollPosition = _bedrollList.GetPos();
-                    World world = GameManager.Instance.World;
-                    BlockValue _blockValue = world.GetBlock(_bedrollPosition);
-                    Block _block = _blockValue.Block;
-                    if (_block != null && _block is BlockSleepingBag)
-                    {
-                        PersistentPlayerList _persistentPlayers = PersistentOperations.GetPersistentPlayerList();
-                        if (_persistentPlayers != null)
-                        {
-                            bool _bedBug = false;
-                            List<string> _persistentPlayerList = _persistentPlayers.Players.Keys.ToList();
-                            for (int j = 0; j < _persistentPlayerList.Count; j++)
-                            {
-                                PersistentPlayerData _persistentPlayerData;
-                                _persistentPlayers.Players.TryGetValue(_persistentPlayerList[j], out _persistentPlayerData);
-                                if (_persistentPlayerData.EntityId != _cInfo.entityId && _persistentPlayerData.BedrollPos.Equals(_bedrollPosition))
-                                {
-                                    _bedBug = true;
-                                    PersistentOperations.RemoveAndSetOneSpawnPoint(_persistentPlayerData);
-                                }
-                            }
-                            if (_bedBug)
-                            {
-                                PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_cInfo.playerId);
-                                if (_persistentPlayerData != null)
-                                {
-                                    PersistentOperations.RemoveAndSetOneSpawnPoint(_persistentPlayerData);
-                                }
-                                GameManager.Instance.World.SetBlockRPC(0, _bedrollPosition, BlockValue.Air);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.BedBugExec: {0}.", e.Message));
             }
         }
 
@@ -189,7 +142,7 @@ namespace ServerTools
             return null;
         }
 
-        public static ClientInfo GetClientInfo(string _playerId)
+        public static ClientInfo GetClientInfoFromSteamId(string _playerId)
         {
             ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_playerId);
             if (_cInfo != null)
@@ -198,6 +151,26 @@ namespace ServerTools
             }
             return null;
         }
+
+        public static ClientInfo GetClientInfoFromEntityId(int _playerId)
+        {
+            ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_playerId);
+            if (_cInfo != null)
+            {
+                return _cInfo;
+            }
+            return null;
+        }
+
+        public static List<EntityPlayer> PlayerList()
+        {
+            List<EntityPlayer> _playerList = GameManager.Instance.World.Players.list;
+            if (_playerList != null)
+            {
+                return _playerList;
+            }
+            return null;
+        }       
 
         public static EntityPlayer GetEntityPlayer(string _playerId)
         {
@@ -262,108 +235,25 @@ namespace ServerTools
             return null;
         }
 
-
-
-        public static void RemoveAndSetSpawnPointForAll(PersistentPlayerList _persistentPlayers)
+        public static void SetSpawnPointNearClaim(ClientInfo _cInfo, EntityPlayer _entityPlayer)
         {
-            if (_persistentPlayers != null)
+            if (_cInfo != null)
             {
-                List<string> _persistentPlayerList = _persistentPlayers.Players.Keys.ToList();
-                for (int i = 0; i < _persistentPlayerList.Count; i++)
+                PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_cInfo.playerId);
+                if (_persistentPlayerData != null && _persistentPlayerData.LPBlocks != null && _persistentPlayerData.LPBlocks.Count > 0)
                 {
-                    PersistentPlayerData _persistentPlayerData;
-                    _persistentPlayers.Players.TryGetValue(_persistentPlayerList[i], out _persistentPlayerData);
-                    _persistentPlayerData.ClearBedroll();
-                    EntityPlayer _entityPlayer = GetEntityPlayer(_persistentPlayerData.PlayerId);
-                    if (_entityPlayer != null)
+                    int _x, _y, _z;
+                    if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(50f, 50f, 50f), true, false))
                     {
-                        GameManager.Instance.World.ObjectOnMapRemove(EnumMapObjectType.SleepingBag, _entityPlayer.entityId);
-                        ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.SleepingBag, _entityPlayer.entityId), false, -1, -1, -1, -1);
-                        if (_persistentPlayerData.LPBlocks != null && _persistentPlayerData.LPBlocks.Count > 0)
-                        {
-                            int _x, _y, _z;
-                            if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(50f, 50f, 50f), true, true))
-                            {
-                                _entityPlayer.SpawnPoints.Set(new Vector3i(_x, _y, _z));
-                            }
-                            else
-                            {
-                                if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(50f + 10f, 50f + 30f, 50f + 10f), true, true))
-                                {
-                                    _entityPlayer.SpawnPoints.Set(new Vector3i(_x, _y, _z));
-                                }
-                            }
-                        }
+                        _entityPlayer.SpawnPoints.Set(new Vector3i(_x, _y, _z));
                     }
-                }
-                SavePersistentPlayerDataXML();
-            }
-        }
-
-        public static void RemoveAllSpawnPoints(PersistentPlayerList _persistentPlayers)
-        {
-            if (_persistentPlayers != null)
-            {
-                List<string> _persistentPlayerList = _persistentPlayers.Players.Keys.ToList();
-                for (int i = 0; i < _persistentPlayerList.Count; i++)
-                {
-                    PersistentPlayerData _persistentPlayerData;
-                    _persistentPlayers.Players.TryGetValue(_persistentPlayerList[i], out _persistentPlayerData);
-                    EntityPlayer _entityPlayer = GetEntityPlayer(_persistentPlayerData.PlayerId);
-                    if (_entityPlayer != null)
+                    else
                     {
-                        _entityPlayer.SpawnPoints.Clear();
-                    }
-                }
-                SavePersistentPlayerDataXML();
-            }
-        }
-
-        public static void RemoveAndSetOneSpawnPoint(PersistentPlayerData _persistentPlayerData)
-        {
-            if (_persistentPlayerData != null && _persistentPlayerData.BedrollPos != null)
-            {
-                _persistentPlayerData.ClearBedroll();
-                EntityPlayer _entityPlayer = GetEntityPlayer(_persistentPlayerData.PlayerId);
-                if (_entityPlayer != null)
-                {
-                    GameManager.Instance.World.ObjectOnMapRemove(EnumMapObjectType.SleepingBag, _entityPlayer.entityId);
-                    ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.SleepingBag, _entityPlayer.entityId), false, -1, -1, -1, -1);
-                    if (_persistentPlayerData.LPBlocks != null && _persistentPlayerData.LPBlocks.Count > 0)
-                    {
-                        int _x, _y, _z;
-                        if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(50f, 50f, 50f), true, true))
+                        if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(500f, 70f, 500f), true, false))
                         {
-
                             _entityPlayer.SpawnPoints.Set(new Vector3i(_x, _y, _z));
                         }
-                        else
-                        {
-                            if (GameManager.Instance.World.FindRandomSpawnPointNearPosition(_persistentPlayerData.LPBlocks[0].ToVector3(), 15, out _x, out _y, out _z, new UnityEngine.Vector3(50f + 10f, 50f + 30f, 50f + 10f), true, true))
-                            {
-                                _entityPlayer.SpawnPoints.Set(new Vector3i(_x, _y, _z));
-                            }
-                        }
                     }
-                }
-                else
-                {
-                    ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.SleepingBag, _persistentPlayerData.EntityId), false, -1, -1, -1, -1);
-                }
-                SavePersistentPlayerDataXML();
-            }
-        }
-
-        public static void RemoveSpawnPoint(PersistentPlayerData _persistentPlayerData)
-        {
-            if (_persistentPlayerData != null)
-            {
-                _persistentPlayerData.ClearBedroll();
-                SavePersistentPlayerDataXML();
-                EntityPlayer _entityPlayer = GetEntityPlayer(_persistentPlayerData.PlayerId);
-                if (_entityPlayer != null)
-                {
-                    _entityPlayer.SpawnPoints.Clear();
                 }
             }
         }
@@ -461,7 +351,7 @@ namespace ServerTools
         public static void SavePlayerDataFile(string _playerId, PlayerDataFile _playerDataFile)
         {
             _playerDataFile.Save(GameUtils.GetPlayerDataDir(), _playerId.Trim());
-            ClientInfo _cInfo = GetClientInfo(_playerId);
+            ClientInfo _cInfo = GetClientInfoFromSteamId(_playerId);
             if (_cInfo != null)
             {
                 ModEvents.SavePlayerData.Invoke(_cInfo, _playerDataFile);
@@ -473,6 +363,150 @@ namespace ServerTools
             if (GameManager.Instance.persistentPlayers != null)
             {
                 GameManager.Instance.persistentPlayers.Write(GameUtils.GetSaveGameDir(null, null) + "/players.xml");
+            }
+        }
+
+        public static bool ClaimedBySelf(string _id, Vector3i _position)
+        {
+            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_id);
+            if (_persistentPlayerData != null)
+            {
+                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
+                if (_owner == EnumLandClaimOwner.Self)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool ClaimedBySelfVec3(string _id, Vector3i _position)
+        {
+            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_id);
+            if (_persistentPlayerData != null)
+            {
+                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
+                if (_owner == EnumLandClaimOwner.Self)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool ClaimedByAlly(string _id, Vector3i _position)
+        {
+            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_id);
+            if (_persistentPlayerData != null)
+            {
+                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
+                if (_owner == EnumLandClaimOwner.Ally)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool ClaimedByNone(string _id, Vector3i _position)
+        {
+            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_id);
+            if (_persistentPlayerData != null)
+            {
+                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
+                if (_owner == EnumLandClaimOwner.None)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool ClaimedByAllyOrSelf(string _id, Vector3i _position)
+        {
+            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_id);
+            if (_persistentPlayerData != null)
+            {
+                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
+                if (_owner == EnumLandClaimOwner.Ally || _owner == EnumLandClaimOwner.Self)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool ClaimedByUnknown(string _id, Vector3i _position)
+        {
+            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_id);
+            if (_persistentPlayerData != null)
+            {
+                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
+                if (_owner != EnumLandClaimOwner.None && _owner != EnumLandClaimOwner.Ally && _owner != EnumLandClaimOwner.Self)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static List<EntityPlayer> PlayersWithin100Blocks(int _x, int _z)
+        {
+            List<EntityPlayer> _closestPlayers = new List<EntityPlayer>();
+            List<EntityPlayer> _playerList = PersistentOperations.PlayerList();
+            for (int i = 0; i < _playerList.Count; i++)
+            {
+                EntityPlayer _player = _playerList[i];
+                if (!_player.IsDead() && _player.Spawned)
+                {
+                    if ((_x - _player.position.x) * (_x - _player.position.x) + (_z - _player.position.z) * (_z - _player.position.z) >= 100 * 100)
+                    {
+                        _closestPlayers.Add(_player);
+                    }
+                }
+            }
+            if (_closestPlayers.Count > 0)
+            {
+                return _closestPlayers;
+            }
+            return null;
+        }
+
+        public static void BedBug(string _persistentPlayerId)
+        {
+            EntityPlayer _player = PersistentOperations.GetEntityPlayer(_persistentPlayerId);
+            if (_player != null)
+            {
+                EntityBedrollPositionList _bedrollList = _player.SpawnPoints;
+                if (_bedrollList != null)
+                {
+                    Vector3i _bedrollPosition = _bedrollList.GetPos();
+                    List<EntityPlayer> _playerList = PersistentOperations.PlayerList();
+                    if (_bedrollPosition != null && _playerList != null)
+                    {
+                        for (int i = 0; i < _playerList.Count; i++)
+                        {
+                            EntityPlayer _player2 = _playerList[i];
+                            if (_player2 != null && _player2 != _player && _player2.SpawnPoints != null && _player2.SpawnPoints.GetPos().Equals(_bedrollPosition))
+                            {
+                                PersistentPlayerData _ppd = PersistentOperations.GetPersistentPlayerData(_persistentPlayerId);
+                                if (_ppd != null && !_player2.SpawnPoints.GetPos().Equals(_ppd.BedrollPos))
+                                {
+                                    _player2.SpawnPoints.Set(_ppd.BedrollPos);
+                                    continue;
+                                }
+                                _player2.SpawnPoints.Clear();
+                                GameManager.Instance.World.ObjectOnMapRemove(EnumMapObjectType.SleepingBag, _player2.entityId);
+                                ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.SleepingBag, _player2.entityId), false, -1, -1, -1, -1);
+                                ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromEntityId(_player2.entityId);
+                                if (_cInfo2 != null)
+                                {
+                                    ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + "Detected bug with your bed. Check your bed and replace if needed.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -508,29 +542,53 @@ namespace ServerTools
                 //    }
                 //}
 
-                //List<ClientInfo> _clientList = ClientList();
-                //for (int i = 0; i < _clientList.Count; i++)
+                Log.Out("Test 10");
+                List<ClientInfo> _clientList = ClientList();
+                for (int i = 0; i < _clientList.Count; i++)
+                {
+                    Log.Out("Test 11");
+                    ClientInfo _cInfo2 = _clientList[i];
+                    EntityPlayer _entityPlayer = PersistentOperations.GetEntityPlayer(_cInfo2.playerId);
+                    if (_entityPlayer != null)
+                    {
+                        Log.Out("Test 12");
+                        EntityBedrollPositionList _bedrollList = _entityPlayer.SpawnPoints;
+                        for (int j = 0; j < _bedrollList.Count; j++)
+                        {
+                            Log.Out("Test 13");
+                            Vector3i _bedrollPosition = _bedrollList.GetPos();
+                            if (_bedrollPosition != null)
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Player named {0} with id = {1} , EntityAlive Bedroll position is: {2}.", _entityPlayer.EntityName, _entityPlayer.entityId, _bedrollPosition));
+                                PersistentPlayerData _ppd = PersistentOperations.GetPersistentPlayerData(_cInfo2.playerId);
+                                if (_ppd != null && _ppd.HasBedrollPos)
+                                {
+                                    Log.Out("Test 14");
+                                    Log.Out(string.Format("[SERVERTOOLS] Persistent data bed position: {0}.", _ppd.BedrollPos));
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                //EntityPlayer _entityPlayer = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                //if (_entityPlayer != null)
                 //{
-                //    ClientInfo _cInfo2 = _clientList[i];
-                //    EntityPlayer _entityPlayer = PersistentOperations.EntityPlayer(_cInfo2);
-                //    EntityBedrollPositionList _bedrollList = _entityPlayer.SpawnPoints;
-                //    for (int j = 0; j < _bedrollList.Count; j++)
+                //    List<ClientInfo> _clientList = ClientList();
+                //    for (int i = 0; i < _clientList.Count; i++)
                 //    {
-                //        Vector3i _bedrollPosition = _bedrollList[j];
-                //        Log.Out(string.Format("[SERVERTOOLS] _entityPlayer id = {0} , _bedrollPosition: {1}.", _entityPlayer.entityId, _bedrollPosition));
+                //        ClientInfo _cInfo2 = _clientList[i];
+                //        EntityPlayer _entityPlayer2 = PersistentOperations.GetEntityPlayer(_cInfo2.playerId);
+                //        if (_entityPlayer2 != null)
+                //        {
+                //            _entityPlayer2.SpawnPoints.Set(_entityPlayer.SpawnPoints.GetPos());
+                //        }
                 //    }
+                //    Log.Out(string.Format("[SERVERTOOLS] Set all online player spawn positions to: {0}.", _entityPlayer.SpawnPoints.GetPos()));
                 //}
 
 
-                //EntityAlive _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                //if (_player != null && _player.IsAlive())
-                //{
-                //    int _deathCount = _player.Died - 1;
-                //    _player.Died = _deathCount;
-                //    _player.bPlayerStatsChanged = true;
-                //    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(_player));
-                //    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have survived and been rewarded by hades himself. Your death count was reduced by one." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                //}
             }
             catch (Exception e)
             {

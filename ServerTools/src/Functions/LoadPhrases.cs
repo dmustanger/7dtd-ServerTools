@@ -224,7 +224,7 @@ namespace ServerTools
                 string _phrase20;
                 if (!Dict.TryGetValue(20, out _phrase20))
                 {
-                    _phrase20 = "Sorry {PlayerName} server is at max capacity and this slot is reserved.";
+                    _phrase20 = "{ServerResponseName}- The server is full. You were kicked by the reservation system to open a slot.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"20\" Phrase=\"{0}\" />", _phrase20));
                 //21 available
@@ -768,7 +768,7 @@ namespace ServerTools
                 string _phrase560;
                 if (!Dict.TryGetValue(560, out _phrase560))
                 {
-                    _phrase560 = " you can only use {CommandPrivate}{Command51} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase560 = " you can only use {CommandPrivate}{Command103} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"560\" Phrase=\"{0}\" />", _phrase560));
                 string _phrase561;
@@ -1373,7 +1373,7 @@ namespace ServerTools
                 string _phrase796;
                 if (!Dict.TryGetValue(796, out _phrase796))
                 {
-                    _phrase796 = "Report from {PlayerName}: {Message}";
+                    _phrase796 = "Report @ position {Position} from {PlayerName}: {Message}";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"796\" Phrase=\"{0}\" />", _phrase796));
                 string _phrase797;
@@ -1400,13 +1400,13 @@ namespace ServerTools
                 string _phrase801;
                 if (!Dict.TryGetValue(801, out _phrase801))
                 {
-                    _phrase801 = "{PlayerName} has murdered you while you were in a protected zone.";
+                    _phrase801 = "{PlayerName} has murdered you while you were in a protected zone. Your death count was reduced by one.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"801\" Phrase=\"{0}\" />", _phrase801));
                 string _phrase802;
                 if (!Dict.TryGetValue(802, out _phrase802))
                 {
-                    _phrase802 = " you have murdered a player inside a pve zone. Their name was {PlayerName}.";
+                    _phrase802 = " you have murdered a player while inside a pve zone. Their name was {PlayerName}. Your player kill count was reduced by one.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"802\" Phrase=\"{0}\" />", _phrase802));
                 string _phrase804;

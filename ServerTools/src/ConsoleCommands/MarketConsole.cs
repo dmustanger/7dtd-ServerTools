@@ -33,14 +33,14 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    MarketChat.IsEnabled = false;
+                    Market.IsEnabled = false;
                     LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Market has been set to off"));
                     return;
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    MarketChat.IsEnabled = true;
+                    Market.IsEnabled = true;
                     LoadConfig.WriteXml();
                     SdtdConsole.Instance.Output(string.Format("Market has been set to on"));
                     return;

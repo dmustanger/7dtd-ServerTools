@@ -62,6 +62,14 @@ namespace ServerTools
                     {
                         Directory.CreateDirectory(API.ConfigPath + "/Logs/CommandLogs");
                     }
+                    if (!Directory.Exists(API.ConfigPath + "/Logs/DamageLogs"))
+                    {
+                        Directory.CreateDirectory(API.ConfigPath + "/Logs/DamageLogs");
+                    }
+                    if (!Directory.Exists(API.ConfigPath + "/Logs/BlockLogs"))
+                    {
+                        Directory.CreateDirectory(API.ConfigPath + "/Logs/BlockLogs");
+                    }
                     Log.Out(string.Format("[ServerTools] Directory check completed"));
                     Log.Out(string.Format("[ServerTools] Deleting old logs"));
                     int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
@@ -147,6 +155,24 @@ namespace ServerTools
                         }
                     }
                     files = Directory.GetFiles(API.ConfigPath + "/Logs/CommandLogs");
+                    foreach (string file in files)
+                    {
+                        FileInfo fi = new FileInfo(file);
+                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
+                        {
+                            fi.Delete();
+                        }
+                    }
+                    files = Directory.GetFiles(API.ConfigPath + "/Logs/DamageLogs");
+                    foreach (string file in files)
+                    {
+                        FileInfo fi = new FileInfo(file);
+                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
+                        {
+                            fi.Delete();
+                        }
+                    }
+                    files = Directory.GetFiles(API.ConfigPath + "/Logs/BlockLogs");
                     foreach (string file in files)
                     {
                         FileInfo fi = new FileInfo(file);

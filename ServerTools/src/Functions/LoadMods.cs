@@ -194,14 +194,15 @@ namespace ServerTools
             {
                 AuctionBox.AuctionList();
             }
-            if (MutePlayer.IsEnabled)
+            if (Mute.IsEnabled)
             {
-                MutePlayer.MuteList();
+                Mute.MuteList();
             }
             if (Jail.IsEnabled)
             {
                 Jail.JailList();
             }
+            PatchTools.ApplyPatches();
         }
     }
 }

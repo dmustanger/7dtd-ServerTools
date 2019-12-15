@@ -103,7 +103,7 @@ namespace ServerTools
                                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                                             TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
                                             Vector3i vec3i = SecureLoot.ToWorldPos();
-                                            if ((vec3i.x - _player.position.x) * (vec3i.x - _player.position.x) + (vec3i.z - _player.position.z) * (vec3i.z - _player.position.z) <= 2.5 * 2.5)
+                                            if ((vec3i.x - _player.position.x) * (vec3i.x - _player.position.x) + (vec3i.z - _player.position.z) * (vec3i.z - _player.position.z) <= 2.5f * 2.5f)
                                             {
                                                 if (SecureLoot.IsUserAllowed(_cInfo.playerId) && !SecureLoot.IsUserAccessing())
                                                 {

@@ -134,7 +134,6 @@ namespace ServerTools
             {
                 if (!OmittedPlayers.ContainsKey(_cInfo.playerId))
                 {
-                    GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
                     AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
                     if (Admin.PermissionLevel > Admin_Level)
                     {

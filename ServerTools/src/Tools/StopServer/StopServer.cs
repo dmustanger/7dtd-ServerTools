@@ -96,7 +96,6 @@ namespace ServerTools
         {
             Log.Out("[SERVERTOOLS] Running shutdown.");
             Timers.Timer2Stop();
-            Shutdown = true;
             UnityEngine.Application.Quit();
         }
 

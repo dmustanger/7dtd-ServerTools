@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ServerTools
 {
     class AutoBackup
     {
         public static bool IsEnabled = false, IsRunning = false;
-        public static int Delay = 240, Days_Before_Save_Delete = 3, Compression_Level = 0;
+        public static int Delay = 240, Backup_Count = 5, Compression_Level = 0;
         public static string Destination = "";
         private static string saveDirectory = GameUtils.GetSaveGameDir();
 
@@ -24,7 +26,7 @@ namespace ServerTools
                     DeleteFiles(_files);
                     SdtdConsole.Instance.Output("[SERVERTOOLS] Old backup clean up complete");
                     Log.Out("[SERVERTOOLS] Old backup clean up complete");
-                    compressDirectory(saveDirectory, Destination);
+                    CompressDirectory(saveDirectory, Destination);
                     IsRunning = false;
                 }
                 catch (Exception e)
@@ -39,7 +41,7 @@ namespace ServerTools
             }
         }
 
-        private static void compressDirectory(string saveDirectory, string Destination)
+        private static void CompressDirectory(string saveDirectory, string Destination)
         {
             try
             {
@@ -62,11 +64,11 @@ namespace ServerTools
                 string _destination;
                 if (Destination == "")
                 {
-                    _destination = _parentDirectory + string.Format("_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
+                    _destination = "Backup" + _parentDirectory + string.Format("_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
                 }
                 else
                 {
-                    _destination = Destination + string.Format("_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
+                    _destination = "Backup" + Destination + string.Format("_{0}", DateTime.Now.ToString("MM-dd-yy_HH-mm"));
                     if (!Directory.Exists(Destination))
                     {
                         Directory.CreateDirectory(Destination);
@@ -77,6 +79,7 @@ namespace ServerTools
                 {
                     zip.UseZip64WhenSaving = Pathfinding.Ionic.Zip.Zip64Option.Always;
                     zip.CompressionLevel = _compression;
+                    zip.ParallelDeflateThreshold = -1;
                     foreach (var _c in _files)
                     {
                         zip.AddFile(_c);
@@ -101,16 +104,30 @@ namespace ServerTools
         {
             try
             {
-                int _daysBeforeDeleted = (Days_Before_Save_Delete * -1);
                 if (_files != null)
                 {
-                    foreach (string _c in _files)
+                    int _counter = 0;
+                    List<FileInfo> _fileList = new List<FileInfo>();
+                    for (int i = 0; i < _files.Length; i++)
                     {
-                        FileInfo _d = new FileInfo(_c);
-                        if (_d.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
+                        string _fileName = _files[i];
+                        if (_fileName.ToLower().Contains("Backup"))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Old backup named {0} was deleted due to its age", _d.Name));
-                            _d.Delete();
+                            FileInfo _fInfo = new FileInfo(_fileName);
+                            _fileList.Add(_fInfo);
+                            if (_fileList.Count > Backup_Count)
+                            {
+                                var sortedDates = _fileList.OrderByDescending(x => x);
+                                foreach (FileInfo _info in sortedDates)
+                                {
+                                    _counter++;
+                                    if (_counter > Backup_Count)
+                                    {
+                                        Log.Out(string.Format("[SERVERTOOLS] Old backup named {0} was deleted to make space", _info.Name));
+                                        _info.Delete();
+                                    }
+                                }
+                            }
                         }
                     }
                 }

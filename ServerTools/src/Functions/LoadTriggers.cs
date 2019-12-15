@@ -178,7 +178,7 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"55\" default=\"forgive\" replacement=\"forgive\" />");
                     sw.WriteLine("        <trigger number=\"56\" default=\"wallet\" replacement=\"wallet\" />");
                     sw.WriteLine("        <trigger number=\"57\" default=\"shop\" replacement=\"shop\" />");
-                    sw.WriteLine("        <trigger number=\"58\" default=\"buy\" replacement=\"buy\" />");
+                    sw.WriteLine("        <trigger number=\"58\" default=\"shop buy\" replacement=\"shop buy\" />");
                     sw.WriteLine("        <trigger number=\"59\" default=\"friend\" replacement=\"friend\" />");
                     sw.WriteLine("        <trigger number=\"60\" default=\"accept\" replacement=\"accept\" />");
                     sw.WriteLine("        <trigger number=\"61\" default=\"died\" replacement=\"died\" />");
@@ -239,7 +239,7 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"116\" default=\"waydel\" replacement=\"waydel\" />");
                     sw.WriteLine("        <trigger number=\"117\" default=\"wd\" replacement=\"wd\" />");
                     sw.WriteLine("        <trigger number=\"118\" default=\"admin\" replacement=\"admin\" />");
-                    sw.WriteLine("        <trigger number=\"119\" default=\"all\" replacement=\"all\" />");
+                    sw.WriteLine("        <trigger number=\"119\" default=\"\" replacement=\"\" />");
                     sw.WriteLine("        <trigger number=\"120\" default=\"pmessage\" replacement=\"pmessage\" />");
                     sw.WriteLine("        <trigger number=\"121\" default=\"pm\" replacement=\"pm\" />");
                     sw.WriteLine("        <trigger number=\"122\" default=\"rmessage\" replacement=\"rmessage\" />");
@@ -251,8 +251,8 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"128\" default=\"hardcore on\" replacement=\"hardcore on\" />");
                     sw.WriteLine("        <trigger number=\"129\" default=\"scoutplayer\" replacement=\"scoutplayer\" />");
                     sw.WriteLine("        <trigger number=\"130\" default=\"scout\" replacement=\"scout\" />");
-                    //sw.WriteLine("        <trigger number=\"131\" default=\"exit\" replacement=\"exit\" />");
-                    //sw.WriteLine("        <trigger number=\"132\" default=\"quit\" replacement=\"quit\" />");
+                    sw.WriteLine("        <trigger number=\"131\" default=\"exit\" replacement=\"exit\" />");
+                    sw.WriteLine("        <trigger number=\"132\" default=\"quit\" replacement=\"quit\" />");
                 }
                 sw.WriteLine("    </triggers>");
                 sw.WriteLine("</Event>");
@@ -337,11 +337,11 @@ namespace ServerTools
                     }
                     else if (kvp.Key == 13)
                     {
-                        MutePlayer.Command13 = kvp.Value[1];
+                        Mute.Command13 = kvp.Value[1];
                     }
                     else if (kvp.Key == 14)
                     {
-                        MutePlayer.Command14 = kvp.Value[1];
+                        Mute.Command14 = kvp.Value[1];
                     }
                     else if (kvp.Key == 15)
                     {
@@ -489,19 +489,19 @@ namespace ServerTools
                     }
                     else if (kvp.Key == 51)
                     {
-                        MarketChat.Command51 = kvp.Value[1];
+                        Market.Command51 = kvp.Value[1];
                     }
                     else if (kvp.Key == 52)
                     {
-                        MarketChat.Command52 = kvp.Value[1];
+                        Market.Command52 = kvp.Value[1];
                     }
                     else if (kvp.Key == 53)
                     {
-                        LobbyChat.Command53 = kvp.Value[1];
+                        Lobby.Command53 = kvp.Value[1];
                     }
                     else if (kvp.Key == 54)
                     {
-                        LobbyChat.Command54 = kvp.Value[1];
+                        Lobby.Command54 = kvp.Value[1];
                     }
                     else if (kvp.Key == 55)
                     {
@@ -633,11 +633,11 @@ namespace ServerTools
                     }
                     else if (kvp.Key == 87)
                     {
-                        SetLobby.Command87 = kvp.Value[1];
+                        Lobby.Command87 = kvp.Value[1];
                     }
                     else if (kvp.Key == 88)
                     {
-                        LobbyChat.Command88 = kvp.Value[1];
+                        Lobby.Command88 = kvp.Value[1];
                     }
                     else if (kvp.Key == 89)
                     {
@@ -693,11 +693,11 @@ namespace ServerTools
                     }
                     else if (kvp.Key == 102)
                     {
-                        MarketChat.Command102 = kvp.Value[1];
+                        Market.Command102 = kvp.Value[1];
                     }
                     else if (kvp.Key == 103)
                     {
-                        MarketChat.Command103 = kvp.Value[1];
+                        Market.Command103 = kvp.Value[1];
                     }
                     else if (kvp.Key == 104)
                     {
@@ -761,7 +761,7 @@ namespace ServerTools
                     }
                     else if (kvp.Key == 119)
                     {
-                        AdminChat.Command119 = kvp.Value[1];
+
                     }
                     else if (kvp.Key == 120)
                     {
@@ -809,11 +809,11 @@ namespace ServerTools
                     }
                     else if (kvp.Key == 131)
                     {
-                        Exit.Command131 = kvp.Value[1];
+                        BattleLogger.Command131 = kvp.Value[1];
                     }
                     else if (kvp.Key == 132)
                     {
-                        Exit.Command132 = kvp.Value[1];
+                        BattleLogger.Command132 = kvp.Value[1];
                     }
                 }
             }
