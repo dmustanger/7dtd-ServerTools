@@ -24,14 +24,11 @@ namespace ServerTools
                         for (int i = 0; i < _cInfoList.Count; i++)
                         {
                             ClientInfo _cInfo = _cInfoList[i];
-                            Log.Out(string.Format("[SERVERTOOLS] Test 1"));
                             if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId > 0)
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Test 2"));
                                 EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
                                 if (_player != null)
                                 {
-                                    Log.Out(string.Format("[SERVERTOOLS] Test 3"));
                                     if (!_player.IsDead())
                                     {
                                         if (_player.IsSpawned() && _player.IsAlive())

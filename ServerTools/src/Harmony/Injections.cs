@@ -43,7 +43,6 @@ public static class Injections
     {
         try
         {
-            Log.Out(string.Format("[SERVERTOOLS] ChangeBlocks_Prefix executed."));
             return DamageDetector.ProcessBlockDamage(__instance, persistentPlayerId, _blocksToChange);
         }
         catch (Exception e)

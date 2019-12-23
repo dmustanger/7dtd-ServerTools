@@ -962,58 +962,55 @@ namespace ServerTools
                             Wallet.CurrentValue(_cInfo);
                             return false;
                         }
-                        if (Shop.IsEnabled && _message.ToLower().StartsWith(Shop.Command57))
+                        if (Shop.IsEnabled && Wallet.IsEnabled && _message.ToLower() == Shop.Command57)//list category
                         {
-                            if (_message.ToLower() == (Shop.Command57))
+                            if (_message.ToLower() == Shop.Command57)
                             {
                                 Shop.PosCheck(_cInfo, _message, 1, 0);
                             }
-                            else
-                            {
-                                _message = _message.ToLower().Replace(Shop.Command57 + " ", "");
-                                Shop.PosCheck(_cInfo, _message, 2, 0);
-                            }
                             return false;
                         }
-                        if (Shop.IsEnabled && _message.ToLower().StartsWith(Shop.Command58))
+                        if (Shop.IsEnabled && Wallet.IsEnabled && _message.ToLower().StartsWith(Shop.Command58 + " "))//buy specific item and count
                         {
-                            if (_message.ToLower() == (Shop.Command58))
+                            _message = _message.ToLower().Replace(Shop.Command58 + " ", "");
+                            if (_message.ToLower().Length == 1)
                             {
+                                Log.Out(string.Format("shop message string 2 = {0}", _message));
                                 Shop.PosCheck(_cInfo, _message, 3, 1);
                             }
-                            else if (_message.ToLower().StartsWith(Shop.Command58 + " "))
+                            else if (_message.ToLower().Length == 2)
                             {
-                                _message = _message.ToLower().Replace(Shop.Command58 + " ", "");
-                                if (_message.Contains(" "))
+                                Log.Out(string.Format("shop message string 3 = {0}", _message));
+                                string a = _message.Split(' ').First();
+                                string b = _message.Split(' ').Last();
+                                int _count;
+                                if (int.TryParse(b, out _count))
                                 {
-                                    string a = _message.Split(' ').First();
-                                    string b = _message.Split(' ').Last();
-                                    int _count;
-                                    if (int.TryParse(b, out _count))
-                                    {
-                                        Shop.PosCheck(_cInfo, a, 3, _count);
-                                    }
-                                    else
-                                    {
-                                        string _phrase620;
-                                        if (!Phrases.Dict.TryGetValue(620, out _phrase620))
-                                        {
-                                            _phrase620 = " the item amount # you are trying to buy is not an integer. Please input {CommandPrivate}{Command58} 1 2 for example.";
-                                        }
-                                        _phrase620 = _phrase620.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                                        _phrase620 = _phrase620.Replace("{Command58}", Shop.Command58);
-                                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase620 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
+                                    Shop.PosCheck(_cInfo, a, 3, _count);
                                 }
                                 else
                                 {
-                                    Shop.PosCheck(_cInfo, _message, 3, 1);
+                                    string _phrase620;
+                                    if (!Phrases.Dict.TryGetValue(620, out _phrase620))
+                                    {
+                                        _phrase620 = " the item amount # you are trying to buy is not an integer. Please input {CommandPrivate}{Command58} 1 2 for example.";
+                                    }
+                                    _phrase620 = _phrase620.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase620 = _phrase620.Replace("{Command58}", Shop.Command58);
+                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase620 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             else
                             {
                                 ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + ", usage: " + ChatHook.Command_Private + Shop.Command58 + " # or " + ChatHook.Command_Private + Shop.Command58 + " # #[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
+                            return false;
+                        }
+                        if (Shop.IsEnabled && Wallet.IsEnabled && _message.ToLower().StartsWith(Shop.Command57 + " "))//show specific category
+                        {
+                            _message = _message.ToLower().Replace(Shop.Command57 + " ", "");
+                            Log.Out(string.Format("shop message string 4 = {0}", _message));
+                            Shop.PosCheck(_cInfo, _message, 2, 0);
                             return false;
                         }
                         if (FriendTeleport.IsEnabled && _message.ToLower().StartsWith(FriendTeleport.Command59 + " "))
@@ -1272,17 +1269,17 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (AuctionBox.IsEnabled && _message.ToLower() == AuctionBox.Command71)
+                        if (AuctionBox.IsEnabled && Wallet.IsEnabled && _message.ToLower() == AuctionBox.Command71)
                         {
                             AuctionBox.AuctionList(_cInfo);
                             return false;
                         }
-                        if (AuctionBox.IsEnabled && _message.ToLower() == AuctionBox.Command72)
+                        if (AuctionBox.IsEnabled && Wallet.IsEnabled && _message.ToLower() == AuctionBox.Command72)
                         {
                             AuctionBox.CancelAuction(_cInfo);
                             return false;
                         }
-                        if (AuctionBox.IsEnabled && _message.ToLower().StartsWith(AuctionBox.Command73 + " "))
+                        if (AuctionBox.IsEnabled && Wallet.IsEnabled && _message.ToLower().StartsWith(AuctionBox.Command73 + " "))
                         {
                             if (AuctionBox.No_Admins)
                             {
@@ -1291,7 +1288,6 @@ namespace ServerTools
                                 {
                                     string _chatMessage = ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " the auction is disabled for your tier.[-]";
                                     ChatMessage(_cInfo, _chatMessage, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-
                                 }
                             }
                             _message = _message.ToLower().Replace(AuctionBox.Command73 + " ", "");
@@ -1311,7 +1307,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (AuctionBox.IsEnabled && _message.ToLower().StartsWith(AuctionBox.Command74))
+                        if (AuctionBox.IsEnabled && Wallet.IsEnabled && _message.ToLower().StartsWith(AuctionBox.Command74 + " "))
                         {
                             if (AuctionBox.No_Admins)
                             {
