@@ -16,20 +16,26 @@ namespace ServerTools
                 if (PersistentOperations.BloodMoonSky())
                 {
                     BloodmoonStarted = true;
-                    for (int i = 0; i < API.Players.Count; i++)
+                    List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
+                    if (_cInfoList != null)
                     {
-                        ClientInfo _warrior = API.Players[i];
-                        EntityAlive _player = GameManager.Instance.World.Players.dict[_warrior.entityId];
-                        if (_player != null && _player.IsSpawned() && _player.IsAlive())
+                        for (int i = 0; i < _cInfoList.Count; i++)
                         {
-                            WarriorList.Add(_warrior.entityId);
-                            KilledZombies.Add(_warrior.entityId, 0);
-                            ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_warrior.entityId);
-                            if (_cInfo != null)
+                            ClientInfo _cInfo = _cInfoList[i];
+                            if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId > 0)
                             {
-                                string _response = "Hades has called upon you. Survive this night and kill {ZombieCount} zombies to be rewarded by the king of the underworld.";
-                                _response = _response.Replace("{ZombieCount}", Zombie_Kills.ToString());
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                EntityAlive _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                if (_player != null && _player.IsSpawned() && _player.IsAlive())
+                                {
+                                    WarriorList.Add(_cInfo.entityId);
+                                    KilledZombies.Add(_cInfo.entityId, 0);
+                                    if (_cInfo != null)
+                                    {
+                                        string _response = "Hades has called upon you. Survive this night and kill {ZombieCount} zombies to be rewarded by the king of the underworld.";
+                                        _response = _response.Replace("{ZombieCount}", Zombie_Kills.ToString());
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    }
+                                }
                             }
                         }
                     }

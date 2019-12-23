@@ -24,7 +24,7 @@ namespace ServerTools
                 int y = (int)_position.y;
                 int z = (int)_position.z;
                 Vector3i _vec3i = new Vector3i(x, y, z);
-                if (PersistentOperations.ClaimedBySelf(_cInfo.playerId, _vec3i))
+                if (PersistentOperations.ClaimedByAllyOrSelf(_cInfo.playerId, _vec3i))
                 {
                     string _sposition = x + "," + y + "," + z;
                     PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1 = _sposition;
@@ -197,7 +197,7 @@ namespace ServerTools
                 int y = (int)_position.y;
                 int z = (int)_position.z;
                 Vector3i _vec3i = new Vector3i(x, y, z);
-                if (PersistentOperations.ClaimedBySelf(_cInfo.playerId, _vec3i))
+                if (PersistentOperations.ClaimedByAllyOrSelf(_cInfo.playerId, _vec3i))
                 {
                     string _sposition = x + "," + y + "," + z;
                     PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2 = _sposition;
@@ -659,14 +659,11 @@ namespace ServerTools
 
         public static void FriendInvite(ClientInfo _cInfo, Vector3 _position, string _destination)
         {
-            int x = (int)_position.x;
-            int y = (int)_position.y;
-            int z = (int)_position.z;
             World world = GameManager.Instance.World;
             EntityPlayer _player = world.Players.dict[_cInfo.entityId];
             if (_player != null)
             {
-            List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
+                List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
                 for (int i = 0; i < _cInfoList.Count; i++)
                 {
                     ClientInfo _cInfo2 = _cInfoList[i];
@@ -675,7 +672,7 @@ namespace ServerTools
                     {
                         if (_player.IsFriendsWith(_player2))
                         {
-                            if ((x - (int)_player2.position.x) * (x - (int)_player2.position.x) + (z - (int)_player2.position.z) * (z - (int)_player2.position.z) <= 10 * 10)
+                            if ((_position.x - _player2.position.x) * (_position.x - _player2.position.x) + (_position.z - _player2.position.z) * (_position.z - _player2.position.z) <= 10f * 10f)
                             {
                                 string _response1 = " your friend {PlayerName} has invited you to their saved home. Type {CommandPrivate}{Command9} to accept the request.";
                                 _response1 = _response1.Replace("{PlayerName}", _cInfo.playerName);
@@ -742,7 +739,7 @@ namespace ServerTools
                 int y = (int)_position.y;
                 int z = (int)_position.z;
                 Vector3i _vec3i = new Vector3i(x, y, z);
-                if (VehicleCheck(_cInfo))
+                if (Teleportation.VehicleCheck(_cInfo))
                 {
                     return false;
                 }
@@ -760,30 +757,8 @@ namespace ServerTools
                         return false;
                     }
                 }
-                
-                if (PersistentOperations.ClaimedByUnknown(_cInfo.playerId, _vec3i))
-                {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you are in another player's claimed space not owned by you or an ally. Unable to teleport home from here." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    return false;
-                }
             }
             return true;
-        }
-
-        private static bool VehicleCheck(ClientInfo _cInfo)
-        {
-            Entity _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (_player.AttachedToEntity != null)
-            {
-                string _phrase826;
-                if (!Phrases.Dict.TryGetValue(826, out _phrase826))
-                {
-                    _phrase826 = " you can not teleport home with a vehicle.";
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                return true;
-            }
-            return false;
         }
     }
 }

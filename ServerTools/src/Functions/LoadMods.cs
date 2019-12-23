@@ -186,6 +186,14 @@ namespace ServerTools
             {
                 LoadTriggers.Load();
             }
+            if (ProtectedSpace.IsRunning)
+            {
+                ProtectedSpace.Unload();
+            }
+            if (!ProtectedSpace.IsRunning)
+            {
+                ProtectedSpace.Load();
+            }
             if (ClanManager.IsEnabled)
             {
                 ClanManager.ClanList();
@@ -201,6 +209,21 @@ namespace ServerTools
             if (Jail.IsEnabled)
             {
                 Jail.JailList();
+            }
+            if (BattleLogger.IsEnabled && !BattleLogger.LogFound && !string.IsNullOrEmpty(Utils.GetApplicationScratchPath()))
+            {
+                if (!GamePrefs.GetString(EnumGamePrefs.ServerDisabledNetworkProtocols).ToLower().Contains("litenetlib"))
+                {
+                    BattleLogger.LogDirectory = Utils.GetApplicationScratchPath();
+                    BattleLogger.ConfirmLog();
+                }
+                else
+                {
+                    Log.Out("--------------------------------------------------------------------------");
+                    Log.Out("[SERVERTOOLS] Unable to verify log file. Battle_Loggers has been disabled.");
+                    Log.Out("[SERVERTOOLS] Network protocol litenetlib is required for this tool.");
+                    Log.Out("--------------------------------------------------------------------");
+                }
             }
             PatchTools.ApplyPatches();
         }

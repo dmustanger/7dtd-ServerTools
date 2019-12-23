@@ -7,7 +7,7 @@ namespace ServerTools
 {
     class Market
     {
-        public static bool IsEnabled = false, Return = false, PvP_Check = false, Zombie_Check = false, Donor_Only = false;
+        public static bool IsEnabled = false, Return = false, Player_Check = false, Zombie_Check = false, Donor_Only = false, PvE = false, Protected = false;
         public static int Delay_Between_Uses = 5, Market_Size = 25, Command_Cost = 0;
         public static string Market_Position = "0,0,0", Command51 = "marketback", Command52 = "mback", Command102 = "setmarket", Command103 = "market";
         public static List<int> MarketPlayers = new List<int>();
@@ -138,7 +138,7 @@ namespace ServerTools
             if (Market.Market_Position != "0,0,0" || Market.Market_Position != "0 0 0" || Market.Market_Position != "")
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                if (PvP_Check)
+                if (Player_Check)
                 {
                     if (Teleportation.PCheck(_cInfo, _player))
                     {
@@ -214,58 +214,66 @@ namespace ServerTools
 
         public static void SendBack(ClientInfo _cInfo)
         {
-            string _lastPos = PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos;
-            if (_lastPos != "")
+            if (MarketPlayers.Contains(_cInfo.entityId))
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                int x, y, z;
-                string[] _cords = { };
-                if (Market.Market_Position.Contains(","))
+                if (_player != null)
                 {
-                    if (Market.Market_Position.Contains(" "))
+                    string _lastPos = PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos;
+                    if (_lastPos != "")
                     {
-                        Market.Market_Position.Replace(" ", "");
+                        int x, y, z;
+                        string[] _returnCoords = _lastPos.Split(',');
+                        int.TryParse(_returnCoords[0], out x);
+                        int.TryParse(_returnCoords[1], out y);
+                        int.TryParse(_returnCoords[2], out z);
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                        MarketPlayers.Remove(_cInfo.entityId);
+                        PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = "";
+                        PersistentContainer.Instance.Save();
+                        string _phrase555;
+                        if (!Phrases.Dict.TryGetValue(555, out _phrase555))
+                        {
+                            _phrase555 = " sent you back to your saved location.";
+                        }
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase555 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    _cords = Market.Market_Position.Split(',').ToArray();
-                }
-                else
-                {
-                    _cords = Market.Market_Position.Split(' ').ToArray();
-                }
-                int.TryParse(_cords[0], out x);
-                int.TryParse(_cords[1], out y);
-                int.TryParse(_cords[2], out z);
-                if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= Market_Size * Market_Size)
-                {
-                    string[] _returnCoords = _lastPos.Split(',');
-                    int.TryParse(_returnCoords[0], out x);
-                    int.TryParse(_returnCoords[1], out y);
-                    int.TryParse(_returnCoords[2], out z);
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                    MarketPlayers.Remove(_cInfo.entityId);
-                    PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = "";
-                    PersistentContainer.Instance.Save();
-                    string _phrase555;
-                    if (!Phrases.Dict.TryGetValue(555, out _phrase555))
-                    {
-                        _phrase555 = " sent you back to your saved location.";
-                    }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase555 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                else
-                {
-                    string _phrase564;
-                    if (!Phrases.Dict.TryGetValue(564, out _phrase564))
-                    {
-                        _phrase564 = " you are outside the market. Get inside it and try again.";
-                    }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase564 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " you have no saved return point.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
+        }
+
+        public static bool InsideMarket(float _x, float _z)
+        {
+            int x, z;
+            string[] _cords = Market.Market_Position.Split(',').ToArray();
+            int.TryParse(_cords[0], out x);
+            int.TryParse(_cords[2], out z);
+            if ((x - _x) * (x - _x) + (z - _z) * (z - _z) <= Market_Size * Market_Size)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static bool ProtectedSpace(int _X, int _Z)
+        {
+            if (Market.IsEnabled && Market.Protected && Market.Market_Position != "0,0,0")
+            {
+                string[] _cords = Market.Market_Position.Split(',');
+                int x, y, z;
+                int.TryParse(_cords[0], out x);
+                int.TryParse(_cords[1], out y);
+                int.TryParse(_cords[2], out z);
+                if (Zones.VectorCircle(x, z, _X, _Z, Market.Market_Size))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

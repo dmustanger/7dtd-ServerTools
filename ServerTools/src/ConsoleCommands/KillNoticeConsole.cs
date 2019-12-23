@@ -52,7 +52,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in KillNoticeConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in KillNoticeConsole.Execute: {0}.", e.Message));
             }
         }
     }

@@ -18,56 +18,53 @@ namespace ServerTools
                 if (!IsRunning)
                 {
                     IsRunning = true;
-                    List<ClientInfo> _cInfoList = API.Players;
-                    for (int i = 0; i < _cInfoList.Count; i++)
+                    List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
+                    if (_cInfoList != null)
                     {
-                        ClientInfo _cInfo = _cInfoList[i];
-                        if (_cInfo != null)
+                        for (int i = 0; i < _cInfoList.Count; i++)
                         {
-                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                            if (_player != null)
+                            ClientInfo _cInfo = _cInfoList[i];
+                            Log.Out(string.Format("[SERVERTOOLS] Test 1"));
+                            if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId > 0)
                             {
-                                if (!_player.IsDead())
+                                Log.Out(string.Format("[SERVERTOOLS] Test 2"));
+                                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                                if (_player != null)
                                 {
-                                    if (_player.IsSpawned() && _player.IsAlive())
+                                    Log.Out(string.Format("[SERVERTOOLS] Test 3"));
+                                    if (!_player.IsDead())
                                     {
-                                        if (Zones.IsEnabled)
+                                        if (_player.IsSpawned() && _player.IsAlive())
                                         {
-                                            Zones.ZoneCheck(_cInfo, _player);
+                                            if (Zones.IsEnabled)
+                                            {
+                                                Zones.ZoneCheck(_cInfo, _player);
+                                            }
+                                            if (GodMode.IsEnabled)
+                                            {
+                                                GodMode.GodCheck(_cInfo);
+                                            }
                                         }
-                                        if (GodMode.IsEnabled)
+                                    }
+                                    else
+                                    {
+                                        if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.WarriorList.Contains(_cInfo.entityId))
                                         {
-                                            GodMode.GodCheck(_cInfo);
+                                            BloodmoonWarrior.WarriorList.Remove(_cInfo.entityId);
+                                            BloodmoonWarrior.KilledZombies.Remove(_cInfo.entityId);
                                         }
                                     }
                                 }
-                                else
-                                {
-                                    if (API.Players.Contains(_cInfo))
-                                    {
-                                        API.Players.Remove(_cInfo);
-                                    }
-                                    if (BloodmoonWarrior.WarriorList.Contains(_cInfo.entityId))
-                                    {
-                                        BloodmoonWarrior.WarriorList.Remove(_cInfo.entityId);
-                                        BloodmoonWarrior.KilledZombies.Remove(_cInfo.entityId);
-                                    }
-                                }
-                            }
-                            else if (API.Players.Contains(_cInfo))
-                            {
-                                API.Players.Remove(_cInfo);
                             }
                         }
                     }
                 }
-                IsRunning = false;
             }
             catch (Exception e)
             {
-                IsRunning = false;
                 Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.PlayerCheck: {0}.", e.Message));
             }
+            IsRunning = false;
         }
 
         public static void SessionTime(ClientInfo _cInfo)
@@ -196,6 +193,16 @@ namespace ServerTools
                 {
                     return _entityAlive;
                 }
+            }
+            return null;
+        }
+
+        public static Entity GetEntity(int _id)
+        {
+            Entity _entity = GameManager.Instance.World.GetEntity(_id);
+            if (_entity != null)
+            {
+                return _entity;
             }
             return null;
         }
@@ -452,22 +459,70 @@ namespace ServerTools
 
         public static List<EntityPlayer> PlayersWithin100Blocks(int _x, int _z)
         {
-            List<EntityPlayer> _closestPlayers = new List<EntityPlayer>();
+            List<EntityPlayer> _players = new List<EntityPlayer>();
             List<EntityPlayer> _playerList = PersistentOperations.PlayerList();
             for (int i = 0; i < _playerList.Count; i++)
             {
                 EntityPlayer _player = _playerList[i];
                 if (!_player.IsDead() && _player.Spawned)
                 {
-                    if ((_x - _player.position.x) * (_x - _player.position.x) + (_z - _player.position.z) * (_z - _player.position.z) >= 100 * 100)
+                    if ((_x - _player.position.x) * (_x - _player.position.x) + (_z - _player.position.z) * (_z - _player.position.z) <= 100 * 100)
                     {
-                        _closestPlayers.Add(_player);
+                        _players.Add(_player);
                     }
                 }
             }
-            if (_closestPlayers.Count > 0)
+            if (_players.Count > 0)
             {
-                return _closestPlayers;
+                return _players;
+            }
+            return null;
+        }
+
+        public static List<EntityPlayer> PlayersWithin200Blocks(int _x, int _z)
+        {
+            List<EntityPlayer> _players = new List<EntityPlayer>();
+            List<EntityPlayer> _playerList = PersistentOperations.PlayerList();
+            for (int i = 0; i < _playerList.Count; i++)
+            {
+                EntityPlayer _player = _playerList[i];
+                if (!_player.IsDead() && _player.Spawned)
+                {
+                    if ((_x - _player.position.x) * (_x - _player.position.x) + (_z - _player.position.z) * (_z - _player.position.z) <= 200 * 200)
+                    {
+                        _players.Add(_player);
+                    }
+                }
+            }
+            if (_players.Count > 0)
+            {
+                return _players;
+            }
+            return null;
+        }
+
+        public static List<ClientInfo> ClientsWithin200Blocks(int _x, int _z)
+        {
+            List<ClientInfo> _clients = new List<ClientInfo>();
+            List<ClientInfo> _clientList = PersistentOperations.ClientList();
+            for (int i = 0; i < _clientList.Count; i++)
+            {
+                ClientInfo _cInfo = _clientList[i];
+                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                if (_player != null)
+                {
+                    if (!_player.IsDead() && _player.Spawned)
+                    {
+                        if ((_x - _player.position.x) * (_x - _player.position.x) + (_z - _player.position.z) * (_z - _player.position.z) <= 200 * 200)
+                        {
+                            _clients.Add(_cInfo);
+                        }
+                    }
+                }
+            }
+            if (_clients.Count > 0)
+            {
+                return _clients;
             }
             return null;
         }
@@ -510,6 +565,11 @@ namespace ServerTools
             }
         }
 
+        public static void ClaimBug(string _persistentPlayerId)
+        {
+
+        }
+
         public static void InitLogWatch()
         {
             Logger.Main.LogCallbacks += LogAction;
@@ -541,53 +601,6 @@ namespace ServerTools
                 //        }
                 //    }
                 //}
-
-                Log.Out("Test 10");
-                List<ClientInfo> _clientList = ClientList();
-                for (int i = 0; i < _clientList.Count; i++)
-                {
-                    Log.Out("Test 11");
-                    ClientInfo _cInfo2 = _clientList[i];
-                    EntityPlayer _entityPlayer = PersistentOperations.GetEntityPlayer(_cInfo2.playerId);
-                    if (_entityPlayer != null)
-                    {
-                        Log.Out("Test 12");
-                        EntityBedrollPositionList _bedrollList = _entityPlayer.SpawnPoints;
-                        for (int j = 0; j < _bedrollList.Count; j++)
-                        {
-                            Log.Out("Test 13");
-                            Vector3i _bedrollPosition = _bedrollList.GetPos();
-                            if (_bedrollPosition != null)
-                            {
-                                Log.Out(string.Format("[SERVERTOOLS] Player named {0} with id = {1} , EntityAlive Bedroll position is: {2}.", _entityPlayer.EntityName, _entityPlayer.entityId, _bedrollPosition));
-                                PersistentPlayerData _ppd = PersistentOperations.GetPersistentPlayerData(_cInfo2.playerId);
-                                if (_ppd != null && _ppd.HasBedrollPos)
-                                {
-                                    Log.Out("Test 14");
-                                    Log.Out(string.Format("[SERVERTOOLS] Persistent data bed position: {0}.", _ppd.BedrollPos));
-                                }
-                            }
-                        }
-                    }
-                }
-
-
-                //EntityPlayer _entityPlayer = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-                //if (_entityPlayer != null)
-                //{
-                //    List<ClientInfo> _clientList = ClientList();
-                //    for (int i = 0; i < _clientList.Count; i++)
-                //    {
-                //        ClientInfo _cInfo2 = _clientList[i];
-                //        EntityPlayer _entityPlayer2 = PersistentOperations.GetEntityPlayer(_cInfo2.playerId);
-                //        if (_entityPlayer2 != null)
-                //        {
-                //            _entityPlayer2.SpawnPoints.Set(_entityPlayer.SpawnPoints.GetPos());
-                //        }
-                //    }
-                //    Log.Out(string.Format("[SERVERTOOLS] Set all online player spawn positions to: {0}.", _entityPlayer.SpawnPoints.GetPos()));
-                //}
-
 
             }
             catch (Exception e)

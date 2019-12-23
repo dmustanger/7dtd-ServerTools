@@ -52,7 +52,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in LoginNoticeConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in LoginNoticeConsole.Run: {0}", e.Message));
             }
         }
     }

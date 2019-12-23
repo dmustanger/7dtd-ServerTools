@@ -47,12 +47,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in LocationConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in LocationConsole.Execute: {0}", e.Message));
             }
         }
     }

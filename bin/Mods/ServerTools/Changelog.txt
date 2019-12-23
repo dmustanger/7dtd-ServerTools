@@ -1,5 +1,27 @@
 ﻿CHANGELOG
 
+18.2.1
+Built using Alpha 18.2 stable assets
+Functioning with 18.2 stable and 18.2 experimental
+
+Added option PvE to Lobby. Players can not hurt each other if in the lobby
+Added option PvE to Market. Players can not hurt each other if in the market
+Added Admin_Level option to Battle_Logger
+Fixed Auto_Backup failing to operate
+Fixed orientation of Battle_Loggers in the config file to match alphabetical order
+Fixed Set_home claim checks not identifying a friend's claimed space
+Changed Zone.xml orientation. Recommend backup, delete and refresh. Reload manually
+Changed Lobby and Market return option to stop working if they leave the space
+Changed Lobby option PvP_Check to Player_Check
+Changed Market option PvP_Check to Player_Check
+Changed zones marked as PvE true to protect the player from PvP damage
+Changed null ref checks in API to help prevent errors
+Changed Battle_Logger method when a player exits the server
+Changed zombie and player check for teleportation based tools. 50 blocks for zombies
+and 100 blocks for players. They must be hostile targets
+Changed Phrase 556,564,819
+*Console command SecureChestAccess is called SecureLootAccess. Mistake in the last change log
+
 18.2.0
 Built using Alpha 18.2 stable assets
 Functioning with 18.2 stable and 18.2 experimental

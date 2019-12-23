@@ -161,8 +161,7 @@ namespace ServerTools
                             Log.Out(string.Format("[SERVERTOOLS] Shop entry skipped. Item not found: {0}", _name));
                             continue;
                         }
-                        string _category = _line.GetAttribute("category");
-                        _category = _category.ToLower();
+                        string _category = _line.GetAttribute("category").ToLower();
                         if (!categories.Contains(_category))
                         {
                             categories.Add(_category);
@@ -177,10 +176,10 @@ namespace ServerTools
                         }
                         if (!dict.ContainsKey(_item))
                         {
-                            string[] _n = new string[] { _name, _secondaryname, _category };
-                            dict.Add(_item, _n);
-                            int[] _c = new int[] { _count, _quality, _price };
-                            dict1.Add(_item, _c);
+                            string[] _strings = new string[] { _name, _secondaryname, _category };
+                            dict.Add(_item, _strings);
+                            int[] _integers = new int[] { _count, _quality, _price };
+                            dict1.Add(_item, _integers);
                         }
                     }
                 }
@@ -256,71 +255,73 @@ namespace ServerTools
         {
             if (dict.Count > 0)
             {
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                if (Inside_Market && Inside_Traders)
+                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                if (_player != null)
                 {
-                    int x, y, z;
-                    string[] _cords = Market.Market_Position.Split(',');
-                    int.TryParse(_cords[0], out x);
-                    int.TryParse(_cords[1], out y);
-                    int.TryParse(_cords[2], out z);
-                    Vector3i playerPos = new Vector3i((int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
-                    if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= (float)Market.Market_Size * (float)Market.Market_Size && GameManager.Instance.World.IsWithinTraderArea(playerPos))
+                    if (Inside_Market && Inside_Traders)
+                    {
+                        int x, y, z;
+                        string[] _cords = Market.Market_Position.Split(',');
+                        int.TryParse(_cords[0], out x);
+                        int.TryParse(_cords[1], out y);
+                        int.TryParse(_cords[2], out z);
+                        if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= Market.Market_Size * Market.Market_Size && GameManager.Instance.World.IsWithinTraderArea(new Vector3i(_player.position.x, _player.position.y, _player.position.z)))
+                        {
+                            PosCheck2(_cInfo, _categoryOrItem, _form, _count);
+                        }
+                        else
+                        {
+                            string _phrase821;
+                            if (!Phrases.Dict.TryGetValue(821, out _phrase821))
+                            {
+                                _phrase821 = " you are not inside a market or trader area. Find one and use this command again.";
+                            }
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase821 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        }
+                    }
+                    else if (Inside_Market && !Inside_Traders)
+                    {
+                        int x, y, z;
+                        string[] _cords = Market.Market_Position.Split(',');
+                        int.TryParse(_cords[0], out x);
+                        int.TryParse(_cords[1], out y);
+                        int.TryParse(_cords[2], out z);
+                        if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= Market.Market_Size * Market.Market_Size)
+                        {
+                            PosCheck2(_cInfo, _categoryOrItem, _form, _count);
+                        }
+                        else
+                        {
+                            string _phrase564;
+                            if (!Phrases.Dict.TryGetValue(564, out _phrase564))
+                            {
+                                _phrase564 = " you are outside the market. Get inside it and try again.";
+                            }
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase564 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        }
+                    }
+                    else if (!Inside_Market && Inside_Traders)
+                    {
+                        World world = GameManager.Instance.World;
+                        Vector3i playerPos = new Vector3i(_player.position.x, _player.position.y, _player.position.z);
+                        if (world.IsWithinTraderArea(playerPos))
+                        {
+                            PosCheck2(_cInfo, _categoryOrItem, _form, _count);
+                        }
+                        else
+                        {
+                            string _phrase619;
+                            if (!Phrases.Dict.TryGetValue(619, out _phrase619))
+                            {
+                                _phrase619 = " you are not inside a trader area. Find a trader and use this command again.";
+                            }
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase619 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        }
+                    }
+                    else if (!Inside_Market && !Inside_Traders)
                     {
                         PosCheck2(_cInfo, _categoryOrItem, _form, _count);
                     }
-                    else
-                    {
-                        string _phrase821;
-                        if (!Phrases.Dict.TryGetValue(821, out _phrase821))
-                        {
-                            _phrase821 = " you are not inside a market or trader area. Find one and use this command again.";
-                        }
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase821 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                }
-                else if (Inside_Market && !Inside_Traders)
-                {
-                    int x, y, z;
-                    string[] _cords = Market.Market_Position.Split(',');
-                    int.TryParse(_cords[0], out x);
-                    int.TryParse(_cords[1], out y);
-                    int.TryParse(_cords[2], out z);
-                    if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= (float)Market.Market_Size * (float)Market.Market_Size)
-                    {
-                        PosCheck2(_cInfo, _categoryOrItem, _form, _count);
-                    }
-                    else
-                    {
-                        string _phrase564;
-                        if (!Phrases.Dict.TryGetValue(564, out _phrase564))
-                        {
-                            _phrase564 = " you are outside the market. Get inside it and try again.";
-                        }
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase564 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                }
-                else if (!Inside_Market && Inside_Traders)
-                {
-                    World world = GameManager.Instance.World;
-                    Vector3i playerPos = new Vector3i((int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
-                    if (world.IsWithinTraderArea(playerPos))
-                    {
-                        PosCheck2(_cInfo, _categoryOrItem, _form, _count);
-                    }
-                    else
-                    {
-                        string _phrase619;
-                        if (!Phrases.Dict.TryGetValue(619, out _phrase619))
-                        {
-                            _phrase619 = " you are not inside a trader area. Find a trader and use this command again.";
-                        }
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase619 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                }
-                else if (!Inside_Market && !Inside_Traders)
-                {
-                    PosCheck2(_cInfo, _categoryOrItem, _form, _count);
                 }
             }
             else

@@ -9,7 +9,7 @@ namespace ServerTools
     class Zones
     {
         public static bool IsEnabled = false, IsRunning = false, Kill_Enabled = false, Jail_Enabled = false, Kick_Enabled = false,
-            Ban_Enabled = false, Zone_Message = false, Set_Home = false, No_Zombie = false;
+            Ban_Enabled = false, Zone_Message = false, Set_Home = false;
         public static int Reminder_Delay = 20;
         public static string Command50 = "return";
         public static Dictionary<int, DateTime> reminder = new Dictionary<int, DateTime>();
@@ -22,7 +22,6 @@ namespace ServerTools
         public static List<int> ZonePvE = new List<int>();
         public static List<string[]> Box1 = new List<string[]>();
         public static List<bool[]> Box2 = new List<bool[]>();
-        public static List<Rect> TestBox = new List<Rect>();
         private const string file = "Zones.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
@@ -67,7 +66,6 @@ namespace ServerTools
                 {
                     Box1.Clear();
                     Box2.Clear();
-                    TestBox.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -125,10 +123,15 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing noZombie attribute: {0}", subChild.OuterXml));
                             continue;
                         }
+                        if (!_line.HasAttribute("protected"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing protected attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
                         else
                         {
                             string _circle = _line.GetAttribute("circle");
-                            bool _result1, _result2, _result3; ;
+                            bool _result1, _result2, _result3, _result4; ;
                             if (!bool.TryParse(_circle, out _result1))
                             {
                                 Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for circle attribute: {0}.", subChild.OuterXml));
@@ -146,15 +149,18 @@ namespace ServerTools
                                 Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for noZombie attribute: {0}.", subChild.OuterXml));
                                 continue;
                             }
+                            string _protect = _line.GetAttribute("protected");
+                            if (!bool.TryParse(_protect, out _result4))
+                            {
+                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for protected attribute: {0}.", subChild.OuterXml));
+                                continue;
+                            }
                             string[] box1 = { _line.GetAttribute("corner1"), _line.GetAttribute("corner2"), _line.GetAttribute("entryMessage"), _line.GetAttribute("exitMessage"),
                             _line.GetAttribute("response"), _line.GetAttribute("reminderNotice") };
-                            bool[] box2 = { _result1, _result2, _result3 };
+                            bool[] box2 = { _result1, _result2, _result3, _result4 };
                             if (!Box1.Contains(box1))
                             {
                                 Box1.Add(box1);
-                            }
-                            if (!Box2.Contains(box2))
-                            {
                                 Box2.Add(box2);
                             }
                         }
@@ -177,15 +183,15 @@ namespace ServerTools
                     {
                         string[] _box1 = Box1[i];
                         bool[] _box2 = Box2[i];
-                        sw.WriteLine(string.Format("        <zone corner1=\"{0}\" corner2=\"{1}\" entryMessage=\"{2}\" exitMessage=\"{3}\" response=\"{4}\" reminderNotice=\"{5}\" circle=\"{6}\" PvE=\"{7}\" noZombie=\"{8}\" />", _box1[0], _box1[1], _box1[2], _box1[3], _box1[4], _box1[5], _box2[0], _box2[1], _box2[2]));
+                        sw.WriteLine(string.Format("        <zone corner1=\"{0}\" corner2=\"{1}\" circle=\"{2}\" entryMessage=\"{3}\" exitMessage=\"{4}\" response=\"{5}\" reminderNotice=\"{6}\" PvE=\"{7}\" noZombie=\"{8}\" protected=\"{0}\" />", _box1[0], _box1[1], _box2[0], _box1[2], _box1[3], _box1[4], _box1[5], _box2[1], _box2[2], _box2[3]));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <zone corner1=\"-8000,0,8000\" corner2=\"8000,200,0\" entryMessage=\"You are entering the Northern side\" exitMessage=\"You have exited the Northern Side\" response=\"\" reminderNotice=\"You are still in the North\" circle=\"false\" PvE=\"false\" noZombie=\"false\" />");
-                    sw.WriteLine("        <zone corner1=\"-8000,0,-1\" corner2=\"8000,200,-8000\" entryMessage=\"You are entering the Southern side\" exitMessage=\"You have exited the Southern Side\" response=\"whisper {PlayerName} you have entered the south side ^ ser {EntityId} 40 @ 4\" reminderNotice=\"You are still in the South\" circle=\"false\" PvE=\"false\" noZombie=\"false\" />");
-                    sw.WriteLine("        <zone corner1=\"-100,0,-90\" corner2=\"40\" entryMessage=\"You have entered the Market\" exitMessage=\"You have exited the Market\" response=\"whisper {PlayerName} you have entered the market\" reminderNotice=\"\" circle=\"true\" PvE=\"true\" noZombie=\"true\" />");
-                    sw.WriteLine("        <zone corner1=\"0,0,0\" corner2=\"25,105,25\" entryMessage=\"You have entered the Lobby\" exitMessage=\"You have exited the Lobby\" response=\"say {PlayerName} has entered the lobby\" reminderNotice=\"You have been in the lobby for a long time...\" circle=\"false\" PvE=\"true\" noZombie=\"true\" />");
+                    sw.WriteLine("        <!-- <zone corner1=\"-8000,0,8000\" corner2=\"8000,200,0\" circle=\"false\" entryMessage=\"You are entering the Northern side\" exitMessage=\"You have exited the Northern Side\" response=\"\" reminderNotice=\"You are still in the North\" PvE=\"false\" noZombie=\"false\" protected=\"false\" --> />");
+                    sw.WriteLine("        <!-- <zone corner1=\"-8000,0,-1\" corner2=\"8000,200,-8000\" circle=\"false\" entryMessage=\"You are entering the Southern side\" exitMessage=\"You have exited the Southern Side\" response=\"whisper {PlayerName} you have entered the south side ^ ser {EntityId} 40 @ 4\" reminderNotice=\"You are still in the South\" PvE=\"false\" noZombie=\"false\" protected=\"false\" --> />");
+                    sw.WriteLine("        <!-- <zone corner1=\"-100,0,-90\" corner2=\"40\" circle=\"true\" entryMessage=\"You have entered the Market\" exitMessage=\"You have exited the Market\" response=\"whisper {PlayerName} you have entered the market\" reminderNotice=\"\" PvE=\"true\" noZombie=\"true\" protected=\"true\" --> />");
+                    sw.WriteLine("        <!-- <zone corner1=\"0,0,0\" corner2=\"25,105,25\" circle=\"false\" entryMessage=\"You have entered the Lobby\" exitMessage=\"You have exited the Lobby\" response=\"say {PlayerName} has entered the lobby\" reminderNotice=\"You have been in the lobby for a long time...\" PvE=\"true\" noZombie=\"true\" protected=\"true\" --> />");
                 }
                 sw.WriteLine("    </Zone>");
                 sw.WriteLine("</Zones>");
@@ -295,14 +301,11 @@ namespace ServerTools
         {
             if (Box1.Count > 0)
             {
-                int _X = (int)_player.position.x;
-                int _Y = (int)_player.position.y;
-                int _Z = (int)_player.position.z;
                 for (int i = 0; i < Box1.Count; i++)
                 {
                     string[] _box1 = Box1[i];
                     bool[] _box2 = Box2[i];
-                    if (BoxCheck(_box1, _X, _Y, _Z, _box2))
+                    if (BoxCheck(_box1, _player.position.x, _player.position.y, _player.position.z, _box2))
                     {
                         if (ZoneExit.ContainsKey(_player.entityId))
                         {
@@ -375,6 +378,40 @@ namespace ServerTools
                     }
                 }
             }
+            if (Lobby.IsEnabled && Lobby.LobbyPlayers.Contains(_cInfo.entityId) && !Lobby.InsideLobby(_player.position.x, _player.position.z))
+            {
+                Lobby.LobbyPlayers.Remove(_cInfo.entityId);
+                if (Lobby.Return)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = "";
+                    PersistentContainer.Instance.Save();
+                    string _phrase556;
+                    if (!Phrases.Dict.TryGetValue(556, out _phrase556))
+                    {
+                        _phrase556 = " you have left the lobby space. {PrivateCommand}{Command53} command is no longer available.";
+                        _phrase556 = _phrase556.Replace("{PrivateCommand}", ChatHook.Command_Private);
+                        _phrase556 = _phrase556.Replace("{Command53}", ChatHook.Command_Private);
+                    }
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase556 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
+            }
+            if (Market.IsEnabled && Market.MarketPlayers.Contains(_cInfo.entityId) && !Market.InsideMarket(_player.position.x, _player.position.z))
+            {
+                Market.MarketPlayers.Remove(_cInfo.entityId);
+                if (Market.Return)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = "";
+                    PersistentContainer.Instance.Save();
+                    string _phrase564;
+                    if (!Phrases.Dict.TryGetValue(564, out _phrase564))
+                    {
+                        _phrase564 = " you have left the market space. {PrivateCommand}{Command51} command is no longer available.";
+                        _phrase564 = _phrase564.Replace("{PrivateCommand}", ChatHook.Command_Private);
+                        _phrase564 = _phrase564.Replace("{Command51}", ChatHook.Command_Private);
+                    }
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase564 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
+            }
         }
 
         public static void ReturnToPosition(ClientInfo _cInfo)
@@ -433,57 +470,64 @@ namespace ServerTools
 
         public static void Penalty(ClientInfo _cInfoKiller, ClientInfo _cInfoVictim)
         {
-            EntityPlayer _victim = PersistentOperations.GetEntityPlayer(_cInfoVictim.playerId);
-            if (_victim != null)
+            try
             {
-                int _deathCount = _victim.Died - 1;
-                _victim.Died = _deathCount;
-                _victim.bPlayerStatsChanged = true;
-                _cInfoVictim.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(_victim));
-            }
-            EntityPlayer _killer = PersistentOperations.GetEntityPlayer(_cInfoKiller.playerId);
-            if (_killer != null)
-            {
-                int _killCount = _victim.KilledPlayers - 1;
-                _killer.KilledPlayers = _killCount;
-                _killer.bPlayerStatsChanged = true;
-                _cInfoKiller.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(_killer));
-            }
-            if (Jail_Enabled)
-            {
-                string _message = "[FF0000]{PlayerName} has been jailed for murder in a pve zone.";
-                _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0} 120", _cInfoKiller.playerId), (ClientInfo)null);
-                if (!Forgive.ContainsKey(_cInfoVictim.entityId))
+                EntityPlayer _victim = PersistentOperations.GetEntityPlayer(_cInfoVictim.playerId);
+                if (_victim != null)
                 {
-                    Forgive.Add(_cInfoVictim.entityId, _cInfoKiller.entityId);
+                    int _deathCount = _victim.Died - 1;
+                    _victim.Died = _deathCount;
+                    _victim.bPlayerStatsChanged = true;
+                    _cInfoVictim.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(_victim));
                 }
-                else
+                EntityPlayer _killer = PersistentOperations.GetEntityPlayer(_cInfoKiller.playerId);
+                if (_killer != null)
                 {
-                    Forgive[_cInfoVictim.entityId] = _cInfoKiller.entityId;
+                    int _killCount = _victim.KilledPlayers - 1;
+                    _killer.KilledPlayers = _killCount;
+                    _killer.bPlayerStatsChanged = true;
+                    _cInfoKiller.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(_killer));
+                }
+                if (Jail_Enabled)
+                {
+                    string _message = "[FF0000]{PlayerName} has been jailed for murder in a pve zone.";
+                    _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
+                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0} 120", _cInfoKiller.playerId), (ClientInfo)null);
+                    if (!Forgive.ContainsKey(_cInfoVictim.entityId))
+                    {
+                        Forgive.Add(_cInfoVictim.entityId, _cInfoKiller.entityId);
+                    }
+                    else
+                    {
+                        Forgive[_cInfoVictim.entityId] = _cInfoKiller.entityId;
+                    }
+                }
+                if (Kill_Enabled)
+                {
+                    string _message = "[FF0000]{PlayerName} has been executed for murder in a pve zone.";
+                    _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
+                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfoKiller.playerId), (ClientInfo)null);
+                }
+                if (Kick_Enabled)
+                {
+                    string _message = "[FF0000]{PlayerName} has been kicked for murder in a pve zone.";
+                    _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
+                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for murder in a pve zone\"", _cInfoKiller.playerId), (ClientInfo)null);
+                }
+                if (Ban_Enabled)
+                {
+                    string _message = "[FF0000]{PlayerName} has been banned for murder in a pve zone.";
+                    _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
+                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for murder in a pve zone\"", _cInfoKiller.playerId), (ClientInfo)null);
                 }
             }
-            if (Kill_Enabled)
+            catch (Exception e)
             {
-                string _message = "[FF0000]{PlayerName} has been executed for murder in a pve zone.";
-                _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfoKiller.playerId), (ClientInfo)null);
-            }
-            if (Kick_Enabled)
-            {
-                string _message = "[FF0000]{PlayerName} has been kicked for murder in a pve zone.";
-                _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for murder in a pve zone\"", _cInfoKiller.playerId), (ClientInfo)null);
-            }
-            if (Ban_Enabled)
-            {
-                string _message = "[FF0000]{PlayerName} has been banned for murder in a pve zone.";
-                _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for murder in a pve zone\"", _cInfoKiller.playerId), (ClientInfo)null);
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.Penalty: {0}.", e.Message));
             }
         }
 
@@ -523,20 +567,20 @@ namespace ServerTools
             }
         }
 
-        public static bool BoxCheck(string[] _box, int _X, int _Y, int _Z, bool[] _box2)
+        public static bool BoxCheck(string[] _box, float _X, float _Y, float _Z, bool[] _box2)
         {
             string[] _corner1 = _box[0].Split(',');
-            int xMin, yMin, zMin, xMax, yMax, zMax;
-            int.TryParse(_corner1[0], out xMin);
-            int.TryParse(_corner1[1], out yMin);
-            int.TryParse(_corner1[2], out zMin);
+            float xMin, yMin, zMin, xMax, yMax, zMax;
+            float.TryParse(_corner1[0], out xMin);
+            float.TryParse(_corner1[1], out yMin);
+            float.TryParse(_corner1[2], out zMin);
             if (!_box2[0])
             {
                 string[] _corner2 = _box[1].Split(',');
-                int.TryParse(_corner2[0], out xMax);
-                int.TryParse(_corner2[1], out yMax);
-                int.TryParse(_corner2[2], out zMax);
-                if (VectorCheck(xMin, yMin, zMin, xMax, yMax, zMax, _X, _Y, _Z))
+                float.TryParse(_corner2[0], out xMax);
+                float.TryParse(_corner2[1], out yMax);
+                float.TryParse(_corner2[2], out zMax);
+                if (VectorBox(xMin, yMin, zMin, xMax, yMax, zMax, _X, _Y, _Z))
                 {
                     return true;
                 }
@@ -545,18 +589,25 @@ namespace ServerTools
             else
             {
                 int _radius;
-                if (int.TryParse(_box[1], out _radius))
+                int.TryParse(_box[1], out _radius);
+                if (VectorCircle(xMin, zMin, _X, _Z, _radius))
                 {
-                    if ((xMin - _X) * (xMin - _X) + (zMin - _Z) * (zMin - _Z) <= _radius * _radius)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
                 return false;
             }
         }
 
-        public static bool VectorCheck(int xMin, int yMin, int zMin, int xMax, int yMax, int zMax, int _X, int _Y, int _Z)
+        public static bool VectorCircle(float xMin, float zMin, float _X, float _Z, int _radius)
+        {
+            if ((xMin - _X) * (xMin - _X) + (zMin - _Z) * (zMin - _Z) <= _radius * _radius)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static bool VectorBox(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax, float _X, float _Y, float _Z)
         {
             if (xMin >= 0 && xMax >= 0)
             {
@@ -742,7 +793,7 @@ namespace ServerTools
                                             int.TryParse(_corner2[0], out xMax);
                                             int.TryParse(_corner2[1], out yMax);
                                             int.TryParse(_corner2[2], out zMax);
-                                            if (VectorCheck(xMin, yMin, zMin, xMax, yMax, zMax, _X, _Y, _Z))
+                                            if (VectorBox(xMin, yMin, zMin, xMax, yMax, zMax, _X, _Y, _Z))
                                             {
                                                 string _name = EntityClass.list[_entity.entityClass].entityClassName;
                                                 GameManager.Instance.World.RemoveEntity(_entity.entityId, EnumRemoveEntityReason.Despawned);
@@ -771,38 +822,91 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in EntityCleanup.HostileCheck: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.HostileCheck: {0}.", e.Message));
             }
         }
 
         public static void Reminder()
         {
-            foreach (KeyValuePair<int,DateTime> time in reminder)
+            try
             {
-                ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(time.Key);
-                if (_cInfo != null)
+                foreach (KeyValuePair<int, DateTime> time in reminder)
                 {
-                    DateTime _dt = time.Value;
-                    TimeSpan varTime = DateTime.Now - _dt;
-                    double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
-                    if (_timepassed >= Reminder_Delay)
+                    ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(time.Key);
+                    if (_cInfo != null)
                     {
-                        string _msg;
-                        reminderMsg.TryGetValue(_cInfo.entityId, out _msg);
-                        if (_msg != "")
+                        DateTime _dt = time.Value;
+                        TimeSpan varTime = DateTime.Now - _dt;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        int _timepassed = (int)fractionalMinutes;
+                        if (_timepassed >= Reminder_Delay)
                         {
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _msg + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            reminder[_cInfo.entityId] = DateTime.Now;
+                            string _msg;
+                            reminderMsg.TryGetValue(_cInfo.entityId, out _msg);
+                            if (_msg != "")
+                            {
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _msg + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                reminder[_cInfo.entityId] = DateTime.Now;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        reminder.Remove(time.Key);
+                        reminderMsg.Remove(time.Key);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.Reminder: {0}.", e.Message));
+            }
+        }
+
+        public static bool Protected(Vector3i _position)
+        {
+            try
+            {
+                if (Box1.Count > 0)
+                {
+                    for (int i = 0; i < Box1.Count; i++)
+                    {
+                        bool[] _box2 = Box2[i];
+                        if (_box2[3])
+                        {
+                            string[] _box1 = Box1[i];
+                            float _xMin, _zMin, _xMax, _zMax;
+                            string[] _min = _box1[0].Split(',');
+                            float.TryParse(_min[0], out _xMin);
+                            float.TryParse(_min[2], out _zMin);
+                            if (!_box2[0])
+                            {
+                                string[] _max = _box1[1].Split(',');
+                                float.TryParse(_max[0], out _xMax);
+                                float.TryParse(_max[2], out _zMax);
+                                if (ProtectedSpace.VectorBox(_xMin, _zMin, _xMax, _zMax, _position.x, _position.z))
+                                {
+                                    return true;
+                                }
+                            }
+                            else
+                            {
+                                int _radius;
+                                int.TryParse(_box1[1], out _radius);
+                                if (ProtectedSpace.VectorCircle(_xMin, _zMin, _position.x, _position.z, _radius))
+                                {
+                                    return true;
+                                }
+                            }
                         }
                     }
                 }
-                else
-                {
-                    reminder.Remove(time.Key);
-                    reminderMsg.Remove(time.Key);
-                }
             }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.Protected: {0}.", e.Message));
+            }
+            return false;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace ServerTools
         {
             if (!VoteOpen)
             {
-                if (ConnectionManager.Instance.ClientCount() > Players_Online)
+                if (ConnectionManager.Instance.ClientCount() >= Players_Online)
                 {
                     int _entityId;
                     if (int.TryParse(_player, out _entityId))

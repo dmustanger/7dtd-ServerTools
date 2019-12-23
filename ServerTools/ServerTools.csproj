@@ -46,6 +46,7 @@
     <Compile Include="src\AntiCheat\Flying.cs" />
     <Compile Include="src\AntiCheat\GodMode.cs" />
     <Compile Include="src\AntiCheat\DamageDetector.cs" />
+    <Compile Include="src\ConsoleCommands\ProtectedSpaceConsole.cs" />
     <Compile Include="src\ConsoleCommands\SecureDoorAccess.cs" />
     <Compile Include="src\ConsoleCommands\SecureVehicleAccess.cs" />
     <Compile Include="src\ConsoleCommands\SecureLootAccess.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="src\Tools\Bloodmoon_Warrior\Bloodmoon_Warrior.cs" />
     <Compile Include="src\Tools\BreakTime\BreakTime.cs" />
     <Compile Include="src\Tools\Market\Market.cs" />
+    <Compile Include="src\Tools\ProtectedSpace\ProtectedSpace.cs" />
     <Compile Include="src\Tools\Session\Session.cs" />
     <Compile Include="src\Tools\ChatColorPrefix\ChatColorPrefix.cs" />
     <Compile Include="src\Tools\ScoutPlayer\ScoutPlayer.cs" />
@@ -66,10 +68,10 @@
     <Compile Include="src\ConsoleCommands\BanPlayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\DonorConsole.cs" />
     <Compile Include="src\ConsoleCommands\ChatColorPrefixConsole.cs" />
-    <Compile Include="src\ConsoleCommands\EntityRotate.cs" />
-    <Compile Include="src\ConsoleCommands\BackpackTeleport.cs" />
-    <Compile Include="src\ConsoleCommands\EntityTeleport.cs" />
-    <Compile Include="src\ConsoleCommands\KillEnt.cs" />
+    <Compile Include="src\ConsoleCommands\EntityRotateConsole.cs" />
+    <Compile Include="src\ConsoleCommands\BackpackTeleportConsole.cs" />
+    <Compile Include="src\ConsoleCommands\EntityTeleportConsole.cs" />
+    <Compile Include="src\ConsoleCommands\KillEntConsole.cs" />
     <Compile Include="src\ConsoleCommands\TeleportUnderPlayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\TrackingConsole.cs" />
     <Compile Include="src\ConsoleCommands\WorldRadiusConsole.cs" />

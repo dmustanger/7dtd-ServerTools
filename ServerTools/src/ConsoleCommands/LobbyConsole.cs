@@ -33,7 +33,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -63,7 +63,7 @@ namespace ServerTools
                     string _phrase551;
                     if (!Phrases.Dict.TryGetValue(551, out _phrase551))
                     {
-                        _phrase551 = "{PlayerName} you have set the lobby position as {LobbyPosition}.";
+                        _phrase551 = "{PlayerName} you have set the lobby position as {LobbyPosition}";
                     }
                     _phrase551 = _phrase551.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase551 = _phrase551.Replace("{LobbyPosition}", _lposition);
@@ -72,12 +72,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CommandJailConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in CommandJailConsole.Execute: {0}", e.Message));
             }
         }
     }

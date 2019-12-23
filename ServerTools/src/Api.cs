@@ -11,7 +11,6 @@ namespace ServerTools
     {
         public static string GamePath = Directory.GetCurrentDirectory();
         public static string ConfigPath = string.Format("{0}/ServerTools", GamePath);
-        public static List<ClientInfo> Players = new List<ClientInfo>();
         public static List<string> Verified = new List<string>();
 
         public void InitMod()
@@ -40,22 +39,6 @@ namespace ServerTools
         {
             LoadProcess.Load(1);
             Tracking.Cleanup();
-            if (BattleLogger.IsEnabled && !string.IsNullOrEmpty(Utils.GetApplicationScratchPath()))
-            {
-                if (!GamePrefs.GetString(EnumGamePrefs.ServerDisabledNetworkProtocols).ToLower().Contains("litenetlib"))
-                {
-                    BattleLogger.LogDirectory = Utils.GetApplicationScratchPath();
-                    BattleLogger.ConfirmLog();
-                    return;
-                }
-                else
-                {
-                    Log.Out("---------------------------------------------------------------");
-                    Log.Out("[SERVERTOOLS] Unable to verify log file. Exit tool is disabled.");
-                    Log.Out("[SERVERTOOLS] Network protocol litenetlib is required.");
-                    Log.Out("------------------------------------------------------");
-                }
-            }
         }
 
         private static void GameShutdown()
@@ -137,10 +120,6 @@ namespace ServerTools
             {
                 if (_cInfo != null)
                 {
-                    if (!Players.Contains(_cInfo))
-                    {
-                        Players.Add(_cInfo);
-                    }
                     if (_respawnReason == RespawnType.EnterMultiplayer)//New player spawned
                     {
                         PersistentContainer.Instance.Players[_cInfo.playerId].PlayerName = _cInfo.playerName;
@@ -443,7 +422,7 @@ namespace ServerTools
                     {
                         _ip = _ip.Split(':').First();
                     }
-                    if (!string.IsNullOrEmpty(_ip) && BattleLogger.IsEnabled && BattleLogger.LogFound && !StopServer.StopServerCountingDown && !StopServer.Shutdown && GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId).PermissionLevel > 0)
+                    if (!string.IsNullOrEmpty(_ip) && BattleLogger.IsEnabled && BattleLogger.LogFound && !StopServer.StopServerCountingDown && !StopServer.Shutdown && GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId).PermissionLevel > BattleLogger.Admin_Level)
                     {
                         if (!BattleLogger.Players.ContainsKey(_cInfo.playerId))
                         {
@@ -476,27 +455,32 @@ namespace ServerTools
         {
             try
             {
-                if (_type == EnumGameMessages.EntityWasKilled)
+                if (_type == EnumGameMessages.EntityWasKilled && _cInfo != null)
                 {
-                    if (_cInfo != null)
+                    EntityPlayer _player1 = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                    if (_player1 != null)
                     {
-                        EntityPlayer _player1 = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                        if (_player1 != null)
+                        bool _notice = false;
+                        if (!string.IsNullOrEmpty(_secondaryName) && _mainName != _secondaryName)
                         {
-                            if (!string.IsNullOrEmpty(_secondaryName) && _mainName != _secondaryName)
+                            ClientInfo _cInfo2 = ConsoleHelper.ParseParamIdOrName(_secondaryName);
+                            if (_cInfo2 != null)
                             {
-                                ClientInfo _cInfo2 = ConsoleHelper.ParseParamIdOrName(_secondaryName);
                                 EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
-                                if (_cInfo2 != null && _player2 != null)
+                                if (_player2 != null)
                                 {
                                     if (KillNotice.IsEnabled && _player2.IsAlive())
                                     {
                                         string _holdingItem = _player2.inventory.holdingItem.Name;
-                                        ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
-                                        if (_itemValue.type != ItemValue.None.type)
+                                        if (!string.IsNullOrEmpty(_holdingItem))
                                         {
-                                            _holdingItem = _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName();
-                                            KillNotice.Notice(_cInfo, _cInfo2, _holdingItem);
+                                            ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
+                                            if (_itemValue.type != ItemValue.None.type)
+                                            {
+                                                _holdingItem = _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName();
+                                                KillNotice.Notice(_cInfo, _cInfo2, _holdingItem);
+                                                _notice = true;
+                                            }
                                         }
                                     }
                                     if (Zones.IsEnabled)
@@ -520,15 +504,19 @@ namespace ServerTools
                                     }
                                 }
                             }
-                            if (DeathSpot.IsEnabled)
-                            {
-                                DeathSpot.PlayerKilled(_player1);
-                            }
-                            if (Event.Open && Event.PlayersTeam.ContainsKey(_cInfo.playerId))
-                            {
-                                string _sql = string.Format("UPDATE Players SET eventReturn = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
-                                SQL.FastQuery(_sql, "Players");
-                            }
+                        }
+                        if (DeathSpot.IsEnabled)
+                        {
+                            DeathSpot.PlayerKilled(_player1);
+                        }
+                        if (Event.Open && Event.PlayersTeam.ContainsKey(_cInfo.playerId))
+                        {
+                            string _sql = string.Format("UPDATE Players SET eventReturn = 'true' WHERE steamid = '{0}'", _cInfo.playerId);
+                            SQL.FastQuery(_sql, "Players");
+                        }
+                        if (_notice)
+                        {
+                            return false;
                         }
                     }
                 }
@@ -573,14 +561,9 @@ namespace ServerTools
                 Log.Out("[SERVERTOOLS] Player detected disconnecting");
                 if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId != -1)
                 {
-                    if (Players.Contains(_cInfo))
-                    {
-                        Players.Remove(_cInfo);
-                    }
                     if (BattleLogger.IsEnabled && BattleLogger.LogFound && !_bShutdown && !StopServer.StopServerCountingDown && !StopServer.Shutdown && BattleLogger.Players.ContainsKey(_cInfo.playerId))
                     {
-                        Log.Out("[SERVERTOOLS] Starting battle log");
-                        API.BattleLog(_cInfo);
+                        BattleLogger.BattleLog(_cInfo);
                     }
                     if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
                     {
@@ -805,44 +788,6 @@ namespace ServerTools
             }
             PersistentContainer.Instance.Players[_cInfo.playerId].OldPlayer = true;
             PersistentContainer.Instance.Save();
-        }
-
-        public static void BattleLog(ClientInfo _cInfo)
-        {
-            try
-            {
-                EntityPlayer _entity = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-                if (_entity != null)
-                {
-                    EntityPlayer _attackTarget = (EntityPlayer)_entity.GetAttackTarget();
-                    List<EntityPlayer> _players = PersistentOperations.PlayerList();
-                    if (_players != null)
-                    {
-                        for (int i = 0; i < _players.Count; i++)
-                        {
-                            EntityPlayer _player = _players[i];
-                            if (_player != null && _player.entityId != _cInfo.entityId)
-                            {
-                                EntityPlayer _damageTarget = (EntityPlayer)_player.GetDamagedTarget();
-                                if (_damageTarget != null && !_damageTarget.IsFriendsWith(_player) && (_damageTarget == _entity || _attackTarget != null && _attackTarget == _player))
-                                {
-                                    float _distance = _player.GetDistanceSq(_entity);
-                                    if (_distance <= 80f)
-                                    {
-                                        Timers.BattleLogTool(_cInfo.playerId);
-                                        return;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                BattleLogger.Players.Remove(_cInfo.playerId);
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.BattleLog: {0}.", e.Message));
-            }
         }
     }
 }

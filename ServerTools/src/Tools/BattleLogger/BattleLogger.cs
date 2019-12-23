@@ -11,6 +11,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, LogFound = false, Drop = false, Remove = false, All = false, Belt = false, Bag = false, Equipment = false;
         public static string Command131 = "exit", Command132 = "quit", LogDirectory = "", LogName = "";
+        public static int Admin_Level = 0;
         public static Dictionary<string, string> Players = new Dictionary<string, string>();
         private static int LogLineCount = 0;
 
@@ -48,9 +49,9 @@ namespace ServerTools
                                         {
                                             LogName = _fileName;
                                             LogFound = true;
-                                            Log.Out("--------------------------------");
-                                            Log.Out("[SERVERTOOLS] Verified log file.");
-                                            Log.Out("--------------------------------");
+                                            Log.Out("------------------------------------------------------------------");
+                                            Log.Out("[SERVERTOOLS] Verified log file. Battle_Loggers is now functioning");
+                                            Log.Out("------------------------------------------------------------------");
                                             break;
                                         }
                                     }
@@ -115,6 +116,49 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in BattleLogger.ScanLog: {0}.", e.Message));
             }
+        }
+
+        public static bool BattleLog(ClientInfo _cInfo)
+        {
+            try
+            {
+                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                if (_player != null)
+                {
+                    List<EntityPlayer> _players = PersistentOperations.PlayerList();
+                    if (_players != null)
+                    {
+                        for (int i = 0; i < _players.Count; i++)
+                        {
+                            EntityPlayer _player2 = _players[i];
+                            if (_player2 != null && _player2 != _player)
+                            {
+                                EntityPlayer _damageTarget = (EntityPlayer)_player.GetDamagedTarget();
+                                EntityPlayer _attackTarget = (EntityPlayer)_player.GetAttackTarget();
+                                EntityPlayer _damageTarget2 = (EntityPlayer)_player2.GetDamagedTarget();
+                                EntityPlayer _attackTarget2 = (EntityPlayer)_player2.GetAttackTarget();
+                                if ((_damageTarget != null && _damageTarget == _player2 && !_damageTarget.IsFriendsWith(_player2)) ||
+                                    (_attackTarget != null && _attackTarget == _player2 && !_attackTarget.IsFriendsWith(_player2)) ||
+                                    (_damageTarget2 != null && _damageTarget2 == _player && !_damageTarget2.IsFriendsWith(_player)) ||
+                                    (_attackTarget2 != null && _attackTarget2 == _player && !_damageTarget2.IsFriendsWith(_player)))
+                                {
+                                    float _distance = _player2.GetDistanceSq(_player);
+                                    if (_distance <= 80f)
+                                    {
+                                        Timers.BattleLogTool(_cInfo.playerId);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                BattleLogger.Players.Remove(_cInfo.playerId);
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.BattleLog: {0}.", e.Message));
+            }
+            return true;
         }
 
         private static void Penalty(string _id)

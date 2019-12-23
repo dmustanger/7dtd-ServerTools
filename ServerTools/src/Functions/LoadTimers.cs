@@ -412,6 +412,10 @@ namespace ServerTools
             {
                 Log.Out("Private message enabled");
             }
+            if (ProtectedSpace.IsEnabled)
+            {
+                Log.Out("Protected space enabled");
+            }
             if (RealWorldTime.IsEnabled)
             {
                 Log.Out("Real world time enabled");

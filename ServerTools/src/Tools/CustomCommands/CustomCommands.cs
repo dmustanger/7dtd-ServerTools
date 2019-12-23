@@ -117,7 +117,7 @@ namespace ServerTools
                         {
                             if (!int.TryParse(_line.GetAttribute("Cost"), out _cost))
                             {
-                                Log.Out(string.Format("[SERVERTOOLS] Using default value of 0 for Cost of Custom Commands entry {1} because of invalid (non-numeric) value: {0}", subChild.OuterXml, _line.GetAttribute("Trigger")));
+                                Log.Out(string.Format("[SERVERTOOLS] Using default value of 0 for cost of custom commands entry {1} because of invalid (non-numeric) value: {0}", subChild.OuterXml, _line.GetAttribute("Trigger")));
                             }
                         }
                         string _trigger = _line.GetAttribute("Trigger");
@@ -353,7 +353,7 @@ namespace ServerTools
             if (Lobby.IsEnabled)
             {
                 _commands_4 = string.Format("{0} {1}{2}", _commands_4, ChatHook.Command_Private, Lobby.Command88);
-                if (Lobby.Return)
+                if (Lobby.Return && Lobby.LobbyPlayers.Contains(_cInfo.entityId))
                 {
                     _commands_4 = string.Format("{0} {1}{2}", _commands_4, ChatHook.Command_Private, Lobby.Command53);
                 }
@@ -394,7 +394,7 @@ namespace ServerTools
             if (Market.IsEnabled)
             {
                 _commands_5 = string.Format("{0} {1}{2}", _commands_5, ChatHook.Command_Private, Market.Command103);
-                if (Market.Return)
+                if (Market.Return && Market.MarketPlayers.Contains(_cInfo.entityId))
                 {
                     _commands_5 = string.Format("{0} {1}{2}", _commands_5, ChatHook.Command_Private, Market.Command51);
                 }

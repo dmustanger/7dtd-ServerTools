@@ -5,106 +5,49 @@ namespace ServerTools
 {
     static class PatchTools
     {
-        public static bool ProcessEntityDamage = false, PlayerLoginRPC = false, ChangeBlocks = false;
+        public static bool Applied = false;
+
+        private static readonly Type patchType = typeof(Injections);
 
         public static void ApplyPatches()
         {
             try
             {
-                Log.Out("[SERVERTOOLS] Runtime patching initialized");
-                if (!ProcessEntityDamage)
+                if (!Applied)
                 {
-                    PatchProcessEntityDamage();
+                    Log.Out("[SERVERTOOLS] Runtime patching initialized");
+                    PatchAll();
+                    Applied = true;
+                    Log.Out("[SERVERTOOLS] Runtime patching complete");
                 }
-                if (!ChangeBlocks)
-                {
-                    PatchChangeBlocks();
-                }
-                if (!PlayerLoginRPC)
-                {
-                    PatchPlayerLoginRPC();
-                }
-                Log.Out("[SERVERTOOLS] Runtime patching complete");
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in PatchTools.ApplyPatches: {0}.", e.Message));
             }
-        }       
-
-        public static void PatchProcessEntityDamage()
-        {
-            var harmony = HarmonyInstance.Create("com.github.servertools.patch");
-            var original = typeof(EntityAlive).GetMethod("ProcessDamageResponse");
-            if (original == null)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Injection failed: PatchProcessEntityDamage.original"));
-                return;
-            }
-            var info = harmony.GetPatchInfo(original);
-            if (info != null)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Injection failed: PatchProcessEntityDamage.info"));
-                return;
-            }
-            var postfix = typeof(Injections).GetMethod("ProcessDamageResponse_Postfix");
-            if (postfix == null)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Injection failed: PatchProcessEntityDamage.postfix"));
-                return;
-            }
-            harmony.Patch(original, null, new HarmonyMethod(postfix), null);
-            ProcessEntityDamage = true;
         }
 
-        public static void PatchPlayerLoginRPC()
+        public static void PatchAll()
         {
-            var harmony = HarmonyInstance.Create("com.github.servertools.patch");
-            var original = typeof(GameManager).GetMethod("PlayerLoginRPC");
-            if (original == null)
+            try
             {
-                Log.Out(string.Format("[SERVERTOOLS] Injection failed: PatchPlayerLoginRPC.original"));
-                return;
-            }
-            var info = harmony.GetPatchInfo(original);
-            if (info != null)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Injection failed: PatchPlayerLoginRPC.info"));
-                return;
-            }
-            var prefix = typeof(Injections).GetMethod("PlayerLoginRPC_Prefix");
-            if (prefix == null)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Injection failed: PatchPlayerLoginRPC.prefix"));
-                return;
-            }
-            harmony.Patch(original, new HarmonyMethod(prefix), null, null);
-            PlayerLoginRPC = true;
-        }
+                var harmony = HarmonyInstance.Create("com.github.servertools.patch");
+                harmony.Patch(original: AccessTools.Method(type: typeof(EntityAlive), name: nameof(EntityAlive.ProcessDamageResponse)),
+                prefix: new HarmonyMethod(type: patchType, name: nameof(Injections.DamageResponse_Prefix)));
 
-        public static void PatchChangeBlocks()
-        {
-            var harmony = HarmonyInstance.Create("com.github.servertools.patch");
-            var original = typeof(GameManager).GetMethod("ChangeBlocks");
-            if (original == null)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Injection failed: PatchChangeBlocks.original"));
-                return;
+                harmony.Patch(original: AccessTools.Method(type: typeof(GameManager), name: nameof(GameManager.PlayerLoginRPC)),
+                prefix: new HarmonyMethod(type: patchType, name: nameof(Injections.PlayerLoginRPC_Prefix)));
+
+                harmony.Patch(original: AccessTools.Method(type: typeof(GameManager), name: nameof(GameManager.ChangeBlocks)),
+                prefix: new HarmonyMethod(type: patchType, name: nameof(Injections.ChangeBlocks_Prefix)));
+
+                harmony.Patch(original: AccessTools.Method(type: typeof(GameManager), name: nameof(GameManager.ExplosionServer)),
+                prefix: new HarmonyMethod(type: patchType, name: nameof(Injections.ExplosionServer_Prefix)));
             }
-            var info = harmony.GetPatchInfo(original);
-            if (info != null)
+            catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Injection failed: PatchChangeBlocks.info"));
-                return;
+                Log.Out(string.Format("[SERVERTOOLS] Error in PatchTools.PatchAll: {0}.", e.Message));
             }
-            var prefix = typeof(Injections).GetMethod("ChangeBlocks_Prefix");
-            if (prefix == null)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Injection failed: PatchChangeBlocks.prefix"));
-                return;
-            }
-            harmony.Patch(original, new HarmonyMethod(prefix), null, null);
-            ChangeBlocks = true;
         }
     }
 }

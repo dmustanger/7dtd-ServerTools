@@ -935,7 +935,7 @@ namespace ServerTools
                         {
                             if (Lobby.LobbyPlayers.Contains(_cInfo.entityId))
                             {
-                                Lobby.SendBack(_cInfo, _mainName);
+                                Lobby.SendBack(_cInfo);
                                 return false;
                             }
                         }
@@ -1155,7 +1155,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (MuteVote.IsEnabled && _message.ToLower().StartsWith(MuteVote.Command67))
+                        if (MuteVote.IsEnabled && Mute.IsEnabled && _message.ToLower().StartsWith(MuteVote.Command67))
                         {
                             if (!KickVote.VoteOpen && !RestartVote.VoteOpen && !MuteVote.VoteOpen)
                             {

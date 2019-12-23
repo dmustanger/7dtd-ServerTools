@@ -7,7 +7,7 @@ namespace ServerTools
 {
     class Lobby
     {
-        public static bool IsEnabled = false, Return = false, PvP_Check = false, Zombie_Check = false, Donor_Only = false;
+        public static bool IsEnabled = false, Return = false, Player_Check = false, Zombie_Check = false, Donor_Only = false, PvE = false, Protected = false;
         public static int Delay_Between_Uses = 5, Lobby_Size = 25, Command_Cost = 0;
         public static string Lobby_Position = "0,0,0", Command53 = "lobbyback", Command54 = "lback", Command87 = "setlobby", Command88 = "lobby";
         public static List<int> LobbyPlayers = new List<int>();
@@ -27,20 +27,23 @@ namespace ServerTools
             else
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                Vector3 _position = _player.GetPosition();
-                int x = (int)_position.x;
-                int y = (int)_position.y;
-                int z = (int)_position.z;
-                string _lposition = x + "," + y + "," + z;
-                Lobby_Position = _lposition;
-                string _phrase551;
-                if (!Phrases.Dict.TryGetValue(551, out _phrase551))
+                if (_player != null)
                 {
-                    _phrase551 = " you have set the lobby position as {LobbyPosition}.";
+                    Vector3 _position = _player.GetPosition();
+                    int x = (int)_position.x;
+                    int y = (int)_position.y;
+                    int z = (int)_position.z;
+                    string _lposition = x + "," + y + "," + z;
+                    Lobby_Position = _lposition;
+                    string _phrase551;
+                    if (!Phrases.Dict.TryGetValue(551, out _phrase551))
+                    {
+                        _phrase551 = " you have set the lobby position as {LobbyPosition}.";
+                    }
+                    _phrase551 = _phrase551.Replace("{LobbyPosition}", Lobby_Position);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase551 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    LoadConfig.WriteXml();
                 }
-                _phrase551 = _phrase551.Replace("{LobbyPosition}", Lobby_Position);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase551 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                LoadConfig.WriteXml();
             }
         }
 
@@ -138,68 +141,71 @@ namespace ServerTools
             if (Lobby.Lobby_Position != "0,0,0" || Lobby.Lobby_Position != "0 0 0" || Lobby.Lobby_Position != "")
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                if (PvP_Check)
+                if (_player != null)
                 {
-                    if (Teleportation.PCheck(_cInfo, _player))
+                    if (Player_Check)
                     {
-                        return;
+                        if (Teleportation.PCheck(_cInfo, _player))
+                        {
+                            return;
+                        }
                     }
-                }
-                if (Zombie_Check)
-                {
-                    if (Teleportation.ZCheck(_cInfo, _player))
+                    if (Zombie_Check)
                     {
-                        return;
+                        if (Teleportation.ZCheck(_cInfo, _player))
+                        {
+                            return;
+                        }
                     }
-                }
-                int x, y, z;
-                if (Return)
-                {
-                    Vector3 _position = _player.GetPosition();
-                    x = (int)_position.x;
-                    y = (int)_position.y;
-                    z = (int)_position.z;
-                    string _pposition = x + "," + y + "," + z;
-                    LobbyPlayers.Add(_cInfo.entityId);
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = _pposition;
-                    string _phrase552;
-                    if (!Phrases.Dict.TryGetValue(552, out _phrase552))
+                    int x, y, z;
+                    if (Return)
                     {
-                        _phrase552 = " you can go back by typing {CommandPrivate}{Command53} when you are ready to leave the lobby.";
+                        Vector3 _position = _player.GetPosition();
+                        x = (int)_position.x;
+                        y = (int)_position.y;
+                        z = (int)_position.z;
+                        string _pposition = x + "," + y + "," + z;
+                        LobbyPlayers.Add(_cInfo.entityId);
+                        PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = _pposition;
+                        string _phrase552;
+                        if (!Phrases.Dict.TryGetValue(552, out _phrase552))
+                        {
+                            _phrase552 = " you can go back by typing {CommandPrivate}{Command53} when you are ready to leave the lobby.";
+                        }
+                        _phrase552 = _phrase552.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                        _phrase552 = _phrase552.Replace("{Command53}", Command53);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase552 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    _phrase552 = _phrase552.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                    _phrase552 = _phrase552.Replace("{Command53}", Command53);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase552 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                string[] _cords = { };
-                if (Lobby.Lobby_Position.Contains(","))
-                {
-                    if (Lobby.Lobby_Position.Contains(" "))
+                    string[] _cords = { };
+                    if (Lobby.Lobby_Position.Contains(","))
                     {
-                        Lobby.Lobby_Position.Replace(" ", "");
+                        if (Lobby.Lobby_Position.Contains(" "))
+                        {
+                            Lobby.Lobby_Position.Replace(" ", "");
+                        }
+                        _cords = Lobby.Lobby_Position.Split(',').ToArray();
                     }
-                    _cords = Lobby.Lobby_Position.Split(',').ToArray();
+                    else if (Lobby.Lobby_Position.Contains(" "))
+                    {
+                        _cords = Lobby.Lobby_Position.Split(' ').ToArray();
+                    }
+                    string _phrase553;
+                    if (!Phrases.Dict.TryGetValue(553, out _phrase553))
+                    {
+                        _phrase553 = " sending you to the lobby.";
+                    }
+                    int.TryParse(_cords[0], out x);
+                    int.TryParse(_cords[1], out y);
+                    int.TryParse(_cords[2], out z);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase553 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    {
+                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                    }
+                    PersistentContainer.Instance.Players[_cInfo.playerId].LastLobby = DateTime.Now;
+                    PersistentContainer.Instance.Save();
                 }
-                else if (Lobby.Lobby_Position.Contains(" "))
-                {
-                    _cords = Lobby.Lobby_Position.Split(' ').ToArray();
-                }
-                string _phrase553;
-                if (!Phrases.Dict.TryGetValue(553, out _phrase553))
-                {
-                    _phrase553 = " sending you to the lobby.";
-                }
-                int.TryParse(_cords[0], out x);
-                int.TryParse(_cords[1], out y);
-                int.TryParse(_cords[2], out z);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase553 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                if (Wallet.IsEnabled && Command_Cost >= 1)
-                {
-                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
-                }
-                PersistentContainer.Instance.Players[_cInfo.playerId].LastLobby = DateTime.Now;
-                PersistentContainer.Instance.Save();
             }
             else
             {
@@ -212,54 +218,41 @@ namespace ServerTools
             }
         }
 
-        public static void SendBack(ClientInfo _cInfo, string _playerName)
+        public static void SendBack(ClientInfo _cInfo)
         {
-            string _lastPos = PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos;
-            if (_lastPos != "")
+            if (LobbyPlayers.Contains(_cInfo.entityId))
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                int x, y, z;
-                string[] _cords = { };
-                if (Lobby.Lobby_Position.Contains(","))
+                if (_player != null)
                 {
-                    if (Lobby.Lobby_Position.Contains(" "))
+                    string _lastPos = PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos;
+                    if (_lastPos != "")
                     {
-                        Lobby.Lobby_Position.Replace(" ", "");
+                        int x, y, z;
+                        string[] _returnCoords = _lastPos.Split(',');
+                        int.TryParse(_returnCoords[0], out x);
+                        int.TryParse(_returnCoords[1], out y);
+                        int.TryParse(_returnCoords[2], out z);
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                        LobbyPlayers.Remove(_cInfo.entityId);
+                        PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = "";
+                        PersistentContainer.Instance.Save();
+                        string _phrase555;
+                        if (!Phrases.Dict.TryGetValue(555, out _phrase555))
+                        {
+                            _phrase555 = " sent you back to your saved location.";
+                        }
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase555 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    _cords = Lobby.Lobby_Position.Split(',').ToArray();
-                }
-                else
-                {
-                    _cords = Lobby.Lobby_Position.Split(' ').ToArray();
-                }
-                int.TryParse(_cords[0], out x);
-                int.TryParse(_cords[1], out y);
-                int.TryParse(_cords[2], out z);
-                if ((x - _player.position.x) * (x - _player.position.x) + (z - _player.position.z) * (z - _player.position.z) <= Lobby_Size * Lobby_Size)
-                {
-                    string[] _returnCoords = _lastPos.Split(',');
-                    int.TryParse(_returnCoords[0], out x);
-                    int.TryParse(_returnCoords[1], out y);
-                    int.TryParse(_returnCoords[2], out z);
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                    LobbyPlayers.Remove(_cInfo.entityId);
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = "";
-                    PersistentContainer.Instance.Save();
-                    string _phrase555;
-                    if (!Phrases.Dict.TryGetValue(555, out _phrase555))
+                    else
                     {
-                        _phrase555 = " sent you back to your saved location.";
+                        string _phrase556;
+                        if (!Phrases.Dict.TryGetValue(556, out _phrase556))
+                        {
+                            _phrase556 = " you are outside the lobby. Get inside it and try again.";
+                        }
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase556 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase555 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                else
-                {
-                    string _phrase556;
-                    if (!Phrases.Dict.TryGetValue(556, out _phrase556))
-                    {
-                        _phrase556 = " you are outside the lobby. Get inside it and try again.";
-                    }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase556 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -268,6 +261,34 @@ namespace ServerTools
             }
         }
 
+        public static bool InsideLobby(float _x, float _z)
+        {
+            int x, z;
+            string[] _cords = Lobby.Lobby_Position.Split(',').ToArray();
+            int.TryParse(_cords[0], out x);
+            int.TryParse(_cords[2], out z);
+            if ((x - _x) * (x - _x) + (z - _z) * (z - _z) <= Lobby_Size * Lobby_Size)
+            {
+                return true;
+            }
+            return false;
+        }
 
+        public static bool ProtectedSpace(int _X, int _Z)
+        {
+            if (Lobby.IsEnabled && Lobby.Protected && Lobby.Lobby_Position != "0,0,0")
+            {
+                string[] _cords = Lobby.Lobby_Position.Split(',');
+                int x, y, z;
+                int.TryParse(_cords[0], out x);
+                int.TryParse(_cords[1], out y);
+                int.TryParse(_cords[2], out z);
+                if (Zones.VectorCircle(x, z, _X, _Z, Lobby.Lobby_Size))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

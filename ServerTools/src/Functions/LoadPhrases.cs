@@ -759,7 +759,7 @@ namespace ServerTools
                 string _phrase556;
                 if (!Dict.TryGetValue(556, out _phrase556))
                 {
-                    _phrase556 = " you are outside the lobby. Get inside it and try again.";
+                    _phrase556 = " you have left the lobby space. {PrivateCommand}{Command53} command is no longer available.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"556\" Phrase=\"{0}\" />", _phrase556));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -792,7 +792,7 @@ namespace ServerTools
                 string _phrase564;
                 if (!Dict.TryGetValue(564, out _phrase564))
                 {
-                    _phrase564 = " you are outside the market. Get inside it and try again.";
+                    _phrase564 = " you have left the market space. {PrivateCommand}{Command51} command is no longer available.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"564\" Phrase=\"{0}\" />", _phrase564));
                 string _phrase565;
@@ -1496,7 +1496,7 @@ namespace ServerTools
                 string _phrase819;
                 if (!Dict.TryGetValue(819, out _phrase819))
                 {
-                    _phrase819 = " you are too close to a player that is not a friend. Command unavailable.";
+                    _phrase819 = " you are too close to a hostile player. Command unavailable.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"819\" Phrase=\"{0}\" />", _phrase819));
                 string _phrase820;
