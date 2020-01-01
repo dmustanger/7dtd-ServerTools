@@ -43,26 +43,42 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("off"))
                 {
-                    AutoBackup.IsEnabled = false;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Auto backup has been set to off"));
-                    return;
+                    if (AutoBackup.IsEnabled)
+                    {
+                        AutoBackup.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Auto backup has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Auto backup is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    AutoBackup.IsEnabled = true;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Auto backup has been set to on"));
-                    return;
+                    if (!AutoBackup.IsEnabled)
+                    {
+                        AutoBackup.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Auto backup has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Auto backup is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Execute: {0}", e));
             }
         }
     }

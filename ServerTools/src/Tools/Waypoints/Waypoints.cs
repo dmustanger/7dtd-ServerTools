@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace ServerTools
 {
-    class Waypoint
+    class Waypoints
     {
         public static bool IsEnabled = false, PvP_Check= false, Zombie_Check = false, Vehicle = false;
         public static int Delay_Between_Uses = 0, Max_Waypoints = 2, Donator_Max_Waypoints = 4, Command_Cost = 0;

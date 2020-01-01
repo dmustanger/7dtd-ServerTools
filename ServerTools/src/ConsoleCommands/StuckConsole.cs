@@ -33,26 +33,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Stuck.IsEnabled = false;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Stuck has been set to off"));
-                    return;
+                    if (Stuck.IsEnabled)
+                    {
+                        Stuck.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Stuck has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Stuck is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Stuck.IsEnabled = true;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Stuck has been set to on"));
-                    return;
+                    if (!Stuck.IsEnabled)
+                    {
+                        Stuck.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Stuck has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Stuck is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in StuckConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in StuckConsole.Execute: {0}", e));
             }
         }
     }

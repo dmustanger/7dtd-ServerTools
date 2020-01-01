@@ -33,26 +33,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    ChatHook.ChatFlood = false;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Chat flood protection has been set to off"));
-                    return;
+                    if (ChatHook.ChatFlood)
+                    {
+                        ChatHook.ChatFlood = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Chat flood protection has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Chat flood protection is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    ChatHook.ChatFlood = true;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Chat flood protection has been set to on"));
-                    return;
+                    if (!ChatHook.ChatFlood)
+                    {
+                        ChatHook.ChatFlood = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Chat flood protection has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Chat flood protection is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ChatFloodProtectionConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ChatFloodProtectionConsole.Execute: {0}", e));
             }
         }
     }

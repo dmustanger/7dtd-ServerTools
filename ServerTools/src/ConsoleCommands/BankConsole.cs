@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace ServerTools
 {
@@ -35,26 +37,42 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Bank.IsEnabled = false;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Bank has been set to off"));
-                    return;
+                    if (Bank.IsEnabled)
+                    {
+                        Bank.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Bank has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Bank is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Bank.IsEnabled = true;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Bank has been set to on"));
-                    return;
+                    if (!Bank.IsEnabled)
+                    {
+                        Bank.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Bank has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Bank is already on"));
+                        return;
+                    }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BankConsole.Execute: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BankConsole.Execute: {0}", e));
             }
         }
     }

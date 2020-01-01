@@ -657,7 +657,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in EventCommandsConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in EventCommandsConsole.Execute: {0}", e));
             }
         }
     }

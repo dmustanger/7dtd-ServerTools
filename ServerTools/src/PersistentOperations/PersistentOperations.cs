@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace ServerTools
@@ -26,7 +28,7 @@ namespace ServerTools
                             ClientInfo _cInfo = _cInfoList[i];
                             if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId > 0)
                             {
-                                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                                EntityAlive _player = PersistentOperations.GetPlayerAlive(_cInfo.playerId);
                                 if (_player != null)
                                 {
                                     if (!_player.IsDead())
@@ -121,7 +123,7 @@ namespace ServerTools
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.DuskSky: {0}.", e));
-                
+
             }
             return false;
         }
@@ -164,31 +166,37 @@ namespace ServerTools
                 return _playerList;
             }
             return null;
-        }       
+        }
 
         public static EntityPlayer GetEntityPlayer(string _playerId)
         {
-            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerData(_playerId);
+            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
             if (_persistentPlayerData != null)
             {
-                EntityPlayer _entityPlayer = GameManager.Instance.World.Players.dict[_persistentPlayerData.EntityId];
-                if (_entityPlayer != null)
+                if (GameManager.Instance.World.Players.dict.ContainsKey(_persistentPlayerData.EntityId))
                 {
-                    return _entityPlayer;
+                    EntityPlayer _entityPlayer = GameManager.Instance.World.Players.dict[_persistentPlayerData.EntityId];
+                    if (_entityPlayer != null)
+                    {
+                        return _entityPlayer;
+                    }
                 }
             }
             return null;
         }
 
-        public static EntityAlive GetEntityAlive(string _playerId)
+        public static EntityAlive GetPlayerAlive(string _playerId)
         {
-            EntityPlayer _entityPlayer = GetEntityPlayer(_playerId);
-            if (_entityPlayer != null)
+            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
+            if (_persistentPlayerData != null)
             {
-                EntityAlive _entityAlive = (EntityAlive)GameManager.Instance.World.GetEntity(_entityPlayer.entityId);
-                if (_entityAlive != null)
+                if (GameManager.Instance.World.Players.dict.ContainsKey(_persistentPlayerData.EntityId))
                 {
-                    return _entityAlive;
+                    EntityAlive _entityAlive = (EntityAlive)GetEntity(_persistentPlayerData.EntityId);
+                    if (_entityAlive != null)
+                    {
+                        return _entityAlive;
+                    }
                 }
             }
             return null;
@@ -214,7 +222,7 @@ namespace ServerTools
             return null;
         }
 
-        public static PersistentPlayerData GetPersistentPlayerData(string _playerId)
+        public static PersistentPlayerData GetPersistentPlayerDataFromSteamId(string _playerId)
         {
             PersistentPlayerList _persistentPlayerList = GameManager.Instance.persistentPlayers;
             if (_persistentPlayerList != null)
@@ -228,7 +236,21 @@ namespace ServerTools
             return null;
         }
 
-        public static PlayerDataFile GetPlayerDataFile(string _playerId)
+        public static PersistentPlayerData GetPersistentPlayerDataFromEntityId(int _entityId)
+        {
+            PersistentPlayerList _persistentPlayerList = GameManager.Instance.persistentPlayers;
+            if (_persistentPlayerList != null)
+            {
+                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_entityId);
+                if (_persistentPlayerData != null)
+                {
+                    return _persistentPlayerData;
+                }
+            }
+            return null;
+        }
+
+        public static PlayerDataFile GetPlayerDataFileFromSteamId(string _playerId)
         {
             PlayerDataFile _playerDatafile = new PlayerDataFile();
             _playerDatafile.Load(GameUtils.GetPlayerDataDir(), _playerId.Trim());
@@ -239,11 +261,26 @@ namespace ServerTools
             return null;
         }
 
+        public static PlayerDataFile GetPlayerDataFileFromEntityId(int _entityId)
+        {
+            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromEntityId(_entityId);
+            if (_persistentPlayerData != null)
+            {
+                PlayerDataFile _playerDatafile = new PlayerDataFile();
+                _playerDatafile.Load(GameUtils.GetPlayerDataDir(), _persistentPlayerData.PlayerId.Trim());
+                if (_playerDatafile != null)
+                {
+                    return _playerDatafile;
+                }
+            }
+            return null;
+        }
+
         public static void SetSpawnPointNearClaim(ClientInfo _cInfo, EntityPlayer _entityPlayer)
         {
             if (_cInfo != null)
             {
-                PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_cInfo.playerId);
+                PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo.playerId);
                 if (_persistentPlayerData != null && _persistentPlayerData.LPBlocks != null && _persistentPlayerData.LPBlocks.Count > 0)
                 {
                     int _x, _y, _z;
@@ -264,7 +301,7 @@ namespace ServerTools
 
         public static void RemoveAllClaims(string _playerId)
         {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_playerId);
+            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_playerId);
             if (_persistentPlayerData != null)
             {
                 List<Vector3i> landProtectionBlocks = _persistentPlayerData.LPBlocks;
@@ -294,7 +331,7 @@ namespace ServerTools
 
         public static void RemoveOneClaim(string _playerId, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_playerId);
+            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_playerId);
             if (_persistentPlayerData != null)
             {
                 World world = GameManager.Instance.World;
@@ -328,7 +365,7 @@ namespace ServerTools
 
         public static void RemoveAllACL(string _playerId)
         {
-            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerData(_playerId);
+            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
             if (_persistentPlayerData != null)
             {
                 PersistentPlayerList _persistentPlayerList = PersistentOperations.GetPersistentPlayerList();
@@ -372,7 +409,7 @@ namespace ServerTools
 
         public static bool ClaimedBySelf(string _id, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_id);
+            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
             if (_persistentPlayerData != null)
             {
                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
@@ -386,7 +423,7 @@ namespace ServerTools
 
         public static bool ClaimedBySelfVec3(string _id, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_id);
+            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
             if (_persistentPlayerData != null)
             {
                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
@@ -400,7 +437,7 @@ namespace ServerTools
 
         public static bool ClaimedByAlly(string _id, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_id);
+            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
             if (_persistentPlayerData != null)
             {
                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
@@ -414,7 +451,7 @@ namespace ServerTools
 
         public static bool ClaimedByNone(string _id, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_id);
+            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
             if (_persistentPlayerData != null)
             {
                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
@@ -428,7 +465,7 @@ namespace ServerTools
 
         public static bool ClaimedByAllyOrSelf(string _id, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_id);
+            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
             if (_persistentPlayerData != null)
             {
                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
@@ -442,7 +479,7 @@ namespace ServerTools
 
         public static bool ClaimedByUnknown(string _id, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_id);
+            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
             if (_persistentPlayerData != null)
             {
                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
@@ -524,41 +561,103 @@ namespace ServerTools
             return null;
         }
 
-        public static void BedBug(string _persistentPlayerId)
+        public static void ClearChunkProtection(ClientInfo _cInfo)
         {
-            EntityPlayer _player = PersistentOperations.GetEntityPlayer(_persistentPlayerId);
-            if (_player != null)
+            try
             {
-                EntityBedrollPositionList _bedrollList = _player.SpawnPoints;
-                if (_bedrollList != null)
+                List<Chunk> _chunkList = new List<Chunk>();
+                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                if (_player != null)
                 {
-                    Vector3i _bedrollPosition = _bedrollList.GetPos();
-                    List<EntityPlayer> _playerList = PersistentOperations.PlayerList();
-                    if (_bedrollPosition != null && _playerList != null)
+                    Vector3 _position = _player.position;
+                    int _x = (int)_position.x, _z = (int)_position.z;
+                    if (GameManager.Instance.World.IsChunkAreaLoaded(_x, 1, _z))
                     {
-                        for (int i = 0; i < _playerList.Count; i++)
+                        Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_x, 1, _z);
+                        if (!_chunkList.Contains(_chunk))
                         {
-                            EntityPlayer _player2 = _playerList[i];
-                            if (_player2 != null && _player2 != _player && _player2.SpawnPoints != null && _player2.SpawnPoints.GetPos().Equals(_bedrollPosition))
+                            _chunkList.Add(_chunk);
+                        }
+                        Bounds bounds = _chunk.GetAABB();
+                        for (int i = (int)bounds.min.x; i < (int)bounds.max.x; i++)
+                        {
+                            for (int j = (int)bounds.min.z; j < (int)bounds.max.z; j++)
                             {
-                                PersistentPlayerData _ppd = PersistentOperations.GetPersistentPlayerData(_persistentPlayerId);
-                                if (_ppd != null && !_player2.SpawnPoints.GetPos().Equals(_ppd.BedrollPos))
-                                {
-                                    _player2.SpawnPoints.Set(_ppd.BedrollPos);
-                                    continue;
-                                }
-                                _player2.SpawnPoints.Clear();
-                                GameManager.Instance.World.ObjectOnMapRemove(EnumMapObjectType.SleepingBag, _player2.entityId);
-                                ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.SleepingBag, _player2.entityId), false, -1, -1, -1, -1);
-                                ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromEntityId(_player2.entityId);
+                                _x = i - (int)bounds.min.x;
+                                _z = j - (int)bounds.min.z;
+                                _chunk.SetTraderArea(_x, _z, false);
+                            }
+                        }
+                    }
+                }
+                if (_chunkList.Count > 0)
+                {
+                    for (int k = 0; k < _chunkList.Count; k++)
+                    {
+                        Chunk _chunk = _chunkList[k];
+                        List<ClientInfo> _clientList = PersistentOperations.ClientList();
+                        if (_clientList != null && _clientList.Count > 0)
+                        {
+                            for (int l = 0; l < _clientList.Count; l++)
+                            {
+                                ClientInfo _cInfo2 = _clientList[l];
                                 if (_cInfo2 != null)
                                 {
-                                    ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + "Detected bug with your bed. Check your bed and replace if needed.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
                                 }
                             }
                         }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.ClearChunkProtection: {0}", e.Message));
+            }
+        }
+
+        public static void BedBug(string _persistentPlayerId)
+        {
+            try
+            {
+                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_persistentPlayerId);
+                if (_player != null)
+                {
+                    EntityBedrollPositionList _bedrollList = _player.SpawnPoints;
+                    if (_bedrollList != null)
+                    {
+                        Vector3i _bedrollPosition = _bedrollList.GetPos();
+                        List<EntityPlayer> _playerList = PersistentOperations.PlayerList();
+                        if (_bedrollPosition != null && _playerList != null)
+                        {
+                            for (int i = 0; i < _playerList.Count; i++)
+                            {
+                                EntityPlayer _player2 = _playerList[i];
+                                if (_player2 != null && _player2 != _player && _player2.SpawnPoints != null && _player2.SpawnPoints.GetPos().Equals(_bedrollPosition))
+                                {
+                                    PersistentPlayerData _ppd = PersistentOperations.GetPersistentPlayerDataFromSteamId(_persistentPlayerId);
+                                    if (_ppd != null && !_player2.SpawnPoints.GetPos().Equals(_ppd.BedrollPos))
+                                    {
+                                        _player2.SpawnPoints.Set(_ppd.BedrollPos);
+                                        continue;
+                                    }
+                                    _player2.SpawnPoints.Clear();
+                                    GameManager.Instance.World.ObjectOnMapRemove(EnumMapObjectType.SleepingBag, _player2.entityId);
+                                    ConnectionManager.Instance.SendPackage(NetPackageManager.GetPackage<NetPackageEntityMapMarkerRemove>().Setup(EnumMapObjectType.SleepingBag, _player2.entityId), false, -1, -1, -1, -1);
+                                    ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromEntityId(_player2.entityId);
+                                    if (_cInfo2 != null)
+                                    {
+                                        ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + "Detected bug with your bed. Check your bed and replace if needed[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.BedBug: {0}", e.Message));
             }
         }
 
@@ -574,12 +673,12 @@ namespace ServerTools
 
         private static void LogAction(string msg, string trace, LogType type)
         {
-            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Log out detected. msg = {0}, trace = {1}, type = {2} ", msg, trace, type.ToString()));
+            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Log out detected. msg = {0}, trace = {1}, type = {2}", msg, trace, type.ToString()));
         }
 
-        public static void TestExec(ClientInfo _cInfo)
+        public static void TestExec1(ClientInfo _cInfo)
         {
-            Log.Out("[SERVERTOOLS] Test operation has begun.");
+            Log.Out("[SERVERTOOLS] Test operation 1 has begun.");
             try
             {
                 //LinkedList<Chunk> chunkArray = new LinkedList<Chunk>();
@@ -599,11 +698,418 @@ namespace ServerTools
                 //    }
                 //}
 
+                //Log.Out(string.Format("[SERVERTOOLS] Test 1"));
+                //List<string[]> _protectedList = ProtectedSpace.ProtectedList;
+                //List<Chunk> _chunkList = new List<Chunk>();
+                //string[] _vector = { "-20", "-20", "-18", "-18" };
+                //if (!_protectedList.Contains(_vector))
+                //{
+                //    _protectedList.Add(_vector);
+                //}
+                //int _xMin = int.Parse(_vector[0]), _zMin = int.Parse(_vector[1]), _xMax = int.Parse(_vector[2]), _zMax = int.Parse(_vector[3]);
+                //Log.Out(string.Format("[SERVERTOOLS] Test 2"));
+                //for (int i = _xMin; i <= _xMax; i++)
+                //{
+                //    for (int j = _zMin; j <= _zMax; j++)
+                //    {
+                //        Log.Out(string.Format("[SERVERTOOLS] Test 3"));
+                //        if (GameManager.Instance.World.IsChunkAreaLoaded(i, 1, j))
+                //        {
+                //            Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(i, 1, j);
+                //            if (!_chunkList.Contains(_chunk))
+                //            {
+                //                _chunkList.Add(_chunk);
+                //            }
+                //            Log.Out(string.Format("[SERVERTOOLS] Test 4 {0}x {1}z", i, j));
+                //            Bounds bounds = _chunk.GetAABB();
+                //            Log.Out(string.Format("[SERVERTOOLS] (int)bounds.min.x = {0}, (int)bounds.max.x = {1}, (int)bounds.min.z = {2}, (int)bounds.max.z = {3}", (int)bounds.min.x, (int)bounds.max.x, (int)bounds.min.z, (int)bounds.max.z));
+                //            if (i >= (int)bounds.min.x && i <= (int)bounds.max.x && j >= (int)bounds.min.z && j <= (int)bounds.max.z)
+                //            {
+                //                int _x = i, _z = j;
+                //                if (i < 0)
+                //                {
+                //                    _x = i * -1;
+                //                }
+                //                if (j < 0)
+                //                {
+                //                    _z = j * -1;
+                //                }
+                //                Log.Out(string.Format("[SERVERTOOLS] Test 5"));
+                //                _chunk.SetTraderArea(_x, _z, true);
+                //                Log.Out(string.Format("[SERVERTOOLS] Set area"));
+                //            }
+                //        }
+                //        else
+                //        {
+                //            continue;
+                //        }
+                //    }
+                //}
+                //ProtectedSpace.ProtectedList = _protectedList;
+                //if (_chunkList.Count > 0)
+                //{
+                //    for (int k = 0; k < _chunkList.Count; k++)
+                //    {
+                //        Chunk _chunk = _chunkList[k];
+                //        List<ClientInfo> _clientList = PersistentOperations.ClientList();
+                //        if (_clientList != null && _clientList.Count > 0)
+                //        {
+                //            for (int l = 0; l < _clientList.Count; l++)
+                //            {
+                //                ClientInfo _cInfo2 = _clientList[l];
+                //                if (_cInfo2 != null)
+                //                {
+                //                    _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+
+                //Log.Out(string.Format("[SERVERTOOLS] Test 1"));
+                //List<Chunk> _chunkList = new List<Chunk>();
+                //string[] _vector = { "0", "0", "15", "15" };
+                //int _xMin = int.Parse(_vector[0]), _zMin = int.Parse(_vector[1]), _xMax = int.Parse(_vector[2]), _zMax = int.Parse(_vector[3]);
+                //Log.Out(string.Format("[SERVERTOOLS] Test 2"));
+                //for (int i = _xMin; i <= _xMax; i++)
+                //{
+                //    for (int j = _zMin; j <= _zMax; j++)
+                //    {
+                //        Log.Out(string.Format("[SERVERTOOLS] Test 3"));
+                //        if (GameManager.Instance.World.IsChunkAreaLoaded(i, 1, j))
+                //        {
+                //            Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(i, 1, j);
+                //            if (!_chunkList.Contains(_chunk))
+                //            {
+                //                _chunkList.Add(_chunk);
+                //                Log.Out(string.Format("[SERVERTOOLS] Test 4 {0}x {1}z", i, j));
+                //            }
+                //            Bounds bounds = _chunk.GetAABB();
+                //            Log.Out(string.Format("[SERVERTOOLS] (int)bounds.min.x = {0}, (int)bounds.max.x = {1}, (int)bounds.min.z = {2}, (int)bounds.max.z = {3}", (int)bounds.min.x, (int)bounds.max.x, (int)bounds.min.z, (int)bounds.max.z));
+                //            if (i >= (int)bounds.min.x && i <= (int)bounds.max.x && j >= (int)bounds.min.z && j <= (int)bounds.max.z)
+                //            {
+                //                int _x = i - (int)bounds.min.x, _z = j - (int)bounds.min.z;
+                //                Log.Out(string.Format("[SERVERTOOLS] Test 5, _x = {0}, _z = {1}", _x, _z));
+                //                _chunk.SetTraderArea(_x, _z, true);
+                //                Log.Out(string.Format("[SERVERTOOLS] Area protected"));
+                //            }
+                //        }
+                //    }
+                //}
+                //if (_chunkList.Count > 0)
+                //{
+                //    for (int k = 0; k < _chunkList.Count; k++)
+                //    {
+                //        Chunk _chunk = _chunkList[k];
+                //        List<ClientInfo> _clientList = PersistentOperations.ClientList();
+                //        if (_clientList != null && _clientList.Count > 0)
+                //        {
+                //            for (int l = 0; l < _clientList.Count; l++)
+                //            {
+                //                ClientInfo _cInfo2 = _clientList[l];
+                //                if (_cInfo2 != null)
+                //                {
+                //                    _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in TestOperation.TestExec: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in TestOperation.TestExec1: {0}", e.Message));
             }
+        }
+
+        //public static void TestExec2(ClientInfo _cInfo)
+        //{
+        //    try
+        //    {
+        //        Log.Out(string.Format("[SERVERTOOLS] Test 6"));
+        //        List<Chunk> _chunkList = new List<Chunk>();
+        //        string[] _vector = { "0", "0", "15", "15" };
+        //        int _xMin = int.Parse(_vector[0]), _zMin = int.Parse(_vector[1]), _xMax = int.Parse(_vector[2]), _zMax = int.Parse(_vector[3]);
+        //        Log.Out(string.Format("[SERVERTOOLS] Test 7"));
+        //        for (int i = _xMin; i <= _xMax; i++)
+        //        {
+        //            for (int j = _zMin; j <= _zMax; j++)
+        //            {
+        //                Log.Out(string.Format("[SERVERTOOLS] Test 8"));
+        //                if (GameManager.Instance.World.IsChunkAreaLoaded(i, 1, j))
+        //                {
+        //                    Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(i, 1, j);
+        //                    if (!_chunkList.Contains(_chunk))
+        //                    {
+        //                        _chunkList.Add(_chunk);
+        //                        Log.Out(string.Format("[SERVERTOOLS] Test 9 {0}x {1}z", i, j));
+        //                    }
+        //                    Bounds bounds = _chunk.GetAABB();
+        //                    Log.Out(string.Format("[SERVERTOOLS] (int)bounds.min.x = {0}, (int)bounds.max.x = {1}, (int)bounds.min.z = {2}, (int)bounds.max.z = {3}", (int)bounds.min.x, (int)bounds.max.x, (int)bounds.min.z, (int)bounds.max.z));
+        //                    if (i >= (int)bounds.min.x && i <= (int)bounds.max.x && j >= (int)bounds.min.z && j <= (int)bounds.max.z)
+        //                    {
+        //                        int _x = i - (int)bounds.min.x, _z = j - (int)bounds.min.z;
+        //                        Log.Out(string.Format("[SERVERTOOLS] Test 10, _x = {0}, _z = {1}", _x, _z));
+        //                        _chunk.SetTraderArea(_x, _z, false);
+        //                        Log.Out(string.Format("[SERVERTOOLS] Protection disabled"));
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        if (_chunkList.Count > 0)
+        //        {
+        //            for (int k = 0; k < _chunkList.Count; k++)
+        //            {
+        //                Chunk _chunk = _chunkList[k];
+        //                List<ClientInfo> _clientList = PersistentOperations.ClientList();
+        //                if (_clientList != null && _clientList.Count > 0)
+        //                {
+        //                    for (int l = 0; l < _clientList.Count; l++)
+        //                    {
+        //                        ClientInfo _cInfo2 = _clientList[l];
+        //                        if (_cInfo2 != null)
+        //                        {
+        //                            _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Log.Out(string.Format("[SERVERTOOLS] Error in TestOperation.TestExec2: {0}", e.Message));
+        //    }
+        //}
+        //
+        //public static void TestExec3(ClientInfo _cInfo)
+        //{
+        //    try
+        //    {
+        //        Log.Out(string.Format("[SERVERTOOLS] Test 11"));
+        //        List<Chunk> _chunkList = new List<Chunk>();
+        //        string[] _vector = { "-20", "-20", "-18", "-18" };
+        //        int _xMin = int.Parse(_vector[0]), _zMin = int.Parse(_vector[1]), _xMax = int.Parse(_vector[2]), _zMax = int.Parse(_vector[3]);
+        //        Log.Out(string.Format("[SERVERTOOLS] Test 12"));
+        //        for (int i = _xMin; i <= _xMax; i++)
+        //        {
+        //            for (int j = _zMin; j <= _zMax; j++)
+        //            {
+        //                Log.Out(string.Format("[SERVERTOOLS] Test 13"));
+        //                if (GameManager.Instance.World.IsChunkAreaLoaded(i, 1, j))
+        //                {
+        //                    Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(i, 1, j);
+        //                    if (!_chunkList.Contains(_chunk))
+        //                    {
+        //                        _chunkList.Add(_chunk);
+        //                        Log.Out(string.Format("[SERVERTOOLS] Test 14 {0}x {1}z", i, j));
+        //                    }
+        //                    Bounds bounds = _chunk.GetAABB();
+        //                    Log.Out(string.Format("[SERVERTOOLS] (int)bounds.min.x = {0}, (int)bounds.max.x = {1}, (int)bounds.min.z = {2}, (int)bounds.max.z = {3}", (int)bounds.min.x, (int)bounds.max.x, (int)bounds.min.z, (int)bounds.max.z));
+        //                    if (i >= (int)bounds.min.x && i <= (int)bounds.max.x && j >= (int)bounds.min.z && j <= (int)bounds.max.z)
+        //                    {
+        //                        int _x = i - (int)bounds.min.x, _z = j - (int)bounds.min.z;
+        //                        Log.Out(string.Format("[SERVERTOOLS] Test 15, _x = {0}x, _z = {1}z", _x, _z));
+        //                        _chunk.SetTraderArea(_x, _z, true);
+        //                        Log.Out(string.Format("[SERVERTOOLS] Area protected"));
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        if (_chunkList.Count > 0)
+        //        {
+        //            for (int k = 0; k < _chunkList.Count; k++)
+        //            {
+        //                Chunk _chunk = _chunkList[k];
+        //                List<ClientInfo> _clientList = PersistentOperations.ClientList();
+        //                if (_clientList != null && _clientList.Count > 0)
+        //                {
+        //                    for (int l = 0; l < _clientList.Count; l++)
+        //                    {
+        //                        ClientInfo _cInfo2 = _clientList[l];
+        //                        if (_cInfo2 != null)
+        //                        {
+        //                            _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Log.Out(string.Format("[SERVERTOOLS] Error in TestOperation.TestExec3: {0}", e.Message));
+        //    }
+        //}
+        //
+        //public static void TestExec4(ClientInfo _cInfo)
+        //{
+        //    try
+        //    {
+        //        Log.Out(string.Format("[SERVERTOOLS] Test 16"));
+        //        List<Chunk> _chunkList = new List<Chunk>();
+        //        string[] _vector = { "-20", "-20", "-18", "-18" };
+        //        int _xMin = int.Parse(_vector[0]), _zMin = int.Parse(_vector[1]), _xMax = int.Parse(_vector[2]), _zMax = int.Parse(_vector[3]);
+        //        Log.Out(string.Format("[SERVERTOOLS] Test 17"));
+        //        for (int i = _xMin; i <= _xMax; i++)
+        //        {
+        //            for (int j = _zMin; j <= _zMax; j++)
+        //            {
+        //                Log.Out(string.Format("[SERVERTOOLS] Test 18"));
+        //                if (GameManager.Instance.World.IsChunkAreaLoaded(i, 1, j))
+        //                {
+        //                    Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(i, 1, j);
+        //                    if (!_chunkList.Contains(_chunk))
+        //                    {
+        //                        _chunkList.Add(_chunk);
+        //                        Log.Out(string.Format("[SERVERTOOLS] Test 19 {0}x {1}z", i, j));
+        //                    }
+        //                    Bounds bounds = _chunk.GetAABB();
+        //                    Log.Out(string.Format("[SERVERTOOLS] (int)bounds.min.x = {0}, (int)bounds.max.x = {1}, (int)bounds.min.z = {2}, (int)bounds.max.z = {3}", (int)bounds.min.x, (int)bounds.max.x, (int)bounds.min.z, (int)bounds.max.z));
+        //                    if (i >= (int)bounds.min.x && i <= (int)bounds.max.x && j >= (int)bounds.min.z && j <= (int)bounds.max.z)
+        //                    {
+        //                        int _x = i - (int)bounds.min.x, _z = j - (int)bounds.min.z;
+        //                        Log.Out(string.Format("[SERVERTOOLS] Test 20, setting chunk point _x = {0}x, j = {1}z", _x, _z));
+        //                        _chunk.SetTraderArea(_x, _z, false);
+        //                        Log.Out(string.Format("[SERVERTOOLS] Protection disabled"));
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        if (_chunkList.Count > 0)
+        //        {
+        //            for (int k = 0; k < _chunkList.Count; k++)
+        //            {
+        //                Chunk _chunk = _chunkList[k];
+        //                List<ClientInfo> _clientList = PersistentOperations.ClientList();
+        //                if (_clientList != null && _clientList.Count > 0)
+        //                {
+        //                    for (int l = 0; l < _clientList.Count; l++)
+        //                    {
+        //                        ClientInfo _cInfo2 = _clientList[l];
+        //                        if (_cInfo2 != null)
+        //                        {
+        //                            _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Log.Out(string.Format("[SERVERTOOLS] Error in TestOperation.TestExec4: {0}", e.Message));
+        //    }
+        //}
+        //
+        //public static void TestExec5(ClientInfo _cInfo)
+        //{
+        //    try
+        //    {
+        //        Log.Out(string.Format("[SERVERTOOLS] Test 21"));
+        //        List<Chunk> _chunkList = new List<Chunk>();
+        //        EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+        //        if (_player != null)
+        //        {
+        //            Vector3 _position = _player.position;
+        //            int _x = (int)_position.x, _z = (int)_position.z;
+        //            Log.Out(string.Format("[SERVERTOOLS] Test 22 _x = {0}, _z = {1}, ", _x, _z));
+        //            if (GameManager.Instance.World.IsChunkAreaLoaded(_x, 1, _z))
+        //            {
+        //                Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_x, 1, _z);
+        //                if (!_chunkList.Contains(_chunk))
+        //                {
+        //                    _chunkList.Add(_chunk);
+        //                    Log.Out(string.Format("[SERVERTOOLS] Test 23"));
+        //                }
+        //                Bounds bounds = _chunk.GetAABB();
+        //                for (int i = (int)bounds.min.x; i < (int)bounds.max.x; i++)
+        //                {
+        //                    for (int j = (int)bounds.min.z; j < (int)bounds.max.z; j++)
+        //                    {
+        //                        Log.Out(string.Format("[SERVERTOOLS] Test 24 i = {0}, j = {1}", i, j));
+        //                        _x = i - (int)bounds.min.x;
+        //                        _z = j - (int)bounds.min.z;
+        //                        Log.Out(string.Format("[SERVERTOOLS] Test 25, setting chunk point _x = {0}x, _z = {1}z", _x, _z));
+        //                        _chunk.SetTraderArea(_x, _z, false);
+        //                        Log.Out(string.Format("[SERVERTOOLS] Test 26"));
+        //                    }
+        //                }
+        //                Log.Out(string.Format("[SERVERTOOLS] Protection disabled for entire chunk"));
+        //            }
+        //        }
+        //        if (_chunkList.Count > 0)
+        //        {
+        //            for (int k = 0; k < _chunkList.Count; k++)
+        //            {
+        //                Chunk _chunk = _chunkList[k];
+        //                List<ClientInfo> _clientList = PersistentOperations.ClientList();
+        //                if (_clientList != null && _clientList.Count > 0)
+        //                {
+        //                    for (int l = 0; l < _clientList.Count; l++)
+        //                    {
+        //                        ClientInfo _cInfo2 = _clientList[l];
+        //                        if (_cInfo2 != null)
+        //                        {
+        //                            _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Log.Out(string.Format("[SERVERTOOLS] Error in TestOperation.TestExec5: {0}", e.Message));
+        //    }
+        //}
+
+        public static void ConfigChange(string _target, string _replacement)
+        {
+            LoadConfig.fileWatcher.EnableRaisingEvents = false;
+            List<string> _oldConfig = new List<string>();
+            using (FileStream fs1 = new FileStream(LoadConfig.configFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (StreamReader sr = new StreamReader(fs1, Encoding.UTF8))
+                {
+                    for (int i = 0; i < int.MaxValue; i++)
+                    {
+                        string _line = sr.ReadLine();
+                        if (_line != null)
+                        {
+                            if (!_line.Contains(_target))
+                            {
+                                _oldConfig.Add(_line);
+                            }
+                            else
+                            {
+                                _oldConfig.Add(_replacement);
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            if (_oldConfig.Count > 0)
+            {
+                using (FileStream fs2 = new FileStream(LoadConfig.configFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+                {
+                    using (StreamWriter sw = new StreamWriter(fs2, Encoding.UTF8))
+                    {
+                        for (int i = 0; i < _oldConfig.Count; i++)
+                        {
+                            string _line = _oldConfig[i];
+                            sw.WriteLine(_line);
+                        }
+                    }
+                }
+            }
+            LoadConfig.fileWatcher.EnableRaisingEvents = true;
+            LoadConfig.LoadXml();
+            Mods.Load();
         }
     }
 }

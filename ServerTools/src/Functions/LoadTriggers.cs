@@ -239,7 +239,7 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"116\" default=\"waydel\" replacement=\"waydel\" />");
                     sw.WriteLine("        <trigger number=\"117\" default=\"wd\" replacement=\"wd\" />");
                     sw.WriteLine("        <trigger number=\"118\" default=\"admin\" replacement=\"admin\" />");
-                    sw.WriteLine("        <trigger number=\"119\" default=\"\" replacement=\"\" />");
+                    sw.WriteLine("        <trigger number=\"119\" default=\"mutelist\" replacement=\"mutelist\" />");
                     sw.WriteLine("        <trigger number=\"120\" default=\"pmessage\" replacement=\"pmessage\" />");
                     sw.WriteLine("        <trigger number=\"121\" default=\"pm\" replacement=\"pm\" />");
                     sw.WriteLine("        <trigger number=\"122\" default=\"rmessage\" replacement=\"rmessage\" />");
@@ -325,7 +325,7 @@ namespace ServerTools
                     }
                     else if (kvp.Key == 10)
                     {
-                        Waypoint.Command10 = kvp.Value[1];
+                        Waypoints.Command10 = kvp.Value[1];
                     }
                     else if (kvp.Key == 11)
                     {
@@ -709,51 +709,51 @@ namespace ServerTools
                     }
                     else if (kvp.Key == 106)
                     {
-                        Waypoint.Command106 = kvp.Value[1];
+                        Waypoints.Command106 = kvp.Value[1];
                     }
                     else if (kvp.Key == 107)
                     {
-                        Waypoint.Command107 = kvp.Value[1];
+                        Waypoints.Command107 = kvp.Value[1];
                     }
                     else if (kvp.Key == 108)
                     {
-                        Waypoint.Command108 = kvp.Value[1];
+                        Waypoints.Command108 = kvp.Value[1];
                     }
                     else if (kvp.Key == 109)
                     {
-                        Waypoint.Command109 = kvp.Value[1];
+                        Waypoints.Command109 = kvp.Value[1];
                     }
                     else if (kvp.Key == 110)
                     {
-                        Waypoint.Command110 = kvp.Value[1];
+                        Waypoints.Command110 = kvp.Value[1];
                     }
                     else if (kvp.Key == 111)
                     {
-                        Waypoint.Command111 = kvp.Value[1];
+                        Waypoints.Command111 = kvp.Value[1];
                     }
                     else if (kvp.Key == 112)
                     {
-                        Waypoint.Command112 = kvp.Value[1];
+                        Waypoints.Command112 = kvp.Value[1];
                     }
                     else if (kvp.Key == 113)
                     {
-                        Waypoint.Command113 = kvp.Value[1];
+                        Waypoints.Command113 = kvp.Value[1];
                     }
                     else if (kvp.Key == 114)
                     {
-                        Waypoint.Command114 = kvp.Value[1];
+                        Waypoints.Command114 = kvp.Value[1];
                     }
                     else if (kvp.Key == 115)
                     {
-                        Waypoint.Command115 = kvp.Value[1];
+                        Waypoints.Command115 = kvp.Value[1];
                     }
                     else if (kvp.Key == 116)
                     {
-                        Waypoint.Command116 = kvp.Value[1];
+                        Waypoints.Command116 = kvp.Value[1];
                     }
                     else if (kvp.Key == 117)
                     {
-                        Waypoint.Command117 = kvp.Value[1];
+                        Waypoints.Command117 = kvp.Value[1];
                     }
                     else if (kvp.Key == 118)
                     {
@@ -761,7 +761,7 @@ namespace ServerTools
                     }
                     else if (kvp.Key == 119)
                     {
-
+                        Mute.Command119 = kvp.Value[1];
                     }
                     else if (kvp.Key == 120)
                     {

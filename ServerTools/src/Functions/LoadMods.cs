@@ -186,13 +186,21 @@ namespace ServerTools
             {
                 LoadTriggers.Load();
             }
-            if (ProtectedSpace.IsRunning)
+            if (BloodmoonWarrior.IsRunning)
             {
-                ProtectedSpace.Unload();
+                BloodmoonWarrior.Unload();
             }
-            if (!ProtectedSpace.IsRunning)
+            if (!BloodmoonWarrior.IsRunning)
             {
-                ProtectedSpace.Load();
+                BloodmoonWarrior.Load();
+            }
+            if (ProtectedSpaces.IsRunning)
+            {
+                ProtectedSpaces.Unload();
+            }
+            if (!ProtectedSpaces.IsRunning)
+            {
+                ProtectedSpaces.Load();
             }
             if (ClanManager.IsEnabled)
             {
@@ -204,26 +212,12 @@ namespace ServerTools
             }
             if (Mute.IsEnabled)
             {
+                Mute.ClientMuteList();
                 Mute.MuteList();
             }
             if (Jail.IsEnabled)
             {
                 Jail.JailList();
-            }
-            if (BattleLogger.IsEnabled && !BattleLogger.LogFound && !string.IsNullOrEmpty(Utils.GetApplicationScratchPath()))
-            {
-                if (!GamePrefs.GetString(EnumGamePrefs.ServerDisabledNetworkProtocols).ToLower().Contains("litenetlib"))
-                {
-                    BattleLogger.LogDirectory = Utils.GetApplicationScratchPath();
-                    BattleLogger.ConfirmLog();
-                }
-                else
-                {
-                    Log.Out("--------------------------------------------------------------------------");
-                    Log.Out("[SERVERTOOLS] Unable to verify log file. Battle_Loggers has been disabled.");
-                    Log.Out("[SERVERTOOLS] Network protocol litenetlib is required for this tool.");
-                    Log.Out("--------------------------------------------------------------------");
-                }
             }
             PatchTools.ApplyPatches();
         }

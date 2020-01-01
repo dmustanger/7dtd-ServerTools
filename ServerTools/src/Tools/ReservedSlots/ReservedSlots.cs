@@ -299,7 +299,7 @@ namespace ServerTools
                         }
                         GC.Collect();
                         MemoryPools.Cleanup();
-                        PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_cInfoClientToKick.playerId);
+                        PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfoClientToKick.playerId);
                         if (persistentPlayerData != null)
                         {
                             persistentPlayerData.LastLogin = DateTime.Now;
@@ -335,7 +335,7 @@ namespace ServerTools
                         }
                         GC.Collect();
                         MemoryPools.Cleanup();
-                        PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_cInfoReservedToKick.playerId);
+                        PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfoReservedToKick.playerId);
                         if (persistentPlayerData != null)
                         {
                             persistentPlayerData.LastLogin = DateTime.Now;
@@ -411,7 +411,7 @@ namespace ServerTools
                         }
                         GC.Collect();
                         MemoryPools.Cleanup();
-                        PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_cInfoClientToKick.playerId);
+                        PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfoClientToKick.playerId);
                         if (persistentPlayerData != null)
                         {
                             persistentPlayerData.LastLogin = DateTime.Now;
@@ -488,7 +488,7 @@ namespace ServerTools
                         }
                         GC.Collect();
                         MemoryPools.Cleanup();
-                        PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_cInfoClientToKick.playerId);
+                        PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfoClientToKick.playerId);
                         if (persistentPlayerData != null)
                         {
                             persistentPlayerData.LastLogin = DateTime.Now;

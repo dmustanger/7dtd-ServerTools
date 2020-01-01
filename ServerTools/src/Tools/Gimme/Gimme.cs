@@ -360,7 +360,15 @@ namespace ServerTools
                 int[] _itemData;
                 if (dict.TryGetValue(_randomItem, out _itemData))
                 {
-                    int _count = random.Next(_itemData[0], _itemData[1] + 1);
+                    int _count = 0;
+                    if (_itemData[0] > _itemData[1])
+                    {
+                        _count = random.Next(_itemData[1], _itemData[0] + 1);
+                    }
+                    else
+                    {
+                        _count = random.Next(_itemData[0], _itemData[1] + 1);
+                    }
                     if (_itemValue.HasQuality && _itemData[2] > 0 && _itemData[3] >= _itemData[2])
                     {
                         _itemValue.Quality = random.Next(_itemData[2], _itemData[3] + 1);

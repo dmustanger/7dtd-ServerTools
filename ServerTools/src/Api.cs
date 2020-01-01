@@ -39,6 +39,7 @@ namespace ServerTools
         {
             LoadProcess.Load(1);
             Tracking.Cleanup();
+            BattleLogger.Load();
         }
 
         private static void GameShutdown()
@@ -623,9 +624,9 @@ namespace ServerTools
                     {
                         Bank.TransferId.Remove(_cInfo.playerId);
                     }
-                    if (Zones.reminder.ContainsKey(_cInfo.entityId))
+                    if (Zones.Reminder.ContainsKey(_cInfo.entityId))
                     {
-                        Zones.reminder.Remove(_cInfo.entityId);
+                        Zones.Reminder.Remove(_cInfo.entityId);
                     }
                     if (BloodmoonWarrior.WarriorList.Contains(_cInfo.entityId))
                     {

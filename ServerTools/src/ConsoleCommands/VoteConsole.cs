@@ -28,7 +28,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Vote", "vote" };
+            return new string[] { "st-VoteReward", "votereward", "st-vote", "vote" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -41,17 +41,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    VoteReward.IsEnabled = false;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Vote reward has been set to off"));
-                    return;
+                    if (VoteReward.IsEnabled)
+                    {
+                        VoteReward.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Vote reward has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Vote reward is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    VoteReward.IsEnabled = true;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Vote reward has been set to on"));
-                    return;
+                    if (!VoteReward.IsEnabled)
+                    {
+                        VoteReward.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Vote reward has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Vote reward is already on"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("reset"))
                 {
@@ -70,7 +86,7 @@ namespace ServerTools
                             {
                                 PersistentContainer.Instance.Players[_cInfo2.playerId].LastVote = DateTime.Now.AddYears(-1);
                                 PersistentContainer.Instance.Save();
-                                SdtdConsole.Instance.Output(string.Format("Vote reward delay reset for {0}.", _cInfo2.playerName));
+                                SdtdConsole.Instance.Output(string.Format("Vote reward delay reset for {0}", _cInfo2.playerName));
                             }
                         }
                         return;
@@ -86,7 +102,7 @@ namespace ServerTools
                             }
                         }
                         PersistentContainer.Instance.Save();
-                        SdtdConsole.Instance.Output("Vote reward delay reset for all players.");
+                        SdtdConsole.Instance.Output("Vote reward delay reset for all players");
                         return;
                     }
                     else
@@ -96,7 +112,7 @@ namespace ServerTools
                         {
                             PersistentContainer.Instance.Players[_cInfo.playerId].LastVote = DateTime.Now.AddYears(-1);
                             PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output(string.Format("Vote reward delay reset for {0}.", _cInfo.playerName));
+                            SdtdConsole.Instance.Output(string.Format("Vote reward delay reset for {0}", _cInfo.playerName));
                         }
                         else
                         {
@@ -110,23 +126,23 @@ namespace ServerTools
                             {
                                 PersistentContainer.Instance.Players[_params[1]].LastVote = DateTime.Now.AddYears(-1);
                                 PersistentContainer.Instance.Save();
-                                SdtdConsole.Instance.Output(string.Format("Vote reward delay reset for {0}.", _params[1]));
+                                SdtdConsole.Instance.Output(string.Format("Vote reward delay reset for {0}", _params[1]));
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a Vote reward delay to reset.", _params[1]));
+                                SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a Vote reward delay to reset", _params[1]));
                             }
                         }
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in VotingConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in VotingConsole.Execute: {0}", e));
             }
         }
     }

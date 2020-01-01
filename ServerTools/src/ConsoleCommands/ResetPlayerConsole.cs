@@ -50,7 +50,7 @@ namespace ServerTools
                     int _id;
                     if (int.TryParse(_params[0], out _id))
                     {
-                        if (PersistentOperations.GetPersistentPlayerData(_params[0]) != null)
+                        if (PersistentOperations.GetPersistentPlayerDataFromSteamId(_params[0]) != null)
                         {
                             GC.Collect();
                             MemoryPools.Cleanup();

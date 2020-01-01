@@ -14,7 +14,7 @@ namespace ServerTools
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static SortedDictionary<int, string[]> dict = new SortedDictionary<int, string[]>();
         private static SortedDictionary<int, int[]> dict1 = new SortedDictionary<int, int[]>();
-        private static List<string> categories = new List<string>();
+        public static List<string> categories = new List<string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
 
@@ -516,7 +516,7 @@ namespace ServerTools
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _price);
-                Log.Out(string.Format("Sold {0} to {1}.", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name, _cInfo.playerName));
+                Log.Out(string.Format("Sold {0} to {1}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name, _cInfo.playerName));
                 string _message = "{Count} {Item} was purchased through the shop. If your bag is full, check the ground.";
                 _message = _message.Replace("{Count}", _count.ToString());
                 _message = _message.Replace("{Item}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
@@ -524,7 +524,7 @@ namespace ServerTools
             }
             else
             {
-                string _message = " you can only withdraw a full stack at a time. The maximum stack size is {Max}.";
+                string _message = " you can only purchase a full stack worth at a time. The maximum stack size for this is {Max}.";
                 _message = _message.Replace("{Max}", _maxAllowed.ToString());
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }

@@ -1466,7 +1466,7 @@ namespace ServerTools
                 string _phrase814;
                 if (!Dict.TryGetValue(814, out _phrase814))
                 {
-                    _phrase814 = " you do not have enough {Currency} in your wallet to run this command.";
+                    _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"814\" Phrase=\"{0}\" />", _phrase814));
                 string _phrase815;

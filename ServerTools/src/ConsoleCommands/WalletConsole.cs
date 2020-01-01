@@ -43,15 +43,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Wallet.IsEnabled = false;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Wallet has been set to off"));
+                    if (Wallet.IsEnabled)
+                    {
+                        Wallet.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Wallet has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Wallet is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Wallet.IsEnabled = true;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Wallet has been set to on"));
+                    if (!Wallet.IsEnabled)
+                    {
+                        Wallet.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Wallet has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Wallet is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("all"))
                 {
@@ -137,12 +155,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in WalletConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in WalletConsole.Execute: {0}", e));
             }
         }
     }

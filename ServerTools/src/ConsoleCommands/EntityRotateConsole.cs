@@ -61,7 +61,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in EntityRotateConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in EntityRotateConsole.Execute: {0}", e));
             }
         }
     }

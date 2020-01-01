@@ -180,12 +180,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CountryBanImmunityCommandConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in CountryBanImmunityCommandConsole.Execute: {0}", e));
             }
         }
     }

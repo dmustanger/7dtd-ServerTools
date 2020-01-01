@@ -42,17 +42,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Watchlist.IsEnabled = false;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Watch list has been set to off"));
-                    return;
+                    if (Watchlist.IsEnabled)
+                    {
+                        Watchlist.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Watch list has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Watch list is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Watchlist.IsEnabled = true;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Watch list has been set to on"));
-                    return;
+                    if (!Watchlist.IsEnabled)
+                    {
+                        Watchlist.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Watch list has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Watch list is already on"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("add"))
                 {
@@ -87,23 +103,23 @@ namespace ServerTools
                     }
                     if (!Watchlist.Dict.ContainsKey(_params[1]))
                     {
-                        SdtdConsole.Instance.Output(string.Format("SteamId {0} was not found.", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("SteamId {0} was not found", _params[1]));
                         return;
                     }
                     Watchlist.Dict.Remove(_params[1]);
-                    SdtdConsole.Instance.Output(string.Format("Removed SteamId {0} from the Watchlist.", _params[1]));
+                    SdtdConsole.Instance.Output(string.Format("Removed SteamId {0} from the Watchlist", _params[1]));
                     Watchlist.UpdateXml();
                 }
                 else if (_params[0].ToLower().Equals("list"))
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     if (Watchlist.Dict.Count < 1)
                     {
-                        SdtdConsole.Instance.Output("There are no steamIds on the Watchlist.");
+                        SdtdConsole.Instance.Output("There are no steamIds on the Watchlist");
                         return;
                     }
                     foreach (KeyValuePair<string, string> _key in Watchlist.Dict)
@@ -114,12 +130,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in WatchlistCommandConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in WatchlistConsole.Execute: {0}", e));
             }
         }
     }

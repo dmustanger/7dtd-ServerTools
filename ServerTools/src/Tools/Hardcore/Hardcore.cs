@@ -484,7 +484,7 @@ namespace ServerTools
                 }
                 GC.Collect();
                 MemoryPools.Cleanup();
-                PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_cInfo.playerId);
+                PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo.playerId);
                 if (persistentPlayerData != null)
                 {
                     persistentPlayerData.LastLogin = DateTime.Now;

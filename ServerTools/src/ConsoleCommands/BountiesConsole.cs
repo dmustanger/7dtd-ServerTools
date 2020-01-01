@@ -39,27 +39,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    if (_params.Count != 1)
+                    if (Bounties.IsEnabled)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        Bounties.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Bounties has been set to off"));
                         return;
                     }
-                    Bounties.IsEnabled = false;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Bounties has been set to off"));
-                    return;
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Bounties is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (_params.Count != 1)
+                    if (!Bounties.IsEnabled)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        Bounties.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Bounties has been set to on"));
                         return;
                     }
-                    Bounties.IsEnabled = true;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Bounties has been set to on"));
-                    return;
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Bounties is already on"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("edit"))
                 {
@@ -124,12 +130,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BountiesConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BountiesConsole.Execute: {0}", e));
             }
         }
     }

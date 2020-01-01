@@ -58,14 +58,14 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("#{0}: Id {1}, Located at x {2}  y {3} z {4}.", i, _entity.entityId, x, y, z));
+                            SdtdConsole.Instance.Output(string.Format("#{0}: Id {1}, Located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BikeListConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BikeListConsole.Execute: {0}", e));
             }
         }
     }

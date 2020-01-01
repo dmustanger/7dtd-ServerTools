@@ -7,7 +7,7 @@ namespace ServerTools
 {
     public class TeleportHome
     {
-        public static bool IsEnabled = false, Set_Home2_Enabled = false, Set_Home2_Reserved_Only = false, Home2_Delay = false, PvP_Check = false, Zombie_Check = false, Vehicle_Check = false;
+        public static bool IsEnabled = false, Set_Home2_Enabled = false, Set_Home2_Reserved_Only = false, Home2_Delay = false, Player_Check = false, Zombie_Check = false, Vehicle_Check = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
         public static string Command1 = "sethome", Command2 = "home", Command3 = "fhome", Command4 = "delhome", Command5 = "sethome2", 
             Command6 = "home2", Command7 = "fhome2", Command8 = "delhome2", Command9 = "go";
@@ -743,7 +743,7 @@ namespace ServerTools
                 {
                     return false;
                 }
-                if (PvP_Check)
+                if (Player_Check)
                 {
                     if (Teleportation.PCheck(_cInfo, _player))
                     {

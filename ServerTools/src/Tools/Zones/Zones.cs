@@ -12,19 +12,21 @@ namespace ServerTools
             Ban_Enabled = false, Zone_Message = false, Set_Home = false;
         public static int Reminder_Delay = 20;
         public static string Command50 = "return";
-        public static Dictionary<int, DateTime> reminder = new Dictionary<int, DateTime>();
-        public static Dictionary<int, string> reminderMsg = new Dictionary<int, string>();
-        public static Dictionary<int, string[]> zoneSetup1 = new Dictionary<int, string[]>();
-        public static Dictionary<int, bool[]> zoneSetup2 = new Dictionary<int, bool[]>();
+        public static Dictionary<int, DateTime> Reminder = new Dictionary<int, DateTime>();
+        public static Dictionary<int, string> ReminderMsg = new Dictionary<int, string>();
         public static Dictionary<int, string> Victim = new Dictionary<int, string>();
         public static Dictionary<int, int> Forgive = new Dictionary<int, int>();
         public static Dictionary<int, string> ZoneExit = new Dictionary<int, string>();
         public static List<int> ZonePvE = new List<int>();
         public static List<string[]> Box1 = new List<string[]>();
         public static List<bool[]> Box2 = new List<bool[]>();
+        public static List<string[]> ProtectedList = new List<string[]>();
         private const string file = "Zones.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+
+        public static Dictionary<int, string[]> zoneSetup1 = new Dictionary<int, string[]>();
+        public static Dictionary<int, bool[]> zoneSetup2 = new Dictionary<int, bool[]>();
 
         public static void Load()
         {
@@ -37,10 +39,14 @@ namespace ServerTools
 
         public static void Unload()
         {
-            Box1.Clear();
-            Box2.Clear();
-            fileWatcher.Dispose();
-            IsRunning = false;
+            if (!IsEnabled && IsRunning)
+            {
+                Box1.Clear();
+                Box2.Clear();
+                fileWatcher.Dispose();
+                IsRunning = false;
+                UnloadProtection();
+            }
         }
 
         public static void LoadXml()
@@ -130,8 +136,8 @@ namespace ServerTools
                         }
                         else
                         {
+                            bool _result1, _result2, _result3, _result4;
                             string _circle = _line.GetAttribute("circle");
-                            bool _result1, _result2, _result3, _result4; ;
                             if (!bool.TryParse(_circle, out _result1))
                             {
                                 Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for circle attribute: {0}.", subChild.OuterXml));
@@ -162,6 +168,20 @@ namespace ServerTools
                             {
                                 Box1.Add(box1);
                                 Box2.Add(box2);
+                            }
+                            if (_result4)
+                            {
+                                if (!_result1)
+                                {
+                                    string[] _corner1 = box1[0].Split(',');
+                                    string[] _corner2 = box1[1].Split(',');
+                                    string[] _vectors = { _corner1[0], _corner1[2], _corner2[0], _corner2[2] };
+                                    Zones.AddProtection(_vectors);
+                                }
+                                else
+                                {
+                                    //Add circle protection later
+                                }
                             }
                         }
                     }
@@ -323,8 +343,8 @@ namespace ServerTools
                                         Response(_cInfo, _box1[4]);
                                     }
                                     ZoneExit[_player.entityId] = _box1[3];
-                                    reminder[_player.entityId] = DateTime.Now;
-                                    reminderMsg[_player.entityId] = _box1[5];
+                                    Reminder[_player.entityId] = DateTime.Now;
+                                    ReminderMsg[_player.entityId] = _box1[5];
                                 }
                             }
                         }
@@ -339,8 +359,8 @@ namespace ServerTools
                                 Response(_cInfo, _box1[4]);
                             }
                             ZoneExit.Add(_player.entityId, _box1[3]);
-                            reminder.Add(_player.entityId, DateTime.Now);
-                            reminderMsg.Add(_player.entityId, _box1[5]);
+                            Reminder.Add(_player.entityId, DateTime.Now);
+                            ReminderMsg.Add(_player.entityId, _box1[5]);
                         }
                         if (_box2[1])
                         {
@@ -370,8 +390,8 @@ namespace ServerTools
                         }
                     }
                     ZoneExit.Remove(_player.entityId);
-                    reminder.Remove(_player.entityId);
-                    reminderMsg.Remove(_player.entityId);
+                    Reminder.Remove(_player.entityId);
+                    ReminderMsg.Remove(_player.entityId);
                     if (ZonePvE.Contains(_player.entityId))
                     {
                         ZonePvE.Remove(_player.entityId);
@@ -527,7 +547,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.Penalty: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.Penalty: {0}", e.Message));
             }
         }
 
@@ -822,15 +842,15 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.HostileCheck: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.HostileCheck: {0}", e.Message));
             }
         }
 
-        public static void Reminder()
+        public static void ReminderExec()
         {
             try
             {
-                foreach (KeyValuePair<int, DateTime> time in reminder)
+                foreach (KeyValuePair<int, DateTime> time in Reminder)
                 {
                     ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(time.Key);
                     if (_cInfo != null)
@@ -842,24 +862,24 @@ namespace ServerTools
                         if (_timepassed >= Reminder_Delay)
                         {
                             string _msg;
-                            reminderMsg.TryGetValue(_cInfo.entityId, out _msg);
+                            ReminderMsg.TryGetValue(_cInfo.entityId, out _msg);
                             if (_msg != "")
                             {
                                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _msg + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                reminder[_cInfo.entityId] = DateTime.Now;
+                                Reminder[_cInfo.entityId] = DateTime.Now;
                             }
                         }
                     }
                     else
                     {
-                        reminder.Remove(time.Key);
-                        reminderMsg.Remove(time.Key);
+                        Reminder.Remove(time.Key);
+                        ReminderMsg.Remove(time.Key);
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.Reminder: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.ReminderExec: {0}", e.Message));
             }
         }
 
@@ -884,7 +904,7 @@ namespace ServerTools
                                 string[] _max = _box1[1].Split(',');
                                 float.TryParse(_max[0], out _xMax);
                                 float.TryParse(_max[2], out _zMax);
-                                if (ProtectedSpace.VectorBox(_xMin, _zMin, _xMax, _zMax, _position.x, _position.z))
+                                if (Zones.VectorBox(_xMin, _zMin, _xMax, _zMax, _position.x, _position.z))
                                 {
                                     return true;
                                 }
@@ -893,7 +913,7 @@ namespace ServerTools
                             {
                                 int _radius;
                                 int.TryParse(_box1[1], out _radius);
-                                if (ProtectedSpace.VectorCircle(_xMin, _zMin, _position.x, _position.z, _radius))
+                                if (Zones.VectorCircle(_xMin, _zMin, _position.x, _position.z, _radius))
                                 {
                                     return true;
                                 }
@@ -904,9 +924,250 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.Protected: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.Protected: {0}", e.Message));
             }
             return false;
+        }
+
+        public static bool VectorBox(float xMin, float zMin, float xMax, float zMax, float _X, float _Z)
+        {
+            if (xMin >= 0 && xMax >= 0)
+            {
+                if (xMin < xMax)
+                {
+                    if (_X < xMin || _X > xMax)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (_X > xMin || _X < xMax)
+                    {
+                        return false;
+                    }
+                }
+            }
+            else if (xMin <= 0 && xMax <= 0)
+            {
+                if (xMin < xMax)
+                {
+                    if (_X < xMin || _X > xMax)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (_X > xMin || _X < xMax)
+                    {
+                        return false;
+                    }
+                }
+            }
+            else if (xMin <= 0 && xMax >= 0)
+            {
+                if (_X < xMin || _X > xMax)
+                {
+                    return false;
+                }
+            }
+            else if (xMin >= 0 && xMax <= 0)
+            {
+                if (_X > xMin || _X < xMax)
+                {
+                    return false;
+                }
+            }
+            if (zMin >= 0 && zMax >= 0)
+            {
+                if (zMin < zMax)
+                {
+                    if (_Z < zMin || _Z > zMax)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (_Z > zMin || _Z < zMax)
+                    {
+                        return false;
+                    }
+                }
+            }
+            else if (zMin <= 0 && zMax <= 0)
+            {
+                if (zMin < zMax)
+                {
+                    if (_Z < zMin || _Z > zMax)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (_Z > zMin || _Z < zMax)
+                    {
+                        return false;
+                    }
+                }
+            }
+            else if (zMin <= 0 && zMax >= 0)
+            {
+                if (_Z < zMin || _Z > zMax)
+                {
+                    return false;
+                }
+            }
+            else if (zMin >= 0 && zMax <= 0)
+            {
+                if (_Z > zMin || _Z < zMax)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static void AddProtection(string[] _vectors)
+        {
+            try
+            {
+                int _xMin = int.Parse(_vectors[0]), _zMin = int.Parse(_vectors[1]), _xMax = int.Parse(_vectors[2]), _zMax = int.Parse(_vectors[3]);
+                int _xMinAlt = _xMin, _zMinAlt = _zMin, _xMaxAlt = _xMax, _zMaxAlt = _zMax;
+                if (_xMin > _xMax)
+                {
+                    _xMinAlt = _xMax;
+                    _xMaxAlt = _xMin;
+                }
+                if (_zMin > _zMax)
+                {
+                    _zMinAlt = _zMax;
+                    _zMaxAlt = _zMin;
+                }
+                List<Chunk> _chunkList = new List<Chunk>();
+                string[] _vectorsAlt = { _xMinAlt.ToString(), _zMinAlt.ToString(), _xMaxAlt.ToString(), _zMaxAlt.ToString() };
+                if (!Zones.ProtectedList.Contains(_vectorsAlt))
+                {
+                    Zones.ProtectedList.Add(_vectorsAlt);
+                    for (int i = _xMinAlt; i <= _xMaxAlt; i++)
+                    {
+                        for (int j = _zMinAlt; j <= _zMaxAlt; j++)
+                        {
+                            if (GameManager.Instance.World.IsChunkAreaLoaded(i, 1, j))
+                            {
+                                Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(i, 1, j);
+                                if (!_chunkList.Contains(_chunk))
+                                {
+                                    _chunkList.Add(_chunk);
+                                }
+                                Bounds bounds = _chunk.GetAABB();
+                                int _x = i - (int)bounds.min.x, _z = j - (int)bounds.min.z;
+                                _chunk.SetTraderArea(_x, _z, true);
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                    if (_chunkList.Count > 0)
+                    {
+                        for (int k = 0; k < _chunkList.Count; k++)
+                        {
+                            Chunk _chunk = _chunkList[k];
+                            List<ClientInfo> _clientList = PersistentOperations.ClientList();
+                            if (_clientList != null && _clientList.Count > 0)
+                            {
+                                for (int l = 0; l < _clientList.Count; l++)
+                                {
+                                    ClientInfo _cInfo2 = _clientList[l];
+                                    if (_cInfo2 != null)
+                                    {
+                                        _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Zones.UpdateXml();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.AddProtection: {0}", e.Message));
+            }
+        }
+
+        public static void UnloadProtection()
+        {
+            try
+            {
+                List<string[]> _protectedList = Zones.ProtectedList;
+                if (_protectedList.Count > 0)
+                {
+                    List<Chunk> _chunkList = new List<Chunk>();
+                    for (int i = 0; i < _protectedList.Count; i++)
+                    {
+                        string[] _vector = _protectedList[i];
+                        int _xMin = int.Parse(_vector[0]), _zMin = int.Parse(_vector[1]), _xMax = int.Parse(_vector[2]), _zMax = int.Parse(_vector[3]);
+                        int _xMinAlt = _xMin, _zMinAlt = _zMin, _xMaxAlt = _xMax, _zMaxAlt = _zMax;
+                        if (_xMin > _xMax)
+                        {
+                            _xMinAlt = _xMax;
+                            _xMaxAlt = _xMin;
+                        }
+                        if (_zMin > _zMax)
+                        {
+                            _zMinAlt = _zMax;
+                            _zMaxAlt = _zMin;
+                        }
+                        for (int j = _xMinAlt; j <= _xMaxAlt; j++)
+                        {
+                            for (int k = _zMinAlt; k <= _zMaxAlt; k++)
+                            {
+                                if (GameManager.Instance.World.IsChunkAreaLoaded(j, 1, k))
+                                {
+                                    Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(j, 1, k);
+                                    if (!_chunkList.Contains(_chunk))
+                                    {
+                                        _chunkList.Add(_chunk);
+                                    }
+                                    Bounds bounds = _chunk.GetAABB();
+                                    int _x = i - (int)bounds.min.x, _z = j - (int)bounds.min.z;
+                                    _chunk.SetTraderArea(_x, _z, false);
+                                }
+                            }
+                        }
+                        _protectedList.Remove(_vector);
+                    }
+                    Zones.ProtectedList = _protectedList;
+                    if (_chunkList.Count > 0)
+                    {
+                        for (int l = 0; l < _chunkList.Count; l++)
+                        {
+                            Chunk _chunk = _chunkList[l];
+                            List<ClientInfo> _clientList = PersistentOperations.ClientList();
+                            if (_clientList != null && _clientList.Count > 0)
+                            {
+                                for (int m = 0; m < _clientList.Count; m++)
+                                {
+                                    ClientInfo _cInfo2 = _clientList[m];
+                                    if (_cInfo2 != null)
+                                    {
+                                        _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Zones.UnloadProtection: {0}", e.Message));
+            }
         }
     }
 }

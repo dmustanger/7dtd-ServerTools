@@ -6,15 +6,18 @@ using UnityEngine;
 public static class Injections
 {
 
-    public static bool DamageResponse_Prefix(EntityAlive __instance, ref DamageResponse _dmResponse)
+    public static bool DamageResponse_Prefix(EntityAlive __instance, DamageResponse _dmResponse)
     {
         try
         {
-            return DamageDetector.ProcessPlayerDamage(__instance, _dmResponse);
+            if (ProcessDamage.Damage_Detector || Zones.IsEnabled || Lobby.IsEnabled)
+            {
+                return ProcessDamage.ProcessPlayerDamage(__instance, _dmResponse);
+            }
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.DamageResponse_Prefix: {0}.", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.DamageResponse_Prefix: {0}", e.Message));
         }
         return true;
     }
@@ -23,31 +26,27 @@ public static class Injections
     {
         try
         {
-            if (ReservedSlots.IsEnabled && (_playerId == null || _playerId.Length < 17))
-            {
-                return true;
-            }
-            else if (ConnectionManager.Instance.ClientCount() > PersistentOperations.MaxPlayers)
+            if (ReservedSlots.IsEnabled && _playerId != null && _playerId.Length == 17 && ConnectionManager.Instance.ClientCount() > PersistentOperations.MaxPlayers)
             {
                 return ReservedSlots.FullServer(_playerId, _playerName, _compatibilityVersion);
             }
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.PlayerLoginRPC_Prefix: {0}.", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.PlayerLoginRPC_Prefix: {0}", e.Message));
         }
         return true;
     }
 
-    public static bool ChangeBlocks_Prefix(GameManager __instance, string persistentPlayerId, ref List<BlockChangeInfo> _blocksToChange)
+    public static bool ChangeBlocks_Prefix(GameManager __instance, string persistentPlayerId, List<BlockChangeInfo> _blocksToChange)
     {
         try
         {
-            return DamageDetector.ProcessBlockDamage(__instance, persistentPlayerId, _blocksToChange);
+            return ProcessDamage.ProcessBlockDamage(__instance, persistentPlayerId, _blocksToChange);
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ChangeBlocks_Prefix: {0}.", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ChangeBlocks_Prefix: {0}", e.Message));
         }
         return true;
     }
@@ -59,15 +58,15 @@ public static class Injections
             if (_playerId > 0)
             {
                 AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_playerId.ToString());
-                if (Admin.PermissionLevel > DamageDetector.Admin_Level)
+                if (Admin.PermissionLevel > ProcessDamage.Admin_Level)
                 {
-                    return ProtectedSpace.AllowExplosion(_worldPos);
+                    return ProtectedSpaces.AllowExplosion(_worldPos);
                 }
             }
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ExplosionServer_Prefix: {0}.", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ExplosionServer_Prefix: {0}", e.Message));
         }
         return true;
     }

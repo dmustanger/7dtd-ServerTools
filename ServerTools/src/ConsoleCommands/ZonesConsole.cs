@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 using UnityEngine;
 
 namespace ServerTools
 {
-    class ZoneSetupConsole : ConsoleCmdAbstract
+    class ZonesConsole : ConsoleCmdAbstract
     {
         public static Dictionary<int, int> newZone = new Dictionary<int, int>();
 
@@ -17,13 +16,13 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Zone off\n" +
-                   "  2. Zone on\n" +
-                   "  3. Zone new\n" +
-                   "  4. Zone list\n" +
-                   "  5. Zone delete <number>\n" +
-                   "  6. Zone save\n" +
-                   "  7. Zone back\n" +
+                   "  1. Zones off\n" +
+                   "  2. Zones on\n" +
+                   "  3. Zones new\n" +
+                   "  4. Zones list\n" +
+                   "  5. Zones delete <number>\n" +
+                   "  6. Zones save\n" +
+                   "  7. Zones back\n" +
                    "1. Turn off zone tool\n" +
                    "2. Turn on zone tool\n" +
                    "3. Create a new zone\n" +
@@ -35,7 +34,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Zone", "Zone", "zone"};
+            return new string[] { "st-Zones", "Zones", "zones"};
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -47,17 +46,33 @@ namespace ServerTools
                 {
                     if (_params[0].ToLower().Equals("off"))
                     {
-                        Zones.IsEnabled = false;
-                        LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Zones has been set to off"));
-                        return;
+                        if (Zones.IsEnabled)
+                        {
+                            Zones.IsEnabled = false;
+                            LoadConfig.WriteXml();
+                            SdtdConsole.Instance.Output(string.Format("Zones has been set to off"));
+                            return;
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Zones is already off"));
+                            return;
+                        }
                     }
                     else if (_params[0].ToLower().Equals("on"))
                     {
-                        Zones.IsEnabled = true;
-                        LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Zones has been set to on"));
-                        return;
+                        if (!Zones.IsEnabled)
+                        {
+                            Zones.IsEnabled = true;
+                            LoadConfig.WriteXml();
+                            SdtdConsole.Instance.Output(string.Format("Zones has been set to on"));
+                            return;
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output(string.Format("Zones is already on"));
+                            return;
+                        }
                     }
                     else if (_params[0].ToLower().Equals("new"))
                     {
@@ -534,13 +549,13 @@ namespace ServerTools
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ZoneSetupConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ZonesConsole.Execute: {0}", e));
             }
         }
     }

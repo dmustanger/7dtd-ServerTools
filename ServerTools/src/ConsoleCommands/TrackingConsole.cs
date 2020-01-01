@@ -42,17 +42,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Tracking.IsEnabled = false;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Tracking has been set to off"));
-                    return;
+                    if (Tracking.IsEnabled)
+                    {
+                        Tracking.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Tracking has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Tracking is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Tracking.IsEnabled = true;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Tracking has been set to on"));
-                    return;
+                    if (!Tracking.IsEnabled)
+                    {
+                        Tracking.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Tracking has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Tracking is already on"));
+                        return;
+                    }
                 }
                 else if (_params.Count == 2)
                 {
@@ -108,12 +124,12 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[1]));
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                     }
                     return;
                 }
@@ -177,38 +193,38 @@ namespace ServerTools
                                     }
                                     else
                                     {
-                                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[4]));
+                                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[4]));
                                     }
                                 }
                                 else
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[3]));
+                                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[3]));
                                 }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[2]));
+                                SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[2]));
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[1]));
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                     }
                     return;
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output("Invalid arguments.");
+                    SdtdConsole.Instance.Output("Invalid arguments");
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in TrackingConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in TrackingConsole.Execute: {0}", e));
             }
         }
 

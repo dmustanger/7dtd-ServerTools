@@ -15,6 +15,22 @@ namespace ServerTools
         public static Dictionary<string, string> Players = new Dictionary<string, string>();
         private static int LogLineCount = 0;
 
+        public static void Load()
+        {
+            try
+            {
+                if (!BattleLogger.LogFound && !string.IsNullOrEmpty(Utils.GetApplicationScratchPath()))
+                {
+                    BattleLogger.LogDirectory = Utils.GetApplicationScratchPath();
+                    BattleLogger.ConfirmLog();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in BattleLogger.Load: {0}.", e.Message));
+            }
+        }
+
         public static void ConfirmLog()
         {
             try
@@ -49,9 +65,9 @@ namespace ServerTools
                                         {
                                             LogName = _fileName;
                                             LogFound = true;
-                                            Log.Out("------------------------------------------------------------------");
-                                            Log.Out("[SERVERTOOLS] Verified log file. Battle_Loggers is now functioning");
-                                            Log.Out("------------------------------------------------------------------");
+                                            Log.Out("-------------------------------");
+                                            Log.Out("[SERVERTOOLS] Verified log file");
+                                            Log.Out("-------------------------------");
                                             break;
                                         }
                                     }
@@ -59,6 +75,12 @@ namespace ServerTools
                                     {
                                         break;
                                     }
+                                }
+                                if (!LogFound)
+                                {
+                                    Log.Out("---------------------------------------");
+                                    Log.Out("[SERVERTOOLS] Unable to verify log file");
+                                    Log.Out("---------------------------------------");
                                 }
                             }
                         }
@@ -165,10 +187,10 @@ namespace ServerTools
         {
             try
             {
-                PlayerDataFile _playerDataFile = PersistentOperations.GetPlayerDataFile(_id);
+                PlayerDataFile _playerDataFile = PersistentOperations.GetPlayerDataFileFromSteamId(_id);
                 if (_playerDataFile != null)
                 {
-                    PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_id);
+                    PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
                     if (_persistentPlayerData != null)
                     {
                         GC.Collect();
@@ -249,7 +271,7 @@ namespace ServerTools
                 ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_id);
                 if (_cInfo != null)
                 {
-                    PlayerDataFile _playerDataFile = PersistentOperations.GetPlayerDataFile(_id);
+                    PlayerDataFile _playerDataFile = PersistentOperations.GetPlayerDataFileFromSteamId(_id);
                     if (_playerDataFile != null)
                     {
                         PersistentOperations.SavePlayerDataFile(_id, _playerDataFile);
@@ -281,7 +303,7 @@ namespace ServerTools
                 }
                 GC.Collect();
                 MemoryPools.Cleanup();
-                PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerData(_cInfo.playerId);
+                PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo.playerId);
                 if (persistentPlayerData != null)
                 {
                     persistentPlayerData.LastLogin = DateTime.Now;

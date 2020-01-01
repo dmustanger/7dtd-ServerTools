@@ -38,17 +38,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Gimme.IsEnabled = false;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Gimme has been set to off"));
-                    return;
+                    if (Gimme.IsEnabled)
+                    {
+                        Gimme.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Gimme has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Gimme is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Gimme.IsEnabled = true;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Gimme has been set to on"));
-                    return;
+                    if (!Gimme.IsEnabled)
+                    {
+                        Gimme.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Gimme has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Gimme is already on"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("reset"))
                 {
@@ -83,12 +99,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in GimmeConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in GimmeConsole.Execute: {0}", e));
             }
         }
     }

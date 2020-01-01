@@ -54,50 +54,57 @@ namespace ServerTools
                 }
                 catch (Exception e)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in GiveStartingItemsConsole.Run: {0}.", e));
+                    Log.Out(string.Format("[SERVERTOOLS] Error in GiveStartingItemsConsole.Execute: {0}", e));
                 }
             }
         }
 
         public static void Send(ClientInfo _cInfo)
         {
-            if (StartingItems.ItemList.Count > 0)
+            try
             {
-                World world = GameManager.Instance.World;
-                List<string> _itemList = StartingItems.ItemList.Keys.ToList();
-                for (int i = 0; i < _itemList.Count; i++)
+                if (StartingItems.ItemList.Count > 0)
                 {
-                    string _item = _itemList[i];
-                    int[] _itemData;
-                    StartingItems.ItemList.TryGetValue(_item, out _itemData);
-                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item, false).type, false);
-                    if (_itemValue.HasQuality && _itemData[1] > 0)
+                    World world = GameManager.Instance.World;
+                    List<string> _itemList = StartingItems.ItemList.Keys.ToList();
+                    for (int i = 0; i < _itemList.Count; i++)
                     {
-                        _itemValue.Quality = _itemData[1];
+                        string _item = _itemList[i];
+                        int[] _itemData;
+                        StartingItems.ItemList.TryGetValue(_item, out _itemData);
+                        ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item, false).type, false);
+                        if (_itemValue.HasQuality && _itemData[1] > 0)
+                        {
+                            _itemValue.Quality = _itemData[1];
+                        }
+                        EntityItem entityItem = new EntityItem();
+                        entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                        {
+                            entityClass = EntityClass.FromString("item"),
+                            id = EntityFactory.nextEntityID++,
+                            itemStack = new ItemStack(_itemValue, _itemData[0]),
+                            pos = world.Players.dict[_cInfo.entityId].position,
+                            rot = new Vector3(20f, 0f, 20f),
+                            lifetime = 60f,
+                            belongsPlayerId = _cInfo.entityId
+                        });
+                        world.SpawnEntityInWorld(entityItem);
+                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                        world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+                        SdtdConsole.Instance.Output(string.Format("Spawned starting item {0} for {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
+                        Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
                     }
-                    EntityItem entityItem = new EntityItem();
-                    entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                    string _phrase806;
+                    if (!Phrases.Dict.TryGetValue(806, out _phrase806))
                     {
-                        entityClass = EntityClass.FromString("item"),
-                        id = EntityFactory.nextEntityID++,
-                        itemStack = new ItemStack(_itemValue, _itemData[0]),
-                        pos = world.Players.dict[_cInfo.entityId].position,
-                        rot = new Vector3(20f, 0f, 20f),
-                        lifetime = 60f,
-                        belongsPlayerId = _cInfo.entityId
-                    });
-                    world.SpawnEntityInWorld(entityItem);
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                    SdtdConsole.Instance.Output(string.Format("Spawned starting item {0} for {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
-                    Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
+                        _phrase806 = " you have received the starting items. Check your inventory. If full, check the ground.";
+                    }
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase806 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
-                string _phrase806;
-                if (!Phrases.Dict.TryGetValue(806, out _phrase806))
-                {
-                    _phrase806 = " you have received the starting items. Check your inventory. If full, check the ground.";
-                }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase806 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in GiveStartingItemsConsole.Send: {0}", e));
             }
         }
     }

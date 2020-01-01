@@ -144,7 +144,7 @@ namespace ServerTools
             {
                 Log.Out("Credential enabled");
             }
-            if (DamageDetector.IsEnabled)
+            if (ProcessDamage.Damage_Detector)
             {
                 Log.Out("Damage detector enabled");
             }
@@ -176,6 +176,10 @@ namespace ServerTools
             {
                 Log.Out("Player logs enabled");
             }
+            if (ProtectedSpaces.IsEnabled)
+            {
+                Log.Out("Protected spaces enabled");
+            }
             if (TeleportCheck.IsEnabled)
             {
                 Log.Out("Teleport enabled");
@@ -198,6 +202,10 @@ namespace ServerTools
             if (ChatHook.Normal_Player_Chat_Prefix)
             {
                 Log.Out("Normal Player chat color and prefix enabled");
+            }
+            if (ChatHook.Message_Color_Enabled)
+            {
+                Log.Out("Message color is enabled");
             }
             if (VehicleTeleport.IsEnabled)
             {
@@ -412,10 +420,6 @@ namespace ServerTools
             {
                 Log.Out("Private message enabled");
             }
-            if (ProtectedSpace.IsEnabled)
-            {
-                Log.Out("Protected space enabled");
-            }
             if (RealWorldTime.IsEnabled)
             {
                 Log.Out("Real world time enabled");
@@ -464,7 +468,7 @@ namespace ServerTools
             {
                 Log.Out("Wallet enabled");
             }
-            if (Waypoint.IsEnabled)
+            if (Waypoints.IsEnabled)
             {
                 Log.Out("Waypoints enabled");
             }
@@ -842,13 +846,13 @@ namespace ServerTools
                 {
                     _restartVote = 0;
                 }
-                if (Zones.IsEnabled & Zones.reminder.Count > 0)
+                if (Zones.IsEnabled & Zones.Reminder.Count > 0)
                 {
                     _zoneReminder++;
                     if (_zoneReminder >= Zones.Reminder_Delay * 60)
                     {
                         _zoneReminder = 0;
-                        Zones.Reminder();
+                        Zones.ReminderExec();
                     }
                 }
                 else

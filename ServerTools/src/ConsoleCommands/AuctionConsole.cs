@@ -41,17 +41,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    AuctionBox.IsEnabled = false;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Auction has been set to off"));
-                    return;
+                    if (AuctionBox.IsEnabled)
+                    {
+                        AuctionBox.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Auction has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Auction is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    AuctionBox.IsEnabled = true;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Auction has been set to on"));
-                    return;
+                    if (!AuctionBox.IsEnabled)
+                    {
+                        AuctionBox.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Auction has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Auction is already on"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("cancel"))
                 {
@@ -197,12 +213,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AuctionConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AuctionConsole.Execute: {0}", e));
             }
         }
     }

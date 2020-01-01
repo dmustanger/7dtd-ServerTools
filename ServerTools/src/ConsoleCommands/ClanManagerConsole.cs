@@ -40,15 +40,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    ClanManager.IsEnabled = false;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Clan manager has been set to off"));
+                    if (ClanManager.IsEnabled)
+                    {
+                        ClanManager.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Clan manager has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Clan manager is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    ClanManager.IsEnabled = true;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Clan manager has been set to on"));
+                    if (!ClanManager.IsEnabled)
+                    {
+                        ClanManager.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Clan manager has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Clan manager is already on"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("list"))
                 {
@@ -193,12 +211,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ClanManagerConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ClanManagerConsole.Execute: {0}", e));
             }
         }
     }

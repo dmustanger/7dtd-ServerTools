@@ -33,17 +33,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    Suicide.IsEnabled = false;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Suicide has been set to off"));
-                    return;
+                    if (Suicide.IsEnabled)
+                    {
+                        Suicide.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Suicide has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Suicide is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    Suicide.IsEnabled = true;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("Suicide has been set to on"));
-                    return;
+                    if (!Suicide.IsEnabled)
+                    {
+                        Suicide.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("Suicide has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Suicide is already on"));
+                        return;
+                    }
                 }
                 else
                 {
@@ -52,7 +68,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in SuicideConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in SuicideConsole.Execute: {0}", e));
             }
         }
     }

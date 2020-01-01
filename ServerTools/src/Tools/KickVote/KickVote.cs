@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace ServerTools
 {
@@ -90,12 +89,14 @@ namespace ServerTools
 
         public static void List(ClientInfo _cInfo)
         {
+            bool _otherUser = false;
             List<ClientInfo> ClientInfoList = PersistentOperations.ClientList();
             for (int i = 0; i < ClientInfoList.Count; i++)
             {
                 ClientInfo _cInfo2 = ClientInfoList[i];
                 if (_cInfo2 != _cInfo)
                 {
+                    _otherUser = true;
                     string _phrase958;
                     if (!Phrases.Dict.TryGetValue(958, out _phrase958))
                     {
@@ -106,14 +107,21 @@ namespace ServerTools
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase958 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
-            string _phrase959;
-            if (!Phrases.Dict.TryGetValue(959, out _phrase959))
+            if (_otherUser)
             {
-                _phrase959 = " type {CommandPrivate}{Command68} # to start a vote to kick that player.";
+                string _phrase959;
+                if (!Phrases.Dict.TryGetValue(959, out _phrase959))
+                {
+                    _phrase959 = " type {CommandPrivate}{Command68} # to start a vote to kick that player.";
+                }
+                _phrase959 = _phrase959.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase959 = _phrase959.Replace("{Command68}", Command68);
+                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase959 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
-            _phrase959 = _phrase959.Replace("{CommandPrivate}", ChatHook.Command_Private);
-            _phrase959 = _phrase959.Replace("{Command68}", Command68);
-            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase959 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            else
+            {
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "No other users were found online" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
         }
     }
 }

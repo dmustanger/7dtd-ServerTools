@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -12,6 +13,7 @@ namespace ServerTools
         private static PersistentContainer instance;
 
         private DateTime lastWeather;
+        private Dictionary<int, List<int>> clientMuteList;
 
         public PersistentPlayers Players
         {
@@ -80,6 +82,18 @@ namespace ServerTools
             set
             {
                 lastWeather = value;
+            }
+        }
+
+        public Dictionary<int, List<int>> ClientMuteList
+        {
+            get
+            {
+                return clientMuteList;
+            }
+            set
+            {
+                clientMuteList = value;
             }
         }
     }

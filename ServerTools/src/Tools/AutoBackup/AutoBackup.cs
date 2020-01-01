@@ -29,7 +29,7 @@ namespace ServerTools
                             Directory.CreateDirectory(API.ConfigPath + "/Backups");
                             Log.Out(string.Format("[SERVERTOOLS] Auto backup destination folder not found. The folder has been created at {0} and backup resumed", API.ConfigPath + "/Backups"));
                         }
-                        string[] _files = Directory.GetFiles(API.ConfigPath + "/Backups/", "*.zip", SearchOption.AllDirectories);//get files from save directory parent of parent. This is the default destination
+                        string[] _files = Directory.GetFiles(API.ConfigPath + "/Backups/", "*.zip", SearchOption.AllDirectories);//get files from save directory. This is the default destination
                         if (_files != null && _files.Length > Backup_Count)//files are not null or empty
                         {
                             DeleteFiles(_files);//exec file delete
@@ -52,7 +52,7 @@ namespace ServerTools
                         string[] _files = { };
                         if (!Destination.EndsWith("\\") || !Destination.EndsWith("/"))
                         {
-                            _files = Directory.GetFiles(Destination + "\\", "*.zip", SearchOption.AllDirectories);//get files from save directory. This is a custom location
+                            _files = Directory.GetFiles(Destination + "/", "*.zip", SearchOption.AllDirectories);//get files from save directory. This is a custom location
                         }
                         else
                         {
@@ -118,10 +118,6 @@ namespace ServerTools
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.DeleteFiles: {0}.", e.Message));
-                if (e.Message.Contains("112"))
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Auto backup does not have enough free space to work with on the selected drive. Please make space available before operating the backup process."));
-                }
             }
         }
 

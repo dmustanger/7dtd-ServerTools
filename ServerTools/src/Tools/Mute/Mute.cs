@@ -6,156 +6,129 @@ namespace ServerTools
     public class Mute
     {
         public static bool IsEnabled = false, Block_Commands = false;
-        public static string Command13 = "mute", Command14 = "unmute";
-        private static string[] _cmd = { Command13, Command14 };
+        public static string Command13 = "mute", Command14 = "unmute", Command119 = "mutelist";
         public static List<string> Mutes = new List<string>();
+        public static Dictionary<int, List<int>> PrivateMutes = new Dictionary<int, List<int>>();
+
+        public static void ClientMuteList()
+        {
+            PrivateMutes = PersistentContainer.Instance.ClientMuteList;
+        }
 
         public static void Add(ClientInfo _cInfo, string _player)
         {
-            if (IsEnabled)
+            _player = _player.Replace(Command13 + " ", "");
+            if (!string.IsNullOrEmpty(_player))
             {
-                if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo.playerId))
+                ClientInfo _PlayertoMute = ConsoleHelper.ParseParamIdOrName(_player);
+                if (_PlayertoMute == null)
                 {
-                    string _phrase107;
-                    if (!Phrases.Dict.TryGetValue(107, out _phrase107))
+                    string _phrase201;
+                    if (!Phrases.Dict.TryGetValue(201, out _phrase201))
                     {
-                        _phrase107 = " you do not have permissions to use this command.";
+                        _phrase201 = " player {Player} was not found.";
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase107 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    _phrase201 = _phrase201.Replace("{Player}", _player);
+                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase201 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
-                else
+                else if (PrivateMutes.ContainsKey(_cInfo.entityId))
                 {
-                    _player = _player.Replace(Command13 + " ", "");
-                    ClientInfo _PlayertoMute = ConsoleHelper.ParseParamIdOrName(_player);
-                    if (_PlayertoMute == null)
+                    List<int> _mutedPlayers;
+                    PrivateMutes.TryGetValue(_cInfo.entityId, out _mutedPlayers);
+                    if (!_mutedPlayers.Contains(_PlayertoMute.entityId))
                     {
-                        string _phrase201;
-                        if (!Phrases.Dict.TryGetValue(201, out _phrase201))
-                        {
-                            _phrase201 = " player {Player} was not found.";
-                        }
-                        _phrase201 = _phrase201.Replace("{Player}", _player);
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase201 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        _mutedPlayers.Add(_PlayertoMute.entityId);
+                        PrivateMutes.Add(_cInfo.entityId, _mutedPlayers);
+                        PersistentContainer.Instance.ClientMuteList = PrivateMutes;
+                        PersistentContainer.Instance.Save();
+                        ChatHook.ChatMessage(_cInfo, string.Format("You have muted player {0}", _PlayertoMute.playerName) + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
-                        PersistentPlayer p = PersistentContainer.Instance.Players[_player];
-                        if (p != null)
+                        ChatHook.ChatMessage(_cInfo, "You have already muted this player" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                }
+                else
+                {
+                    List<int> _mutedPlayers = new List<int>();
+                    _mutedPlayers.Add(_PlayertoMute.entityId);
+                    PrivateMutes.Add(_cInfo.entityId, _mutedPlayers);
+                    PersistentContainer.Instance.ClientMuteList = PrivateMutes;
+                    PersistentContainer.Instance.Save();
+                    ChatHook.ChatMessage(_cInfo, string.Format("You have muted player {0}", _PlayertoMute.playerName) + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
+            }
+        }
+
+        public static void Remove(ClientInfo _cInfo, string _player)
+        {
+            _player = _player.Replace(Command14 + " ", "");
+            if (!string.IsNullOrEmpty(_player))
+            {
+                int _id;
+                if (int.TryParse(_player, out _id))
+                {
+                    if (PrivateMutes.ContainsKey(_cInfo.entityId))
+                    {
+                        List<int> _mutedPlayers;
+                        PrivateMutes.TryGetValue(_cInfo.entityId, out _mutedPlayers);
+                        if (_mutedPlayers.Contains(_id))
                         {
-                            int _muteTime = PersistentContainer.Instance.Players[_player].MuteTime;
-                            if (_muteTime != 0)
+                            _mutedPlayers.Remove(_id);
+                            if (_mutedPlayers.Count > 0)
                             {
-                                string _phrase202;
-                                if (!Phrases.Dict.TryGetValue(202, out _phrase202))
-                                {
-                                    _phrase202 = " player {Player} is already muted.";
-                                }
-                                _phrase202 = _phrase202.Replace("{Player}", _player);
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + _phrase202 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                PrivateMutes[_cInfo.entityId] = _mutedPlayers;
                             }
                             else
                             {
-                                MutePlayer(_cInfo, _PlayertoMute);
+                                PrivateMutes.Remove(_cInfo.entityId);
                             }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + " this command is not enabled.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-            }
-        }
-
-        public static void MutePlayer(ClientInfo _admin, ClientInfo _player)
-        {
-            Mutes.Add(_player.playerId);
-            PersistentContainer.Instance.Players[_player.playerId].MuteTime = 60;
-            PersistentContainer.Instance.Players[_player.playerId].MuteName = _player.playerName;
-            PersistentContainer.Instance.Players[_player.playerId].MuteDate = DateTime.Now;
-            PersistentContainer.Instance.Save();
-            string _phrase203;
-            if (!Phrases.Dict.TryGetValue(203, out _phrase203))
-            {
-                _phrase203 = " you have muted {Player} for 60 minutes.";
-            }
-
-            _phrase203 = _phrase203.Replace("{Player}", _player.playerName);
-            ChatHook.ChatMessage(_admin, LoadConfig.Chat_Response_Color + _admin.playerName  + _phrase203 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-        }
-
-        public static void Remove(ClientInfo _cInfo, string _playerName)
-        {
-            if (IsEnabled)
-            {
-                if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo.playerId))
-                {
-                    string _phrase107;
-                    if (!Phrases.Dict.TryGetValue(107, out _phrase107))
-                    {
-                        _phrase107 = " you do not have permissions to use this command.";
-                    }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase107 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                else
-                {
-                    _playerName = _playerName.Replace("unmute ", "");
-                    ClientInfo _PlayertoUnMute = ConsoleHelper.ParseParamIdOrName(_playerName);
-                    if (_PlayertoUnMute == null)
-                    {
-                        string _phrase201;
-                        if (!Phrases.Dict.TryGetValue(201, out _phrase201))
-                        {
-                            _phrase201 = " player {Player} was not found online.";
-                        }
-                        _phrase201 = _phrase201.Replace("{Player}", _playerName);
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase201 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    }
-                    else
-                    {
-                        int _muteTime = PersistentContainer.Instance.Players[_PlayertoUnMute.playerId].MuteTime;
-                        if (_muteTime == 0)
-                        {
-                            string _phrase204;
-                            if (!Phrases.Dict.TryGetValue(204, out _phrase204))
+                            PersistentContainer.Instance.ClientMuteList = PrivateMutes;
+                            PersistentContainer.Instance.Save();
+                            PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromEntityId(_id);
+                            if (_pdf != null)
                             {
-                                _phrase204 = " player {Player} is not muted.";
+                                ChatHook.ChatMessage(_cInfo, string.Format("You have removed a player named {0} with id: {1}", _pdf.ecd.entityName, _id) + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                return;
                             }
-                            _phrase204 = _phrase204.Replace("{Player}", _playerName);
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase204 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, string.Format("You have removed a player with id: {0}", _id) + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                         else
                         {
-                            if (!Mutes.Contains(_PlayertoUnMute.playerId))
-                            {
-                                string _phrase204;
-                                if (!Phrases.Dict.TryGetValue(204, out _phrase204))
-                                {
-                                    _phrase204 = " player {Player} is not muted.";
-                                }
-                                _phrase204 = _phrase204.Replace("{Player}", _playerName);
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase204 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
-                            else
-                            {
-                                Mutes.Remove(_PlayertoUnMute.playerId);
-                                PersistentContainer.Instance.Players[_PlayertoUnMute.playerId].MuteTime = 0;
-                                PersistentContainer.Instance.Save();
-                                string _phrase205;
-                                if (!Phrases.Dict.TryGetValue(205, out _phrase205))
-                                {
-                                    _phrase205 = " you have unmuted {Player}.";
-                                }
-                                _phrase205 = _phrase205.Replace("{Player}", _playerName);
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase205 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
+                            ChatHook.ChatMessage(_cInfo, "This player is not on your mute list" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
+                    }
+                    else
+                    {
+                        ChatHook.ChatMessage(_cInfo, "You have no muted players" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
+                }
+                else
+                {
+                    ChatHook.ChatMessage(_cInfo, string.Format("You must input a invalid id: {0}", _player) + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
+            }
+        }
+
+        public static void ClientMuteList(ClientInfo _cInfo)
+        {
+            if (PrivateMutes.ContainsKey(_cInfo.entityId))
+            {
+                List<int> _mutedPlayers;
+                PrivateMutes.TryGetValue(_cInfo.entityId, out _mutedPlayers);
+                for (int i = 0; i < _mutedPlayers.Count; i++)
+                {
+                    int _entityId = _mutedPlayers[i];
+                    PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromEntityId(_entityId);
+                    if (_pdf != null)
+                    {
+                        ChatHook.ChatMessage(_cInfo, string.Format("Muted: {0} with id {1}", _pdf.ecd.entityName, _entityId) + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + " this command is not enabled.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, "You have no muted players" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

@@ -7,7 +7,7 @@ namespace ServerTools
 {
     class Market
     {
-        public static bool IsEnabled = false, Return = false, Player_Check = false, Zombie_Check = false, Donor_Only = false, PvE = false, Protected = false;
+        public static bool IsEnabled = false, Return = false, Player_Check = false, Zombie_Check = false, Donor_Only = false, PvE = false;
         public static int Delay_Between_Uses = 5, Market_Size = 25, Command_Cost = 0;
         public static string Market_Position = "0,0,0", Command51 = "marketback", Command52 = "mback", Command102 = "setmarket", Command103 = "market";
         public static List<int> MarketPlayers = new List<int>();
@@ -255,23 +255,6 @@ namespace ServerTools
             if ((x - _x) * (x - _x) + (z - _z) * (z - _z) <= Market_Size * Market_Size)
             {
                 return true;
-            }
-            return false;
-        }
-
-        public static bool ProtectedSpace(int _X, int _Z)
-        {
-            if (Market.IsEnabled && Market.Protected && Market.Market_Position != "0,0,0")
-            {
-                string[] _cords = Market.Market_Position.Split(',');
-                int x, y, z;
-                int.TryParse(_cords[0], out x);
-                int.TryParse(_cords[1], out y);
-                int.TryParse(_cords[2], out z);
-                if (Zones.VectorCircle(x, z, _X, _Z, Market.Market_Size))
-                {
-                    return true;
-                }
             }
             return false;
         }

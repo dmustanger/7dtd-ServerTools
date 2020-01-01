@@ -36,17 +36,33 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    FirstClaimBlock.IsEnabled = false;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("First claim block has been set to off"));
-                    return;
+                    if (FirstClaimBlock.IsEnabled)
+                    {
+                        FirstClaimBlock.IsEnabled = false;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("First claim block has been set to off"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("First claim block is already off"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    FirstClaimBlock.IsEnabled = true;
-                    LoadConfig.WriteXml();
-                    SdtdConsole.Instance.Output(string.Format("First claim block has been set to on"));
-                    return;
+                    if (!FirstClaimBlock.IsEnabled)
+                    {
+                        FirstClaimBlock.IsEnabled = true;
+                        LoadConfig.WriteXml();
+                        SdtdConsole.Instance.Output(string.Format("First claim block has been set to on"));
+                        return;
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output(string.Format("First claim block is already on"));
+                        return;
+                    }
                 }
                 else if (_params[0].ToLower().Equals("reset"))
                 {
@@ -81,12 +97,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in FirstClaimBlockConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in FirstClaimBlockConsole.Execute: {0}", e));
             }
         }
     }

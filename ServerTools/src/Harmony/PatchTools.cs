@@ -23,7 +23,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PatchTools.ApplyPatches: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PatchTools.ApplyPatches: {0}", e.Message));
             }
         }
 
@@ -32,21 +32,102 @@ namespace ServerTools
             try
             {
                 var harmony = HarmonyInstance.Create("com.github.servertools.patch");
-                harmony.Patch(original: AccessTools.Method(type: typeof(EntityAlive), name: nameof(EntityAlive.ProcessDamageResponse)),
-                prefix: new HarmonyMethod(type: patchType, name: nameof(Injections.DamageResponse_Prefix)));
-
-                harmony.Patch(original: AccessTools.Method(type: typeof(GameManager), name: nameof(GameManager.PlayerLoginRPC)),
-                prefix: new HarmonyMethod(type: patchType, name: nameof(Injections.PlayerLoginRPC_Prefix)));
-
-                harmony.Patch(original: AccessTools.Method(type: typeof(GameManager), name: nameof(GameManager.ChangeBlocks)),
-                prefix: new HarmonyMethod(type: patchType, name: nameof(Injections.ChangeBlocks_Prefix)));
-
-                harmony.Patch(original: AccessTools.Method(type: typeof(GameManager), name: nameof(GameManager.ExplosionServer)),
-                prefix: new HarmonyMethod(type: patchType, name: nameof(Injections.ExplosionServer_Prefix)));
+                var original = typeof(EntityAlive).GetMethod("ProcessDamageResponse");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.ProcessDamageResponse method was not found"));
+                }
+                else
+                {
+                    var info = harmony.GetPatchInfo(original);
+                    if (info != null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.ProcessDamageResponse method is already modified by another mod"));
+                    }
+                    else
+                    {
+                        var prefix = typeof(Injections).GetMethod("DamageResponse_Prefix");
+                        if (prefix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: ProcessDamageResponse.prefix"));
+                            return;
+                        }
+                        harmony.Patch(original, new HarmonyMethod(prefix), null, null);
+                    }
+                }
+                original = typeof(GameManager).GetMethod("PlayerLoginRPC");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.PlayerLoginRPC method was not found"));
+                }
+                else
+                {
+                    var info = harmony.GetPatchInfo(original);
+                    if (info != null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.PlayerLoginRPC method is already modified by another mod"));
+                    }
+                    else
+                    {
+                        var prefix = typeof(Injections).GetMethod("PlayerLoginRPC_Prefix");
+                        if (prefix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: PlayerLoginRPC.prefix"));
+                            return;
+                        }
+                        harmony.Patch(original, new HarmonyMethod(prefix), null, null);
+                    }
+                }
+                original = typeof(GameManager).GetMethod("ChangeBlocks");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ChangeBlocks method was not found"));
+                }
+                else
+                {
+                    var info = harmony.GetPatchInfo(original);
+                    if (info != null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ChangeBlocks method is already modified by another mod"));
+                    }
+                    else
+                    {
+                        var prefix = typeof(Injections).GetMethod("ChangeBlocks_Prefix");
+                        if (prefix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChangeBlocks.prefix"));
+                            return;
+                        }
+                        harmony.Patch(original, new HarmonyMethod(prefix), null, null);
+                    }
+                }
+                original = typeof(GameManager).GetMethod("ExplosionServer");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ExplosionServer method was not found"));
+                }
+                else
+                {
+                    var info = harmony.GetPatchInfo(original);
+                    if (info != null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ExplosionServer method is already modified by another mod"));
+                    }
+                    else
+                    {
+                        var prefix = typeof(Injections).GetMethod("ExplosionServer_Prefix");
+                        if (prefix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: ExplosionServer.prefix"));
+                            return;
+                        }
+                        harmony.Patch(original, new HarmonyMethod(prefix), null, null);
+                    }
+                }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PatchTools.PatchAll: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PatchTools.PatchAll: {0}", e.Message));
             }
         }
     }
