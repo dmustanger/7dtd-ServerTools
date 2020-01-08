@@ -43,6 +43,10 @@ namespace ServerTools
             {
                 Box1.Clear();
                 Box2.Clear();
+                ReminderMsg.Clear();
+                Reminder.Clear();
+                ZoneExit.Clear();
+                ZonePvE.Clear();
                 fileWatcher.Dispose();
                 IsRunning = false;
                 UnloadProtection();
@@ -168,19 +172,19 @@ namespace ServerTools
                             {
                                 Box1.Add(box1);
                                 Box2.Add(box2);
-                            }
-                            if (_result4)
-                            {
-                                if (!_result1)
+                                if (_result4)
                                 {
-                                    string[] _corner1 = box1[0].Split(',');
-                                    string[] _corner2 = box1[1].Split(',');
-                                    string[] _vectors = { _corner1[0], _corner1[2], _corner2[0], _corner2[2] };
-                                    Zones.AddProtection(_vectors);
-                                }
-                                else
-                                {
-                                    //Add circle protection later
+                                    if (!_result1)
+                                    {
+                                        string[] _corner1 = box1[0].Split(',');
+                                        string[] _corner2 = box1[1].Split(',');
+                                        string[] _vectors = { _corner1[0], _corner1[2], _corner2[0], _corner2[2] };
+                                        Zones.AddProtection(_vectors);
+                                    }
+                                    else
+                                    {
+                                        //Add circle protection later
+                                    }
                                 }
                             }
                         }
@@ -203,15 +207,15 @@ namespace ServerTools
                     {
                         string[] _box1 = Box1[i];
                         bool[] _box2 = Box2[i];
-                        sw.WriteLine(string.Format("        <zone corner1=\"{0}\" corner2=\"{1}\" circle=\"{2}\" entryMessage=\"{3}\" exitMessage=\"{4}\" response=\"{5}\" reminderNotice=\"{6}\" PvE=\"{7}\" noZombie=\"{8}\" protected=\"{0}\" />", _box1[0], _box1[1], _box2[0], _box1[2], _box1[3], _box1[4], _box1[5], _box2[1], _box2[2], _box2[3]));
+                        sw.WriteLine(string.Format("        <zone corner1=\"{0}\" corner2=\"{1}\" circle=\"{2}\" entryMessage=\"{3}\" exitMessage=\"{4}\" response=\"{5}\" reminderNotice=\"{6}\" PvE=\"{7}\" noZombie=\"{8}\" protected=\"{9}\" />", _box1[0], _box1[1], _box2[0], _box1[2], _box1[3], _box1[4], _box1[5], _box2[1], _box2[2], _box2[3]));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <!-- <zone corner1=\"-8000,0,8000\" corner2=\"8000,200,0\" circle=\"false\" entryMessage=\"You are entering the Northern side\" exitMessage=\"You have exited the Northern Side\" response=\"\" reminderNotice=\"You are still in the North\" PvE=\"false\" noZombie=\"false\" protected=\"false\" --> />");
-                    sw.WriteLine("        <!-- <zone corner1=\"-8000,0,-1\" corner2=\"8000,200,-8000\" circle=\"false\" entryMessage=\"You are entering the Southern side\" exitMessage=\"You have exited the Southern Side\" response=\"whisper {PlayerName} you have entered the south side ^ ser {EntityId} 40 @ 4\" reminderNotice=\"You are still in the South\" PvE=\"false\" noZombie=\"false\" protected=\"false\" --> />");
-                    sw.WriteLine("        <!-- <zone corner1=\"-100,0,-90\" corner2=\"40\" circle=\"true\" entryMessage=\"You have entered the Market\" exitMessage=\"You have exited the Market\" response=\"whisper {PlayerName} you have entered the market\" reminderNotice=\"\" PvE=\"true\" noZombie=\"true\" protected=\"true\" --> />");
-                    sw.WriteLine("        <!-- <zone corner1=\"0,0,0\" corner2=\"25,105,25\" circle=\"false\" entryMessage=\"You have entered the Lobby\" exitMessage=\"You have exited the Lobby\" response=\"say {PlayerName} has entered the lobby\" reminderNotice=\"You have been in the lobby for a long time...\" PvE=\"true\" noZombie=\"true\" protected=\"true\" --> />");
+                    sw.WriteLine("        <!-- <zone corner1=\"-8000,0,8000\" corner2=\"8000,200,0\" circle=\"false\" entryMessage=\"You are entering the Northern side\" exitMessage=\"You have exited the Northern Side\" response=\"\" reminderNotice=\"You are still in the North\" PvE=\"false\" noZombie=\"false\" protected=\"false\" /> -->");
+                    sw.WriteLine("        <!-- <zone corner1=\"-8000,0,-1\" corner2=\"8000,200,-8000\" circle=\"false\" entryMessage=\"You are entering the Southern side\" exitMessage=\"You have exited the Southern Side\" response=\"whisper {PlayerName} you have entered the south side ^ ser {EntityId} 40 @ 4\" reminderNotice=\"You are still in the South\" PvE=\"false\" noZombie=\"false\" protected=\"false\" /> -->");
+                    sw.WriteLine("        <!-- <zone corner1=\"-100,0,-90\" corner2=\"40\" circle=\"true\" entryMessage=\"You have entered the Market\" exitMessage=\"You have exited the Market\" response=\"whisper {PlayerName} you have entered the market\" reminderNotice=\"\" PvE=\"true\" noZombie=\"true\" protected=\"true\" /> -->");
+                    sw.WriteLine("        <!-- <zone corner1=\"0,0,0\" corner2=\"25,105,25\" circle=\"false\" entryMessage=\"You have entered the Lobby\" exitMessage=\"You have exited the Lobby\" response=\"global {PlayerName} has entered the lobby\" reminderNotice=\"You have been in the lobby for a long time...\" PvE=\"true\" noZombie=\"true\" protected=\"true\" /> -->");
                 }
                 sw.WriteLine("    </Zone>");
                 sw.WriteLine("</Zones>");
@@ -571,14 +575,6 @@ namespace ServerTools
                     _responseAdj = _responseAdj.Replace("Whisper ", "");
                     _responseAdj = _responseAdj.Replace("whisper ", "");
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _responseAdj + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                else if (_responseAdj.StartsWith("tele ") || _responseAdj.StartsWith("tp ") || _responseAdj.StartsWith("teleportplayer "))
-                {
-                    SdtdConsole.Instance.ExecuteSync(_responseAdj, null);
-                    if (Zones.IsEnabled && Zones.ZoneExit.ContainsKey(_cInfo.entityId))
-                    {
-                        Zones.ZoneExit.Remove(_cInfo.entityId);
-                    }
                 }
                 else
                 {

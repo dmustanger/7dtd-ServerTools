@@ -1002,67 +1002,22 @@ namespace ServerTools
         //    }
         //}
         //
-        //public static void TestExec5(ClientInfo _cInfo)
-        //{
-        //    try
-        //    {
-        //        Log.Out(string.Format("[SERVERTOOLS] Test 21"));
-        //        List<Chunk> _chunkList = new List<Chunk>();
-        //        EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-        //        if (_player != null)
-        //        {
-        //            Vector3 _position = _player.position;
-        //            int _x = (int)_position.x, _z = (int)_position.z;
-        //            Log.Out(string.Format("[SERVERTOOLS] Test 22 _x = {0}, _z = {1}, ", _x, _z));
-        //            if (GameManager.Instance.World.IsChunkAreaLoaded(_x, 1, _z))
-        //            {
-        //                Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(_x, 1, _z);
-        //                if (!_chunkList.Contains(_chunk))
-        //                {
-        //                    _chunkList.Add(_chunk);
-        //                    Log.Out(string.Format("[SERVERTOOLS] Test 23"));
-        //                }
-        //                Bounds bounds = _chunk.GetAABB();
-        //                for (int i = (int)bounds.min.x; i < (int)bounds.max.x; i++)
-        //                {
-        //                    for (int j = (int)bounds.min.z; j < (int)bounds.max.z; j++)
-        //                    {
-        //                        Log.Out(string.Format("[SERVERTOOLS] Test 24 i = {0}, j = {1}", i, j));
-        //                        _x = i - (int)bounds.min.x;
-        //                        _z = j - (int)bounds.min.z;
-        //                        Log.Out(string.Format("[SERVERTOOLS] Test 25, setting chunk point _x = {0}x, _z = {1}z", _x, _z));
-        //                        _chunk.SetTraderArea(_x, _z, false);
-        //                        Log.Out(string.Format("[SERVERTOOLS] Test 26"));
-        //                    }
-        //                }
-        //                Log.Out(string.Format("[SERVERTOOLS] Protection disabled for entire chunk"));
-        //            }
-        //        }
-        //        if (_chunkList.Count > 0)
-        //        {
-        //            for (int k = 0; k < _chunkList.Count; k++)
-        //            {
-        //                Chunk _chunk = _chunkList[k];
-        //                List<ClientInfo> _clientList = PersistentOperations.ClientList();
-        //                if (_clientList != null && _clientList.Count > 0)
-        //                {
-        //                    for (int l = 0; l < _clientList.Count; l++)
-        //                    {
-        //                        ClientInfo _cInfo2 = _clientList[l];
-        //                        if (_cInfo2 != null)
-        //                        {
-        //                            _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Log.Out(string.Format("[SERVERTOOLS] Error in TestOperation.TestExec5: {0}", e.Message));
-        //    }
-        //}
+        public static void TestExec5(ClientInfo _cInfo)
+        {
+            try
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Test 1"));
+                int _bloodmoonFrequency = GamePrefs.GetInt(EnumGamePrefs.BloodMoonFrequency);
+                int _bloodmoonRange = GamePrefs.GetInt(EnumGamePrefs.BloodMoonRange);
+                int _worldTimeToDays = GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime());
+                int _worldTimeToHours = GameUtils.WorldTimeToHours(GameManager.Instance.World.GetWorldTime());
+                Log.Out(string.Format("[SERVERTOOLS] Test 2, _bloodmoonFrequency = {0}, _bloodmoonRange = {1}, _worldTimeToDays = {2}, _worldTimeToHours = {3}", _bloodmoonFrequency, _bloodmoonRange, _worldTimeToDays, _worldTimeToHours));
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in TestOperation.TestExec5: {0}", e.Message));
+            }
+        }
 
         public static void ConfigChange(string _target, string _replacement)
         {

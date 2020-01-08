@@ -14,7 +14,7 @@ namespace ServerTools
         {
             try
             {
-                if (PersistentOperations.BloodMoonSky() || PersistentOperations.BloodMoonDuskSky())
+                if (Day7.DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime())) == 0)
                 {
                     Bloodmoon = true;
                     return;
@@ -29,7 +29,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AutoShutdown.BloodmoonCheck: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AutoShutdown.BloodmoonCheck: {0}", e));
             }
         }
 
@@ -48,7 +48,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AutoShutdown.Shutdown: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AutoShutdown.Shutdown: {0}", e));
             }
         }
 
@@ -102,7 +102,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AutoShutdown.NextShutdown: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AutoShutdown.NextShutdown: {0}", e));
             }
         }
     }

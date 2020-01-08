@@ -8,7 +8,7 @@ namespace ServerTools
         private const string configFile = "ServerToolsConfig.xml";
         public static string configFilePath = string.Format("{0}/{1}", API.ConfigPath, configFile);
         public static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, configFile);
-        public const string version = "18.2.3";
+        public const string version = "18.2.4";
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
 
@@ -61,18 +61,23 @@ namespace ServerTools
                         }
                         else if (_line.GetAttribute("Version") != version)
                         {
+                            Log.Out("[SERVERTOOLS] Detected version update. Created backup of existing xml files");
                             string _version = _line.GetAttribute("Version");
-                            string _target = API.ConfigPath + "/ServerToolsConfig.xml";
-                            string _destination = API.ConfigPath + "/ConfigBackup/" + _version + "/ServerToolsConfig.xml";
-                            if (!Directory.Exists(API.ConfigPath + "/ConfigBackup"))
+                            string[] _files = Directory.GetFiles(API.ConfigPath, "*.xml");
+                            if (!Directory.Exists(API.ConfigPath + "/XMLBackups"))
                             {
-                                Directory.CreateDirectory(API.ConfigPath + "/ConfigBackup");
+                                Directory.CreateDirectory(API.ConfigPath + "/XMLBackups");
                             }
-                            if (!Directory.Exists(API.ConfigPath + "/ConfigBackup/" + _version))
+                            if (!Directory.Exists(API.ConfigPath + "/XMLBackups/" + _version))
                             {
-                                Directory.CreateDirectory(API.ConfigPath + "/ConfigBackup/" + _version);
+                                Directory.CreateDirectory(API.ConfigPath + "/XMLBackups/" + _version);
                             }
-                            File.Copy(_target, _destination);
+                            for (int i = 0; i < _files.Length; i++)
+                            {
+                                string _fileName = _files[i];
+                                File.Copy(_fileName, API.ConfigPath + "/XMLBackups/" + _version + _fileName.Substring(_fileName.IndexOf("ServerTools") + 11));
+                                File.Delete(_fileName);
+                            }
                             WriteXml();
                             return;
                         }

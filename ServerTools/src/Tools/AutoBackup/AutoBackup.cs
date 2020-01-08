@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace ServerTools
 {
@@ -22,21 +21,21 @@ namespace ServerTools
                     SdtdConsole.Instance.Output("[SERVERTOOLS] Starting auto backup process");
                     Log.Out("[SERVERTOOLS] Starting auto backup process");
                     DirectoryInfo _saveDirInfo = new DirectoryInfo(SaveDirectory);//save dir
-                    if (Destination == "" && _saveDirInfo != null)
+                    if (string.IsNullOrEmpty(Destination) && _saveDirInfo != null)
                     {
-                        if (!Directory.Exists(API.ConfigPath + "/Backups"))
+                        if (!Directory.Exists(API.ConfigPath + "/WorldBackup"))
                         {
-                            Directory.CreateDirectory(API.ConfigPath + "/Backups");
-                            Log.Out(string.Format("[SERVERTOOLS] Auto backup destination folder not found. The folder has been created at {0} and backup resumed", API.ConfigPath + "/Backups"));
+                            Directory.CreateDirectory(API.ConfigPath + "/WorldBackup");
+                            Log.Out(string.Format("[SERVERTOOLS] Auto backup destination folder not found. The folder has been created at {0} and backup resumed", API.ConfigPath + "/WorldBackup"));
                         }
-                        string[] _files = Directory.GetFiles(API.ConfigPath + "/Backups/", "*.zip", SearchOption.AllDirectories);//get files from save directory. This is the default destination
+                        string[] _files = Directory.GetFiles(API.ConfigPath + "/WorldBackup/", "*.zip", SearchOption.AllDirectories);//get files from save directory. This is the default destination
                         if (_files != null && _files.Length > Backup_Count)//files are not null or empty
                         {
                             DeleteFiles(_files);//exec file delete
                             SdtdConsole.Instance.Output("[SERVERTOOLS] Auto backup clean up complete");
                             Log.Out("[SERVERTOOLS] Auto backup clean up complete");
                         }
-                        DirectoryInfo _destDirInfo = new DirectoryInfo(API.ConfigPath + "/Backups/");//destination dir
+                        DirectoryInfo _destDirInfo = new DirectoryInfo(API.ConfigPath + "/WorldBackup/");//destination dir
                         if (_destDirInfo != null)
                         {
                             Save(_destDirInfo);//exec save method
@@ -50,7 +49,7 @@ namespace ServerTools
                             Log.Out(string.Format("[SERVERTOOLS] Auto backup destination folder not found. The folder has been created at {0} and backup resumed", Destination));
                         }
                         string[] _files = { };
-                        if (!Destination.EndsWith("\\") || !Destination.EndsWith("/"))
+                        if (!Destination.EndsWith("\\") || !Destination.EndsWith("\n") || !Destination.EndsWith("/"))
                         {
                             _files = Directory.GetFiles(Destination + "/", "*.zip", SearchOption.AllDirectories);//get files from save directory. This is a custom location
                         }
@@ -73,7 +72,7 @@ namespace ServerTools
                 }
                 catch (Exception e)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Exec: {0}.", e.Message));
+                    Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Exec: {0}", e.Message));
                     if (e.Message.Contains("112"))
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Auto backup does not have enough free space to work with on the selected drive. Please make space available before operating the backup process."));
@@ -103,9 +102,9 @@ namespace ServerTools
                     {
                         _fileList.Sort((x, y) => DateTime.Compare(x.CreationTime, y.CreationTime));
                         _fileList.Reverse();
-                        for (int j = 0; j < _fileList.Count; j++)
+                        for (int j = 1; j < _fileList.Count; j++)
                         {
-                            if (j + 1 >= Backup_Count)
+                            if (j >= Backup_Count)
                             {
                                 FileInfo _fInfo = _fileList[j];
                                 Log.Out(string.Format("[SERVERTOOLS] Auto backup cleanup has deleted {0}", _fInfo.Name));
@@ -117,7 +116,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.DeleteFiles: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.DeleteFiles: {0}", e.Message));
             }
         }
 
@@ -147,9 +146,10 @@ namespace ServerTools
                     zip.UseZip64WhenSaving = Pathfinding.Ionic.Zip.Zip64Option.Always;
                     zip.CompressionLevel = _compression;
                     zip.ParallelDeflateThreshold = -1;
-                    foreach (var _c in _files)
+                    for (int i = 0; i < _files.Length; i++)
                     {
-                        zip.AddFile(_c);
+                        string _file = _files[i];
+                        zip.AddFile(_file).FileName = _file.Substring(_file.IndexOf(SaveDirectory));
                     }
                     zip.Save(Path.ChangeExtension(_location, ".zip"));
                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auto backup completed successfully. File is located at {0}. File is named {1}", _destinationDirInfo.FullName, _name + ".zip"));
@@ -159,7 +159,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Save: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AutoBackup.Save: {0}", e.Message));
                 if (e.Message.Contains("112"))
                 {
                     Log.Out(string.Format("[SERVERTOOLS] Auto backup does not have enough free space to work with on the selected drive. Please make space available before operating the backup process."));

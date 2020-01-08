@@ -608,7 +608,7 @@ namespace ServerTools
                         }
                         if (Mute.IsEnabled && _message.ToLower() == Mute.Command119)
                         {
-                            Mute.ClientMuteList(_cInfo);
+                            Mute.List(_cInfo);
                             return false;
                         }
                         if (Mute.IsEnabled && _message.ToLower().StartsWith(Mute.Command13 + " "))
@@ -1650,12 +1650,12 @@ namespace ServerTools
                         //    PersistentOperations.TestExec4(_cInfo);
                         //    return false;
                         //}
-                        //if (_message.ToLower() == "sttest5")
-                        //{
-                        //    Log.Out("ST Test detected 5");
-                        //    PersistentOperations.TestExec5(_cInfo);
-                        //    return false;
-                        //}
+                        if (_message.ToLower() == "sttest5")
+                        {
+                            Log.Out("ST Test detected 5");
+                            PersistentOperations.TestExec5(_cInfo);
+                            return false;
+                        }
                     }
                     if (AdminChat.IsEnabled && _message.ToLower().StartsWith("@" + AdminChat.Command118))
                     {
@@ -1734,42 +1734,49 @@ namespace ServerTools
             }
             else if (_type == EChatType.Global)
             {
-                List<EntityPlayer> _playerList = PersistentOperations.PlayerList();
-                if (_playerList != null)
+                if (Mute.IsEnabled)
                 {
-                    for (int i = 0; i < _playerList.Count; i++)
+                    List<int> _mutedPlayers;
+                    if (Mute.PrivateMutes.Count > 0)
                     {
-                        EntityPlayer _player = _playerList[i];
-                        if (_player != null)
+                        List<ClientInfo> _clientList = PersistentOperations.ClientList();
+                        if (_clientList != null)
                         {
-                            ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_player.entityId);
-                            if (_cInfo2 != null)
+                            for (int i = 0; i < _clientList.Count; i++)
                             {
-                                if (Mute.IsEnabled && (Mute.PrivateMutes.ContainsKey(_cInfo2.entityId) || Mute.PrivateMutes.ContainsKey(_cInfo.entityId)))
+                                ClientInfo _cInfo2 = _clientList[i];
+                                if (_cInfo2 != null)
                                 {
-                                    List<int> _mutedPlayers;
-                                    if (Mute.PrivateMutes.TryGetValue(_cInfo2.entityId, out _mutedPlayers))
+                                    if (Mute.PrivateMutes.ContainsKey(_cInfo2.entityId) || Mute.PrivateMutes.ContainsKey(_cInfo.entityId))
                                     {
-                                        if (_mutedPlayers.Contains(_cInfo.entityId))
+                                        if (Mute.PrivateMutes.TryGetValue(_cInfo2.entityId, out _mutedPlayers))
                                         {
-                                            continue;
+                                            if (_mutedPlayers.Contains(_cInfo.entityId))
+                                            {
+                                                continue;
+                                            }
+                                        }
+                                        if (Mute.PrivateMutes.TryGetValue(_cInfo.entityId, out _mutedPlayers))
+                                        {
+                                            if (_mutedPlayers.Contains(_cInfo2.entityId))
+                                            {
+                                                continue;
+                                            }
                                         }
                                     }
-                                    if (Mute.PrivateMutes.TryGetValue(_cInfo.entityId, out _mutedPlayers))
-                                    {
-                                        if (_mutedPlayers.Contains(_cInfo2.entityId))
-                                        {
-                                            continue;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChat>().Setup(EChatType.Global, -1, _message, _name, false, null));
+                                    _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChat>().Setup(EChatType.Whisper, -1, _message, _name, false, _recipientEntityIds));
                                 }
                             }
                         }
                     }
+                    else
+                    {
+                        GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, -1, _message, _name, false, _recipientEntityIds);
+                    }
+                }
+                else
+                {
+                    GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, -1, _message, _name, false, _recipientEntityIds);
                 }
             }
             else if (_type == EChatType.Friends)

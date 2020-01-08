@@ -140,15 +140,15 @@ namespace ServerTools
 
         public static int DaysRemaining(int _daysUntilHorde)
         {
-            int _daysUntil = GamePrefs.GetInt(EnumGamePrefs.BloodMoonFrequency);
-            if (_daysUntilHorde <= _daysUntil)
+            int _bloodmoonFrequency = GamePrefs.GetInt(EnumGamePrefs.BloodMoonFrequency);
+            if (_daysUntilHorde <= _bloodmoonFrequency)
             {
-                int _daysLeft = _daysUntil - _daysUntilHorde;
+                int _daysLeft = _bloodmoonFrequency - _daysUntilHorde;
                 return _daysLeft;
             }
             else
             {
-                int _daysLeft = _daysUntilHorde - _daysUntil;
+                int _daysLeft = _daysUntilHorde - _bloodmoonFrequency;
                 return DaysRemaining(_daysLeft);
             }
         }
