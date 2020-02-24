@@ -24,7 +24,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-AnimalTracking", "animaltracking" };
+            return new string[] { "st-AnimalTracking", "AnimalTracking", "animaltracking" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

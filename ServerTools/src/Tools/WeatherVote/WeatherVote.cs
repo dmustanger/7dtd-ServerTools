@@ -19,6 +19,10 @@ namespace ServerTools
             if (!VoteOpen)
             {
                 DateTime _lastVote = PersistentContainer.Instance.LastWeather;
+                if (_lastVote == null)
+                {
+                    _lastVote = DateTime.Now.AddMinutes(-70);
+                }
                 TimeSpan varTime = DateTime.Now - _lastVote;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int _timepassed = (int)fractionalMinutes;

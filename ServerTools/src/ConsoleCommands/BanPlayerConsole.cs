@@ -23,7 +23,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-BanPlayer", "banplayer", "bp" };
+            return new string[] { "st-BanPlayer", "BanPlayer", "banplayer", "bp" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

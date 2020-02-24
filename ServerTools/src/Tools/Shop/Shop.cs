@@ -58,7 +58,7 @@ namespace ServerTools
             XmlNode _XmlNode = xmlDoc.DocumentElement;
             foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
-                if (childNode.Name == "items")
+                if (childNode.Name == "Items")
                 {
                     dict.Clear();
                     dict1.Clear();
@@ -75,69 +75,65 @@ namespace ServerTools
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("item"))
+                        if (!_line.HasAttribute("Item"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing item attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing Item attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("name"))
+                        if (!_line.HasAttribute("Name"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing name attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing Name attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("secondaryname"))
+                        if (!_line.HasAttribute("SecondaryName"))
                         {
                             updateConfig = true;
                         }
-                        if (!_line.HasAttribute("count"))
+                        if (!_line.HasAttribute("Count"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing count attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing Count attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("quality"))
+                        if (!_line.HasAttribute("Quality"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing quality attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing Quality attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("price"))
+                        if (!_line.HasAttribute("Price"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing price attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing Price attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("category"))
+                        if (!_line.HasAttribute("Category"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing category attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing Category attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        int _item = 1;
-                        int _count = 1;
-                        int _quality = 1;
-                        int _price = 1;
-                        if (!int.TryParse(_line.GetAttribute("item"), out _item))
+                        if (!int.TryParse(_line.GetAttribute("Item"), out int _item))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (non-numeric) value for 'item' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (non-numeric) value for 'Item' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("count"), out _count))
+                        if (!int.TryParse(_line.GetAttribute("Count"), out int _count))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (non-numeric) value for 'count' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (non-numeric) value for 'Count' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("quality"), out _quality))
+                        if (!int.TryParse(_line.GetAttribute("Quality"), out int _quality))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (non-numeric) value for 'quality' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (non-numeric) value for 'Quality' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("price"), out _price))
+                        if (!int.TryParse(_line.GetAttribute("Price"), out int _price))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop Item entry because of invalid (non-numeric) value for 'price' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop  entry because of invalid (non-numeric) value for 'Price' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        string _name = _line.GetAttribute("name");
+                        string _name = _line.GetAttribute("Name");
                         string _secondaryname;
-                        if (_line.HasAttribute("secondaryname"))
+                        if (_line.HasAttribute("SecondaryName"))
                         {
-                            _secondaryname = _line.GetAttribute("secondaryname");
+                            _secondaryname = _line.GetAttribute("SecondaryName");
                         }
                         else
                         {
@@ -145,8 +141,7 @@ namespace ServerTools
                         }
                         ItemClass _class;
                         Block _block;
-                        int _id;
-                        if (int.TryParse(_name, out _id))
+                        if (int.TryParse(_name, out int _id))
                         {
                             _class = ItemClass.GetForId(_id);
                             _block = Block.GetBlockByName(_name, false);
@@ -161,7 +156,7 @@ namespace ServerTools
                             Log.Out(string.Format("[SERVERTOOLS] Shop entry skipped. Item not found: {0}", _name));
                             continue;
                         }
-                        string _category = _line.GetAttribute("category").ToLower();
+                        string _category = _line.GetAttribute("Category").ToLower();
                         if (!categories.Contains(_category))
                         {
                             categories.Add(_category);
@@ -198,7 +193,7 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Shop>");
-                sw.WriteLine("    <items>");
+                sw.WriteLine("    <Items>");
                 if (dict.Count > 0)
                 {
                     foreach (KeyValuePair<int, string[]> kvp in dict)
@@ -206,26 +201,26 @@ namespace ServerTools
                         int[] _values;
                         if (dict1.TryGetValue(kvp.Key, out _values))
                         {
-                            sw.WriteLine(string.Format("        <shop item=\"{0}\" name=\"{1}\" secondaryname=\"{2}\" count=\"{3}\" quality=\"{4}\" price=\"{5}\" category=\"{6}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], _values[0], _values[1], _values[2], kvp.Value[2]));
+                            sw.WriteLine(string.Format("        <Shop Item=\"{0}\" Name=\"{1}\" SecondaryName=\"{2}\" Count=\"{3}\" Quality=\"{4}\" Price=\"{5}\" Category=\"{6}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], _values[0], _values[1], _values[2], kvp.Value[2]));
                         }
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <shop item=\"1\" name=\"drinkJarBoiledWater\" secondaryName=\"Bottled Water\" count=\"1\" quality=\"1\" price=\"20\" category=\"food\" />");
-                    sw.WriteLine("        <shop item=\"2\" name=\"drinkJarBeer\" secondaryName=\"Beer\" count=\"1\" quality=\"1\" price=\"50\" category=\"food\" />");
-                    sw.WriteLine("        <shop item=\"3\" name=\"brickBlock\" secondaryName=\"Wood\" count=\"1\" quality=\"1\" price=\"50\" category=\"mats\" />");
-                    sw.WriteLine("        <shop item=\"4\" name=\"woodFrameBlock\" secondaryName=\"Wood Frame Block\" count=\"1\" quality=\"1\" price=\"20\" category=\"mats\" />");
-                    sw.WriteLine("        <shop item=\"5\" name=\"foodCanChicken\" secondaryName=\"Can of Chicken\" count=\"1\" quality=\"1\" price=\"50\" category=\"food\" />");
-                    sw.WriteLine("        <shop item=\"6\" name=\"foodCanChili\" secondaryName=\"Can of Chilli\" count=\"1\" quality=\"1\" price=\"50\" category=\"food\" />");
-                    sw.WriteLine("        <shop item=\"7\" name=\"foodCropCorn\" secondaryName=\"Corn\" count=\"5\" quality=\"1\" price=\"50\" category=\"food\" />");
-                    sw.WriteLine("        <shop item=\"8\" name=\"foodCropPotato\" secondaryName=\"Potato\" count=\"5\" quality=\"1\" price=\"50\" category=\"food\" />");
-                    sw.WriteLine("        <shop item=\"9\" name=\"medicalBandage\" secondaryName=\"First Aid Bandage\" count=\"1\" quality=\"1\" price=\"50\" category=\"meds\" />");
-                    sw.WriteLine("        <shop item=\"10\" name=\"drugPainkillers\" secondaryName=\"Pain Killers\" count=\"5\" quality=\"1\" price=\"150\" category=\"meds\" />");
-                    sw.WriteLine("        <shop item=\"11\" name=\"gunPistol\" secondaryName=\"Pistol\" count=\"1\" quality=\"100\" price=\"500\" category=\"weapon\" />");
-                    sw.WriteLine("        <shop item=\"12\" name=\"casinoCoin\" secondaryName=\"casinoCoin\" count=\"1\" quality=\"1\" price=\"1\" category=\"extra\" />");
+                    sw.WriteLine("        <Shop Item=\"1\" Name=\"drinkJarBoiledWater\" SecondaryName=\"Bottled Water\" Count=\"1\" Quality=\"1\" Price=\"20\" Category=\"Food\" />");
+                    sw.WriteLine("        <Shop Item=\"2\" Name=\"drinkJarBeer\" SecondaryName=\"Beer\" Count=\"1\" Quality=\"1\" Price=\"50\" Category=\"food\" />");
+                    sw.WriteLine("        <Shop Item=\"3\" Name=\"brickBlock\" SecondaryName=\"Wood\" Count=\"1\" Qualityuality=\"1\" Price=\"50\" Category=\"mats\" />");
+                    sw.WriteLine("        <Shop Item=\"4\" Name=\"woodFrameBlock\" SecondaryName=\"Wood Frame Block\" Count=\"1\" Quality=\"1\" Price=\"20\" Category=\"mats\" />");
+                    sw.WriteLine("        <Shop Item=\"5\" Name=\"foodCanChicken\" SecondaryName=\"Can of Chicken\" Count=\"1\" Quality=\"1\" Price=\"50\" Category=\"food\" />");
+                    sw.WriteLine("        <Shop Item=\"6\" Name=\"foodCanChili\" SecondaryName=\"Can of Chilli\" Count=\"1\" Quality=\"1\" Price=\"50\" Category=\"food\" />");
+                    sw.WriteLine("        <Shop Item=\"7\" Name=\"foodCropCorn\" SecondaryName=\"Corn\" Count=\"5\" Quality=\"1\" Price=\"50\" Category=\"food\" />");
+                    sw.WriteLine("        <Shop Item=\"8\" Name=\"foodCropPotato\" SecondaryName=\"Potato\" Count=\"5\" Quality=\"1\" Price=\"50\" Category=\"food\" />");
+                    sw.WriteLine("        <Shop Item=\"9\" Name=\"medicalBandage\" SecondaryName=\"First Aid Bandage\" Count=\"1\" Quality=\"1\" Price=\"50\" Category=\"meds\" />");
+                    sw.WriteLine("        <Shop Item=\"10\" Name=\"drugPainkillers\" SecondaryName=\"Pain Killers\" Count=\"5\" Quality=\"1\" Price=\"150\" Category=\"meds\" />");
+                    sw.WriteLine("        <Shop Item=\"11\" Name=\"gunPistol\" SecondaryName=\"Pistol\" Count=\"1\" Quality=\"100\" Price=\"500\" Category=\"weapon\" />");
+                    sw.WriteLine("        <Shop Item=\"12\" Name=\"casinoCoin\" SecondaryName=\"casinoCoin\" Count=\"1\" Quality=\"1\" Price=\"1\" Category=\"extra\" />");
                 }
-                sw.WriteLine("    </items>");
+                sw.WriteLine("    </Items>");
                 sw.WriteLine("</Shop>");
                 sw.Flush();
                 sw.Close();

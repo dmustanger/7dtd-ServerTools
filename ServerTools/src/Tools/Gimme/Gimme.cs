@@ -11,7 +11,7 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false, Zombies = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
         public static string Command24 = "gimme", Command25 = "gimmie";
-        private const string file = "GimmeItems.xml";
+        private const string file = "Gimme.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static Dictionary<string, int[]> dict = new Dictionary<string, int[]>();
         private static Dictionary<string, string> dict1 = new Dictionary<string, string>();
@@ -63,7 +63,7 @@ namespace ServerTools
             XmlNode _XmlNode = xmlDoc.DocumentElement;
             foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
-                if (childNode.Name == "items")
+                if (childNode.Name == "Items")
                 {
                     dict.Clear();
                     dict1.Clear();
@@ -75,59 +75,60 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'items' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Items' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("item"))
+                        if (!_line.HasAttribute("Name"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing item attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing Name attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("secondaryname"))
+                        if (!_line.HasAttribute("SecondaryName"))
                         {
                             updateConfig = true;
                         }
-                        if (!_line.HasAttribute("minCount"))
+                        if (!_line.HasAttribute("MinCount"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing minCount attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing MinCount attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("maxCount"))
+                        if (!_line.HasAttribute("MaxCount"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing maxCount attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing MaxCount attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("minQuality"))
+                        if (!_line.HasAttribute("MinQuality"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing minQuality attribute: {0}", subChild.OuterXml));
-                        }
-                        if (!_line.HasAttribute("maxQuality"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing maxQuality attribute: {0}", subChild.OuterXml));
-                        }
-                        int _minCount = 1, _maxCount = 1, _minQuality = 1, _maxQuality = 1;
-                        if (!int.TryParse(_line.GetAttribute("minCount"), out _minCount))
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (non-numeric) value for 'minCount' attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing MinQuality attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("maxCount"), out _maxCount))
+                        if (!_line.HasAttribute("MaxQuality"))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (non-numeric) value for 'maxCount' attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of missing MaxQuality attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("minQuality"), out _minQuality))
+                        if (!int.TryParse(_line.GetAttribute("MinCount"), out int _minCount))
                         {
-
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (non-numeric) value for 'minQuality' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (non-numeric) value for 'MinCount' attribute: {0}", subChild.OuterXml));
+                            continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("maxQuality"), out _maxQuality))
+                        if (!int.TryParse(_line.GetAttribute("MaxCount"), out int _maxCount))
                         {
-
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (non-numeric) value for 'maxQuality' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (non-numeric) value for 'MaxCount' attribute: {0}", subChild.OuterXml));
+                            continue;
                         }
-                        string _item = _line.GetAttribute("item");
+                        if (!int.TryParse(_line.GetAttribute("MinQuality"), out int _minQuality))
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (non-numeric) value for 'MinQuality' attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        if (!int.TryParse(_line.GetAttribute("MaxQuality"), out int _maxQuality))
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Gimme entry because of invalid (non-numeric) value for 'MaxQuality' attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        string _item = _line.GetAttribute("Name");
                         ItemClass _class = ItemClass.GetItemClass(_item, true);
                         Block _block = Block.GetBlockByName(_item, true);
                         if (_class == null && _block == null)
@@ -136,9 +137,9 @@ namespace ServerTools
                             continue;
                         }
                         string _secondaryname;
-                        if (_line.HasAttribute("secondaryname"))
+                        if (_line.HasAttribute("SecondaryName"))
                         {
-                            _secondaryname = _line.GetAttribute("secondaryname");
+                            _secondaryname = _line.GetAttribute("SecondaryName");
                         }
                         else
                         {
@@ -148,9 +149,6 @@ namespace ServerTools
                         {
                             int[] _c = new int[] { _minCount, _maxCount, _minQuality, _maxQuality };
                             dict.Add(_item, _c);
-                        }
-                        if (!dict1.ContainsKey(_item))
-                        {
                             dict1.Add(_item, _secondaryname);
                         }
                     }
@@ -170,7 +168,7 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Gimme>");
-                sw.WriteLine("    <items>");
+                sw.WriteLine("    <Items>");
                 if (dict.Count > 0)
                 {
                     foreach (KeyValuePair<string, int[]> kvp in dict)
@@ -178,39 +176,39 @@ namespace ServerTools
                         string _name;
                         if (dict1.TryGetValue(kvp.Key, out _name))
                         {
-                            sw.WriteLine(string.Format("        <item item=\"{0}\" secondaryname=\"{1}\" minCount=\"{2}\" maxCount=\"{3}\" minQuality=\"{4}\" maxQuality=\"{5}\" />", kvp.Key, _name, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
+                            sw.WriteLine(string.Format("        <Item Name=\"{0}\" Secondaryname=\"{1}\" MinCount=\"{2}\" MaxCount=\"{3}\" MinQuality=\"{4}\" MaxQuality=\"{5}\" />", kvp.Key, _name, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
                         }
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <item item=\"drinkJarBoiledWater\" secondaryname=\"Bottled Water\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"drinkJarBeer\" secondaryname=\"Beer\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"foodCanChicken\" secondaryname=\"Can of Chicken\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"foodcanChili\" secondaryname=\"Can of Chilli\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"foodCropCorn\" secondaryname=\"Corn\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"foodCropPotato\" secondaryname=\"Potato\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"medicalBandage\" secondaryname=\"First Aid Bandage\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"drugPainkillers\" secondaryname=\"Pain Killers\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"resourceScrapBrass\" secondaryname=\"Scrap Brass\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"drugAntibiotics\" secondaryname=\"Antibiotics\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"foodMoldyBread\" secondaryname=\"Moldy Bread\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"resourceOil\" secondaryname=\"Oil\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"foodCornMeal\" secondaryname=\"Cornmeal\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"foodCropBlueberries\" secondaryname=\"Blueberries\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"resourceCropCoffeeBeans\" secondaryname=\"Coffee Beans\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"casinoCoin\" secondaryname=\"Casino Coins\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"meleeToolKnifeBone\" secondaryname=\"Bone Shiv\" minCount=\"1\" maxCount=\"1\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"foodCanDogfood\" secondaryname=\"Can of Dog Food\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"foodBlueberryPie\" secondaryname=\"Blueberry Pie\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"foodCanPeas\" secondaryname=\"Can of Peas\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"foodCanCatfood\" secondaryname=\"Can of Cat Food\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"resourceScrapIron\" secondaryname=\"Scrap Iron\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"resourceCropGoldenrodPlant\" secondaryname=\"Goldenrod Plant\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"resourceClayLump\" secondaryname=\"Lumps of Clay\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item item=\"foodRottingFlesh\" secondaryname=\"Rotting Flesh\" minCount=\"1\" maxCount=\"5\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"drinkJarBoiledWater\" Secondaryname=\"Bottled Water\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"drinkJarBeer\" Secondaryname=\"Beer\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCanChicken\" Secondaryname=\"Can of Chicken\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodcanChili\" Secondaryname=\"Can of Chilli\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCropCorn\" Secondaryname=\"Corn\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCropPotato\" Secondaryname=\"Potato\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"medicalBandage\" Secondaryname=\"First Aid Bandage\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"drugPainkillers\" Secondaryname=\"Pain Killers\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"resourceScrapBrass\" Secondaryname=\"Scrap Brass\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"drugAntibiotics\" Secondaryname=\"Antibiotics\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodMoldyBread\" Secondaryname=\"Moldy Bread\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"resourceOil\" Secondaryname=\"Oil\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCornMeal\" Secondaryname=\"Cornmeal\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCropBlueberries\" Secondaryname=\"Blueberries\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"resourceCropCoffeeBeans\" Secondaryname=\"Coffee Beans\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"casinoCoin\" Secondaryname=\"Casino Coins\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"meleeToolKnifeBone\" Secondaryname=\"Bone Shiv\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCanDogfood\" Secondaryname=\"Can of Dog Food\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodBlueberryPie\" Secondaryname=\"Blueberry Pie\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCanPeas\" Secondaryname=\"Can of Peas\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCanCatfood\" Secondaryname=\"Can of Cat Food\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"resourceScrapIron\" Secondaryname=\"Scrap Iron\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"resourceCropGoldenrodPlant\" Secondaryname=\"Goldenrod Plant\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"resourceClayLump\" Secondaryname=\"Lumps of Clay\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodRottingFlesh\" Secondaryname=\"Rotting Flesh\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
                 }
-                sw.WriteLine("    </items>");
+                sw.WriteLine("    </Items>");
                 sw.WriteLine("</Gimme>");
                 sw.Flush();
                 sw.Close();

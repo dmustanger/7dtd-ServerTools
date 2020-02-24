@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ServerTools.Website;
+using System;
 using System.IO;
+using System.Threading;
 using System.Xml;
 
 namespace ServerTools
@@ -70,6 +72,10 @@ namespace ServerTools
                     {
                         Directory.CreateDirectory(API.ConfigPath + "/Logs/BlockLogs");
                     }
+                    if (!Directory.Exists(API.ConfigPath + "/Logs/WebsiteLogs"))
+                    {
+                        Directory.CreateDirectory(API.ConfigPath + "/Logs/WebsiteLogs");
+                    }
                     Log.Out(string.Format("[ServerTools] Directory check completed"));
                     Log.Out(string.Format("[ServerTools] Deleting old logs"));
                     int _daysBeforeDeleted = (Days_Before_Log_Delete * -1);
@@ -91,7 +97,7 @@ namespace ServerTools
                             fi.Delete();
                         }
                     }
-                    files = Directory.GetFiles(API.ConfigPath + "/Logs/AuctionLog");
+                    files = Directory.GetFiles(API.ConfigPath + "/Logs/AuctionLogs");
                     foreach (string file in files)
                     {
                         FileInfo fi = new FileInfo(file);
@@ -181,6 +187,15 @@ namespace ServerTools
                             fi.Delete();
                         }
                     }
+                    files = Directory.GetFiles(API.ConfigPath + "/Logs/WebsiteLogs");
+                    foreach (string file in files)
+                    {
+                        FileInfo fi = new FileInfo(file);
+                        if (fi.CreationTime < DateTime.Now.AddDays(_daysBeforeDeleted))
+                        {
+                            fi.Delete();
+                        }
+                    }
                     Log.Out(string.Format("[ServerTools] Log clean up completed"));
                 }
                 catch (XmlException e)
@@ -211,7 +226,7 @@ namespace ServerTools
                 {
                     Log.Out("[ServerTools] Failed to connect to an sql database. ST requires this to operate. Error = {0}", e.Message);
                 }
-                //Load(4);
+                Load(4);
             }
             else if (_state == 4)
             {

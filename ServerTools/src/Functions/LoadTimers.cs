@@ -1,4 +1,6 @@
 ﻿using System.Timers;
+using ServerTools.AntiCheat;
+using ServerTools.Website;
 
 namespace ServerTools
 {
@@ -6,11 +8,10 @@ namespace ServerTools
     {
         public static bool timer1Running = false, timer2Running = false;
         public static int _stopServerCount, _eventTime = 0, _autoShutdown, _autoShutdownBloodmoonOver;
-        private static int timer1SecondInstanceCount, timerHalfSecondInstanceCount, timer2Second, timer5Second, timer10Second, timer60Second, _watchList, _nightAlert, 
-            _horde, _lottery, _breakTime, _inventoryCheck, _weatherVote, _bloodmoon, _playerLogs, _autoSaveWorld, _infoTicker, _restartVote, _stopServerCountDown, 
-            _kickVote, _muteVote, _eventInvitation, _eventOpen, _zoneReminder, _shutdownFailSafe, _tracking, _realWorldTime, _autoShutdownBloodmoon, _autoBackup;
+        private static int timer1SecondInstanceCount, timer2Second, timer5Second, timer10Second, timer60Second, _watchList, _nightAlert, 
+            _horde, _lottery, _breakTime, _invalidItems, _weatherVote, _bloodmoon, _playerLogs, _autoSaveWorld, _infoTicker, _restartVote, _stopServerCountDown, 
+            _kickVote, _muteVote, _eventInvitation, _eventOpen, _zoneReminder, _tracking, _realWorldTime, _autoShutdownBloodmoon, _autoBackup;
         private static System.Timers.Timer t1 = new System.Timers.Timer();
-        private static System.Timers.Timer t2 = new System.Timers.Timer();
 
         public static void TimerStart()
         {
@@ -32,29 +33,6 @@ namespace ServerTools
                 t1.Stop();
                 t1.Close();
                 timer1SecondInstanceCount = 0;
-            }
-        }
-
-        public static void Timer2Start()
-        {
-            timerHalfSecondInstanceCount++;
-            if (timerHalfSecondInstanceCount <= 1)
-            {
-                timer2Running = true;
-                t2.Interval = 500;
-                t2.Start();
-                t2.Elapsed += new ElapsedEventHandler(Init2);
-            }
-        }
-
-        public static void Timer2Stop()
-        {
-            if (timer2Running)
-            {
-                timer2Running = false;
-                t2.Stop();
-                t2.Close();
-                timerHalfSecondInstanceCount = 0;
             }
         }
 
@@ -87,14 +65,14 @@ namespace ServerTools
             };
         }
 
-        public static void NewPlayerStartingItemsTimer(ClientInfo _cInfo, EntityPlayer _player)
+        public static void NewPlayerStartingItemsTimer(ClientInfo _cInfo)
         {
             System.Timers.Timer newPlayerStartingItemsTimer = new System.Timers.Timer(2000);
             newPlayerStartingItemsTimer.AutoReset = false;
             newPlayerStartingItemsTimer.Start();
             newPlayerStartingItemsTimer.Elapsed += (sender, e) =>
             {
-                Init5(sender, e, _cInfo, _player);
+                Init5(sender, e, _cInfo);
                 newPlayerStartingItemsTimer.Close();
             };
         }
@@ -160,7 +138,7 @@ namespace ServerTools
             {
                 Log.Out("God mode detector enabled");
             }
-            if (InventoryCheck.IsEnabled)
+            if (InvalidItems.IsEnabled)
             {
                 Log.Out("Invalid item detector enabled");
             }
@@ -472,6 +450,10 @@ namespace ServerTools
             {
                 Log.Out("Waypoints enabled");
             }
+            if (WebsiteServer.IsEnabled)
+            {
+                Log.Out("Website server enabled");
+            }
             if (Zones.IsEnabled)
             {
                 Log.Out("Zone enabled");
@@ -489,6 +471,7 @@ namespace ServerTools
         {
             if (!StopServer.Shutdown)
             {
+                PersistentOperations.PlayerCheck();
                 if (Jail.IsEnabled)
                 {
                     Jail.StatusCheck();
@@ -898,18 +881,18 @@ namespace ServerTools
                 {
                     _tracking = 0;
                 }
-                if (InventoryCheck.IsEnabled && InventoryCheck.Chest_Checker)
+                if (InvalidItems.IsEnabled && InvalidItems.Check_Storage)
                 {
-                    _inventoryCheck++;
-                    if (_inventoryCheck >= 300)
+                    _invalidItems++;
+                    if (_invalidItems >= 300)
                     {
-                        _inventoryCheck = 0;
-                        InventoryCheck.ChestCheck();
+                        _invalidItems = 0;
+                        InvalidItems.CheckStorage();
                     }
                 }
                 else
                 {
-                    _inventoryCheck = 0;
+                    _invalidItems = 0;
                 }
                 if (RealWorldTime.IsEnabled)
                 {
@@ -925,21 +908,9 @@ namespace ServerTools
                     _realWorldTime = 0;
                 }
             }
-            else
-            {
-                _shutdownFailSafe++;
-                if (_shutdownFailSafe >= 15)
-                {
-                    _shutdownFailSafe = 0;
-                    StopServer.FailSafe();
-                }
-            }
         }
 
-        private static void Init2(object sender, ElapsedEventArgs e)
-        {
-            PersistentOperations.PlayerCheck();
-        }
+        //init 2 available
 
         private static void Init3(object sender, ElapsedEventArgs e, string _playerId, string _commands)
         {
@@ -951,9 +922,9 @@ namespace ServerTools
             API.NewPlayerExec1(_cInfo);
         }
 
-        private static void Init5(object sender, ElapsedEventArgs e, ClientInfo _cInfo, EntityPlayer _player)
+        private static void Init5(object sender, ElapsedEventArgs e, ClientInfo _cInfo)
         {
-            API.NewPlayerExec2(_cInfo, _player);
+            API.NewPlayerExec2(_cInfo);
         }
 
         private static void Init6(object sender, ElapsedEventArgs e, ClientInfo _cInfo)

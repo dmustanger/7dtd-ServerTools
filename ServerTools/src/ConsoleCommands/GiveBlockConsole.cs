@@ -22,7 +22,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-GiveBlock", "giveblock", "gb" };
+            return new string[] { "st-GiveBlock", "GiveBlock", "giveblock", "gb" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

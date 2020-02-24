@@ -11,8 +11,6 @@ namespace ServerTools
         public static string Normal_Player_Color = "[00B3B3]", Normal_Player_Prefix = "NOOB", Friend_Chat_Color = "[33CC33]", Party_Chat_Color = "[FFCC00]", Player_Name_Color = "[00FF00]",
             Command_Private = "/", Command_Public = "!", Message_Color = "[FFFFFF]";
         public static int Admin_Level = 0, Mod_Level = 1, Max_Length = 250, Messages_Per_Min = 8, Wait_Time = 60;
-        private static SortedDictionary<string, DateTime> Dict = new SortedDictionary<string, DateTime>();
-        private static SortedDictionary<string, string> Dict1 = new SortedDictionary<string, string>();
         private static Dictionary<int, int> ChatFloodPlayerList = new Dictionary<int, int>();
         private static Dictionary<int, DateTime> ChatFloodTimeList = new Dictionary<int, DateTime>();
         private static Dictionary<int, DateTime> ChatFloodLock = new Dictionary<int, DateTime>();
@@ -129,11 +127,10 @@ namespace ServerTools
                                     }
                                 }
                                 int _count = 0;
-                                DateTime _chatTime = new DateTime();
                                 if (ChatFloodPlayerList.ContainsKey(_cInfo.entityId))
                                 {
                                     ChatFloodPlayerList.TryGetValue(_cInfo.entityId, out _count);
-                                    ChatFloodTimeList.TryGetValue(_cInfo.entityId, out _chatTime);
+                                    ChatFloodTimeList.TryGetValue(_cInfo.entityId, out DateTime _chatTime);
                                     TimeSpan varTime = DateTime.Now - _chatTime;
                                     double fractionalSeconds = varTime.TotalSeconds;
                                     int _timepassed = (int)fractionalSeconds;
@@ -174,8 +171,7 @@ namespace ServerTools
                             ChatColorPrefix.dict1.TryGetValue(_cInfo.playerId, out _dt);
                             if (DateTime.Now < _dt)
                             {
-                                string[] _colorPrefix;
-                                ChatColorPrefix.dict.TryGetValue(_cInfo.playerId, out _colorPrefix);
+                                ChatColorPrefix.dict.TryGetValue(_cInfo.playerId, out string[] _colorPrefix);
                                 if (ClanManager.IsEnabled && ClanManager.ClanMember.Contains(_cInfo.playerId))
                                 {
                                     string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
@@ -200,17 +196,20 @@ namespace ServerTools
                         {
                             if (ClanManager.ClanMember.Contains(_cInfo.playerId))
                             {
-                                string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
-                                if (Normal_Player_Chat_Prefix)
+                                if (string.IsNullOrEmpty(PersistentContainer.Instance.Players[_cInfo.playerId].ClanName))
                                 {
-                                    PrepMessage(_cInfo, _message, _senderId, _mainName, Normal_Player_Color, _clanName, _type, _recipientEntityIds);
+                                    string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
+                                    if (Normal_Player_Chat_Prefix)
+                                    {
+                                        PrepMessage(_cInfo, _message, _senderId, _mainName, Normal_Player_Color, _clanName, _type, _recipientEntityIds);
+                                        return false;
+                                    }
+                                    else
+                                    {
+                                        PrepMessage(_cInfo, _message, _senderId, _mainName, "", _clanName, _type, _recipientEntityIds);
+                                    }
                                     return false;
                                 }
-                                else
-                                {
-                                    PrepMessage(_cInfo, _message, _senderId, _mainName, "", _clanName, _type, _recipientEntityIds);
-                                }
-                                return false;
                             }
                         }
                         if (Normal_Player_Chat_Prefix)
@@ -295,8 +294,7 @@ namespace ServerTools
                                     {
                                         if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                         {
-                                            DateTime _dt;
-                                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                            ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                                             if (DateTime.Now < _dt)
                                             {
 
@@ -342,8 +340,7 @@ namespace ServerTools
                                 {
                                     if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                     {
-                                        DateTime _dt;
-                                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                        ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                                         if (DateTime.Now < _dt)
                                         {
                                             TeleportHome.SetHome2(_cInfo);
@@ -406,8 +403,7 @@ namespace ServerTools
                             {
                                 if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                                     if (DateTime.Now < _dt)
                                     {
                                         TeleportHome.Exec2(_cInfo);
@@ -459,8 +455,7 @@ namespace ServerTools
                             {
                                 if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                                     if (DateTime.Now < _dt)
                                     {
                                         TeleportHome.FExec2(_cInfo);
@@ -512,8 +507,7 @@ namespace ServerTools
                             {
                                 if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
-                                    DateTime _dt;
-                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt);
+                                    ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                                     if (DateTime.Now < _dt)
                                     {
                                         TeleportHome.DelHome2(_cInfo);
@@ -597,8 +591,7 @@ namespace ServerTools
                             }
                             else
                             {
-                                string _phrase824;
-                                if (!Phrases.Dict.TryGetValue(824, out _phrase824))
+                                if (!Phrases.Dict.TryGetValue(824, out string _phrase824))
                                 {
                                     _phrase824 = " there is a vote already open.";
                                 }
@@ -922,7 +915,6 @@ namespace ServerTools
                         if (Shop.IsEnabled && Wallet.IsEnabled && _message.ToLower().StartsWith(Shop.Command57 + " "))//show specific category
                         {
                             string _category = _message.ToLower().Replace(Shop.Command57 + " ", "");
-                            Log.Out(string.Format("shop message string 1 = {0}", _category));
                             if (Shop.categories.Contains(_category))
                             {
                                 Shop.PosCheck(_cInfo, _category, 2, 0);
@@ -933,12 +925,10 @@ namespace ServerTools
                                 string _buyCount = _message.Replace(Shop.Command58 + " ", "");
                                 if (_buyCount.ToLower().Length == 1)
                                 {
-                                    Log.Out(string.Format("shop message string 2 = {0}", _buyCount));
                                     Shop.PosCheck(_cInfo, _buyCount, 3, 1);
                                 }
                                 else
                                 {
-                                    Log.Out(string.Format("shop message string 3 = {0}", _buyCount));
                                     string a = _buyCount.Split(' ').First();
                                     string b = _buyCount.Split(' ').Last();
                                     int _count;
@@ -1575,7 +1565,8 @@ namespace ServerTools
                         }
                         if (Hardcore.IsEnabled && Hardcore.Optional && _message.ToLower() == Hardcore.Command128)
                         {
-                            if (!PersistentContainer.Instance.Players[_cInfo.playerId].Hardcore)
+
+                            if (PersistentContainer.Instance.Players[_cInfo.playerId].Hardcore)
                             {
                                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                                 int _deaths = XUiM_Player.GetDeaths(_player);
@@ -1624,36 +1615,6 @@ namespace ServerTools
                         {
                             Timers.BattleLogPlayerExit(_cInfo.playerId);
                             ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Please wait 15 seconds for disconnection and do not move" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            return false;
-                        }
-                        //if (_message.ToLower() == "sttest1")
-                        //{
-                        //    Log.Out("ST Test detected 1");
-                        //    PersistentOperations.TestExec1(_cInfo);
-                        //    return false;
-                        //}
-                        //if (_message.ToLower() == "sttest2")
-                        //{
-                        //    Log.Out("ST Test detected 2");
-                        //    PersistentOperations.TestExec2(_cInfo);
-                        //    return false;
-                        //}
-                        //if (_message.ToLower() == "sttest3")
-                        //{
-                        //    Log.Out("ST Test detected 3");
-                        //    PersistentOperations.TestExec3(_cInfo);
-                        //    return false;
-                        //}
-                        //if (_message.ToLower() == "sttest4")
-                        //{
-                        //    Log.Out("ST Test detected 4");
-                        //    PersistentOperations.TestExec4(_cInfo);
-                        //    return false;
-                        //}
-                        if (_message.ToLower() == "sttest5")
-                        {
-                            Log.Out("ST Test detected 5");
-                            PersistentOperations.TestExec5(_cInfo);
                             return false;
                         }
                     }

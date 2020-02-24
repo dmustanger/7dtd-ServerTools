@@ -429,6 +429,7 @@ namespace ServerTools
                     p.StartingItems = false;
                     p.TotalTimePlayed = 0;
                     p.VoteWeekCount = 0;
+                    p.WP = "";
                     p.ZoneDeathTime = new DateTime();
                     PersistentContainer.Instance.Save();
                 }
@@ -470,29 +471,9 @@ namespace ServerTools
         {
             try
             {
+                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto kicked at end of hardcore session\"", _cInfo.playerId), (ClientInfo)null);
                 EntityPlayer entityPlayer = (EntityPlayer)GameManager.Instance.World.GetEntity(_cInfo.entityId);
-                if (entityPlayer != null)
-                {
-                    if (_cInfo.entityId != -1)
-                    {
-                        Log.Out("Player {0} disconnected after {1} minutes", new object[]
-                    {
-                GameUtils.SafeStringFormat(entityPlayer.EntityName),
-                ((Time.timeSinceLevelLoad - entityPlayer.CreationTimeSinceLevelLoad) / 60f).ToCultureInvariantString("0.0")
-                    });
-                    }
-                }
-                GC.Collect();
-                MemoryPools.Cleanup();
-                PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo.playerId);
-                if (persistentPlayerData != null)
-                {
-                    persistentPlayerData.LastLogin = DateTime.Now;
-                    persistentPlayerData.EntityId = -1;
-                }
                 PersistentOperations.SavePersistentPlayerDataXML();
-                ConnectionManager.Instance.DisconnectClient(_cInfo, false);
-                GameManager.Instance.World.aiDirector.RemoveEntity(entityPlayer);
                 PersistentOperations.RemoveAllClaims(_cInfo.playerId);
                 PersistentOperations.RemovePersistentPlayerData(_cInfo.playerId);
                 PersistentOperations.RemoveAllACL(_cInfo.playerId);

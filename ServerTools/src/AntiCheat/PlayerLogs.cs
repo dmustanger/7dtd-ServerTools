@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace ServerTools
+namespace ServerTools.AntiCheat
 {
     class PlayerLogs
     {

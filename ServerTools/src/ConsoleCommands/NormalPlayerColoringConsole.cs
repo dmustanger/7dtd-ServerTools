@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-NormalPlayerColoring", "normalplayercoloring" };
+            return new string[] { "st-NormalPlayerColoring", "NormalPlayerColoring", "normalplayercoloring" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

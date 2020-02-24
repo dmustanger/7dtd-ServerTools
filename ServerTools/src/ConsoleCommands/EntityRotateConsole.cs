@@ -18,7 +18,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-EntityRotate", "entityrotate", "st-erot", "erot" };
+            return new string[] { "st-EntityRotate", "EntityRotate", "entityrotate", "erot" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

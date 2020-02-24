@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Net;
 using System.Xml;
@@ -68,68 +67,63 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Vote Reward' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'VoteReward' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("itemOrBlock"))
+                        if (!_line.HasAttribute("ItemOrBlock"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing itemOrBlock attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing ItemOrBlock attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("countMin"))
+                        if (!_line.HasAttribute("CountMin"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing countMin attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing CountMin attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("countMax"))
+                        if (!_line.HasAttribute("CountMax"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing countMax attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing CountMax attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("qualityMin"))
+                        if (!_line.HasAttribute("QualityMin"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing qualityMin attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing QualityMin attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("qualityMax"))
+                        if (!_line.HasAttribute("QualityMax"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing qualityMax attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of missing QualityMax attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        int _countMin = 1;
-                        int _countMax = 1;
-                        int _qualityMin = 1;
-                        int _qualityMax = 1;
-                        if (!int.TryParse(_line.GetAttribute("countMin"), out _countMin))
+                        if (!int.TryParse(_line.GetAttribute("CountMin"), out int _countMin))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'count' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'CountMin' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("countMax"), out _countMax))
+                        if (!int.TryParse(_line.GetAttribute("CountMax"), out int _countMax))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'count' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'CountMax' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("qualityMin"), out _qualityMin))
+                        if (!int.TryParse(_line.GetAttribute("QualityMin"), out int _qualityMin))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'quality' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'QualityMin' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("qualityMax"), out _qualityMax))
+                        if (!int.TryParse(_line.GetAttribute("QualityMax"), out int _qualityMax))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'quality' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Vote Reward entry because of invalid (non-numeric) value for 'QualityMax' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (_qualityMax > 6)
                         {
                             _qualityMax = 6;
                         }
-                        string _item = _line.GetAttribute("itemOrBlock");
+                        string _item = _line.GetAttribute("ItemOrBlock");
                         ItemClass _class;
                         Block _block;
-                        int _id;
-                        if (int.TryParse(_item, out _id))
+                        if (int.TryParse(_item, out int _id))
                         {
                             _class = ItemClass.GetForId(_id);
                             _block = Block.GetBlockByName(_item, true);
@@ -169,27 +163,27 @@ namespace ServerTools
             using (StreamWriter sw = new StreamWriter(filePath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                sw.WriteLine("<RewardItems>");
+                sw.WriteLine("<VoteRewards>");
                 sw.WriteLine("    <Rewards>");
                 if (dict.Count > 0)
                 {
                     foreach (KeyValuePair<string, int[]> kvp in dict)
                     {
-                        sw.WriteLine(string.Format("        <reward itemOrBlock=\"{0}\" countMin=\"{1}\" countMax=\"{2}\" qualityMin=\"{3}\" qualityMax=\"{4}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
+                        sw.WriteLine(string.Format("        <Reward ItemOrBlock=\"{0}\" CountMin=\"{1}\" CountMax=\"{2}\" QualityMin=\"{3}\" QualityMax=\"{4}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <reward itemOrBlock=\"meleeToolTorch\" countMin=\"5\" countMax=\"10\" qualityMin=\"1\" qualityMax=\"1\" />");
-                    sw.WriteLine("        <reward itemOrBlock=\"ammo9mmBullet\" countMin=\"10\" countMax=\"30\" qualityMin=\"1\" qualityMax=\"1\" />");
-                    sw.WriteLine("        <reward itemOrBlock=\"ammo44MagnumBullet\" countMin=\"5\" countMax=\"10\" qualityMin=\"1\" qualityMax=\"1\" />");
-                    sw.WriteLine("        <reward itemOrBlock=\"armorIronChest\" countMin=\"1\" countMax=\"1\" qualityMin=\"1\" qualityMax=\"6\" />");
-                    sw.WriteLine("        <reward itemOrBlock=\"foodCropCorn\" countMin=\"5\" countMax=\"10\" qualityMin=\"1\" qualityMax=\"1\" />");
-                    sw.WriteLine("        <reward itemOrBlock=\"terrSand\" countMin=\"5\" countMax=\"10\" qualityMin=\"1\" qualityMax=\"1\" />");
-                    sw.WriteLine("        <reward itemOrBlock=\"terrSnow\" countMin=\"2\" countMax=\"10\" qualityMin=\"1\" qualityMax=\"1\" />");
+                    sw.WriteLine("        <Reward ItemOrBlock=\"meleeToolTorch\" CountMin=\"5\" CountMax=\"10\" QualityMin=\"1\" QualityMax=\"1\" />");
+                    sw.WriteLine("        <Reward ItemOrBlock=\"ammo9mmBullet\" CountMin=\"10\" CountMax=\"30\" QualityMin=\"1\" QualityMax=\"1\" />");
+                    sw.WriteLine("        <Reward ItemOrBlock=\"ammo44MagnumBullet\" CountMin=\"5\" CountMax=\"10\" QualityMin=\"1\" QualityMax=\"1\" />");
+                    sw.WriteLine("        <Reward ItemOrBlock=\"armorIronChest\" CountMin=\"1\" CountMax=\"1\" QualityMin=\"1\" QualityMax=\"6\" />");
+                    sw.WriteLine("        <Reward ItemOrBlock=\"foodCropCorn\" CountMin=\"5\" CountMax=\"10\" QualityMin=\"1\" QualityMax=\"1\" />");
+                    sw.WriteLine("        <Reward ItemOrBlock=\"terrSand\" CountMin=\"5\" CountMax=\"10\" QualityMin=\"1\" QualityMax=\"1\" />");
+                    sw.WriteLine("        <Reward ItemOrBlock=\"terrSnow\" CountMin=\"2\" CountMax=\"10\" QualityMin=\"1\" QualityMax=\"1\" />");
                 }
                 sw.WriteLine("    </Rewards>");
-                sw.WriteLine("</RewardItems>");
+                sw.WriteLine("</VoteRewards>");
                 sw.Flush();
                 sw.Close();
             }
@@ -319,7 +313,7 @@ namespace ServerTools
             ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase700 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
-        private static void ItemOrBlockCounter(ClientInfo _cInfo, int _counter)
+        public static void ItemOrBlockCounter(ClientInfo _cInfo, int _counter)
         {
             ItemOrBlockRandom(_cInfo);
             _counter--;
@@ -329,9 +323,17 @@ namespace ServerTools
             }
             else
             {
-                if (Weekly_Votes > 0)
+                if (Weekly_Votes > 1)
                 {
-                    DateTime _lastVoteWeek = PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek;
+                    DateTime _lastVoteWeek;
+                    if (PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek != null)
+                    {
+                        _lastVoteWeek = PersistentContainer.Instance.Players[_cInfo.playerId].LastVoteWeek;
+                    }
+                    else
+                    {
+                        _lastVoteWeek = DateTime.Now;
+                    }
                     TimeSpan varTime = DateTime.Now - _lastVoteWeek;
                     double fractionalDays = varTime.TotalDays;
                     int _timepassed = (int)fractionalDays;
@@ -379,8 +381,9 @@ namespace ServerTools
                         string _phrase705;
                         if (!Phrases.Dict.TryGetValue(705, out _phrase705))
                         {
-                            _phrase705 = " you have voted 1 time since {Date}. You need {Count} more votes before {Date2} to reach the bonus.";
+                            _phrase705 = " you have voted {Votes} time since {Date}. You need {Count} more votes before {Date2} to reach the bonus.";
                         }
+                        _phrase705 = _phrase705.Replace("{Votes}", 1.ToString());
                         _phrase705 = _phrase705.Replace("{Date}", DateTime.Now.ToString());
                         _phrase705 = _phrase705.Replace("{Count}", _remainingVotes.ToString());
                         _phrase705 = _phrase705.Replace("{Date2}", _date2.ToString());

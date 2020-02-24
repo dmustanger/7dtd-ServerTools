@@ -15,7 +15,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-MaxPing", "maxping", string.Empty };
+            return new string[] { "st-MaxPing", "MaxPing", "maxping" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
-namespace ServerTools
+namespace ServerTools.AntiCheat
 {
     class CredentialCheck
 

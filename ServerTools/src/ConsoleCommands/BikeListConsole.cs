@@ -21,7 +21,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Bikelist", "bikelist", "bl" };
+            return new string[] { "st-Bikelist", "Bikelist", "bikelist", "bl" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

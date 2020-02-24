@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Report", "report" };
+            return new string[] { "st-Report", "Report", "report" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

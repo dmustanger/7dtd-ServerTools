@@ -7,7 +7,7 @@ namespace ServerTools
 {
     class Waypoints
     {
-        public static bool IsEnabled = false, PvP_Check= false, Zombie_Check = false, Vehicle = false;
+        public static bool IsEnabled = false, PvP_Check = false, Zombie_Check = false, Vehicle = false;
         public static int Delay_Between_Uses = 0, Max_Waypoints = 2, Donator_Max_Waypoints = 4, Command_Cost = 0;
         public static string Command10 = "goway", Command106 = "waypoint", Command107 = "way", Command108 = "wp", Command109 = "fwaypoint", Command110 = "fway", Command111 = "fwp", 
             Command112 = "waypointsave", Command113 = "waysave", Command114 = "ws", Command115 = "waypointdel", Command116 = "waydel", Command117 = "wd";
@@ -190,7 +190,7 @@ namespace ServerTools
             int y = (int)_position.y;
             int z = (int)_position.z;
             Vector3i _vec3i = new Vector3i(x, y, z);
-            if (!Claimed(_cInfo, _vec3i))
+            if (PersistentOperations.ClaimedByNone(_cInfo.playerId, _vec3i))
             {
                 CommandCost(_cInfo, _waypoint);
             }
@@ -280,7 +280,7 @@ namespace ServerTools
                 int y = (int)_position.y;
                 int z = (int)_position.z;
                 Vector3i _vec3i = new Vector3i(x, y, z);
-                if (!Claimed(_cInfo, _vec3i))
+                if (PersistentOperations.ClaimedByNone(_cInfo.playerId, _vec3i))
                 {
                     ReservedCheck(_cInfo, _waypoint);
                 }
@@ -298,21 +298,6 @@ namespace ServerTools
             {
                 ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you can not use waypoint commands while signed up for or in an event.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
-        }
-
-        private static bool Claimed(ClientInfo _cInfo, Vector3i _position)
-        {
-            PersistentPlayerList _persistentPlayerList = PersistentOperations.GetPersistentPlayerList();
-            if (_persistentPlayerList != null)
-            {
-                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_cInfo.entityId);
-                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
-                if (_owner == EnumLandClaimOwner.None)
-                {
-                    return false;
-                }
-            }
-            return true;
         }
 
         private static void ReservedCheck(ClientInfo _cInfo, string _waypoint)
@@ -493,7 +478,7 @@ namespace ServerTools
             int y = (int)_position.y;
             int z = (int)_position.z;
             Vector3i _vec3i = new Vector3i(x, y, z);
-            if (!Claimed(_cInfo, _vec3i))
+            if (PersistentOperations.ClaimedByNone(_cInfo.playerId, _vec3i))
             {
                 FCommandCost(_cInfo, _waypoint, _position);
             }
@@ -540,7 +525,10 @@ namespace ServerTools
                 int.TryParse(_cordsplit[1], out y);
                 int.TryParse(_cordsplit[2], out z);
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                if (Wallet.IsEnabled && Command_Cost > 0)
+                {
+                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                }
                 _sql = string.Format("UPDATE Players SET lastWaypoint = '{0}' WHERE steamid = '{1}'", DateTime.Now, _cInfo.playerId);
                 SQL.FastQuery(_sql, "Waypoints");
                 string _phrase577;

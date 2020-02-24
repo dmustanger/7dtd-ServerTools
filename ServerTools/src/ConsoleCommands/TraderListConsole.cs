@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Traderlist", "traderlist", "st-tl", "tl" };
+            return new string[] { "st-Traderlist", "Traderlist", "traderlist", "st-tl", "tl" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

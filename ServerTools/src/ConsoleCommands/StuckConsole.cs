@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Stuck", "stuck" };
+            return new string[] { "st-Stuck", "Stuck", "stuck" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

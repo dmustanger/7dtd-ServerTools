@@ -11,7 +11,7 @@ namespace ServerTools
         public static int Delay_Between_Uses = 30, Admin_Level = 0, Cancel_Time = 15;
         public static string Command71 = "auction", Command72 = "auction cancel", Command73 = "auction buy", Command74 = "auction sell";
         public static Dictionary<int, string> AuctionItems = new Dictionary<int, string>();
-        private static string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy")), filepath = string.Format("{0}/Logs/AuctionLog/{1}", API.ConfigPath, file);
+        private static string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy")), filepath = string.Format("{0}/Logs/AuctionLogs/{1}", API.ConfigPath, file);
 
         public static void Delay(ClientInfo _cInfo, string _price)
         {

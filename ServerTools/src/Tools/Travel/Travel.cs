@@ -67,32 +67,32 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'travel' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'TravelLocations' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("name"))
+                        if (!_line.HasAttribute("Name"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry because of missing name attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry because of missing Name attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("corner1"))
+                        if (!_line.HasAttribute("Corner1"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry because of missing corner1 attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry because of missing Corner1 attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("corner2"))
+                        if (!_line.HasAttribute("Corner2"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry because of missing corner2 attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry because of missing Corner2 attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("destination"))
+                        if (!_line.HasAttribute("Destination"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry because of missing destination attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Travel entry because of missing Destination attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        string _name = _line.GetAttribute("name");
-                        string[] box = { _line.GetAttribute("corner1"), _line.GetAttribute("corner2"), _line.GetAttribute("destination") };
+                        string _name = _line.GetAttribute("Name");
+                        string[] box = { _line.GetAttribute("Corner1"), _line.GetAttribute("Corner2"), _line.GetAttribute("Destination") };
 
                         if (!Box.ContainsKey(_name))
                         {
@@ -120,13 +120,13 @@ namespace ServerTools
                 {
                     foreach (KeyValuePair<string, string[]> kvpBox in Box)
                     {
-                        sw.WriteLine(string.Format("        <location name=\"{0}\" corner1=\"{1}\" corner2=\"{2}\" destination=\"{3}\"  />", kvpBox.Key, kvpBox.Value[0], kvpBox.Value[1], kvpBox.Value[2]));
+                        sw.WriteLine(string.Format("        <Location Name=\"{0}\" Corner1=\"{1}\" Corner2=\"{2}\" Destination=\"{3}\" />", kvpBox.Key, kvpBox.Value[0], kvpBox.Value[1], kvpBox.Value[2]));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <location name=\"zone1\" corner1=\"0,100,0\" corner2=\"10,100,10\" destination=\"-100,-1,-100\" />");
-                    sw.WriteLine("        <location name=\"zone2\" corner1=\"-1,100,-1\" corner2=\"-10,100,-10\" destination=\"100,-1,100\" />");
+                    sw.WriteLine("        <Location Name=\"zone1\" Corner1=\"0,100,0\" Corner2=\"10,100,10\" Destination=\"-100,-1,-100\" />");
+                    sw.WriteLine("        <Location Name=\"zone2\" Corner1=\"-1,100,-1\" Corner2=\"-10,100,-10\" Destination=\"100,-1,100\" />");
                 }
                 sw.WriteLine("    </Travel>");
                 sw.WriteLine("</TravelLocations>");

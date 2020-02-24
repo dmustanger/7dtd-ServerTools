@@ -9,89 +9,11 @@ namespace ServerTools
 {
     class BattleLogger
     {
-        public static bool IsEnabled = false, LogFound = false, Drop = false, Remove = false, All = false, Belt = false, Bag = false, Equipment = false;
-        public static string Command131 = "exit", Command132 = "quit", LogDirectory = "", LogName = "";
+        public static bool IsEnabled = false, Drop = false, Remove = false, All = false, Belt = false, Bag = false, Equipment = false;
+        public static string Command131 = "exit", Command132 = "quit";
         public static int Admin_Level = 0;
         public static Dictionary<string, string> Players = new Dictionary<string, string>();
         private static int LogLineCount = 0;
-
-        public static void Load()
-        {
-            try
-            {
-                if (!BattleLogger.LogFound && !string.IsNullOrEmpty(Utils.GetApplicationScratchPath()))
-                {
-                    BattleLogger.LogDirectory = Utils.GetApplicationScratchPath();
-                    BattleLogger.ConfirmLog();
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BattleLogger.Load: {0}.", e.Message));
-            }
-        }
-
-        public static void ConfirmLog()
-        {
-            try
-            {
-                string[] _txtFiles = Directory.GetFiles(LogDirectory, "*.txt", SearchOption.AllDirectories);
-                if (_txtFiles != null)
-                {
-                    string _fileName = "";
-                    DateTime _latestDateTime = DateTime.MinValue;
-                    for (int i = 0; i < _txtFiles.Length; i++)
-                    {
-                        FileInfo _fileInfo = new FileInfo(_txtFiles[i]);
-                        if (_fileInfo != null && _fileInfo.CreationTime > _latestDateTime)
-                        {
-                            _fileName = _fileInfo.FullName;
-                            _latestDateTime = _fileInfo.CreationTime;
-                        }
-                    }
-                    if (_fileName != "")
-                    {
-                        using (FileStream fs = new FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                        {
-                            using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
-                            {
-                                for (int i = 0; i < int.MaxValue; i++)
-                                {
-                                    string _line = sr.ReadLine();
-                                    if (_line != null)
-                                    {
-                                        LogLineCount++;
-                                        if (_line.ToLower().Contains("dedicated server only build"))
-                                        {
-                                            LogName = _fileName;
-                                            LogFound = true;
-                                            Log.Out("-------------------------------");
-                                            Log.Out("[SERVERTOOLS] Verified log file");
-                                            Log.Out("-------------------------------");
-                                            break;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-                                if (!LogFound)
-                                {
-                                    Log.Out("---------------------------------------");
-                                    Log.Out("[SERVERTOOLS] Unable to verify log file");
-                                    Log.Out("---------------------------------------");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BattleLogger.ConfirmLog: {0}.", e.Message));
-            }
-        }
 
         public static void ScanLog(string _id)
         {
@@ -104,7 +26,7 @@ namespace ServerTools
                 string _ip;
                 BattleLogger.Players.TryGetValue(_id, out _ip);
                 BattleLogger.Players.Remove(_id);
-                using (FileStream fs = new FileStream(BattleLogger.LogName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (FileStream fs = new FileStream(Confirm.LogName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
                     {

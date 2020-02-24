@@ -21,7 +21,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-AdminChatCommands", "adminchatcommands", "st-acc", "acc" };
+            return new string[] { "st-AdminChatCommands", "AdminChatCommands", "adminchatcommands", "st-acc", "acc" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

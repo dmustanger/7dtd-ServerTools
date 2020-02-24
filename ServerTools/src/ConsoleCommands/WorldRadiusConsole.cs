@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
+using ServerTools.AntiCheat;
 
 namespace ServerTools
 {
@@ -24,7 +24,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-WorldRadius", "worldradius", "st-wr", "wr" };
+            return new string[] { "st-WorldRadius", "WorldRadius", "worldradius", "st-wr", "wr" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -52,7 +52,7 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (WorldRadius.IsEnabled)
+                    if (!WorldRadius.IsEnabled)
                     {
                         WorldRadius.IsEnabled = true;
                         LoadConfig.WriteXml();

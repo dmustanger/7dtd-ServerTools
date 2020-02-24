@@ -119,10 +119,6 @@ namespace ServerTools
                 {
                     UpdateSQL.Exec(_version);
                 }
-                else
-                {
-                    LoadProcess.Load(4);
-                }
             }
             catch (SQLiteException e)
             {

@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-EntityCleanup", "entitycleanup" };
+            return new string[] { "st-EntityCleanup", "EntityCleanup", "entitycleanup" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

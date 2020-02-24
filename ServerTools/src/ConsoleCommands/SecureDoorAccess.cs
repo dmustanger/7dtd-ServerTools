@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-SecureDoorAccess", "securedooraccess", "st-sda", "sda" };
+            return new string[] { "st-SecureDoorAccess", "SecureDoorAccess", "securedooraccess", "st-sda", "sda" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace ServerTools
+namespace ServerTools.AntiCheat
 {
     public static class ProcessDamage
     {
@@ -85,61 +85,95 @@ namespace ServerTools
             try
             {
                 World _world = __instance.World;
-                for (int i = 0; i < _blocksToChange.Count; i++)
+                if (_world != null && _blocksToChange != null)
                 {
-                    BlockChangeInfo _newBlockInfo = _blocksToChange[i];//new block info
-                    BlockValue _blockValue = _world.GetBlock(_newBlockInfo.pos);//old block value
-                    if (_newBlockInfo.bChangeBlockValue)//new block value
+                    for (int i = 0; i < _blocksToChange.Count; i++)
                     {
-                        if (_blockValue.type == BlockValue.Air.type)//old block was air
+                        BlockChangeInfo _newBlockInfo = _blocksToChange[i];//new block info
+                        BlockValue _blockValue = _world.GetBlock(_newBlockInfo.pos);//old block value
+                        if (_newBlockInfo != null && _newBlockInfo.bChangeBlockValue)//new block value
                         {
-                            if (_newBlockInfo.blockValue.Block is BlockSleepingBag)//placed a sleeping bag
+                            if (_blockValue.type == BlockValue.Air.type)//old block was air
                             {
-                                PersistentOperations.BedBug(_persistentPlayerId);
-                                if (BlockLogger.IsEnabled)
+                                if (_newBlockInfo.blockValue.Block is BlockSleepingBag)//placed a sleeping bag
+                                {
+                                    PersistentOperations.BedBug(_persistentPlayerId);
+                                    if (BlockLogger.IsEnabled)
+                                    {
+                                        BlockLogger.Log(_persistentPlayerId, _newBlockInfo);
+                                    }
+                                }
+                                else if (BlockLogger.IsEnabled && _newBlockInfo.blockValue.Block is BlockLandClaim)//placed a land claim
+                                {
+                                    PersistentOperations.ClaimBug(_persistentPlayerId);
+                                    BlockLogger.Log(_persistentPlayerId, _newBlockInfo);
+                                }
+                                else if (BlockLogger.IsEnabled)//placed block
                                 {
                                     BlockLogger.Log(_persistentPlayerId, _newBlockInfo);
                                 }
                             }
-                            else if (BlockLogger.IsEnabled && _newBlockInfo.blockValue.Block is BlockLandClaim)//placed a land claim
+                            if (ProcessDamage.Damage_Detector)
                             {
-                                PersistentOperations.ClaimBug(_persistentPlayerId);
-                                BlockLogger.Log(_persistentPlayerId, _newBlockInfo);
-                            }
-                            else if (BlockLogger.IsEnabled)//placed block
-                            {
-                                BlockLogger.Log(_persistentPlayerId, _newBlockInfo);
-                            }
-                        }
-                        if (ProcessDamage.Damage_Detector)
-                        {
-                            if (_newBlockInfo.blockValue.type == BlockValue.Air.type)//new block is air
-                            {
-                                if (_blockValue.type == BlockValue.Air.type)//replaced block
+                                if (_newBlockInfo.blockValue.type == BlockValue.Air.type)//new block is air
                                 {
-                                    return true;
-                                }
-                                if (_blockValue.Block is BlockLandClaim)//removed claim
-                                {
-                                    if (!string.IsNullOrEmpty(_persistentPlayerId))//id is valid
+                                    if (_blockValue.type == BlockValue.Air.type)//replaced block
                                     {
-                                        if (!PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, _newBlockInfo.pos))
+                                        return true;
+                                    }
+                                    if (_blockValue.Block is BlockLandClaim)//removed claim
+                                    {
+                                        if (!string.IsNullOrEmpty(_persistentPlayerId))//id is valid
                                         {
-                                            int _total = _blockValue.Block.MaxDamage - _blockValue.damage;
-                                            if (_blockValue.Block.MaxDamage - _blockValue.damage >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId, _newBlockInfo))
+                                            if (!PersistentOperations.ClaimedByAllySelfOrParty(_persistentPlayerId, _newBlockInfo.pos))
                                             {
-                                                if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_newBlockInfo.pos))
+                                                int _total = _blockValue.Block.MaxDamage - _blockValue.damage;
+                                                if (_blockValue.Block.MaxDamage - _blockValue.damage >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId, _newBlockInfo))
                                                 {
-                                                    _world.SetBlockRPC(_newBlockInfo.clrIdx, _newBlockInfo.pos, _blockValue);
-                                                    return false;
+                                                    if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_newBlockInfo.pos))
+                                                    {
+                                                        _world.SetBlockRPC(_newBlockInfo.clrIdx, _newBlockInfo.pos, _blockValue);
+                                                        return false;
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+                                    if (!_blockValue.Block.CanPickup)//old block can not be picked up
+                                    {
+                                        int _total = _blockValue.Block.MaxDamage - _blockValue.damage;
+                                        if (_total >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId, _newBlockInfo))
+                                        {
+                                            if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_newBlockInfo.pos))
+                                            {
+                                                _world.SetBlockRPC(_newBlockInfo.clrIdx, _newBlockInfo.pos, _blockValue);
+                                                return false;
+                                            }
+                                        }
+                                    }
                                 }
-                                if (!_blockValue.Block.CanPickup)//old block can not be picked up
+                                else if (_blockValue.Block.blockID == _newBlockInfo.blockValue.Block.blockID)//block is the same
                                 {
-                                    int _total = _blockValue.Block.MaxDamage - _blockValue.damage;
+                                    if (_newBlockInfo.bChangeDamage)//block took damage
+                                    {
+                                        int _total = _newBlockInfo.blockValue.damage - _blockValue.damage;
+                                        if (_total >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId, _newBlockInfo))
+                                        {
+                                            if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_newBlockInfo.pos) || Zones.IsEnabled && Zones.Protected(_newBlockInfo.pos))
+                                            {
+                                                _world.SetBlockRPC(_newBlockInfo.clrIdx, _newBlockInfo.pos, _blockValue);
+                                                return false;
+                                            }
+                                        }
+                                    }
+                                    if (_blockValue.damage == _newBlockInfo.blockValue.damage || _newBlockInfo.blockValue.damage == 0)//protected block replaced
+                                    {
+                                        return true;
+                                    }
+                                }
+                                else if (_blockValue.Block.DowngradeBlock.Block.blockID == _newBlockInfo.blockValue.Block.blockID)//downgraded
+                                {
+                                    int _total = _blockValue.Block.MaxDamage - _blockValue.damage + _newBlockInfo.blockValue.damage;
                                     if (_total >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId, _newBlockInfo))
                                     {
                                         if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_newBlockInfo.pos))
@@ -147,37 +181,6 @@ namespace ServerTools
                                             _world.SetBlockRPC(_newBlockInfo.clrIdx, _newBlockInfo.pos, _blockValue);
                                             return false;
                                         }
-                                    }
-                                }
-                            }
-                            else if (_blockValue.Block.blockID == _newBlockInfo.blockValue.Block.blockID)//block is the same
-                            {
-                                if (_newBlockInfo.bChangeDamage)//block took damage
-                                {
-                                    int _total = _newBlockInfo.blockValue.damage - _blockValue.damage;
-                                    if (_total >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId, _newBlockInfo))
-                                    {
-                                        if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_newBlockInfo.pos) || Zones.IsEnabled && Zones.Protected(_newBlockInfo.pos))
-                                        {
-                                            _world.SetBlockRPC(_newBlockInfo.clrIdx, _newBlockInfo.pos, _blockValue);
-                                            return false;
-                                        }
-                                    }
-                                }
-                                if (_blockValue.damage == _newBlockInfo.blockValue.damage || _newBlockInfo.blockValue.damage == 0)//protected block replaced
-                                {
-                                    return true;
-                                }
-                            }
-                            else if (_blockValue.Block.DowngradeBlock.Block.blockID == _newBlockInfo.blockValue.Block.blockID)//downgraded
-                            {
-                                int _total = _blockValue.Block.MaxDamage - _blockValue.damage + _newBlockInfo.blockValue.damage;
-                                if (_total >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId, _newBlockInfo))
-                                {
-                                    if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_newBlockInfo.pos))
-                                    {
-                                        _world.SetBlockRPC(_newBlockInfo.clrIdx, _newBlockInfo.pos, _blockValue);
-                                        return false;
                                     }
                                 }
                             }

@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-MessageColor", "messagecolor", "st-mc", "mc" };
+            return new string[] { "st-MessageColor", "MessageColor", "messagecolor", "mc" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

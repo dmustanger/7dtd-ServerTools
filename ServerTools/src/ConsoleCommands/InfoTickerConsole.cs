@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-InfoTicker", "infoticker" };
+            return new string[] { "st-InfoTicker", "InfoTicker", "infoticker" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

@@ -18,7 +18,6 @@ namespace ServerTools
                 try
                 {
                     IsRunning = true;
-                    SdtdConsole.Instance.Output("[SERVERTOOLS] Starting auto backup process");
                     Log.Out("[SERVERTOOLS] Starting auto backup process");
                     DirectoryInfo _saveDirInfo = new DirectoryInfo(SaveDirectory);//save dir
                     if (string.IsNullOrEmpty(Destination) && _saveDirInfo != null)
@@ -32,7 +31,6 @@ namespace ServerTools
                         if (_files != null && _files.Length > Backup_Count)//files are not null or empty
                         {
                             DeleteFiles(_files);//exec file delete
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] Auto backup clean up complete");
                             Log.Out("[SERVERTOOLS] Auto backup clean up complete");
                         }
                         DirectoryInfo _destDirInfo = new DirectoryInfo(API.ConfigPath + "/WorldBackup/");//destination dir
@@ -60,7 +58,6 @@ namespace ServerTools
                         if (_files != null && _files.Length > Backup_Count)//files are not null or empty
                         {
                             DeleteFiles(_files);//exec file delete
-                            SdtdConsole.Instance.Output("[SERVERTOOLS] Auto backup clean up complete");
                             Log.Out("[SERVERTOOLS] Auto backup clean up complete");
                         }
                         DirectoryInfo _destDirInfo = new DirectoryInfo(Destination);//destination dir
@@ -152,7 +149,6 @@ namespace ServerTools
                         zip.AddFile(_file).FileName = _file.Substring(_file.IndexOf(SaveDirectory));
                     }
                     zip.Save(Path.ChangeExtension(_location, ".zip"));
-                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auto backup completed successfully. File is located at {0}. File is named {1}", _destinationDirInfo.FullName, _name + ".zip"));
                     Log.Out(string.Format("[SERVERTOOLS] Auto backup completed successfully. File is located at {0}. File is named {1}", _destinationDirInfo.FullName, _name + ".zip"));
                     ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Auto backup completed successfully" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }

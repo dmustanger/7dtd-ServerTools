@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
+using ServerTools.AntiCheat;
 
 namespace ServerTools
 {
@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-GodmodeDetector", "godmodedetector", "st-gd", "gd" };
+            return new string[] { "st-GodmodeDetector", "GodmodeDetector", "godmodedetector", "gd" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

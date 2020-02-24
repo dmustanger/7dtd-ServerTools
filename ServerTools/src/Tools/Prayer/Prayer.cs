@@ -54,7 +54,7 @@ namespace ServerTools
             XmlNode _XmlNode = xmlDoc.DocumentElement;
             foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
-                if (childNode.Name == "prayers")
+                if (childNode.Name == "Prayers")
                 {
                     Dict.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
@@ -65,22 +65,22 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'prayers' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Prayers' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("name"))
+                        if (!_line.HasAttribute("Name"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Prayer entry because of missing buff attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Prayer entry because of missing Name attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("message"))
+                        if (!_line.HasAttribute("Message"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Prayer entry because of missing message attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Prayer entry because of missing Message attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        string _buff = _line.GetAttribute("name");
-                        string _message = _line.GetAttribute("message");
+                        string _buff = _line.GetAttribute("Name");
+                        string _message = _line.GetAttribute("Message");
                         BuffClass _class = BuffManager.GetBuff(_buff);
                         if (_class == null)
                         {
@@ -103,22 +103,22 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Prayer>");
-                sw.WriteLine("    <prayers>");
+                sw.WriteLine("    <Prayers>");
                 if (Dict.Count > 0)
                 {
                     foreach (KeyValuePair<string, string> _buff in Dict)
                     {
-                        sw.WriteLine(string.Format("        <buff name=\"{0}\" message=\"{1}\" />", _buff.Key, _buff.Value));
+                        sw.WriteLine(string.Format("        <Buff Name=\"{0}\" Message=\"{1}\" />", _buff.Key, _buff.Value));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <buff name=\"buffPerkCharismaticNature\" message=\"Your charisma has blossomed through your prayer\" />");
-                    sw.WriteLine("        <buff name=\"buffPerkParkour\" message=\"You have can fall without taking damage by the grace of your prayers\" />");
-                    sw.WriteLine("        <buff name=\"buffPistolPeteSwissKnees\" message=\"Your prayers have developed in to a higher change to cripple\" />");
-                    sw.WriteLine("        <buff name=\"buffAutoWeaponsRagdoll\" message=\"Your prayers have been answered with auto weapon knockdown damage\" />");
+                    sw.WriteLine("        <Buff Name=\"buffPerkCharismaticNature\" Message=\"Your charisma has blossomed through your prayer\" />");
+                    sw.WriteLine("        <Buff Name=\"buffPerkParkour\" Message=\"You have can fall without taking damage by the grace of your prayers\" />");
+                    sw.WriteLine("        <Buff Name=\"buffPistolPeteSwissKnees\" Message=\"Your prayers have developed in to a higher change to cripple\" />");
+                    sw.WriteLine("        <Buff Name=\"buffAutoWeaponsRagdoll\" Message=\"Your prayers have been answered with auto weapon knockdown damage\" />");
                 }
-                sw.WriteLine("    </prayers>");
+                sw.WriteLine("    </Prayers>");
                 sw.WriteLine("</Prayer>");
                 sw.Flush();
                 sw.Close();

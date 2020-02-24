@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace ServerTools
+namespace ServerTools.AntiCheat
 {
     class Flying
     {
@@ -29,7 +29,7 @@ namespace ServerTools
                                 if (Admin.PermissionLevel > Admin_Level)
                                 {
                                     EntityAlive _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                    if (_player != null && _player.IsSpawned() && _player.IsAlive() && !_player.IsStuck)
+                                    if (_player != null && _player.IsSpawned() && _player.IsAlive() && !_player.IsStuck && _player.AttachedToEntity == null)
                                     {
                                         float _x = _player.position.x;
                                         float _y = _player.position.y;
@@ -116,9 +116,9 @@ namespace ServerTools
         {
             for (float k = y - 2.8f; k <= (y + 1.5f); k++)
             {
-                for (float i = x - 0.6f; i <= (x + 0.6f); i++)
+                for (float i = x - 0.75f; i <= (x + 0.75f); i++)
                 {
-                    for (float j = z - 0.6f; j <= (z + 0.6f); j++)
+                    for (float j = z - 0.75f; j <= (z + 0.75f); j++)
                     {
                         BlockValue Block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
                         if (Block.type != BlockValue.Air.type)
@@ -133,15 +133,14 @@ namespace ServerTools
 
         private static bool GroundCheck(float x, float y, float z)
         {
-            for (float k = y - 0.4f; k <= (y + 1.6f); k++)
+            for (float k = y - 0.8f; k <= (y + 1.5f); k++)
             {
-                for (float i = x - 0.6f; i <= (x + 0.6f); i++)
+                for (float i = x - 0.75f; i <= (x + 0.75f); i++)
                 {
-                    for (float j = z - 0.6f; j <= (z + 0.6f); j++)
+                    for (float j = z - 0.75f; j <= (z + 0.75f); j++)
                     {
                         BlockValue block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
-                        MaterialBlock _material = Block.list[block.type].blockMaterial;
-                        if (block.type == BlockValue.Air.type || _material.IsLiquid || _material.IsPlant || block.Block.IsTerrainDecoration || block.Block.isMultiBlock)
+                        if (block.Block.shape.ToString() != "Terrain")
                         {
                             return false;
                         }

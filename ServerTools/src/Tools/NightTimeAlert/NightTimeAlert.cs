@@ -8,7 +8,7 @@ namespace ServerTools
 
         public static void Exec()
         {
-            if (GameManager.Instance.World.IsDaytime())
+            if (ConnectionManager.Instance.ClientCount() > 0 && GameManager.Instance.World.IsDaytime())
             {
                 ulong _worldTime = GameManager.Instance.World.worldTime;
                 int _24HourTime = (int)(_worldTime / 1000UL) % 24;

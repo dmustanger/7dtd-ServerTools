@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace ServerTools
+namespace ServerTools.AntiCheat
 {
     class GodMode
     {
@@ -33,18 +33,13 @@ namespace ServerTools
                             sw.Flush();
                             sw.Close();
                         }
-                        Penalty(_cInfo);
+                        string _message = "[FF0000]{PlayerName} has been banned for god mode.";
+                        _message = _message.Replace("{PlayerName}", _cInfo.playerName);
+                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for god mode\"", _cInfo.playerId), (ClientInfo)null);
                     }
                 }
             }
-        }
-
-        public static void Penalty(ClientInfo _cInfo)
-        {
-            string _message = "[FF0000]{PlayerName} has been banned for god mode.";
-            _message = _message.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for god mode\"", _cInfo.playerId), (ClientInfo)null);
         }
     }
 }

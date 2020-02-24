@@ -65,22 +65,22 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Login_Notice' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Logins' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("id"))
+                        if (!_line.HasAttribute("Id"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Login_Notice entry because of missing id attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Login_Notice entry because of missing Id attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("message"))
+                        if (!_line.HasAttribute("Message"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Login_Notice entry because of missing message attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Login_Notice entry because of missing Message attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        string _id = _line.GetAttribute("id");
-                        string _message = _line.GetAttribute("message");
+                        string _id = _line.GetAttribute("Id");
+                        string _message = _line.GetAttribute("Message");
                         if (!dict.ContainsKey(_id))
                         {
                             dict.Add(_id, _message);
@@ -110,15 +110,15 @@ namespace ServerTools
                         string _message;
                         if (dict.TryGetValue(kvp.Key, out _message))
                         {
-                            sw.WriteLine(string.Format("        <login id=\"{0}\" message=\"{1}\" />", kvp.Key, _message));
+                            sw.WriteLine(string.Format("        <Player Id=\"{0}\" Message=\"{1}\" />", kvp.Key, _message));
                         }
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <login id=\"76561191234567891\" message=\"Time to kick ass and chew bubble gum\" />");
-                    sw.WriteLine("        <login id=\"76561199876543210\" message=\"Head admin has arrived... shhh\" />");
-                    sw.WriteLine("        <login id=\"76561191234509876\" message=\"Run for your lives, {PlayerName} has logged on\" />");
+                    sw.WriteLine("        <Player Id=\"76561191234567891\" Message=\"Time to kick ass and chew bubble gum\" />");
+                    sw.WriteLine("        <Player Id=\"76561199876543210\" Message=\"Head admin has arrived... shhh\" />");
+                    sw.WriteLine("        <Player Id=\"76561191234509876\" Message=\"Run for your lives, {PlayerName} has logged on\" />");
                 }
                 sw.WriteLine("    </Logins>");
                 sw.WriteLine("</LoginNotice>");

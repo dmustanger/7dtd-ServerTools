@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
+using ServerTools.AntiCheat;
 
 namespace ServerTools
 {
@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-InvalidItemKicker", "invaliditemkicker" };
+            return new string[] { "st-InvalidItemKicker", "InvalidItemKicker", "invaliditemkicker" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -33,9 +33,9 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    if (InventoryCheck.IsEnabled)
+                    if (InvalidItems.IsEnabled)
                     {
-                        InventoryCheck.IsEnabled = false;
+                        InvalidItems.IsEnabled = false;
                         LoadConfig.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("Invalid item kicker has been set to off"));
                         return;
@@ -48,9 +48,9 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (!InventoryCheck.IsEnabled)
+                    if (!InvalidItems.IsEnabled)
                     {
-                        InventoryCheck.IsEnabled = true;
+                        InvalidItems.IsEnabled = true;
                         LoadConfig.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("Invalid item kicker has been set to on"));
                         return;

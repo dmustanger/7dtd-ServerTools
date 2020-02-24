@@ -28,7 +28,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-ReservedSlots", "reservedslots", "rs" };
+            return new string[] { "st-ReservedSlots", "ReservedSlots", "reservedslots", "rs" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

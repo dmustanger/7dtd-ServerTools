@@ -341,47 +341,46 @@ namespace ServerTools
                 {
                     int _jailTime = PersistentContainer.Instance.Players[_id].JailTime;
                     DateTime _jailDate = PersistentContainer.Instance.Players[_id].JailDate;
-                    if (_jailTime == -1)
+                    if (_jailTime > 0)
                     {
-                        break;
-                    }
-                    TimeSpan varTime = DateTime.Now - _jailDate;
-                    double fractionalMinutes = varTime.TotalMinutes;
-                    int _timepassed = (int)fractionalMinutes;
-                    if (_timepassed >= _jailTime)
-                    {
-                        ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_id);
-                        if (_cInfo != null)
+                        TimeSpan varTime = DateTime.Now - _jailDate;
+                        double fractionalMinutes = varTime.TotalMinutes;
+                        int _timepassed = (int)fractionalMinutes;
+                        if (_timepassed >= _jailTime)
                         {
-                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                            if (_player.IsSpawned())
+                            ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_id);
+                            if (_cInfo != null)
+                            {
+                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                if (_player.IsSpawned())
+                                {
+                                    Jailed.Remove(_id);
+                                    PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = 0;
+                                    PersistentContainer.Instance.Save();
+                                    EntityBedrollPositionList _position = _player.SpawnPoints;
+                                    if (_position.Count > 0)
+                                    {
+                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_position[0].x, _position[0].y + 1, _position[0].z), null, false));
+                                    }
+                                    else
+                                    {
+                                        Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
+                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), null, false));
+                                    }
+                                    string _phrase501;
+                                    if (!Phrases.Dict.TryGetValue(501, out _phrase501))
+                                    {
+                                        _phrase501 = " you have been released from jail.";
+                                    }
+                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase501 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                            }
+                            else
                             {
                                 Jailed.Remove(_id);
                                 PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = 0;
                                 PersistentContainer.Instance.Save();
-                                EntityBedrollPositionList _position = _player.SpawnPoints;
-                                if (_position.Count > 0)
-                                {
-                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_position[0].x, _position[0].y + 1, _position[0].z), null, false));
-                                }
-                                else
-                                {
-                                    Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), null, false));
-                                }
-                                string _phrase501;
-                                if (!Phrases.Dict.TryGetValue(501, out _phrase501))
-                                {
-                                    _phrase501 = " you have been released from jail.";
-                                }
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase501 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
-                        }
-                        else
-                        {
-                            Jailed.Remove(_id);
-                            PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = 0;
-                            PersistentContainer.Instance.Save();
                         }
                     }
                 }

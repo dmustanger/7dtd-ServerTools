@@ -23,7 +23,7 @@ namespace ServerTools
                 int y = (int)_position.y;
                 int z = (int)_position.z;
                 Vector3i _vec3i = new Vector3i(x, y, z);
-                if (PersistentOperations.ClaimedByAllyOrSelf(_cInfo.playerId, _vec3i))
+                if (PersistentOperations.ClaimedByAllySelfOrParty(_cInfo.playerId, _vec3i))
                 {
                     string _sposition = x + "," + y + "," + z;
                     PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1 = _sposition;
@@ -196,7 +196,7 @@ namespace ServerTools
                 int y = (int)_position.y;
                 int z = (int)_position.z;
                 Vector3i _vec3i = new Vector3i(x, y, z);
-                if (PersistentOperations.ClaimedByAllyOrSelf(_cInfo.playerId, _vec3i))
+                if (PersistentOperations.ClaimedByAllySelfOrParty(_cInfo.playerId, _vec3i))
                 {
                     string _sposition = x + "," + y + "," + z;
                     PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2 = _sposition;

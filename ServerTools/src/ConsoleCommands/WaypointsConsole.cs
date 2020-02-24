@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Waypoints", "waypoints", "st-wp", "wp" };
+            return new string[] { "st-Waypoints", "Waypoints", "waypoints", "st-wp", "wp" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

@@ -35,7 +35,7 @@ namespace ServerTools
     
         public override string[] GetCommands()
         {
-            return new string[] { "st-ProtectedSpaces", "protectedspaces", "st-ps", "ps" };
+            return new string[] { "st-ProtectedSpaces", "ProtectedSpaces", "protectedspaces", "st-ps", "ps" };
         }
     
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -204,9 +204,9 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("remove"))
                 {
-                    if (ProtectedSpaces.ProtectedList.Count > 0)
+                    if (_params.Count == 2)
                     {
-                        if (_params.Count == 2)
+                        if (ProtectedSpaces.ProtectedList.Count > 0)
                         {
                             int _listNum;
                             if (int.TryParse(_params[1], out _listNum))
@@ -230,18 +230,17 @@ namespace ServerTools
                                 return;
                             }
                         }
-                        else if (_senderInfo.RemoteClientInfo != null)
+                        else
                         {
-                            PersistentOperations.ClearChunkProtection(_senderInfo.RemoteClientInfo);
+                            SdtdConsole.Instance.Output(string.Format("There are no protected spaces"));
                             return;
                         }
                     }
-                    else
+                    else if (_senderInfo.RemoteClientInfo != null)
                     {
-                        SdtdConsole.Instance.Output(string.Format("There are no protected spaces"));
+                        PersistentOperations.ClearChunkProtection(_senderInfo.RemoteClientInfo);
                         return;
                     }
-                    
                 }
                 else if (_params[0].ToLower().Equals("list"))
                 {

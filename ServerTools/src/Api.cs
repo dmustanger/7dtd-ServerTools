@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using ServerTools.AntiCheat;
 
 namespace ServerTools
 {
@@ -39,13 +40,12 @@ namespace ServerTools
         {
             LoadProcess.Load(1);
             Tracking.Cleanup();
-            BattleLogger.Load();
+            Confirm.Exec();
         }
 
         private static void GameShutdown()
         {
             StateManager.Shutdown();
-            Timers.Timer2Stop();
             StopServer.Shutdown = true;
         }
 
@@ -71,7 +71,7 @@ namespace ServerTools
                         int _timepassed = (int)fractionalMinutes;
                         if (_timepassed < 5)
                         {
-                            _stringBuild = new StringBuilder(string.Format("{ServerResponseName}- You reached the max session time. Come back in {0} minute", 5 - _timepassed));
+                            _stringBuild = new StringBuilder("{" + LoadConfig.Server_Response_Name + "}" + " You reached the max session time. Come back in a few minutes");
                             _stringBuild = _stringBuild.Replace("{ServerResponseName}", LoadConfig.Server_Response_Name);
                             return false;
                         }
@@ -84,7 +84,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerLogin: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerLogin: {0}", e.Message));
             }
             return true;
         }
@@ -111,7 +111,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerSpawning: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerSpawning: {0}", e.Message));
             }
         }
 
@@ -423,7 +423,7 @@ namespace ServerTools
                     {
                         _ip = _ip.Split(':').First();
                     }
-                    if (!string.IsNullOrEmpty(_ip) && BattleLogger.IsEnabled && BattleLogger.LogFound && !StopServer.StopServerCountingDown && !StopServer.Shutdown && GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId).PermissionLevel > BattleLogger.Admin_Level)
+                    if (!string.IsNullOrEmpty(_ip) && BattleLogger.IsEnabled && Confirm.LogFound && !StopServer.StopServerCountingDown && !StopServer.Shutdown && GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId).PermissionLevel > BattleLogger.Admin_Level)
                     {
                         if (!BattleLogger.Players.ContainsKey(_cInfo.playerId))
                         {
@@ -443,7 +443,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerSpawnedInWorld: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerSpawnedInWorld: {0}", e.Message));
             }
         }
 
@@ -524,7 +524,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.GameMessage: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.GameMessage: {0}", e.Message));
             }
             return true;
         }
@@ -539,9 +539,9 @@ namespace ServerTools
                     {
                         HighPingKicker.Exec(_cInfo);
                     }
-                    if (InventoryCheck.IsEnabled || InventoryCheck.Announce_Invalid_Stack)
+                    if (InvalidItems.IsEnabled || InvalidItems.Announce_Invalid_Stack)
                     {
-                        InventoryCheck.CheckInv(_cInfo, _playerDataFile);
+                        InvalidItems.CheckInv(_cInfo, _playerDataFile);
                     }
                     if (DupeLog.IsEnabled)
                     {
@@ -551,7 +551,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.SavePlayerData: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.SavePlayerData: {0}", e.Message));
             }
         }
 
@@ -562,7 +562,7 @@ namespace ServerTools
                 Log.Out("[SERVERTOOLS] Player detected disconnecting");
                 if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId != -1)
                 {
-                    if (BattleLogger.IsEnabled && BattleLogger.LogFound && !_bShutdown && !StopServer.StopServerCountingDown && !StopServer.Shutdown && BattleLogger.Players.ContainsKey(_cInfo.playerId))
+                    if (BattleLogger.IsEnabled && Confirm.LogFound && !_bShutdown && !StopServer.StopServerCountingDown && !StopServer.Shutdown && BattleLogger.Players.ContainsKey(_cInfo.playerId))
                     {
                         BattleLogger.BattleLog(_cInfo);
                     }
@@ -636,7 +636,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerDisconnected: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.PlayerDisconnected: {0}", e.Message));
             }
         }
 
@@ -668,7 +668,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.EntityKilled: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.EntityKilled: {0}", e.Message));
             }
         }
 
@@ -686,7 +686,7 @@ namespace ServerTools
                             NewSpawnTele.TeleNewSpawn(_cInfo, _player);
                             if (StartingItems.IsEnabled && StartingItems.ItemList.Count > 0)
                             {
-                                Timers.NewPlayerStartingItemsTimer(_cInfo, _player);
+                                Timers.NewPlayerStartingItemsTimer(_cInfo);
                             }
                             else
                             {
@@ -695,7 +695,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            NewPlayerExec2(_cInfo, _player);
+                            NewPlayerExec2(_cInfo);
                         }
                     }
                     else
@@ -706,30 +706,34 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.NewPlayerExec1: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.NewPlayerExec1: {0}", e.Message));
             }
         }
 
-        public static void NewPlayerExec2(ClientInfo _cInfo, EntityPlayer _player)
+        public static void NewPlayerExec2(ClientInfo _cInfo)
         {
             try
             {
-                if (_player.IsSpawned() && _player.IsAlive())
+                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                if (_player != null)
                 {
-                    if (StartingItems.IsEnabled && StartingItems.ItemList.Count > 0)
+                    if (_player.IsSpawned() && _player.IsAlive())
                     {
-                        StartingItems.SpawnItems(_cInfo);
+                        if (StartingItems.IsEnabled && StartingItems.ItemList.Count > 0)
+                        {
+                            StartingItems.SpawnItems(_cInfo);
+                        }
+                        NewPlayerExec3(_cInfo, _player);
                     }
-                    NewPlayerExec3(_cInfo, _player);
-                }
-                else
-                {
-                    Timers.NewPlayerStartingItemsTimer(_cInfo, _player);
+                    else
+                    {
+                        Timers.NewPlayerStartingItemsTimer(_cInfo);
+                    }
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.NewPlayerExec2: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.NewPlayerExec2: {0}", e.Message));
             }
         }
 
@@ -785,7 +789,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.NewPlayerExec3: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.NewPlayerExec3: {0}", e.Message));
             }
             PersistentContainer.Instance.Players[_cInfo.playerId].OldPlayer = true;
             PersistentContainer.Instance.Save();

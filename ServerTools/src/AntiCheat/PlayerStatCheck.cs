@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
-namespace ServerTools
+namespace ServerTools.AntiCheat
 {
     class PlayerStatCheck
     {
         public static bool IsEnabled = false, Kick_Enabled = false, Ban_Enabled = false;
-        public static int Admin_Level = 0, Days_Before_Log_Delete = 5, Max_Speed = 20;
+        public static int Admin_Level = 0, Days_Before_Log_Delete = 5, Max_Speed = 28;
         private static string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
 

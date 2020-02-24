@@ -29,7 +29,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Jail", "jail", string.Empty };
+            return new string[] { "st-Jail", "Jail", "jail" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -111,7 +111,7 @@ namespace ServerTools
                             else
                             {
                                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                if (_player.IsSpawned())
+                                if (_player != null && _player.IsSpawned())
                                 {
                                     int x, y, z;
                                     string[] _cords = Jail.Jail_Position.Split(',');
@@ -191,21 +191,24 @@ namespace ServerTools
                             if (_cInfo != null)
                             {
                                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                EntityBedrollPositionList _position = _player.SpawnPoints;
-                                Jail.Jailed.Remove(_cInfo.playerId);
-                                PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = 0;
-                                PersistentContainer.Instance.Save();
-                                if (_position.Count > 0)
+                                if (_player != null)
                                 {
-                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_position[0].x, -1, _position[0].z), null, false));
+                                    EntityBedrollPositionList _position = _player.SpawnPoints;
+                                    Jail.Jailed.Remove(_cInfo.playerId);
+                                    PersistentContainer.Instance.Players[_cInfo.playerId].JailTime = 0;
+                                    PersistentContainer.Instance.Save();
+                                    if (_position != null && _position.Count > 0)
+                                    {
+                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_position[0].x, -1, _position[0].z), null, false));
+                                    }
+                                    else
+                                    {
+                                        Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
+                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, -1, _pos[0].z), null, false));
+                                    }
+                                    SdtdConsole.Instance.Output(string.Format("You have released a player with steam id {0} from jail. ", _params[1]));
+                                    return;
                                 }
-                                else
-                                {
-                                    Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, -1, _pos[0].z), null, false));
-                                }
-                                SdtdConsole.Instance.Output(string.Format("You have released a player with steam id {0} from jail. ", _params[1]));
-                                return;
                             }
                             else
                             {

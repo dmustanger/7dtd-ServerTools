@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ServerTools.AntiCheat;
 
 namespace ServerTools
 {
@@ -22,7 +23,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-FamilyShare", "familyshare", "fs" };
+            return new string[] { "st-FamilyShare", "FamilyShare", "familyshare", "fs" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -90,22 +91,22 @@ namespace ServerTools
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
                     if (_cInfo != null)
                     {
-                        if (!CredentialCheck.OmittedPlayers.ContainsKey(_cInfo.playerId))
+                        if (!AntiCheat.CredentialCheck.OmittedPlayers.ContainsKey(_cInfo.playerId))
                         {
                             SdtdConsole.Instance.Output(string.Format("Id {0} was not found on the Family Share list.", _params[1]));
                             return;
                         }
-                        CredentialCheck.OmittedPlayers.Remove(_cInfo.playerId);
+                        AntiCheat.CredentialCheck.OmittedPlayers.Remove(_cInfo.playerId);
                         SdtdConsole.Instance.Output(string.Format("Removed Id {0} from Family Share list.", _params[1]));
-                        CredentialCheck.UpdateXml();
+                        AntiCheat.CredentialCheck.UpdateXml();
                     }
                     else
                     {
-                        if (CredentialCheck.OmittedPlayers.ContainsKey(_params[1]))
+                        if (AntiCheat.CredentialCheck.OmittedPlayers.ContainsKey(_params[1]))
                         {
-                            CredentialCheck.OmittedPlayers.Remove(_params[1]);
+                            ServerTools.AntiCheat.CredentialCheck.OmittedPlayers.Remove(_params[1]);
                             SdtdConsole.Instance.Output(string.Format("Removed Id {0} from Family Share list.", _params[1]));
-                            CredentialCheck.UpdateXml();
+                            AntiCheat.CredentialCheck.UpdateXml();
                         }
                         else
                         {
@@ -120,17 +121,17 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
                         return;
                     }
-                    if (CredentialCheck.OmittedPlayers.Count == 0)
+                    if (AntiCheat.CredentialCheck.OmittedPlayers.Count == 0)
                     {
                         SdtdConsole.Instance.Output("There are no players on the Family Share list.");
                         return;
                     }
                     else
                     {
-                        foreach (var _key in CredentialCheck.OmittedPlayers)
+                        foreach (var _key in AntiCheat.CredentialCheck.OmittedPlayers)
                         {
                             string _name;
-                            if (CredentialCheck.OmittedPlayers.TryGetValue(_key.Key, out _name))
+                            if (AntiCheat.CredentialCheck.OmittedPlayers.TryGetValue(_key.Key, out _name))
                             {
                                 SdtdConsole.Instance.Output(string.Format("{0} {1}", _key.Key, _name));
                             }

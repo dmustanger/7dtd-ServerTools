@@ -57,7 +57,7 @@
     <Compile Include="src\ConsoleCommands\SecureLootAccess.cs" />
     <Compile Include="src\ConsoleCommands\ScoutPlayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\WaypointsConsole.cs" />
-    <Compile Include="src\ConsoleCommands\VehicleTeleportConsole.cs" />
+    <Compile Include="src\ConsoleCommands\WebsiteConsole.cs" />
     <Compile Include="src\Harmony\PatchTools.cs" />
     <Compile Include="src\Harmony\Injections.cs" />
     <Compile Include="src\PersistentData\MySqlDB.cs" />
@@ -67,6 +67,7 @@
     <Compile Include="src\Tools\Bloodmoon_Warrior\Bloodmoon_Warrior.cs" />
     <Compile Include="src\Tools\BreakTime\BreakTime.cs" />
     <Compile Include="src\Tools\Market\Market.cs" />
+    <Compile Include="src\Tools\OutputLog\Confirm.cs" />
     <Compile Include="src\Tools\ProtectedSpaces\ProtectedSpaces.cs" />
     <Compile Include="src\Tools\Session\Session.cs" />
     <Compile Include="src\Tools\ChatColorPrefix\ChatColorPrefix.cs" />
@@ -130,7 +131,7 @@
     <Compile Include="src\ConsoleCommands\ChatFloodProtectionConsole.cs" />
     <Compile Include="src\ConsoleCommands\BountiesConsole.cs" />
     <Compile Include="src\ConsoleCommands\BloodmoonConsole.cs" />
-    <Compile Include="src\ConsoleCommands\BikeReturnConsole.cs" />
+    <Compile Include="src\ConsoleCommands\VehicleTeleportConsole.cs" />
     <Compile Include="src\ConsoleCommands\BankConsole.cs" />
     <Compile Include="src\ConsoleCommands\BadWordFilterConsole.cs" />
     <Compile Include="src\ConsoleCommands\AutoShutdownConsole.cs" />
@@ -249,6 +250,8 @@
     <Compile Include="src\Tools\VoteReward\VoteReward.cs" />
     <Compile Include="src\Tools\Watchlist\Watchlist.cs" />
     <Compile Include="src\Tools\Waypoints\Waypoints.cs" />
+    <Compile Include="src\Website\MimeType.cs" />
+    <Compile Include="src\Website\WebsiteServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ModInfo.xml">
@@ -290,7 +293,9 @@
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.111.0\lib\net45\System.Data.SQLite.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.XML, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
       <HintPath>..\7dtd-binaries\UnityEngine.dll</HintPath>
       <Private>False</Private>
@@ -298,6 +303,9 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\7dtd-binaries\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>..\..\7dtd-ServerTools-master-18.2.5\7dtd-binaries\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

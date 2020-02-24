@@ -24,7 +24,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-AutoBackup", "autobackup", "ab" };
+            return new string[] { "st-AutoBackup", "AutoBackup", "autobackup", "ab" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -38,7 +38,9 @@ namespace ServerTools
                 }
                 if (_params.Count == 0)
                 {
+                    SdtdConsole.Instance.Output(string.Format("Starting backup"));
                     AutoBackup.Exec();
+                    SdtdConsole.Instance.Output(string.Format("Backup complete"));
                     return;
                 }
                 else if (_params[0].ToLower().Equals("off"))

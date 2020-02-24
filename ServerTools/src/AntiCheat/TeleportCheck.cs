@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace ServerTools
+namespace ServerTools.AntiCheat
 {
     class TeleportCheck
     {
@@ -61,7 +61,7 @@ namespace ServerTools
             string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
             using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
-                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, Entity Id {2} teleporting.", _cInfo.playerName, _cInfo.steamId, _cInfo.entityId));
+                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, Entity Id {2} teleporting.", _cInfo.playerName, _cInfo.playerId, _cInfo.entityId));
                 sw.WriteLine();
                 sw.Flush();
                 sw.Close();

@@ -13,13 +13,13 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. scheck\n" +
+                   "  1. ShutdownCheck\n" +
                    "1. Shows the next scheduled auto shutdown\n";
         }
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-ShutdownCheck", "ShutdownCheck", "st-scheck", "scheck" };
+            return new string[] { "st-ShutdownCheck", "ShutdownCheck", "scheck", "sc" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
@@ -97,19 +98,19 @@ namespace ServerTools
                 {
                     foreach (string _word in List)
                     {
-                        sw.WriteLine(string.Format("        <BadWord Word=\"{0}\" />", _word));
+                        sw.WriteLine(string.Format("        <Bad Word=\"{0}\" />", _word));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <BadWord Word=\"nigger\" />");
-                    sw.WriteLine("        <BadWord Word=\"n!gger\" />");
-                    sw.WriteLine("        <BadWord Word=\"ass\" />");
-                    sw.WriteLine("        <BadWord Word=\"cunt\" />");
-                    sw.WriteLine("        <BadWord Word=\"faggit\" />");
-                    sw.WriteLine("        <BadWord Word=\"piss\" />");
-                    sw.WriteLine("        <BadWord Word=\"p!ss\" />");
-                    sw.WriteLine("        <BadWord Word=\"fuck\" />");
+                    sw.WriteLine("        <Bad Word=\"nigger\" />");
+                    sw.WriteLine("        <Bad Word=\"n!gger\" />");
+                    sw.WriteLine("        <Bad Word=\"ass\" />");
+                    sw.WriteLine("        <Bad Word=\"cunt\" />");
+                    sw.WriteLine("        <Bad Word=\"faggit\" />");
+                    sw.WriteLine("        <Bad Word=\"piss\" />");
+                    sw.WriteLine("        <Bad Word=\"p!ss\" />");
+                    sw.WriteLine("        <Bad Word=\"fuck\" />");
                 }
                 sw.WriteLine("    </BadWords>");
                 sw.WriteLine("</BadWordFilter>");
@@ -131,6 +132,10 @@ namespace ServerTools
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
+            if (!Utils.FileExists(filePath))
+            {
+                UpdateXml();
+            }
             LoadXml();
         }
     }

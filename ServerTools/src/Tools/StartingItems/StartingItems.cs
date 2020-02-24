@@ -61,42 +61,40 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'items' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'StartingItems' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("item"))
+                        if (!_line.HasAttribute("Name"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring starting item entry because of missing item attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring starting item entry because of missing Name attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("count"))
+                        if (!_line.HasAttribute("Count"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring starting item entry because of missing count attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring starting item entry because of missing Count attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("quality"))
+                        if (!_line.HasAttribute("Quality"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring starting item entry because of missing quality attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring starting item entry because of missing Quality attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        int _count = 1;
-                        int _quality = 1;
-                        if (!int.TryParse(_line.GetAttribute("count"), out _count))
+                        if (!int.TryParse(_line.GetAttribute("Count"), out int _count))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring starting item entry because of invalid (non-numeric) value for 'count' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring starting item entry because of invalid (non-numeric) value for 'Count' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("quality"), out _quality))
+                        if (!int.TryParse(_line.GetAttribute("Quality"), out int _quality))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring starting item entry because of invalid (non-numeric) value for 'quality' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring starting item entry because of invalid (non-numeric) value for 'Quality' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (_quality < 1)
                         {
                             _quality = 1;
                         }
-                        string _item = _line.GetAttribute("item");
+                        string _item = _line.GetAttribute("Name");
                         ItemClass _class;
                         Block _block;
                         int _id;
@@ -142,15 +140,15 @@ namespace ServerTools
                 {
                     foreach (KeyValuePair<string, int[]> kvp in ItemList)
                     {
-                        sw.WriteLine(string.Format("        <item item=\"{0}\" count=\"{1}\" quality=\"{2}\" />", kvp.Key, kvp.Value[0], kvp.Value[1]));
+                        sw.WriteLine(string.Format("        <Item Name=\"{0}\" Count=\"{1}\" Quality=\"{2}\" />", kvp.Key, kvp.Value[0], kvp.Value[1]));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <item item=\"meleeToolStoneAxe\" count=\"1\" quality=\"1\" />");
-                    sw.WriteLine("        <item item=\"meleeToolTorch\" count=\"1\" quality=\"1\" />");
-                    sw.WriteLine("        <item item=\"foodCanChili\" count=\"1\" quality=\"1\" />");
-                    sw.WriteLine("        <item item=\"drinkJarBoiledWater\" count=\"1\" quality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"meleeToolStoneAxe\" Count=\"1\" Quality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"meleeToolTorch\" Count=\"1\" Quality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCanChili\" Count=\"1\" Quality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"drinkJarBoiledWater\" Count=\"1\" Quality=\"1\" />");
                 }
                 sw.WriteLine("    </Items>");
                 sw.WriteLine("</StartingItems>");

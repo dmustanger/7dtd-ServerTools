@@ -33,7 +33,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Event", "event" };
+            return new string[] { "st-Event", "Event", "event" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

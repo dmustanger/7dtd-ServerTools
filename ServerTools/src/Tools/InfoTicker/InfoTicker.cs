@@ -92,9 +92,9 @@ namespace ServerTools
             }
             if (dict.Count == 0)
             {
-                Log.Warning("------------------------------------------------------------------------------------");
-                Log.Warning("[SERVERTOOLS] Ignoring infoticker because no messages from your file could be added.");
-                Log.Warning("------------------------------------------------------------------------------------");
+                Log.Warning("-----------------------------------------------------------------------------------");
+                Log.Warning("[SERVERTOOLS] Ignoring infoticker because no messages from your file could be added");
+                Log.Warning("-----------------------------------------------------------------------------------");
             }
             else
             {
@@ -110,7 +110,7 @@ namespace ServerTools
             }
             else
             {
-                Log.Warning("[SERVERTOOLS] Ignoring infoticker because no messages from your file could be added.");
+                Log.Warning("[SERVERTOOLS] Ignoring infoticker because no messages from your file could be added");
             }
         }
 

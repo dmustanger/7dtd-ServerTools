@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-StopServer", "stopserver" };
+            return new string[] { "st-StopServer", "StopServer", "stopserver" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

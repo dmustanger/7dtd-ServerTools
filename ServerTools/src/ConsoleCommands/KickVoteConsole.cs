@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-KickVote", "kickvote" };
+            return new string[] { "st-KickVote", "KickVote", "kickvote" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

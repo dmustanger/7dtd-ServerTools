@@ -26,7 +26,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Mute", "mute", string.Empty };
+            return new string[] { "st-Mute", "Mute", "mute" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -34,7 +34,6 @@ namespace ServerTools
             {
                 try
                 {
-
                     if (_params.Count < 1 || _params.Count > 3)
                     {
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 to 3, found {0}.", _params.Count));

@@ -1,4 +1,6 @@
 ﻿using System.Data;
+using ServerTools.AntiCheat;
+using ServerTools.Website;
 
 namespace ServerTools
 {
@@ -8,8 +10,13 @@ namespace ServerTools
 
         public static void Load()
         {
+            Confirm.Exec();
+            PatchTools.ApplyPatches();
+            if (!LoadTriggers.IsRunning)
+            {
+                LoadTriggers.Load();
+            }
             Timers.TimerStart();
-            Timers.Timer2Start();
             string _sql = "SELECT pollOpen FROM Polls WHERE pollOpen = 'true'";
             DataTable _result = SQL.TypeQuery(_sql);
             if (_result.Rows.Count > 0)
@@ -118,15 +125,19 @@ namespace ServerTools
             {
                 Motd.Unload();
             }
-            if (InventoryCheck.IsRunning && !InventoryCheck.IsEnabled)
+            if (InvalidItems.IsRunning && !InvalidItems.IsEnabled)
             {
-                InventoryCheck.Unload();
+                InvalidItems.Unload();
             }
-            if (!InventoryCheck.IsRunning && InventoryCheck.IsEnabled)
+            if (!InvalidItems.IsRunning && InvalidItems.IsEnabled)
             {
-                InventoryCheck.Load();
+                InvalidItems.Load();
             }
-            if (HighPingKicker.IsEnabled)
+            if (HighPingKicker.IsRunning && !HighPingKicker.IsEnabled)
+            {
+                HighPingKicker.Unload();
+            }
+            if (!HighPingKicker.IsRunning && HighPingKicker.IsEnabled)
             {
                 HighPingKicker.Load();
             }
@@ -170,35 +181,27 @@ namespace ServerTools
             {
                 KillNotice.Load();
             }
-            if (!Prayer.IsRunning && Prayer.IsEnabled)
-            {
-                Prayer.Load();
-            }
             if (Prayer.IsRunning && !Prayer.IsEnabled)
             {
                 Prayer.Unload();
             }
-            if (LoadTriggers.IsRunning)
+            if (!Prayer.IsRunning && Prayer.IsEnabled)
             {
-                LoadTriggers.Unload();
+                Prayer.Load();
             }
-            if (!LoadTriggers.IsRunning)
-            {
-                LoadTriggers.Load();
-            }
-            if (BloodmoonWarrior.IsRunning)
+            if (BloodmoonWarrior.IsRunning && !BloodmoonWarrior.IsEnabled)
             {
                 BloodmoonWarrior.Unload();
             }
-            if (!BloodmoonWarrior.IsRunning)
+            if (!BloodmoonWarrior.IsRunning && BloodmoonWarrior.IsEnabled)
             {
                 BloodmoonWarrior.Load();
             }
-            if (ProtectedSpaces.IsRunning)
+            if (ProtectedSpaces.IsRunning && !ProtectedSpaces.IsEnabled)
             {
                 ProtectedSpaces.Unload();
             }
-            if (!ProtectedSpaces.IsRunning)
+            if (!ProtectedSpaces.IsRunning && ProtectedSpaces.IsEnabled)
             {
                 ProtectedSpaces.Load();
             }
@@ -219,7 +222,19 @@ namespace ServerTools
             {
                 Jail.JailList();
             }
-            PatchTools.ApplyPatches();
+            //always load the website last
+            if (WebsiteServer.IsEnabled && !WebsiteServer.DirFound)
+            {
+                WebsiteServer.CheckDir();
+            }
+            if (WebsiteServer.IsRunning && !WebsiteServer.IsEnabled)
+            {
+                WebsiteServer.Unload();
+            }
+            if (!WebsiteServer.IsRunning && WebsiteServer.IsEnabled && WebsiteServer.DirFound)
+            {
+                WebsiteServer.Load();
+            }
         }
     }
 }

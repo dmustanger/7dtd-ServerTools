@@ -22,7 +22,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-AutoShutdown", "autoshutdown" };
+            return new string[] { "st-AutoShutdown", "AutoShutdown", "autoshutdown" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

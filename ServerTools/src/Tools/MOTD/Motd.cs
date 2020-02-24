@@ -61,16 +61,16 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Messages' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Motd' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("message"))
+                        if (!_line.HasAttribute("Message"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring message entry because of missing name attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring message entry because of missing Message attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        string _message = _line.GetAttribute("message");
+                        string _message = _line.GetAttribute("Message");
                         if (!Message.Contains(_message))
                         {
                             Message.Add(_message);
@@ -98,13 +98,13 @@ namespace ServerTools
                 {
                     foreach (string _message in Message)
                     {
-                        sw.WriteLine(string.Format("        <Motd message=\"{0}\" />", _message));
+                        sw.WriteLine(string.Format("        <Server Message=\"{0}\" />", _message));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <Motd message=\"Welcome to the server\" />");
-                    sw.WriteLine("        <Motd message=\"The server restarts every 4 hours\" />");
+                    sw.WriteLine("        <Server Message=\"Welcome to the server\" />");
+                    sw.WriteLine("        <Server Message=\"The server restarts every 4 hours\" />");
                 }
                 sw.WriteLine("    </Motd>");
                 sw.WriteLine("</Motds>");

@@ -29,7 +29,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AutoShutdown.BloodmoonCheck: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AutoShutdown.BloodmoonCheck: {0}", e.Message));
             }
         }
 
@@ -48,7 +48,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AutoShutdown.Shutdown: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AutoShutdown.Shutdown: {0}", e.Message));
             }
         }
 
@@ -56,53 +56,56 @@ namespace ServerTools
         {
             try
             {
-                if (!Event.Open)
+                if (_cInfo != null && _cInfo.playerId != null)
                 {
-                    if (!Bloodmoon)
+                    if (!Event.Open)
                     {
-                        if (!StopServer.StopServerCountingDown)
+                        if (!Bloodmoon)
                         {
-                            int _time;
-                            if (BloodmoonOver)
+                            if (!StopServer.StopServerCountingDown)
                             {
-                                _time = Delay - (Timers._autoShutdownBloodmoonOver / 60);
+                                int _time;
+                                if (BloodmoonOver)
+                                {
+                                    _time = Delay - (Timers._autoShutdownBloodmoonOver / 60);
+                                }
+                                else
+                                {
+                                    _time = Delay - (Timers._autoShutdown / 60);
+                                }
+                                if (_time < 0)
+                                {
+                                    _time = 0;
+                                }
+                                string TimeLeft;
+                                TimeLeft = string.Format("{0:00} H : {1:00} M", _time / 60, _time % 60);
+                                string _phrase730;
+                                if (!Phrases.Dict.TryGetValue(730, out _phrase730))
+                                {
+                                    _phrase730 = "The next auto shutdown is in [FF8000]{TimeLeft}.";
+                                }
+                                _phrase730 = _phrase730.Replace("{TimeLeft}", TimeLeft);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase730 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                             else
                             {
-                                _time = Delay - (Timers._autoShutdown / 60);
+                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " the server has already started the shutdown process.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
-                            if (_time < 0)
-                            {
-                                _time = 0;
-                            }
-                            string TimeLeft;
-                            TimeLeft = string.Format("{0:00} H : {1:00} M", _time / 60, _time % 60);
-                            string _phrase730;
-                            if (!Phrases.Dict.TryGetValue(730, out _phrase730))
-                            {
-                                _phrase730 = "The next auto shutdown is in [FF8000]{TimeLeft}.";
-                            }
-                            _phrase730 = _phrase730.Replace("{TimeLeft}", TimeLeft);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase730 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                         else
                         {
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " the server has already started the shutdown process.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " a bloodmoon is currently active. The server is set to shutdown after it finishes.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
                     {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " a bloodmoon is currently active. The server is set to shutdown after it finishes.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " a event is currently active. The server is set to shutdown after it finishes.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
-                }
-                else
-                {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " a event is currently active. The server is set to shutdown after it finishes.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AutoShutdown.NextShutdown: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AutoShutdown.NextShutdown: {0}", e.Message));
             }
         }
     }

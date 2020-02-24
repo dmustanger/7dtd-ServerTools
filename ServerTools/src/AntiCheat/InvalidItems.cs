@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
-namespace ServerTools
+namespace ServerTools.AntiCheat
 {
-    public class InventoryCheck
+    public class InvalidItems
     {
-        public static bool IsEnabled = false, IsRunning = false, Announce_Invalid_Stack = false, Ban_Player = false, Chest_Checker = false;
+        public static bool IsEnabled = false, IsRunning = false, Announce_Invalid_Stack = false, Ban_Player = false, Check_Storage = false;
         public static int Admin_Level = 0, Days_Before_Log_Delete = 5;
         private static string file = "InvalidItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -405,7 +405,7 @@ namespace ServerTools
             Flags.Remove(_cInfo.entityId);
         }
 
-        public static void ChestCheck()
+        public static void CheckStorage()
         {
             try
             {

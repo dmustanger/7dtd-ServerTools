@@ -20,7 +20,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-TeleportUnderPlayer", "teleportunderplayer", "tup", "teleu" };
+            return new string[] { "st-TeleportUnderPlayer", "TeleportUnderPlayer", "teleportunderplayer", "tup", "teleu" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

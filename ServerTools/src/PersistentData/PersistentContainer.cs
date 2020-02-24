@@ -14,6 +14,11 @@ namespace ServerTools
 
         private DateTime lastWeather;
         private Dictionary<int, List<int>> clientMuteList;
+        private List<string> websiteClientList;
+        private List<string> websiteBanList;
+        private Dictionary<string, string[]> websiteAuthorizedList;
+        private Dictionary<string, DateTime> websiteAuthorizedTimeList;
+        private Dictionary<string, DateTime> websiteTimeoutList;
 
         public PersistentPlayers Players
         {
@@ -94,6 +99,66 @@ namespace ServerTools
             set
             {
                 clientMuteList = value;
+            }
+        }
+
+        public List<string> WebsiteClientList
+        {
+            get
+            {
+                return websiteClientList;
+            }
+            set
+            {
+                websiteClientList = value;
+            }
+        }
+
+        public List<string> WebsiteBanList
+        {
+            get
+            {
+                return websiteBanList;
+            }
+            set
+            {
+                websiteBanList = value;
+            }
+        }
+
+        public Dictionary<string, string[]> WebsiteAuthorizedList
+        {
+            get
+            {
+                return websiteAuthorizedList;
+            }
+            set
+            {
+                websiteAuthorizedList = value;
+            }
+        }
+
+        public Dictionary<string, DateTime> WebsiteAuthorizedTimeList
+        {
+            get
+            {
+                return websiteAuthorizedTimeList;
+            }
+            set
+            {
+                websiteAuthorizedTimeList = value;
+            }
+        }
+
+        public Dictionary<string, DateTime> WebsiteTimeoutList
+        {
+            get
+            {
+                return websiteTimeoutList;
+            }
+            set
+            {
+                websiteTimeoutList = value;
             }
         }
     }

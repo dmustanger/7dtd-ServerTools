@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-PrivateMessage", "privatemessage", "st-pm", "pm" };
+            return new string[] { "st-PrivateMessage", "PrivateMessage", "privatemessage", "st-pm", "pm" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

@@ -14,12 +14,12 @@ namespace ServerTools
         {
             return "Removes an entity from the game.\n" +
                 "Usage: EntityRemove <EntityId>\n" +
-                "Usage; er <EntityId>";
+                "Usage: er <EntityId>";
         }
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-EntityRemove", "entityremove", "st-er", "er" };
+            return new string[] { "st-EntityRemove", "EntityRemove", "entityremove", "st-er", "er" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

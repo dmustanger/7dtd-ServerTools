@@ -25,7 +25,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-CountryBanImmunity", "countrybanimmunity", "cbi" };
+            return new string[] { "st-CountryBanImmunity", "CountryBanImmunity", "countrybanimmunity", "cbi" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

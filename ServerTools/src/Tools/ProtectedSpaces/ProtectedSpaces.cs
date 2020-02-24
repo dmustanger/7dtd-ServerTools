@@ -52,7 +52,7 @@ namespace ServerTools
             XmlNode _XmlNode = xmlDoc.DocumentElement;
             foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
-                if (childNode.Name == "spaces")
+                if (childNode.Name == "Spaces")
                 {
                     ProtectedList.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
@@ -63,53 +63,53 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'spaces' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Spaces' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("xMin"))
+                        if (!_line.HasAttribute("XMin"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of missing xMin attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of missing XMin attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("zMin"))
+                        if (!_line.HasAttribute("ZMin"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of missing zMin attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of missing ZMin attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("xMax"))
+                        if (!_line.HasAttribute("XMax"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of missing xMax attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of missing XMax attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("zMax"))
+                        if (!_line.HasAttribute("ZMax"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of missing zMax attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of missing ZMax attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        string xMin = _line.GetAttribute("xMin");
-                        string zMin = _line.GetAttribute("zMin");
-                        string xMax = _line.GetAttribute("xMax");
-                        string zMax = _line.GetAttribute("zMax");
+                        string xMin = _line.GetAttribute("XMin");
+                        string zMin = _line.GetAttribute("ZMin");
+                        string xMax = _line.GetAttribute("XMax");
+                        string zMax = _line.GetAttribute("ZMax");
                         int _xMin, _zMin, _xMax, _zMax;
                         if (!int.TryParse(xMin, out _xMin))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of invalid _xMin integer: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of invalid _XMin integer: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!int.TryParse(zMin, out _zMin))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of invalid _zMin integer: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of invalid _ZMin integer: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!int.TryParse(xMax, out _xMax))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of invalid _xMax integer: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of invalid _XMax integer: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!int.TryParse(zMax, out _zMax))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of invalid _zMax integer: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of invalid _ZMax integer: {0}", subChild.OuterXml));
                             continue;
                         }
                         int _xMinAlt = _xMin, _zMinAlt = _zMin, _xMaxAlt = _xMax, _zMaxAlt = _zMax;
@@ -181,22 +181,22 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Protected>");
-                sw.WriteLine("    <spaces>");
+                sw.WriteLine("    <Spaces>");
                 if (ProtectedList.Count > 0)
                 {
                     for (int i = 0; i < ProtectedList.Count; i++)
                     {
                         string[] _vectors = ProtectedList[i];
-                        sw.WriteLine(string.Format("        <space xMin=\"{0}\" zMin=\"{1}\" xMax=\"{2}\" zMax=\"{3}\" />", _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
+                        sw.WriteLine(string.Format("        <Space XMin=\"{0}\" ZMin=\"{1}\" XMax=\"{2}\" ZMax=\"{3}\" />", _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <!-- <space xMin=\"-30\" zMin=\"-20\" xMax=\"10\" zMax=\"50\" /> -->");
-                    sw.WriteLine("        <!-- <space xMin=\"-800\" zMin=\"75\" xMax=\"-300\" zMax=\"100\" /> -->");
-                    sw.WriteLine("        <!-- <space xMin=\"-50\" zMin=\"-600\" xMax=\"-5\" zMax=\"-550\" /> -->");
+                    sw.WriteLine("        <!-- <Space XMin=\"-30\" ZMin=\"-20\" XMax=\"10\" ZMax=\"50\" /> -->");
+                    sw.WriteLine("        <!-- <space XMin=\"-800\" ZMin=\"75\" XMax=\"-300\" ZMax=\"100\" /> -->");
+                    sw.WriteLine("        <!-- <space XMin=\"-50\" ZMin=\"-600\" XMax=\"-5\" ZMax=\"-550\" /> -->");
                 }
-                sw.WriteLine("    </spaces>");
+                sw.WriteLine("    </Spaces>");
                 sw.WriteLine("</Protected>");
                 sw.Flush();
                 sw.Close();

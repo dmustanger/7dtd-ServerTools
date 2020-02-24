@@ -22,7 +22,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-AdminList", "adminlist", "al" };
+            return new string[] { "st-AdminList", "AdminList", "adminlist", "al" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

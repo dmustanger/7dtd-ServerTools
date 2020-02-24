@@ -20,7 +20,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-GiveStartingItems", "givestartingitems", "gsi" };
+            return new string[] { "st-GiveStartingItems", "GiveStartingItems", "givestartingitems", "gsi" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

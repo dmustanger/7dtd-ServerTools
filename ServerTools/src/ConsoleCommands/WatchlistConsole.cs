@@ -28,7 +28,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-WatchList", "watchlist", "wl" };
+            return new string[] { "st-WatchList", "WatchList", "watchlist", "wl" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

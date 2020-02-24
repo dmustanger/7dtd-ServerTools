@@ -74,8 +74,7 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Event Triggers entry because of missing number attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        int _number;
-                        if (!int.TryParse(_line.GetAttribute("number"), out _number))
+                        if (!int.TryParse(_line.GetAttribute("number"), out int _number))
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring Event Triggers because of invalid (non-numeric) value for 'number' attribute: {0}", subChild.OuterXml));
                             continue;
@@ -94,9 +93,6 @@ namespace ServerTools
                         if (!Dict.ContainsKey(_number))
                         {
                             Dict.Add(_number, _c);
-                        }
-                        if (!TriggerList.Contains(_c[1]))
-                        {
                             TriggerList.Add(_c[1]);
                         }
                     }

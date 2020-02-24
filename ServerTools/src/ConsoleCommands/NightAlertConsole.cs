@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-NightAlert", "nightalert" };
+            return new string[] { "st-NightAlert", "NightAlert", "nightalert" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

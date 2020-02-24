@@ -15,15 +15,15 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. giveitem <steamId/entityId> <itemId or name> <count> <quality>\n" +
-                "  2. giveitem all <itemId or name> <count> <quality>\n " +
+                "  1. GiveItem <steamId/entityId> <itemId or name> <count> <quality>\n" +
+                "  2. GiveItem all <itemId or name> <count> <quality>\n " +
                 "1. Gives a player the item(s) to their inventory unless full. Drops to the ground when full.\n" +
                 "2. Gives all players the item(s) to their inventory unless full. Drops to the ground when full.\n" +
                 "*Note Item(s) with no quality require a 1*\n";
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-GiveItem", "giveitem", "gi" };
+            return new string[] { "st-GiveItem", "GiveItem", "giveitem", "gi" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

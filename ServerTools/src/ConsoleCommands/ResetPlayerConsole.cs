@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-ResetPlayerProfile", "resetplayerprofile", "st-rpp", "rpp" };
+            return new string[] { "st-ResetPlayerProfile", "ResetPlayerProfile", "resetplayerprofile", "st-rpp", "rpp" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

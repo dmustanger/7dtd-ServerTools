@@ -26,7 +26,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Bounties", "bounties", "st-bounty", "bounty" };
+            return new string[] { "st-Bounties", "Bounties", "bounties", "bounty" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

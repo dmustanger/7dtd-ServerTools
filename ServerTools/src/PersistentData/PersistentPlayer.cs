@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace ServerTools
 {
@@ -8,7 +7,6 @@ namespace ServerTools
     public class PersistentPlayer
     {
         private readonly string steamId;
-        [OptionalField]
         private int playerWallet;
         private int bank;
         private int totalTimePlayed;
@@ -98,7 +96,9 @@ namespace ServerTools
         private string lastWhisper;
         private string highPingImmuneName;
         private string newSpawnPosition;
+        private string wP;
         private List<string[]> clanRequestToJoin;
+        
 
         public int PlayerWallet
         {
@@ -1165,6 +1165,18 @@ namespace ServerTools
             set
             {
                 newSpawnPosition = value;
+            }
+        }
+
+        public string WP
+        {
+            get
+            {
+                return wP;
+            }
+            set
+            {
+                wP = value;
             }
         }
 

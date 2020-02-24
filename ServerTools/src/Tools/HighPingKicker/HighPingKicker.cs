@@ -8,11 +8,11 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false;
         public static int Max_Ping = 250;
-        public static int Samples_Needed = 0;
+        public static int Flags = 0;
         private const string file = "HighPingImmunity.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         public static Dictionary<string, string> Dict = new Dictionary<string, string>();
-        private static Dictionary<string, int> Samples = new Dictionary<string, int>();
+        private static Dictionary<string, int> FlagCounts = new Dictionary<string, int>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
@@ -29,6 +29,7 @@ namespace ServerTools
             if (!IsEnabled && IsRunning)
             {
                 Dict.Clear();
+                FlagCounts.Clear();
                 fileWatcher.Dispose();
                 IsRunning = false;
             }
@@ -53,7 +54,7 @@ namespace ServerTools
             XmlNode _XmlNode = xmlDoc.DocumentElement;
             foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
-                if (childNode.Name == "immunePlayers")
+                if (childNode.Name == "Immune")
                 {
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
@@ -63,32 +64,32 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'immunePlayers' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Immune' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
                         if (!_line.HasAttribute("SteamId"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring player entry because of missing 'steamid' attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring player entry because of missing 'SteamId' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("name"))
+                        if (!_line.HasAttribute("Name"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring player entry because of missing 'name' attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring player entry because of missing 'Name' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         string _id = _line.GetAttribute("SteamId");
-                        string _name = _line.GetAttribute("name");
-                        Dict.Add(_id, _name);
-                        PersistentContainer.Instance.Players[_id].HighPingImmune = true;
-                        PersistentContainer.Instance.Players[_id].HighPingImmuneName = _name;
-                        PersistentContainer.Instance.Save();
+                        string _name = _line.GetAttribute("Name");
+                        if (!Dict.ContainsKey(_id))
+                        {
+                            Dict.Add(_id, _name);
+                        }
                     }
                 }
             }
         }
 
-        private static void UpdateXml()
+        public static void UpdateXml()
         {
             fileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath))
@@ -100,12 +101,12 @@ namespace ServerTools
                 {
                     foreach (KeyValuePair<string, string> _c in Dict)
                     {
-                        sw.WriteLine(string.Format("        <immune player=\"{0}\" steamId=\"{1}\" />", _c.Key, _c.Value));
+                        sw.WriteLine(string.Format("        <Player Name=\"{0}\" SteamId=\"{1}\" />", _c.Key, _c.Value));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <immune player=\"Cow\" steamId=\"76560987654321234\" />");
+                    sw.WriteLine("        <Player Name=\"Cow\" SteamId=\"76560987654321234\" />");
                 }
                 sw.WriteLine("    </Immune>");
                 sw.WriteLine("</HighPing>");
@@ -135,48 +136,48 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (_cInfo.ping > Max_Ping)
+            if (Dict.ContainsKey(_cInfo.playerId) || !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
             {
-                if (Dict.ContainsKey(_cInfo.playerId) || !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
+                return;
+            }
+            else
+            {
+                if (_cInfo.ping >= Max_Ping)
                 {
-                    return;
-                }
-                else
-                {
-                    if (Samples_Needed < 1)
+                    if (Flags == 1)
                     {
                         KickPlayer(_cInfo);
                     }
                     else
                     {
-                        if (!Samples.ContainsKey(_cInfo.playerId))
+                        if (!FlagCounts.ContainsKey(_cInfo.playerId))
                         {
-                            Samples.Add(_cInfo.playerId, 1);
+                            FlagCounts.Add(_cInfo.playerId, 1);
                         }
                         else
                         {
                             int _savedsamples;
-                            if (Samples.TryGetValue(_cInfo.playerId, out _savedsamples))
+                            FlagCounts.TryGetValue(_cInfo.playerId, out _savedsamples);
                             {
-                                if (_savedsamples < Samples_Needed)
+                                if (_savedsamples + 1 < Flags)
                                 {
-                                    Samples[_cInfo.playerId] = _savedsamples + 1;
+                                    FlagCounts[_cInfo.playerId] = _savedsamples + 1;
                                 }
                                 else
                                 {
-                                    Samples.Remove(_cInfo.playerId);
+                                    FlagCounts.Remove(_cInfo.playerId);
                                     KickPlayer(_cInfo);
                                 }
                             }
                         }
                     }
                 }
-            }
-            else
-            {
-                if (Samples.ContainsKey(_cInfo.playerId))
+                else
                 {
-                    Samples.Remove(_cInfo.playerId);
+                    if (FlagCounts.ContainsKey(_cInfo.playerId))
+                    {
+                        FlagCounts.Remove(_cInfo.playerId);
+                    }
                 }
             }
         }
@@ -199,8 +200,8 @@ namespace ServerTools
             }
             _phrase2 = _phrase2.Replace("{PlayerPing}", _cInfo.ping.ToString());
             _phrase2 = _phrase2.Replace("{MaxPing}", Max_Ping.ToString());
-            Log.Out(string.Format("[SERVERTOOLS] {0}", _phrase1));
             SdtdConsole.Instance.ExecuteSync(string.Format("Kick {0} \"{1}\"", _cInfo.entityId, _phrase2), (ClientInfo)null);
+            Log.Out(string.Format("[SERVERTOOLS] {0}", _phrase1));
         }
     }
 }

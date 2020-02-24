@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
+using ServerTools.AntiCheat;
 
 namespace ServerTools
 {
@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-PlayerStatCheck", "playerstatcheck", "psc" };
+            return new string[] { "st-PlayerStatCheck", "PlayerStatCheck", "playerstatcheck", "psc" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

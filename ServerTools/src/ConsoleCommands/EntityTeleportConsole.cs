@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-EntityTeleport", "entityteleport", "st-et", "et" };
+            return new string[] { "st-EntityTeleport", "EntityTeleport", "entityteleport", "et" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

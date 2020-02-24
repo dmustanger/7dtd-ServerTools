@@ -21,7 +21,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Flying", "flying" };
+            return new string[] { "st-Flying", "Flying", "flying" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -34,9 +34,9 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    if (Flying.IsEnabled)
+                    if (AntiCheat.Flying.IsEnabled)
                     {
-                        Flying.IsEnabled = false;
+                        AntiCheat.Flying.IsEnabled = false;
                         LoadConfig.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("Flying has been set to off"));
                         return;
@@ -49,9 +49,9 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (!Flying.IsEnabled)
+                    if (!AntiCheat.Flying.IsEnabled)
                     {
-                        Flying.IsEnabled = true;
+                        AntiCheat.Flying.IsEnabled = true;
                         LoadConfig.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("Flying has been set to on"));
                         return;

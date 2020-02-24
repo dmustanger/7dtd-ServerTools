@@ -33,7 +33,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-ChatColorPrefix", "st-ccp", "chatcolorprefix", "ccp"  };
+            return new string[] { "st-ChatColorPrefix", "ChatColorPrefix", "st-ccp", "chatcolorprefix", "ccp"  };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

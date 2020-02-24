@@ -53,10 +53,6 @@ namespace ServerTools
                 {
                     Exec(_version);
                 }
-                else
-                {
-                    LoadProcess.Load(4);
-                }
             }
             catch (Exception e)
             {

@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-FriendTeleport", "friendteleport" };
+            return new string[] { "st-FriendTeleport", "FriendTeleport", "friendteleport" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

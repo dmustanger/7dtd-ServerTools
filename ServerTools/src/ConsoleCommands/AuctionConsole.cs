@@ -27,7 +27,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Auction", "auction", "st-auc", "auc" };
+            return new string[] { "st-Auction", "Auction", "auction", "auc" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

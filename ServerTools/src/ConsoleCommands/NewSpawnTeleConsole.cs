@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-NewSpawnTele", "newspawntele" };
+            return new string[] { "st-NewSpawnTele", "NewSpawnTele", "newspawntele" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

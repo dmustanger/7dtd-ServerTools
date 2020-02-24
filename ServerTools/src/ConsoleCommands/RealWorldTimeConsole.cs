@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-RealWorldTime", "realworldtime" };
+            return new string[] { "st-RealWorldTime", "RealWorldTime", "realworldtime" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Prayer", "prayer" };
+            return new string[] { "st-Prayer", "Prayer", "prayer" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
