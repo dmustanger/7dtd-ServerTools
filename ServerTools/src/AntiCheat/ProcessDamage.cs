@@ -32,28 +32,31 @@ namespace ServerTools.AntiCheat
                                 if (Damage_Detector)
                                 {
                                     ItemValue _itemValue = ItemClass.GetItem(_player.inventory.holdingItem.Name, true);
-                                    int _distance = (int)_player.GetDistance(__instance);
-                                    using (StreamWriter sw = new StreamWriter(filepath, true))
+                                    if (_itemValue != null)
                                     {
-                                        sw.WriteLine(string.Format("{0}: {1} {2} hit {3} with entity id {4} using {5} for {6} damage @ {7}. Distance: {8}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, __instance.EntityName, __instance.entityId, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _dmResponse.Strength, __instance.position, _distance));
-                                        sw.WriteLine();
-                                        sw.Flush();
-                                        sw.Close();
-                                    }
-                                    if (__instance is EntityPlayer && _dmResponse.Strength >= Entity_Damage_Limit && GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId).PermissionLevel > Admin_Level)
-                                    {
-                                        string _message = "[FF0000]{PlayerName} has been banned for using damage manipulation.";
-                                        _message = _message.Replace("{PlayerName}", _cInfo.playerName);
-                                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for using damage manipulation. Damage recorded: {1}\"", _cInfo.playerId, _dmResponse.Strength), (ClientInfo)null);
-                                        using (StreamWriter sw = new StreamWriter(_detectionFilepath, true))
+                                        int _distance = (int)_player.GetDistance(__instance);
+                                        using (StreamWriter sw = new StreamWriter(filepath, true))
                                         {
-                                            sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, using damage manipulation @ {2}. Damage recorded: {3}.", _cInfo.playerName, _cInfo.playerId, __instance.position, _dmResponse.Strength));
+                                            sw.WriteLine(string.Format("{0}: {1} {2} hit {3} with entity id {4} using {5} for {6} damage @ {7}. Distance: {8}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, __instance.EntityName, __instance.entityId, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _dmResponse.Strength, __instance.position, _distance));
                                             sw.WriteLine();
                                             sw.Flush();
                                             sw.Close();
                                         }
-                                        return false;
+                                        if (_dmResponse.Strength >= Entity_Damage_Limit && GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId).PermissionLevel > Admin_Level)
+                                        {
+                                            string _message = "[FF0000]{PlayerName} has been banned for using damage manipulation.";
+                                            _message = _message.Replace("{PlayerName}", _cInfo.playerName);
+                                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for using damage manipulation. Damage recorded: {1}\"", _cInfo.playerId, _dmResponse.Strength), (ClientInfo)null);
+                                            using (StreamWriter sw = new StreamWriter(_detectionFilepath, true))
+                                            {
+                                                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, using damage manipulation @ {2}. Damage recorded: {3}.", _cInfo.playerName, _cInfo.playerId, __instance.position, _dmResponse.Strength));
+                                                sw.WriteLine();
+                                                sw.Flush();
+                                                sw.Close();
+                                            }
+                                            return false;
+                                        }
                                     }
                                 }
                             }
@@ -85,7 +88,7 @@ namespace ServerTools.AntiCheat
             try
             {
                 World _world = __instance.World;
-                if (_world != null && _blocksToChange != null)
+                if (__instance != null && _world != null && _blocksToChange != null && !string.IsNullOrEmpty(_persistentPlayerId) && _blocksToChange != null)
                 {
                     for (int i = 0; i < _blocksToChange.Count; i++)
                     {
@@ -128,7 +131,7 @@ namespace ServerTools.AntiCheat
                                             if (!PersistentOperations.ClaimedByAllySelfOrParty(_persistentPlayerId, _newBlockInfo.pos))
                                             {
                                                 int _total = _blockValue.Block.MaxDamage - _blockValue.damage;
-                                                if (_blockValue.Block.MaxDamage - _blockValue.damage >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId, _newBlockInfo))
+                                                if (_blockValue.Block.MaxDamage - _blockValue.damage >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId))
                                                 {
                                                     if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_newBlockInfo.pos))
                                                     {
@@ -142,7 +145,7 @@ namespace ServerTools.AntiCheat
                                     if (!_blockValue.Block.CanPickup)//old block can not be picked up
                                     {
                                         int _total = _blockValue.Block.MaxDamage - _blockValue.damage;
-                                        if (_total >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId, _newBlockInfo))
+                                        if (_total >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId))
                                         {
                                             if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_newBlockInfo.pos))
                                             {
@@ -157,7 +160,7 @@ namespace ServerTools.AntiCheat
                                     if (_newBlockInfo.bChangeDamage)//block took damage
                                     {
                                         int _total = _newBlockInfo.blockValue.damage - _blockValue.damage;
-                                        if (_total >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId, _newBlockInfo))
+                                        if (_total >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId))
                                         {
                                             if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_newBlockInfo.pos) || Zones.IsEnabled && Zones.Protected(_newBlockInfo.pos))
                                             {
@@ -174,7 +177,7 @@ namespace ServerTools.AntiCheat
                                 else if (_blockValue.Block.DowngradeBlock.Block.blockID == _newBlockInfo.blockValue.Block.blockID)//downgraded
                                 {
                                     int _total = _blockValue.Block.MaxDamage - _blockValue.damage + _newBlockInfo.blockValue.damage;
-                                    if (_total >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId, _newBlockInfo))
+                                    if (_total >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId))
                                     {
                                         if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_newBlockInfo.pos))
                                         {
@@ -195,42 +198,39 @@ namespace ServerTools.AntiCheat
             return true;
         }
 
-        public static bool ProcessPenalty(int _total, string _persistentPlayerId, BlockChangeInfo _bChangeInfo)
+        public static bool ProcessPenalty(int _total, string _persistentPlayerId)
         {
             try
             {
-                if (!string.IsNullOrEmpty(_persistentPlayerId))
+                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_persistentPlayerId);
+                if (_player != null)
                 {
-                    EntityPlayer _player = PersistentOperations.GetEntityPlayer(_persistentPlayerId);
-                    if (_player != null)
+                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_persistentPlayerId);
+                    if (Admin.PermissionLevel > Admin_Level)
                     {
-                        AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_persistentPlayerId);
-                        if (Admin.PermissionLevel > Admin_Level)
+                        if (Damage_Detector)
                         {
-                            if (Damage_Detector)
+                            string _message = "[FF0000]{PlayerName} has been banned for using damage manipulation.";
+                            _message = _message.Replace("{PlayerName}", _player.EntityName);
+                            ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_persistentPlayerId);
+                            if (_cInfo != null)
                             {
-                                string _message = "[FF0000]{PlayerName} has been banned for using damage manipulation.";
-                                _message = _message.Replace("{PlayerName}", _player.EntityName);
-                                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_persistentPlayerId);
-                                if (_cInfo != null)
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for using a damage manipulator. Damage recorded: {1}\"", _persistentPlayerId, _total.ToString()), null);
+                                using (StreamWriter sw = new StreamWriter(_detectionFilepath, true))
                                 {
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for using a damage manipulator. Damage recorded: {1}\"", _persistentPlayerId, _total.ToString()), null);
-                                    using (StreamWriter sw = new StreamWriter(_detectionFilepath, true))
-                                    {
-                                        sw.WriteLine(string.Format("Detected {0} with steam id {1} using a damage manipulator @ position {2}. Damage recorded: {3}", _player.EntityName, _persistentPlayerId, _player.position, _total));
-                                        sw.WriteLine();
-                                        sw.Flush();
-                                        sw.Close();
-                                    }
+                                    sw.WriteLine(string.Format("Detected {0} with steam id {1} using a damage manipulator @ position {2}. Damage recorded: {3}", _player.EntityName, _persistentPlayerId, _player.position, _total));
+                                    sw.WriteLine();
+                                    sw.Flush();
+                                    sw.Close();
                                 }
-                                return true;
                             }
-                        }
-                        else
-                        {
                             return true;
                         }
+                    }
+                    else
+                    {
+                        return true;
                     }
                 }
             }
