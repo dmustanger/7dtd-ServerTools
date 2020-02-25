@@ -166,37 +166,40 @@ namespace ServerTools
             {
                 bool _auctionItemsFound = false;
                 List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
-                for (int i = 0; i < playerlist.Count; i++)
+                if (playerlist != null && playerlist.Count > 0)
                 {
-                    string _steamId = playerlist[i];
-                    int _auctionId = PersistentContainer.Instance.Players[_steamId].AuctionId;
-                    if (_auctionId > 0 && AuctionItems.ContainsKey(_auctionId))
+                    for (int i = 0; i < playerlist.Count; i++)
                     {
-                        _auctionItemsFound = true;
-                        int _auctionCount = PersistentContainer.Instance.Players[_steamId].AuctionItemCount;
-                        string _auctionName = PersistentContainer.Instance.Players[_steamId].AuctionItemName;
-                        int _auctionQuality = PersistentContainer.Instance.Players[_steamId].AuctionItemQuality;
-                        int _auctionPrice = PersistentContainer.Instance.Players[_steamId].AuctionItemPrice;
-                        if (_auctionQuality > 1)
+                        string _steamId = playerlist[i];
+                        int _auctionId = PersistentContainer.Instance.Players[_steamId].AuctionId;
+                        if (_auctionId > 0 && AuctionItems.ContainsKey(_auctionId))
                         {
-                            string _message = "# {Id}: {Count} {Item} at {Quality} quality, for {Price} {Name}";
-                            _message = _message.Replace("{Id}", _auctionId.ToString());
-                            _message = _message.Replace("{Count}", _auctionCount.ToString());
-                            _message = _message.Replace("{Item}", _auctionName);
-                            _message = _message.Replace("{Quality}", _auctionQuality.ToString());
-                            _message = _message.Replace("{Price}", _auctionPrice.ToString());
-                            _message = _message.Replace("{Name}", Wallet.Coin_Name);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                        }
-                        else
-                        {
-                            string _message = "# {Id}: {Count} {Item} for {Price} {Name}";
-                            _message = _message.Replace("{Id}", _auctionId.ToString());
-                            _message = _message.Replace("{Count}", _auctionCount.ToString());
-                            _message = _message.Replace("{Item}", _auctionName);
-                            _message = _message.Replace("{Price}", _auctionPrice.ToString());
-                            _message = _message.Replace("{Name}", Wallet.Coin_Name);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            _auctionItemsFound = true;
+                            int _auctionCount = PersistentContainer.Instance.Players[_steamId].AuctionItemCount;
+                            string _auctionName = PersistentContainer.Instance.Players[_steamId].AuctionItemName;
+                            int _auctionQuality = PersistentContainer.Instance.Players[_steamId].AuctionItemQuality;
+                            int _auctionPrice = PersistentContainer.Instance.Players[_steamId].AuctionItemPrice;
+                            if (_auctionQuality > 1)
+                            {
+                                string _message = "# {Id}: {Count} {Item} at {Quality} quality, for {Price} {Name}";
+                                _message = _message.Replace("{Id}", _auctionId.ToString());
+                                _message = _message.Replace("{Count}", _auctionCount.ToString());
+                                _message = _message.Replace("{Item}", _auctionName);
+                                _message = _message.Replace("{Quality}", _auctionQuality.ToString());
+                                _message = _message.Replace("{Price}", _auctionPrice.ToString());
+                                _message = _message.Replace("{Name}", Wallet.Coin_Name);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            }
+                            else
+                            {
+                                string _message = "# {Id}: {Count} {Item} for {Price} {Name}";
+                                _message = _message.Replace("{Id}", _auctionId.ToString());
+                                _message = _message.Replace("{Count}", _auctionCount.ToString());
+                                _message = _message.Replace("{Item}", _auctionName);
+                                _message = _message.Replace("{Price}", _auctionPrice.ToString());
+                                _message = _message.Replace("{Name}", Wallet.Coin_Name);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            }
                         }
                     }
                 }
@@ -209,8 +212,7 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in AuctionBox.AuctionList: {0}.", e));
             }
-        }
-            
+        }     
 
         public static void WalletCheck(ClientInfo _cInfo, int _purchase)
         {
