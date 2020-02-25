@@ -1180,84 +1180,63 @@ namespace ServerTools
                                 return false;
                             }
                         }
-                        if (AuctionBox.IsEnabled && _message.ToLower() == AuctionBox.Command71)
+                        if (AuctionBox.IsEnabled && Wallet.IsEnabled && _message.ToLower() == AuctionBox.Command71)
                         {
                             AuctionBox.AuctionList(_cInfo);
                             return false;
                         }
-                        if (AuctionBox.IsEnabled && _message.ToLower() == AuctionBox.Command72)
+                        if (AuctionBox.IsEnabled && Wallet.IsEnabled && _message.ToLower() == AuctionBox.Command72)
                         {
-                            if (Wallet.IsEnabled)
-                            {
-                                AuctionBox.CancelAuction(_cInfo);
-                            }
-                            else
-                            {
-                                ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + "Can not run command. Wallet is not enabled" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
+                            AuctionBox.CancelAuction(_cInfo);
                             return false;
                         }
-                        if (AuctionBox.IsEnabled && _message.ToLower().StartsWith(AuctionBox.Command73 + " "))
+                        if (AuctionBox.IsEnabled && Wallet.IsEnabled && _message.ToLower().StartsWith(AuctionBox.Command73 + " "))
                         {
-                            if (Wallet.IsEnabled)
+                            if (AuctionBox.No_Admins)
                             {
-                                if (AuctionBox.No_Admins)
+                                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                                if (Admin.PermissionLevel <= Admin_Level)
                                 {
-                                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                                    if (Admin.PermissionLevel <= Admin_Level)
-                                    {
-                                        string _chatMessage = ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " the auction is disabled for your tier.[-]";
-                                        ChatMessage(_cInfo, _chatMessage, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                }
-                                _message = _message.ToLower().Replace(AuctionBox.Command73 + " ", "");
-                                {
-                                    int _purchase;
-                                    if (int.TryParse(_message, out _purchase))
-                                    {
-                                        if (AuctionBox.AuctionItems.ContainsKey(_purchase))
-                                        {
-                                            AuctionBox.WalletCheck(_cInfo, _purchase);
-                                        }
-                                        else
-                                        {
-                                            ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have used an auction item # that does not exist or has sold. Type " + ChatHook.Command_Private + AuctionBox.Command71 + ".[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                        }
-                                    }
+                                    string _chatMessage = ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " the auction is disabled for your tier.[-]";
+                                    ChatMessage(_cInfo, _chatMessage, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
-                            else
+                            _message = _message.ToLower().Replace(AuctionBox.Command73 + " ", "");
                             {
-                                ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + "Can not run command. Wallet is not enabled" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                int _purchase;
+                                if (int.TryParse(_message, out _purchase))
+                                {
+                                    if (AuctionBox.AuctionItems.ContainsKey(_purchase))
+                                    {
+                                        AuctionBox.WalletCheck(_cInfo, _purchase);
+                                    }
+                                    else
+                                    {
+                                        ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have used an auction item # that does not exist or has sold. Type " + ChatHook.Command_Private + AuctionBox.Command71 + ".[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    }
+                                }
                             }
                             return false;
                         }
                         if (AuctionBox.IsEnabled && Wallet.IsEnabled && _message.ToLower().StartsWith(AuctionBox.Command74 + " "))
                         {
-                            if (Wallet.IsEnabled)
+                            if (AuctionBox.No_Admins)
                             {
-                                if (AuctionBox.No_Admins)
-                                {
-                                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                                    if (Admin.PermissionLevel > Admin_Level)
-                                    {
-                                        _message = _message.ToLower().Replace(AuctionBox.Command74 + " ", "");
-                                        AuctionBox.Delay(_cInfo, _message);
-                                    }
-                                    else
-                                    {
-                                        ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " the auction is disabled for your tier.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                }
-                                else
+                                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                                if (Admin.PermissionLevel > Admin_Level)
                                 {
                                     _message = _message.ToLower().Replace(AuctionBox.Command74 + " ", "");
                                     AuctionBox.Delay(_cInfo, _message);
                                 }
+                                else
+                                {
+                                    ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " the auction is disabled for your tier.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
                             }
                             else
                             {
-                                ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + "Can not run command. Wallet is not enabled" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                _message = _message.ToLower().Replace(AuctionBox.Command74 + " ", "");
+                                AuctionBox.Delay(_cInfo, _message);
                             }
                             return false;
                         }
@@ -1716,46 +1695,39 @@ namespace ServerTools
             }
             else if (_type == EChatType.Global)
             {
-                if (_cInfo != null)
+                if (Mute.IsEnabled)
                 {
-                    if (Mute.IsEnabled)
+                    List<int> _mutedPlayers;
+                    if (Mute.PrivateMutes.Count > 0)
                     {
-                        List<int> _mutedPlayers;
-                        if (Mute.PrivateMutes.Count > 0)
+                        List<ClientInfo> _clientList = PersistentOperations.ClientList();
+                        if (_clientList != null)
                         {
-                            List<ClientInfo> _clientList = PersistentOperations.ClientList();
-                            if (_clientList != null && _clientList.Count > 0)
+                            for (int i = 0; i < _clientList.Count; i++)
                             {
-                                for (int i = 0; i < _clientList.Count; i++)
+                                ClientInfo _cInfo2 = _clientList[i];
+                                if (_cInfo2 != null)
                                 {
-                                    ClientInfo _cInfo2 = _clientList[i];
-                                    if (_cInfo2 != null)
+                                    if (Mute.PrivateMutes.ContainsKey(_cInfo2.entityId) || Mute.PrivateMutes.ContainsKey(_cInfo.entityId))
                                     {
-                                        if (Mute.PrivateMutes.ContainsKey(_cInfo2.entityId) || Mute.PrivateMutes.ContainsKey(_cInfo.entityId))
+                                        if (Mute.PrivateMutes.TryGetValue(_cInfo2.entityId, out _mutedPlayers))
                                         {
-                                            if (Mute.PrivateMutes.TryGetValue(_cInfo2.entityId, out _mutedPlayers))
+                                            if (_mutedPlayers.Contains(_cInfo.entityId))
                                             {
-                                                if (_mutedPlayers.Contains(_cInfo.entityId))
-                                                {
-                                                    continue;
-                                                }
-                                            }
-                                            if (Mute.PrivateMutes.TryGetValue(_cInfo.entityId, out _mutedPlayers))
-                                            {
-                                                if (_mutedPlayers.Contains(_cInfo2.entityId))
-                                                {
-                                                    continue;
-                                                }
+                                                continue;
                                             }
                                         }
-                                        _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChat>().Setup(EChatType.Whisper, -1, _message, _name, false, _recipientEntityIds));
+                                        if (Mute.PrivateMutes.TryGetValue(_cInfo.entityId, out _mutedPlayers))
+                                        {
+                                            if (_mutedPlayers.Contains(_cInfo2.entityId))
+                                            {
+                                                continue;
+                                            }
+                                        }
                                     }
+                                    _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChat>().Setup(EChatType.Whisper, -1, _message, _name, false, _recipientEntityIds));
                                 }
                             }
-                        }
-                        else
-                        {
-                            GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, -1, _message, _name, false, _recipientEntityIds);
                         }
                     }
                     else

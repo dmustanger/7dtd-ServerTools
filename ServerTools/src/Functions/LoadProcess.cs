@@ -38,7 +38,7 @@ namespace ServerTools
                     }
                     if (!Directory.Exists(API.ConfigPath + "/Logs/AuctionLog"))
                     {
-                        Directory.CreateDirectory(API.ConfigPath + "/Logs/AuctionLogs");
+                        Directory.CreateDirectory(API.ConfigPath + "/Logs/AuctionLog");
                     }
                     if (!Directory.Exists(API.ConfigPath + "/Logs/BankLogs"))
                     {

@@ -30,8 +30,8 @@ namespace ServerTools.Website
         public static string SITE_DIR = "";
         public static string Password = "";
         private static string Port = "";
-        private static string file = string.Format("WebsiteLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string filepath = string.Format("{0}/Logs/WebsiteLogs/{1}", API.ConfigPath, file);
+        private static string _file = string.Format("WebsiteLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static string _filepath = string.Format("{0}/Logs/WebsiteLogs/{1}", API.ConfigPath, _file);
         private static HttpListener Listener = new HttpListener();
         private static readonly Version HttpVersion = new Version(1, 1);
         private static System.Random Rnd = new System.Random();
@@ -1522,7 +1522,7 @@ namespace ServerTools.Website
 
         private static void Writer(string _input)
         {
-            using (StreamWriter sw = new StreamWriter(filepath, true))
+            using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
                 sw.WriteLine(string.Format("{0}: {1}", DateTime.Now, _input));
                 sw.WriteLine();

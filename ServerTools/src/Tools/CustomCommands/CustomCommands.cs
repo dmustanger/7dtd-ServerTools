@@ -230,17 +230,9 @@ namespace ServerTools
                     _commands = "";
                 }
             }
-            if (Wallet.IsEnabled)
+            if (Shop.IsEnabled && Wallet.IsEnabled)
             {
                 _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Wallet.Command56);
-                if (_commands.Length >= 100)
-                {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    _commands = "";
-                }
-            }
-            if (Shop.IsEnabled)
-            {
                 _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Shop.Command57);
                 _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Shop.Command58);
                 if (_commands.Length >= 100)
@@ -517,15 +509,8 @@ namespace ServerTools
                 _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Bank.Command94);
                 _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Bank.Command95);
                 _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Bank.Command96);
-                if (Wallet.IsEnabled)
-                {
-                    _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Bank.Command97);
-                    _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Bank.Command98);
-                }
-                if (Bank.Player_Transfers)
-                {
-                    _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Bank.Command99);
-                }
+                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Bank.Command97);
+                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Bank.Command98);
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
