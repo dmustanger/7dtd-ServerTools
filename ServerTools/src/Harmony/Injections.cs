@@ -58,8 +58,8 @@ public static class Injections
         {
             if (_playerId > 0)
             {
-                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_playerId.ToString());
-                if (Admin.PermissionLevel > ProcessDamage.Admin_Level)
+                var permissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(_playerId.ToString());
+                if (permissionLevel > ProcessDamage.Admin_Level)
                 {
                     return ProtectedSpaces.AllowExplosion(_worldPos);
                 }

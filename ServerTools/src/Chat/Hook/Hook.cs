@@ -621,8 +621,8 @@ namespace ServerTools
                             {
                                 CustomCommands.CustomCommandList(_cInfo);
                             }
-                            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                            if (Admin.PermissionLevel <= Admin_Level)
+                            var permissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo);
+                            if (permissionLevel <= Admin_Level)
                             {
                                CustomCommands.AdminCommandList(_cInfo);
                             }
@@ -1203,8 +1203,8 @@ namespace ServerTools
                             {
                                 if (AuctionBox.No_Admins)
                                 {
-                                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                                    if (Admin.PermissionLevel <= Admin_Level)
+                                    var permissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo);
+                                    if (permissionLevel <= Admin_Level)
                                     {
                                         string _chatMessage = ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " the auction is disabled for your tier.[-]";
                                         ChatMessage(_cInfo, _chatMessage, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -1238,8 +1238,8 @@ namespace ServerTools
                             {
                                 if (AuctionBox.No_Admins)
                                 {
-                                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                                    if (Admin.PermissionLevel > Admin_Level)
+                                    var permissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo);
+                                    if (permissionLevel > Admin_Level)
                                     {
                                         _message = _message.ToLower().Replace(AuctionBox.Command74 + " ", "");
                                         AuctionBox.Delay(_cInfo, _message);

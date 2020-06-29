@@ -10,8 +10,8 @@ namespace ServerTools.AntiCheat
 
         public static void GodCheck(ClientInfo _cInfo)
         {
-            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-            if (Admin.PermissionLevel > Admin_Level)
+            var permissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo);
+            if (permissionLevel > Admin_Level)
             {
                 EntityAlive _player = PersistentOperations.GetPlayerAlive(_cInfo.playerId);
                 if (_player != null && _player.Buffs.HasBuff("god"))

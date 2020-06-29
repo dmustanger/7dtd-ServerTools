@@ -34,7 +34,7 @@ public class @AdminsConsole : ConsoleCmdAbstract
             for (int i = 0; i < _cInfoList.Count; i++)
             {
                 ClientInfo _player = _cInfoList[i];
-                if (GameManager.Instance.adminTools.IsAdmin(_player.playerId))
+                if (GameManager.Instance.adminTools.IsAdmin(_player))
                 {
                     ChatHook.ChatMessage(_player, ChatHook.Player_Name_Color + _player.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _player.entityId, _player.playerName, EChatType.Whisper, null);
                     SdtdConsole.Instance.Output(string.Format("Message sent to {0}", _player.playerName));

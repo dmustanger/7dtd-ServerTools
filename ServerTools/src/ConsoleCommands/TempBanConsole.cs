@@ -47,9 +47,9 @@ namespace ServerTools
                 ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
                 if (_cInfo != null)
                 {
-                    GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId);
-                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                    if (Admin.PermissionLevel > Admin_Level)
+                    GameManager.Instance.adminTools.IsAdmin(_cInfo);
+                    var permissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo);
+                    if (permissionLevel > Admin_Level)
                     {
                         if (_time > 60)
                         {

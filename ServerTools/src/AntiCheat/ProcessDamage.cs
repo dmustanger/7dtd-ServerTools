@@ -42,7 +42,7 @@ namespace ServerTools.AntiCheat
                                             sw.Flush();
                                             sw.Close();
                                         }
-                                        if (_dmResponse.Strength >= Entity_Damage_Limit && GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId).PermissionLevel > Admin_Level)
+                                        if (_dmResponse.Strength >= Entity_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Admin_Level)
                                         {
                                             string _message = "[FF0000]{PlayerName} has been banned for using damage manipulation.";
                                             _message = _message.Replace("{PlayerName}", _cInfo.playerName);
@@ -205,8 +205,8 @@ namespace ServerTools.AntiCheat
                 EntityPlayer _player = PersistentOperations.GetEntityPlayer(_persistentPlayerId);
                 if (_player != null)
                 {
-                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_persistentPlayerId);
-                    if (Admin.PermissionLevel > Admin_Level)
+                    var permissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(_persistentPlayerId);
+                    if (permissionLevel > Admin_Level)
                     {
                         if (Damage_Detector)
                         {

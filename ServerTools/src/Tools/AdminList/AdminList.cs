@@ -19,13 +19,13 @@ namespace ServerTools
             for (int i = 0; i < ClientInfoList.Count; i++)
             {
                 ClientInfo _cInfoAdmins = ClientInfoList[i];
-                GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins.playerId);
-                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfoAdmins.playerId);
-                if (Admin.PermissionLevel <= Admin_Level)
+                GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins);
+                var permissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfoAdmins);
+                if (permissionLevel <= Admin_Level)
                 {
                     Admins.Add(_cInfoAdmins.playerName);
                 }
-                if (Admin.PermissionLevel > Admin_Level & Admin.PermissionLevel <= Mod_Level)
+                if (permissionLevel > Admin_Level & permissionLevel <= Mod_Level)
                 {
                     Mods.Add(_cInfoAdmins.playerName);
                 }

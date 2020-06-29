@@ -134,8 +134,8 @@ namespace ServerTools.AntiCheat
             {
                 if (!OmittedPlayers.ContainsKey(_cInfo.playerId))
                 {
-                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                    if (Admin.PermissionLevel > Admin_Level)
+                    var permissionlevel = GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo);
+                    if (permissionlevel > Admin_Level)
                     {
                         if (Family_Share)
                         {

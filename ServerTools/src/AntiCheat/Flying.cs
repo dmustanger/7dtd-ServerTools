@@ -25,8 +25,8 @@ namespace ServerTools.AntiCheat
                             ClientInfo _cInfo = _cInfoList[i];
                             if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId > 0)
                             {
-                                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
-                                if (Admin.PermissionLevel > Admin_Level)
+                                var permissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo);
+                                if (permissionLevel > Admin_Level)
                                 {
                                     EntityAlive _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                                     if (_player != null && _player.IsSpawned() && _player.IsAlive() && !_player.IsStuck && _player.AttachedToEntity == null)
