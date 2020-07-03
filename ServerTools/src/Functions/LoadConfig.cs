@@ -3370,7 +3370,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Scout_Player\" Enable=\"{0}\" />", ScoutPlayer.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Shop\" Enable=\"{0}\" Inside_Market=\"{1}\" Inside_Traders=\"{2}\" />", Shop.IsEnabled, Shop.Inside_Market, Shop.Inside_Traders));
                 sw.WriteLine(string.Format("        <Tool Name=\"Shutdown\" Enable=\"{0}\" Countdown_Timer=\"{1}\" Time_Before_Shutdown=\"{2}\" Alert_Count=\"{3}\" />", AutoShutdown.IsEnabled, AutoShutdown.Countdown_Timer, AutoShutdown.Delay, StopServer.Alert_Count));
-                sw.WriteLine(string.Format("        <Tool Name=\"Spectator_Detector\" Enable=\"{0}\" Admin_Level=\"{0}\" />", PlayerChecks.SpectatorEnabled, PlayerChecks.Spectator_Admin_Level));
+                sw.WriteLine(string.Format("        <Tool Name=\"Spectator_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" />", PlayerChecks.SpectatorEnabled, PlayerChecks.Spectator_Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Starting_Items\" Enable=\"{0}\" />", StartingItems.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Stopserver\" Alert_Count=\"{0}\" />", StopServer.Alert_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Stuck\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" />", Stuck.IsEnabled, Stuck.Delay_Between_Uses));

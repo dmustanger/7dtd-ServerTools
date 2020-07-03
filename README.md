@@ -159,15 +159,13 @@ Wallet: takes note of player kills, zombie kills, deaths and spent coins. Calcul
 <br>
 Bank: allows players to deposit in game coins or wallet coins to a bank account. Exchange coin types through the bank<br>
 <br>
-Vehicle_Teleport: Save one of each vehicle type. Teleport a saved vehicle if close enough to the user<br>
+Bike: save a bike id while inside a claimed space. Return a saved bike if close enough to it<br>
 <br>
 Death return: while enabled, players can return to where they died<br>
 <br>
 Entity cleanup: removes falling blocks, stuck falling trees<br>
 <br>
 Command costs: set a price required to use certain commands. Dependant on ingame wallet and earning coins by killing zombies. In game coins such as casino coin can be transferred through the bank<br>
-<br>
-Website: Monitor the online players. Kick, ban, mute, jail or reward them. Configure the main config xml file
 <br>
 <br> 
 <br>

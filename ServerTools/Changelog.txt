@@ -1,5 +1,11 @@
 ﻿CHANGELOG
 
+18.4.11
+Built using Alpha 18.4 experimental assets
+Functioning with 18.4 experimental. Untested with other versions
+
+Fixed Spectator_Detector option Admin_Level
+
 18.4.10
 Built using Alpha 18.4 stable assets
 Functioning with 18.4 stable. Untested with other versions
