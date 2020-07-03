@@ -37,7 +37,7 @@ namespace ServerTools.AntiCheat
                                         int _distance = (int)_player.GetDistance(__instance);
                                         using (StreamWriter sw = new StreamWriter(filepath, true))
                                         {
-                                            sw.WriteLine(string.Format("{0}: {1} {2} hit {3} with entity id {4} using {5} for {6} damage @ {7}. Distance: {8}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, __instance.EntityName, __instance.entityId, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _dmResponse.Strength, __instance.position, _distance));
+                                            sw.WriteLine(string.Format("{0}: {1} {2} hit {3} with entity id {4} using {5} for {6} damage @ {7}. Distance: {8}", DateTime.Now, _cInfo.playerId, _cInfo.playerName, __instance.EntityName, __instance.entityId, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _dmResponse.Strength, __instance.position, _distance));
                                             sw.WriteLine();
                                             sw.Flush();
                                             sw.Close();
@@ -50,7 +50,7 @@ namespace ServerTools.AntiCheat
                                             SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for using damage manipulation. Damage recorded: {1}\"", _cInfo.playerId, _dmResponse.Strength), (ClientInfo)null);
                                             using (StreamWriter sw = new StreamWriter(_detectionFilepath, true))
                                             {
-                                                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, using damage manipulation @ {2}. Damage recorded: {3}.", _cInfo.playerName, _cInfo.playerId, __instance.position, _dmResponse.Strength));
+                                                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, using damage manipulation @ {2}. Damage recorded: {3}", _cInfo.playerName, _cInfo.playerId, __instance.position, _dmResponse.Strength));
                                                 sw.WriteLine();
                                                 sw.Flush();
                                                 sw.Close();
@@ -94,6 +94,7 @@ namespace ServerTools.AntiCheat
                     {
                         BlockChangeInfo _newBlockInfo = _blocksToChange[i];//new block info
                         BlockValue _blockValue = _world.GetBlock(_newBlockInfo.pos);//old block value
+                        Log.Out(string.Format("Test Damage Detection. New Block {0}. Old Block {1}", _newBlockInfo.blockValue.Block.GetBlockName(), _blockValue.Block.GetBlockName()));
                         if (_newBlockInfo != null && _newBlockInfo.bChangeBlockValue)//new block value
                         {
                             if (_blockValue.type == BlockValue.Air.type)//old block was air

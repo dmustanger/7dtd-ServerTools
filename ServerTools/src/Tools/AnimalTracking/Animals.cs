@@ -27,7 +27,11 @@ namespace ServerTools
             }
             else
             {
-                DateTime _lastAnimals = PersistentContainer.Instance.Players[_cInfo.playerId].LastAnimal;
+                DateTime _lastAnimals = DateTime.Now;
+                if (PersistentContainer.Instance.Players[_cInfo.playerId].LastAnimal != null)
+                {
+                    _lastAnimals = PersistentContainer.Instance.Players[_cInfo.playerId].LastAnimal;
+                }
                 TimeSpan varTime = DateTime.Now - _lastAnimals;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int _timepassed = (int)fractionalMinutes;
@@ -68,10 +72,10 @@ namespace ServerTools
                 string _phrase601;
                 if (!Phrases.Dict.TryGetValue(601, out _phrase601))
                 {
-                    _phrase601 = " you have taxed your tracking ability. Wait {TimeRemaining} minutes and try again.";
+                    _phrase601 = "You have taxed your tracking ability. Wait {TimeRemaining} minutes and try again.";
                 }
                 _phrase601 = _phrase601.Replace("{TimeRemaining}", _timeleft.ToString());
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase601 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase601 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -87,10 +91,10 @@ namespace ServerTools
                 string _phrase814;
                 if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    _phrase814 = "You do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -150,10 +154,10 @@ namespace ServerTools
                 string _phrase715;
                 if (!Phrases.Dict.TryGetValue(715, out _phrase715))
                 {
-                    _phrase715 = " you have tracked down an animal to within {Radius} metres.";
+                    _phrase715 = "You have tracked down an animal to within {Radius} metres.";
                 }
                 _phrase715 = _phrase715.Replace("{Radius}", _nextRadius.ToString());
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase715 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase715 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
@@ -163,7 +167,7 @@ namespace ServerTools
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " animal list is empty. Contact an administrator.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Animal list is empty. Contact an administrator.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

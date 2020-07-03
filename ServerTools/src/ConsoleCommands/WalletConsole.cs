@@ -62,12 +62,12 @@ namespace ServerTools
                     {
                         Wallet.IsEnabled = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Wallet has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("Wallet has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wallet is already off"));
+                        SdtdConsole.Instance.Output(string.Format("Wallet is already on"));
                         return;
                     }
                 }

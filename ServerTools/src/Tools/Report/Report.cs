@@ -29,11 +29,11 @@ namespace ServerTools
                 string _phrase795;
                 if (!Phrases.Dict.TryGetValue(795, out _phrase795))
                 {
-                    _phrase795 = " you can only make a report once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase795 = "You can only make a report once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 _phrase795 = _phrase795.Replace("{DelayBetweenUses}", Delay.ToString());
                 _phrase795 = _phrase795.Replace("{TimeRemaining}", _timeleft.ToString());
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase795 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase795 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -42,7 +42,7 @@ namespace ServerTools
             _message = _message.Replace(Command82 + " ", "");
             if (_message.Length > 150)
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Your report is too long. Please reduce it to 150 characters." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Your report is too long. Please reduce it to 150 characters." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 return;
             }
             Vector3 _pos = GameManager.Instance.World.Players.dict[_cInfo.entityId].position;
@@ -60,7 +60,7 @@ namespace ServerTools
                     _phrase796 = _phrase796.Replace("{Position}", _pos.ToString());
                     _phrase796 = _phrase796.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase796 = _phrase796.Replace("{Message}", _message);
-                    ChatHook.ChatMessage(_cInfoAdmins, LoadConfig.Chat_Response_Color + _phrase796 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfoAdmins, LoadConfig.Chat_Response_Color + _phrase796 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             using (StreamWriter sw = new StreamWriter(_filepath, true))
@@ -73,9 +73,9 @@ namespace ServerTools
             string _phrase797;
             if (!Phrases.Dict.TryGetValue(797, out _phrase797))
             {
-                _phrase797 = " your report has been sent to online administrators and logged.";
+                _phrase797 = "Your report has been sent to online administrators and logged.";
             }
-            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase797 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase797 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             PersistentContainer.Instance.Players[_cInfo.playerId].LastLog = DateTime.Now;
             PersistentContainer.Instance.Save();
             Log.Out(string.Format("[SERVERTOOLS] Report sent by player name {0} and saved to the report logs", _cInfo.playerName));

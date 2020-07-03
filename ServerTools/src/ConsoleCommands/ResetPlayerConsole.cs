@@ -71,7 +71,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ResetPlayerConsole.Execute: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ResetPlayerConsole.Execute: {0}", e));
             }
         }
 
@@ -81,11 +81,11 @@ namespace ServerTools
             {
                 RemovePersistentData(_id);
                 RemoveProfile(_id);
-                RemoveServerToolsPlayerData(_id);
+                RemovePlayerData(_id);
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ResetPlayerConsole.ResetProfile: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ResetPlayerConsole.ResetProfileExec: {0}", e.Message));
             }
         }
 
@@ -121,46 +121,14 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ResetPlayerConsole.ResetProfile: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ResetPlayerConsole.RemoveProfile: {0}", e.Message));
             }
         }
 
-        public static void RemoveServerToolsPlayerData(string _id)
+        public static void RemovePlayerData(string _id)
         {
             try
             {
-                string _sql = string.Format("SELECT * FROM Players WHERE steamid = '{0}'", _id);
-                DataTable _result = SQL.TypeQuery(_sql);
-                if (_result.Rows.Count != 0)
-                {
-                    _sql = string.Format("Delete FROM Players WHERE steamid = '{0}'", _id);
-                    SQL.FastQuery(_sql, "ResetPlayerConsole");
-                }
-                _result.Dispose();
-                _sql = string.Format("SELECT * FROM Waypoints WHERE steamid = '{0}'", _id);
-                _result = SQL.TypeQuery(_sql);
-                if (_result.Rows.Count != 0)
-                {
-                    _sql = string.Format("Delete FROM Waypoints WHERE steamid = '{0}'", _id);
-                    SQL.FastQuery(_sql, "ResetPlayerConsole");
-                }
-                _result.Dispose();
-                _sql = string.Format("SELECT * FROM Hardcore WHERE steamid = '{0}'", _id);
-                _result = SQL.TypeQuery(_sql);
-                if (_result.Rows.Count != 0)
-                {
-                    _sql = string.Format("Delete FROM Hardcore WHERE steamid = '{0}'", _id);
-                    SQL.FastQuery(_sql, "ResetPlayerConsole");
-                }
-                _result.Dispose();
-                _sql = string.Format("SELECT * FROM Tracking WHERE steamid = '{0}'", _id);
-                _result = SQL.TypeQuery(_sql);
-                if (_result.Rows.Count != 0)
-                {
-                    _sql = string.Format("Delete FROM Tracking WHERE steamid = '{0}'", _id);
-                    SQL.FastQuery(_sql, "ResetPlayerConsole");
-                }
-                _result.Dispose();
                 PersistentPlayer p = PersistentContainer.Instance.Players[_id];
                 if (p != null)
                 {
@@ -180,7 +148,7 @@ namespace ServerTools
                     p.ClanName = "";
                     p.ClanOfficer = false;
                     p.ClanOwner = false;
-                    p.ClanRequestToJoin = new List<string[]>();
+                    p.ClanRequestToJoin = new Dictionary<string, string>();
                     p.CountryBanImmune = false;
                     p.CustomCommand1 = new DateTime();
                     p.CustomCommand2 = new DateTime();
@@ -204,8 +172,9 @@ namespace ServerTools
                     p.CustomCommand20 = new DateTime();
                     p.FirstClaimBlock = false;
                     p.GyroId = 0;
-                    p.Hardcore = false;
-                    p.HardcoreExtraLives = 0;
+                    p.HardcoreEnabled = false;
+                    p.HardcoreSavedStats = new List<string[]>();
+                    p.HardcoreStats = new string[0];
                     p.HighPingImmune = false;
                     p.HighPingImmuneName = "";
                     p.HomePosition1 = "";
@@ -251,6 +220,8 @@ namespace ServerTools
                     p.StartingItems = false;
                     p.TotalTimePlayed = 0;
                     p.VoteWeekCount = 0;
+                    p.Waypoints = new Dictionary<string, string>();
+                    p.WP = "";
                     p.ZoneDeathTime = new DateTime();
                     PersistentContainer.Instance.Save();
                 }
@@ -264,7 +235,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ResetPlayerConsole.RemoveServerToolsPlayerData: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ResetPlayerConsole.RemovePlayerData: {0}", e.Message));
             }
         }
     }

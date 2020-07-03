@@ -24,9 +24,9 @@ namespace ServerTools
                                 string _phrase820;
                                 if (!Phrases.Dict.TryGetValue(820, out _phrase820))
                                 {
-                                    _phrase820 = " you are too close to a hostile zombie or animal. Command unavailable.";
+                                    _phrase820 = "You are too close to a hostile zombie or animal. Command unavailable.";
                                 }
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase820 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase820 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 return true;
                             }
                         }
@@ -49,9 +49,9 @@ namespace ServerTools
                         string _phrase819;
                         if (!Phrases.Dict.TryGetValue(819, out _phrase819))
                         {
-                            _phrase819 = " you are too close to a hostile player. Command unavailable.";
+                            _phrase819 = "You are too close to a hostile player. Command unavailable.";
                         }
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase819 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase819 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         return true;
                     }
                 }
@@ -67,8 +67,8 @@ namespace ServerTools
                 string _phrase826;
                 if (!Phrases.Dict.TryGetValue(826, out _phrase826))
                 {
-                    _phrase826 = " you can not teleport home with a vehicle.";
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase826 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    _phrase826 = "You can not teleport home with a vehicle.";
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase826 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 return true;
             }

@@ -27,7 +27,11 @@ namespace ServerTools
             }
             else
             {
-                DateTime _lastDied = PersistentContainer.Instance.Players[_cInfo.playerId].LastDied;
+                DateTime _lastDied = DateTime.Now;
+                if (PersistentContainer.Instance.Players[_cInfo.playerId].LastDied != null)
+                {
+                    _lastDied = PersistentContainer.Instance.Players[_cInfo.playerId].LastDied;
+                }
                 TimeSpan varTime = DateTime.Now - _lastDied;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int _timepassed = (int)fractionalMinutes;
@@ -68,13 +72,13 @@ namespace ServerTools
                 string _phrase735;
                 if (!Phrases.Dict.TryGetValue(735, out _phrase735))
                 {
-                    _phrase735 = " you can only use {CommandPrivate}{Command61} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase735 = "You can only use {CommandPrivate}{Command61} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 _phrase735 = _phrase735.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase735 = _phrase735.Replace("{TimeRemaining}", _timeleft.ToString());
                 _phrase735 = _phrase735.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase735 = _phrase735.Replace("{Command61}", Command61);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase735 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase735 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -90,10 +94,10 @@ namespace ServerTools
                 string _phrase814;
                 if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    _phrase814 = "You do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -142,21 +146,21 @@ namespace ServerTools
                             string _phrase736;
                             if (!Phrases.Dict.TryGetValue(736, out _phrase736))
                             {
-                                _phrase736 = " teleporting you to your last death position. You can use this again in {DelayBetweenUses} minutes.";
+                                _phrase736 = "Teleporting you to your last death position. You can use this again in {DelayBetweenUses} minutes.";
                             }
                             _phrase736 = _phrase736.Replace("{DelayBetweenUses}", Delay_Between_Uses.ToString());
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase736 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase736 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
                     {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " your last death occurred too long ago. Command unavailable.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Your last death occurred too long ago. Command unavailable.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have no death position. Die first.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have no death position. Die first.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

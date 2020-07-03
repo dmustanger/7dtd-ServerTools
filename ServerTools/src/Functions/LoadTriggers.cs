@@ -126,7 +126,7 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"7\" default=\"fhome2\" replacement=\"fhome2\" />");
                     sw.WriteLine("        <trigger number=\"8\" default=\"delhome2\" replacement=\"delhome2\" />");
                     sw.WriteLine("        <trigger number=\"9\" default=\"go\" replacement=\"go\" />");
-                    sw.WriteLine("        <trigger number=\"10\" default=\"goway\" replacement=\"goway\" />");
+                    sw.WriteLine("        <trigger number=\"10\" default=\"go way\" replacement=\"go way\" />");
                     sw.WriteLine("        <trigger number=\"11\" default=\"top3\" replacement=\"top3\" />");
                     sw.WriteLine("        <trigger number=\"12\" default=\"score\" replacement=\"score\" />");
                     sw.WriteLine("        <trigger number=\"13\" default=\"mute\" replacement=\"mute\" />");
@@ -142,26 +142,26 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"23\" default=\"suicide\" replacement=\"suicide\" />");
                     sw.WriteLine("        <trigger number=\"24\" default=\"gimme\" replacement=\"gimme\" />");
                     sw.WriteLine("        <trigger number=\"25\" default=\"gimmie\" replacement=\"gimmie\" />");
-                    sw.WriteLine("        <trigger number=\"26\" default=\"setjail\" replacement=\"setjail\" />");
+                    sw.WriteLine("        <trigger number=\"26\" default=\"set jail\" replacement=\"set jail\" />");
                     sw.WriteLine("        <trigger number=\"27\" default=\"jail\" replacement=\"jail\" />");
                     sw.WriteLine("        <trigger number=\"28\" default=\"unjail\" replacement=\"unjail\" />");
                     sw.WriteLine("        <trigger number=\"29\" default=\"setspawn\" replacement=\"setspawn\" />");
                     sw.WriteLine("        <trigger number=\"30\" default=\"trackanimal\" replacement=\"trackanimal\" />");
                     sw.WriteLine("        <trigger number=\"31\" default=\"track\" replacement=\"track\" />");
                     sw.WriteLine("        <trigger number=\"32\" default=\"claim\" replacement=\"claim\" />");
-                    sw.WriteLine("        <trigger number=\"33\" default=\"clanadd\" replacement=\"clanadd\" />");
-                    sw.WriteLine("        <trigger number=\"34\" default=\"clandel\" replacement=\"clandel\" />");
-                    sw.WriteLine("        <trigger number=\"35\" default=\"claninvite\" replacement=\"claninvite\" />");
-                    sw.WriteLine("        <trigger number=\"36\" default=\"clanaccept\" replacement=\"clanaccept\" />");
-                    sw.WriteLine("        <trigger number=\"37\" default=\"clandecline\" replacement=\"clandecline\" />");
-                    sw.WriteLine("        <trigger number=\"38\" default=\"clanremove\" replacement=\"clanremove\" />");
-                    sw.WriteLine("        <trigger number=\"39\" default=\"clanpromote\" replacement=\"clanpromote\" />");
-                    sw.WriteLine("        <trigger number=\"40\" default=\"clandemote\" replacement=\"clandemote\" />");
-                    sw.WriteLine("        <trigger number=\"41\" default=\"clanleave\" replacement=\"clanleave\" />");
-                    sw.WriteLine("        <trigger number=\"42\" default=\"clancommands\" replacement=\"clancommands\" />");
-                    sw.WriteLine("        <trigger number=\"43\" default=\"clanchat\" replacement=\"clanchat\" />");
-                    sw.WriteLine("        <trigger number=\"44\" default=\"clanrename\" replacement=\"clanrename\" />");
-                    sw.WriteLine("        <trigger number=\"45\" default=\"clanrequest\" replacement=\"clanrequest\" />");
+                    sw.WriteLine("        <trigger number=\"33\" default=\"clan add\" replacement=\"clan add\" />");
+                    sw.WriteLine("        <trigger number=\"34\" default=\"clan del\" replacement=\"clan del\" />");
+                    sw.WriteLine("        <trigger number=\"35\" default=\"clan invite\" replacement=\"clan invite\" />");
+                    sw.WriteLine("        <trigger number=\"36\" default=\"clan accept\" replacement=\"clan accept\" />");
+                    sw.WriteLine("        <trigger number=\"37\" default=\"clan decline\" replacement=\"clan decline\" />");
+                    sw.WriteLine("        <trigger number=\"38\" default=\"clan remove\" replacement=\"clan remove\" />");
+                    sw.WriteLine("        <trigger number=\"39\" default=\"clan promote\" replacement=\"clan promote\" />");
+                    sw.WriteLine("        <trigger number=\"40\" default=\"clan demote\" replacement=\"clan demote\" />");
+                    sw.WriteLine("        <trigger number=\"41\" default=\"clan leave\" replacement=\"clan leave\" />");
+                    sw.WriteLine("        <trigger number=\"42\" default=\"clan commands\" replacement=\"clan commands\" />");
+                    sw.WriteLine("        <trigger number=\"43\" default=\"clan chat\" replacement=\"clan chat\" />");
+                    sw.WriteLine("        <trigger number=\"44\" default=\"clan rename\" replacement=\"clan rename\" />");
+                    sw.WriteLine("        <trigger number=\"45\" default=\"clan request\" replacement=\"clan request\" />");
                     sw.WriteLine("        <trigger number=\"46\" default=\"reward\" replacement=\"reward\" />");
                     sw.WriteLine("        <trigger number=\"47\" default=\"shutdown\" replacement=\"shutdown\" />");
                     sw.WriteLine("        <trigger number=\"48\" default=\"adminlist\" replacement=\"adminlist\" />");
@@ -228,11 +228,11 @@ namespace ServerTools
                     sw.WriteLine("        <trigger number=\"109\" default=\"fwaypoint\" replacement=\"fwaypoint\" />");
                     sw.WriteLine("        <trigger number=\"110\" default=\"fway\" replacement=\"fway\" />");
                     sw.WriteLine("        <trigger number=\"111\" default=\"fwp\" replacement=\"fwp\" />");
-                    sw.WriteLine("        <trigger number=\"112\" default=\"waypointsave\" replacement=\"waypointsave\" />");
-                    sw.WriteLine("        <trigger number=\"113\" default=\"waysave\" replacement=\"waysave\" />");
+                    sw.WriteLine("        <trigger number=\"112\" default=\"waypoint save\" replacement=\"waypoint save\" />");
+                    sw.WriteLine("        <trigger number=\"113\" default=\"way save\" replacement=\"way save\" />");
                     sw.WriteLine("        <trigger number=\"114\" default=\"ws\" replacement=\"ws\" />");
-                    sw.WriteLine("        <trigger number=\"115\" default=\"waypointdel\" replacement=\"waypointdel\" />");
-                    sw.WriteLine("        <trigger number=\"116\" default=\"waydel\" replacement=\"waydel\" />");
+                    sw.WriteLine("        <trigger number=\"115\" default=\"waypoint del\" replacement=\"waypoint del\" />");
+                    sw.WriteLine("        <trigger number=\"116\" default=\"way del\" replacement=\"way del\" />");
                     sw.WriteLine("        <trigger number=\"117\" default=\"wd\" replacement=\"wd\" />");
                     sw.WriteLine("        <trigger number=\"118\" default=\"admin\" replacement=\"admin\" />");
                     sw.WriteLine("        <trigger number=\"119\" default=\"mutelist\" replacement=\"mutelist\" />");
@@ -645,15 +645,15 @@ namespace ServerTools
                     }
                     else if (kvp.Key == 91)
                     {
-                        PollConsole.Command91 = kvp.Value[1];
+                        Poll.Command91 = kvp.Value[1];
                     }
                     else if (kvp.Key == 92)
                     {
-                        PollConsole.Command92 = kvp.Value[1];
+                        Poll.Command92 = kvp.Value[1];
                     }
                     else if (kvp.Key == 93)
                     {
-                        PollConsole.Command93 = kvp.Value[1];
+                        Poll.Command93 = kvp.Value[1];
                     }
                     else if (kvp.Key == 94)
                     {

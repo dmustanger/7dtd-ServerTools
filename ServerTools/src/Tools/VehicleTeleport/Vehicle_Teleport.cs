@@ -95,11 +95,11 @@ namespace ServerTools
                 string _phrase786;
                 if (!Phrases.Dict.TryGetValue(786, out _phrase786))
                 {
-                    _phrase786 = " you can only use vehicle teleport once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase786 = "You can only use vehicle teleport once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 _phrase786 = _phrase786.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase786 = _phrase786.Replace("{TimeRemaining}", _timeleft.ToString());
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase786 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase786 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -115,10 +115,10 @@ namespace ServerTools
                 string _phrase814;
                 if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                 {
-                    _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
+                    _phrase814 = "You do not have enough {WalletCoinName} in your wallet to run this command.";
                 }
                 _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -140,9 +140,9 @@ namespace ServerTools
                     string _phrase780;
                     if (!Phrases.Dict.TryGetValue(780, out _phrase780))
                     {
-                        _phrase780 = " you have not claimed this space or a friend. You can only save your vehicle inside a claimed space.";
+                        _phrase780 = "You have not claimed this space or a friend. You can only save your vehicle inside a claimed space.";
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase780 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase780 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     return;
                 }
             }
@@ -198,20 +198,20 @@ namespace ServerTools
                 string _phrase781;
                 if (!Phrases.Dict.TryGetValue(781, out _phrase781))
                 {
-                    _phrase781 = " saved your current {Vehicle} for retrieval.";
+                    _phrase781 = "Saved your current {Vehicle} for retrieval.";
                     _phrase781 = _phrase781.Replace("{Vehicle}", _vehicleName);
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase781 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase781 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
                 string _phrase787;
                 if (!Phrases.Dict.TryGetValue(787, out _phrase787))
                 {
-                    _phrase787 = " you are on the wrong vehicle to save it with this command. You are using a {Vehicle}.";
+                    _phrase787 = "You are on the wrong vehicle to save it with this command. You are using a {Vehicle}.";
                 }
                 _phrase787 = _phrase787.Replace("{Vehicle}", _vehicleName);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase787 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase787 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -256,9 +256,9 @@ namespace ServerTools
                                     string _phrase782;
                                     if (!Phrases.Dict.TryGetValue(782, out _phrase782))
                                     {
-                                        _phrase782 = " found your vehicle and sent it to you.";
+                                        _phrase782 = "Found your vehicle and sent it to you.";
                                     }
-                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase782 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase782 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
 
                                     if (Wallet.IsEnabled && Command_Cost >= 1)
                                     {
@@ -292,9 +292,9 @@ namespace ServerTools
                                     string _phrase785;
                                     if (!Phrases.Dict.TryGetValue(785, out _phrase785))
                                     {
-                                        _phrase785 = " found your vehicle but someone else is on it.";
+                                        _phrase785 = "Found your vehicle but someone else is on it.";
                                     }
-                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase785 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase785 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     return;
                                 }
                             }
@@ -304,18 +304,18 @@ namespace ServerTools
                 string _phrase784;
                 if (!Phrases.Dict.TryGetValue(784, out _phrase784))
                 {
-                    _phrase784 = " could not find your vehicle near by.";
+                    _phrase784 = "Could not find your vehicle near by.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase784 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase784 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
                 string _phrase783;
                 if (!Phrases.Dict.TryGetValue(783, out _phrase783))
                 {
-                    _phrase783 = " you do not have this vehicle type saved.";
+                    _phrase783 = "You do not have this vehicle type saved.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase783 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase783 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

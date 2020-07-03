@@ -9,28 +9,21 @@ namespace ServerTools
     public class PersistentContainer
     {
         private static string filepath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
-        private PersistentPlayers players;
         private static PersistentContainer instance;
+        private static PersistentPlayers players;
 
-        private DateTime lastWeather;
         private Dictionary<int, List<int>> clientMuteList;
-        private List<string> websiteClientList;
-        private List<string> websiteBanList;
+        private DateTime lastWeather;
+        private string[] pollData;
+        private Dictionary<string[], string> pollOld;
+        private bool pollOpen;
+        private Dictionary<string, bool> pollVote;
+        private List<string[]> track;
         private Dictionary<string, string[]> websiteAuthorizedList;
         private Dictionary<string, DateTime> websiteAuthorizedTimeList;
+        private List<string> websiteBanList;
+        private List<string> websiteClientList;
         private Dictionary<string, DateTime> websiteTimeoutList;
-
-        public PersistentPlayers Players
-        {
-            get
-            {
-                if (players == null)
-                {
-                    players = new PersistentPlayers();
-                }
-                return players;
-            }
-        }
 
         public static PersistentContainer Instance
         {
@@ -41,6 +34,18 @@ namespace ServerTools
                     instance = new PersistentContainer();
                 }
                 return instance;
+            }
+        }
+
+        public PersistentPlayers Players
+        {
+            get
+            {
+                if (players == null)
+                {
+                    players = new PersistentPlayers();
+                }
+                return players;
             }
         }
 
@@ -72,22 +77,10 @@ namespace ServerTools
                 }
                 catch (Exception e)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Exception in PersistentContainer.Load: {0}", e));
+                    Log.Out(string.Format("[SERVERTOOLS] Exception in PersistentContainer.Load: {0}", e.Message));
                 }
             }
             return false;
-        }
-
-        public DateTime LastWeather
-        {
-            get
-            {
-                return lastWeather;
-            }
-            set
-            {
-                lastWeather = value;
-            }
         }
 
         public Dictionary<int, List<int>> ClientMuteList
@@ -102,27 +95,75 @@ namespace ServerTools
             }
         }
 
-        public List<string> WebsiteClientList
+        public DateTime LastWeather
         {
             get
             {
-                return websiteClientList;
+                return lastWeather;
             }
             set
             {
-                websiteClientList = value;
+                lastWeather = value;
             }
         }
 
-        public List<string> WebsiteBanList
+        public string[] PollData
         {
             get
             {
-                return websiteBanList;
+                return pollData;
             }
             set
             {
-                websiteBanList = value;
+                pollData = value;
+            }
+        }
+
+        public Dictionary<string[], string> PollOld
+        {
+            get
+            {
+                return pollOld;
+            }
+            set
+            {
+                pollOld = value;
+            }
+        }
+
+        public bool PollOpen
+        {
+            get
+            {
+                return pollOpen;
+            }
+            set
+            {
+                pollOpen = value;
+            }
+        }
+
+        public Dictionary<string, bool> PollVote
+        {
+            get
+            {
+                return pollVote;
+            }
+            set
+            {
+                pollVote = value;
+            }
+        }
+
+        public List<string[]> Track
+        {
+            get
+            {
+                return track;
+            }
+            set
+            {
+                track = value;
             }
         }
 
@@ -147,6 +188,30 @@ namespace ServerTools
             set
             {
                 websiteAuthorizedTimeList = value;
+            }
+        }
+
+        public List<string> WebsiteBanList
+        {
+            get
+            {
+                return websiteBanList;
+            }
+            set
+            {
+                websiteBanList = value;
+            }
+        }
+
+        public List<string> WebsiteClientList
+        {
+            get
+            {
+                return websiteClientList;
+            }
+            set
+            {
+                websiteClientList = value;
             }
         }
 

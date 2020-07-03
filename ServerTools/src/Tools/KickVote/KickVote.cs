@@ -30,7 +30,7 @@ namespace ServerTools
                                 _phrase955 = "A vote to kick {PlayerName} has begun and will close in 60 seconds.";
                             }
                             _phrase955 = _phrase955.Replace("{PlayerName}", _playerInfo.playerName);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase955 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase955 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             string _phrase776;
                             if (!Phrases.Dict.TryGetValue(776, out _phrase776))
                             {
@@ -38,7 +38,7 @@ namespace ServerTools
                             }
                             _phrase776 = _phrase776.Replace("{CommandPrivate}", ChatHook.Command_Private);
                             _phrase776 = _phrase776.Replace("{Command70}", RestartVote.Command70);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase776 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase776 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             VoteOpen = true;
                         }
                         else
@@ -46,9 +46,9 @@ namespace ServerTools
                             string _phrase956;
                             if (!Phrases.Dict.TryGetValue(956, out _phrase956))
                             {
-                                _phrase956 = " this player id was not found.";
+                                _phrase956 = "This player id was not found.";
                             }
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase956 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase956 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
@@ -57,9 +57,9 @@ namespace ServerTools
                     string _phrase957;
                     if (!Phrases.Dict.TryGetValue(957, out _phrase957))
                     {
-                        _phrase957 = " not enough players are online to start a vote to kick.";
+                        _phrase957 = "Not enough players are online to start a vote to kick.";
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase957 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase957 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -104,7 +104,7 @@ namespace ServerTools
                     }
                     _phrase958 = _phrase958.Replace("{PlayerName}", _cInfo2.playerName);
                     _phrase958 = _phrase958.Replace("{Id}", _cInfo2.entityId.ToString());
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase958 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase958 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             if (_otherUser)
@@ -112,15 +112,15 @@ namespace ServerTools
                 string _phrase959;
                 if (!Phrases.Dict.TryGetValue(959, out _phrase959))
                 {
-                    _phrase959 = " type {CommandPrivate}{Command68} # to start a vote to kick that player.";
+                    _phrase959 = "Type {CommandPrivate}{Command68} # to start a vote to kick that player.";
                 }
                 _phrase959 = _phrase959.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase959 = _phrase959.Replace("{Command68}", Command68);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase959 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase959 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "No other users were found online" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "No other users were found online" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

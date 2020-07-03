@@ -58,7 +58,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BattleLogger.ScanLog: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BattleLogger.ScanLog: {0}", e.Message));
             }
         }
 
@@ -100,7 +100,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in API.BattleLog: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.BattleLog: {0}", e.Message));
             }
             return true;
         }
@@ -181,7 +181,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BattleLogger.Penalty: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BattleLogger.Penalty: {0}", e.Message));
             }
         }
 
@@ -203,7 +203,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BattleLogger.PlayerExit: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BattleLogger.PlayerExit: {0}", e.Message));
             }
         }
 
@@ -237,7 +237,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BattleLogger.Disconnect: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BattleLogger.Disconnect: {0}", e.Message));
             }
         }
 

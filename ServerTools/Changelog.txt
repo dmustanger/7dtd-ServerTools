@@ -1,5 +1,50 @@
 ﻿CHANGELOG
 
+18.4.10
+Built using Alpha 18.4 stable assets
+Functioning with 18.4 stable. Untested with other versions
+
+Added anti-cheat tool named Spectator_Detector. Checks for spectator mode
+Added check to Jail tool preventing release to a hostile claimed area
+Added more information to output logs when reporting an xml error
+Added option to Normal_Player_Color_Prefix tool named Prefix_Color
+Added option to Gimme tool named Zombie_Id. Sets the entity id that can spawn
+Added option to ChatColorPrefix.xml named PrefixColor
+Added ability to use color arrays for the name and prefix of chat based tools
+Added phrase 828
+Fixed chat command /reserved displaying the player name twice by default
+Fixed chat command /shutdown time remaining
+Fixed EventTriggers.xml utilizing custom Shop command
+Fixed null ref error from claim check
+Fixed Shop.xml default containing an error
+Fixed process for console command GiveItem All and GiveBlock All
+Fixed Prayer tool. Recommend making new buffs that last longer than the default
+Changed command responses to no longer auto respond with the player name
+Changed Events to allow multiple user setups. Can only run one at a time
+Changed Auto_Shutdown tool name to Shutdown
+Changed Shutdown process to kick players when 30 seconds remain
+Changed Shutdown process to stop players from joining if 1 minute remains
+Changed Shutdown fail safe process to prevent potentially lost data
+Changed Starting_Items code to avoid a potential error or server crash
+Changed Player_Logs to show the item name from the xml instead of localized
+Changed timer system to utilize dedicated threading to help prevent schedules
+from going out of sync under heavy server loads and game bugs
+Changed ChatColorPrefix.xml attribute named Color to NameColor
+Changed many default phrases. Rebuild the file by deleting your original
+Changed multiple of the default clan commands
+Changed some anti-cheat operations to work in conjunction to improve cpu load
+Changed Player_Stat_Check tool name to Player_Stats
+Changed Set_Home tool name to Home
+Removed Player_Name_Color option from Chat_Command_Response
+Removed SQL and recoded effected tools. Linux OS are fully compatible again
+Removed Rate option from Tracking tool. Interval locked to 30 seconds
+Removed Days_Before_Log_Delete from Tracking tool. The log will retain two days
+of player positions. This prevents a over sized bin file and long searches
+Removed Country_Ban tool. This will return in a future version
+*Note* Your ServerTools.db file can be deleted. It is no longer in use
+*Note* It is HIGHLY recommended that you remove old versions of ST before
+installation
+
 18.3.1
 Built using Alpha 18.3 experimental assets
 Functioning with 18.3 stable and 18.3 experimental. Untested with other versions

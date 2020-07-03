@@ -13,7 +13,7 @@ namespace ServerTools
 
         public static void Exec()
         {
-            if (!IsRunning && !StopServer.StopServerCountingDown)
+            if (!IsRunning && !StopServer.CountingDown)
             {
                 try
                 {

@@ -25,23 +25,23 @@ namespace ServerTools
                     string _phrase761;
                     if (!Phrases.Dict.TryGetValue(761, out _phrase761))
                     {
-                        _phrase761 = " your current position is X  {X}, Y  {Y}, Z  {Z}. You are inside a zone.";
+                        _phrase761 = "Your current position is X  {X}, Y  {Y}, Z  {Z}. You are inside a zone.";
                     }
                     _phrase761 = _phrase761.Replace("{X}", _x.ToString());
                     _phrase761 = _phrase761.Replace("{Y}", _y.ToString());
                     _phrase761 = _phrase761.Replace("{Z}", _z.ToString());
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase761 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase761 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             string _phrase760;
             if (!Phrases.Dict.TryGetValue(760, out _phrase760))
             {
-                _phrase760 = " your current position is X  {X}, Y  {Y}, Z  {Z}.";
+                _phrase760 = "Your current position is X  {X}, Y  {Y}, Z  {Z}.";
             }
             _phrase760 = _phrase760.Replace("{X}", _x.ToString());
             _phrase760 = _phrase760.Replace("{Y}", _y.ToString());
             _phrase760 = _phrase760.Replace("{Z}", _z.ToString());
-            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase760 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase760 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
     }
 }

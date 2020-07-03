@@ -62,7 +62,7 @@ namespace ServerTools
                     {
                         if (!Bloodmoon)
                         {
-                            if (!StopServer.StopServerCountingDown)
+                            if (!StopServer.CountingDown)
                             {
                                 int _time;
                                 if (BloodmoonOver)
@@ -89,17 +89,17 @@ namespace ServerTools
                             }
                             else
                             {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " the server has already started the shutdown process.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "The server has already started the shutdown process.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                         else
                         {
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " a bloodmoon is currently active. The server is set to shutdown after it finishes.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "A bloodmoon is currently active. The server is set to shutdown after it finishes.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
                     {
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " a event is currently active. The server is set to shutdown after it finishes.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "A event is currently active. The server is set to shutdown after it finishes.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }

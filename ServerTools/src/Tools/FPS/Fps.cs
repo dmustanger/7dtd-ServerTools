@@ -7,7 +7,7 @@ namespace ServerTools
         public static int Set_Target = 60;
         public static string Command75 = "fps";
 
-        public static void FPS(ClientInfo _cInfo, bool _announce)
+        public static void FPS(ClientInfo _cInfo)
         {
             string _fps = GameManager.Instance.fps.Counter.ToString();
             string _phrase300;
@@ -16,14 +16,7 @@ namespace ServerTools
                 _phrase300 = "Server FPS: {Fps}";
             }
             _phrase300 = _phrase300.Replace("{Fps}", _fps);
-            if (_announce)
-            {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase300 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-            }
-            else
-            {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase300 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-            }
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase300 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void SetTarget()

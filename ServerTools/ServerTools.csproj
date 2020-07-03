@@ -43,24 +43,22 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="src\AntiCheat\DupeLog.cs" />
-    <Compile Include="src\AntiCheat\Flying.cs" />
-    <Compile Include="src\AntiCheat\GodMode.cs" />
     <Compile Include="src\AntiCheat\ProcessDamage.cs" />
+    <Compile Include="src\AntiCheat\PlayerChecks.cs" />
     <Compile Include="src\ConsoleCommands\FlyingConsole.cs" />
     <Compile Include="src\ConsoleCommands\GodmodeDetectorConsole.cs" />
     <Compile Include="src\ConsoleCommands\MessageColorConsole.cs" />
     <Compile Include="src\ConsoleCommands\PrivateMessageConsole.cs" />
     <Compile Include="src\ConsoleCommands\ProtectedSpaceConsole.cs" />
     <Compile Include="src\ConsoleCommands\PrayerConsole.cs" />
-    <Compile Include="src\ConsoleCommands\SecureDoorAccess.cs" />
-    <Compile Include="src\ConsoleCommands\SecureVehicleAccess.cs" />
-    <Compile Include="src\ConsoleCommands\SecureLootAccess.cs" />
+    <Compile Include="src\ConsoleCommands\SecureDoorAccessConsole.cs" />
+    <Compile Include="src\ConsoleCommands\SecureVehicleAccessConsole.cs" />
+    <Compile Include="src\ConsoleCommands\SecureLootAccessConsole.cs" />
     <Compile Include="src\ConsoleCommands\ScoutPlayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\WaypointsConsole.cs" />
     <Compile Include="src\ConsoleCommands\WebsiteConsole.cs" />
     <Compile Include="src\Harmony\PatchTools.cs" />
     <Compile Include="src\Harmony\Injections.cs" />
-    <Compile Include="src\PersistentData\MySqlDB.cs" />
     <Compile Include="src\Tools\AutoBackup\AutoBackup.cs" />
     <Compile Include="src\Tools\Bank\Bank.cs" />
     <Compile Include="src\Tools\Block_Logger\BlockLogger.cs" />
@@ -68,6 +66,7 @@
     <Compile Include="src\Tools\BreakTime\BreakTime.cs" />
     <Compile Include="src\Tools\Market\Market.cs" />
     <Compile Include="src\Tools\OutputLog\Confirm.cs" />
+    <Compile Include="src\Tools\Poll\Poll.cs" />
     <Compile Include="src\Tools\ProtectedSpaces\ProtectedSpaces.cs" />
     <Compile Include="src\Tools\Session\Session.cs" />
     <Compile Include="src\Tools\ChatColorPrefix\ChatColorPrefix.cs" />
@@ -154,13 +153,12 @@
     <Compile Include="src\PersistentData\PersistentPlayer.cs" />
     <Compile Include="src\PersistentData\PersistentPlayers.cs" />
     <Compile Include="src\PersistentData\StateManager.cs" />
-    <Compile Include="src\PersistentData\UpdateSQL.cs" />
     <Compile Include="src\Tools\BattleLogger\BattleLogger.cs" />
     <Compile Include="src\Tools\Hardcore\Hardcore.cs" />
     <Compile Include="src\AntiCheat\CredentialCheck.cs" />
     <Compile Include="src\AntiCheat\TeleportCheck.cs" />
     <Compile Include="src\AntiCheat\WorldRadius.cs" />
-    <Compile Include="src\AntiCheat\PlayerStatCheck.cs" />
+    <Compile Include="src\AntiCheat\PlayerStats.cs" />
     <Compile Include="src\AntiCheat\PlayerLogs.cs" />
     <Compile Include="src\AntiCheat\InvalidItems.cs" />
     <Compile Include="src\Tools\Prayer\Prayer.cs" />
@@ -239,8 +237,6 @@
     <Compile Include="src\Tools\KillNotice\KillNotice.cs" />
     <Compile Include="src\Tools\NewPlayer\NewPlayer.cs" />
     <Compile Include="src\Tools\NewSpawnTele\NewSpawnTele.cs" />
-    <Compile Include="src\PersistentData\SQL.cs" />
-    <Compile Include="src\PersistentData\SQLiteDatabase.cs" />
     <Compile Include="src\ConsoleCommands\ResetPlayerConsole.cs" />
     <Compile Include="src\ConsoleCommands\WatchlistConsole.cs" />
     <Compile Include="src\Tools\ReservedSlots\ReservedSlots.cs" />
@@ -279,9 +275,6 @@
       <HintPath>..\7dtd-binaries\LogLibrary.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MaxMind.Db, Version=2.0.0.0, Culture=neutral, PublicKeyToken=66afa4cc5ae853ac, processorArchitecture=MSIL">
-      <HintPath>..\packages\MaxMind.Db.2.4.0\lib\net45\MaxMind.Db.dll</HintPath>
-    </Reference>
     <Reference Include="Pathfinding.Ionic.Zip.Reduced, Version=1.9.1.9000, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\7dtd-ServerTools-master-18.0.3\7dtd-binaries\Pathfinding.Ionic.Zip.Reduced.dll</HintPath>
@@ -289,10 +282,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite, Version=1.0.111.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Core.1.0.111.0\lib\net45\System.Data.SQLite.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.XML, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
@@ -306,6 +295,7 @@
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule">
       <HintPath>..\..\7dtd-ServerTools-master-18.2.5\7dtd-binaries\UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -324,13 +314,6 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\System.Data.SQLite.Core.1.0.111.0\build\net45\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net45\System.Data.SQLite.Core.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net45\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.111.0\build\net45\System.Data.SQLite.Core.targets'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -7,7 +7,7 @@ namespace ServerTools
         public static bool IsEnabled = false;
         public static string Command16 = "day7", Command17 = "day";
 
-        public static void GetInfo(ClientInfo _cInfo, bool _announce)
+        public static void GetInfo(ClientInfo _cInfo)
         {
             string _fps = GameManager.Instance.fps.Counter.ToString();
             int _playerCount = ConnectionManager.Instance.ClientCount();
@@ -98,44 +98,22 @@ namespace ServerTools
             _phrase303 = _phrase303.Replace("{4x4}", _4x4.ToString());
             _phrase303 = _phrase303.Replace("{Gyros}", _gyros.ToString());
             _phrase304 = _phrase304.Replace("{SupplyCrates}", _supplyCrates.ToString());
-            if (_announce)
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase300 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            if (_daysRemaining == 0 && !SkyManager.BloodMoon())
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase300 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                if (_daysRemaining == 0 && !SkyManager.BloodMoon())
-                {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase306 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                }
-                else if (SkyManager.BloodMoon())
-                {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                }
-                else
-                {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase301 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase302 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase303 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase304 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase306 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+            else if (SkyManager.BloodMoon())
+            {
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase300 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                if (_daysRemaining == 0 && !SkyManager.BloodMoon())
-                {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase306 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                else if (SkyManager.BloodMoon())
-                {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                else
-                {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase301 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase302 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase303 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase304 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase301 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase302 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase303 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase304 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static int DaysRemaining(int _daysUntilHorde)

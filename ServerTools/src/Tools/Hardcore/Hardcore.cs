@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using UnityEngine;
 
 namespace ServerTools
 {
@@ -12,21 +11,16 @@ namespace ServerTools
         public static int Max_Deaths = 9, Max_Extra_Lives = 3, Life_Price = 2000;
         public static string Command11 = "top3", Command12 = "score", Command101 = "buy life", Command127 = "hardcore", Command128 = "hardcore on";
 
-        public static void Alert(ClientInfo _cInfo)
+        public static void Check(ClientInfo _cInfo, EntityPlayer _player)
         {
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (_player != null)
+            string[] _stats = PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreStats;
+            if (int.TryParse(_stats[1], out int _deaths))
             {
-                string _sql = string.Format("SELECT deaths, extraLives FROM Hardcore WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TypeQuery(_sql);
-                if (_result.Rows.Count > 0)
+                if (int.TryParse(_stats[2], out int _extraLives))
                 {
-                    int _deaths, _extraLives;
-                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _deaths);
-                    int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _extraLives);
-                    if (_deaths - _extraLives < Max_Deaths)
+                    int _lives = Max_Deaths - (XUiM_Player.GetDeaths(_player) - _deaths) + _extraLives;
+                    if (_lives > 0)
                     {
-                        int _lives = Max_Deaths - _deaths + _extraLives;
                         string _phrase949;
                         if (!Phrases.Dict.TryGetValue(949, out _phrase949))
                         {
@@ -35,120 +29,195 @@ namespace ServerTools
                         _phrase949 = _phrase949.Replace("{Lives}", _lives.ToString());
                         ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase949 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
-                }
-            }
-        }
-
-        public static void Check(ClientInfo _cInfo)
-        {
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-            if (_player != null)
-            {
-                string _sql = string.Format("SELECT deaths, extraLives FROM Hardcore WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TypeQuery(_sql);
-                if (_result.Rows.Count > 0)
-                {
-                    int _deaths, _extraLives;
-                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _deaths);
-                    int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _extraLives);
-                    if (_deaths + 1 - _extraLives < Max_Deaths)
-                    {
-                        _sql = string.Format("UPDATE Hardcore SET deaths = {0} WHERE steamid = '{1}'", _deaths + 1, _cInfo.playerId);
-                        SQL.FastQuery(_sql, "Hardcore");
-                        int _lives = Max_Deaths - _deaths - 1 + _extraLives;
-                        string _phrase950;
-                        if (!Phrases.Dict.TryGetValue(950, out _phrase950))
-                        {
-                            _phrase950 = "Hardcore: Zombie Kills {ZombieKills}, Player Kills {PlayerKills}, Score {Score}, Lives remaining {Lives}...";
-                        }
-                        _phrase950 = _phrase950.Replace("{ZombieKills}", _player.KilledZombies.ToString());
-                        _phrase950 = _phrase950.Replace("{PlayerKills}", _player.KilledPlayers.ToString());
-                        _phrase950 = _phrase950.Replace("{Score}", _player.Score.ToString());
-                        _phrase950 = _phrase950.Replace("{Lives}", _lives.ToString());
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase950 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    }
                     else
                     {
-                        EndGame(_cInfo, _player, _deaths, _extraLives);
+                        EndGame(_cInfo, _player, _stats);
                     }
                 }
-                _result.Dispose();
             }
         }
 
-        public static void EndGame(ClientInfo _cInfo, EntityPlayer _player, int _deaths, int _extraLives)
+        public static void EndGame(ClientInfo _cInfo, EntityPlayer _player, string[] _stats)
         {
-            DateTime _time = DateTime.Now;
-            PersistentOperations.Session.TryGetValue(_cInfo.playerId, out _time);
-            TimeSpan varTime = DateTime.Now - _time;
-            double fractionalMinutes = varTime.TotalMinutes;
-            int _timepassed = (int)fractionalMinutes;
-            int _oldSession = PersistentContainer.Instance.Players[_cInfo.playerId].SessionTime;
-            int _newSession = _oldSession + _timepassed;
-            int _playerKills = _player.KilledPlayers, _zKills = _player.KilledZombies, _score = _player.Score;
-            string _session = string.Format("{0:00}", _newSession % 60);
-            string _playerName = SQL.EscapeString(_cInfo.playerName);
-            string _sql;
-            SQL.FastQuery(_sql = string.Format("UPDATE Hardcore SET sessionTime = {0}, kills = {1}, zKills = {2}, score = {3}, oldDeaths = {4}, deaths = {5}, playerName = '{6}', extraLives = {7} WHERE steamid = '{8}'",
-                _newSession, _playerKills, _zKills, _score, _deaths + 1, 0, _playerName, _extraLives, _cInfo.playerId), "Hardcore");
-            Hardcore.DisconnectHardcoreExec(_cInfo, _zKills, _playerKills, _deaths + 1, _score, _session);
+            PersistentPlayer _p = PersistentContainer.Instance.Players[_cInfo.playerId];
+            if (_p != null)
+            {
+                PersistentOperations.Session.TryGetValue(_cInfo.playerId, out DateTime _time);
+                TimeSpan varTime = DateTime.Now - _time;
+                double fractionalMinutes = varTime.TotalMinutes;
+                int _timepassed = (int)fractionalMinutes;
+                int _oldSession = PersistentContainer.Instance.Players[_cInfo.playerId].SessionTime;
+                int _newSession = _oldSession + _timepassed;
+                int.TryParse(_stats[2], out int _extraLives);
+                string[] _newStats = { _cInfo.playerName, _newSession.ToString(), _player.KilledPlayers.ToString(), _player.KilledZombies.ToString(), Max_Deaths + _extraLives.ToString(), _player.Score.ToString() };
+                if (PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats != null && PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats.Count > 0)
+                {
+                    List<string[]> SavedStats = PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats;
+                    SavedStats.Add(_newStats);
+                    PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats = SavedStats;
+                }
+                else
+                {
+                    List<string[]> SavedStats = new List<string[]>();
+                    SavedStats.Add(_newStats);
+                    PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats = SavedStats;
+                }
+                _p.AuctionCancelTime = new DateTime();
+                _p.AuctionId = 0;
+                _p.AuctionItemCount = 0;
+                _p.AuctionItemName = "";
+                _p.AuctionItemPrice = 0;
+                _p.AuctionItemQuality = 0;
+                _p.AuctionReturn = false;
+                _p.AuctionSellDate = new DateTime();
+                _p.Bank = 0;
+                _p.BikeId = 0;
+                _p.Bounty = 0;
+                _p.BountyHunter = 0;
+                _p.ClanInvite = "";
+                _p.ClanName = "";
+                _p.ClanOfficer = false;
+                _p.ClanOwner = false;
+                _p.ClanRequestToJoin = new Dictionary<string, string>();
+                _p.CountryBanImmune = false;
+                _p.CustomCommand1 = new DateTime();
+                _p.CustomCommand2 = new DateTime();
+                _p.CustomCommand3 = new DateTime();
+                _p.CustomCommand4 = new DateTime();
+                _p.CustomCommand5 = new DateTime();
+                _p.CustomCommand6 = new DateTime();
+                _p.CustomCommand7 = new DateTime();
+                _p.CustomCommand8 = new DateTime();
+                _p.CustomCommand9 = new DateTime();
+                _p.CustomCommand10 = new DateTime();
+                _p.CustomCommand11 = new DateTime();
+                _p.CustomCommand12 = new DateTime();
+                _p.CustomCommand13 = new DateTime();
+                _p.CustomCommand14 = new DateTime();
+                _p.CustomCommand15 = new DateTime();
+                _p.CustomCommand16 = new DateTime();
+                _p.CustomCommand17 = new DateTime();
+                _p.CustomCommand18 = new DateTime();
+                _p.CustomCommand19 = new DateTime();
+                _p.CustomCommand20 = new DateTime();
+                _p.FirstClaimBlock = false;
+                _p.GyroId = 0;
+                _p.HardcoreEnabled = false;
+                _p.HardcoreStats = new string[0];
+                _p.HighPingImmune = false;
+                _p.HighPingImmuneName = "";
+                _p.HomePosition1 = "";
+                _p.HomePosition2 = "";
+                _p.JailDate = new DateTime();
+                _p.JailName = "";
+                _p.JailTime = 0;
+                _p.JeepId = 0;
+                _p.LastAnimal = new DateTime();
+                _p.LastBike = new DateTime();
+                _p.LastDied = new DateTime();
+                _p.LastFriendTele = new DateTime();
+                _p.LastGimme = new DateTime();
+                _p.LastGyro = new DateTime();
+                _p.LastHome1 = new DateTime();
+                _p.LastHome2 = new DateTime();
+                _p.LastJeep = new DateTime();
+                _p.LastJoined = new DateTime();
+                _p.LastKillMe = new DateTime();
+                _p.LastLobby = new DateTime();
+                _p.LastLog = new DateTime();
+                _p.LastMarket = new DateTime();
+                _p.LastMiniBike = new DateTime();
+                _p.LastMotorBike = new DateTime();
+                _p.LastStuck = new DateTime();
+                _p.LastTravel = new DateTime();
+                _p.LastVote = new DateTime();
+                _p.LastVoteWeek = new DateTime();
+                _p.LastWhisper = "";
+                _p.LobbyReturnPos = "";
+                _p.MarketReturnPos = "";
+                _p.MiniBikeId = 0;
+                _p.MotorBikeId = 0;
+                _p.MuteDate = new DateTime();
+                _p.MuteName = "";
+                _p.MuteTime = 0;
+                _p.NewSpawn = false;
+                _p.NewSpawnPosition = "";
+                _p.OldPlayer = false;
+                _p.PlayerName = "";
+                _p.PlayerWallet = 0;
+                _p.SessionTime = 0;
+                _p.StartingItems = false;
+                _p.TotalTimePlayed = 0;
+                _p.VoteWeekCount = 0;
+                _p.WP = "";
+                _p.ZoneDeathTime = new DateTime();
+                PersistentContainer.Instance.Save();
+                Hardcore.Disconnect(_cInfo, _newStats);
+            }
         }
 
-        public static void TopThree(ClientInfo _cInfo, bool _announce)
+        public static void TopThree(ClientInfo _cInfo)
         {
-            int _sessionTime, _score, _topSession1 = 0, _topSession2 = 0, _topSession3 = 0, _topScore1 = 0, _topScore2 = 0, _topScore3 = 0;
+            int _topSession1 = 0, _topSession2 = 0, _topSession3 = 0, _topScore1 = 0, _topScore2 = 0, _topScore3 = 0;
             string _sessionName1 = "", _sessionName2 = "", _sessionName3 = "", _ScoreName1 = "", _ScoreName2 = "", _ScoreName3 = "";
-            string _sql = "SELECT sessionTime, score, playerName From Hardcore";
-            DataTable _result = SQL.TypeQuery(_sql);
-            if (_result.Rows.Count > 0)
+            List<string> _persistentPlayers = PersistentContainer.Instance.Players.SteamIDs;
+            for (int i = 0; i < _persistentPlayers.Count; i++)
             {
-                foreach (DataRow row in _result.Rows)
+                if (PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats != null && PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats.Count > 0)
                 {
-                    int.TryParse(row[0].ToString(), out _sessionTime);
-                    if (_sessionTime > _topSession1)
+                    List<string[]> _hardcoreSavedStats = PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats;
+                    for (int j = 0; j < _hardcoreSavedStats.Count; j++)
                     {
-                        _topSession3 = _topSession2;
-                        _sessionName3 = _sessionName2;
-                        _topSession2 = _topSession1;
-                        _sessionName2 = _sessionName1;
-                        _topSession1 = _sessionTime;
-                        _sessionName1 = row[2].ToString();
-                    }
-                    else if (_sessionTime > _topSession2)
-                    {
-                        _topSession3 = _topSession2;
-                        _sessionName3 = _sessionName2;
-                        _topSession2 = _sessionTime;
-                        _sessionName2 = row[2].ToString();
-                    }
-                    else if (_sessionTime > _topSession3)
-                    {
-                        _topSession3 = _sessionTime;
-                        _sessionName3 = row[2].ToString();
-                    }
-                    int.TryParse(row[1].ToString(), out _score);
-                    if (_score > _topScore1)
-                    {
-                        _topScore3 = _topScore2;
-                        _ScoreName3 = _ScoreName2;
-                        _topScore2 = _topScore1;
-                        _ScoreName2 = _ScoreName1;
-                        _topScore1 = _score;
-                        _ScoreName1 = row[2].ToString();
-                    }
-                    else if (_score > _topScore2)
-                    {
-                        _topScore3 = _topScore2;
-                        _ScoreName3 = _ScoreName2;
-                        _topScore2 = _score;
-                        _ScoreName2 = row[2].ToString();
-                    }
-                    else if (_score > _topScore3)
-                    {
-                        _topScore3 = _score;
-                        _ScoreName3 = row[2].ToString();
+                        string[] _stats = _hardcoreSavedStats[j];
+                        int.TryParse(_stats[1], out int _sessionTime);
+                        if (_sessionTime > _topSession1)
+                        {
+                            _topSession3 = _topSession2;
+                            _sessionName3 = _sessionName2;
+                            _topSession2 = _topSession1;
+                            _sessionName2 = _sessionName1;
+                            _topSession1 = _sessionTime;
+                            _sessionName1 = _stats[0];
+                        }
+                        else if (_sessionTime > _topSession2)
+                        {
+                            _topSession3 = _topSession2;
+                            _sessionName3 = _sessionName2;
+                            _topSession2 = _sessionTime;
+                            _sessionName2 = _stats[0];
+                        }
+                        else if (_sessionTime > _topSession3)
+                        {
+                            _topSession3 = _sessionTime;
+                            _sessionName3 = _stats[0];
+                        }
+                        int.TryParse(_stats[4], out int _score);
+                        if (_score > _topScore1)
+                        {
+                            _topScore3 = _topScore2;
+                            _ScoreName3 = _ScoreName2;
+                            _topScore2 = _topScore1;
+                            _ScoreName2 = _ScoreName1;
+                            _topScore1 = _score;
+                            _ScoreName1 = _stats[0];
+                        }
+                        else if (_score > _topScore2)
+                        {
+                            _topScore3 = _topScore2;
+                            _ScoreName3 = _ScoreName2;
+                            _topScore2 = _score;
+                            _ScoreName2 = _stats[0];
+                        }
+                        else if (_score > _topScore3)
+                        {
+                            _topScore3 = _score;
+                            _ScoreName3 = _stats[0];
+                        }
                     }
                 }
+            }
+            if (_sessionName1 != "" || _ScoreName1 != null)
+            {
                 string _phrase945;
                 if (!Phrases.Dict.TryGetValue(945, out _phrase945))
                 {
@@ -176,65 +245,48 @@ namespace ServerTools
                 _phrase947 = _phrase947.Replace("{Score2}", _topScore2.ToString());
                 _phrase947 = _phrase947.Replace("{Name3}", _ScoreName3);
                 _phrase947 = _phrase947.Replace("{Score3}", _topScore3.ToString());
-                if (_announce)
-                {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase945 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase946 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase947 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                }
-                else
-                {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase945 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase946 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase947 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase945 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase946 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase947 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "There are no hardcore records" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
-            _result.Dispose();
-
         }
 
-        public static void Score(ClientInfo _cInfo, bool _announce)
+        public static void Score(ClientInfo _cInfo)
         {
             try
             {
-                string _sql = string.Format("SELECT sessionTime, kills, zKills, score, oldDeaths, playerName From Hardcore WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TypeQuery(_sql);
-                if (_result.Rows.Count > 0)
+                if (PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats != null && PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats.Count > 0)
                 {
-                    string _phrase948;
-                    if (!Phrases.Dict.TryGetValue(948, out _phrase948))
+                    List<string[]> _hardcoreSavedStats = PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats;
+                    for (int i = 0; i < _hardcoreSavedStats.Count; i++)
                     {
-                        _phrase948 = "{PlayerName} your last hardcore stats: Name {LastName} Zombie Kills {ZombieKills}, Player Kills {PlayerKills}, Deaths {Deaths}, Score {Score}, Playtime {Playtime} Minutes";
-                    }
-                    _phrase948 = _phrase948.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase948 = _phrase948.Replace("{LastName}", _result.Rows[0].ItemArray.GetValue(5).ToString());
-                    _phrase948 = _phrase948.Replace("{ZombieKills}", _result.Rows[0].ItemArray.GetValue(2).ToString());
-                    _phrase948 = _phrase948.Replace("{PlayerKills}", _result.Rows[0].ItemArray.GetValue(1).ToString());
-                    _phrase948 = _phrase948.Replace("{Deaths}", _result.Rows[0].ItemArray.GetValue(4).ToString());
-                    _phrase948 = _phrase948.Replace("{Score}", _result.Rows[0].ItemArray.GetValue(3).ToString());
-                    _phrase948 = _phrase948.Replace("{Playtime}", _result.Rows[0].ItemArray.GetValue(0).ToString());
-                    if (_announce)
-                    {
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase948 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    }
-                    else
-                    {
+                        string[] _stats = _hardcoreSavedStats[i];
+                        string _phrase948;
+                        if (!Phrases.Dict.TryGetValue(948, out _phrase948))
+                        {
+                            _phrase948 = "Hardcore stats: Name {PlayerName}, Playtime {PlayTime}, Player Kills {PlayerKills}, Zombie Kills {ZombieKills}, Deaths {Deaths}, Score {Score}";
+                        }
+                        _phrase948 = _phrase948.Replace("{PlayerName}", _stats[0]);
+                        _phrase948 = _phrase948.Replace("{PlayTime}", _stats[1]);
+                        _phrase948 = _phrase948.Replace("{PlayerKills}", _stats[2]);
+                        _phrase948 = _phrase948.Replace("{ZombieKills}", _stats[3]);
+                        _phrase948 = _phrase948.Replace("{Deaths}", _stats[4]);
+                        _phrase948 = _phrase948.Replace("{Score}", _stats[5]);
                         ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase948 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have no hardcore records." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have no hardcore records" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
-                _result.Dispose();
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.Score: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.Score: {0}", e.Message));
             }
         }
 
@@ -245,42 +297,52 @@ namespace ServerTools
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 if (_player != null)
                 {
-                    int _deaths = XUiM_Player.GetDeaths(_player);
-                    string _sql = string.Format("SELECT extraLives FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                    DataTable _result = SQL.TypeQuery(_sql);
-                    if (_result.Rows.Count > 0)
+                    if (Max_Extra_Lives > 0)
                     {
-                        int _extraLives;
-                        int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _extraLives);
-                        _result.Dispose();
-                        if (_extraLives < Max_Extra_Lives)
+                        if (PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled)
                         {
-                            if (Life_Price < 0)
+                            string[] _stats = PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreStats;
+                            int.TryParse(_stats[2], out int _extraLives);
+                            if (_extraLives < Max_Extra_Lives)
                             {
-                                Life_Price = 0;
-                            }
-                            int _cost = Life_Price * _extraLives;
-                            if (Wallet.GetCurrentCoins(_cInfo.playerId) >= _cost)
-                            {
-                                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _cost);
-                                SQL.FastQuery(_sql = string.Format("UPDATE Players SET extraLives = {0} WHERE steamid = '{1}'", _extraLives + 1, _cInfo.playerId), "Hardcore");
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you have bought one extra life." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                if (Life_Price < 0)
+                                {
+                                    Life_Price = 0;
+                                }
+                                int _cost = Life_Price * _extraLives;
+                                if (Wallet.GetCurrentCoins(_cInfo.playerId) >= _cost)
+                                {
+                                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _cost);
+                                    _stats[2] = (_extraLives + 1).ToString();
+                                    PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreStats = _stats;
+                                    PersistentContainer.Instance.Save();
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have bought one extra life." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                                else
+                                {
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You need a total of " + _cost.ToString() + " " + Wallet.Coin_Name + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
                             }
                             else
                             {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you need a total of " + _cost.ToString() + " " + Wallet.Coin_Name + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You are at the maximum extra lives." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
+                            
                         }
                         else
                         {
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " you are at the maximum extra lives." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have not turned on hardcore mode." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
+                    }
+                    else
+                    {
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You are at the maximum extra lives." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.BuyLife: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.BuyLife: {0}", e.Message));
             }
         }
 
@@ -306,39 +368,18 @@ namespace ServerTools
                 {
                     File.Delete(_filepath1);
                 }
-                RemoveServerToolsPlayerData(_cInfo);
+                RemovePlayerData(_cInfo);
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.ResetHardcoreProfile: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.ResetHardcoreProfile: {0}", e.Message));
             }
         }
 
-        public static void RemoveServerToolsPlayerData(ClientInfo _cInfo)
+        public static void RemovePlayerData(ClientInfo _cInfo)
         {
             try
             {
-                string _sql = string.Format("SELECT * FROM Players WHERE steamid = '{0}'", _cInfo.playerId);
-                DataTable _result = SQL.TypeQuery(_sql);
-                if (_result.Rows.Count != 0)
-                {
-                    SQL.FastQuery(_sql = string.Format("Delete FROM Players WHERE steamid = '{0}'", _cInfo.playerId), "ResetPlayerConsole");
-                }
-                _result.Dispose();
-                _sql = string.Format("SELECT * FROM Waypoints WHERE steamid = '{0}'", _cInfo.playerId);
-                _result = SQL.TypeQuery(_sql);
-                if (_result.Rows.Count != 0)
-                {
-                    SQL.FastQuery(_sql = string.Format("Delete FROM Waypoints WHERE steamid = '{0}'", _cInfo.playerId), "ResetPlayerConsole");
-                }
-                _result.Dispose();
-                _sql = string.Format("SELECT * FROM Tracking WHERE steamid = '{0}'", _cInfo.playerId);
-                _result = SQL.TypeQuery(_sql);
-                if (_result.Rows.Count != 0)
-                {
-                    SQL.FastQuery(_sql = string.Format("Delete FROM Tracking WHERE steamid = '{0}'", _cInfo.playerId), "ResetPlayerConsole");
-                }
-                _result.Dispose();
                 PersistentPlayer p = PersistentContainer.Instance.Players[_cInfo.playerId];
                 if (p != null)
                 {
@@ -358,7 +399,7 @@ namespace ServerTools
                     p.ClanName = "";
                     p.ClanOfficer = false;
                     p.ClanOwner = false;
-                    p.ClanRequestToJoin = new List<string[]>();
+                    p.ClanRequestToJoin = new Dictionary<string, string>();
                     p.CountryBanImmune = false;
                     p.CustomCommand1 = new DateTime();
                     p.CustomCommand2 = new DateTime();
@@ -382,8 +423,9 @@ namespace ServerTools
                     p.CustomCommand20 = new DateTime();
                     p.FirstClaimBlock = false;
                     p.GyroId = 0;
-                    p.Hardcore = false;
-                    p.HardcoreExtraLives = 0;
+                    p.HardcoreEnabled = false;
+                    p.HardcoreSavedStats = new List<string[]>();
+                    p.HardcoreStats = new string[0];
                     p.HighPingImmune = false;
                     p.HighPingImmuneName = "";
                     p.HomePosition1 = "";
@@ -429,6 +471,7 @@ namespace ServerTools
                     p.StartingItems = false;
                     p.TotalTimePlayed = 0;
                     p.VoteWeekCount = 0;
+                    p.Waypoints = new Dictionary<string, string>();
                     p.WP = "";
                     p.ZoneDeathTime = new DateTime();
                     PersistentContainer.Instance.Save();
@@ -436,11 +479,11 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.ResetServerToolsPlayerData: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.RemovePlayerData: {0}", e.Message));
             }
         }
 
-        public static void DisconnectHardcoreExec(ClientInfo _cInfo, int _zKills, int _playerKills, int _deaths, int _score, string _session)
+        public static void Disconnect(ClientInfo _cInfo, string[] _newStats)
         {
             try
             {
@@ -449,25 +492,25 @@ namespace ServerTools
                     string _phrase951;
                     if (!Phrases.Dict.TryGetValue(951, out _phrase951))
                     {
-                        _phrase951 = "Hardcore Game Over: Player {PlayerName}, Zombie Kills {ZombieKills}, Player Kills {PlayerKills}, Deaths {Deaths}, Score {Score}, Playtime {Playtime}";
+                        _phrase951 = "Hardcore Game Over: Player {PlayerName}, Playtime {Playtime}, Player Kills {PlayerKills}, Zombie Kills {ZombieKills}, Deaths {Deaths}, Score {Score}";
                     }
-                    _phrase951 = _phrase951.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase951 = _phrase951.Replace("{ZombieKills}", _zKills.ToString());
-                    _phrase951 = _phrase951.Replace("{PlayerKills}", _playerKills.ToString());
-                    _phrase951 = _phrase951.Replace("{Deaths}", _deaths.ToString());
-                    _phrase951 = _phrase951.Replace("{Score}", _score.ToString());
-                    _phrase951 = _phrase951.Replace("{Playtime}", _session);
+                    _phrase951 = _phrase951.Replace("{PlayerName}", _newStats[0]);
+                    _phrase951 = _phrase951.Replace("{Playtime}", _newStats[1]);
+                    _phrase951 = _phrase951.Replace("{PlayerKills}", _newStats[2]);
+                    _phrase951 = _phrase951.Replace("{ZombieKills}", _newStats[3]);
+                    _phrase951 = _phrase951.Replace("{Deaths}", _newStats[4]);
+                    _phrase951 = _phrase951.Replace("{Score}", _newStats[5]);
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase951 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                     Timers.DisconnectHardcorePlayer(_cInfo);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.DisconnectHardcoreExec: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.Disconnect: {0}", e.Message));
             }
         }
 
-        public static void DisconnectHardcorePlayer(ClientInfo _cInfo)
+        public static void KickPlayer(ClientInfo _cInfo)
         {
             try
             {
@@ -481,7 +524,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.DisconnectHardcorePlayer: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Hardcore.DisconnectHardcorePlayer: {0}", e.Message));
             }
         }
     }

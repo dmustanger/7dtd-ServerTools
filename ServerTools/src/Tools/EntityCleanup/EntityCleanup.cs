@@ -182,7 +182,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in EntityCleanup.EntityCheck: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in EntityCleanup.EntityCheck: {0}", e.Message));
             }
         }
     }

@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Friend Teleport.";
+            return "[ServerTools] - Enable or Disable Friend Teleport.";
         }
         public override string GetHelp()
         {

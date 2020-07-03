@@ -114,7 +114,7 @@ namespace ServerTools
                             ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_id);
                             if (_cInfo != null)
                             {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + " you have been unmuted.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have been unmuted.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                             Mute.Mutes.Remove(_id);
                             PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = 0;
@@ -171,7 +171,7 @@ namespace ServerTools
                 }
                 catch (Exception e)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in ConsoleCommandMuteConsole.Execute: {0}", e));
+                    Log.Out(string.Format("[SERVERTOOLS] Error in ConsoleCommandMuteConsole.Execute: {0}", e.Message));
                 }
             }
             else

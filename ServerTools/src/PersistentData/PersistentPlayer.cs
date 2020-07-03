@@ -7,44 +7,24 @@ namespace ServerTools
     public class PersistentPlayer
     {
         private readonly string steamId;
-        private int playerWallet;
-        private int bank;
-        private int totalTimePlayed;
+        private DateTime auctionCancelTime;
         private int auctionId;
         private int auctionItemCount;
-        private int auctionItemQuality;
+        private string auctionItemName;
         private int auctionItemPrice;
+        private int auctionItemQuality;
+        private bool auctionReturn;
+        private DateTime auctionSellDate;
+        private int bank;
+        private int bikeId;
         private int bounty;
         private int bountyHunter;
-        private int jailTime;
-        private int muteTime;
-        private int sessionTime;
-        private int bikeId;
-        private int miniBikeId;
-        private int motorBikeId;
-        private int jeepId;
-        private int gyroId;
-        private int voteWeekCount;
-        private int hardcoreExtraLives;
-        private DateTime lastJoined;
-        private DateTime lastGimme;
-        private DateTime auctionSellDate;
-        private DateTime auctionCancelTime;
-        private DateTime jailDate;
-        private DateTime muteDate;
-        private DateTime lastAnimal;
-        private DateTime lastDied;
-        private DateTime lastFriendTele;
-        private DateTime lastLobby;
-        private DateTime lastMarket;
-        private DateTime lastLog;
-        private DateTime lastStuck;
-        private DateTime lastKillMe;
-        private DateTime lastHome1;
-        private DateTime lastHome2;
-        private DateTime lastTravel;
-        private DateTime lastPrayer;
-        private DateTime lastScout;
+        private string clanInvite;
+        private string clanName;
+        private bool clanOfficer;
+        private bool clanOwner;
+        private Dictionary<string, string> clanRequestToJoin;
+        private bool countryBanImmune;
         private DateTime customCommand1;
         private DateTime customCommand2;
         private DateTime customCommand3;
@@ -65,74 +45,76 @@ namespace ServerTools
         private DateTime customCommand18;
         private DateTime customCommand19;
         private DateTime customCommand20;
-        private DateTime lastBike;
-        private DateTime lastMiniBike;
-        private DateTime lastMotorBike;
-        private DateTime lastJeep;
-        private DateTime lastGyro;
-        private DateTime lastVote;
-        private DateTime lastVoteWeek;
-        private DateTime zoneDeathTime;
-        private bool clanOwner;
-        private bool clanOfficer;
+        private bool eventOver;
+        private string eventReturnPosition;
+        private bool eventSpawn;
+        private List<List<string>> events;
         private bool firstClaimBlock;
-        private bool countryBanImmune;
+        private int gyroId;
+        private bool hardcoreEnabled;
+        private List<string[]> hardcoreSavedStats;
+        private string[] hardcoreStats;
         private bool highPingImmune;
-        private bool newSpawn;
-        private bool startingItems;
-        private bool auctionReturn;
-        private bool hardcore;
-        private bool oldPlayer;
-        private string playerName;
-        private string auctionItemName;
-        private string clanName;
-        private string clanInvite;
-        private string jailName;
-        private string muteName;
-        private string lobbyReturnPos;
-        private string marketReturnPos;
+        private string highPingImmuneName;
         private string homePosition1;
         private string homePosition2;
+        private DateTime jailDate;
+        private string jailName;
+        private int jailTime;
+        private int jeepId;
+        private DateTime lastAnimal;
+        private DateTime lastBike;
+        private DateTime lastDied;
+        private DateTime lastFriendTele;
+        private DateTime lastGimme;
+        private DateTime lastGyro;
+        private DateTime lastHome1;
+        private DateTime lastHome2;
+        private DateTime lastJeep;
+        private DateTime lastJoined;
+        private DateTime lastKillMe;
+        private DateTime lastLobby;
+        private DateTime lastMarket;
+        private DateTime lastMiniBike;
+        private DateTime lastMotorBike;
+        private DateTime lastLog;
+        private DateTime lastPrayer;
+        private DateTime lastScout;
+        private DateTime lastStuck;
+        private DateTime lastTravel;
+        private DateTime lastVote;
+        private DateTime lastVoteWeek;
+        private DateTime lastWaypoint;
         private string lastWhisper;
-        private string highPingImmuneName;
+        private string lobbyReturnPos;
+        private string marketReturnPos;
+        private int miniBikeId;
+        private int motorBikeId;
+        private DateTime muteDate;
+        private string muteName;
+        private int muteTime;
+        private bool newSpawn;
         private string newSpawnPosition;
+        private bool oldPlayer;
+        private string playerName;
+        private int playerWallet;
+        private int sessionTime;
+        private bool startingItems;
+        private int totalTimePlayed;
+        private int voteWeekCount;
+        private Dictionary<string, string> waypoints;
         private string wP;
-        private List<string[]> clanRequestToJoin;
-        
+        private DateTime zoneDeathTime;
 
-        public int PlayerWallet
+        public DateTime AuctionCancelTime
         {
             get
             {
-                return playerWallet;
+                return auctionCancelTime;
             }
             set
             {
-                playerWallet = value;
-            }
-        }
-
-        public int Bank
-        {
-            get
-            {
-                return bank;
-            }
-            set
-            {
-                bank = value;
-            }
-        }
-
-        public int TotalTimePlayed
-        {
-            get
-            {
-                return totalTimePlayed;
-            }
-            set
-            {
-                totalTimePlayed = value;
+                auctionCancelTime = value;
             }
         }
 
@@ -160,15 +142,15 @@ namespace ServerTools
             }
         }
 
-        public int AuctionItemQuality
+        public string AuctionItemName
         {
             get
             {
-                return auctionItemQuality;
+                return auctionItemName;
             }
             set
             {
-                auctionItemQuality = value;
+                auctionItemName = value;
             }
         }
 
@@ -181,6 +163,66 @@ namespace ServerTools
             set
             {
                 auctionItemPrice = value;
+            }
+        }
+
+        public int AuctionItemQuality
+        {
+            get
+            {
+                return auctionItemQuality;
+            }
+            set
+            {
+                auctionItemQuality = value;
+            }
+        }
+
+        public bool AuctionReturn
+        {
+            get
+            {
+                return auctionReturn;
+            }
+            set
+            {
+                auctionReturn = value;
+            }
+        }
+
+        public DateTime AuctionSellDate
+        {
+            get
+            {
+                return auctionSellDate;
+            }
+            set
+            {
+                auctionSellDate = value;
+            }
+        }
+
+        public int Bank
+        {
+            get
+            {
+                return bank;
+            }
+            set
+            {
+                bank = value;
+            }
+        }
+
+        public int BikeId
+        {
+            get
+            {
+                return bikeId;
+            }
+            set
+            {
+                bikeId = value;
             }
         }
 
@@ -208,351 +250,75 @@ namespace ServerTools
             }
         }
 
-        public int JailTime
+        public string ClanInvite
         {
             get
             {
-                return jailTime;
+                return clanInvite;
             }
             set
             {
-                jailTime = value;
+                clanInvite = value;
             }
         }
 
-        public int MuteTime
+        public string ClanName
         {
             get
             {
-                return muteTime;
+                return clanName;
             }
             set
             {
-                muteTime = value;
+                clanName = value;
             }
         }
 
-        public int SessionTime
+        public bool ClanOwner
         {
             get
             {
-                return sessionTime;
+                return clanOwner;
             }
             set
             {
-                sessionTime = value;
+                clanOwner = value;
             }
         }
 
-        public int BikeId
+        public bool ClanOfficer
         {
             get
             {
-                return bikeId;
+                return clanOfficer;
             }
             set
             {
-                bikeId = value;
+                clanOfficer = value;
             }
         }
 
-        public int MiniBikeId
+        public Dictionary<string, string> ClanRequestToJoin
         {
             get
             {
-                return miniBikeId;
+                return clanRequestToJoin;
             }
             set
             {
-                miniBikeId = value;
+                clanRequestToJoin = value;
             }
         }
 
-        public int MotorBikeId
+        public bool CountryBanImmune
         {
             get
             {
-                return motorBikeId;
+                return countryBanImmune;
             }
             set
             {
-                motorBikeId = value;
-            }
-        }
-
-        public int JeepId
-        {
-            get
-            {
-                return jeepId;
-            }
-            set
-            {
-                jeepId = value;
-            }
-        }
-
-        public int GyroId
-        {
-            get
-            {
-                return gyroId;
-            }
-            set
-            {
-                gyroId = value;
-            }
-        }
-
-        public int VoteWeekCount
-        {
-            get
-            {
-                return voteWeekCount;
-            }
-            set
-            {
-                voteWeekCount = value;
-            }
-        }
-
-        public int HardcoreExtraLives
-        {
-            get
-            {
-                return hardcoreExtraLives;
-            }
-            set
-            {
-                hardcoreExtraLives = value;
-            }
-        }
-
-        public DateTime LastJoined
-        {
-            get
-            {
-                return lastJoined;
-            }
-            set
-            {
-                lastJoined = value;
-            }
-        }
-
-        public DateTime LastGimme
-        {
-            get
-            {
-                return lastGimme;
-            }
-            set
-            {
-                lastGimme = value;
-            }
-        }
-
-        public DateTime AuctionSellDate
-        {
-            get
-            {
-                return auctionSellDate;
-            }
-            set
-            {
-                auctionSellDate = value;
-            }
-        }
-
-        public DateTime AuctionCancelTime
-        {
-            get
-            {
-                return auctionCancelTime;
-            }
-            set
-            {
-                auctionCancelTime = value;
-            }
-        }
-
-        public DateTime JailDate
-        {
-            get
-            {
-                return jailDate;
-            }
-            set
-            {
-                jailDate = value;
-            }
-        }
-
-        public DateTime MuteDate
-        {
-            get
-            {
-                return muteDate;
-            }
-            set
-            {
-                muteDate = value;
-            }
-        }
-
-        public DateTime LastAnimal
-        {
-            get
-            {
-                return lastAnimal;
-            }
-            set
-            {
-                lastAnimal = value;
-            }
-        }
-
-        public DateTime LastDied
-        {
-            get
-            {
-                return lastDied;
-            }
-            set
-            {
-                lastDied = value;
-            }
-        }
-
-        public DateTime LastFriendTele
-        {
-            get
-            {
-                return lastFriendTele;
-            }
-            set
-            {
-                lastFriendTele = value;
-            }
-        }
-
-        public DateTime LastLobby
-        {
-            get
-            {
-                return lastLobby;
-            }
-            set
-            {
-                lastLobby = value;
-            }
-        }
-
-        public DateTime LastMarket
-        {
-            get
-            {
-                return lastMarket;
-            }
-            set
-            {
-                lastMarket = value;
-            }
-        }
-
-        public DateTime LastLog
-        {
-            get
-            {
-                return lastLog;
-            }
-            set
-            {
-                lastLog = value;
-            }
-        }
-
-        public DateTime LastStuck
-        {
-            get
-            {
-                return lastStuck;
-            }
-            set
-            {
-                lastStuck = value;
-            }
-        }
-
-        public DateTime LastKillMe
-        {
-            get
-            {
-                return lastKillMe;
-            }
-            set
-            {
-                lastKillMe = value;
-            }
-        }
-
-        public DateTime LastHome1
-        {
-            get
-            {
-                return lastHome1;
-            }
-            set
-            {
-                lastHome1 = value;
-            }
-        }
-
-        public DateTime LastHome2
-        {
-            get
-            {
-                return lastHome2;
-            }
-            set
-            {
-                lastHome2 = value;
-            }
-        }
-
-        public DateTime LastTravel
-        {
-            get
-            {
-                return lastTravel;
-            }
-            set
-            {
-                lastTravel = value;
-            }
-        }
-
-        public DateTime LastPrayer
-        {
-            get
-            {
-                return lastPrayer;
-            }
-            set
-            {
-                lastPrayer = value;
-            }
-        }
-
-        public DateTime LastScout
-        {
-            get
-            {
-                return lastScout;
-            }
-            set
-            {
-                lastScout = value;
+                countryBanImmune = value;
             }
         }
 
@@ -796,123 +562,51 @@ namespace ServerTools
             }
         }
 
-        public DateTime LastBike
+        public bool EventOver
         {
             get
             {
-                return lastBike;
+                return eventOver;
             }
             set
             {
-                lastBike = value;
+                eventOver = value;
             }
         }
 
-        public DateTime LastMiniBike
+        public string EventReturnPosition
         {
             get
             {
-                return lastMiniBike;
+                return eventReturnPosition;
             }
             set
             {
-                lastMiniBike = value;
+                eventReturnPosition = value;
             }
         }
 
-        public DateTime LastMotorBike
+        public bool EventSpawn
         {
             get
             {
-                return lastMotorBike;
+                return eventSpawn;
             }
             set
             {
-                lastMotorBike = value;
+                eventSpawn = value;
             }
         }
 
-        public DateTime LastJeep
+        public List<List<string>> Events
         {
             get
             {
-                return lastJeep;
+                return events;
             }
             set
             {
-                lastJeep = value;
-            }
-        }
-
-        public DateTime LastGyro
-        {
-            get
-            {
-                return lastGyro;
-            }
-            set
-            {
-                lastGyro = value;
-            }
-        }
-
-        public DateTime LastVote
-        {
-            get
-            {
-                return lastVote;
-            }
-            set
-            {
-                lastVote = value;
-            }
-        }
-
-        public DateTime LastVoteWeek
-        {
-            get
-            {
-                return lastVoteWeek;
-            }
-            set
-            {
-                lastVoteWeek = value;
-            }
-        }
-
-        public DateTime ZoneDeathTime
-        {
-            get
-            {
-                return zoneDeathTime;
-            }
-            set
-            {
-                zoneDeathTime = value;
-            }
-        }
-
-        public bool ClanOwner
-        {
-            get
-            {
-                return clanOwner;
-            }
-            set
-            {
-                clanOwner = value;
-            }
-        }
-
-        public bool ClanOfficer
-        {
-            get
-            {
-                return clanOfficer;
-            }
-            set
-            {
-                clanOfficer = value;
+                events = value;
             }
         }
 
@@ -928,15 +622,51 @@ namespace ServerTools
             }
         }
 
-        public bool CountryBanImmune
+        public int GyroId
         {
             get
             {
-                return countryBanImmune;
+                return gyroId;
             }
             set
             {
-                countryBanImmune = value;
+                gyroId = value;
+            }
+        }
+
+        public bool HardcoreEnabled
+        {
+            get
+            {
+                return hardcoreEnabled;
+            }
+            set
+            {
+                hardcoreEnabled = value;
+            }
+        }
+
+        public List<string[]> HardcoreSavedStats
+        {
+            get
+            {
+                return hardcoreSavedStats;
+            }
+            set
+            {
+                hardcoreSavedStats = value;
+            }
+        }
+
+        public string[] HardcoreStats
+        {
+            get
+            {
+                return hardcoreStats;
+            }
+            set
+            {
+                hardcoreStats = value;
             }
         }
 
@@ -952,159 +682,15 @@ namespace ServerTools
             }
         }
 
-        public bool NewSpawn
+        public string HighPingImmuneName
         {
             get
             {
-                return newSpawn;
+                return highPingImmuneName;
             }
             set
             {
-                newSpawn = value;
-            }
-        }
-
-        public bool StartingItems
-        {
-            get
-            {
-                return startingItems;
-            }
-            set
-            {
-                startingItems = value;
-            }
-        }
-
-        public bool AuctionReturn
-        {
-            get
-            {
-                return auctionReturn;
-            }
-            set
-            {
-                auctionReturn = value;
-            }
-        }
-
-        public bool Hardcore
-        {
-            get
-            {
-                return hardcore;
-            }
-            set
-            {
-                hardcore = value;
-            }
-        }
-
-        public bool OldPlayer
-        {
-            get
-            {
-                return oldPlayer;
-            }
-            set
-            {
-                oldPlayer = value;
-            }
-        }
-
-        public string PlayerName
-        {
-            get
-            {
-                return playerName;
-            }
-            set
-            {
-                playerName = value;
-            }
-        }
-
-        public string AuctionItemName
-        {
-            get
-            {
-                return auctionItemName;
-            }
-            set
-            {
-                auctionItemName = value;
-            }
-        }
-
-        public string ClanName
-        {
-            get
-            {
-                return clanName;
-            }
-            set
-            {
-                clanName = value;
-            }
-        }
-
-        public string ClanInvite
-        {
-            get
-            {
-                return clanInvite;
-            }
-            set
-            {
-                clanInvite = value;
-            }
-        }
-
-        public string JailName
-        {
-            get
-            {
-                return jailName;
-            }
-            set
-            {
-                jailName = value;
-            }
-        }
-
-        public string MuteName
-        {
-            get
-            {
-                return muteName;
-            }
-            set
-            {
-                muteName = value;
-            }
-        }
-
-        public string LobbyReturnPos
-        {
-            get
-            {
-                return lobbyReturnPos;
-            }
-            set
-            {
-                lobbyReturnPos = value;
-            }
-        }
-
-        public string MarketReturnPos
-        {
-            get
-            {
-                return marketReturnPos;
-            }
-            set
-            {
-                marketReturnPos = value;
+                highPingImmuneName = value;
             }
         }
 
@@ -1132,6 +718,318 @@ namespace ServerTools
             }
         }
 
+        public string JailName
+        {
+            get
+            {
+                return jailName;
+            }
+            set
+            {
+                jailName = value;
+            }
+        }
+
+        public int JailTime
+        {
+            get
+            {
+                return jailTime;
+            }
+            set
+            {
+                jailTime = value;
+            }
+        }
+
+        public int JeepId
+        {
+            get
+            {
+                return jeepId;
+            }
+            set
+            {
+                jeepId = value;
+            }
+        }
+
+        public DateTime LastGimme
+        {
+            get
+            {
+                return lastGimme;
+            }
+            set
+            {
+                lastGimme = value;
+            }
+        }
+
+        public DateTime LastAnimal
+        {
+            get
+            {
+                return lastAnimal;
+            }
+            set
+            {
+                lastAnimal = value;
+            }
+        }
+
+        public DateTime LastBike
+        {
+            get
+            {
+                return lastBike;
+            }
+            set
+            {
+                lastBike = value;
+            }
+        }
+
+        public DateTime LastDied
+        {
+            get
+            {
+                return lastDied;
+            }
+            set
+            {
+                lastDied = value;
+            }
+        }
+
+        public DateTime LastFriendTele
+        {
+            get
+            {
+                return lastFriendTele;
+            }
+            set
+            {
+                lastFriendTele = value;
+            }
+        }
+
+        public DateTime LastGyro
+        {
+            get
+            {
+                return lastGyro;
+            }
+            set
+            {
+                lastGyro = value;
+            }
+        }
+
+        public DateTime LastHome1
+        {
+            get
+            {
+                return lastHome1;
+            }
+            set
+            {
+                lastHome1 = value;
+            }
+        }
+
+        public DateTime LastHome2
+        {
+            get
+            {
+                return lastHome2;
+            }
+            set
+            {
+                lastHome2 = value;
+            }
+        }
+
+        public DateTime LastJeep
+        {
+            get
+            {
+                return lastJeep;
+            }
+            set
+            {
+                lastJeep = value;
+            }
+        }
+
+        public DateTime LastJoined
+        {
+            get
+            {
+                return lastJoined;
+            }
+            set
+            {
+                lastJoined = value;
+            }
+        }
+
+        public DateTime LastKillMe
+        {
+            get
+            {
+                return lastKillMe;
+            }
+            set
+            {
+                lastKillMe = value;
+            }
+        }
+
+        public DateTime LastLobby
+        {
+            get
+            {
+                return lastLobby;
+            }
+            set
+            {
+                lastLobby = value;
+            }
+        }
+
+        public DateTime LastLog
+        {
+            get
+            {
+                return lastLog;
+            }
+            set
+            {
+                lastLog = value;
+            }
+        }
+
+        public DateTime LastMarket
+        {
+            get
+            {
+                return lastMarket;
+            }
+            set
+            {
+                lastMarket = value;
+            }
+        }
+
+        public DateTime LastMiniBike
+        {
+            get
+            {
+                return lastMiniBike;
+            }
+            set
+            {
+                lastMiniBike = value;
+            }
+        }
+
+        public DateTime LastMotorBike
+        {
+            get
+            {
+                return lastMotorBike;
+            }
+            set
+            {
+                lastMotorBike = value;
+            }
+        }
+
+        public DateTime LastPrayer
+        {
+            get
+            {
+                return lastPrayer;
+            }
+            set
+            {
+                lastPrayer = value;
+            }
+        }
+
+        public DateTime LastScout
+        {
+            get
+            {
+                return lastScout;
+            }
+            set
+            {
+                lastScout = value;
+            }
+        }
+
+        public DateTime LastStuck
+        {
+            get
+            {
+                return lastStuck;
+            }
+            set
+            {
+                lastStuck = value;
+            }
+        }
+
+        public DateTime LastTravel
+        {
+            get
+            {
+                return lastTravel;
+            }
+            set
+            {
+                lastTravel = value;
+            }
+        }
+
+        public DateTime LastVote
+        {
+            get
+            {
+                return lastVote;
+            }
+            set
+            {
+                lastVote = value;
+            }
+        }
+
+        public DateTime LastVoteWeek
+        {
+            get
+            {
+                return lastVoteWeek;
+            }
+            set
+            {
+                lastVoteWeek = value;
+            }
+        }
+
+        public DateTime LastWaypoint
+        {
+            get
+            {
+                return lastWaypoint;
+            }
+            set
+            {
+                lastWaypoint = value;
+            }
+        }
+
         public string LastWhisper
         {
             get
@@ -1144,15 +1042,87 @@ namespace ServerTools
             }
         }
 
-        public string HighPingImmuneName
+        public string LobbyReturnPos
         {
             get
             {
-                return highPingImmuneName;
+                return lobbyReturnPos;
             }
             set
             {
-                highPingImmuneName = value;
+                lobbyReturnPos = value;
+            }
+        }
+
+        public string MarketReturnPos
+        {
+            get
+            {
+                return marketReturnPos;
+            }
+            set
+            {
+                marketReturnPos = value;
+            }
+        }
+
+        public int MiniBikeId
+        {
+            get
+            {
+                return miniBikeId;
+            }
+            set
+            {
+                miniBikeId = value;
+            }
+        }
+
+        public int MotorBikeId
+        {
+            get
+            {
+                return motorBikeId;
+            }
+            set
+            {
+                motorBikeId = value;
+            }
+        }
+
+        public string MuteName
+        {
+            get
+            {
+                return muteName;
+            }
+            set
+            {
+                muteName = value;
+            }
+        }
+
+        public int MuteTime
+        {
+            get
+            {
+                return muteTime;
+            }
+            set
+            {
+                muteTime = value;
+            }
+        }
+
+        public bool NewSpawn
+        {
+            get
+            {
+                return newSpawn;
+            }
+            set
+            {
+                newSpawn = value;
             }
         }
 
@@ -1168,6 +1138,126 @@ namespace ServerTools
             }
         }
 
+        public bool OldPlayer
+        {
+            get
+            {
+                return oldPlayer;
+            }
+            set
+            {
+                oldPlayer = value;
+            }
+        }
+
+        public string PlayerName
+        {
+            get
+            {
+                return playerName;
+            }
+            set
+            {
+                playerName = value;
+            }
+        }
+
+        public int PlayerWallet
+        {
+            get
+            {
+                return playerWallet;
+            }
+            set
+            {
+                playerWallet = value;
+            }
+        }
+
+        public int SessionTime
+        {
+            get
+            {
+                return sessionTime;
+            }
+            set
+            {
+                sessionTime = value;
+            }
+        }
+
+        public bool StartingItems
+        {
+            get
+            {
+                return startingItems;
+            }
+            set
+            {
+                startingItems = value;
+            }
+        }
+
+        public int TotalTimePlayed
+        {
+            get
+            {
+                return totalTimePlayed;
+            }
+            set
+            {
+                totalTimePlayed = value;
+            }
+        }
+
+        public int VoteWeekCount
+        {
+            get
+            {
+                return voteWeekCount;
+            }
+            set
+            {
+                voteWeekCount = value;
+            }
+        }
+
+        public DateTime JailDate
+        {
+            get
+            {
+                return jailDate;
+            }
+            set
+            {
+                jailDate = value;
+            }
+        }
+
+        public DateTime MuteDate
+        {
+            get
+            {
+                return muteDate;
+            }
+            set
+            {
+                muteDate = value;
+            }
+        }
+
+        public Dictionary<string, string> Waypoints
+        {
+            get
+            {
+                return waypoints;
+            }
+            set
+            {
+                waypoints = value;
+            }
+        }
+
         public string WP
         {
             get
@@ -1180,15 +1270,15 @@ namespace ServerTools
             }
         }
 
-        public List<string[]> ClanRequestToJoin
+        public DateTime ZoneDeathTime
         {
             get
             {
-                return clanRequestToJoin;
+                return zoneDeathTime;
             }
             set
             {
-                clanRequestToJoin = value;
+                zoneDeathTime = value;
             }
         }
 

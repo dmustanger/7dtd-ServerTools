@@ -25,7 +25,7 @@ namespace ServerTools
                         {
                             if (Mute.Mutes.Contains(_playerToMute.playerId))
                             {
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " this player is already muted.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "This player is already muted.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 return;
                             }
                             _playerMute = _playerToMute;
@@ -35,7 +35,7 @@ namespace ServerTools
                                 _phrase775 = "A vote to mute {PlayerName} in chat has begun and will close in 60 seconds.";
                             }
                             _phrase775 = _phrase775.Replace("{PlayerName}", _playerToMute.playerName);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase775 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase775 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             string _phrase776;
                             if (!Phrases.Dict.TryGetValue(776, out _phrase776))
                             {
@@ -43,18 +43,18 @@ namespace ServerTools
                             }
                             _phrase776 = _phrase776.Replace("{CommandPrivate}", ChatHook.Command_Private);
                             _phrase776 = _phrase776.Replace("{Command70}", RestartVote.Command70);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase776 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase776 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             VoteOpen = true;
                         }
                         else
                         {
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " this player id was not found.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + " this player id was not found.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + " not enough players are online to start a vote to mute.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + " not enough players are online to start a vote to mute.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -97,7 +97,7 @@ namespace ServerTools
                     }
                     _phrase958 = _phrase958.Replace("{PlayerName}", _cInfo2.playerName);
                     _phrase958 = _phrase958.Replace("{Id}", _cInfo2.entityId.ToString());
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase958 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase958 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             if (_otherUser)
@@ -105,15 +105,15 @@ namespace ServerTools
                 string _phrase778;
                 if (!Phrases.Dict.TryGetValue(778, out _phrase778))
                 {
-                    _phrase778 = " type {CommandPrivate}{Command67} # to start a vote to mute that player from chat.";
+                    _phrase778 = "Type {CommandPrivate}{Command67} # to start a vote to mute that player from chat.";
                 }
                 _phrase778 = _phrase778.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase778 = _phrase778.Replace("{Command67}", Command67);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase778 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase778 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "No other users were found online" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "No other users were found online" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

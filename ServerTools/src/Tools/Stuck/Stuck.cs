@@ -58,13 +58,13 @@ namespace ServerTools
                 string _phrase920;
                 if (!Phrases.Dict.TryGetValue(920, out _phrase920))
                 {
-                    _phrase920 = " you can only use {CommandPrivate}{Command90} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase920 = "You can only use {CommandPrivate}{Command90} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 _phrase920 = _phrase920.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase920 = _phrase920.Replace("{TimeRemaining}", _timeleft.ToString());
                 _phrase920 = _phrase920.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase920 = _phrase920.Replace("{Command90}", Command90);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase920 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase920 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -91,9 +91,9 @@ namespace ServerTools
                     string _phrase923;
                     if (!Phrases.Dict.TryGetValue(923, out _phrase923))
                     {
-                        _phrase923 = " you do not seem to be stuck.";
+                        _phrase923 = "You do not seem to be stuck.";
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase923 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase923 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -101,9 +101,9 @@ namespace ServerTools
                 string _phrase921;
                 if (!Phrases.Dict.TryGetValue(921, out _phrase921))
                 {
-                    _phrase921 = " you are outside of your claimed space or a friends. Command is unavailable.";
+                    _phrase921 = "You are outside of your claimed space or a friends. Command is unavailable.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase921 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase921 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -133,9 +133,9 @@ namespace ServerTools
             string _phrase922;
             if (!Phrases.Dict.TryGetValue(922, out _phrase922))
             {
-                _phrase922 = " sending you to the world surface. If you are still stuck, contact an administrator.";
+                _phrase922 = "Sending you to the world surface. If you are still stuck, contact an administrator.";
             }
-            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase922 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase922 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             PersistentContainer.Instance.Players[_cInfo.playerId].LastStuck = DateTime.Now;
             PersistentContainer.Instance.Save();
         }

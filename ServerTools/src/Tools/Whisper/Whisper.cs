@@ -21,7 +21,7 @@ namespace ServerTools
             _message = _message.Replace(_nameId, "");
             if (string.IsNullOrEmpty(_nameId) || string.IsNullOrEmpty(_message))
             {
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + "Invalid name, id or message used to whisper" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Invalid name, id or message used to whisper" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 return;
             }
             ClientInfo _recipientInfo = ConsoleHelper.ParseParamIdOrName(_nameId);
@@ -30,10 +30,10 @@ namespace ServerTools
                 string _phrase14;
                 if (!Phrases.Dict.TryGetValue(14, out _phrase14))
                 {
-                    _phrase14 = " player {TargetName} was not found.";
+                    _phrase14 = "Player {TargetName} was not found.";
                 }
                 _phrase14 = _phrase14.Replace("{TargetName}", _nameId);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase14 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase14 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -59,9 +59,9 @@ namespace ServerTools
                 string _phrase15;
                 if (!Phrases.Dict.TryGetValue(15, out _phrase15))
                 {
-                    _phrase15 = " no one has pm'd you.";
+                    _phrase15 = "No one has pm'd you.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase15 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase15 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -71,9 +71,9 @@ namespace ServerTools
                     string _phrase16;
                     if (!Phrases.Dict.TryGetValue(16, out _phrase16))
                     {
-                        _phrase16 = " the player is not online.";
+                        _phrase16 = "The player is not online.";
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase16 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase16 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {

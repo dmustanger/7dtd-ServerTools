@@ -64,7 +64,7 @@ namespace ServerTools
             XmlNode _XmlNode = xmlDoc.DocumentElement;
             foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
-                if (childNode.Name == "items")
+                if (childNode.Name == "Items")
                 {
                     Dict.Clear();
                     Dict1.Clear();
@@ -76,59 +76,59 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'items' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Bloodmoon_Warrior.xml' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("name"))
+                        if (!_line.HasAttribute("Name"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior entry because of missing name attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("secondaryname"))
+                        if (!_line.HasAttribute("SecondaryName"))
                         {
                             updateConfig = true;
                         }
-                        if (!_line.HasAttribute("minCount"))
+                        if (!_line.HasAttribute("MinCount"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior entry because of missing minCount attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("maxCount"))
+                        if (!_line.HasAttribute("MaxCount"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior entry because of missing maxCount attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("minQuality"))
+                        if (!_line.HasAttribute("MinQuality"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior entry because of missing minQuality attribute: {0}", subChild.OuterXml));
                         }
-                        if (!_line.HasAttribute("maxQuality"))
+                        if (!_line.HasAttribute("MaxQuality"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior entry because of missing maxQuality attribute: {0}", subChild.OuterXml));
                         }
                         int _minCount = 1, _maxCount = 1, _minQuality = 1, _maxQuality = 1;
-                        if (!int.TryParse(_line.GetAttribute("minCount"), out _minCount))
+                        if (!int.TryParse(_line.GetAttribute("MinCount"), out _minCount))
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior entry because of invalid (non-numeric) value for 'minCount' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("maxCount"), out _maxCount))
+                        if (!int.TryParse(_line.GetAttribute("MaxCount"), out _maxCount))
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior entry because of invalid (non-numeric) value for 'maxCount' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("minQuality"), out _minQuality))
+                        if (!int.TryParse(_line.GetAttribute("MinQuality"), out _minQuality))
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior entry because of invalid (non-numeric) value for 'minQuality' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("maxQuality"), out _maxQuality))
+                        if (!int.TryParse(_line.GetAttribute("MaxQuality"), out _maxQuality))
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior entry because of invalid (non-numeric) value for 'maxQuality' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        string _name = _line.GetAttribute("name");
+                        string _name = _line.GetAttribute("Name");
                         ItemClass _class = ItemClass.GetItemClass(_name, true);
                         Block _block = Block.GetBlockByName(_name, true);
                         if (_class == null && _block == null)
@@ -137,9 +137,9 @@ namespace ServerTools
                             continue;
                         }
                         string _secondaryname;
-                        if (_line.HasAttribute("secondaryname"))
+                        if (_line.HasAttribute("SecondaryName"))
                         {
-                            _secondaryname = _line.GetAttribute("secondaryname");
+                            _secondaryname = _line.GetAttribute("SecondaryName");
                         }
                         else
                         {
@@ -171,7 +171,7 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<BloodmoonWarrior>");
-                sw.WriteLine("    <items>");
+                sw.WriteLine("    <Items>");
                 if (Dict.Count > 0)
                 {
                     foreach (KeyValuePair<string, int[]> kvp in Dict)
@@ -179,23 +179,23 @@ namespace ServerTools
                         string _name;
                         if (Dict1.TryGetValue(kvp.Key, out _name))
                         {
-                            sw.WriteLine(string.Format("        <item name=\"{0}\" secondaryname=\"{1}\" minCount=\"{2}\" maxCount=\"{3}\" minQuality=\"{4}\" maxQuality=\"{5}\" />", kvp.Key, _name, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
+                            sw.WriteLine(string.Format("        <Item Name=\"{0}\" SecondaryName=\"{1}\" MinCount=\"{2}\" MaxCount=\"{3}\" MinQuality=\"{4}\" MaxQuality=\"{5}\" />", kvp.Key, _name, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
                         }
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <item name=\"drinkJarBoiledWater\" secondaryname=\"Bottled Water\" minCount=\"20\" maxCount=\"30\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item name=\"drinkJarBeer\" secondaryname=\"Beer\" minCount=\"10\" maxCount=\"15\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item name=\"gun44Magnum\" secondaryname=\"44 Magnum\" minCount=\"1\" maxCount=\"1\" minQuality=\"3\" maxQuality=\"5\" />");
-                    sw.WriteLine("        <item name=\"gunPumpShotgun\" secondaryname=\"Pump Shotgun\" minCount=\"1\" maxCount=\"1\" minQuality=\"3\" maxQuality=\"5\" />");
-                    sw.WriteLine("        <item name=\"gunMR10\" secondaryname=\"MR10\" minCount=\"1\" maxCount=\"1\" minQuality=\"2\" maxQuality=\"5\" />");
-                    sw.WriteLine("        <item name=\"gunRocketLauncher\" secondaryname=\"Rocket Launcher\" minCount=\"1\" maxCount=\"1\" minQuality=\"2\" maxQuality=\"5\" />");
-                    sw.WriteLine("        <item name=\"ammoRocketHE\" secondaryname=\"HE Rocket\" minCount=\"5\" maxCount=\"10\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item name=\"ammo44MagnumBulletHP\" secondaryname=\"HP 44 Magnum Ammo\" minCount=\"25\" maxCount=\"50\" minQuality=\"1\" maxQuality=\"1\" />");
-                    sw.WriteLine("        <item name=\"ammo762mmBulletHP\" secondaryname=\"HP AK47 Ammo\" minCount=\"50\" maxCount=\"100\" minQuality=\"1\" maxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"Bottled Water\" MinCount=\"20\" MaxCount=\"30\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"drinkJarBeer\" SecondaryName=\"Beer\" MinCount=\"10\" MaxCount=\"15\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"gun44Magnum\" SecondaryName=\"44 Magnum\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"3\" MaxQuality=\"5\" />");
+                    sw.WriteLine("        <Item Name=\"gunPumpShotgun\" SecondaryName=\"Pump Shotgun\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"3\" MaxQuality=\"5\" />");
+                    sw.WriteLine("        <Item Name=\"gunMR10\" SecondaryName=\"MR10\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"2\" MaxQuality=\"5\" />");
+                    sw.WriteLine("        <Item Name=\"gunRocketLauncher\" SecondaryName=\"Rocket Launcher\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"2\" MaxQuality=\"5\" />");
+                    sw.WriteLine("        <Item Name=\"ammoRocketHE\" SecondaryName=\"HE Rocket\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"ammo44MagnumBulletHP\" SecondaryName=\"HP 44 Magnum Ammo\" MinCount=\"25\" MaxCount=\"50\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"ammo762mmBulletHP\" SecondaryName=\"HP AK47 Ammo\" MinCount=\"50\" MaxCount=\"100\" MinQuality=\"1\" MaxQuality=\"1\" />");
                 }
-                sw.WriteLine("    </items>");
+                sw.WriteLine("    </Items>");
                 sw.WriteLine("</BloodmoonWarrior>");
                 sw.Flush();
                 sw.Close();
@@ -260,7 +260,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonWarrior.Exec: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonWarrior.Exec: {0}", e.Message));
             }
         }
 
@@ -302,7 +302,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonWarrior.RewardWarriors: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonWarrior.RewardWarriors: {0}", e.Message));
             }
         }
 
@@ -342,17 +342,17 @@ namespace ServerTools
                     world.SpawnEntityInWorld(entityItem);
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                     world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                    string _message = " received {ItemCount} {ItemName} from Hades.";
+                    string _message = "Received {ItemCount} {ItemName} from Hades.";
                     _message = _message.Replace("{ItemCount}", _count.ToString());
                     string _name;
                     Dict1.TryGetValue(_randomItem, out _name);
                     _message = _message.Replace("{ItemName}", _name);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonWarrior.RandomItem: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonWarrior.RandomItem: {0}", e.Message));
             }
         }
     }

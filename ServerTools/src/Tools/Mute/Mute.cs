@@ -64,10 +64,10 @@ namespace ServerTools
                     string _phrase201;
                     if (!Phrases.Dict.TryGetValue(201, out _phrase201))
                     {
-                        _phrase201 = " player {Player} was not found.";
+                        _phrase201 = "Player {Player} was not found.";
                     }
                     _phrase201 = _phrase201.Replace("{Player}", _player);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase201 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase201 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else if (PrivateMutes != null && PrivateMutes.Count > 0 && PrivateMutes.ContainsKey(_cInfo.entityId))
                 {

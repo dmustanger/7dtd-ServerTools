@@ -10,18 +10,18 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, IsRunning = false, Zombies = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
-        public static string Command24 = "gimme", Command25 = "gimmie";
+        public static string Command24 = "gimme", Command25 = "gimmie", Zombie_Id = "4,9,11";
         private const string file = "Gimme.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static Dictionary<string, int[]> dict = new Dictionary<string, int[]>();
-        private static Dictionary<string, string> dict1 = new Dictionary<string, string>();
+        private static Dictionary<string, int[]> Dict = new Dictionary<string, int[]>();
+        private static Dictionary<string, string> Dict1 = new Dictionary<string, string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static System.Random random = new System.Random();
         private static bool updateConfig = false;
 
         private static List<string> list
         {
-            get { return new List<string>(dict.Keys); }
+            get { return new List<string>(Dict.Keys); }
         }
 
         public static void Load()
@@ -37,8 +37,8 @@ namespace ServerTools
         {
             if (!IsEnabled && IsRunning)
             {
-                dict.Clear();
-                dict1.Clear();
+                Dict.Clear();
+                Dict1.Clear();
                 fileWatcher.Dispose();
                 IsRunning = false;
             }
@@ -65,8 +65,8 @@ namespace ServerTools
             {
                 if (childNode.Name == "Items")
                 {
-                    dict.Clear();
-                    dict1.Clear();
+                    Dict.Clear();
+                    Dict1.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -145,11 +145,11 @@ namespace ServerTools
                         {
                             _secondaryname = _item;
                         }
-                        if (!dict.ContainsKey(_item))
+                        if (!Dict.ContainsKey(_item))
                         {
                             int[] _c = new int[] { _minCount, _maxCount, _minQuality, _maxQuality };
-                            dict.Add(_item, _c);
-                            dict1.Add(_item, _secondaryname);
+                            Dict.Add(_item, _c);
+                            Dict1.Add(_item, _secondaryname);
                         }
                     }
                 }
@@ -169,12 +169,12 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Gimme>");
                 sw.WriteLine("    <Items>");
-                if (dict.Count > 0)
+                if (Dict.Count > 0)
                 {
-                    foreach (KeyValuePair<string, int[]> kvp in dict)
+                    foreach (KeyValuePair<string, int[]> kvp in Dict)
                     {
                         string _name;
-                        if (dict1.TryGetValue(kvp.Key, out _name))
+                        if (Dict1.TryGetValue(kvp.Key, out _name))
                         {
                             sw.WriteLine(string.Format("        <Item Name=\"{0}\" Secondaryname=\"{1}\" MinCount=\"{2}\" MaxCount=\"{3}\" MinQuality=\"{4}\" MaxQuality=\"{5}\" />", kvp.Key, _name, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
                         }
@@ -236,7 +236,7 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (dict.Count == 0)
+            if (Dict.Count == 0)
             {
                 return;
             }
@@ -253,7 +253,11 @@ namespace ServerTools
             }
             else
             {
-                DateTime _lastgimme = PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme;
+                DateTime _lastgimme = DateTime.Now;
+                if (PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme != null)
+                {
+                    _lastgimme = PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme;
+                }
                 TimeSpan varTime = DateTime.Now - _lastgimme;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int _timepassed = (int)fractionalMinutes;
@@ -294,13 +298,13 @@ namespace ServerTools
                 string _phrase6;
                 if (!Phrases.Dict.TryGetValue(6, out _phrase6))
                 {
-                    _phrase6 = " you can only use {CommandPrivate}{Command24} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase6 = "You can only use {CommandPrivate}{Command24} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 _phrase6 = _phrase6.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
                 _phrase6 = _phrase6.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase6 = _phrase6.Replace("{Command24}", Command24);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase6 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase6 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -317,10 +321,10 @@ namespace ServerTools
                     string _phrase814;
                     if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                     {
-                        _phrase814 = " you do not have enough {Currency} in your wallet to run this command.";
+                        _phrase814 = "You do not have enough {Currency} in your wallet to run this command.";
                     }
                     _phrase814 = _phrase814.Replace("{Currency}", TraderInfo.CurrencyItem);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -356,7 +360,7 @@ namespace ServerTools
                 string _randomItem = list.RandomObject();
                 ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_randomItem, false).type, false);
                 int[] _itemData;
-                if (dict.TryGetValue(_randomItem, out _itemData))
+                if (Dict.TryGetValue(_randomItem, out _itemData))
                 {
                     int _count = 0;
                     if (_itemData[0] > _itemData[1])
@@ -371,32 +375,31 @@ namespace ServerTools
                     {
                         _itemValue.Quality = random.Next(_itemData[2], _itemData[3] + 1);
                     }
-                    World world = GameManager.Instance.World;
                     var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                     {
                         entityClass = EntityClass.FromString("item"),
                         id = EntityFactory.nextEntityID++,
                         itemStack = new ItemStack(_itemValue, _count),
-                        pos = world.Players.dict[_cInfo.entityId].position,
+                        pos = GameManager.Instance.World.Players.dict[_cInfo.entityId].position,
                         rot = new Vector3(20f, 0f, 20f),
                         lifetime = 60f,
                         belongsPlayerId = _cInfo.entityId
                     });
-                    world.SpawnEntityInWorld(entityItem);
+                    GameManager.Instance.World.SpawnEntityInWorld(entityItem);
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+                    GameManager.Instance.World.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
                     string _phrase7;
                     if (!Phrases.Dict.TryGetValue(7, out _phrase7))
                     {
-                        _phrase7 = " received {ItemCount} {ItemName} from gimme.";
+                        _phrase7 = "Received {ItemCount} {ItemName} from gimme.";
                     }
                     _phrase7 = _phrase7.Replace("{ItemCount}", _count.ToString());
                     string _name;
-                    if (dict1.TryGetValue(_randomItem, out _name))
+                    if (Dict1.TryGetValue(_randomItem, out _name))
                     {
                         _phrase7 = _phrase7.Replace("{ItemName}", _name);
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase7 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase7 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     if (Wallet.IsEnabled && Command_Cost >= 1)
                     {
                         Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
@@ -407,38 +410,70 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Gimme.RandomItem: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Gimme.RandomItem: {0}", e.Message));
             }
         }
 
         private static void RandomZombie(ClientInfo _cInfo)
         {
-            Log.Out("[SERVERTOOLS] Spawning zombie for player's gimme");
-            int _rndZ = random.Next(1, 4);
-            if (_rndZ == 1)
+            if (Zombie_Id != "")
             {
-                SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} 10 @ 4", _cInfo.entityId), (ClientInfo)null);
-            }
-            if (_rndZ == 2)
-            {
-                SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} 10 @ 9", _cInfo.entityId), (ClientInfo)null);
+                if (Zombie_Id.Contains(","))
+                {
+                    string[] _zombieIds = Zombie_Id.Split(',');
+                    int _count = random.Next(1, _zombieIds.Length + 1);
+                    string _zId = _zombieIds[_count];
+                    if (int.TryParse(_zId, out int _zombieId))
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Spawned an entity for {0}'s gimme", _cInfo.playerName));
+                        SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} 10 @ {1}", _cInfo.playerId, _zombieId), null);
+                        string _phrase807;
+                        if (!Phrases.Dict.TryGetValue(807, out _phrase807))
+                        {
+                            _phrase807 = "OH NO! How did that get in there? You have received a zombie.";
+                        }
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase807 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        if (Wallet.IsEnabled && Command_Cost >= 1)
+                        {
+                            Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                        }
+                        PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+                        PersistentContainer.Instance.Save();
+                    }
+                    else
+                    {
+                        RandomItem(_cInfo);
+                    }
+                }
+                else
+                {
+                    if (int.TryParse(Zombie_Id, out int _zombieId))
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Spawned an entity for {0}'s gimme", _cInfo.playerName));
+                        SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} 10 @ {1}", _cInfo.playerId, _zombieId), null);
+                        string _phrase807;
+                        if (!Phrases.Dict.TryGetValue(807, out _phrase807))
+                        {
+                            _phrase807 = "OH NO! How did that get in there? You have received a zombie.";
+                        }
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase807 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        if (Wallet.IsEnabled && Command_Cost >= 1)
+                        {
+                            Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                        }
+                        PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
+                        PersistentContainer.Instance.Save();
+                    }
+                    else
+                    {
+                        RandomItem(_cInfo);
+                    }
+                }
             }
             else
             {
-                SdtdConsole.Instance.ExecuteSync(string.Format("ser {0} 10 @ 11", _cInfo.entityId), (ClientInfo)null);
+                RandomItem(_cInfo);
             }
-            string _phrase807;
-            if (!Phrases.Dict.TryGetValue(807, out _phrase807))
-            {
-                _phrase807 = "OH NO! How did that get in there? You have received a zombie.";
-            }
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase807 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-            if (Wallet.IsEnabled && Command_Cost >= 1)
-            {
-                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
-            }
-            PersistentContainer.Instance.Players[_cInfo.playerId].LastGimme = DateTime.Now;
-            PersistentContainer.Instance.Save();
         }
     }
 }

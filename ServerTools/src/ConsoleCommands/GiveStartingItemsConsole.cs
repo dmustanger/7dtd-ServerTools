@@ -97,14 +97,14 @@ namespace ServerTools
                     string _phrase806;
                     if (!Phrases.Dict.TryGetValue(806, out _phrase806))
                     {
-                        _phrase806 = " you have received the starting items. Check your inventory. If full, check the ground.";
+                        _phrase806 = "You have received the starting items. Check your inventory. If full, check the ground.";
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase806 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase806 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in GiveStartingItemsConsole.Send: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in GiveStartingItemsConsole.Send: {0}", e.Message));
             }
         }
     }

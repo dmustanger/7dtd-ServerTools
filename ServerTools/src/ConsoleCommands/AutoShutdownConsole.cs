@@ -39,7 +39,7 @@ namespace ServerTools
                     {
                         AutoShutdown.IsEnabled = false;
                         LoadConfig.WriteXml();
-                        StopServer.StopServerCountingDown = false;
+                        StopServer.CountingDown = false;
                         SdtdConsole.Instance.Output(string.Format("Auto shutdown has been set to off"));
                         return;
                     }

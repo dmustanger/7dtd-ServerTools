@@ -30,8 +30,8 @@ namespace ServerTools.Website
         public static string SITE_DIR = "";
         public static string Password = "";
         private static string Port = "";
-        private static string file = string.Format("WebsiteLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string filepath = string.Format("{0}/Logs/WebsiteLogs/{1}", API.ConfigPath, file);
+        private static string _File = string.Format("WebsiteLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static string FilePath = string.Format("{0}/Logs/WebsiteLogs/{1}", API.ConfigPath, _File);
         private static HttpListener Listener = new HttpListener();
         private static readonly Version HttpVersion = new Version(1, 1);
         private static System.Random Rnd = new System.Random();
@@ -92,11 +92,13 @@ namespace ServerTools.Website
                 }
                 if (!DirFound)
                 {
+                    Unload();
                     Log.Out("[SERVERTOOLS] Unable to verify ServerTools directory. Website failed to start");
                 }
             }
             catch (Exception e)
             {
+                Unload();
                 Log.Out(string.Format("[SERVERTOOLS] Error in WebsiteServer.CheckDir: {0}" + e.Message));
             }
         }
@@ -1279,14 +1281,13 @@ namespace ServerTools.Website
                                                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                                                     if (_player != null && _player.IsSpawned())
                                                     {
-                                                        int x, y, z;
                                                         if (Jail.Jail_Position.Contains(","))
                                                         {
                                                             string[] _cords = Jail.Jail_Position.Split(',');
-                                                            int.TryParse(_cords[0], out x);
-                                                            int.TryParse(_cords[1], out y);
-                                                            int.TryParse(_cords[2], out z);
-                                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                                                            int.TryParse(_cords[0], out int _x);
+                                                            int.TryParse(_cords[1], out int _y);
+                                                            int.TryParse(_cords[2], out int _z);
+                                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                                                         }
                                                     }
                                                     Jail.Jailed.Add(_cInfo.playerId);
@@ -1416,25 +1417,25 @@ namespace ServerTools.Website
             return false;
         }
 
-        private static string Encrypt(string _k, string _s)
-        {
-            int _sL = _s.Length;
-            for (int i = 3992; i > 0; i -= 8)
-            {
-                _k = _k.Insert(i, " ");
-            }
-            string[] _kA = _k.Split(' ');
-            string _enc = "";
-            for (int j = 0; j < _sL; j++)
-            {
-                char _ch = _s.ElementAt(j);
-                int _cHP = int.Parse(_ch.ToString());
-                int _kP = int.Parse(_kA[(_sL - 1) - j]);
-                string _bK = (_cHP + _kP).ToString().PadLeft(8, '0');
-                _enc += _bK;
-            }
-            return _enc;
-        }
+        //private static string Encrypt(string _k, string _s)
+        //{
+        //    int _sL = _s.Length;
+        //    for (int i = 3992; i > 0; i -= 8)
+        //    {
+        //        _k = _k.Insert(i, " ");
+        //    }
+        //    string[] _kA = _k.Split(' ');
+        //    string _enc = "";
+        //    for (int j = 0; j < _sL; j++)
+        //    {
+        //        char _ch = _s.ElementAt(j);
+        //        int _cHP = int.Parse(_ch.ToString());
+        //        int _kP = int.Parse(_kA[(_sL - 1) - j]);
+        //        string _bK = (_cHP + _kP).ToString().PadLeft(8, '0');
+        //        _enc += _bK;
+        //    }
+        //    return _enc;
+        //}
 
         private static string Decrypt(string _k, string _s)
         {
@@ -1522,7 +1523,7 @@ namespace ServerTools.Website
 
         private static void Writer(string _input)
         {
-            using (StreamWriter sw = new StreamWriter(filepath, true))
+            using (StreamWriter sw = new StreamWriter(FilePath, true))
             {
                 sw.WriteLine(string.Format("{0}: {1}", DateTime.Now, _input));
                 sw.WriteLine();

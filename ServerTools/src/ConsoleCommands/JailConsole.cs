@@ -130,10 +130,10 @@ namespace ServerTools
                                     string _phrase500;
                                     if (!Phrases.Dict.TryGetValue(500, out _phrase500))
                                     {
-                                        _phrase500 = " you have been sent to jail.";
+                                        _phrase500 = "You have been sent to jail.";
                                     }
                                     _phrase500 = _phrase500.Replace("{Minutes}", _jailTime.ToString());
-                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase500 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase500 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     SdtdConsole.Instance.Output(string.Format("You have put {0} in jail for {1} minutes.", _cInfo.playerName, _jailTime));
                                 }
                                 if (_jailTime == -1)
@@ -141,9 +141,9 @@ namespace ServerTools
                                     string _phrase500;
                                     if (!Phrases.Dict.TryGetValue(500, out _phrase500))
                                     {
-                                        _phrase500 = " you have been sent to jail.";
+                                        _phrase500 = "You have been sent to jail.";
                                     }
-                                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase500 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase500 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     SdtdConsole.Instance.Output(string.Format("You have put {0} in jail for life.", _cInfo.playerName));
                                 }
                             }

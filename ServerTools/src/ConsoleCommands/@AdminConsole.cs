@@ -36,14 +36,14 @@ public class @AdminsConsole : ConsoleCmdAbstract
                 ClientInfo _player = _cInfoList[i];
                 if (GameManager.Instance.adminTools.IsAdmin(_player.playerId))
                 {
-                    ChatHook.ChatMessage(_player, ChatHook.Player_Name_Color + _player.playerName + LoadConfig.Chat_Response_Color + _message + "[-]", _player.entityId, _player.playerName, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_player, LoadConfig.Chat_Response_Color + _message + "[-]", -1, _player.playerName, EChatType.Whisper, null);
                     SdtdConsole.Instance.Output(string.Format("Message sent to {0}", _player.playerName));
                 }
             }
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in @AdminConsole.Execute: {0}", e));
+            Log.Out(string.Format("[SERVERTOOLS] Error in @AdminConsole.Execute: {0}", e.Message));
         }
     }
 }

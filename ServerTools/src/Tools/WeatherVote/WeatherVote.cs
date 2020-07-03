@@ -36,7 +36,7 @@ namespace ServerTools
                         {
                             _phrase611 = "A vote to change the weather has begun and will close in 60 seconds.";
                         }
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase611 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase611 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         string _phrase615;
                         if (!Phrases.Dict.TryGetValue(615, out _phrase615))
                         {
@@ -46,7 +46,7 @@ namespace ServerTools
                         _phrase615 = _phrase615.Replace("{Command63}", Command63);
                         _phrase615 = _phrase615.Replace("{Command64}", Command64);
                         _phrase615 = _phrase615.Replace("{Command65}", Command65);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase615 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase615 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         VoteOpen = true;
                     }
                     else
@@ -54,15 +54,15 @@ namespace ServerTools
                         string _phrase933;
                         if (!Phrases.Dict.TryGetValue(933, out _phrase933))
                         {
-                            _phrase933 = " not enough players are online to start a weather vote.";
+                            _phrase933 = "Not enough players are online to start a weather vote.";
                         }
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase933 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase933 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
                 {
                     int _timeleft = 60 - _timepassed;
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Wait thirty minutes before starting a new vote to change the weather. " + _timeleft + " minutes remaining." + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Wait thirty minutes before starting a new vote to change the weather. " + _timeleft + " minutes remaining." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -70,9 +70,9 @@ namespace ServerTools
                 string _phrase824;
                 if (!Phrases.Dict.TryGetValue(824, out _phrase824))
                 {
-                    _phrase824 = " there is a vote already open.";
+                    _phrase824 = "There is a vote already open.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase824 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase824 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

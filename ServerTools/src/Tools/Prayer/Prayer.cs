@@ -114,8 +114,8 @@ namespace ServerTools
                 else
                 {
                     sw.WriteLine("        <Buff Name=\"buffPerkCharismaticNature\" Message=\"Your charisma has blossomed through your prayer\" />");
-                    sw.WriteLine("        <Buff Name=\"buffPerkParkour\" Message=\"You have can fall without taking damage by the grace of your prayers\" />");
-                    sw.WriteLine("        <Buff Name=\"buffPistolPeteSwissKnees\" Message=\"Your prayers have developed in to a higher change to cripple\" />");
+                    sw.WriteLine("        <Buff Name=\"buffPerkParkour\" Message=\"You can fall without taking damage by the grace of your prayers\" />");
+                    sw.WriteLine("        <Buff Name=\"buffPistolPeteSwissKnees\" Message=\"Your prayers have developed in to a higher chance to cripple\" />");
                     sw.WriteLine("        <Buff Name=\"buffAutoWeaponsRagdoll\" Message=\"Your prayers have been answered with auto weapon knockdown damage\" />");
                 }
                 sw.WriteLine("    </Prayers>");
@@ -159,7 +159,11 @@ namespace ServerTools
             }
             else
             {
-                DateTime _lastPrayer = PersistentContainer.Instance.Players[_cInfo.playerId].LastPrayer;
+                DateTime _lastPrayer = DateTime.Now;
+                if (PersistentContainer.Instance.Players[_cInfo.playerId].LastPrayer != null)
+                {
+                    _lastPrayer = PersistentContainer.Instance.Players[_cInfo.playerId].LastPrayer;
+                }
                 TimeSpan varTime = DateTime.Now - _lastPrayer;
                 double fractionalMinutes = varTime.TotalMinutes;
                 int _timepassed = (int)fractionalMinutes;
@@ -197,12 +201,12 @@ namespace ServerTools
             else
             {
                 int _timeleft = _delay - _timepassed;
-                string _response = " you can only use {CommandPrivate}{Command126} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                string _response = "You can only use {CommandPrivate}{Command126} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 _response = _response.Replace("{DelayBetweenUses}", _delay.ToString());
                 _response = _response.Replace("{TimeRemaining}", _timeleft.ToString());
                 _response = _response.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _response = _response.Replace("{Command126}", Command126);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -219,10 +223,10 @@ namespace ServerTools
                     string _phrase814;
                     if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                     {
-                        _phrase814 = " you do not have enough {Currency} in your wallet to run this command.";
+                        _phrase814 = "You do not have enough {Currency} in your wallet to run this command.";
                     }
                     _phrase814 = _phrase814.Replace("{Currency}", TraderInfo.CurrencyItem);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -238,7 +242,7 @@ namespace ServerTools
                 List<string> Keys = new List<string>(Dict.Keys);
                 string randomKey = Keys[random.Next(Dict.Count)];
                 string _message = Dict[randomKey];
-                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("buff " + "randomKey", true));
+                SdtdConsole.Instance.ExecuteSync(string.Format("buffplayer {0} {1}", _cInfo.playerId, randomKey), null);
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {

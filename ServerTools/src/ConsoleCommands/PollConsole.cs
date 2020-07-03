@@ -1,254 +1,268 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
+using System.Linq;
 
 namespace ServerTools
 {
     class PollConsole : ConsoleCmdAbstract
     {
-        public static bool IsEnabled = false;
-        public static string Command91 = "pollyes", Command92 = "pollno", Command93 = "poll";
-        public static List<string> PolledYes = new List<string>();
-        public static List<string> PolledNo = new List<string>();
-        private static string _file = string.Format("PollLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string _filepath = string.Format("{0}/Logs/PollLogs/{1}", API.ConfigPath, _file);
-
         public override string GetDescription()
         {
-            return "[ServerTools]-Opens a new poll for players to vote for.";
+            return "[ServerTools] - Open, cancel, stop, check, or list a poll for players to vote on";
         }
 
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. Poll new <time> <message>\n" +
-                "  2. Poll close <True/False>\n" +
-                "  3. Poll check\n" +
-                "  4. Poll last\n" +
-                "  5. Poll reopen <time>\n" +
-                "1. Opens a new poll for <time> in hours. The poll message will display when a player joins the server.\n" +
-                "Players can vote once per poll. Results are logged to a file for review.\n" +
-                "2. Closes an open poll and will announce the result if true.\n" +
-                "3. Shows the current poll results in console.\n" +
-                "4. Displays the last poll in console.\n" +
-                "5. Opens the last poll for <time> in hours.\n";
+                "  1. Poll new <hours> <message>\n" +
+                "  2. Poll cancel\n" +
+                "  3. Poll stop\n" +
+                "  4. Poll check\n" +
+                "  5. Poll list\n" +
+                "  6. Poll open <number> <hours>\n" +
+                "1. Opens a new poll that lasts for this many hours. The poll message will display when a player joins the server.\n" +
+                "Players can vote once per poll. Results are logged to a file for review and stored to a list if you wish to open it again.\n" +
+                "2. Cancels the open poll and does not announce or store it.\n" +
+                "3. Stops an open poll and will announce the result so far.\n" +
+                "4. Shows the current poll results in console.\n" +
+                "5. Displays a list of old polls and their results.\n" +
+                "6. Opens a poll from the list of old polls for this many hours.\n";
         }
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Poll", "Poll", "poll" };
+            return new string[] { "st-Poll", "Poll", "poll", "st-poll" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
-            if (!IsEnabled)
+            if (!Poll.IsEnabled)
             {
                 SdtdConsole.Instance.Output(string.Format("Polling is disabled. You must enable the tool first", _params.Count));
                 return;
             }
             try
             {
-                if (_params[0] == "new")
+                if (_params.Count < 1)
                 {
-                    if (_params.Count < 3)
+                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected more than 1, found {0}", _params.Count));
+                    return;
+                }
+                if (_params[0].ToLower() == "new")
+                {
+                    if (!int.TryParse(_params[1], out int _hours))
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected at least 3, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("Invalid integer {0}", _params[1]));
+                        return;
+                    }
+                    if (PersistentContainer.Instance.PollOpen)
+                    {
+                        SdtdConsole.Instance.Output("A poll is already open");
                         return;
                     }
                     else
                     {
-                        int _hours;
-                        if (!int.TryParse(_params[1], out _hours))
-                        {
-                            SdtdConsole.Instance.Output(string.Format("Invalid integer {0}", _params[1]));
-                            return;
-                        }
-                        _params.RemoveRange(0, 2);
+                        _params.RemoveAt(0);
+                        _params.RemoveAt(0);
                         string _message = string.Join(" ", _params.ToArray());
-                        string _sql = "SELECT pollTime, pollHours, pollMessage FROM Polls WHERE pollOpen = 'true'";
-                        DataTable _result = SQL.TypeQuery(_sql);
-                        if (_result.Rows.Count > 0)
+                        string[] _newPollData = { DateTime.Now.ToString(), _hours.ToString(), _message };
+                        PersistentContainer.Instance.PollData = _newPollData;
+                        PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
+                        PersistentContainer.Instance.PollOpen = true;
+                        PersistentContainer.Instance.Save();
+                        SdtdConsole.Instance.Output(string.Format("A new poll has opened for {0} hour. Poll message: {1}", _hours, _message));
+                        using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
                         {
-                            DateTime _pollTime;
-                            DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _pollTime);
-                            int _pollHours;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _pollHours);
-                            string _pollMessage = _result.Rows[0].ItemArray.GetValue(2).ToString();
-                            TimeSpan varTime = DateTime.Now - _pollTime;
-                            double fractionalHours = varTime.TotalHours;
-                            int _timepassed = (int)fractionalHours;
-                            if (_timepassed >= _pollHours)
-                            {
-                                SdtdConsole.Instance.Output("There is a poll open but the time has expired.");
-                                SdtdConsole.Instance.Output(string.Format("Poll: {0}", _pollMessage));
-                                SdtdConsole.Instance.Output("You need to close the above poll before making a new one.");
-                            }
-                            else
-                            {
-                                int _timeleft = _pollHours - _timepassed;
-                                SdtdConsole.Instance.Output("There is a poll open. Let it finish or close it");
-                                SdtdConsole.Instance.Output(string.Format("Poll: {0}", _pollMessage));
-                                SdtdConsole.Instance.Output(string.Format("Time Remaining: {0} hours", _timeleft));
-                            }
+                            sw.WriteLine(string.Format("{0}: A new poll has opened for {1} hour. Message: {2}", DateTime.Now, _hours, _message));
+                            sw.WriteLine();
+                            sw.Flush();
+                            sw.Close();
                         }
-                        else
-                        {
-                            _sql = string.Format("INSERT INTO Polls (pollOpen, pollTime, pollHours, pollMessage) VALUES ('true', '{0}', {1}, '{2}')", DateTime.Now, _hours, _message);
-                            SQL.FastQuery(_sql, "PollConsole");
-                            string _phrase926;
-                            if (!Phrases.Dict.TryGetValue(926, out _phrase926))
-                            {
-                                _phrase926 = "Poll: {Message}";
-                            }
-                            _phrase926 = _phrase926.Replace("{Message}", _message);
-                            string _phrase927;
-                            if (!Phrases.Dict.TryGetValue(927, out _phrase927))
-                            {
-                                _phrase927 = "Type {CommandPrivate}{Command91} or {CommandPrivate}{Command92} to vote.";
-                            }
-                            _phrase927 = _phrase927.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                            _phrase927 = _phrase927.Replace("{Command91}", Command91);
-                            _phrase927 = _phrase927.Replace("{Command92}", Command92);
-                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase926, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase927, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            SdtdConsole.Instance.Output(string.Format("Opened a new poll for {0} hours.", _hours));
-                            using (StreamWriter sw = new StreamWriter(_filepath, true))
-                            {
-                                sw.WriteLine(string.Format("{0}  New poll {1} ... The poll will be open for {2} hours", DateTime.Now, _message, _hours));
-                                sw.WriteLine();
-                                sw.Flush();
-                                sw.Close();
-                            }
-                        }
-                        _result.Dispose();
-                    }
-                }
-                else if (_params[0] == "close")
-                {
-                    if (_params.Count != 2)
-                    {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
-                    bool _announce = false;
-                    if (!bool.TryParse(_params[1], out _announce))
-                    {
-                        SdtdConsole.Instance.Output(string.Format("Invalid True/False argument: {0}", _params[1]));
-                        return;
-                    }
-                    else
-                    {
-                        string _sql = "SELECT pollMessage, pollYes, pollNo FROM Polls WHERE pollOpen = 'true'";
-                        DataTable _result = SQL.TypeQuery(_sql);
-                        if (_result.Rows.Count > 0)
-                        {
-                            int _pollYes;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _pollYes);
-                            int _pollNo;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _pollNo);
-                            if (_announce)
-                            {
-                                string _phrase925;
-                                if (!Phrases.Dict.TryGetValue(925, out _phrase925))
-                                {
-                                    _phrase925 = "Poll results: Yes {YesVote} / No {NoVote}";
-                                }
-                                _phrase925 = _phrase925.Replace("{YesVote}", _pollYes.ToString());
-                                _phrase925 = _phrase925.Replace("{NoVote}", _pollNo.ToString());
-                                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase925, -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            }
-                            using (StreamWriter sw = new StreamWriter(_filepath, true))
-                            {
-                                string _pollMessage = _result.Rows[0].ItemArray.GetValue(0).ToString();
-                                sw.WriteLine(string.Format("{0}  Poll {1} ... has completed. The final results were yes {2} / no {3}", DateTime.Now, _pollMessage, _pollYes, _pollNo));
-                                sw.WriteLine();
-                                sw.Flush();
-                                sw.Close();
-                            }
-                            _sql = "SELECT pollMessage, pollYes, pollNo FROM Polls WHERE pollOpen = 'false'";
-                            DataTable _result1 = SQL.TypeQuery(_sql);
-                            if (_result1.Rows.Count > 0)
-                            {
-                                _sql = "DELETE FROM Polls WHERE pollOpen = 'false'";
-                                SQL.FastQuery(_sql, "PollConsole");
-                            }
-                            _result1.Dispose();
-                            _sql = "UPDATE Polls SET pollOpen = 'false' WHERE pollOpen = 'true'";
-                            SQL.FastQuery(_sql, "PollConsole");
-                            PolledYes.Clear();
-                            PolledNo.Clear();
-                            SdtdConsole.Instance.Output("Closed the open poll.");
-                        }
-                        else
-                        {
-                            SdtdConsole.Instance.Output("No poll is open");
-                        }
-                        _result.Dispose();
-                    }
                 }
-                else if (_params[0] == "last")
+                else if (_params[0] == "cancel")
                 {
                     if (_params.Count != 1)
                     {
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
-                    else
+                    if (PersistentContainer.Instance.PollOpen)
                     {
-                        string _sql = "SELECT pollHours, pollMessage, pollYes, pollNo FROM Polls WHERE pollOpen = 'false'";
-                        DataTable _result = SQL.TypeQuery(_sql);
-                        if (_result.Rows.Count > 0)
+                        PersistentContainer.Instance.PollData = null;
+                        PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
+                        PersistentContainer.Instance.PollOpen = false;
+                        PersistentContainer.Instance.Save();
+                        SdtdConsole.Instance.Output("The open poll has been cancelled");
+                        using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
                         {
-                            int _pollHours;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _pollHours);
-                            string _pollMessage = _result.Rows[0].ItemArray.GetValue(1).ToString();
-                            int _pollYes;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(2).ToString(), out _pollYes);
-                            int _pollNo;
-                            int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _pollNo);
-                            SdtdConsole.Instance.Output(string.Format("The last poll message: {0}", _pollMessage));
-                            SdtdConsole.Instance.Output(string.Format("Last poll results: Yes {0} / No {1}", _pollYes, _pollNo));
-                            SdtdConsole.Instance.Output(string.Format("Poll was open for {0} hours", _pollHours));
+                            sw.WriteLine(string.Format("{0}: The poll has been cancelled", DateTime.Now));
+                            sw.WriteLine();
+                            sw.Flush();
+                            sw.Close();
                         }
-                        else
-                        {
-                            SdtdConsole.Instance.Output("There are no saved prior poll results");
-                        }
-                        _result.Dispose();
-                    }
-                }
-                else if (_params[0] == "reopen")
-                {
-                    if (_params.Count != 2)
-                    {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
-                    string _sql = "SELECT pollTime, pollHours, pollMessage FROM Polls WHERE pollOpen = 'true'";
-                    DataTable _result = SQL.TypeQuery(_sql);
-                    if (_result.Rows.Count > 0)
-                    {
-                        SdtdConsole.Instance.Output("A poll is open. Can not open a new poll until it is closed");
-                    }
                     else
                     {
-                        _sql = "SELECT pollTime, pollHours, pollMessage FROM Polls WHERE pollOpen = 'false'";
-                        DataTable _result1 = SQL.TypeQuery(_sql);
-                        if (_result1.Rows.Count > 0)
+                        SdtdConsole.Instance.Output("There is no open poll to cancel");
+                        return;
+                    }
+                }
+                else if (_params[0] == "stop")
+                {
+                    if (_params.Count != 1)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        return;
+                    }
+                    if (PersistentContainer.Instance.PollOpen)
+                    {
+                        if (PersistentContainer.Instance.PollData == null || PersistentContainer.Instance.PollVote == null)
                         {
-                            int _hours;
-                            int.TryParse(_params[1], out _hours);
-                            _sql = string.Format("UPDATE Polls SET pollOpen = 'true', pollTime = '{0}', pollHours = {1} WHERE pollOpen = 'false'", DateTime.Now, _hours);
-                            SQL.FastQuery(_sql, "PollConsole");
+                            PersistentContainer.Instance.PollData = null;
+                            PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
+                            PersistentContainer.Instance.PollOpen = false;
+                            PersistentContainer.Instance.Save();
+                            SdtdConsole.Instance.Output("The open poll has been stopped but no announcement made due to missing data");
+                            using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                            {
+                                sw.WriteLine(string.Format("{0}: The poll has been stopped. Data was missing so nothing was recorded", DateTime.Now));
+                                sw.WriteLine();
+                                sw.Flush();
+                                sw.Close();
+                            }
+                            return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output("You have no previous poll");
+                            string[] _pollData = PersistentContainer.Instance.PollData;
+                            Dictionary<string, bool> _pollVotes = PersistentContainer.Instance.PollVote;
+                            if (_pollVotes.Count == 0)
+                            {
+                                PersistentContainer.Instance.PollData = null;
+                                PersistentContainer.Instance.PollOpen = false;
+                                PersistentContainer.Instance.Save();
+                                SdtdConsole.Instance.Output("The open poll has been stopped but no announcement made due to no votes");
+                                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                                {
+                                    sw.WriteLine(string.Format("{0}: The poll has been stopped. There was no votes recorded", DateTime.Now));
+                                    sw.WriteLine();
+                                    sw.Flush();
+                                    sw.Close();
+                                }
+                                return;
+                            }
+                            int _yes = 0, _no = 0;
+                            foreach (var _vote in _pollVotes)
+                            {
+                                if (_vote.Value == true)
+                                {
+                                    _yes++;
+                                }
+                                else
+                                {
+                                    _no++;
+                                }
+                            }
+                            if (_yes > _no)
+                            {
+                                if (PersistentContainer.Instance.PollOld != null && PersistentContainer.Instance.PollOld.Count > 0)
+                                {
+                                    Dictionary<string[], string> _oldPoll = PersistentContainer.Instance.PollOld;
+                                    _oldPoll.Add(_pollData, "yes");
+                                    PersistentContainer.Instance.PollOld = _oldPoll;
+                                }
+                                else
+                                {
+                                    Dictionary<string[], string> _oldPoll = new Dictionary<string[], string>();
+                                    _oldPoll.Add(_pollData, "yes");
+                                    PersistentContainer.Instance.PollOld = _oldPoll;
+                                }
+                                SdtdConsole.Instance.Output(string.Format("The open poll has been stopped and recorded. Yes votes have won {0} to {1}. Poll message: {2}", _yes, _no, _pollData[2]));
+                                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                                {
+                                    sw.WriteLine(string.Format("{0}: The poll has been stopped. Yes votes have won {1} to {2}", DateTime.Now, _yes, _no));
+                                    sw.WriteLine();
+                                    sw.Flush();
+                                    sw.Close();
+                                }
+                            }
+                            else if (_no > _yes)
+                            {
+                                if (PersistentContainer.Instance.PollOld != null && PersistentContainer.Instance.PollOld.Count > 0)
+                                {
+                                    Dictionary<string[], string> _oldPoll = PersistentContainer.Instance.PollOld;
+                                    _oldPoll.Add(_pollData, "no");
+                                    PersistentContainer.Instance.PollOld = _oldPoll;
+                                }
+                                else
+                                {
+                                    Dictionary<string[], string> _oldPoll = new Dictionary<string[], string>();
+                                    _oldPoll.Add(_pollData, "no");
+                                    PersistentContainer.Instance.PollOld = _oldPoll;
+                                }
+                                SdtdConsole.Instance.Output(string.Format("The open poll has been stopped and recorded. No votes have won {0} to {1}. Poll message: {2}", _no, _yes, _pollData[2]));
+                                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                                {
+                                    sw.WriteLine(string.Format("{0}: The poll has been stopped. No votes have won {1} to {2}", DateTime.Now, _no, _yes));
+                                    sw.WriteLine();
+                                    sw.Flush();
+                                    sw.Close();
+                                }
+                            }
+                            else
+                            {
+                                if (PersistentContainer.Instance.PollOld != null && PersistentContainer.Instance.PollOld.Count > 0)
+                                {
+                                    Dictionary<string[], string> _oldPoll = PersistentContainer.Instance.PollOld;
+                                    _oldPoll.Add(_pollData, "tie");
+                                    PersistentContainer.Instance.PollOld = _oldPoll;
+                                }
+                                else
+                                {
+                                    Dictionary<string[], string> _oldPoll = new Dictionary<string[], string>();
+                                    _oldPoll.Add(_pollData, "tie");
+                                    PersistentContainer.Instance.PollOld = _oldPoll;
+                                }
+                                SdtdConsole.Instance.Output(string.Format("The open poll has been stopped and recorded. It was a tie at {0} votes each. Poll message: {1}", _yes, _pollData[2]));
+                                using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                                {
+                                    sw.WriteLine(string.Format("{0}: The poll has been stopped. It was a tie at {1} votes each", DateTime.Now, _yes));
+                                    sw.WriteLine();
+                                    sw.Flush();
+                                    sw.Close();
+                                }
+                            }
+                            PersistentContainer.Instance.PollData = null;
+                            PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
+                            PersistentContainer.Instance.PollOpen = false;
+                            PersistentContainer.Instance.Save();
+                            string _phrase926;
+                            if (!Phrases.Dict.TryGetValue(926, out _phrase926))
+                            {
+                                _phrase926 = "Poll: {Message}";
+                            }
+                            _phrase926 = _phrase926.Replace("{Message}", _pollData[2]);
+                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase926 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            string _phrase925;
+                            if (!Phrases.Dict.TryGetValue(925, out _phrase925))
+                            {
+                                _phrase925 = "Poll results: Yes {YesVote} / No {NoVote}";
+                            }
+                            _phrase925 = _phrase925.Replace("{YesVote}", _yes.ToString());
+                            _phrase925 = _phrase925.Replace("{NoVote}", _no.ToString());
+                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase925 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            return;
                         }
-                        _result1.Dispose();
                     }
-                    _result.Dispose();
+                    else
+                    {
+                        SdtdConsole.Instance.Output("There is no open poll to stop");
+                        return;
+                    }
                 }
                 else if (_params[0] == "check")
                 {
@@ -257,229 +271,241 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
-                    string _sql = "SELECT pollTime, pollHours, pollMessage, pollYes, pollNo FROM Polls WHERE pollOpen = 'true'";
-                    DataTable _result = SQL.TypeQuery(_sql);
-                    if (_result.Rows.Count > 0)
+                    if (PersistentContainer.Instance.PollOpen)
                     {
-                        DateTime _pollTime;
-                        DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _pollTime);
-                        int _pollHours;
-                        int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _pollHours);
-                        string _pollMessage = _result.Rows[0].ItemArray.GetValue(2).ToString();
-                        int _pollYes;
-                        int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _pollYes);
-                        int _pollNo;
-                        int.TryParse(_result.Rows[0].ItemArray.GetValue(4).ToString(), out _pollNo);
-                        TimeSpan varTime = DateTime.Now - _pollTime;
-                        double fractionalHours = varTime.TotalHours;
-                        int _timepassed = (int)fractionalHours;
-                        if (_timepassed >= _pollHours)
+                        if (PersistentContainer.Instance.PollData != null && PersistentContainer.Instance.PollVote != null)
                         {
-                            SdtdConsole.Instance.Output("There is a poll open but the time has expired.");
-                            SdtdConsole.Instance.Output(string.Format("Poll: {0}", _pollMessage));
-                            SdtdConsole.Instance.Output(string.Format("Current poll results: Yes votes {0} / No votes {1}", _pollYes, _pollNo));
+                            string[] _pollData = PersistentContainer.Instance.PollData;
+                            DateTime.TryParse(_pollData[0], out DateTime _pollTime);
+                            int.TryParse(_pollData[1], out int _pollHours);
+                            TimeSpan varTime = DateTime.Now - _pollTime;
+                            double fractionalHours = varTime.TotalHours;
+                            int _timepassed = (int)fractionalHours;
+                            int _timeLeft = _pollHours - _timepassed;
+                            if (_timeLeft > 0)
+                            {
+                                SdtdConsole.Instance.Output("There is a poll running");
+                                SdtdConsole.Instance.Output(string.Format("It is set to run for {0} hour. {1} hour remains. Poll message: {2}", _pollData[1], _timeLeft, _pollData[2]));
+                                return;
+                            }
+                            else
+                            {
+                                Dictionary<string, bool> _pollVotes = PersistentContainer.Instance.PollVote;
+                                if (_pollVotes.Count == 0)
+                                {
+                                    SdtdConsole.Instance.Output("The open poll has been stopped but no announcement made due to no votes");
+                                    return;
+                                }
+                                int _yes = 0, _no = 0;
+                                foreach (var _vote in _pollVotes)
+                                {
+                                    if (_vote.Value == true)
+                                    {
+                                        _yes++;
+                                    }
+                                    else
+                                    {
+                                        _no++;
+                                    }
+                                }
+                                if (_yes > _no)
+                                {
+                                    if (PersistentContainer.Instance.PollOld != null && PersistentContainer.Instance.PollOld.Count > 0)
+                                    {
+                                        Dictionary<string[], string> _oldPoll = PersistentContainer.Instance.PollOld;
+                                        _oldPoll.Add(_pollData, "yes");
+                                        PersistentContainer.Instance.PollOld = _oldPoll;
+                                    }
+                                    else
+                                    {
+                                        Dictionary<string[], string> _oldPoll = new Dictionary<string[], string>();
+                                        _oldPoll.Add(_pollData, "yes");
+                                        PersistentContainer.Instance.PollOld = _oldPoll;
+                                    }
+                                    SdtdConsole.Instance.Output(string.Format("The open poll has been stopped and recorded. Yes votes have won {0} to {1}. Poll message: {2}", _yes, _no, _pollData[2]));
+                                    using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                                    {
+                                        sw.WriteLine(string.Format("{0}: The poll has been stopped. Yes votes have won {1} to {2}", DateTime.Now, _yes, _no));
+                                        sw.WriteLine();
+                                        sw.Flush();
+                                        sw.Close();
+                                    }
+                                }
+                                else if (_no > _yes)
+                                {
+                                    if (PersistentContainer.Instance.PollOld != null && PersistentContainer.Instance.PollOld.Count > 0)
+                                    {
+                                        Dictionary<string[], string> _oldPoll = PersistentContainer.Instance.PollOld;
+                                        _oldPoll.Add(_pollData, "no");
+                                        PersistentContainer.Instance.PollOld = _oldPoll;
+                                    }
+                                    else
+                                    {
+                                        Dictionary<string[], string> _oldPoll = new Dictionary<string[], string>();
+                                        _oldPoll.Add(_pollData, "no");
+                                        PersistentContainer.Instance.PollOld = _oldPoll;
+                                    }
+                                    SdtdConsole.Instance.Output(string.Format("The open poll has been stopped and recorded. No votes have won {0} to {1}. Poll message: {2}", _no, _yes, _pollData[2]));
+                                    using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                                    {
+                                        sw.WriteLine(string.Format("{0}: The poll has been stopped. No votes have won {1} to {2}", DateTime.Now, _no, _yes));
+                                        sw.WriteLine();
+                                        sw.Flush();
+                                        sw.Close();
+                                    }
+                                }
+                                else
+                                {
+                                    if (PersistentContainer.Instance.PollOld != null && PersistentContainer.Instance.PollOld.Count > 0)
+                                    {
+                                        Dictionary<string[], string> _oldPoll = PersistentContainer.Instance.PollOld;
+                                        _oldPoll.Add(_pollData, "tie");
+                                        PersistentContainer.Instance.PollOld = _oldPoll;
+                                    }
+                                    else
+                                    {
+                                        Dictionary<string[], string> _oldPoll = new Dictionary<string[], string>();
+                                        _oldPoll.Add(_pollData, "tie");
+                                        PersistentContainer.Instance.PollOld = _oldPoll;
+                                    }
+                                    SdtdConsole.Instance.Output(string.Format("The open poll has been stopped and recorded. It was a tie at {0} votes each. Poll message: {1}", _yes, _pollData[2]));
+                                    using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                                    {
+                                        sw.WriteLine(string.Format("{0}: The poll has been stopped. It was a tie at {1} votes each", DateTime.Now, _yes));
+                                        sw.WriteLine();
+                                        sw.Flush();
+                                        sw.Close();
+                                    }
+                                }
+                                string _phrase926;
+                                if (!Phrases.Dict.TryGetValue(926, out _phrase926))
+                                {
+                                    _phrase926 = "Poll: {Message}";
+                                }
+                                _phrase926 = _phrase926.Replace("{Message}", _pollData[2]);
+                                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase926 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                string _phrase925;
+                                if (!Phrases.Dict.TryGetValue(925, out _phrase925))
+                                {
+                                    _phrase925 = "Poll results: Yes {YesVote} / No {NoVote}";
+                                }
+                                _phrase925 = _phrase925.Replace("{YesVote}", _yes.ToString());
+                                _phrase925 = _phrase925.Replace("{NoVote}", _no.ToString());
+                                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase925 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                _params.RemoveAt(0);
+                                _params.RemoveAt(0);
+                                string _message = string.Join(" ", _params.ToArray());
+                                string[] _newPollData = { DateTime.Now.ToString(), _pollHours.ToString(), _message };
+                                PersistentContainer.Instance.PollData = _newPollData;
+                                PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
+                                PersistentContainer.Instance.PollOpen = true;
+                                PersistentContainer.Instance.Save();
+                                SdtdConsole.Instance.Output(string.Format("A new poll has opened for {0} hour. Poll message: {1}", _pollHours, _message));
+                                return;
+                            }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Poll: {0}", _pollMessage));
-                            SdtdConsole.Instance.Output(string.Format("Current poll results: Yes votes {0} / No votes {1}", _pollYes, _pollNo));
+                            SdtdConsole.Instance.Output("There is a open poll but the data is missing. Cancel the poll or start a new one");
+                            return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("No poll is open");
+                        SdtdConsole.Instance.Output("There is no open poll");
+                        return;
                     }
-                    _result.Dispose();
+                }
+                else if (_params[0] == "list")
+                {
+                    if (_params.Count != 1)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        return;
+                    }
+                    else
+                    {
+                        if (PersistentContainer.Instance.PollOld != null && PersistentContainer.Instance.PollOld.Count > 0)
+                        {
+                            Dictionary<string[], string> _oldPoll = PersistentContainer.Instance.PollOld;
+                            List<string[]> _keys = _oldPoll.Keys.ToList();
+                            for (int i = 0; i < _keys.Count; i++)
+                            {
+                                KeyValuePair<string[], string> _poll = _oldPoll.ElementAt(i);
+                                SdtdConsole.Instance.Output(string.Format("Poll {0} opened at {1} for {2} hour", i + 1, _poll.Key[0], _poll.Key[1]));
+                                SdtdConsole.Instance.Output(string.Format("Message: {0}", _poll.Key[2]));
+                                SdtdConsole.Instance.Output(string.Format("Vote: {0}", _poll.Value));
+                            }
+                            return;
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output("There are no saved polls");
+                            return;
+                        }
+                    }
+                }
+                else if (_params[0] == "open")
+                {
+                    if (_params.Count != 2)
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        return;
+                    }
+                    if (!int.TryParse(_params[1], out int _number))
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Invalid integer {0}", _params[1]));
+                        return;
+                    }
+                    if (!int.TryParse(_params[2], out int _hours))
+                    {
+                        SdtdConsole.Instance.Output(string.Format("Invalid integer {0}", _params[2]));
+                        return;
+                    }
+                    if (PersistentContainer.Instance.PollOpen)
+                    {
+                        SdtdConsole.Instance.Output("A poll is already open");
+                        return;
+                    }
+                    int _numberAdjusted = _number - 1;
+                    if (PersistentContainer.Instance.PollOld != null && PersistentContainer.Instance.PollOld.Count > 0 && _numberAdjusted >= 0)
+                    {
+                        Dictionary<string[], string> _oldPoll = PersistentContainer.Instance.PollOld;
+                        if (_numberAdjusted <= _oldPoll.Count)
+                        {
+                            KeyValuePair<string[], string> _poll = _oldPoll.ElementAt(_number - 1);
+                            string[] _newPollData = { DateTime.Now.ToString(), _hours.ToString(), _poll.Key[2] };
+                            PersistentContainer.Instance.PollData = _newPollData;
+                            PersistentContainer.Instance.PollVote = new Dictionary<string, bool>();
+                            PersistentContainer.Instance.PollOpen = true;
+                            PersistentContainer.Instance.Save();
+                            SdtdConsole.Instance.Output(string.Format("Poll {0} has been opened for {1} hour", _number, _hours));
+                            SdtdConsole.Instance.Output(string.Format("Message: {0}", _poll.Key[2]));
+                            using (StreamWriter sw = new StreamWriter(Poll.Filepath, true))
+                            {
+                                sw.WriteLine(string.Format("{0}: A new poll has opened for {1} hour. Message: {2}", DateTime.Now, _hours, _poll.Key[2]));
+                                sw.WriteLine();
+                                sw.Flush();
+                                sw.Close();
+                            }
+                        }
+                        else
+                        {
+                            SdtdConsole.Instance.Output("That entry does not exist in the list");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        SdtdConsole.Instance.Output("There are no saved polls");
+                        return;
+                    }
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PollConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PollConsole.Execute: {0}", e.Message));
             }
-        }
-
-        public static void Message(ClientInfo _cInfo)
-        {
-            string _sql = "SELECT pollTime, pollHours, pollMessage, pollYes, pollNo FROM Polls WHERE pollOpen = 'true'";
-            DataTable _result = SQL.TypeQuery(_sql);
-            if (_result.Rows.Count > 0)
-            {
-                DateTime _pollTime;
-                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _pollTime);
-                int _pollHours;
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _pollHours);
-                string _pollMessage = _result.Rows[0].ItemArray.GetValue(2).ToString();
-                int _pollYes;
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _pollYes);
-                int _pollNo;
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(4).ToString(), out _pollNo);
-                TimeSpan varTime = DateTime.Now - _pollTime;
-                double fractionalHours = varTime.TotalHours;
-                int _timepassed = (int)fractionalHours;
-                if (_timepassed <= _pollHours)
-                {
-                    string _phrase926;
-                    if (!Phrases.Dict.TryGetValue(926, out _phrase926))
-                    {
-                        _phrase926 = "Poll: {Message}";
-                    }
-                    _phrase926 = _phrase926.Replace("{Message}", _pollMessage);
-                    string _phrase927;
-                    if (!Phrases.Dict.TryGetValue(927, out _phrase927))
-                    {
-                        _phrase927 = "Type {CommandPrivate}{Command91} or {CommandPrivate}{Command92} to vote.";
-                    }
-                    _phrase927 = _phrase927.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                    _phrase927 = _phrase927.Replace("{Command91}", Command91);
-                    _phrase927 = _phrase927.Replace("{Command92}", Command92);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase926 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase927 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                else
-                {
-                    string _phrase925;
-                    if (!Phrases.Dict.TryGetValue(925, out _phrase925))
-                    {
-                        _phrase925 = "Poll results: Yes {YesVote} / No {NoVote}";
-                    }
-                    _phrase925 = _phrase925.Replace("{YesVote}", _pollYes.ToString());
-                    _phrase925 = _phrase925.Replace("{NoVote}", _pollNo.ToString());
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase925 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                }
-            }
-            _result.Dispose();
-        }
-
-        public static void VoteYes(ClientInfo _cInfo)
-        {
-            string _sql = "SELECT pollYes, pollNo FROM Polls WHERE pollOpen = 'true'";
-            DataTable _result = SQL.TypeQuery(_sql);
-            if (_result.Rows.Count > 0)
-            {
-                if (PolledYes.Contains(_cInfo.playerId) || PolledNo.Contains(_cInfo.playerId))
-                {
-                    string _phrase812;
-                    if (!Phrases.Dict.TryGetValue(812, out _phrase812))
-                    {
-                        _phrase812 = " you have already voted on the poll.";
-                    }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase812 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                else
-                {
-                    PolledYes.Add(_cInfo.playerId);
-                    int _pollYes;
-                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _pollYes);
-                    int _pollNo;
-                    int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _pollNo);
-                    _pollYes = _pollYes + 1;
-                    _sql = string.Format("UPDATE Polls SET pollYes = {0} WHERE pollOpen = 'true'", _pollYes);
-                    SQL.FastQuery(_sql, "PollConsole");
-                    string _phrase928;
-                    if (!Phrases.Dict.TryGetValue(928, out _phrase928))
-                    {
-                        _phrase928 = " you have cast a vote for yes. Currently, the pole is yes {Yes} / no {No}.";
-                    }
-                    _phrase928 = _phrase928.Replace("{PlayerName}", _cInfo.playerName);
-                    _phrase928 = _phrase928.Replace("{Yes}", _pollYes.ToString());
-                    _phrase928 = _phrase928.Replace("{No}", _pollNo.ToString());
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase928 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    using (StreamWriter sw = new StreamWriter(_filepath, true))
-                    {
-                        sw.WriteLine(string.Format("{0}  Player name {1} has voted yes in the poll. Yes {2} / no {3}", DateTime.Now, _cInfo.playerName, _pollYes, _pollNo));
-                        sw.WriteLine();
-                        sw.Flush();
-                        sw.Close();
-                    }
-                }
-            }
-            _result.Dispose(); 
-        }
-
-        public static void VoteNo(ClientInfo _cInfo)
-        {
-            string _sql = "SELECT pollYes, pollNo FROM Polls WHERE pollOpen = 'true'";
-            DataTable _result = SQL.TypeQuery(_sql);
-            if (_result.Rows.Count > 0)
-            {
-                if (PolledYes.Contains(_cInfo.playerId) || PolledNo.Contains(_cInfo.playerId))
-                {
-                    string _phrase812;
-                    if (!Phrases.Dict.TryGetValue(812, out _phrase812))
-                    {
-                        _phrase812 = " you have already voted on the poll";
-                    }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase812 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                else
-                {
-                    PolledNo.Add(_cInfo.playerId);
-                    int _pollYes;
-                    int.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _pollYes);
-                    int _pollNo;
-                    int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _pollNo);
-                    _pollNo = _pollNo + 1;
-                    _sql = string.Format("UPDATE Polls SET pollNo = {0} WHERE pollOpen = 'true'", _pollNo);
-                    SQL.FastQuery(_sql, "PollConsole");
-                    string _phrase929;
-                    if (!Phrases.Dict.TryGetValue(929, out _phrase929))
-                    {
-                        _phrase929 = " you have cast a vote for no. Currently, the pole is yes {Yes} / no {No}.";
-                    }
-                    _phrase929 = _phrase929.Replace("{Yes}", _pollYes.ToString());
-                    _phrase929 = _phrase929.Replace("{No}", _pollNo.ToString());
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase929 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    using (StreamWriter sw = new StreamWriter(_filepath, true))
-                    {
-                        sw.WriteLine(string.Format("{0}  Player name {1} has voted no in the poll. Yes {2} / no {3}", DateTime.Now, _cInfo.playerName, _pollYes, _pollNo));
-                        sw.WriteLine();
-                        sw.Flush();
-                        sw.Close();
-                    }
-                }
-            }
-            _result.Dispose();
-        }
-
-        public static void Check()
-        {
-            string _sql = "SELECT pollTime, pollHours, pollMessage, pollYes, pollNo FROM Polls WHERE pollOpen = 'true'";
-            DataTable _result = SQL.TypeQuery(_sql);
-            if (_result.Rows.Count > 0)
-            {
-                DateTime _pollTime;
-                DateTime.TryParse(_result.Rows[0].ItemArray.GetValue(0).ToString(), out _pollTime);
-                int _pollHours;
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(1).ToString(), out _pollHours);
-                string _pollMessage = _result.Rows[0].ItemArray.GetValue(2).ToString();
-                int _pollYes;
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(3).ToString(), out _pollYes);
-                int _pollNo;
-                int.TryParse(_result.Rows[0].ItemArray.GetValue(4).ToString(), out _pollNo);
-                TimeSpan varTime = DateTime.Now - _pollTime;
-                double fractionalHours = varTime.TotalHours;
-                int _timepassed = (int)fractionalHours;
-                if (_timepassed >= _pollHours)
-                {
-                    string _phrase925;
-                    if (!Phrases.Dict.TryGetValue(925, out _phrase925))
-                    {
-                        _phrase925 = "Poll results: Yes {YesVote} / No {NoVote}";
-                    }
-                    _phrase925 = _phrase925.Replace("{YesVote}", _pollYes.ToString());
-                    _phrase925 = _phrase925.Replace("{NoVote}", _pollNo.ToString());
-                    _sql = "UPDATE Polls SET pollOpen = 'false' WHERE pollOpen = 'true'";
-                    SQL.FastQuery(_sql, "PollConsole");
-                    using (StreamWriter sw = new StreamWriter(_filepath, true))
-                    {
-                        sw.WriteLine(string.Format("{0}  Poll {1} ... has completed. The final results were yes {2} / no {3}", DateTime.Now, _pollMessage, _pollYes, _pollNo));
-                        sw.WriteLine();
-                        sw.Flush();
-                        sw.Close();
-                    }
-                }
-            }
-            _result.Dispose();
         }
     }
 }

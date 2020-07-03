@@ -1,38 +1,49 @@
 ﻿using System.Timers;
 using ServerTools.AntiCheat;
 using ServerTools.Website;
+using System.Threading;
+using System.Diagnostics;
 
 namespace ServerTools
 {
     class Timers
     {
-        public static bool timer1Running = false, timer2Running = false;
-        public static int _stopServerCount, _eventTime = 0, _autoShutdown, _autoShutdownBloodmoonOver;
-        private static int timer1SecondInstanceCount, timer2Second, timer5Second, timer10Second, timer60Second, _watchList, _nightAlert, 
-            _horde, _lottery, _breakTime, _invalidItems, _weatherVote, _bloodmoon, _playerLogs, _autoSaveWorld, _infoTicker, _restartVote, _stopServerCountDown, 
-            _kickVote, _muteVote, _eventInvitation, _eventOpen, _zoneReminder, _tracking, _realWorldTime, _autoShutdownBloodmoon, _autoBackup;
-        private static System.Timers.Timer t1 = new System.Timers.Timer();
+        public static bool timer1Running = false, timer2Running = false, IsRunning = false;
+        public static int StopServerMinutes, _eventTime, _autoShutdown, _autoShutdownBloodmoonOver;
+        private static int TwoSecondTick, FiveSecondTick, TenSecondTick, SixtySecondTick, _watchList, _nightAlert, 
+            _horde, _lottery, _breakTime, _invalidItems, WeatherVoteTick, _bloodmoon, _playerLogs, _autoSaveWorld, _infoTicker, _restartVote, StopServerSeconds, 
+            _kickVote, MuteVoteTick, _eventInvitation, _eventOpen, _zoneReminder, _tracking, _realWorldTime, _autoShutdownBloodmoon, _autoBackup;
+        private static Thread TimerThread;
 
-        public static void TimerStart()
+        public static void Load()
         {
-            timer1SecondInstanceCount++;
-            if (timer1SecondInstanceCount <= 1)
-            {
-                timer1Running = true;
-                t1.Interval = 1000;
-                t1.Start();
-                t1.Elapsed += new ElapsedEventHandler(Init);
-            }
+            IsRunning = true;
+            Start();
         }
 
-        public static void TimerStop()
+        public static void Unload()
         {
-            if (timer1Running)
+            IsRunning = false;
+            TimerThread.Abort();
+        }
+
+        private static void Start()
+        {
+            TimerThread = new Thread(new ThreadStart(CoreTimer));
+            TimerThread.IsBackground = true;
+            TimerThread.Start();
+        }
+
+        private static void CoreTimer()
+        {
+            while (IsRunning)
             {
-                timer1Running = false;
-                t1.Stop();
-                t1.Close();
-                timer1SecondInstanceCount = 0;
+                TwoSecondTick++;
+                FiveSecondTick++;
+                TenSecondTick++;
+                SixtySecondTick++;
+                Exec();
+                Thread.Sleep(1000);
             }
         }
 
@@ -43,73 +54,85 @@ namespace ServerTools
                 _delay = 120;
             }
             int _delayAdjusted = _delay * 1000;
-            System.Timers.Timer singleUseTimer = new System.Timers.Timer(_delayAdjusted);
-            singleUseTimer.AutoReset = false;
-            singleUseTimer.Start();
-            singleUseTimer.Elapsed += (sender, e) =>
+            System.Timers.Timer _singleUseTimer = new System.Timers.Timer(_delayAdjusted);
+            _singleUseTimer.AutoReset = false;
+            _singleUseTimer.Start();
+            _singleUseTimer.Elapsed += (sender, e) =>
             {
-                Init3(sender, e, _playerId, _commands);
-                singleUseTimer.Close();
+                Init1(sender, e, _playerId, _commands);
+                _singleUseTimer.Close();
             };
         }
 
         public static void NewPlayerExecTimer(ClientInfo _cInfo)
         {
-            System.Timers.Timer newPlayerExecTimer = new System.Timers.Timer(3000);
-            newPlayerExecTimer.AutoReset = false;
-            newPlayerExecTimer.Start();
-            newPlayerExecTimer.Elapsed += (sender, e) =>
+            System.Timers.Timer _newPlayerExecTimer = new System.Timers.Timer(3000);
+            _newPlayerExecTimer.AutoReset = false;
+            _newPlayerExecTimer.Start();
+            _newPlayerExecTimer.Elapsed += (sender, e) =>
             {
-                Init4(sender, e, _cInfo);
-                newPlayerExecTimer.Close();
+                Init2(sender, e, _cInfo);
+                _newPlayerExecTimer.Close();
             };
         }
 
         public static void NewPlayerStartingItemsTimer(ClientInfo _cInfo)
         {
-            System.Timers.Timer newPlayerStartingItemsTimer = new System.Timers.Timer(2000);
-            newPlayerStartingItemsTimer.AutoReset = false;
-            newPlayerStartingItemsTimer.Start();
-            newPlayerStartingItemsTimer.Elapsed += (sender, e) =>
+            System.Timers.Timer _newPlayerStartingItemsTimer = new System.Timers.Timer(2000);
+            _newPlayerStartingItemsTimer.AutoReset = false;
+            _newPlayerStartingItemsTimer.Start();
+            _newPlayerStartingItemsTimer.Elapsed += (sender, e) =>
             {
-                Init5(sender, e, _cInfo);
-                newPlayerStartingItemsTimer.Close();
+                Init3(sender, e, _cInfo);
+                _newPlayerStartingItemsTimer.Close();
             };
         }
 
         public static void DisconnectHardcorePlayer(ClientInfo _cInfo)
         {
-            System.Timers.Timer hardcoreTimer = new System.Timers.Timer(20000);
-            hardcoreTimer.AutoReset = false;
-            hardcoreTimer.Start();
-            hardcoreTimer.Elapsed += (sender, e) =>
+            System.Timers.Timer _hardcoreTimer = new System.Timers.Timer(20000);
+            _hardcoreTimer.AutoReset = false;
+            _hardcoreTimer.Start();
+            _hardcoreTimer.Elapsed += (sender, e) =>
             {
-                Init6(sender, e, _cInfo);
-                hardcoreTimer.Close();
+                Init4(sender, e, _cInfo);
+                _hardcoreTimer.Close();
             };
         }
 
         public static void BattleLogTool(string _id)
         {
-            System.Timers.Timer exitTimer = new System.Timers.Timer(2000);
-            exitTimer.AutoReset = false;
-            exitTimer.Start();
-            exitTimer.Elapsed += (sender, e) =>
+            System.Timers.Timer _exitTimer = new System.Timers.Timer(2000);
+            _exitTimer.AutoReset = false;
+            _exitTimer.Start();
+            _exitTimer.Elapsed += (sender, e) =>
             {
-                Init7(sender, e, _id);
-                exitTimer.Close();
+                Init5(sender, e, _id);
+                _exitTimer.Close();
             };
         }
 
         public static void BattleLogPlayerExit(string _id)
         {
-            System.Timers.Timer playerExitTimer = new System.Timers.Timer(15000);
-            playerExitTimer.AutoReset = false;
-            playerExitTimer.Start();
-            playerExitTimer.Elapsed += (sender, e) =>
+            System.Timers.Timer _playerExitTimer = new System.Timers.Timer(15000);
+            _playerExitTimer.AutoReset = false;
+            _playerExitTimer.Start();
+            _playerExitTimer.Elapsed += (sender, e) =>
             {
-                Init8(sender, e, _id);
-                playerExitTimer.Close();
+                Init6(sender, e, _id);
+                _playerExitTimer.Close();
+            };
+        }
+
+        public static void ShutdownFailsafe()
+        {
+            System.Timers.Timer _shutdownFailsafe = new System.Timers.Timer(30000);
+            _shutdownFailsafe.AutoReset = false;
+            _shutdownFailsafe.Start();
+            _shutdownFailsafe.Elapsed += (sender, e) =>
+            {
+                StopServer.FailSafe(sender, e);
+                _shutdownFailsafe.Close();
             };
         }
 
@@ -130,11 +153,11 @@ namespace ServerTools
             {
                 Log.Out("Dupe log enabled");
             }
-            if (Flying.IsEnabled)
+            if (PlayerChecks.FlyEnabled)
             {
                 Log.Out("Flying detector enabled");
             }
-            if (GodMode.IsEnabled)
+            if (PlayerChecks.GodEnabled)
             {
                 Log.Out("God mode detector enabled");
             }
@@ -146,9 +169,9 @@ namespace ServerTools
             {
                 Log.Out("Jail enabled");
             }
-            if (PlayerStatCheck.IsEnabled)
+            if (PlayerStats.IsEnabled)
             {
-                Log.Out("Player stat enabled");
+                Log.Out("Player stats enabled");
             }
             if (PlayerLogs.IsEnabled)
             {
@@ -158,10 +181,14 @@ namespace ServerTools
             {
                 Log.Out("Protected spaces enabled");
             }
-            if (TeleportCheck.IsEnabled)
+            if (PlayerChecks.SpectatorEnabled)
             {
-                Log.Out("Teleport enabled");
+                Log.Out("Spectator detector enabled");
             }
+            //if (TeleportCheck.IsEnabled)
+            //{
+            //    Log.Out("Teleport enabled");
+            //}
             if (Watchlist.IsEnabled)
             {
                 Log.Out("Watch list enabled");
@@ -340,7 +367,7 @@ namespace ServerTools
             }
             if (InfoTicker.IsEnabled)
             {
-                Log.Out("Infoticker enabled");
+                Log.Out("Info ticker enabled");
             }
             if (KickVote.IsEnabled)
             {
@@ -426,7 +453,7 @@ namespace ServerTools
             {
                 Log.Out("Suicide enabled");
             }
-            if (Tracking.IsEnabled)
+            if (Track.IsEnabled)
             {
                 Log.Out("Tracking enabled");
             }
@@ -467,7 +494,7 @@ namespace ServerTools
             Log.Out("--------------------------------");
         }
 
-        private static void Init(object sender, ElapsedEventArgs e)
+        private static void Exec()
         {
             if (!StopServer.Shutdown)
             {
@@ -480,44 +507,41 @@ namespace ServerTools
                 {
                     UnderWater.Exec();
                 }
-                timer2Second++;
-                if (timer2Second >= 2)
+                if (TwoSecondTick >= 2)
                 {
+                    TwoSecondTick = 0;
                     if (WorldRadius.IsEnabled)
                     {
                         WorldRadius.Exec();
                     }
-                    if (Flying.IsEnabled)
+                    if (PlayerChecks.GodEnabled || PlayerChecks.FlyEnabled || PlayerChecks.SpectatorEnabled)
                     {
-                        Flying.Exec();
+                        PlayerChecks.Exec();
                     }
-                    timer2Second = 0;
                 }
-                timer5Second++;
-                if (timer5Second >= 5)
+                if (FiveSecondTick >= 5)
                 {
+                    FiveSecondTick = 0;
                     if (Zones.IsEnabled)
                     {
                         Zones.HostileCheck();
                     }
-                    if (PlayerStatCheck.IsEnabled)
+                    if (PlayerStats.IsEnabled)
                     {
-                        PlayerStatCheck.PlayerStat();
+                        PlayerStats.Exec();
                     }
-                    timer5Second = 0;
                 }
-                timer10Second++;
-                if (timer10Second >= 10)
+                if (TenSecondTick >= 10)
                 {
+                    TenSecondTick = 0;
                     if (EntityCleanup.IsEnabled)
                     {
                         EntityCleanup.EntityCheck();
                     }
-                    timer10Second = 0;
                 }
-                timer60Second++;
-                if (timer60Second >= 60)
+                if (SixtySecondTick >= 60)
                 {
+                    SixtySecondTick = 0;
                     if (Jail.IsEnabled && Jail.Jailed.Count > 0)
                     {
                         Jail.Clear();
@@ -530,14 +554,13 @@ namespace ServerTools
                     {
                         BloodmoonWarrior.Exec();
                     }
-                    timer60Second = 0;
                 }
                 if (WeatherVote.IsEnabled && WeatherVote.VoteOpen)
                 {
-                    _weatherVote++;
-                    if (_weatherVote >= 60)
+                    WeatherVoteTick++;
+                    if (WeatherVoteTick >= 60)
                     {
-                        _weatherVote = 0;
+                        WeatherVoteTick = 0;
                         WeatherVote.VoteOpen = false;
                         WeatherVote.ProcessWeatherVote();
                     }
@@ -554,10 +577,10 @@ namespace ServerTools
                 }
                 if (MuteVote.IsEnabled && MuteVote.VoteOpen)
                 {
-                    _muteVote++;
-                    if (_muteVote >= 60)
+                    MuteVoteTick++;
+                    if (MuteVoteTick >= 60)
                     {
-                        _muteVote = 0;
+                        MuteVoteTick = 0;
                         MuteVote.VoteOpen = false;
                         MuteVote.ProcessMuteVote();
                     }
@@ -657,68 +680,32 @@ namespace ServerTools
                 {
                     _playerLogs = 0;
                 }
-                if (StopServer.StopServerCountingDown)
+                if (StopServer.CountingDown)
                 {
-                    _stopServerCountDown++;
-                    if (_stopServerCountDown == 60)
+                    StopServerSeconds++;
+                    if (StopServerSeconds == 60)
                     {
-                        _stopServerCountDown = 0;
-                        _stopServerCount--;
+                        StopServerSeconds = 0;
+                        StopServerMinutes--;
                     }
-                    if (_stopServerCount == 0)
+                    if (StopServerMinutes == 0)
                     {
-                        _stopServerCountDown = 0;
-                        StopServer.StopServerCountingDown = false;
+                        StopServerSeconds = 0;
+                        StopServer.CountingDown = false;
                         StopServer.Stop();
                     }
-                    if (_stopServerCount == 1 && _stopServerCountDown == 0)
+                    if (StopServerMinutes == 1 && StopServerSeconds == 0)
                     {
                         StopServer.StartShutdown3();
                     }
-                    if (_stopServerCount > 1 && _stopServerCountDown == 0)
+                    if (StopServerMinutes > 1 && StopServerSeconds == 0)
                     {
-                        StopServer.StartShutdown2(_stopServerCount);
+                        StopServer.StartShutdown2(StopServerMinutes);
                     }
-                    if (StopServer.Kick_30_Seconds)
+                    if (StopServerMinutes == 1 && StopServerSeconds == 30)
                     {
-                        if (_stopServerCount == 1 && _stopServerCountDown == 30)
-                        {
-                            StopServer.NoEntry = true;
-                            StopServer.Kick30();
-                        }
+                        StopServer.Kick30();
                     }
-                    if (StopServer.Ten_Second_Countdown)
-                    {
-                        if (_stopServerCount == 1 && _stopServerCountDown == 50)
-                        {
-                            StopServer.StartShutdown4();
-                        }
-                        if (_stopServerCount == 1 && _stopServerCountDown == 55)
-                        {
-                            StopServer.StartShutdown5();
-                        }
-                        if (_stopServerCount == 1 && _stopServerCountDown == 56)
-                        {
-                            StopServer.StartShutdown6();
-                        }
-                        if (_stopServerCount == 1 && _stopServerCountDown == 57)
-                        {
-                            StopServer.StartShutdown7();
-                        }
-                        if (_stopServerCount == 1 && _stopServerCountDown == 58)
-                        {
-                            StopServer.StartShutdown8();
-                        }
-                        if (_stopServerCount == 1 && _stopServerCountDown == 59)
-                        {
-                            StopServer.StartShutdown9();
-                        }
-                    }
-                }
-                else
-                {
-                    _stopServerCountDown = 0;
-                    _stopServerCount = 0;
                 }
                 if (AutoSaveWorld.IsEnabled & AutoSaveWorld.Delay > 0)
                 {
@@ -733,7 +720,7 @@ namespace ServerTools
                 {
                     _autoSaveWorld = 0;
                 }
-                if (AutoShutdown.IsEnabled && !AutoShutdown.Bloodmoon && !AutoShutdown.BloodmoonOver && !StopServer.StopServerCountingDown)
+                if (AutoShutdown.IsEnabled && !AutoShutdown.Bloodmoon && !AutoShutdown.BloodmoonOver && !StopServer.CountingDown)
                 {
                     _autoShutdown++;
                     if (!Event.Open && _autoShutdown >= AutoShutdown.Delay * 60)
@@ -868,13 +855,13 @@ namespace ServerTools
                 {
                     _breakTime = 0;
                 }
-                if (Tracking.IsEnabled)
+                if (Track.IsEnabled)
                 {
                     _tracking++;
-                    if (_tracking >= Tracking.Rate)
+                    if (_tracking >= 20)
                     {
                         _tracking = 0;
-                        Tracking.Exec();
+                        Track.Exec();
                     }
                 }
                 else
@@ -910,34 +897,32 @@ namespace ServerTools
             }
         }
 
-        //init 2 available
-
-        private static void Init3(object sender, ElapsedEventArgs e, string _playerId, string _commands)
+        private static void Init1(object sender, ElapsedEventArgs e, string _playerId, string _commands)
         {
             CustomCommands.DelayedCommand(_playerId, _commands);
         }
 
-        private static void Init4(object sender, ElapsedEventArgs e, ClientInfo _cInfo)
+        private static void Init2(object sender, ElapsedEventArgs e, ClientInfo _cInfo)
         {
             API.NewPlayerExec1(_cInfo);
         }
 
-        private static void Init5(object sender, ElapsedEventArgs e, ClientInfo _cInfo)
+        private static void Init3(object sender, ElapsedEventArgs e, ClientInfo _cInfo)
         {
             API.NewPlayerExec2(_cInfo);
         }
 
-        private static void Init6(object sender, ElapsedEventArgs e, ClientInfo _cInfo)
+        private static void Init4(object sender, ElapsedEventArgs e, ClientInfo _cInfo)
         {
-            Hardcore.DisconnectHardcorePlayer(_cInfo);
+            Hardcore.KickPlayer(_cInfo);
         }
 
-        private static void Init7(object sender, ElapsedEventArgs e, string _id)
+        private static void Init5(object sender, ElapsedEventArgs e, string _id)
         {
             BattleLogger.ScanLog(_id);
         }
 
-        private static void Init8(object sender, ElapsedEventArgs e, string _id)
+        private static void Init6(object sender, ElapsedEventArgs e, string _id)
         {
             BattleLogger.PlayerExit(_id);
         }

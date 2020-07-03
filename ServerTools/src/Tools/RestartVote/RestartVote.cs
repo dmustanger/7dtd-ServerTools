@@ -35,7 +35,7 @@ namespace ServerTools
                                         _phrase748 = "{Player} has requested a restart vote.";
                                     }
                                     _phrase748 = _phrase748.Replace("{Player}", _cInfo.playerName);
-                                    ChatHook.ChatMessage(_cInfoAdmins, LoadConfig.Chat_Response_Color + _phrase748 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    ChatHook.ChatMessage(_cInfoAdmins, LoadConfig.Chat_Response_Color + _phrase748 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                         }
@@ -60,9 +60,9 @@ namespace ServerTools
                             string _phrase741;
                             if (!Phrases.Dict.TryGetValue(741, out _phrase741))
                             {
-                                _phrase741 = " there are not enough players online to start a restart vote.";
+                                _phrase741 = "There are not enough players online to start a restart vote.";
                             }
-                            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase741 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase741 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
@@ -70,9 +70,9 @@ namespace ServerTools
                         string _phrase749;
                         if (!Phrases.Dict.TryGetValue(749, out _phrase749))
                         {
-                            _phrase749 = " a administrator is currently online. They have been alerted.";
+                            _phrase749 = "A administrator is currently online. They have been alerted.";
                         }
-                        ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase749 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase749 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
                 else
@@ -80,9 +80,9 @@ namespace ServerTools
                     string _phrase824;
                     if (!Phrases.Dict.TryGetValue(824, out _phrase824))
                     {
-                        _phrase824 = " there is a vote already open.";
+                        _phrase824 = "There is a vote already open.";
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase824 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase824 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -90,9 +90,9 @@ namespace ServerTools
                 string _phrase816;
                 if (!Phrases.Dict.TryGetValue(816, out _phrase816))
                 {
-                    _phrase816 = " you must wait thirty minutes after the server starts before opening a restart vote.";
+                    _phrase816 = "You must wait thirty minutes after the server starts before opening a restart vote.";
                 }
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase816 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase816 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

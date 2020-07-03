@@ -7,19 +7,19 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Kills All Of The Zombies And Animals On The Map.";
+            return "[ServerTools] - Kills all zombies and animals on the map.";
         }
 
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. KillEnt\n" +
-                "1. Kills all of the zombies and animals on the map\n";
+                "  1. KillZA\n" +
+                "1. Removes all current zombies and animals on the map\n";
         }
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-KillEnt", "KillEnt", "killent", "ke" };
+            return new string[] { "st-KillZA", "KillZA", "killza", "kza", "st-kza" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -43,11 +43,11 @@ namespace ServerTools
                     }
                 }
                 SdtdConsole.Instance.Output(string.Format("All current zombies and animals have been removed from the map"));
-                Log.Out(string.Format("[SERVERTOOLS] All current zombies and animals have been removed from the map."));
+                Log.Out(string.Format("[SERVERTOOLS] Console command KillEnt has been run. All current zombies and animals have been removed from the map."));
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in KillAll.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in KillEntConsole.Execute: {0}", e.Message));
             }
         }
     }

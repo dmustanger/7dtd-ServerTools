@@ -1,7 +1,6 @@
-﻿using System;
+﻿using ServerTools.AntiCheat;
+using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -9,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable, Disable Flying Detection.";
+            return "[ServerTools] - Enable, Disable Flying Detection.";
         }
         public override string GetHelp()
         {
@@ -34,9 +33,9 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    if (AntiCheat.Flying.IsEnabled)
+                    if (PlayerChecks.FlyEnabled)
                     {
-                        AntiCheat.Flying.IsEnabled = false;
+                        PlayerChecks.FlyEnabled = false;
                         LoadConfig.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("Flying has been set to off"));
                         return;
@@ -49,9 +48,9 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (!AntiCheat.Flying.IsEnabled)
+                    if (!PlayerChecks.FlyEnabled)
                     {
-                        AntiCheat.Flying.IsEnabled = true;
+                        PlayerChecks.FlyEnabled = true;
                         LoadConfig.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("Flying has been set to on"));
                         return;

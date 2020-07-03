@@ -1,5 +1,4 @@
-﻿using System.Data;
-using ServerTools.AntiCheat;
+﻿using ServerTools.AntiCheat;
 using ServerTools.Website;
 
 namespace ServerTools
@@ -16,18 +15,18 @@ namespace ServerTools
             {
                 LoadTriggers.Load();
             }
-            Timers.TimerStart();
-            string _sql = "SELECT pollOpen FROM Polls WHERE pollOpen = 'true'";
-            DataTable _result = SQL.TypeQuery(_sql);
-            if (_result.Rows.Count > 0)
+            if (Poll.IsEnabled && PersistentContainer.Instance.PollOpen)
             {
-                PollConsole.Check();
+                Poll.CheckTime();
             }
-            _result.Dispose();
             if (!ClanManager.IsEnabled)
             {
                 ClanManager.Clans.Clear();
                 ClanManager.ClanMember.Clear();
+            }
+            if (!Timers.IsRunning)
+            {
+                Timers.Load();
             }
             if (!InfoTicker.IsEnabled && InfoTicker.IsRunning)
             {

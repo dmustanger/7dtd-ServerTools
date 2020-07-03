@@ -8,8 +8,8 @@ namespace ServerTools.AntiCheat
     {
         public static bool IsEnabled = false;
         public static int Delay = 60, Days_Before_Log_Delete = 5;
-        private static string _file = string.Format("PlayerLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
-        private static string _filepath = string.Format("{0}/Logs/PlayerLogs/{1}", API.ConfigPath, _file);
+        private static string File = string.Format("PlayerLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
+        private static string Filepath = string.Format("{0}/Logs/PlayerLogs/{1}", API.ConfigPath, File);
 
         public static void Exec()
         {
@@ -43,14 +43,14 @@ namespace ServerTools.AntiCheat
                                         region_z--;
                                     }
                                     string _ip = _cInfo.ip;
-                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                    using (StreamWriter sw = new StreamWriter(Filepath, true))
                                     {
                                         sw.WriteLine(string.Format("{0}:  {1} SteamId {2}. IP Address {3} at Position: {4} X {5} Y {6} Z in RegionFile: r.{7}.{8}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, _ip, x, y, z, region_x, region_z));
                                         sw.WriteLine();
                                         sw.Flush();
                                         sw.Close();
                                     }
-                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                    using (StreamWriter sw = new StreamWriter(Filepath, true))
                                     {
                                         sw.WriteLine(string.Format("Stats: Health={0} Stamina={1} ZombieKills={2} PlayerKills={3} PlayerLevel={4}", (int)_player.Stats.Health.Value, (int)_player.Stats.Stamina.Value, _player.KilledZombies, _player.KilledPlayers, _player.Progression.GetLevel()));
                                         sw.WriteLine();
@@ -60,7 +60,7 @@ namespace ServerTools.AntiCheat
                                     playerDataFile.Load(GameUtils.GetPlayerDataDir(), _cInfo.playerId.Trim());
                                     if (playerDataFile != null)
                                     {
-                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                        using (StreamWriter sw = new StreamWriter(Filepath, true))
                                         {
                                             sw.WriteLine(string.Format("Inventory of " + _cInfo.playerName + " steamId {0}", _cInfo.playerId));
                                             sw.WriteLine("Belt:");
@@ -68,21 +68,21 @@ namespace ServerTools.AntiCheat
                                             sw.Close();
                                         }
                                         PrintInv(playerDataFile.inventory, _cInfo.entityId, "belt");
-                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                        using (StreamWriter sw = new StreamWriter(Filepath, true))
                                         {
                                             sw.WriteLine("Backpack:");
                                             sw.Flush();
                                             sw.Close();
                                         }
                                         PrintInv(playerDataFile.bag, _cInfo.entityId, "backpack");
-                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                        using (StreamWriter sw = new StreamWriter(Filepath, true))
                                         {
                                             sw.WriteLine("Equipment:");
                                             sw.Flush();
                                             sw.Close();
                                         }
                                         PrintEquipment(playerDataFile.equipment, _cInfo.entityId, "equipment");
-                                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                        using (StreamWriter sw = new StreamWriter(Filepath, true))
                                         {
                                             sw.WriteLine("End of inventory");
                                             sw.WriteLine();
@@ -95,7 +95,7 @@ namespace ServerTools.AntiCheat
                                 }
                                 else if (!_player.IsDead() && !_player.IsSpawned())
                                 {
-                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                    using (StreamWriter sw = new StreamWriter(Filepath, true))
                                     {
                                         sw.WriteLine(string.Format("{0}:  {1} SteamId {2}. Player has not spawned", DateTime.Now, _cInfo.playerName, _cInfo.playerId));
                                         sw.WriteLine();
@@ -107,7 +107,7 @@ namespace ServerTools.AntiCheat
                                 }
                                 else if (_player.IsDead())
                                 {
-                                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                                    using (StreamWriter sw = new StreamWriter(Filepath, true))
                                     {
                                         sw.WriteLine(string.Format("{0}:  {1} SteamId {2}. Player is currently dead", DateTime.Now, _cInfo.playerName, _cInfo.playerId));
                                         sw.WriteLine();
@@ -120,7 +120,7 @@ namespace ServerTools.AntiCheat
                             }
                         }
                     }
-                    using (StreamWriter sw = new StreamWriter(_filepath, true))
+                    using (StreamWriter sw = new StreamWriter(Filepath, true))
                     {
                         sw.WriteLine("***********************************************************");
                         sw.Flush();
@@ -142,18 +142,18 @@ namespace ServerTools.AntiCheat
                 {
                     if (_inv[i].itemValue.HasQuality && _inv[i].itemValue.Quality > 0)
                     {
-                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                        using (StreamWriter sw = new StreamWriter(Filepath, true))
                         {
-                            sw.WriteLine(string.Format("    Slot {0}: {1:000} * {2} - quality: {3}", i, _inv[i].count, _inv[i].itemValue.ItemClass.GetLocalizedItemName() ?? _inv[i].itemValue.ItemClass.GetItemName(), _inv[i].itemValue.Quality));
+                            sw.WriteLine(string.Format("    Slot {0}: {1:000} * {2} - quality: {3}", i, _inv[i].count, _inv[i].itemValue.ItemClass.GetItemName(), _inv[i].itemValue.Quality));
                             sw.Flush();
                             sw.Close();
                         }
                     }
                     else
                     {
-                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                        using (StreamWriter sw = new StreamWriter(Filepath, true))
                         {
-                            sw.WriteLine(string.Format("    Slot {0}: {1:000} * {2}", i, _inv[i].count, _inv[i].itemValue.ItemClass.GetLocalizedItemName() ?? _inv[i].itemValue.ItemClass.GetItemName()));
+                            sw.WriteLine(string.Format("    Slot {0}: {1:000} * {2}", i, _inv[i].count, _inv[i].itemValue.ItemClass.GetItemName()));
                             sw.Flush();
                             sw.Close();
                         }
@@ -179,18 +179,18 @@ namespace ServerTools.AntiCheat
                 {
                     if (_item.HasQuality && _item.Quality > 0)
                     {
-                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                        using (StreamWriter sw = new StreamWriter(Filepath, true))
                         {
-                            sw.WriteLine(string.Format("    Slot {0}: {1} - quality: {2}", _item.ItemClass.EquipSlot, _item.ItemClass.GetLocalizedItemName() ?? _item.ItemClass.GetItemName(), _item.Quality));
+                            sw.WriteLine(string.Format("    Slot {0}: {1} - quality: {2}", _item.ItemClass.EquipSlot, _item.ItemClass.GetItemName(), _item.Quality));
                             sw.Flush();
                             sw.Close();
                         }
                     }
                     else
                     {
-                        using (StreamWriter sw = new StreamWriter(_filepath, true))
+                        using (StreamWriter sw = new StreamWriter(Filepath, true))
                         {
-                            sw.WriteLine(string.Format("    Slot {0}: {1}", _item.ItemClass.EquipSlot, _item.ItemClass.GetLocalizedItemName() ?? _item.ItemClass.GetItemName()));
+                            sw.WriteLine(string.Format("    Slot {0}: {1}", _item.ItemClass.EquipSlot, _item.ItemClass.GetItemName()));
                             sw.Flush();
                             sw.Close();
                         }
@@ -218,9 +218,9 @@ namespace ServerTools.AntiCheat
                     {
                         if (_currentMessage == null)
                         {
-                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                            using (StreamWriter sw = new StreamWriter(Filepath, true))
                             {
-                                sw.WriteLine(string.Format("{0}         - {1}", indenter, _parts[i].ItemClass.GetLocalizedItemName() ?? _parts[i].ItemClass.GetItemName()));
+                                sw.WriteLine(string.Format("{0}         - {1}", indenter, _parts[i].ItemClass.GetItemName()));
                                 sw.Flush();
                                 sw.Close();
                             }
@@ -231,7 +231,7 @@ namespace ServerTools.AntiCheat
                             {
                                 _currentMessage += ",";
                             }
-                            _currentMessage += _parts[i].ItemClass.GetLocalizedItemName() ?? _parts[i].ItemClass.GetItemName();
+                            _currentMessage += _parts[i].ItemClass.GetItemName();
                             _currentMessage = Mods(_parts[i].Modifications, _indent + 1, _currentMessage);
                         }
                     }
@@ -251,9 +251,9 @@ namespace ServerTools.AntiCheat
                     {
                         if (_currentMessage == null)
                         {
-                            using (StreamWriter sw = new StreamWriter(_filepath, true))
+                            using (StreamWriter sw = new StreamWriter(Filepath, true))
                             {
-                                sw.WriteLine(string.Format("{0}         - {1}", indenter, _parts[i].ItemClass.GetLocalizedItemName() ?? _parts[i].ItemClass.GetItemName()));
+                                sw.WriteLine(string.Format("{0}         - {1}", indenter, _parts[i].ItemClass.GetItemName()));
                                 sw.Flush();
                                 sw.Close();
                             }
@@ -264,7 +264,7 @@ namespace ServerTools.AntiCheat
                             {
                                 _currentMessage += ",";
                             }
-                            _currentMessage += _parts[i].ItemClass.GetLocalizedItemName() ?? _parts[i].ItemClass.GetItemName();
+                            _currentMessage += _parts[i].ItemClass.GetItemName();
                             _currentMessage = CosmeticMods(_parts[i].Modifications, _indent + 1, _currentMessage);
                         }
                     }

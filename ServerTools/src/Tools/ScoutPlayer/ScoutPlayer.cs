@@ -66,13 +66,13 @@ namespace ServerTools
                 string _phrase6;
                 if (!Phrases.Dict.TryGetValue(6, out _phrase6))
                 {
-                    _phrase6 = " you can only use {CommandPrivate}{Command129} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase6 = "You can only use {CommandPrivate}{Command129} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 _phrase6 = _phrase6.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase6 = _phrase6.Replace("{TimeRemaining}", _timeleft.ToString());
                 _phrase6 = _phrase6.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase6 = _phrase6.Replace("{Command129}", Command129);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase6 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase6 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -89,10 +89,10 @@ namespace ServerTools
                     string _phrase814;
                     if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                     {
-                        _phrase814 = " you do not have enough {Currency} in your wallet to run this command.";
+                        _phrase814 = "You do not have enough {Currency} in your wallet to run this command.";
                     }
                     _phrase814 = _phrase814.Replace("{Currency}", TraderInfo.CurrencyItem);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else

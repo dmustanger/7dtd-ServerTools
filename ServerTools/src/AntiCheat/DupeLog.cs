@@ -151,8 +151,7 @@ namespace ServerTools.AntiCheat
                     ItemStack[] _bag = _playerDataFile.bag;
                     ItemStack[] _inventory = _playerDataFile.inventory;
 
-                    int _craftCount;
-                    if (Crafted.TryGetValue(_cInfo.entityId, out _craftCount))
+                    if (Crafted.TryGetValue(_cInfo.entityId, out int _craftCount))
                     {
                         if ((int)_playerDataFile.totalItemsCrafted != _craftCount)
                         {
@@ -172,13 +171,12 @@ namespace ServerTools.AntiCheat
 
                     List<int> BagSlot = new List<int>();
                     List<int> InvSlot = new List<int>();
-                    ItemStack[] _bagStacks, _invStacks;
                     ItemStack _bagStackOld, _bagStackNew, _invStackOld, _invStackNew, _CompareBagOld, _CompareBagNew,
                     _CompareInvOld, _CompareInvNew;
 
-                    Bag.TryGetValue(_cInfo.entityId, out _bagStacks);
+                    Bag.TryGetValue(_cInfo.entityId, out ItemStack[]  _bagStacks);
                     {
-                        Inventory.TryGetValue(_cInfo.entityId, out _invStacks);
+                        Inventory.TryGetValue(_cInfo.entityId, out ItemStack[] _invStacks);
                         {
                             int _bagSize = _bag.Length;
                             int _invSize = _inventory.Length;

@@ -21,14 +21,21 @@ namespace ServerTools.AntiCheat
                     if (Admin.PermissionLevel > Admin_Level)
                     {
                         EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                        if (ReservedSlots.IsEnabled)
+                        if (_player != null)
                         {
-                            DateTime _dt;
-                            if (ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt))
+                            if (ReservedSlots.IsEnabled)
                             {
-                                if (DateTime.Now < _dt)
+                                DateTime _dt;
+                                if (ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt))
                                 {
-                                    DonatorRad(_cInfo, _player);
+                                    if (DateTime.Now < _dt)
+                                    {
+                                        DonatorRad(_cInfo, _player);
+                                    }
+                                    else
+                                    {
+                                        NormalRad(_cInfo, _player);
+                                    }
                                 }
                                 else
                                 {
@@ -39,10 +46,6 @@ namespace ServerTools.AntiCheat
                             {
                                 NormalRad(_cInfo, _player);
                             }
-                        }
-                        else
-                        {
-                            NormalRad(_cInfo, _player);
                         }
                     }
                 }
@@ -74,10 +77,10 @@ namespace ServerTools.AntiCheat
                 string _phrase790;
                 if (!Phrases.Dict.TryGetValue(790, out _phrase790))
                 {
-                    _phrase790 = " you have reached the world border.";
+                    _phrase790 = "You have reached the world border.";
                 }
                 _phrase790 = _phrase790.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase790 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase790 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -106,10 +109,10 @@ namespace ServerTools.AntiCheat
                 string _phrase790;
                 if (!Phrases.Dict.TryGetValue(790, out _phrase790))
                 {
-                    _phrase790 = " you have reached the world border.";
+                    _phrase790 = "You have reached the world border.";
                 }
                 _phrase790 = _phrase790.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase790 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase790 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

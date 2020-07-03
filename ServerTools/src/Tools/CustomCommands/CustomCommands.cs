@@ -634,7 +634,7 @@ namespace ServerTools
                         _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Hardcore.Command101);
                     }
                 }
-                else if (PersistentContainer.Instance.Players[_cInfo.playerId].Hardcore)
+                else if (PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreEnabled)
                 {
                     _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Hardcore.Command11);
                     _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Hardcore.Command12);
@@ -901,13 +901,13 @@ namespace ServerTools
             string _phrase616;
             if (!Phrases.Dict.TryGetValue(616, out _phrase616))
             {
-                _phrase616 = " you can only use {CommandPrivate}{Command15} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                _phrase616 = "You can only use {CommandPrivate}{Command15} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
             }
             _phrase616 = _phrase616.Replace("{CommandPrivate}", ChatHook.Command_Private);
             _phrase616 = _phrase616.Replace("{Command15}", Command15);
             _phrase616 = _phrase616.Replace("{DelayBetweenUses}", _newDelay.ToString());
             _phrase616 = _phrase616.Replace("{TimeRemaining}", _timeLeft.ToString());
-            ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase616 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase616 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void Permission(ClientInfo _cInfo, string _message, string[] _c, int[] _c1)
@@ -924,10 +924,10 @@ namespace ServerTools
                     string _phrase827;
                     if (!Phrases.Dict.TryGetValue(827, out _phrase827))
                     {
-                        _phrase827 = " you do not have permission to use {Command}.";
+                        _phrase827 = "You do not have permission to use {Command}.";
                     }
                     _phrase827 = _phrase827.Replace("{Command}", _message);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase827 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase827 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -951,10 +951,10 @@ namespace ServerTools
                     string _phrase814;
                     if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                     {
-                        _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
+                        _phrase814 = "You do not have enough {WalletCoinName} in your wallet to run this command.";
                     }
                     _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else

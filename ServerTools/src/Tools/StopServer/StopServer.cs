@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics;
+using System.Timers;
 
 namespace ServerTools
 {
     class StopServer
     {
-        public static bool Ten_Second_Countdown = false, StopServerCountingDown = false, Kick_30_Seconds = false, NoEntry = false, Shutdown = false;
+        public static bool NoEntry = false, Shutdown = false, CountingDown = false;
         public static int Alert_Count = 2, Delay = 5;
 
         public static void StartShutdown()
@@ -14,16 +15,12 @@ namespace ServerTools
                 Lottery.StartLotto();
             }
             Lottery.ShuttingDown = true;
-            if (AutoShutdown.Kick_Login)
-            {
-                NoEntry = true;
-            }
+            CountingDown = true;
             if (Delay < 1)
             {
                 Delay = 1;
             }
-            Timers._stopServerCount = Delay;
-            StopServerCountingDown = true;
+            Timers.StopServerMinutes = Delay;
             string _phrase450;
             if (!Phrases.Dict.TryGetValue(450, out _phrase450))
             {
@@ -46,6 +43,7 @@ namespace ServerTools
 
         public static void StartShutdown3()
         {
+            NoEntry = true;
             string _phrase451;
             if (!Phrases.Dict.TryGetValue(451, out _phrase451))
             {
@@ -60,52 +58,22 @@ namespace ServerTools
             Alert(_phrase451, 1);
             Alert(_phrase450, 1);
             SdtdConsole.Instance.ExecuteSync("saveworld", (ClientInfo)null);
-        }
-
-        public static void StartShutdown4()
-        {
-            Alert("10 seconds until shutdown", 1);
-        }
-
-        public static void StartShutdown5()
-        {
-            Alert("5", 1);
-        }
-
-        public static void StartShutdown6()
-        {
-            Alert("4", 1);
-        }
-
-        public static void StartShutdown7()
-        {
-            Alert("3", 1);
-        }
-
-        public static void StartShutdown8()
-        {
-            Alert("2", 1);
-        }
-
-        public static void StartShutdown9()
-        {
-            Alert("1", 1);
+            if (VehicleManager.Instance != null)
+            {
+                VehicleManager.Instance.Update();
+            }
         }
 
         public static void Stop()
         {
             Log.Out("[SERVERTOOLS] Running shutdown.");
-            Timers.TimerStop();
-            Process process = Process.GetCurrentProcess();
-            if (process != null)
-            {
-                process.Kill();
-            }
+            Timers.Unload();
+            Timers.ShutdownFailsafe();
+            SdtdConsole.Instance.ExecuteSync("shutdown", (ClientInfo)null);
         }
 
         public static void Kick30()
         {
-            NoEntry = true;
             string _phrase453;
             if (!Phrases.Dict.TryGetValue(453, out _phrase453))
             {
@@ -120,6 +88,15 @@ namespace ServerTools
             if (_count > 1)
             {
                 Alert(_message, _count - 1);
+            }
+        }
+
+        public static void FailSafe(object sender, ElapsedEventArgs e)
+        {
+            Process process = Process.GetCurrentProcess();
+            if (process != null)
+            {
+                process.Kill();
             }
         }
     }

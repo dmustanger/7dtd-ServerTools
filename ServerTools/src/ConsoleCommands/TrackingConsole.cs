@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Xml;
 using UnityEngine;
 
 namespace ServerTools
@@ -22,13 +20,13 @@ namespace ServerTools
                    "  4. Tracking <Hours> <Block Range> <X> <Y> <Z>\n" +
                    "1. Turn off the tracking tool\n" +
                    "2. Turn on the tracking tool\n" +
-                   "3. Shows the players that have been tracked within the time and range specified from your current location\n" +
-                   "4. Shows the players that have been tracked within the time, range and location specified\n";
+                   "3. List players tracked with in the specified hours and block range from your current location\n" +
+                   "4. List players tracked with in the specified hours and block range from a specific location\n";
         }
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Tracking", "Tracking", "tracking", "track" };
+            return new string[] { "st-Tracking", "Tracking", "tracking", "st-track" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -42,9 +40,9 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    if (Tracking.IsEnabled)
+                    if (Track.IsEnabled)
                     {
-                        Tracking.IsEnabled = false;
+                        Track.IsEnabled = false;
                         LoadConfig.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("Tracking has been set to off"));
                         return;
@@ -57,9 +55,9 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (!Tracking.IsEnabled)
+                    if (!Track.IsEnabled)
                     {
-                        Tracking.IsEnabled = true;
+                        Track.IsEnabled = true;
                         LoadConfig.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("Tracking has been set to on"));
                         return;
@@ -72,110 +70,93 @@ namespace ServerTools
                 }
                 else if (_params.Count == 2)
                 {
-                    int _hours, _range;
-                    if (int.TryParse(_params[0], out _hours))
+                    if (PersistentContainer.Instance.Track != null && PersistentContainer.Instance.Track.Count > 0)
                     {
-                        if (int.TryParse(_params[1], out _range))
+                        bool _found = false;
+                        int _hours, _range;
+                        if (int.TryParse(_params[0], out _hours))
                         {
-                            List<string> PlayerInRange = new List<string>();
-                            string _sql = string.Format("SELECT * FROM Tracking ORDER BY dateTime DESC");
-                            DataTable _result = SQL.TypeQuery(_sql);
-                            if (_result.Rows.Count > 0)
+                            if (_hours > 48)
                             {
-                                bool _found = false;
+                                _hours = 48;
+                            }
+                            if (int.TryParse(_params[1], out _range))
+                            {
                                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_senderInfo.RemoteClientInfo.entityId];
-                                SdtdConsole.Instance.Output(string.Format("Tracking results at a range of {0} blocks:", _range));
-                                foreach (DataRow row in _result.Rows)
+                                if (_player != null)
                                 {
-                                    DateTime _dateTime;
-                                    DateTime.TryParse(row.ItemArray.GetValue(1).ToString(), out _dateTime);
-                                    if (_dateTime.AddHours(_hours) >= DateTime.Now)
+                                    List<string[]> _tracking = PersistentContainer.Instance.Track;
+                                    for (int i = 0; i < _tracking.Count; i++)
                                     {
-                                        string[] _cords = row.ItemArray.GetValue(2).ToString().Split(' ');
-                                        int _x, _y, _z;
-                                        int.TryParse(_cords[0], out _x);
-                                        int.TryParse(_cords[1], out _y);
-                                        int.TryParse(_cords[2], out _z);
-                                        Vector3 _trackedVecPos = new Vector3(_x, _y, _z);
-                                        if (RangeCheck(_player.position, _trackedVecPos, _range))
+                                        string[] _trackData = _tracking[i];
+                                        DateTime.TryParse(_trackData[0], out DateTime _date);
+                                        if (_date.AddHours(_hours) >= DateTime.Now)
                                         {
-                                            _found = true;
-                                            string _playerId = row.ItemArray.GetValue(3).ToString();
-                                            string _playerName = row.ItemArray.GetValue(4).ToString();
-                                            string _itemHeld = row.ItemArray.GetValue(5).ToString();
-                                            if (!PlayerInRange.Contains(_playerId))
+                                            string[] _cords = _trackData[1].Split(',');
+                                            int.TryParse(_cords[0], out int _x);
+                                            int.TryParse(_cords[1], out int _y);
+                                            int.TryParse(_cords[2], out int _z);
+                                            Vector3 _trackedVecPos = new Vector3(_x, _y, _z);
+                                            if (RangeCheck(_player.position, _trackedVecPos, _range))
                                             {
-                                                PlayerInRange.Add(_playerId);
-                                                SdtdConsole.Instance.Output(string.Format("Player: {0}, SteamId: {1}, Time: {2}, Position: {3} {4} {5}, Item Held: {6}", _playerName, _playerId, _dateTime, _x, _y, _z, _itemHeld));
+                                                SdtdConsole.Instance.Output(string.Format("Player: {0}, SteamId: {1}, Time: {2}, Position: {3}, Item Held: {4}", _trackData[3], _trackData[2], _trackData[0], _trackData[1], _trackData[4]));
                                             }
                                         }
                                     }
                                 }
                                 if (!_found)
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("Tracking results found nobody at this time and range inside your current position"));
+                                    SdtdConsole.Instance.Output("Tracking log lists nobody at this time and range from your current position");
                                 }
+                                return;
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("No tracking positions are recorded in the database"));
+                                SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[1]));
+                                return;
                             }
-                            _result.Dispose();
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                            return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                        SdtdConsole.Instance.Output("Tracking log has no data");
+                        return;
                     }
-                    return;
                 }
                 else if (_params.Count == 5)
                 {
-                    int _hours, _range, _worldX, _worldY, _worldZ;
-                    if (int.TryParse(_params[0], out _hours))
+                    if (PersistentContainer.Instance.Track != null && PersistentContainer.Instance.Track.Count > 0)
                     {
-                        if (int.TryParse(_params[1], out _range))
+                        bool _found = false;
+                        if (int.TryParse(_params[0], out int _hours))
                         {
-                            if (int.TryParse(_params[2], out _worldX))
+                            if (int.TryParse(_params[1], out int _range))
                             {
-                                if (int.TryParse(_params[3], out _worldY))
+                                if (int.TryParse(_params[2], out int _worldX))
                                 {
-                                    if (int.TryParse(_params[4], out _worldZ))
+                                    if (int.TryParse(_params[3], out int _worldY))
                                     {
-                                        string _sql = string.Format("SELECT * FROM Tracking ORDER BY dateTime DESC");
-                                        DataTable _result = SQL.TypeQuery(_sql);
-                                        if (_result.Rows.Count > 0)
+                                        if (int.TryParse(_params[4], out int _worldZ))
                                         {
-                                            bool _found = false;
-                                            List<string> PlayerInRange = new List<string>();
-                                            SdtdConsole.Instance.Output(string.Format("Tracking results at a range of {0} blocks:", _range));
-                                            foreach (DataRow row in _result.Rows)
+                                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_senderInfo.RemoteClientInfo.entityId];
+                                            if (_player != null)
                                             {
-                                                DateTime _dateTime;
-                                                DateTime.TryParse(row.ItemArray.GetValue(1).ToString(), out _dateTime);
-                                                if (_dateTime.AddHours(_hours) >= DateTime.Now)
+                                                List<string[]> _tracking = PersistentContainer.Instance.Track;
+                                                for (int i = 0; i < _tracking.Count; i++)
                                                 {
-                                                    string[] _cords = row.ItemArray.GetValue(2).ToString().Split(' ');
-                                                    int _x, _y, _z;
-                                                    int.TryParse(_cords[0], out _x);
-                                                    int.TryParse(_cords[1], out _y);
-                                                    int.TryParse(_cords[2], out _z);
-                                                    Vector3 _worldVecPos = new Vector3(_worldX, _worldY, _worldZ);
-                                                    Vector3 _trackedVecPos = new Vector3(_x, _y, _z);
-                                                    if (RangeCheck(_worldVecPos, _trackedVecPos, _range))
+                                                    string[] _trackData = _tracking[i];
+                                                    DateTime.TryParse(_trackData[0], out DateTime _date);
+                                                    if (_date.AddHours(_hours) >= DateTime.Now)
                                                     {
-                                                        _found = true;
-                                                        string _playerId = row.ItemArray.GetValue(3).ToString();
-                                                        string _playerName = row.ItemArray.GetValue(4).ToString();
-                                                        string _itemHeld = row.ItemArray.GetValue(5).ToString();
-                                                        if (!PlayerInRange.Contains(_playerId))
+                                                        Vector3 _trackedVecPos = new Vector3(_worldX, _worldY, _worldZ);
+                                                        if (RangeCheck(_player.position, _trackedVecPos, _range))
                                                         {
-                                                            PlayerInRange.Add(_playerId);
-                                                            SdtdConsole.Instance.Output(string.Format("Player: {0}, SteamId: {1}, Time: {2}, Position: {3} {4} {5}, Item Held: {6}", _playerName, _playerId, _dateTime, _x, _y, _z, _itemHeld));
+                                                            SdtdConsole.Instance.Output(string.Format("Player: {0}, SteamId: {1}, Time: {2}, Position: {3}, Item Held: {4}", _trackData[3], _trackData[2], _trackData[0], _trackData[1], _trackData[4]));
                                                         }
                                                     }
                                                 }
@@ -187,35 +168,35 @@ namespace ServerTools
                                         }
                                         else
                                         {
-                                            SdtdConsole.Instance.Output(string.Format("No tracking positions are recorded in the database"));
+                                            SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[4]));
                                         }
-                                        _result.Dispose();
                                     }
                                     else
                                     {
-                                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[4]));
+                                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[3]));
                                     }
                                 }
                                 else
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[3]));
+                                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[2]));
                                 }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[2]));
+                                SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[1]));
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
                         }
+                        return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                        SdtdConsole.Instance.Output("Tracking log has no data");
+                        return;
                     }
-                    return;
                 }
                 else
                 {
@@ -224,7 +205,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in TrackingConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in TrackingConsole.Execute: {0}", e.Message));
             }
         }
 

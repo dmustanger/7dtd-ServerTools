@@ -34,16 +34,9 @@ namespace ServerTools
                                 {
                                     if (!_player.IsDead())
                                     {
-                                        if (_player.IsSpawned() && _player.IsAlive())
+                                        if (Zones.IsEnabled && _player.IsSpawned() && _player.IsAlive())
                                         {
-                                            if (Zones.IsEnabled)
-                                            {
-                                                Zones.ZoneCheck(_cInfo, _player);
-                                            }
-                                            if (GodMode.IsEnabled)
-                                            {
-                                                GodMode.GodCheck(_cInfo);
-                                            }
+                                            Zones.ZoneCheck(_cInfo, _player);
                                         }
                                     }
                                     else

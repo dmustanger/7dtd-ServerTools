@@ -10,11 +10,11 @@ namespace ServerTools
     class StartingItems
     {
         public static bool IsEnabled = false, IsRunning = false;
-        private const string file = "StartingItems.xml";
-        private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
+        private const string File = "StartingItems.xml";
+        private static string FilePath = string.Format("{0}/{1}", API.ConfigPath, File);
         public static Dictionary<string, int[]> ItemList = new Dictionary<string, int[]>();
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static bool updateConfig = false;
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, File);
+        private static bool UpdateConfig = false;
 
         public static void Load()
         {
@@ -27,24 +27,24 @@ namespace ServerTools
 
         public static void Unload()
         {
-            fileWatcher.Dispose();
+            FileWatcher.Dispose();
             IsRunning = false;
         }
 
         public static void LoadXml()
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(filePath);
+                xmlDoc.Load(FilePath);
             }
             catch (XmlException e)
             {
-                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
+                Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", File, e.Message));
                 return;
             }
             XmlNode _XmlNode = xmlDoc.DocumentElement;
@@ -121,17 +121,17 @@ namespace ServerTools
                     }
                 }
             }
-            if (updateConfig)
+            if (UpdateConfig)
             {
-                updateConfig = false;
+                UpdateConfig = false;
                 UpdateXml();
             }
         }
 
         private static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
-            using (StreamWriter sw = new StreamWriter(filePath))
+            FileWatcher.EnableRaisingEvents = false;
+            using (StreamWriter sw = new StreamWriter(FilePath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<StartingItems>");
@@ -155,21 +155,21 @@ namespace ServerTools
                 sw.Flush();
                 sw.Close();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 
         private static void OnFileChanged(object source, FileSystemEventArgs e)
         {
-            if (!Utils.FileExists(filePath))
+            if (!Utils.FileExists(FilePath))
             {
                 UpdateXml();
             }
@@ -186,7 +186,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Starting items have already been spawned for player {0} with steam id {1}.", _cInfo.playerName, _cInfo.playerId));
+                    Log.Out(string.Format("[SERVERTOOLS] Starting items have already been spawned for player {0} with steam id {1}", _cInfo.playerName, _cInfo.playerId));
                 }
             }
             else
@@ -225,14 +225,14 @@ namespace ServerTools
                     world.SpawnEntityInWorld(entityItem);
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                     world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                    Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1} with steam id {2}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName, _cInfo.playerId));
-                    PersistentContainer.Instance.Players[_cInfo.playerId].StartingItems = true;
-                    PersistentContainer.Instance.Save();
+                    Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1} with steam id {2}", _itemValue.ItemClass.Name, _cInfo.playerName, _cInfo.playerId));
                 }
+                PersistentContainer.Instance.Players[_cInfo.playerId].StartingItems = true;
+                PersistentContainer.Instance.Save();
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in StartingItems.SpawnItems: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in StartingItems.SpawnItems: {0}", e.Message));
             }
         }
     }

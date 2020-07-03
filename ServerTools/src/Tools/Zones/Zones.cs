@@ -261,7 +261,7 @@ namespace ServerTools
                 string _phrase802;
                 if (!Phrases.Dict.TryGetValue(802, out _phrase802))
                 {
-                    _phrase802 = " you have murdered a player while inside a pve zone. Their name was {PlayerName}. Your player kill count was reduced by one.";
+                    _phrase802 = "You have murdered a player while inside a pve zone. Their name was {PlayerName}. Your player kill count was reduced by one.";
                 }
                 _phrase802 = _phrase802.Replace("{PlayerName}", _cInfoVictim.playerName);
                 ChatHook.ChatMessage(_cInfoKiller, LoadConfig.Chat_Response_Color + _phrase802 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -295,10 +295,10 @@ namespace ServerTools
                 string _phrase802;
                 if (!Phrases.Dict.TryGetValue(802, out _phrase802))
                 {
-                    _phrase802 = " you have murdered a player while inside a pve zone. Their name was {PlayerName}.";
+                    _phrase802 = "You have murdered a player while inside a pve zone. Their name was {PlayerName}.";
                 }
                 _phrase802 = _phrase802.Replace("{PlayerName}", _cInfoVictim.playerName);
-                ChatHook.ChatMessage(_cInfoKiller, ChatHook.Player_Name_Color + _cInfoKiller.playerName + LoadConfig.Chat_Response_Color + _phrase802 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfoKiller, LoadConfig.Chat_Response_Color + _phrase802 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfoVictim.entityId];
                 int x = (int)_player.position.x;
                 int y = (int)_player.position.y;
@@ -416,11 +416,11 @@ namespace ServerTools
                     string _phrase556;
                     if (!Phrases.Dict.TryGetValue(556, out _phrase556))
                     {
-                        _phrase556 = " you have left the lobby space. {PrivateCommand}{Command53} command is no longer available.";
+                        _phrase556 = "You have left the lobby space. {PrivateCommand}{Command53} command is no longer available.";
                         _phrase556 = _phrase556.Replace("{PrivateCommand}", ChatHook.Command_Private);
                         _phrase556 = _phrase556.Replace("{Command53}", ChatHook.Command_Private);
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase556 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase556 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             if (Market.IsEnabled && Market.MarketPlayers.Contains(_cInfo.entityId) && !Market.InsideMarket(_player.position.x, _player.position.z))
@@ -433,11 +433,11 @@ namespace ServerTools
                     string _phrase564;
                     if (!Phrases.Dict.TryGetValue(564, out _phrase564))
                     {
-                        _phrase564 = " you have left the market space. {PrivateCommand}{Command51} command is no longer available.";
+                        _phrase564 = "You have left the market space. {PrivateCommand}{Command51} command is no longer available.";
                         _phrase564 = _phrase564.Replace("{PrivateCommand}", ChatHook.Command_Private);
                         _phrase564 = _phrase564.Replace("{Command51}", ChatHook.Command_Private);
                     }
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase564 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase564 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -485,13 +485,13 @@ namespace ServerTools
                 string _phrase811;
                 if (!Phrases.Dict.TryGetValue(606, out _phrase811))
                 {
-                    _phrase811 = " you can only use {CommandPrivate}{Command50} for {Time} minutes after being killed in a pve zone. Time has expired.";
+                    _phrase811 = "You can only use {CommandPrivate}{Command50} for {Time} minutes after being killed in a pve zone. Time has expired.";
                 }
                 _phrase811 = _phrase811.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase811 = _phrase811.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase811 = _phrase811.Replace("{Command50}", Zones.Command50);
                 _phrase811 = _phrase811.Replace("{Time}", _timeAllowed.ToString());
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase811 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase811 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 Victim.Remove(_cInfo.entityId);
             }
         }

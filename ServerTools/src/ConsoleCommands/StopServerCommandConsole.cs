@@ -33,13 +33,13 @@ namespace ServerTools
                 }
                 if (_params[0] == "cancel")
                 {
-                    if (!StopServer.StopServerCountingDown)
+                    if (!StopServer.CountingDown)
                     {
                         SdtdConsole.Instance.Output("Stopserver is not running.");
                     }
                     else
                     {
-                        StopServer.StopServerCountingDown = false;
+                        StopServer.CountingDown = false;
                         StopServer.NoEntry = false;
                         Lottery.ShuttingDown = false;
                         if (AutoShutdown.IsEnabled)
@@ -51,7 +51,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    if (StopServer.StopServerCountingDown)
+                    if (StopServer.CountingDown)
                     {
                         SdtdConsole.Instance.Output(string.Format("Server is already set to stop."));
                     }
@@ -70,7 +70,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in StopServerConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in StopServerConsole.Run: {0}", e.Message));
             }
         }
     }

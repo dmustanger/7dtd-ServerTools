@@ -71,7 +71,11 @@ namespace ServerTools
                 EntityPlayer _friendPlayer = GameManager.Instance.World.Players.dict[_friend.entityId];
                 if (_player.IsFriendsWith(_friendPlayer))
                 {
-                    DateTime _lastFriendTele = PersistentContainer.Instance.Players[_cInfo.playerId].LastFriendTele;
+                    DateTime _lastFriendTele = DateTime.Now;
+                    if (PersistentContainer.Instance.Players[_cInfo.playerId].LastFriendTele != null)
+                    {
+                        _lastFriendTele = PersistentContainer.Instance.Players[_cInfo.playerId].LastFriendTele;
+                    }
                     TimeSpan varTime = DateTime.Now - _lastFriendTele;
                     double fractionalMinutes = varTime.TotalMinutes;
                     int _timepassed = (int)fractionalMinutes;
@@ -122,11 +126,11 @@ namespace ServerTools
                 string _phrase630;
                 if (!Phrases.Dict.TryGetValue(630, out _phrase630))
                 {
-                    _phrase630 = " you can only teleport to a friend once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
+                    _phrase630 = "You can only teleport to a friend once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
                 }
                 _phrase630 = _phrase630.Replace("{DelayBetweenUses}", _delay.ToString());
                 _phrase630 = _phrase630.Replace("{TimeRemaining}", _timeleft.ToString());
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase630 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase630 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -144,10 +148,10 @@ namespace ServerTools
                     string _phrase814;
                     if (!Phrases.Dict.TryGetValue(814, out _phrase814))
                     {
-                        _phrase814 = " you do not have enough {WalletCoinName} in your wallet to run this command.";
+                        _phrase814 = "You do not have enough {WalletCoinName} in your wallet to run this command.";
                     }
                     _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                    ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase814 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -164,10 +168,10 @@ namespace ServerTools
                 string _phrase626;
                 if (!Phrases.Dict.TryGetValue(626, out _phrase626))
                 {
-                    _phrase626 = " this {EntityId} is not valid. Only integers accepted.";
+                    _phrase626 = "This {EntityId} is not valid. Only integers accepted.";
                 }
                 _phrase626 = _phrase626.Replace("{EntityId}", _Id.ToString());
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase626 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase626 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 return;
             }
             ClientInfo _cInfo3 = ConnectionManager.Instance.Clients.ForEntityId(_Id);
@@ -176,19 +180,19 @@ namespace ServerTools
                 string _phrase627;
                 if (!Phrases.Dict.TryGetValue(627, out _phrase627))
                 {
-                    _phrase627 = " sent your friend {PlayerName} a teleport request.";
+                    _phrase627 = "Sent your friend {PlayerName} a teleport request.";
                 }
                 _phrase627 = _phrase627.Replace("{PlayerName}", _cInfo3.playerName);
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase627 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase627 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 string _phrase628;
                 if (!Phrases.Dict.TryGetValue(628, out _phrase628))
                 {
-                    _phrase628 = " {PlayerName} would like to teleport to you. Type {CommandPrivate}{Command60} in chat to accept the request.";
+                    _phrase628 = "{PlayerName} would like to teleport to you. Type {CommandPrivate}{Command60} in chat to accept the request.";
                 }
                 _phrase628 = _phrase628.Replace("{PlayerName}", _cInfo.playerName);
                 _phrase628 = _phrase628.Replace("{CommandPrivate}", ChatHook.Command_Private);
                 _phrase628 = _phrase628.Replace("{Command60}", Command60);
-                ChatHook.ChatMessage(_cInfo3, ChatHook.Player_Name_Color + _cInfo3.playerName + LoadConfig.Chat_Response_Color + _phrase628 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo3, LoadConfig.Chat_Response_Color + _phrase628 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 if (Dict.ContainsKey(_cInfo3.entityId))
                 {
                     Dict.Remove(_cInfo3.entityId);
@@ -207,32 +211,39 @@ namespace ServerTools
                 string _phrase629;
                 if (!Phrases.Dict.TryGetValue(629, out _phrase629))
                 {
-                    _phrase629 = " did not find EntityId {EntityId}. No teleport request sent.";
+                    _phrase629 = "Did not find EntityId {EntityId}. No teleport request sent.";
                 }
                 _phrase629 = _phrase629.Replace("{EntityId}", _Id.ToString());
-                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName + LoadConfig.Chat_Response_Color + _phrase629 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase629 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
         public static void TeleFriend(ClientInfo _cInfo, int _friendToTele)
         {
-            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
             ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_friendToTele);
             if (_cInfo2 != null)
             {
-                _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player.position.x, (int)_player.position.y, (int)_player.position.z), null, false));
-                if (Wallet.IsEnabled && Command_Cost >= 1)
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                if (_player != null)
                 {
-                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                    _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player.position.x, (int)_player.position.y, (int)_player.position.z), null, false));
+                    if (Wallet.IsEnabled && Command_Cost >= 1)
+                    {
+                        Wallet.SubtractCoinsFromWallet(_cInfo2.playerId, Command_Cost);
+                    }
+                    PersistentContainer.Instance.Players[_cInfo2.playerId].LastFriendTele = DateTime.Now;
+                    PersistentContainer.Instance.Save();
+                    string _phrase631;
+                    if (!Phrases.Dict.TryGetValue(631, out _phrase631))
+                    {
+                        _phrase631 = "Your request was accepted. Teleported you to your friend.";
+                    }
+                    ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _phrase631 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
-                PersistentContainer.Instance.Players[_cInfo.playerId].LastFriendTele = DateTime.Now;
-                PersistentContainer.Instance.Save();
-                string _phrase631;
-                if (!Phrases.Dict.TryGetValue(631, out _phrase631))
-                {
-                    _phrase631 = " your request was accepted. Teleporting you to your friend.";
-                }
-                ChatHook.ChatMessage(_cInfo2, ChatHook.Player_Name_Color + _cInfo2.playerName + LoadConfig.Chat_Response_Color + _phrase631 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+            else
+            {
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Unable to complete request. Friend was not found online" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

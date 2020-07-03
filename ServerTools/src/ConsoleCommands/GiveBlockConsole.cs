@@ -9,7 +9,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Gives A Block Directly To A Players Inventory. Drops To The Ground If Full.";
+            return "[ServerTools]-Gives a block directly to a player's inventory. Drops to the ground if inventory and bag is full.";
         }
         public override string GetHelp()
         {
@@ -51,6 +51,16 @@ namespace ServerTools
                 }
                 else
                 {
+                    World world = GameManager.Instance.World;
+                    int count = 1;
+                    int _count;
+                    if (int.TryParse(_params[2], out _count))
+                    {
+                        if (_count > 0 & _count < 100000)
+                        {
+                            count = _count;
+                        }
+                    }
                     ItemValue _itemValue;
                     ItemClass _class;
                     Block _block;
@@ -77,65 +87,64 @@ namespace ServerTools
                     if (_params[0].ToLower() == "all")
                     {
                         List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                        foreach (var _cInfo in _cInfoList)
+                        if (_cInfoList != null && _cInfoList.Count > 0)
                         {
-                            int count = 1;
-                            int _count;
-                            if (int.TryParse(_params[2], out _count))
+                            for (int i = 0; i < _cInfoList.Count; i++)
                             {
-                                if (_count > 0 & _count < 100000)
+                                ClientInfo _cInfo = _cInfoList[i];
+                                if (_cInfo != null && world.Players.dict.ContainsKey(_cInfo.entityId))
                                 {
-                                    count = _count;
+                                    EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                                    if (_player != null && _player.IsSpawned() && _player.IsDead())
+                                    {
+                                        var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                                        {
+                                            entityClass = EntityClass.FromString("item"),
+                                            id = EntityFactory.nextEntityID++,
+                                            itemStack = new ItemStack(_itemValue, count),
+                                            pos = world.Players.dict[_cInfo.entityId].position,
+                                            rot = new Vector3(20f, 0f, 20f),
+                                            lifetime = 60f,
+                                            belongsPlayerId = _cInfo.entityId
+                                        });
+                                        world.SpawnEntityInWorld(entityItem);
+                                        SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
+                                        if (_player.bag.CanTakeItem(new ItemStack(_itemValue, count)) || _player.inventory.CanTakeItem(new ItemStack(_itemValue, count)))
+                                        {
+                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                                            world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                                            string _phrase804;
+                                            if (!Phrases.Dict.TryGetValue(804, out _phrase804))
+                                            {
+                                                _phrase804 = "{Count} {ItemName} was sent to your inventory.";
+                                            }
+                                            _phrase804 = _phrase804.Replace("{Count}", count.ToString());
+                                            _phrase804 = _phrase804.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase804 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        }
+                                        else
+                                        {
+                                            string _phrase828;
+                                            if (!Phrases.Dict.TryGetValue(828, out _phrase828))
+                                            {
+                                                _phrase828 = "{Count} {ItemName} was sent to you but your bag is full. Check the ground.";
+                                            }
+                                            _phrase828 = _phrase828.Replace("{Count}", count.ToString());
+                                            _phrase828 = _phrase828.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase828 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        }
+                                    }
                                 }
-                            }
-                            World world = GameManager.Instance.World;
-                            if (world.Players.dict[_cInfo.entityId].IsSpawned())
-                            {
-                                var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                                {
-                                    entityClass = EntityClass.FromString("item"),
-                                    id = EntityFactory.nextEntityID++,
-                                    itemStack = new ItemStack(_itemValue, count),
-                                    pos = world.Players.dict[_cInfo.entityId].position,
-                                    rot = new Vector3(20f, 0f, 20f),
-                                    lifetime = 60f,
-                                    belongsPlayerId = _cInfo.entityId
-                                });
-                                world.SpawnEntityInWorld(entityItem);
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
-                                string _phrase804;
-                                if (!Phrases.Dict.TryGetValue(804, out _phrase804))
-                                {
-                                    _phrase804 = "{Count} {ItemName} was sent to your inventory. If your bag is full, check the ground.";
-                                }
-                                _phrase804 = _phrase804.Replace("{Count}", count.ToString());
-                                _phrase804 = _phrase804.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase804 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
-                            else
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Player with steamdId {0} is not spawned", _params[0]));
                             }
                         }
                     }
                     else
                     {
                         ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
-                        if (_cInfo != null)
+                        if (_cInfo != null && world.Players.dict.ContainsKey(_cInfo.entityId))
                         {
-                            int count = 1;
-                            int _count;
-                            if (int.TryParse(_params[2], out _count))
-                            {
-                                if (_count > 0 & _count < 10000)
-                                {
-                                    count = _count;
-                                }
-                            }
-                            World world = GameManager.Instance.World;
-                            if (world.Players.dict[_cInfo.entityId].IsSpawned())
+                            EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                            if (_player != null && _player.IsSpawned() && _player.IsDead())
                             {
                                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                                 {
@@ -148,25 +157,36 @@ namespace ServerTools
                                     belongsPlayerId = _cInfo.entityId
                                 });
                                 world.SpawnEntityInWorld(entityItem);
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                string _phrase804;
-                                if (!Phrases.Dict.TryGetValue(804, out _phrase804))
+                                SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
+                                if (_player.bag.CanTakeItem(new ItemStack(_itemValue, count)) || _player.inventory.CanTakeItem(new ItemStack(_itemValue, count)))
                                 {
-                                    _phrase804 = "{Count} {ItemName} was sent to your inventory. If your bag is full, check the ground.";
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                                    string _phrase804;
+                                    if (!Phrases.Dict.TryGetValue(804, out _phrase804))
+                                    {
+                                        _phrase804 = "{Count} {ItemName} was sent to your inventory.";
+                                    }
+                                    _phrase804 = _phrase804.Replace("{Count}", count.ToString());
+                                    _phrase804 = _phrase804.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase804 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
-                                _phrase804 = _phrase804.Replace("{Count}", count.ToString());
-                                _phrase804 = _phrase804.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
-                                ChatHook.ChatMessage(_cInfo, ChatHook.Player_Name_Color + _cInfo.playerName  + _phrase804 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
-                            else
-                            {
-                                SdtdConsole.Instance.Output(string.Format("Player with Id {0} is not spawned", _params[0]));
+                                else
+                                {
+                                    string _phrase828;
+                                    if (!Phrases.Dict.TryGetValue(828, out _phrase828))
+                                    {
+                                        _phrase828 = "{Count} {ItemName} was sent to you but your bag is full. Check the ground.";
+                                    }
+                                    _phrase828 = _phrase828.Replace("{Count}", count.ToString());
+                                    _phrase828 = _phrase828.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase828 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Player with steamdId {0} does not exist", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("Player with steamd id {0} is not logged on or loaded in yet", _params[0]));
                         }
                     }
                 }
