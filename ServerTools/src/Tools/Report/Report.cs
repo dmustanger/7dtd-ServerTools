@@ -50,7 +50,8 @@ namespace ServerTools
             for (int i = 0; i < ClientInfoList.Count; i++)
             {
                 ClientInfo _cInfoAdmins = ClientInfoList[i];
-                if (GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfoAdmins.playerId).PermissionLevel <= Admin_Level)
+                GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
+                if (Admin.PermissionLevel <= Admin_Level)
                 {
                     string _phrase796;
                     if (!Phrases.Dict.TryGetValue(796, out _phrase796))

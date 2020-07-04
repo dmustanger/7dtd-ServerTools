@@ -15,7 +15,7 @@ namespace ServerTools
         public static void Set(ClientInfo _cInfo)
         {
             string[] _command = { Market.Command102 };
-            if (!GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo.playerId))
+            if (!GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo))
             {
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))

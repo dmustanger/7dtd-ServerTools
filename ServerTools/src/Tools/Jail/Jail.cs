@@ -16,7 +16,7 @@ namespace ServerTools
         public static void SetJail(ClientInfo _cInfo)
         {
             string[] _command1 = { Command26 };
-            if (!GameManager.Instance.adminTools.CommandAllowedFor(_command1, _cInfo.playerId))
+            if (!GameManager.Instance.adminTools.CommandAllowedFor(_command1, _cInfo))
             {
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
@@ -47,7 +47,7 @@ namespace ServerTools
         public static void PutInJail(ClientInfo _cInfo, string _playerName)
         {
             string[] _command2 = { Command27 };
-            if (!GameManager.Instance.adminTools.CommandAllowedFor(_command2, _cInfo.playerId))
+            if (!GameManager.Instance.adminTools.CommandAllowedFor(_command2, _cInfo))
             {
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))
@@ -154,7 +154,7 @@ namespace ServerTools
         public static void RemoveFromJail(ClientInfo _cInfo, string _playerName)
         {
             string[] _command3 = { Command28 };
-            if (!GameManager.Instance.adminTools.CommandAllowedFor(_command3, _cInfo.playerId))
+            if (!GameManager.Instance.adminTools.CommandAllowedFor(_command3, _cInfo))
             {
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))

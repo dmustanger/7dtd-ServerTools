@@ -19,8 +19,8 @@ namespace ServerTools
             for (int i = 0; i < ClientInfoList.Count; i++)
             {
                 ClientInfo _cInfoAdmins = ClientInfoList[i];
-                GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins.playerId);
-                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfoAdmins.playerId);
+                GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins);
+                GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
                 if (Admin.PermissionLevel <= Admin_Level)
                 {
                     Admins.Add(_cInfoAdmins.playerName);

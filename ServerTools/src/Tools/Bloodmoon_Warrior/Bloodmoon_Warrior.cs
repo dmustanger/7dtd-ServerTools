@@ -187,10 +187,10 @@ namespace ServerTools
                 {
                     sw.WriteLine("        <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"Bottled Water\" MinCount=\"20\" MaxCount=\"30\" MinQuality=\"1\" MaxQuality=\"1\" />");
                     sw.WriteLine("        <Item Name=\"drinkJarBeer\" SecondaryName=\"Beer\" MinCount=\"10\" MaxCount=\"15\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"gun44Magnum\" SecondaryName=\"44 Magnum\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"3\" MaxQuality=\"5\" />");
-                    sw.WriteLine("        <Item Name=\"gunPumpShotgun\" SecondaryName=\"Pump Shotgun\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"3\" MaxQuality=\"5\" />");
-                    sw.WriteLine("        <Item Name=\"gunMR10\" SecondaryName=\"MR10\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"2\" MaxQuality=\"5\" />");
-                    sw.WriteLine("        <Item Name=\"gunRocketLauncher\" SecondaryName=\"Rocket Launcher\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"2\" MaxQuality=\"5\" />");
+                    sw.WriteLine("        <Item Name=\"gunHandgunT2Magnum44\" SecondaryName=\"44 Magnum\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"3\" MaxQuality=\"5\" />");
+                    sw.WriteLine("        <Item Name=\"gunShotgunT2PumpShotgun\" SecondaryName=\"Pump Shotgun\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"3\" MaxQuality=\"5\" />");
+                    sw.WriteLine("        <Item Name=\"gunRifleT3SniperRifle\" SecondaryName=\"Sniper Rifle\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"2\" MaxQuality=\"5\" />");
+                    sw.WriteLine("        <Item Name=\"gunExplosivesT3RocketLauncher\" SecondaryName=\"Rocket Launcher\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"2\" MaxQuality=\"5\" />");
                     sw.WriteLine("        <Item Name=\"ammoRocketHE\" SecondaryName=\"HE Rocket\" MinCount=\"5\" MaxCount=\"10\" MinQuality=\"1\" MaxQuality=\"1\" />");
                     sw.WriteLine("        <Item Name=\"ammo44MagnumBulletHP\" SecondaryName=\"HP 44 Magnum Ammo\" MinCount=\"25\" MaxCount=\"50\" MinQuality=\"1\" MaxQuality=\"1\" />");
                     sw.WriteLine("        <Item Name=\"ammo762mmBulletHP\" SecondaryName=\"HP AK47 Ammo\" MinCount=\"50\" MaxCount=\"100\" MinQuality=\"1\" MaxQuality=\"1\" />");

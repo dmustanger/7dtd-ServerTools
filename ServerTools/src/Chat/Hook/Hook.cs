@@ -515,7 +515,7 @@ namespace ServerTools
                             {
                                 CustomCommands.CustomCommandList(_cInfo);
                             }
-                            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                            GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
                             if (Admin.PermissionLevel <= Admin_Level)
                             {
                                CustomCommands.AdminCommandList(_cInfo);
@@ -1095,7 +1095,7 @@ namespace ServerTools
                             {
                                 if (AuctionBox.No_Admins)
                                 {
-                                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                                    GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
                                     if (Admin.PermissionLevel <= Admin_Level)
                                     {
                                         string _chatMessage = LoadConfig.Chat_Response_Color + "The auction is disabled for your tier.[-]";
@@ -1130,7 +1130,7 @@ namespace ServerTools
                             {
                                 if (AuctionBox.No_Admins)
                                 {
-                                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                                    GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
                                     if (Admin.PermissionLevel > Admin_Level)
                                     {
                                         _message = _message.ToLower().Replace(AuctionBox.Command74 + " ", "");

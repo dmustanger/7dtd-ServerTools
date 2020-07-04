@@ -217,7 +217,7 @@ namespace ServerTools
                     sw.WriteLine("        <Shop Item=\"8\" Name=\"foodCropPotato\" SecondaryName=\"Potato\" Count=\"5\" Quality=\"1\" Price=\"50\" Category=\"food\" />");
                     sw.WriteLine("        <Shop Item=\"9\" Name=\"medicalBandage\" SecondaryName=\"First Aid Bandage\" Count=\"1\" Quality=\"1\" Price=\"50\" Category=\"meds\" />");
                     sw.WriteLine("        <Shop Item=\"10\" Name=\"drugPainkillers\" SecondaryName=\"Pain Killers\" Count=\"5\" Quality=\"1\" Price=\"150\" Category=\"meds\" />");
-                    sw.WriteLine("        <Shop Item=\"11\" Name=\"gunPistol\" SecondaryName=\"Pistol\" Count=\"1\" Quality=\"100\" Price=\"500\" Category=\"weapon\" />");
+                    sw.WriteLine("        <Shop Item=\"11\" Name=\"gunHandgunT1Pistol\" SecondaryName=\"Pistol\" Count=\"1\" Quality=\"100\" Price=\"500\" Category=\"weapon\" />");
                     sw.WriteLine("        <Shop Item=\"12\" Name=\"casinoCoin\" SecondaryName=\"casinoCoin\" Count=\"1\" Quality=\"1\" Price=\"1\" Category=\"extra\" />");
                 }
                 sw.WriteLine("    </Items>");

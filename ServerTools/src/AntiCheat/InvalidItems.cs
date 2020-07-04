@@ -166,7 +166,7 @@ namespace ServerTools.AntiCheat
             {
                 if (_cInfo != null)
                 {
-                    AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                    GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
                     if (Admin.PermissionLevel > Admin_Level)
                     {
                         for (int i = 0; i < _playerDataFile.inventory.Length; i++)
@@ -424,7 +424,7 @@ namespace ServerTools.AntiCheat
                             if (tile.GetTileEntityType().ToString().Equals("SecureLoot"))
                             {
                                 TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
-                                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(SecureLoot.GetOwner());
+                                GameManager.Instance.adminTools.GetAdmins().TryGetValue(SecureLoot.GetOwner(), out AdminToolsClientInfo Admin);
                                 if (Admin.PermissionLevel > Admin_Level)
                                 {
                                     ItemStack[] items = SecureLoot.items;

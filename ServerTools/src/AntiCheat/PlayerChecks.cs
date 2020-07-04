@@ -30,7 +30,7 @@ namespace ServerTools.AntiCheat
                                 {
                                     if (SpectatorEnabled)
                                     {
-                                        AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                                        GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
                                         if (Admin.PermissionLevel > Spectator_Admin_Level)
                                         {
                                             if (_player.IsSpectator)
@@ -58,7 +58,7 @@ namespace ServerTools.AntiCheat
                                     }
                                     if (GodEnabled)
                                     {
-                                        AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                                        GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
                                         if (Admin.PermissionLevel > Godmode_Admin_Level)
                                         {
                                             if (_player.Buffs.HasBuff("god"))
@@ -86,7 +86,7 @@ namespace ServerTools.AntiCheat
                                     }
                                     if (FlyEnabled)
                                     {
-                                        AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                                        GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
                                         if (Admin.PermissionLevel > Flying_Admin_Level)
                                         {
                                             if (_player.IsSpawned() && _player.IsAlive() && !_player.IsStuck && _player.AttachedToEntity == null)

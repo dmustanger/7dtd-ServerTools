@@ -11,7 +11,7 @@ namespace ServerTools
 
         public static void SetNewSpawnTele(ClientInfo _cInfo)
         {
-            if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo.playerId))
+            if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo))
             {
                 string _phrase107;
                 if (!Phrases.Dict.TryGetValue(107, out _phrase107))

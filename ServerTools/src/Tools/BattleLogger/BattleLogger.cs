@@ -169,7 +169,7 @@ namespace ServerTools
                         entityBackpack.entityId = -1;
                         entityBackpack.RefPlayerId = _playerDataFile.ecd.clientEntityId;
                         EntityCreationData entityCreationData = new EntityCreationData(entityBackpack);
-                        entityCreationData.entityName = string.Format(Localization.Get("playersBackpack", ""), _playerDataFile.ecd.entityName);
+                        entityCreationData.entityName = string.Format(Localization.Get("playersBackpack"), _playerDataFile.ecd.entityName);
                         entityCreationData.id = -1;
                         entityCreationData.lootContainer = entityBackpack.lootContainer.Clone();
                         PersistentOperations.SavePlayerDataFile(_id, _playerDataFile);

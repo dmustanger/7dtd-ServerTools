@@ -136,7 +136,7 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (Dict.ContainsKey(_cInfo.playerId) || !GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
+            if (Dict.ContainsKey(_cInfo.playerId) || !GameManager.Instance.adminTools.IsAdmin(_cInfo))
             {
                 return;
             }

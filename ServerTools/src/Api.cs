@@ -268,18 +268,22 @@ namespace ServerTools
                     {
                         _ip = _ip.Split(':').First();
                     }
-                    if (!string.IsNullOrEmpty(_ip) && BattleLogger.IsEnabled && Confirm.LogFound && !StopServer.CountingDown && !StopServer.Shutdown && GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId).PermissionLevel > BattleLogger.Admin_Level)
+                    if (!string.IsNullOrEmpty(_ip) && BattleLogger.IsEnabled && Confirm.LogFound && !StopServer.CountingDown && !StopServer.Shutdown)
                     {
-                        if (!BattleLogger.Players.ContainsKey(_cInfo.playerId))
+                        GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
+                        if (Admin.PermissionLevel > BattleLogger.Admin_Level)
                         {
-                            BattleLogger.Players.Add(_cInfo.playerId, _cInfo.ip);
-                        }
-                        else
-                        {
-                            BattleLogger.Players.TryGetValue(_cInfo.playerId, out string _recordedIp);
-                            if (_recordedIp != _ip)
+                            if (!BattleLogger.Players.ContainsKey(_cInfo.playerId))
                             {
-                                BattleLogger.Players[_cInfo.playerId] = _ip;
+                                BattleLogger.Players.Add(_cInfo.playerId, _cInfo.ip);
+                            }
+                            else
+                            {
+                                BattleLogger.Players.TryGetValue(_cInfo.playerId, out string _recordedIp);
+                                if (_recordedIp != _ip)
+                                {
+                                    BattleLogger.Players[_cInfo.playerId] = _ip;
+                                }
                             }
                         }
                     }

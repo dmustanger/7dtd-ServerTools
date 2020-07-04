@@ -193,7 +193,7 @@ namespace ServerTools
 
         public static bool AdminCheck(string _steamId)
         {
-            AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_steamId);
+            GameManager.Instance.adminTools.GetAdmins().TryGetValue(_steamId, out AdminToolsClientInfo Admin);
             if (Admin.PermissionLevel <= Admin_Level)
             {
                 return true;

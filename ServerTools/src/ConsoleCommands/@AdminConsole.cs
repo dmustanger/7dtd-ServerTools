@@ -33,11 +33,11 @@ public class @AdminsConsole : ConsoleCmdAbstract
             List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
             for (int i = 0; i < _cInfoList.Count; i++)
             {
-                ClientInfo _player = _cInfoList[i];
-                if (GameManager.Instance.adminTools.IsAdmin(_player.playerId))
+                ClientInfo _cInfo = _cInfoList[i];
+                if (GameManager.Instance.adminTools.IsAdmin(_cInfo))
                 {
-                    ChatHook.ChatMessage(_player, LoadConfig.Chat_Response_Color + _message + "[-]", -1, _player.playerName, EChatType.Whisper, null);
-                    SdtdConsole.Instance.Output(string.Format("Message sent to {0}", _player.playerName));
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, _cInfo.playerName, EChatType.Whisper, null);
+                    SdtdConsole.Instance.Output(string.Format("Message sent to {0}", _cInfo.playerName));
                 }
             }
         }

@@ -741,9 +741,9 @@ namespace ServerTools
         public static string GetChatCommandsAdmin(ClientInfo _cInfo)
         {
             string _commandsAdmin = string.Format("{0}Admin commands are:", LoadConfig.Chat_Response_Color);
-            if (AdminChat.IsEnabled && GameManager.Instance.adminTools.IsAdmin(_cInfo.playerId))
+            if (AdminChat.IsEnabled && GameManager.Instance.adminTools.IsAdmin(_cInfo))
             {
-                AdminToolsClientInfo Admin = GameManager.Instance.adminTools.GetAdminToolsClientInfo(_cInfo.playerId);
+                GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
                 if (Admin.PermissionLevel <= ChatHook.Mod_Level)
                 {
                     if (AdminChat.IsEnabled)
@@ -915,7 +915,7 @@ namespace ServerTools
             if (_c[2].ToLower() == "true")
             {
                 string[] _command = { _message };
-                if (GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo.playerId))
+                if (GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo))
                 {
                     CommandCost(_cInfo, _message, _c1);
                 }
