@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enabled, Disable, Add, Remove or List protected spaces";
+            return "[ServerTools] - Enabled, disable, add, remove or list protected spaces";
         }
     
         public override string GetHelp()
@@ -35,7 +35,7 @@ namespace ServerTools
     
         public override string[] GetCommands()
         {
-            return new string[] { "st-ProtectedSpaces", "ProtectedSpaces", "protectedspaces", "st-ps", "ps" };
+            return new string[] { "st-ProtectedSpaces", "ps", "st-ps" };
         }
     
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

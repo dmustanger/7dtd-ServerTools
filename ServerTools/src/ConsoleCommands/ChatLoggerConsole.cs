@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -8,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Chat Log.";
+            return "[ServerTools]- Enable or disable chat log.";
         }
         public override string GetHelp()
         {
@@ -20,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-ChatLog", "ChatLog", "chatLog" };
+            return new string[] { "st-ChatLog", "cl", "st-cl" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

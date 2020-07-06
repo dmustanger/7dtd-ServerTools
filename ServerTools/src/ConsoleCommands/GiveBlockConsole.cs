@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -9,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Gives a block directly to a player's inventory. Drops to the ground if inventory and bag is full.";
+            return "[ServerTools] - Gives a block directly to a player's inventory. Drops to the ground if inventory and bag is full.";
         }
         public override string GetHelp()
         {
@@ -22,7 +21,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-GiveBlock", "GiveBlock", "giveblock", "gb" };
+            return new string[] { "st-GiveBlock", "gb", "st-gb" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -95,7 +94,7 @@ namespace ServerTools
                                 if (_cInfo != null && world.Players.dict.ContainsKey(_cInfo.entityId))
                                 {
                                     EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-                                    if (_player != null && _player.IsSpawned() && _player.IsDead())
+                                    if (_player != null && _player.IsSpawned() && !_player.IsDead())
                                     {
                                         var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                                         {
@@ -134,6 +133,10 @@ namespace ServerTools
                                             ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase828 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                     }
+                                    else
+                                    {
+                                        SdtdConsole.Instance.Output(string.Format("Player with steamd Id {0} has not spawned. Unable to give block", _cInfo.playerId));
+                                    }
                                 }
                             }
                         }
@@ -144,7 +147,7 @@ namespace ServerTools
                         if (_cInfo != null && world.Players.dict.ContainsKey(_cInfo.entityId))
                         {
                             EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-                            if (_player != null && _player.IsSpawned() && _player.IsDead())
+                            if (_player != null && _player.IsSpawned() && !_player.IsDead())
                             {
                                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                                 {

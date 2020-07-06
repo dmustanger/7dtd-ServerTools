@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Dupe Log.";
+            return "[ServerTools] - Enable or disable dupe log.";
         }
         public override string GetHelp()
         {
@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-DupeLog", "DupeLog", "dupelog" };
+            return new string[] { "st-DupeLog", "dl", "st-dl" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

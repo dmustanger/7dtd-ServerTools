@@ -7,21 +7,21 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Admin Chat Commands.";
+            return "[ServerTools] - Enable or disable admin chat commands.";
         }
 
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. AdminChatCommands off\n" +
-                   "  2. AdminChatCommands on\n" +
+                   "  1. acc off\n" +
+                   "  2. acc on\n" +
                    "1. Turn off server admin chat commands\n" +
                    "2. Turn on server admin chat commands\n";
         }
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-AdminChatCommands", "AdminChatCommands", "adminchatcommands", "st-acc", "acc" };
+            return new string[] { "st-AdminChatCommands", "acc", "st-acc" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

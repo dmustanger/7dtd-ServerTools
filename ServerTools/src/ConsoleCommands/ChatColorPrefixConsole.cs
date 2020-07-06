@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -9,7 +8,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools]-Enable, add, delete a player from the chat color prefix list.";
+            return "[ServerTools] - Enable, add, delete a player from the chat color prefix list.";
         }
         public override string GetHelp()
         {
@@ -34,7 +33,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-ChatColorPrefix", "ChatColorPrefix", "st-ccp", "chatcolorprefix", "ccp"  };
+            return new string[] { "st-ChatColorPrefix", "ccp", "st-ccp" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

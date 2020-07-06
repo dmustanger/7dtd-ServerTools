@@ -334,9 +334,9 @@ namespace ServerTools
                     _commands = "";
                 }
             }
-            if (AutoShutdown.IsEnabled)
+            if (Shutdown.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, AutoShutdown.Command47);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Shutdown.Command47);
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);

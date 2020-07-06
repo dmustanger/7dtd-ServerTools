@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace ServerTools
 {
@@ -9,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Bank.";
+            return "[ServerTools] - Enable or disable bank.";
         }
 
         public override string GetHelp()
@@ -23,7 +21,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Bank", "Bank", "bank" };
+            return new string[] { "st-Bank", "bank", "st-bank" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

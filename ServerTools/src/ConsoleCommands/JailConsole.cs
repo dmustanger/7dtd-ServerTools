@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using UnityEngine;
 
 namespace ServerTools
@@ -10,7 +9,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools]- Puts A Player In Jail.";
+            return "[ServerTools] - Place or remove players from jail.";
         }
         public override string GetHelp()
         {
@@ -29,7 +28,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Jail", "Jail", "jail" };
+            return new string[] { "st-Jail", "jail", "st-jail" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -259,7 +258,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CommandJailConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in CommandJailConsole.Execute: {0}", e.Message));
             }
         }
     }

@@ -39,7 +39,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Event", "Event", "event", "st-ev" };
+            return new string[] { "st-Event", "event", "st-ev" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -52,7 +52,7 @@ namespace ServerTools
                 {
                     if (Event.Open)
                     {
-                        SdtdConsole.Instance.Output(string.Format("A event has already started. Event admin is {0}. The event is named {1}", Event.Admin, Event.EventName));
+                        SdtdConsole.Instance.Output(string.Format("A event has already started. Event admin is {0}. The event is named {1}", Event.Operator, Event.EventName));
                         return;
                     }
                     if (_params.Count < 2)
@@ -115,7 +115,7 @@ namespace ServerTools
                         {
                             Setup.TryGetValue(_steamId, out List<string> _setup);
                             Event.Invited = true;
-                            Event.Admin = _steamId;
+                            Event.Operator = _steamId;
                             Event.EventName = _setup[0];
                             int.TryParse(_setup[2], out int _teams);
                             Event.TeamCount = _teams;
@@ -148,11 +148,11 @@ namespace ServerTools
                 {
                     if (Event.Open)
                     {
-                        Setup.TryGetValue(Event.Admin, out List<string> _setup);
+                        Setup.TryGetValue(Event.Operator, out List<string> _setup);
                         SdtdConsole.Instance.Output(string.Format("Event: {0}", _setup[0]));
                         SdtdConsole.Instance.Output(string.Format("Invitation: {0}", _setup[1]));
                         SdtdConsole.Instance.Output(string.Format("Info: Teams {0}, Players {1}, Time {2} minutes.", _setup[2], _setup[3], _setup[4]));
-                        SdtdConsole.Instance.Output(string.Format("Operator: {0}", Event.Admin));
+                        SdtdConsole.Instance.Output(string.Format("Operator: {0}", Event.Operator));
                         foreach (var _player in Event.Teams)
                         {
                             ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForPlayerId(_player.Key);
@@ -193,7 +193,7 @@ namespace ServerTools
                     }
                     if (Event.Open)
                     {
-                        if (Event.Admin == _steamId)
+                        if (Event.Operator == _steamId)
                         {
                             int _addTime = Timers._eventTime + (_time * 60);
                             Timers._eventTime = _addTime;
@@ -216,7 +216,7 @@ namespace ServerTools
                 {
                     if (Event.Open)
                     {
-                        if (Event.Admin == _steamId)
+                        if (Event.Operator == _steamId)
                         {
                             foreach (var _eventPlayer in Event.Teams)
                             {
@@ -251,7 +251,7 @@ namespace ServerTools
                                 }
                             }
                             Event.Open = false;
-                            Event.Admin = "";
+                            Event.Operator = "";
                             Event.EventName = "";
                             SdtdConsole.Instance.Output("The current event has been cancelled and players have been sent back to their return points or setup for automatic return");
                             return;
@@ -266,10 +266,10 @@ namespace ServerTools
                     {
                         if (Event.Invited)
                         {
-                            if (Event.Admin == _steamId)
+                            if (Event.Operator == _steamId)
                             {
                                 Event.Invited = false;
-                                Event.Admin = "";
+                                Event.Operator = "";
                                 Event.EventName = "";
                                 Event.Teams.Clear();
                                 SdtdConsole.Instance.Output("The event invitation has been stopped");
@@ -458,7 +458,7 @@ namespace ServerTools
                     }
                     if (Event.Open)
                     {
-                        if (Event.Admin == _steamId)
+                        if (Event.Operator == _steamId)
                         {
                             if (Event.Teams.ContainsKey(_params[1]))
                             {

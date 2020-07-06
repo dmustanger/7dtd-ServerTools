@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace ServerTools
@@ -9,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Lists the currently assembled minibikes.";
+            return "[ServerTools] - Lists the currently assembled minibikes.";
         }
 
         public override string GetHelp()
@@ -21,7 +20,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Bikelist", "Bikelist", "bikelist", "bl" };
+            return new string[] { "st-Bikelist", "bl", "st-bl" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -65,7 +64,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BikeListConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BikeListConsole.Execute: {0}", e.Message));
             }
         }
     }

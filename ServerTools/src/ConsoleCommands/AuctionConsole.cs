@@ -7,17 +7,17 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Auction. Cancel, clear or list the auction items.";
+            return "[ServerTools] - Enable or disable auction. Cancel, clear or list the auction items.";
         }
 
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Auction off\n" +
-                   "  2. Auction on\n" +
-                   "  3. Auction cancel <Id>\n" +
-                   "  4. Auction clear <Id>\n" +
-                   "  5. Auction list\n" +
+                   "  1. auc off\n" +
+                   "  2. auc on\n" +
+                   "  3. auc cancel <Id>\n" +
+                   "  4. auc clear <Id>\n" +
+                   "  5. auc list\n" +
                    "1. Turn off the auction\n" +
                    "2. Turn on the auction\n" +
                    "3. Cancel the auction Id and return it to the owner\n" +
@@ -27,7 +27,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Auction", "Auction", "auction", "auc" };
+            return new string[] { "st-Auction", "auc", "st-auc" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

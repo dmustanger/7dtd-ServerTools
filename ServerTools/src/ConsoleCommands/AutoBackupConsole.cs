@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -8,15 +7,15 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Auto Backup.";
+            return "[ServerTools] - Enable or disable auto backup.";
         }
 
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. AutoBackup off\n" +
-                   "  2. AutoBackup on\n" +
-                   "  3. AutoBackup\n" +
+                   "  1. ab off\n" +
+                   "  2. ab on\n" +
+                   "  3. ab\n" +
                    "1. Turn off world auto backup\n" +
                    "2. Turn on world auto backup\n" +
                    "3. Start a backup manually\n";
@@ -24,7 +23,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-AutoBackup", "AutoBackup", "autobackup", "ab" };
+            return new string[] { "st-AutoBackup", "ab", "st-ab" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

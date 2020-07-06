@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Lists the trader locations.";
+            return "[ServerTools] - Lists the trader locations.";
         }
 
         public override string GetHelp()
@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Traderlist", "Traderlist", "traderlist", "st-tl", "tl" };
+            return new string[] { "st-Traderlist", "tl", "st-tl" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -47,7 +47,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in TraderListConsole.Execute: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in TraderListConsole.Execute: {0}", e.Message));
             }
         }
     }

@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Teleports you under the target player.";
+            return "[ServerTools] - Teleports you under the target player.";
         }
 
         public override string GetHelp()
@@ -20,7 +20,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-TeleportUnderPlayer", "TeleportUnderPlayer", "teleportunderplayer", "tup", "teleu" };
+            return new string[] { "st-TeleportUnderPlayer", "tup", "st-tup" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -66,7 +66,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in TeleportUnderPlayerConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in TeleportUnderPlayerConsole.Run: {0}", e.Message));
             }
         }
     }

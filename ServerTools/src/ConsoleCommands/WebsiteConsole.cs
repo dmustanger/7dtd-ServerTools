@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable, Disable, Restart Website. Add, Remove, Reset, Ban or List Clients.";
+            return "[ServerTools] - Enable, disable, restart website. Add, remove, reset, ban or list clients.";
         }
 
         public override string GetHelp()
@@ -40,7 +40,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Website", "Website", "website", "ws" };
+            return new string[] { "st-Website", "ws", "st-ws" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -391,7 +391,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in WebsiteConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in WebsiteConsole.Execute: {0}", e.Message));
             }
         }
     }

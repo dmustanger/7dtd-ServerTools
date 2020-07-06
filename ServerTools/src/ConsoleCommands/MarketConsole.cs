@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -8,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Market.";
+            return "[ServerTools] - Enable or disable market.";
         }
         public override string GetHelp()
         {
@@ -20,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Market", "Market", "market" };
+            return new string[] { "st-Market", "market", "st-market" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

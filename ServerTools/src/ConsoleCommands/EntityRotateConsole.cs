@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Rotates an entity to face away from the command user";
+            return "[ServerTools] - Rotates an entity to face away from the command user";
         }
 
         public override string GetHelp()
@@ -18,7 +18,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-EntityRotate", "EntityRotate", "entityrotate", "erot" };
+            return new string[] { "st-EntityRotate", "erot", "st-erot" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

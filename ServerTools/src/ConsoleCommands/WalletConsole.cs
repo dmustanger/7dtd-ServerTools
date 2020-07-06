@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ServerTools
 {
@@ -8,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable, Disable, Add, Reduce, Check Wallet.";
+            return "[ServerTools] - Enable, disable, add, reduce, check wallet.";
         }
 
         public override string GetHelp()
@@ -29,7 +28,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Wallet", "Wallet", "wallet" };
+            return new string[] { "st-Wallet", "wallet", "st-wallet" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -160,7 +159,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in WalletConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in WalletConsole.Execute: {0}", e.Message));
             }
         }
     }

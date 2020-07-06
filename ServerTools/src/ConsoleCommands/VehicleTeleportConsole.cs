@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Vehicle Teleport tool.";
+            return "[ServerTools] - Enable or disable vehicle teleport tool.";
         }
         public override string GetHelp()
         {
@@ -29,7 +29,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-VehicleTeleport", "VehicleTeleport", "vehicleteleport", "vt" };
+            return new string[] { "st-VehicleTeleport", "st-vt", "st-vt" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -162,7 +162,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in VehicleTeleportConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in VehicleTeleportConsole.Execute: {0}", e.Message));
             }
         }
     }

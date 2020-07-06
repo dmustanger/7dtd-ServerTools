@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 namespace ServerTools.AntiCheat
 {
     class PlayerChecks
     {
-        public static bool GodEnabled = false, FlyEnabled = false, SpectatorEnabled = false;
+        public static bool GodEnabled = false, FlyEnabled = false, SpectatorEnabled = false, WaterEnabled = false;
         public static int Flying_Admin_Level = 0, Godmode_Admin_Level, Spectator_Admin_Level, Flying_Flags = 4;
         private static Dictionary<int, int> Flag = new Dictionary<int, int>();
         private static Dictionary<int, float> OldY = new Dictionary<int, float>();
+        private static List<int> WaterFlag = new List<int>();
 
         public static void Exec()
         {
@@ -18,7 +20,7 @@ namespace ServerTools.AntiCheat
                 if (GameManager.Instance.World.Players.dict.Count > 0)
                 {
                     List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                    if (_cInfoList != null)
+                    if (_cInfoList != null && _cInfoList.Count > 0)
                     {
                         for (int i = 0; i < _cInfoList.Count; i++)
                         {
@@ -165,6 +167,31 @@ namespace ServerTools.AntiCheat
                                             }
                                         }
                                     }
+                                    if (WaterEnabled)
+                                    {
+                                        int x = (int)_player.position.x;
+                                        int y = (int)_player.position.y;
+                                        int z = (int)_player.position.z;
+                                        if (WaterCheck(_cInfo, _player, x, y, z))
+                                        {
+                                            if (WaterFlag.Contains(_cInfo.entityId))
+                                            {
+                                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, -1, z), null, false));
+                                                WaterFlag.Remove(_cInfo.entityId);
+                                            }
+                                            else
+                                            {
+                                                WaterFlag.Add(_cInfo.entityId);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (WaterFlag.Contains(_cInfo.entityId))
+                                            {
+                                                WaterFlag.Remove(_cInfo.entityId);
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -206,6 +233,26 @@ namespace ServerTools.AntiCheat
                     {
                         BlockValue block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
                         if (block.Block.shape.ToString() != "Terrain")
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        public static bool WaterCheck(ClientInfo _cInfo, EntityPlayer _player, int x, int y, int z)
+        {
+            for (int i = x - 1; i <= (x + 1); i++)
+            {
+                for (int j = z - 1; j <= (z + 1); j++)
+                {
+                    for (int k = y - 0; k <= (y + 2); k++)
+                    {
+                        BlockValue Block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
+                        string _blockName = Block.Block.GetBlockName();
+                        if (_blockName != "waterMoving" || _blockName != "water")
                         {
                             return false;
                         }

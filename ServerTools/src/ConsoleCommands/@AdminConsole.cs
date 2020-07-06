@@ -1,7 +1,6 @@
 ﻿using ServerTools;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public class @AdminsConsole : ConsoleCmdAbstract
 {
@@ -10,13 +9,13 @@ public class @AdminsConsole : ConsoleCmdAbstract
 
     public override string GetDescription()
     {
-        return "[ServerTools]-Sends a message to all online admins.";
+        return "[ServerTools] - Sends a message to all online admins.";
     }
 
     public override string GetHelp()
     {
         return "Usage:\n" +
-            "  1. @Admin Your message\n" +
+            "  1. @A Your message\n" +
             "1. Sends your private chat message to all online admins.\n";
     }
 

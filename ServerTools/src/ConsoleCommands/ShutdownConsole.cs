@@ -3,27 +3,24 @@ using System.Collections.Generic;
 
 namespace ServerTools
 {
-    class AdminListConsole : ConsoleCmdAbstract
+    class ShutdownConsole : ConsoleCmdAbstract
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or disable chat command admin list.";
+            return "[ServerTools] - Enable or disable shutdown.";
         }
-
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. al off\n" +
-                   "  2. al on\n" +
-                   "1. Turn off your admin list\n" +
-                   "2. Turn on your admin list\n";
+                   "  1. sd off\n" +
+                   "  2. sd on\n" +
+                   "1. Turn off the shutdown process\n" +
+                   "2. Turn on the shutdown process\n";
         }
-
         public override string[] GetCommands()
         {
-            return new string[] { "st-AdminList", "al", "st-al" };
+            return new string[] { "st-Shutdown", "sd", "st-sd" };
         }
-
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
             try
@@ -35,31 +32,32 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    if (AdminList.IsEnabled)
+                    if (Shutdown.IsEnabled)
                     {
-                        AdminList.IsEnabled = false;
+                        Shutdown.IsEnabled = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Admin list has been set to off"));
+                        StopServer.CountingDown = false;
+                        SdtdConsole.Instance.Output(string.Format("Auto shutdown has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Admin list is already off"));
+                        SdtdConsole.Instance.Output(string.Format("Auto shutdown is already off"));
                         return;
                     }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (!AdminList.IsEnabled)
+                    if (!Shutdown.IsEnabled)
                     {
-                        AdminList.IsEnabled = true;
+                        Shutdown.IsEnabled = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Admin list has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("Auto shutdown has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Admin list is already on"));
+                        SdtdConsole.Instance.Output(string.Format("Auto shutdown is already on"));
                         return;
                     }
                 }
@@ -70,7 +68,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AdminListConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AutoShutdownConsole.Execute: {0}", e.Message));
             }
         }
     }

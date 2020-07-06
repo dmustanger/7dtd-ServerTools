@@ -7,19 +7,19 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Teleports a backpack in the game";
+            return "[ServerTools] - Teleports a backpack in the game";
         }
 
         public override string GetHelp()
         {
             return "Teleports a backpack. Backpack can not be attached to a player.\n" +
-                "Usage: BackpackTeleport <BackpackId> <EntityId>\n" +
-                "Usage: BackpackTeleport <BackpackId> <X> <Y> <Z>\n";
+                "Usage: bt <BackpackId> <EntityId>\n" +
+                "Usage: bt <BackpackId> <X> <Y> <Z>\n";
         }
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-BackpackTeleport", "BackpackTeleport", "backpackteleport", "bt" };
+            return new string[] { "st-BackpackTeleport", "bt", "st-bt" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

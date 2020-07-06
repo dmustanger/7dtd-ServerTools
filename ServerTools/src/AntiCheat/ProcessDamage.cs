@@ -95,7 +95,6 @@ namespace ServerTools.AntiCheat
                     {
                         BlockChangeInfo _newBlockInfo = _blocksToChange[i];//new block info
                         BlockValue _blockValue = _world.GetBlock(_newBlockInfo.pos);//old block value
-                        Log.Out(string.Format("Test Damage Detection. New Block {0}. Old Block {1}", _newBlockInfo.blockValue.Block.GetBlockName(), _blockValue.Block.GetBlockName()));
                         if (_newBlockInfo != null && _newBlockInfo.bChangeBlockValue)//new block value
                         {
                             if (_blockValue.type == BlockValue.Air.type)//old block was air
@@ -130,7 +129,7 @@ namespace ServerTools.AntiCheat
                                     {
                                         if (!string.IsNullOrEmpty(_persistentPlayerId))//id is valid
                                         {
-                                            if (!PersistentOperations.ClaimedByAllySelfOrParty(_persistentPlayerId, _newBlockInfo.pos))
+                                            if (!PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, _newBlockInfo.pos))
                                             {
                                                 int _total = _blockValue.Block.MaxDamage - _blockValue.damage;
                                                 if (_blockValue.Block.MaxDamage - _blockValue.damage >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId))
@@ -178,6 +177,10 @@ namespace ServerTools.AntiCheat
                                 }
                                 else if (_blockValue.Block.DowngradeBlock.Block.blockID == _newBlockInfo.blockValue.Block.blockID)//downgraded
                                 {
+                                    if (_blockValue.damage == _newBlockInfo.blockValue.damage || _newBlockInfo.blockValue.damage == 0)
+                                    {
+                                        return true;
+                                    }
                                     int _total = _blockValue.Block.MaxDamage - _blockValue.damage + _newBlockInfo.blockValue.damage;
                                     if (_total >= Block_Damage_Limit && ProcessPenalty(_total, _persistentPlayerId))
                                     {

@@ -10,7 +10,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools]-Ban a player temporarily.";
+            return "[ServerTools] - Ban a player temporarily.";
         }
 
         public override string GetHelp()
@@ -22,7 +22,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-TempBan", "TempBan", "tempban", "tb" };
+            return new string[] { "st-TempBan", "tb", "st-tb" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -73,7 +73,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in TempBanConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in TempBanConsole.Run: {0}", e.Message));
             }
         }
     }

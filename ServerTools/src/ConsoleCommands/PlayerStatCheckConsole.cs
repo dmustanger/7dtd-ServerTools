@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Player Stat Check.";
+            return "[ServerTools] - Enable or disable player stat check.";
         }
         public override string GetHelp()
         {
@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-PlayerStatCheck", "PlayerStatCheck", "playerstatcheck", "psc" };
+            return new string[] { "st-PlayerStatCheck", "psc", "st-psc" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -68,7 +68,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PlayerStatCheckConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PlayerStatCheckConsole.Execute: {0}", e.Message));
             }
         }
     }

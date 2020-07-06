@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Scout Player.";
+            return "[ServerTools] - Enable or disable scout player.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-ScoutPlayer", "ScoutPlayer", "scoutplayer" };
+            return new string[] { "st-ScoutPlayer", "sp", "st-sp" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -67,7 +67,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ScoutPlayerConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ScoutPlayerConsole.Execute: {0}", e.Message));
             }
         }
     }

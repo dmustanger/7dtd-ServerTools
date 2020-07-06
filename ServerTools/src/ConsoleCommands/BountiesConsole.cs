@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -8,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Bounties. Alter, remove or show a list of all current bounties";
+            return "[ServerTools] - Enable or disable bounties. Alter, remove or show a list of all current bounties";
         }
         public override string GetHelp()
         {
@@ -26,7 +25,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Bounties", "Bounties", "bounties", "bounty" };
+            return new string[] { "st-Bounties", "bounty", "st-bounty" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

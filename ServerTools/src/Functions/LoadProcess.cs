@@ -1,7 +1,5 @@
-﻿using ServerTools.Website;
-using System;
+﻿using System;
 using System.IO;
-using System.Threading;
 using System.Xml;
 
 namespace ServerTools
@@ -208,11 +206,11 @@ namespace ServerTools
             {
                 try
                 {
-                    LoadConfig.Load();
+                    StateManager.Awake();
                 }
                 catch (XmlException e)
                 {
-                    Log.Out("[ServerTools] Failed to load the configuration file. Error = {0}", e.Message);
+                    Log.Out("[ServerTools] Failed to load the persistent database bin file. Restart the server and check for errors. Error = {0}", e.Message);
                 }
                 Load(3);
             }
@@ -220,11 +218,11 @@ namespace ServerTools
             {
                 try
                 {
-                    StateManager.Awake();
+                    LoadConfig.Load();
                 }
                 catch (XmlException e)
                 {
-                    Log.Out("[ServerTools] Failed to load the persistent database bin file. Restart the server and check for errors. Error = {0}", e.Message);
+                    Log.Out("[ServerTools] Failed to load the configuration file. Error = {0}", e.Message);
                 }
                 Load(4);
             }
@@ -293,6 +291,11 @@ namespace ServerTools
                 Load(9);
             }
             else if (_state == 9)
+            {
+                Track.Cleanup();
+                Load(10);
+            }
+            else if (_state == 10)
             {
                 Timers.LogAlert();
                 Timers.LoadAlert();

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -8,19 +7,19 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Bad Word Filter.";
+            return "[ServerTools] - Enable or disable bad word filter.";
         }
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. BadWordFilter off\n" +
-                   "  2. BadWordFilter on\n" +
+                   "  1. bwf off\n" +
+                   "  2. bwf on\n" +
                    "1. Turn off the bad word filter\n" +
                    "2. Turn on the bad word filter\n";
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-BadWordFilter", "BadWordFilter", "badwordfilter" };
+            return new string[] { "st-BadWordFilter", "bwf", "st-bwf" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

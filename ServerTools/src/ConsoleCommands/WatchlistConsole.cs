@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -8,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Enable, Add, Remove and View steamids on the Watchlist.";
+            return "[ServerTools] - Enable, add, remove and view steam ids on the watchlist.";
         }
 
         public override string GetHelp()
@@ -28,7 +27,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-WatchList", "WatchList", "watchlist", "wl" };
+            return new string[] { "st-WatchList", "wl", "st-wl" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -135,7 +134,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in WatchlistConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in WatchlistConsole.Execute: {0}", e.Message));
             }
         }
     }

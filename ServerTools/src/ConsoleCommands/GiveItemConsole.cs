@@ -9,7 +9,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools]- Gives a item directly to a player's inventory. Drops to the ground if inventory and bag is full.";
+            return "[ServerTools] - Gives a item directly to a player's inventory. Drops to the ground if inventory and bag is full.";
         }
         public override string GetHelp()
         {
@@ -22,7 +22,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-GiveItem", "GiveItem", "giveitem", "gi" };
+            return new string[] { "st-GiveItem", "gi", "st-gi" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -33,14 +33,14 @@ namespace ServerTools
                     SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 4, found {0}", _params.Count));
                     return;
                 }
-                if (_params[0].Length < 1 || _params[0].Length > 17)
+                if (_params[0].Length < 3 || _params[0].Length > 17)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Can not give item to SteamId: Invalid SteamId {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("Can not give item to id: Invalid id {0}", _params[0]));
                     return;
                 }
                 if (_params[1].Length < 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Can not give item: Invalid itemId or name {0}", _params[1]));
+                    SdtdConsole.Instance.Output(string.Format("Can not give item: Invalid name {0}", _params[1]));
                     return;
                 }
                 if (_params[2].Length < 1 || _params[2].Length > 5)
@@ -110,7 +110,7 @@ namespace ServerTools
                                 if (_cInfo != null && world.Players.dict.ContainsKey(_cInfo.entityId))
                                 {
                                     EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-                                    if (_player != null && _player.IsSpawned() && _player.IsDead())
+                                    if (_player != null && _player.IsSpawned() && !_player.IsDead())
                                     {
                                         var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                                         {
@@ -163,7 +163,7 @@ namespace ServerTools
                         if (_cInfo != null && world.Players.dict.ContainsKey(_cInfo.entityId))
                         {
                             EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
-                            if (_player != null && _player.IsSpawned() && _player.IsDead())
+                            if (_player != null && _player.IsSpawned() && !_player.IsDead())
                             {
                                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                                 {
@@ -212,7 +212,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in GiveItemDirectConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in GiveItemDirectConsole.Execute: {0}", e.Message));
             }
         }
     }

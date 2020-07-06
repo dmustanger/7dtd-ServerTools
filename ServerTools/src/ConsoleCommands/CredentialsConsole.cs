@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Credentials.";
+            return "[ServerTools] - Enable or disable credential checks when players join.";
         }
         public override string GetHelp()
         {
@@ -21,7 +21,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Credentials", "Credentials", "credentials" };
+            return new string[] { "st-Credentials", "creds", "st-creds" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

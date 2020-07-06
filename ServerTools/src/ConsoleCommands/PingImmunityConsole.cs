@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Collections.Generic;
 
 namespace ServerTools
@@ -8,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Add, Remove and View steamids on the PingImmunity list.";
+            return "[ServerTools] - Add, remove and view steam ids on the ping immunity list.";
         }
 
         public override string GetHelp()
@@ -25,7 +24,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-PingImmunity", "PingImmunity", "pingimmunity", "pi" };
+            return new string[] { "st-PingImmunity", "pi", "st-pi" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -161,7 +160,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PingImmunityCommandConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PingImmunityCommandConsole.Execute: {0}", e.Message));
             }
         }
     }

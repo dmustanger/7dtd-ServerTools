@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Spawn multiple entity in a radius around coordinates or in a radius around a player";
+            return "[ServerTools] - Spawn multiple entity in a radius from a location.";
         }
 
         public override string GetHelp()
@@ -28,7 +28,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-SpawnEntityRadius", "SpawnEntityRadius", "spawnentityradius", "ser" };
+            return new string[] { "st-SpawnEntityRadius", "ser", "st-ser" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -159,7 +159,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in SpawnMultipleRadiusConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in SpawnMultipleRadiusConsole.Run: {0}", e.Message));
             }
         }
     }

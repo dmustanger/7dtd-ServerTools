@@ -8,7 +8,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools]-Stops the game server with a warning countdown every minute.";
+            return "[ServerTools] - Starts a countdown with an alert system for the time specified and then stops the server";
         }
 
         public override string GetHelp()
@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-StopServer", "StopServer", "stopserver" };
+            return new string[] { "st-StopServer", "ss", "st-ss" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -35,25 +35,25 @@ namespace ServerTools
                 {
                     if (!StopServer.CountingDown)
                     {
-                        SdtdConsole.Instance.Output("Stopserver is not running.");
+                        SdtdConsole.Instance.Output("Stopserver is not running");
                     }
                     else
                     {
                         StopServer.CountingDown = false;
                         StopServer.NoEntry = false;
                         Lottery.ShuttingDown = false;
-                        if (AutoShutdown.IsEnabled)
+                        if (Shutdown.IsEnabled)
                         {
-                            Timers._autoShutdown = 0;
+                            Timers._shutdown = 0;
                         }
-                        SdtdConsole.Instance.Output("Stopserver has been cancelled.");
+                        SdtdConsole.Instance.Output("Stopserver has been cancelled");
                     }
                 }
                 else
                 {
                     if (StopServer.CountingDown)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Server is already set to stop."));
+                        SdtdConsole.Instance.Output(string.Format("Server is already set to shutdown"));
                     }
                     else
                     {
@@ -70,7 +70,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in StopServerConsole.Run: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in StopServerCommandConsole.Execute: {0}", e.Message));
             }
         }
     }

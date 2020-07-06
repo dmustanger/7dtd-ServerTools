@@ -15,7 +15,7 @@ namespace ServerTools.AntiCheat
         {
             try
             {
-                if (ConnectionManager.Instance.ClientCount() > 0)
+                if (GameManager.Instance.World.Players.dict.Count > 0)
                 {
                     List<EntityPlayer> EntityPlayerList = GameManager.Instance.World.Players.list;
                     for (int i = 0; i < EntityPlayerList.Count; i++)

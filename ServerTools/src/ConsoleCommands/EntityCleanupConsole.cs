@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -8,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Entity Cleanup.";
+            return "[ServerTools] - Enable or disable entity cleanup.";
         }
         public override string GetHelp()
         {
@@ -20,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-EntityCleanup", "EntityCleanup", "entitycleanup" };
+            return new string[] { "st-EntityCleanup", "ec", "st-ec" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

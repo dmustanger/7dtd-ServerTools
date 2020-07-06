@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 
 namespace ServerTools
 {
@@ -9,7 +8,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools]-Mutes A Players Chat.";
+            return "[ServerTools] - Mutes a players chat.";
         }
         public override string GetHelp()
         {
@@ -26,7 +25,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Mute", "Mute", "mute" };
+            return new string[] { "st-Mute", "mute", "st-mute" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

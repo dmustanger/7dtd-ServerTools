@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Kick Vote.";
+            return "[ServerTools] - Enable or disable kick vote.";
         }
         public override string GetHelp()
         {
@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-KickVote", "KickVote", "kickvote" };
+            return new string[] { "st-KickVote", "kv", "st-kv" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -68,7 +68,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in KickVoteConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in KickVoteConsole.Execute: {0}", e.Message));
             }
         }
     }

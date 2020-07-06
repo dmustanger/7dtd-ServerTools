@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Real World Time.";
+            return "[ServerTools] - Enable or disable real world time.";
         }
         public override string GetHelp()
         {
@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-RealWorldTime", "RealWorldTime", "realworldtime" };
+            return new string[] { "st-RealWorldTime", "rwt", "st-rwt" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -68,7 +68,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in RealWorldTimeConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in RealWorldTimeConsole.Execute: {0}", e.Message));
             }
         }
     }

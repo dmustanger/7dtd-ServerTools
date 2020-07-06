@@ -179,37 +179,37 @@ namespace ServerTools
                         string _name;
                         if (Dict1.TryGetValue(kvp.Key, out _name))
                         {
-                            sw.WriteLine(string.Format("        <Item Name=\"{0}\" Secondaryname=\"{1}\" MinCount=\"{2}\" MaxCount=\"{3}\" MinQuality=\"{4}\" MaxQuality=\"{5}\" />", kvp.Key, _name, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
+                            sw.WriteLine(string.Format("        <Item Name=\"{0}\" SecondaryName=\"{1}\" MinCount=\"{2}\" MaxCount=\"{3}\" MinQuality=\"{4}\" MaxQuality=\"{5}\" />", kvp.Key, _name, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3]));
                         }
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <Item Name=\"drinkJarBoiledWater\" Secondaryname=\"Bottled Water\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"drinkJarBeer\" Secondaryname=\"Beer\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"foodCanChicken\" Secondaryname=\"Can of Chicken\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"foodCanChili\" Secondaryname=\"Can of Chili\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"foodCropCorn\" Secondaryname=\"Corn\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"foodCropPotato\" Secondaryname=\"Potato\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"medicalBandage\" Secondaryname=\"First Aid Bandage\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"drugPainkillers\" Secondaryname=\"Pain Killers\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"resourceScrapBrass\" Secondaryname=\"Scrap Brass\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"drugAntibiotics\" Secondaryname=\"Antibiotics\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"foodMoldyBread\" Secondaryname=\"Moldy Bread\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"resourceOil\" Secondaryname=\"Oil\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"foodCornMeal\" Secondaryname=\"Cornmeal\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"foodCropBlueberries\" Secondaryname=\"Blueberries\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"resourceCropCoffeeBeans\" Secondaryname=\"Coffee Beans\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"casinoCoin\" Secondaryname=\"Casino Coins\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"meleeWpnBladeT0BoneKnife\" Secondaryname=\"Bone Knife\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"foodCanDogfood\" Secondaryname=\"Can of Dog Food\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"foodBlueberryPie\" Secondaryname=\"Blueberry Pie\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"foodCanPeas\" Secondaryname=\"Can of Peas\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"foodCanCatfood\" Secondaryname=\"Can of Cat Food\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"resourceScrapIron\" Secondaryname=\"Scrap Iron\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"resourceCropGoldenrodPlant\" Secondaryname=\"Goldenrod Plant\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"resourceClayLump\" Secondaryname=\"Lumps of Clay\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
-                    sw.WriteLine("        <Item Name=\"foodRottingFlesh\" Secondaryname=\"Rotting Flesh\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"drinkJarBoiledWater\" SecondaryName=\"Bottled Water\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"drinkJarBeer\" SecondaryName=\"Beer\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCanChicken\" SecondaryName=\"Can of Chicken\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCanChili\" SecondaryName=\"Can of Chili\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCropCorn\" SecondaryName=\"Corn\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCropPotato\" SecondaryName=\"Potato\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"medicalBandage\" SecondaryName=\"First Aid Bandage\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"drugPainkillers\" SecondaryName=\"Pain Killers\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"resourceScrapBrass\" SecondaryName=\"Scrap Brass\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"drugAntibiotics\" SecondaryName=\"Antibiotics\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodMoldyBread\" SecondaryName=\"Moldy Bread\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"resourceOil\" SecondaryName=\"Oil\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCornMeal\" SecondaryName=\"Cornmeal\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCropBlueberries\" SecondaryName=\"Blueberries\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"resourceCropCoffeeBeans\" SecondaryName=\"Coffee Beans\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"casinoCoin\" SecondaryName=\"Casino Coins\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"meleeWpnBladeT0BoneKnife\" SecondaryName=\"Bone Knife\" MinCount=\"1\" MaxCount=\"1\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCanDogfood\" SecondaryName=\"Can of Dog Food\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodBlueberryPie\" SecondaryName=\"Blueberry Pie\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCanPeas\" SecondaryName=\"Can of Peas\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodCanCatfood\" SecondaryName=\"Can of Cat Food\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"resourceScrapIron\" SecondaryName=\"Scrap Iron\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"resourceCropGoldenrodPlant\" SecondaryName=\"Goldenrod Plant\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"resourceClayLump\" SecondaryName=\"Lumps of Clay\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
+                    sw.WriteLine("        <Item Name=\"foodRottingFlesh\" SecondaryName=\"Rotting Flesh\" MinCount=\"1\" MaxCount=\"5\" MinQuality=\"1\" MaxQuality=\"1\" />");
                 }
                 sw.WriteLine("    </Items>");
                 sw.WriteLine("</Gimme>");

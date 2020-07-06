@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Hordes.";
+            return "[ServerTools] - Enable or disable hordes.";
         }
         public override string GetHelp()
         {
@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Hordes", "Hordes", "hordes" };
+            return new string[] { "st-Hordes", "hordes", "st-hordes" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

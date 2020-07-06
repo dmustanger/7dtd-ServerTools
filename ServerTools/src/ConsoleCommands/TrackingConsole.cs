@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Player Tracking. Check if players have been tracked with in the specified range.";
+            return "[ServerTools] - Enable or disable tracking. Check if players have been tracked with in the specified range.";
         }
 
         public override string GetHelp()
@@ -26,7 +26,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Tracking", "Tracking", "tracking", "st-track" };
+            return new string[] { "st-Tracking", "track", "st-track" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

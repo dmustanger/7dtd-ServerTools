@@ -2,36 +2,47 @@
 using ServerTools.AntiCheat;
 using ServerTools.Website;
 using System.Threading;
-using System.Diagnostics;
+using System;
 
 namespace ServerTools
 {
     class Timers
     {
         public static bool timer1Running = false, timer2Running = false, IsRunning = false;
-        public static int StopServerMinutes, _eventTime, _autoShutdown, _autoShutdownBloodmoonOver;
-        private static int TwoSecondTick, FiveSecondTick, TenSecondTick, SixtySecondTick, _watchList, _nightAlert, 
+        public static int StopServerMinutes, _eventTime, _shutdown, _shutdownBloodmoonOver;
+        private static int Core = 0, TwoSecondTick, FiveSecondTick, TenSecondTick, SixtySecondTick, _watchList, _nightAlert, 
             _horde, _lottery, _breakTime, _invalidItems, WeatherVoteTick, _bloodmoon, _playerLogs, _autoSaveWorld, _infoTicker, _restartVote, StopServerSeconds, 
-            _kickVote, MuteVoteTick, _eventInvitation, _eventOpen, _zoneReminder, _tracking, _realWorldTime, _autoShutdownBloodmoon, _autoBackup;
+            _kickVote, MuteVoteTick, _eventInvitation, _eventOpen, _zoneReminder, _tracking, _realWorldTime, _shutdownBloodmoon, _autoBackup;
         private static Thread TimerThread;
 
         public static void Load()
         {
             IsRunning = true;
-            Start();
+            Begin();
         }
 
         public static void Unload()
         {
-            IsRunning = false;
-            TimerThread.Abort();
+            try
+            {
+                IsRunning = false;
+                Core = 0;
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in Timers.Unload: {0}", e.Message));
+            }
         }
 
-        private static void Start()
+        private static void Begin()
         {
-            TimerThread = new Thread(new ThreadStart(CoreTimer));
-            TimerThread.IsBackground = true;
-            TimerThread.Start();
+            if (Core == 0)
+            {
+                TimerThread = new Thread(new ThreadStart(CoreTimer));
+                TimerThread.IsBackground = true;
+                Core = 1;
+                TimerThread.Start();
+            }
         }
 
         private static void CoreTimer()
@@ -204,9 +215,9 @@ namespace ServerTools
             {
                 Log.Out("Chat color and prefix enabled");
             }
-            if (ChatHook.Normal_Player_Chat_Prefix)
+            if (ChatHook.Normal_Player_Color_Prefix)
             {
-                Log.Out("Normal Player chat color and prefix enabled");
+                Log.Out("Normal player chat color and prefix enabled");
             }
             if (ChatHook.Message_Color_Enabled)
             {
@@ -264,10 +275,6 @@ namespace ServerTools
             if (AutoSaveWorld.IsEnabled)
             {
                 Log.Out("Auto save world enabled");
-            }
-            if (AutoShutdown.IsEnabled)
-            {
-                Log.Out("Auto shutdown enabled");
             }
             if (Badwords.IsEnabled)
             {
@@ -437,6 +444,10 @@ namespace ServerTools
             {
                 Log.Out("Scout player enabled");
             }
+            if (Shutdown.IsEnabled)
+            {
+                Log.Out("Shutdown enabled");
+            }
             if (TeleportHome.IsEnabled)
             {
                 Log.Out("Set home enabled");
@@ -461,7 +472,7 @@ namespace ServerTools
             {
                 Log.Out("Travel enabled");
             }
-            if (UnderWater.IsEnabled)
+            if (PlayerChecks.WaterEnabled)
             {
                 Log.Out("Under water enabled");
             }
@@ -496,16 +507,12 @@ namespace ServerTools
 
         private static void Exec()
         {
-            if (!StopServer.Shutdown)
+            if (!StopServer.ShuttingDown)
             {
                 PersistentOperations.PlayerCheck();
                 if (Jail.IsEnabled)
                 {
                     Jail.StatusCheck();
-                }
-                if (UnderWater.IsEnabled)
-                {
-                    UnderWater.Exec();
                 }
                 if (TwoSecondTick >= 2)
                 {
@@ -514,7 +521,7 @@ namespace ServerTools
                     {
                         WorldRadius.Exec();
                     }
-                    if (PlayerChecks.GodEnabled || PlayerChecks.FlyEnabled || PlayerChecks.SpectatorEnabled)
+                    if (PlayerChecks.GodEnabled || PlayerChecks.FlyEnabled || PlayerChecks.SpectatorEnabled || PlayerChecks.WaterEnabled)
                     {
                         PlayerChecks.Exec();
                     }
@@ -720,41 +727,55 @@ namespace ServerTools
                 {
                     _autoSaveWorld = 0;
                 }
-                if (AutoShutdown.IsEnabled && !AutoShutdown.Bloodmoon && !AutoShutdown.BloodmoonOver && !StopServer.CountingDown)
+                if (Shutdown.IsEnabled)
                 {
-                    _autoShutdown++;
-                    if (!Event.Open && _autoShutdown >= AutoShutdown.Delay * 60)
+                    if (Shutdown.BloodmoonOver && !Event.Open)
                     {
-                        _autoShutdown = 0;
-                        AutoShutdown.BloodmoonCheck();
+                        _shutdownBloodmoonOver++;
+                        if (_shutdownBloodmoonOver >= 900)
+                        {
+                            _shutdownBloodmoonOver = 0;
+                            Shutdown.BloodmoonOver = false;
+                            Shutdown.Stop();
+                        }
+                    }
+                    else if (!Shutdown.Bloodmoon)
+                    {
+                        _shutdown++;
+                        if (_shutdown >= Shutdown.Delay * 60)
+                        {
+                            if (Event.Open)
+                            {
+                                if (!Event.OperatorWarned)
+                                {
+                                    Event.OperatorWarned = true;
+                                    ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(Event.Operator);
+                                    if (_cInfo != null)
+                                    {
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "A scheduled shutdown is set to begin but is on hold until the event ends" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                _shutdown = 0;
+                                Shutdown.BloodmoonCheck();
+                            }
+                        }
+                    }
+                    else if (Shutdown.Bloodmoon)
+                    {
+                        _shutdownBloodmoon++;
+                        if (_shutdownBloodmoon >= 150)
+                        {
+                            _shutdownBloodmoon = 0;
+                            Shutdown.BloodmoonCheck();
+                        }
                     }
                 }
                 else
                 {
-                    _autoShutdown = 0;
-                }
-                if (AutoShutdown.Bloodmoon)
-                {
-                    _autoShutdownBloodmoon++;
-                    if (_autoShutdownBloodmoon >= 150)
-                    {
-                        _autoShutdownBloodmoon = 0;
-                        AutoShutdown.BloodmoonCheck();
-                    }
-                }
-                if (AutoShutdown.BloodmoonOver && !Event.Open)
-                {
-                    _autoShutdownBloodmoonOver++;
-                    if (_autoShutdownBloodmoonOver == 1)
-                    {
-                        AutoShutdown.BloodmoonOverAlert();
-                    }
-                    else if (_autoShutdownBloodmoonOver >= 900)
-                    {
-                        _autoShutdownBloodmoonOver = 0;
-                        AutoShutdown.BloodmoonOver = false;
-                        AutoShutdown.Shutdown();
-                    }
+                    _shutdown = 0;
                 }
                 if (InfoTicker.IsEnabled)
                 {

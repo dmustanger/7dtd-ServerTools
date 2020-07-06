@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Player Logs.";
+            return "[ServerTools] - Enable or disable player logs.";
         }
         public override string GetHelp()
         {
@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-PlayerLogs", "PlayerLogs", "playerlogs" };
+            return new string[] { "st-PlayerLogs", "pl", "st-pl" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -68,7 +68,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PlayerLogsConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PlayerLogsConsole.Execute: {0}", e.Message));
             }
         }
     }

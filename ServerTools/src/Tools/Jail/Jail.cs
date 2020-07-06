@@ -28,19 +28,22 @@ namespace ServerTools
             else
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                int x = (int)_player.position.x;
-                int y = (int)_player.position.y;
-                int z = (int)_player.position.z;
-                string _sposition = x + "," + y + "," + z;
-                Jail_Position = _sposition;
-                string _phrase502;
-                if (!Phrases.Dict.TryGetValue(502, out _phrase502))
+                if (_player != null)
                 {
-                    _phrase502 = "You have set the jail position as {JailPosition}.";
+                    int _x = (int)_player.position.x;
+                    int _y = (int)_player.position.y;
+                    int _z = (int)_player.position.z;
+                    string _sposition = _x + "," + _y + "," + _z;
+                    Jail_Position = _sposition;
+                    string _phrase502;
+                    if (!Phrases.Dict.TryGetValue(502, out _phrase502))
+                    {
+                        _phrase502 = "You have set the jail position as {JailPosition}.";
+                    }
+                    _phrase502 = _phrase502.Replace("{JailPosition}", Jail_Position);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase502 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    LoadConfig.WriteXml();
                 }
-                _phrase502 = _phrase502.Replace("{JailPosition}", Jail_Position);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase502 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                LoadConfig.WriteXml();
             }
         }
 
@@ -209,28 +212,28 @@ namespace ServerTools
                             PersistentContainer.Instance.Save();
                             EntityPlayer _player = GameManager.Instance.World.Players.dict[_PlayertoUnJail.entityId];
                             EntityBedrollPositionList _position = _player.SpawnPoints;
-                            if (_position.Count > 0 && (PersistentOperations.ClaimedByAllySelfOrParty(_PlayertoUnJail.playerId, _position.GetPos()) || PersistentOperations.ClaimedByNone(_PlayertoUnJail.playerId, _position.GetPos())))
+                            if (_position.Count > 0 && (PersistentOperations.ClaimedByAllyOrSelf(_PlayertoUnJail.playerId, _position.GetPos()) || PersistentOperations.ClaimedByNone(_PlayertoUnJail.playerId, _position.GetPos())))
                             {
                                 _PlayertoUnJail.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_position[0].x, _position[0].y + 1, _position[0].z), null, false));
                             }
                             else
                             {
                                 Vector3[] _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                if (PersistentOperations.ClaimedByAllySelfOrParty(_PlayertoUnJail.playerId, new Vector3i(_pos[0].x, _pos[0].y, _pos[0].z)) || PersistentOperations.ClaimedByNone(_PlayertoUnJail.playerId, new Vector3i(_pos[0].x, _pos[0].y, _pos[0].z)))
+                                if (PersistentOperations.ClaimedByAllyOrSelf(_PlayertoUnJail.playerId, new Vector3i(_pos[0].x, _pos[0].y, _pos[0].z)) || PersistentOperations.ClaimedByNone(_PlayertoUnJail.playerId, new Vector3i(_pos[0].x, _pos[0].y, _pos[0].z)))
                                 {
                                     _PlayertoUnJail.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), null, false));
                                 }
                                 else
                                 {
                                     _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                    if (PersistentOperations.ClaimedByAllySelfOrParty(_PlayertoUnJail.playerId, new Vector3i(_pos[0].x, _pos[0].y, _pos[0].z)) || PersistentOperations.ClaimedByNone(_PlayertoUnJail.playerId, new Vector3i(_pos[0].x, _pos[0].y, _pos[0].z)))
+                                    if (PersistentOperations.ClaimedByAllyOrSelf(_PlayertoUnJail.playerId, new Vector3i(_pos[0].x, _pos[0].y, _pos[0].z)) || PersistentOperations.ClaimedByNone(_PlayertoUnJail.playerId, new Vector3i(_pos[0].x, _pos[0].y, _pos[0].z)))
                                     {
                                         _PlayertoUnJail.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), null, false));
                                     }
                                     else
                                     {
                                         _pos = GameManager.Instance.World.GetRandomSpawnPointPositions(1);
-                                        if (PersistentOperations.ClaimedByAllySelfOrParty(_PlayertoUnJail.playerId, new Vector3i(_pos[0].x, _pos[0].y, _pos[0].z)) || PersistentOperations.ClaimedByNone(_PlayertoUnJail.playerId, new Vector3i(_pos[0].x, _pos[0].y, _pos[0].z)))
+                                        if (PersistentOperations.ClaimedByAllyOrSelf(_PlayertoUnJail.playerId, new Vector3i(_pos[0].x, _pos[0].y, _pos[0].z)) || PersistentOperations.ClaimedByNone(_PlayertoUnJail.playerId, new Vector3i(_pos[0].x, _pos[0].y, _pos[0].z)))
                                         {
                                             _PlayertoUnJail.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_pos[0].x, _pos[0].y + 1, _pos[0].z), null, false));
                                         }

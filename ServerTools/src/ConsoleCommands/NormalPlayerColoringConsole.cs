@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -8,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Normal Player Coloring.";
+            return "[ServerTools] - Enable or disable normal player coloring.";
         }
         public override string GetHelp()
         {
@@ -20,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-NormalPlayerColoring", "NormalPlayerColoring", "normalplayercoloring" };
+            return new string[] { "st-NormalPlayerColoring", "npc", "st-npc" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -33,9 +32,9 @@ namespace ServerTools
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    if (ChatHook.Normal_Player_Chat_Prefix)
+                    if (ChatHook.Normal_Player_Color_Prefix)
                     {
-                        ChatHook.Normal_Player_Chat_Prefix = false;
+                        ChatHook.Normal_Player_Color_Prefix = false;
                         LoadConfig.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("Normal player coloring has been set to off"));
                         return;
@@ -48,9 +47,9 @@ namespace ServerTools
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (ChatHook.Normal_Player_Chat_Prefix)
+                    if (ChatHook.Normal_Player_Color_Prefix)
                     {
-                        ChatHook.Normal_Player_Chat_Prefix = true;
+                        ChatHook.Normal_Player_Color_Prefix = true;
                         LoadConfig.WriteXml();
                         SdtdConsole.Instance.Output(string.Format("Normal player coloring has been set to on"));
                         return;
@@ -68,7 +67,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in NormalPlayerColoringConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in NormalPlayerColoringConsole.Execute: {0}", e.Message));
             }
         }
     }

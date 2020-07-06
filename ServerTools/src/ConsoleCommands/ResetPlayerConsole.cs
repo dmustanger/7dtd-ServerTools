@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 
 namespace ServerTools
@@ -9,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Reset a players profile. * WARNING * Can not be undone without a backup. You must also reload the ServerTools.db and ServerTools.bin file to recover various servertools player data.";
+            return "[ServerTools] - Reset a players profile. * WARNING * Can not be undone without a backup.";
         }
 
         public override string GetHelp()
@@ -19,7 +18,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-ResetPlayerProfile", "ResetPlayerProfile", "resetplayerprofile", "st-rpp", "rpp" };
+            return new string[] { "st-ResetPlayerProfile", "rpp", "st-rpp" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -71,7 +70,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ResetPlayerConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ResetPlayerConsole.Execute: {0}", e.Message));
             }
         }
 

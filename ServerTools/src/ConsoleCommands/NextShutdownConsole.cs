@@ -7,69 +7,76 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Shows the next scheduled auto shutdown.";
+            return "[ServerTools] - Shows the next scheduled shutdown.";
         }
 
         public override string GetHelp()
         {
             return "Usage:\n" +
                    "  1. ShutdownCheck\n" +
-                   "1. Shows the next scheduled auto shutdown\n";
+                   "1. Shows the next scheduled shutdown\n";
         }
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-ShutdownCheck", "ShutdownCheck", "scheck", "sc" };
+            return new string[] { "st-ShutdownCheck", "sc", "st-sc" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
-            if (AutoShutdown.IsEnabled)
+            try
             {
-                if (!AutoShutdown.Bloodmoon)
+                if (Shutdown.IsEnabled)
                 {
-                    if (!Event.Open)
+                    if (!Shutdown.Bloodmoon)
                     {
-                        try
+                        if (!Event.Open)
                         {
-                            int _time;
-                            if (AutoShutdown.BloodmoonOver)
+                            try
                             {
-                                _time = AutoShutdown.Delay - (Timers._autoShutdownBloodmoonOver / 60);
+                                int _time;
+                                if (Shutdown.BloodmoonOver)
+                                {
+                                    _time = Shutdown.Delay - (Timers._shutdownBloodmoonOver / 60);
+                                }
+                                else
+                                {
+                                    _time = Shutdown.Delay - (Timers._shutdown / 60);
+                                }
+                                if (_time < 0)
+                                {
+                                    _time = 0;
+                                }
+                                string _message = string.Format("The next shutdown is in {0:00} H : {1:00} M", _time / 60, _time % 60);
+                                SdtdConsole.Instance.Output(_message);
+                                return;
                             }
-                            else
+                            catch (Exception e)
                             {
-                                _time = AutoShutdown.Delay - (Timers._autoShutdown / 60);
+                                Log.Out(string.Format("[SERVERTOOLS] Error in NextShutdownConsole.Execute: {0}.", e));
                             }
-                            if (_time < 0)
-                            {
-                                _time = 0;
-                            }
-                            string _message = string.Format("The next auto shutdown is in {0:00} H : {1:00} M", _time / 60, _time % 60);
-                            SdtdConsole.Instance.Output(_message);
-                            return;
                         }
-                        catch (Exception e)
+                        else
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Error in NextShutdownConsole.Execute: {0}.", e));
+                            SdtdConsole.Instance.Output("The server is set to shutdown after the event is over.");
+                            return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("The server is set to shutdown after the event is over.");
+                        SdtdConsole.Instance.Output("The server is set to shutdown after the bloodmoon is over.");
                         return;
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output("The server is set to shutdown after the bloodmoon is over.");
+                    SdtdConsole.Instance.Output("Shutdown is not enabled.");
                     return;
                 }
             }
-            else
+            catch (Exception e)
             {
-                SdtdConsole.Instance.Output("Auto shutdown is not enabled.");
-                return;
+                Log.Out(string.Format("[SERVERTOOLS] Error in NextShutdownConsole.Execute: {0}", e.Message));
             }
         }
     }

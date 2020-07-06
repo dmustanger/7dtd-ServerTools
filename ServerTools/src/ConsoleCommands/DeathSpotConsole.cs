@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Death Spot.";
+            return "[ServerTools] - Enable or disable death spot.";
         }
         public override string GetHelp()
         {
@@ -19,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-DeathSpot", "DeathSpot", "deathspot" };
+            return new string[] { "st-DeathSpot", "ds", "st-ds" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

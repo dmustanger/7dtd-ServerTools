@@ -469,7 +469,7 @@ namespace ServerTools
                     }
                     else if (kvp.Key == 47)
                     {
-                        AutoShutdown.Command47 = kvp.Value[1];
+                        Shutdown.Command47 = kvp.Value[1];
                     }
                     else if (kvp.Key == 48)
                     {

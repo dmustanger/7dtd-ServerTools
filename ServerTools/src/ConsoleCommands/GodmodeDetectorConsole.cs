@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Godmode Detector.";
+            return "[ServerTools] - Enable or disable godmode detector.";
         }
         public override string GetHelp()
         {
@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-GodmodeDetector", "GodmodeDetector", "godmodedetector", "gd" };
+            return new string[] { "st-GodmodeDetector", "gd", "st-gd" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

@@ -9,7 +9,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools] - Open, cancel, stop, check, or list a poll for players to vote on";
+            return "[ServerTools] - Open, cancel, stop, check, or list a poll for players to vote on.";
         }
 
         public override string GetHelp()
@@ -32,7 +32,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Poll", "Poll", "poll", "st-poll" };
+            return new string[] { "st-Poll", "poll", "st-poll" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

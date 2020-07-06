@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Collections.Generic;
 
 namespace ServerTools
@@ -8,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Add, Remove and View Steam Ids On The Country Ban Immunity list.";
+            return "[ServerTools] - Add, remove and view steam ids on the country ban immunity list.";
         }
 
         public override string GetHelp()
@@ -25,7 +24,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-CountryBanImmunity", "CountryBanImmunity", "countrybanimmunity", "st-cbi" };
+            return new string[] { "st-CountryBanImmunity", "cbi", "st-cbi" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

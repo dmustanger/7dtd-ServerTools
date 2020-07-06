@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -8,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Enable, Disable, Add, Remove and view the Reserved Slots list.";
+            return "[ServerTools] - Enable, disable, add, remove and view the reserved slots list.";
         }
 
         public override string GetHelp()
@@ -28,7 +27,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-ReservedSlots", "ReservedSlots", "reservedslots", "rs" };
+            return new string[] { "st-ReservedSlots", "rs", "st-rs" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -178,7 +177,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlotConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlotConsole.Execute: {0}", e.Message));
             }
         }
     }

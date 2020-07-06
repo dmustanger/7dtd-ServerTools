@@ -7,19 +7,19 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Teleports an entity in the game";
+            return "[ServerTools] - Teleports a entity in the game";
         }
 
         public override string GetHelp()
         {
-            return "Teleports an entity. Entity can not be a player.\n" +
+            return "Teleports a entity. Entity can not be a player.\n" +
                 "Usage: EntityTeleport <EntityId> <EntityId>\n" +
                 "Usage: EntityTeleport <EntityId> <X> <Y> <Z>\n";
         }
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-EntityTeleport", "EntityTeleport", "entityteleport", "et" };
+            return new string[] { "st-EntityTeleport", "et", "st-et" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

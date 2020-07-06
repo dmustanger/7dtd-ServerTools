@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Clan Manager.";
+            return "[ServerTools]- Enable or disable clan manager.";
         }
         public override string GetHelp()
         {
@@ -27,7 +27,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-ClanManager", "ClanManager", "clanmanager", "st-cm", "cm" };
+            return new string[] { "st-ClanManager", "cm", "st-cm" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

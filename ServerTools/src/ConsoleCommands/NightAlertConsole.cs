@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -8,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Night Alert Console.";
+            return "[ServerTools] - Enable or disable night alert.";
         }
         public override string GetHelp()
         {
@@ -20,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-NightAlert", "NightAlert", "nightalert" };
+            return new string[] { "st-NightAlert", "na", "st-na" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -68,7 +67,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in NightAlertConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in NightAlertConsole.Execute: {0}", e.Message));
             }
         }
     }

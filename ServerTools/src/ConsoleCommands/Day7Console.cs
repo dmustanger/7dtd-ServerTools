@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -8,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Day7.";
+            return "[ServerTools]- Enable or disable day7.";
         }
         public override string GetHelp()
         {
@@ -20,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Day7", "Day7", "D7" };
+            return new string[] { "st-Day7", "d7", "st-d7" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

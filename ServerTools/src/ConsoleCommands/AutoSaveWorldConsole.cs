@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -10,19 +7,19 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Auto Save World.";
+            return "[ServerTools] - Enable or disable auto save world.";
         }
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. AutoSaveWorld off\n" +
-                   "  2. AutoSaveWorld on\n" +
+                   "  1. asw off\n" +
+                   "  2. asw on\n" +
                    "1. Turn off the world auto save\n" +
                    "2. Turn on the world auto save\n";
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-AutoSaveWorld", "AutoSaveWorld", "autosaveworld" };
+            return new string[] { "st-AutoSaveWorld", "asw", "st-asw" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

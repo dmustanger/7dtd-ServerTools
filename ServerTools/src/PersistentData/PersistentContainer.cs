@@ -8,9 +8,9 @@ namespace ServerTools
     [Serializable]
     public class PersistentContainer
     {
-        private static string filepath = string.Format("{0}/ServerTools.bin", GameUtils.GetSaveGameDir());
+        private static string filepath = string.Format("{0}/ServerTools.bin", API.ConfigPath);
         private static PersistentContainer instance;
-        private static PersistentPlayers players;
+        private PersistentPlayers players;
 
         private Dictionary<int, List<int>> clientMuteList;
         private DateTime lastWeather;
@@ -61,7 +61,7 @@ namespace ServerTools
             stream.Close();
         }
 
-        public static bool Load()
+        public bool Load()
         {
             if (File.Exists(filepath))
             {

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -9,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable, Disable, Reset Gimme.";
+            return "[ServerTools] - Enable, disable, reset gimme.";
         }
         public override string GetHelp()
         {
@@ -25,7 +23,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Gimme", "Gimme", "gimme" };
+            return new string[] { "st-Gimme", "gimme", "st-gimme" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

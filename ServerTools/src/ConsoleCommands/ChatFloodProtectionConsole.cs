@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -8,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Chat Flood Protection.";
+            return "[ServerTools] - Enable or disable chat flood protection.";
         }
         public override string GetHelp()
         {
@@ -20,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-ChatFloodProtection", "ChatFloodProtection", "chatfloodprotection" };
+            return new string[] { "st-ChatFloodProtection", "cfp", "st-cfp" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

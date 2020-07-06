@@ -5,8 +5,8 @@ namespace ServerTools
 {
     class StopServer
     {
-        public static bool NoEntry = false, Shutdown = false, CountingDown = false;
-        public static int Alert_Count = 2, Delay = 5;
+        public static bool NoEntry = false, ShuttingDown = false, CountingDown = false;
+        public static int Delay = 5;
 
         public static void StartShutdown()
         {
@@ -27,7 +27,7 @@ namespace ServerTools
                 _phrase450 = "Server Shutdown In {Minutes} Minutes.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", Delay.ToString());
-            Alert(_phrase450, Alert_Count);
+            Alert(_phrase450, Shutdown.Alert_Count);
         }
 
         public static void StartShutdown2(int _newCount)
@@ -38,7 +38,7 @@ namespace ServerTools
                 _phrase450 = "Server Shutdown In {Minutes} Minutes.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", _newCount.ToString());
-            Alert(_phrase450, Alert_Count);
+            Alert(_phrase450, Shutdown.Alert_Count);
         }
 
         public static void StartShutdown3()
@@ -80,6 +80,7 @@ namespace ServerTools
                 _phrase453 = "Shutdown is in 30 seconds. Please come back after the server restarts.";
             }
             SdtdConsole.Instance.ExecuteSync(string.Format("kickall \"{0}\"", _phrase453), (ClientInfo)null);
+            PersistentContainer.Instance.Save();
         }
 
         public static void Alert(string _message, int _count)
@@ -93,6 +94,7 @@ namespace ServerTools
 
         public static void FailSafe(object sender, ElapsedEventArgs e)
         {
+            Log.Out("[SERVERTOOLS] Failsafe activated. Server detected operating past shutdown. Forcing process kill.");
             Process process = Process.GetCurrentProcess();
             if (process != null)
             {

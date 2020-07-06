@@ -1,5 +1,28 @@
 ﻿CHANGELOG
 
+19.0.1
+Built using Alpha 19 experimental assets
+Functioning with 19 experimental. Untested with other versions
+
+Added option Alert_Count to Shutdown tool
+Fixed /sethome command not working as intended
+Fixed a static method causing data recall issues after restart
+Fixed Auto_Backup not starting at the set time
+Fixed Auto_Backup leaving one extra save
+Fixed Shutdown tool not starting at the set time
+Fixed missing option for Shutdown tool named Alert_On_Login
+Fixed log out point in damage detection system spamming the log
+Fixed false positive with damage detection system and lock picks
+Fixed Starting_Items reapplying to players after server restart
+Fixed spawning player process due to api error in base game
+Fixed friends chat not functioning properly
+Fixed console command GiveItem
+Fixed console command GiveBlock
+Fixed SecondaryName option in Gimme.xml
+Changed console command shorten versions to reduce clutter
+Changed Starting_Items to run slower, preventing crashes
+Removed tool Stopserver from the config
+
 19.0.0
 Built using Alpha 19 experimental assets
 Functioning with 19 experimental. Untested with other versions

@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Attempts to set access to all secure vehicle.";
+            return "[ServerTools] - Attempts to set access to all secure vehicle.";
         }
 
         public override string GetHelp()
@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-SecureVehicleAccess", "SecureVehicleAccess", "securevehicleaccess", "st-sva", "sva" };
+            return new string[] { "st-SecureVehicleAccess", "sva", "st-sva" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -60,7 +60,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in SecureVehicleAccess.Execute: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in SecureVehicleAccess.Execute: {0}", e.Message));
             }
         }
     }

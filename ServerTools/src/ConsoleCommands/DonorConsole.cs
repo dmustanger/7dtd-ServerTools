@@ -8,7 +8,7 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools]- Add Or Delete A Player Drom The Reserved Slots List And Chat Color Prefix List.";
+            return "[ServerTools] - Add or delete a player from the reserved slots list and chat color prefix List.";
         }
         public override string GetHelp()
         {
@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Donor", "Donor", "donor", "don" };
+            return new string[] { "st-Donor", "don", "st-don" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

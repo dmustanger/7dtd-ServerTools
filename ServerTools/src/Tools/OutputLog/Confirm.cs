@@ -12,7 +12,7 @@ namespace ServerTools
 
         public static void Exec()
         {
-            if (!string.IsNullOrEmpty(Utils.GetApplicationScratchPath()))
+            if (!LogFound && !string.IsNullOrEmpty(Utils.GetApplicationScratchPath()))
             {
                 LogDirectory = Utils.GetApplicationScratchPath();
                 string[] _txtFiles = Directory.GetFiles(LogDirectory, "*.txt", SearchOption.AllDirectories);

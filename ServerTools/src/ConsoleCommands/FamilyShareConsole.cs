@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Add, Remove And View SteamId On The Family Share List.";
+            return "[ServerTools] - Add, remove and view steam id on the family share list.";
         }
         public override string GetHelp()
         {
@@ -23,7 +23,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-FamilyShare", "FamilyShare", "familyshare", "fs" };
+            return new string[] { "st-FamilyShare", "fs", "st-fs" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

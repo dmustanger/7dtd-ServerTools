@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Private Message.";
+            return "[ServerTools] - Enable or disable private message.";
         }
         public override string GetHelp()
         {
@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-PrivateMessage", "PrivateMessage", "privatemessage", "st-pm", "pm" };
+            return new string[] { "st-PrivateMessage", "pm", "st-pm" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -68,7 +68,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PrivateMessageConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PrivateMessageConsole.Execute: {0}", e.Message));
             }
         }
     }

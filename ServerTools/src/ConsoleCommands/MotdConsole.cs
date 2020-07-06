@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -8,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Motd(messsage of the day).";
+            return "[ServerTools] - Enable or disable motd(messsage of the day).";
         }
         public override string GetHelp()
         {
@@ -20,7 +19,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Motd", "Motd", "motd" };
+            return new string[] { "st-Motd", "motd", "st-motd" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

@@ -6,13 +6,13 @@ namespace ServerTools
     [Serializable]
     public class PersistentPlayers
     {
-        public Dictionary<string, PersistentPlayer> players = new Dictionary<string, PersistentPlayer>();
+        public Dictionary<string, PersistentPlayer> Players = new Dictionary<string, PersistentPlayer>();
 
         public List<string> SteamIDs
         {
             get
             {
-                return new List<string>(players.Keys);
+                return new List<string>(Players.Keys);
             }
         }
 
@@ -24,16 +24,16 @@ namespace ServerTools
                 {
                     return null;
                 }
-                else if (players.ContainsKey(steamId))
+                else if (Players.ContainsKey(steamId))
                 {
-                    return players[steamId];
+                    return Players[steamId];
                 }
                 else
                 {
-                    if (steamId != null && steamId.Length == 17 && steamId.StartsWith("7656"))
+                    if (steamId != null && steamId.Length == 17 && steamId.StartsWith("7656119"))
                     {
                         PersistentPlayer p = new PersistentPlayer(steamId);
-                        players.Add(steamId, p);
+                        Players.Add(steamId, p);
                         return p;
                     }
                     else

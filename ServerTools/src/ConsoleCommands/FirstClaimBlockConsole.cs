@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -9,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable, Disable, Reset First Claim Block.";
+            return "[ServerTools] - Enable, disable, reset first claim block.";
         }
         public override string GetHelp()
         {
@@ -23,7 +21,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-FirstClaimBlock", "FirstClaimBlock", "firstclaimblock" };
+            return new string[] { "st-FirstClaimBlock", "fcb", "st-fcb" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -102,7 +100,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in FirstClaimBlockConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in FirstClaimBlockConsole.Execute: {0}", e.Message));
             }
         }
     }

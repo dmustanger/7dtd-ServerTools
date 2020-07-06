@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ServerTools
 {
@@ -9,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Bans A Player But Also Removes Their Active Claim Blocks.";
+            return "[ServerTools] - Bans a player but also removes their active claim blocks.";
         }
 
         public override string GetHelp()
@@ -23,7 +21,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-BanPlayer", "BanPlayer", "banplayer", "bp" };
+            return new string[] { "st-BanPlayer", "bp", "st-bp" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools] - Enable, Disable Flying Detection.";
+            return "[ServerTools] - Enable, disable flying detection.";
         }
         public override string GetHelp()
         {
@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Flying", "Flying", "flying" };
+            return new string[] { "st-Flying", "flying", "st-flying" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

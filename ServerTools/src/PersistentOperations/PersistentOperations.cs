@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using UnityEngine;
-using ServerTools.AntiCheat;
 
 namespace ServerTools
 {
@@ -22,7 +19,7 @@ namespace ServerTools
                 {
                     IsRunning = true;
                     List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                    if (_cInfoList != null)
+                    if (_cInfoList != null && _cInfoList.Count > 0)
                     {
                         for (int i = 0; i < _cInfoList.Count; i++)
                         {
@@ -79,7 +76,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.BloodMoonSky: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.BloodMoonSky: {0}", e.Message));
             }
             return false;
         }
@@ -98,7 +95,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.BloodMoonDuskSky: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.BloodMoonDuskSky: {0}", e.Message));
             }
             return false;
         }
@@ -116,8 +113,24 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.DuskSky: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.DuskSky: {0}", e.Message));
 
+            }
+            return false;
+        }
+
+        public static bool BloodMoonOver()
+        {
+            try
+            {
+                if (Shutdown.Bloodmoon && !SkyManager.BloodMoon() && !GameManager.Instance.World.IsDark())
+                {
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.BloodMoonOver: {0}", e.Message));
             }
             return false;
         }
@@ -414,20 +427,6 @@ namespace ServerTools
             return false;
         }
 
-        public static bool ClaimedBySelfVec3(string _id, Vector3i _position)
-        {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
-            if (_persistentPlayerData != null)
-            {
-                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
-                if (_owner == EnumLandClaimOwner.Self)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         public static bool ClaimedByAlly(string _id, Vector3i _position)
         {
             PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
@@ -463,69 +462,6 @@ namespace ServerTools
             {
                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
                 if (_owner == EnumLandClaimOwner.Ally || _owner == EnumLandClaimOwner.Self)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool ClaimedByParty(int _entityId, Vector3i _position)
-        {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromEntityId(_entityId);
-            if (_persistentPlayerData != null)
-            {
-                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
-                if (_owner == EnumLandClaimOwner.Self)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool ClaimedByAllySelfOrParty(string _id, Vector3i _position)
-        {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
-            if (_persistentPlayerData != null)
-            {
-                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
-                if (_owner == EnumLandClaimOwner.Ally || _owner == EnumLandClaimOwner.Self)
-                {
-                    return true;
-                }
-                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_id);
-                if (_player != null)
-                {
-                    List<EntityPlayer> _party = _player.Party.MemberList;
-                    if (_party.Count > 0)
-                    {
-                        for (int i = 0; i < _party.Count; i++)
-                        {
-                            EntityPlayer _partyMember = _party[i];
-                            _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromEntityId(_partyMember.entityId);
-                            if (_persistentPlayerData != null)
-                            {
-                                _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
-                                if (_owner == EnumLandClaimOwner.Self)
-                                {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-
-        public static bool ClaimedByUnknown(string _id, Vector3i _position)
-        {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
-            if (_persistentPlayerData != null)
-            {
-                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
-                if (_owner != EnumLandClaimOwner.None && _owner != EnumLandClaimOwner.Ally && _owner != EnumLandClaimOwner.Self)
                 {
                     return true;
                 }

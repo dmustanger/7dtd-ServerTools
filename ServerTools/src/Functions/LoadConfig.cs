@@ -8,7 +8,7 @@ namespace ServerTools
 {
     public class LoadConfig
     {
-        public const string version = "19.0.0";
+        public const string version = "19.0.1";
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
         private const string configFile = "ServerToolsConfig.xml";
@@ -316,58 +316,6 @@ namespace ServerTools
                                 if (!int.TryParse(_line.GetAttribute("Delay_Between_Saves"), out AutoSaveWorld.Delay))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Save_World entry because of invalid (non-numeric) value for 'Delay_Between_Saves' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                break;
-                            case "Auto_Shutdown":
-                                if (!_line.HasAttribute("Enable"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Shutdown entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out AutoShutdown.IsEnabled))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Shutdown entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Countdown_Timer"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Shutdown entry because of missing 'Countdown_Timer' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("Countdown_Timer"), out AutoShutdown.Countdown_Timer))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Shutdown entry because of invalid (non-numeric) value for 'Countdown_Timer' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Time_Before_Shutdown"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Shutdown entry because of missing 'Time_Before_Shutdown' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("Time_Before_Shutdown"), out AutoShutdown.Delay))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Shutdown entry because of invalid (non-numeric) value for 'Time_Before_Shutdown' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Alert_On_Login"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Shutdown entry because of missing 'Alert_On_Login' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Alert_On_Login"), out AutoShutdown.Alert_On_Login))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auto_Shutdown entry because of invalid (True/False) value for 'Alert_On_Login' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Kick_During_Countdown"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AutoShutdown entry because of missing 'Kick_During_Countdown' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Kick_During_Countdown"), out AutoShutdown.Kick_Login))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring AutoShutdown entry because of invalid (True/False) value for 'Kick_During_Countdown' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -2127,7 +2075,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Normal_Player_Color_Prefix entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatHook.Normal_Player_Chat_Prefix))
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatHook.Normal_Player_Color_Prefix))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Normal_Player_Color_Prefix entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -2518,25 +2466,77 @@ namespace ServerTools
                                     continue;
                                 }
                                 break;
-                            case "Spectator":
+                            case "Shutdown":
                                 if (!_line.HasAttribute("Enable"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Spectator entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Shutdown.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Countdown_Timer"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry because of missing 'Countdown_Timer' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Countdown_Timer"), out Shutdown.Countdown_Timer))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry because of invalid (non-numeric) value for 'Countdown_Timer' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Time_Before_Shutdown"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry because of missing 'Time_Before_Shutdown' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Time_Before_Shutdown"), out Shutdown.Delay))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry because of invalid (non-numeric) value for 'Time_Before_Shutdown' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Alert_On_Login"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry because of missing 'Alert_On_Login' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Alert_On_Login"), out Shutdown.Alert_On_Login))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry because of invalid (True/False) value for 'Alert_On_Login' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Alert_Count"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry because of missing 'Alert_Count' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Alert_Count"), out Shutdown.Alert_Count))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shutdown entry because of invalid (True/False) value for 'Alert_Count' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
+                            case "Spectator_Detector":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Spectator_Detector entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!bool.TryParse(_line.GetAttribute("Enable"), out PlayerChecks.SpectatorEnabled))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Spectator entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Spectator_Detector entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Admin_Level"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Spectator entry because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Spectator_Detector entry because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!int.TryParse(_line.GetAttribute("Admin_Level"), out PlayerChecks.Spectator_Admin_Level))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Spectator entry because of invalid (True/False) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Spectator_Detector entry because of invalid (True/False) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -2549,18 +2549,6 @@ namespace ServerTools
                                 if (!bool.TryParse(_line.GetAttribute("Enable"), out StartingItems.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Starting_Items entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                break;
-                            case "Stopserver":
-                                if (!_line.HasAttribute("Alert_Count"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Stopserver entry because of missing 'Alert_Count' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("Alert_Count"), out StopServer.Alert_Count))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Stopserver entry because of invalid (True/False) value for 'Alert_Count' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -2718,7 +2706,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Under_Water entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out UnderWater.IsEnabled))
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out PlayerChecks.WaterEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Under_Water entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -3355,7 +3343,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"New_Player\" Enable=\"{0}\" Entry_Message=\"{1}\" />", NewPlayer.IsEnabled, NewPlayer.Entry_Message));
                 sw.WriteLine(string.Format("        <Tool Name=\"New_Spawn_Tele\" Enable=\"{0}\" New_Spawn_Tele_Position=\"{1}\" Return=\"{2}\" />", NewSpawnTele.IsEnabled, NewSpawnTele.New_Spawn_Tele_Position, NewSpawnTele.Return));
                 sw.WriteLine(string.Format("        <Tool Name=\"Night_Alert\" Enable=\"{0}\" Delay=\"{1}\" />", NightAlert.IsEnabled, NightAlert.Delay));
-                sw.WriteLine(string.Format("        <Tool Name=\"Normal_Player_Color_Prefix\" Enable=\"{0}\" Prefix=\"{1}\" Name_Color=\"{2}\" Prefix_Color=\"{3}\" />", ChatHook.Normal_Player_Chat_Prefix, ChatHook.Normal_Player_Prefix, ChatHook.Normal_Player_Name_Color, ChatHook.Normal_Player_Prefix_Color));
+                sw.WriteLine(string.Format("        <Tool Name=\"Normal_Player_Color_Prefix\" Enable=\"{0}\" Prefix=\"{1}\" Name_Color=\"{2}\" Prefix_Color=\"{3}\" />", ChatHook.Normal_Player_Color_Prefix, ChatHook.Normal_Player_Prefix, ChatHook.Normal_Player_Name_Color, ChatHook.Normal_Player_Prefix_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_List\" Enable=\"{0}\" />", PlayerList.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_Logs\" Enable=\"{0}\" Interval=\"{1}\" />", PlayerLogs.IsEnabled, PlayerLogs.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Player_Stat_Check\" Enable=\"{0}\" Admin_Level=\"{1}\" Max_Speed=\"{2}\" Kick_Enabled=\"{3}\" Ban_Enabled=\"{4}\" />", PlayerStats.IsEnabled, PlayerStats.Admin_Level, PlayerStats.Max_Speed, PlayerStats.Kick_Enabled, PlayerStats.Ban_Enabled));
@@ -3369,15 +3357,14 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Restart_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" Admin_Level=\"{3}\" />", RestartVote.IsEnabled, RestartVote.Players_Online, RestartVote.Votes_Needed, RestartVote.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Scout_Player\" Enable=\"{0}\" />", ScoutPlayer.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Shop\" Enable=\"{0}\" Inside_Market=\"{1}\" Inside_Traders=\"{2}\" />", Shop.IsEnabled, Shop.Inside_Market, Shop.Inside_Traders));
-                sw.WriteLine(string.Format("        <Tool Name=\"Shutdown\" Enable=\"{0}\" Countdown_Timer=\"{1}\" Time_Before_Shutdown=\"{2}\" Alert_Count=\"{3}\" />", AutoShutdown.IsEnabled, AutoShutdown.Countdown_Timer, AutoShutdown.Delay, StopServer.Alert_Count));
+                sw.WriteLine(string.Format("        <Tool Name=\"Shutdown\" Enable=\"{0}\" Countdown_Timer=\"{1}\" Time_Before_Shutdown=\"{2}\" Alert_On_Login=\"{3}\" Alert_Count=\"{4}\"  />", Shutdown.IsEnabled, Shutdown.Countdown_Timer, Shutdown.Delay, Shutdown.Alert_On_Login, Shutdown.Alert_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Spectator_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" />", PlayerChecks.SpectatorEnabled, PlayerChecks.Spectator_Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Starting_Items\" Enable=\"{0}\" />", StartingItems.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Stopserver\" Alert_Count=\"{0}\" />", StopServer.Alert_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Stuck\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" />", Stuck.IsEnabled, Stuck.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Suicide\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" PvP_Check=\"{2}\" Zombie_Check=\"{3}\" />", Suicide.IsEnabled, Suicide.Delay_Between_Uses, Suicide.PvP_Check, Suicide.Zombie_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Tracking\" Enable=\"{0}\" />", Track.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Travel\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" PvP_Check=\"{3}\" Zombie_Check=\"{4}\" />", Travel.IsEnabled, Travel.Delay_Between_Uses, Travel.Command_Cost, Travel.PvP_Check, Travel.Zombie_Check));
-                sw.WriteLine(string.Format("        <Tool Name=\"Under_Water\" Enable=\"{0}\" />", UnderWater.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Under_Water\" Enable=\"{0}\" />", PlayerChecks.WaterEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Teleport\" Enable=\"{0}\" Bike=\"{1}\" Mini_Bike=\"{2}\" Motor_Bike=\"{3}\" Jeep=\"{4}\" Gyro=\"{5}\" />", VehicleTeleport.IsEnabled, VehicleTeleport.Bike, VehicleTeleport.Mini_Bike, VehicleTeleport.Motor_Bike, VehicleTeleport.Jeep, VehicleTeleport.Gyro));
                 sw.WriteLine(string.Format("        <Tool Name=\"Vehicle_Teleport_Extended\" Inside_Claim=\"{0}\" Distance=\"{1}\" Delay_Between_Uses=\"{2}\" Command_Cost=\"{3}\" />", VehicleTeleport.Inside_Claim, VehicleTeleport.Distance, VehicleTeleport.Delay_Between_Uses, VehicleTeleport.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Voting\" Enable=\"{0}\" Your_Voting_Site=\"{1}\" API_Key=\"{2}\" Delay_Between_Uses=\"{3}\" Reward_Count=\"{4}\" />", VoteReward.IsEnabled, VoteReward.Your_Voting_Site, VoteReward.API_Key, VoteReward.Delay_Between_Uses, VoteReward.Reward_Count));

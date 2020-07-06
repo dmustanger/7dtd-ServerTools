@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Restart vote.";
+            return "[ServerTools] - Enable or disable restart vote.";
         }
         public override string GetHelp()
         {
@@ -20,7 +20,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-RestartVote", "RestartVote", "restartvote" };
+            return new string[] { "st-RestartVote", "rv", "st-rv" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -68,7 +68,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in RestartVoteConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in RestartVoteConsole.Execute: {0}", e.Message));
             }
         }
     }

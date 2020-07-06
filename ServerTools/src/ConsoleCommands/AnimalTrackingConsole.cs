@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -9,14 +7,14 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Animal Tracking.";
+            return "[ServerTools] - Enable or disable animal tracking.";
         }
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. AnimalTracking off\n" +
-                   "  2. AnimalTracking on\n" +
-                   "  3. AnimalTracking reset <steamId/entityId/playerName>\n" +
+                   "  1. at off\n" +
+                   "  2. at on\n" +
+                   "  3. at reset <steamId/entityId/playerName>\n" +
                    "1. Turn off animal tracking\n" +
                    "2. Turn on animal tracking\n" +
                    "3. Reset the delay status of a player for the animal tracking command\n";
@@ -24,7 +22,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-AnimalTracking", "AnimalTracking", "animaltracking" };
+            return new string[] { "st-AnimalTracking", "at", "st-at" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

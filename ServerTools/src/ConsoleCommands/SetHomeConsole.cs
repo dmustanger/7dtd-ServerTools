@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Xml;
 
 namespace ServerTools
 {
@@ -9,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Enable or Disable Set Home.";
+            return "[ServerTools] - Enable or disable set home.";
         }
         public override string GetHelp()
         {
@@ -23,7 +21,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Home", "Home", "home" };
+            return new string[] { "st-Home", "home", "st-home" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
@@ -96,7 +94,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in SetHomeConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in SetHomeConsole.Execute: {0}", e.Message));
             }
         }
     }

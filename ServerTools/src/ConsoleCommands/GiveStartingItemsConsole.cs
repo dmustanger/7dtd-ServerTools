@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Threading;
 
 namespace ServerTools
 {
@@ -9,7 +10,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Gives The Starting Items From The List Directly To A Players Inventory. Drops To The Ground If Full.";
+            return "[ServerTools] - Gives the starting items from the xml list.";
         }
         public override string GetHelp()
         {
@@ -20,7 +21,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-GiveStartingItems", "GiveStartingItems", "givestartingitems", "gsi" };
+            return new string[] { "st-GiveStartingItems", "gsi", "st-gsi" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -44,7 +45,7 @@ namespace ServerTools
                         ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
                         if (_cInfo != null)
                         {
-                            Send(_cInfo);
+                            SpawnItems(_cInfo);
                         }
                         else
                         {
@@ -54,57 +55,71 @@ namespace ServerTools
                 }
                 catch (Exception e)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Error in GiveStartingItemsConsole.Execute: {0}", e));
+                    Log.Out(string.Format("[SERVERTOOLS] Error in GiveStartingItemsConsole.Execute: {0}", e.Message));
                 }
             }
         }
 
-        public static void Send(ClientInfo _cInfo)
+        public static void SpawnItems(ClientInfo _cInfo)
         {
             try
             {
                 if (StartingItems.ItemList.Count > 0)
                 {
                     World world = GameManager.Instance.World;
-                    List<string> _itemList = StartingItems.ItemList.Keys.ToList();
-                    for (int i = 0; i < _itemList.Count; i++)
+                    if (world.Players.dict.ContainsKey(_cInfo.entityId))
                     {
-                        string _item = _itemList[i];
-                        int[] _itemData;
-                        StartingItems.ItemList.TryGetValue(_item, out _itemData);
-                        ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item, false).type, false);
-                        if (_itemValue.HasQuality && _itemData[1] > 0)
+                        EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                        if (_player != null && _player.IsSpawned() && !_player.IsDead())
                         {
-                            _itemValue.Quality = _itemData[1];
+                            PersistentContainer.Instance.Players[_cInfo.playerId].StartingItems = true;
+                            PersistentContainer.Instance.Save();
+                            List<string> _itemList = StartingItems.ItemList.Keys.ToList();
+                            for (int i = 0; i < _itemList.Count; i++)
+                            {
+                                string _item = _itemList[i];
+                                int[] _itemData;
+                                StartingItems.ItemList.TryGetValue(_item, out _itemData);
+                                ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item, false).type, false);
+                                if (_itemValue.HasQuality && _itemData[1] > 0)
+                                {
+                                    _itemValue.Quality = _itemData[1];
+                                }
+                                EntityItem entityItem = new EntityItem();
+                                entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                                {
+                                    entityClass = EntityClass.FromString("item"),
+                                    id = EntityFactory.nextEntityID++,
+                                    itemStack = new ItemStack(_itemValue, _itemData[0]),
+                                    pos = world.Players.dict[_cInfo.entityId].position,
+                                    rot = new Vector3(20f, 0f, 20f),
+                                    lifetime = 60f,
+                                    belongsPlayerId = _cInfo.entityId
+                                });
+                                world.SpawnEntityInWorld(entityItem);
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                                Thread.Sleep(TimeSpan.FromSeconds(1));
+                            }
+                            Log.Out(string.Format("[SERVERTOOLS] {0} with steam id {1} received their starting items", _cInfo.playerName, _cInfo.playerId));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0} with steam id {1} received their starting items", _cInfo.playerName, _cInfo.playerId));
+                            string _phrase806;
+                            if (!Phrases.Dict.TryGetValue(806, out _phrase806))
+                            {
+                                _phrase806 = "You have received the starting items. Check your inventory. If full, check the ground.";
+                            }
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase806 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
-                        EntityItem entityItem = new EntityItem();
-                        entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                        else
                         {
-                            entityClass = EntityClass.FromString("item"),
-                            id = EntityFactory.nextEntityID++,
-                            itemStack = new ItemStack(_itemValue, _itemData[0]),
-                            pos = world.Players.dict[_cInfo.entityId].position,
-                            rot = new Vector3(20f, 0f, 20f),
-                            lifetime = 60f,
-                            belongsPlayerId = _cInfo.entityId
-                        });
-                        world.SpawnEntityInWorld(entityItem);
-                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                        world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                        SdtdConsole.Instance.Output(string.Format("Spawned starting item {0} for {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
-                        Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
+                            SdtdConsole.Instance.Output(string.Format("Player with steamd Id {0} has not spawned. Unable to give starting items", _cInfo.playerId));
+                        }
                     }
-                    string _phrase806;
-                    if (!Phrases.Dict.TryGetValue(806, out _phrase806))
-                    {
-                        _phrase806 = "You have received the starting items. Check your inventory. If full, check the ground.";
-                    }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase806 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in GiveStartingItemsConsole.Send: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in GiveStartingItemsConsole.SpawnItems: {0}", e.Message));
             }
         }
     }

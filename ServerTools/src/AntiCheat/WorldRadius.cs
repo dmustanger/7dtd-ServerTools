@@ -11,40 +11,46 @@ namespace ServerTools.AntiCheat
 
         public static void Exec()
         {
-            if (ConnectionManager.Instance.ClientCount() > 0)
+            if (GameManager.Instance.World.Players.dict.Count > 0)
             {
                 List<ClientInfo> ClientInfoList = PersistentOperations.ClientList();
-                for (int i = 0; i < ClientInfoList.Count; i++)
+                if (ClientInfoList != null && ClientInfoList.Count > 0)
                 {
-                    ClientInfo _cInfo = ClientInfoList[i];
-                    GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
-                    if (Admin.PermissionLevel > Admin_Level)
+                    for (int i = 0; i < ClientInfoList.Count; i++)
                     {
-                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                        if (_player != null)
+                        ClientInfo _cInfo = ClientInfoList[i];
+                        if (_cInfo != null && _cInfo.playerId != null)
                         {
-                            if (ReservedSlots.IsEnabled)
+                            GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
+                            if (Admin.PermissionLevel > Admin_Level)
                             {
-                                DateTime _dt;
-                                if (ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt))
+                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                if (_player != null)
                                 {
-                                    if (DateTime.Now < _dt)
+                                    if (ReservedSlots.IsEnabled)
                                     {
-                                        DonatorRad(_cInfo, _player);
+                                        DateTime _dt;
+                                        if (ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out _dt))
+                                        {
+                                            if (DateTime.Now < _dt)
+                                            {
+                                                DonatorRad(_cInfo, _player);
+                                            }
+                                            else
+                                            {
+                                                NormalRad(_cInfo, _player);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            NormalRad(_cInfo, _player);
+                                        }
                                     }
                                     else
                                     {
                                         NormalRad(_cInfo, _player);
                                     }
                                 }
-                                else
-                                {
-                                    NormalRad(_cInfo, _player);
-                                }
-                            }
-                            else
-                            {
-                                NormalRad(_cInfo, _player);
                             }
                         }
                     }

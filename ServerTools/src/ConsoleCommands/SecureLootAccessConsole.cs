@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Attempts to set access to all secure loot.";
+            return "[ServerTools] - Attempts to set access to all secure loot.";
         }
 
         public override string GetHelp()
@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-SecureLootAccess", "SecureLootAccess", "securelootaccess", "st-sla", "sla" };
+            return new string[] { "st-SecureLootAccess", "sla", "st-sla" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -64,7 +64,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in SecureChestAccess.Execute: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in SecureChestAccess.Execute: {0}", e.Message));
             }
         }
     }

@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]-Sets the lobby location.";
+            return "[ServerTools] - Set, turn on or turn off the lobby.";
         }
 
         public override string GetHelp()
@@ -24,7 +24,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-Lobby", "Lobby", "lobby" };
+            return new string[] { "st-Lobby", "lobby", "st-lobby" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)

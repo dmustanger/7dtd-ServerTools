@@ -7,7 +7,7 @@ namespace ServerTools
     {
         public override string GetDescription()
         {
-            return "[ServerTools]- Attempts to set access to all secure door.";
+            return "[ServerTools] - Attempts to set access to all secure door.";
         }
 
         public override string GetHelp()
@@ -19,7 +19,7 @@ namespace ServerTools
 
         public override string[] GetCommands()
         {
-            return new string[] { "st-SecureDoorAccess", "SecureDoorAccess", "securedooraccess", "st-sda", "sda" };
+            return new string[] { "st-SecureDoorAccess", "sda", "st-sda" };
         }
 
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
@@ -64,7 +64,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in SecureDoorAccess.Execute: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in SecureDoorAccess.Execute: {0}", e.Message));
             }
         }
     }

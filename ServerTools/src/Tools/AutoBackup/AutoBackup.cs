@@ -17,8 +17,8 @@ namespace ServerTools
             {
                 try
                 {
-                    IsRunning = true;
                     Log.Out("[SERVERTOOLS] Starting auto backup process");
+                    IsRunning = true;
                     DirectoryInfo _saveDirInfo = new DirectoryInfo(SaveDirectory);//save dir
                     if (string.IsNullOrEmpty(Destination) && _saveDirInfo != null)
                     {
@@ -99,9 +99,9 @@ namespace ServerTools
                     {
                         _fileList.Sort((x, y) => DateTime.Compare(x.CreationTime, y.CreationTime));
                         _fileList.Reverse();
-                        for (int j = 1; j < _fileList.Count; j++)
+                        for (int j = 0; j < _fileList.Count; j++)
                         {
-                            if (j >= Backup_Count)
+                            if (j >= Backup_Count - 1)
                             {
                                 FileInfo _fInfo = _fileList[j];
                                 Log.Out(string.Format("[SERVERTOOLS] Auto backup cleanup has deleted {0}", _fInfo.Name));

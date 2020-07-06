@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Xml;
 using UnityEngine;
 
@@ -97,8 +98,7 @@ namespace ServerTools
                         string _item = _line.GetAttribute("Name");
                         ItemClass _class;
                         Block _block;
-                        int _id;
-                        if (int.TryParse(_item, out _id))
+                        if (int.TryParse(_item, out int _id))
                         {
                             _class = ItemClass.GetForId(_id);
                             _block = Block.GetBlockByName(_item, true);
@@ -199,36 +199,49 @@ namespace ServerTools
         {
             try
             {
-                World world = GameManager.Instance.World;
-                List<string> _itemList = StartingItems.ItemList.Keys.ToList();
-                for (int i = 0; i < _itemList.Count; i++)
+                if (ItemList.Count > 0)
                 {
-                    string _item = _itemList[i];
-                    int[] _itemData;
-                    StartingItems.ItemList.TryGetValue(_item, out _itemData);
-                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item, false).type, false);
-                    if (_itemValue.HasQuality && _itemData[1] > 0)
+                    PersistentContainer.Instance.Players[_cInfo.playerId].StartingItems = true;
+                    PersistentContainer.Instance.Save();
+                    World world = GameManager.Instance.World;
+                    List<string> _itemList = ItemList.Keys.ToList();
+                    for (int i = 0; i < _itemList.Count; i++)
                     {
-                        _itemValue.Quality = _itemData[1];
+                        string _item = _itemList[i];
+                        int[] _itemData;
+                        if (ItemList.TryGetValue(_item, out _itemData))
+                        {
+                            ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_item, false).type, false);
+                            if (_itemValue.HasQuality && _itemData[1] > 0)
+                            {
+                                _itemValue.Quality = _itemData[1];
+                            }
+                            EntityItem entityItem = new EntityItem();
+                            entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                            {
+                                entityClass = EntityClass.FromString("item"),
+                                id = EntityFactory.nextEntityID++,
+                                itemStack = new ItemStack(_itemValue, _itemData[0]),
+                                pos = world.Players.dict[_cInfo.entityId].position,
+                                rot = new Vector3(20f, 0f, 20f),
+                                lifetime = 60f,
+                                belongsPlayerId = _cInfo.entityId
+                            });
+                            world.SpawnEntityInWorld(entityItem);
+                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                            world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                            Thread.Sleep(TimeSpan.FromSeconds(1));
+                        }
                     }
-                    EntityItem entityItem = new EntityItem();
-                    entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                    Log.Out(string.Format("[SERVERTOOLS] {0} with steam id {1} received their starting items", _cInfo.playerName, _cInfo.playerId));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0} with steam id {1} received their starting items", _cInfo.playerName, _cInfo.playerId));
+                    string _phrase806;
+                    if (!Phrases.Dict.TryGetValue(806, out _phrase806))
                     {
-                        entityClass = EntityClass.FromString("item"),
-                        id = EntityFactory.nextEntityID++,
-                        itemStack = new ItemStack(_itemValue, _itemData[0]),
-                        pos = world.Players.dict[_cInfo.entityId].position,
-                        rot = new Vector3(20f, 0f, 20f),
-                        lifetime = 60f,
-                        belongsPlayerId = _cInfo.entityId
-                    });
-                    world.SpawnEntityInWorld(entityItem);
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                    Log.Out(string.Format("[SERVERTOOLS] Spawned starting item {0} for {1} with steam id {2}", _itemValue.ItemClass.Name, _cInfo.playerName, _cInfo.playerId));
+                        _phrase806 = "You have received the starting items. Check your inventory. If full, check the ground.";
+                    }
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase806 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
-                PersistentContainer.Instance.Players[_cInfo.playerId].StartingItems = true;
-                PersistentContainer.Instance.Save();
             }
             catch (Exception e)
             {

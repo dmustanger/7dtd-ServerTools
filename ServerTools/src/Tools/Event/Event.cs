@@ -5,10 +5,10 @@ namespace ServerTools
 {
     class Event
     {
-        public static bool Open = false, Invited = false, Cancel = false, Extend = false, Return = false;
+        public static bool Open = false, Invited = false, Cancel = false, Extend = false, Return = false, OperatorWarned = false;
         public static string Command100 = "join";
         public static Dictionary<string, int> Teams = new Dictionary<string, int>();
-        public static string Admin = null, EventName = "";
+        public static string Operator = "", EventName = "";
         public static int TeamCount = 0, PlayerCount = 0, TeamSetup = 0, Time = 0;
 
         public static void CheckOpen()
@@ -22,8 +22,8 @@ namespace ServerTools
                 PlayerCount = 0;
                 TeamSetup = 0;
                 Time = 0;
-                ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(Admin);
-                Admin = "";
+                ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(Operator);
+                Operator = "";
                 if (_cInfo != null)
                 {
                     ChatHook.ChatMessage(_cInfo, "Not enough players signed up for the event. The invitation and setup has been cleared.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -53,7 +53,7 @@ namespace ServerTools
                     PersistentContainer.Instance.Save();
                     ChatHook.ChatMessage(_cInfo, "You have signed up for the event and your current location has been saved for return.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
-                EventCommandsConsole.Setup.TryGetValue(Event.Admin, out List<string> _setup);
+                EventCommandsConsole.Setup.TryGetValue(Operator, out List<string> _setup);
                 Teams.Add(_cInfo.playerId, TeamSetup);
                 string _message = "You are on team {Team}.";
                 _message = _message.Replace("{Team}", TeamSetup.ToString());
@@ -122,7 +122,7 @@ namespace ServerTools
 
         public static void HalfTime()
         {
-            ClientInfo _cInfo = ConnectionManager.Instance.Clients.GetForPlayerName(Admin);
+            ClientInfo _cInfo = ConnectionManager.Instance.Clients.GetForPlayerName(Operator);
             if (_cInfo != null)
             {
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "The event is at half time.[-]", -1, _cInfo.playerName, EChatType.Whisper, null);
@@ -132,7 +132,7 @@ namespace ServerTools
 
         public static void FiveMin()
         {
-            ClientInfo _cInfo = ConnectionManager.Instance.Clients.GetForPlayerName(Admin);
+            ClientInfo _cInfo = ConnectionManager.Instance.Clients.GetForPlayerName(Operator);
             if (_cInfo != null)
             {
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "The event has five minutes remaining. If you need to extend the time remaining, use the console to type event extend <time>. The time is in minutes.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -166,10 +166,10 @@ namespace ServerTools
                 }
             }
             PersistentContainer.Instance.Save();
-            ClientInfo _cInfo = ConnectionManager.Instance.Clients.GetForPlayerName(Admin);
+            ClientInfo _cInfo = ConnectionManager.Instance.Clients.GetForPlayerName(Operator);
             Open = false;
             Teams.Clear();
-            Admin = "";
+            Operator = "";
             EventName = "";
             TeamCount = 0;
             PlayerCount = 0;
@@ -197,7 +197,7 @@ namespace ServerTools
         {
             if (Teams.TryGetValue(_cInfo.playerId, out int _team))
             {
-                if (EventCommandsConsole.Setup.TryGetValue(Event.Admin, out List<string> _setup))
+                if (EventCommandsConsole.Setup.TryGetValue(Operator, out List<string> _setup))
                 {
                     string _spawnPosition = _setup[_team + 4];
                     string[] _cords = _spawnPosition.Split(',');
@@ -222,7 +222,7 @@ namespace ServerTools
         {
             if (Teams.TryGetValue(_cInfo.playerId, out int _team))
             {
-                if (EventCommandsConsole.Setup.TryGetValue(Event.Admin, out List<string> _setup))
+                if (EventCommandsConsole.Setup.TryGetValue(Operator, out List<string> _setup))
                 {
                     _setup.RemoveRange(0, 4 + _team);
                     string _respawnPosition = _setup[_team - 1];

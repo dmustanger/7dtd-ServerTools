@@ -18,31 +18,34 @@ namespace ServerTools
             if (!Event.Teams.ContainsKey(_cInfo.playerId))
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                Vector3 _position = _player.GetPosition();
-                int x = (int)_position.x;
-                int y = (int)_position.y;
-                int z = (int)_position.z;
-                Vector3i _vec3i = new Vector3i(x, y, z);
-                if (PersistentOperations.ClaimedByAllySelfOrParty(_cInfo.playerId, _vec3i))
+                if (_player != null)
                 {
-                    string _sposition = x + "," + y + "," + z;
-                    PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1 = _sposition;
-                    PersistentContainer.Instance.Save();
-                    string _phrase10;
-                    if (!Phrases.Dict.TryGetValue(10, out _phrase10))
+                    Vector3 _position = _player.GetPosition();
+                    int x = (int)_position.x;
+                    int y = (int)_position.y;
+                    int z = (int)_position.z;
+                    Vector3i _vec3i = new Vector3i(x, y, z);
+                    if (PersistentOperations.ClaimedByAllyOrSelf(_cInfo.playerId, _vec3i))
                     {
-                        _phrase10 = "Your home has been saved.";
+                        string _sposition = x + "," + y + "," + z;
+                        PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition1 = _sposition;
+                        PersistentContainer.Instance.Save();
+                        string _phrase10;
+                        if (!Phrases.Dict.TryGetValue(10, out _phrase10))
+                        {
+                            _phrase10 = "Your home has been saved.";
+                        }
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase10 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase10 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-                else
-                {
-                    string _phrase817;
-                    if (!Phrases.Dict.TryGetValue(817, out _phrase817))
+                    else
                     {
-                        _phrase817 = "You are not inside your own or an ally's claimed space. You can not save this as your home.";
+                        string _phrase817;
+                        if (!Phrases.Dict.TryGetValue(817, out _phrase817))
+                        {
+                            _phrase817 = "You are not inside your own or an ally's claimed space. You can not save this as your home.";
+                        }
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase817 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase817 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
@@ -203,7 +206,7 @@ namespace ServerTools
                 int y = (int)_position.y;
                 int z = (int)_position.z;
                 Vector3i _vec3i = new Vector3i(x, y, z);
-                if (PersistentOperations.ClaimedByAllySelfOrParty(_cInfo.playerId, _vec3i))
+                if (PersistentOperations.ClaimedByAllyOrSelf(_cInfo.playerId, _vec3i))
                 {
                     string _sposition = x + "," + y + "," + z;
                     PersistentContainer.Instance.Players[_cInfo.playerId].HomePosition2 = _sposition;
