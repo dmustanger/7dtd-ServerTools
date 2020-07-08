@@ -39,7 +39,7 @@ namespace ServerTools
             try
             {
                 Log.Out("[SERVERTOOLS] Starting shutdown process");
-                SdtdConsole.Instance.ExecuteSync(string.Format("st-ss {0}", Countdown_Timer), (ClientInfo)null);
+                SdtdConsole.Instance.ExecuteSync(string.Format("st-StopServer {0}", Countdown_Timer), null);
             }
             catch (Exception e)
             {

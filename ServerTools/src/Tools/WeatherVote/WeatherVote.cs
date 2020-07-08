@@ -83,11 +83,11 @@ namespace ServerTools
                 if (Sun.Count > Rain.Count && Sun.Count > Snow.Count)
                 {
                     ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Clear skies ahead.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    SdtdConsole.Instance.ExecuteSync("weather rain 0", (ClientInfo)null);
-                    SdtdConsole.Instance.ExecuteSync("weather rainfall 0", (ClientInfo)null);
-                    SdtdConsole.Instance.ExecuteSync("weather wet 0", (ClientInfo)null);
-                    SdtdConsole.Instance.ExecuteSync("weather snow 0", (ClientInfo)null);
-                    SdtdConsole.Instance.ExecuteSync("weather snowfall 0", (ClientInfo)null);
+                    SdtdConsole.Instance.ExecuteSync("weather rain 0", null);
+                    SdtdConsole.Instance.ExecuteSync("weather rainfall 0", null);
+                    SdtdConsole.Instance.ExecuteSync("weather wet 0", null);
+                    SdtdConsole.Instance.ExecuteSync("weather snow 0", null);
+                    SdtdConsole.Instance.ExecuteSync("weather snowfall 0", null);
                     _weather = "sun";
                 }
                 if (Rain.Count > Sun.Count && Rain.Count > Snow.Count)
@@ -97,19 +97,19 @@ namespace ServerTools
                     if (_rndWeather == 1)
                     {
                         ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "Light rain has started.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                        SdtdConsole.Instance.ExecuteSync("weather rain 0.2", (ClientInfo)null);
+                        SdtdConsole.Instance.ExecuteSync("weather rain 0.2", null);
                     }
                     if (_rndWeather == 2)
                     {
                         ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "A rain storm has started.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                        SdtdConsole.Instance.ExecuteSync("weather rain 0.6", (ClientInfo)null);
-                        SdtdConsole.Instance.ExecuteSync("weather wet 1", (ClientInfo)null);
+                        SdtdConsole.Instance.ExecuteSync("weather rain 0.6", null);
+                        SdtdConsole.Instance.ExecuteSync("weather wet 1", null);
                     }
                     if (_rndWeather == 3)
                     {
                         ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + "A heavy rain storm has started.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                        SdtdConsole.Instance.ExecuteSync("weather rain 1", (ClientInfo)null);
-                        SdtdConsole.Instance.ExecuteSync("weather wet 1", (ClientInfo)null);
+                        SdtdConsole.Instance.ExecuteSync("weather rain 1", null);
+                        SdtdConsole.Instance.ExecuteSync("weather wet 1", null);
                     }
                     _weather = "rain";
                 }

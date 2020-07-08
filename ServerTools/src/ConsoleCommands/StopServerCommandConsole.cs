@@ -13,8 +13,8 @@ namespace ServerTools
 
         public override string GetHelp()
         {
-            return "Usage: stopserver <minutes>\n" +
-                "Usage: stopserver cancel";
+            return "Usage: ss <minutes>\n" +
+                "Usage: ss cancel";
         }
 
         public override string[] GetCommands()

@@ -711,7 +711,7 @@ namespace ServerTools
                 {
                     _autoSaveWorld = 0;
                 }
-                if (Shutdown.IsEnabled)
+                if (Shutdown.IsEnabled && !StopServer.CountingDown)
                 {
                     if (Shutdown.BloodmoonOver && !Event.Open)
                     {

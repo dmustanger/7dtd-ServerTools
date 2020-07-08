@@ -103,7 +103,7 @@ namespace ServerTools
                         _phrase742 = "Players voted yes to a server restart. Shutdown has been initiated.";
                     }
                     ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase742 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("st-ss 2"), (ClientInfo)null);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("st-StopServer 2"), (ClientInfo)null);
                 }
                 else
                 {

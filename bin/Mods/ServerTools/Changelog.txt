@@ -1,5 +1,11 @@
 ﻿CHANGELOG
 
+19.0.3
+Built using Alpha 19 experimental assets
+Functioning with 19 experimental. Untested with other versions
+
+Shutdown Shutdown Shutdown Shutdown Shutdown Shutdown
+
 19.0.2
 Built using Alpha 19 experimental assets
 Functioning with 19 experimental. Untested with other versions
