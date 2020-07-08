@@ -8,44 +8,38 @@ namespace ServerTools
         public static int Players_Online = 5, Votes_Needed = 3, Admin_Level = 0;
         public static string Command66 = "restartvote", Command70 = "yes";
         public static List<int> Restart = new List<int>();
-        private static bool StartedVote = false;
 
         public static void CallForVote1(ClientInfo _cInfo)
         {
             if (!Startup)
             {
-                if (!StartedVote)
+                if (!VoteOpen)
                 {
-                    bool adminOnline = false;
+                    bool _adminOnline = false;
                     List<ClientInfo> ClientInfoList = PersistentOperations.ClientList();
                     for (int i = 0; i < ClientInfoList.Count; i++)
                     {
                         ClientInfo _cInfoAdmins = ClientInfoList[i];
                         if (_cInfo != _cInfoAdmins)
                         {
-                            if (GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins))
+                            GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
+                            if (Admin.PermissionLevel <= Admin_Level)
                             {
-                                GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
-                                if (Admin.PermissionLevel <= Admin_Level)
+                                _adminOnline = true;
+                                string _phrase748;
+                                if (!Phrases.Dict.TryGetValue(748, out _phrase748))
                                 {
-                                    adminOnline = true;
-                                    string _phrase748;
-                                    if (!Phrases.Dict.TryGetValue(748, out _phrase748))
-                                    {
-                                        _phrase748 = "{Player} has requested a restart vote.";
-                                    }
-                                    _phrase748 = _phrase748.Replace("{Player}", _cInfo.playerName);
-                                    ChatHook.ChatMessage(_cInfoAdmins, LoadConfig.Chat_Response_Color + _phrase748 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    _phrase748 = "{Player} has requested a restart vote.";
                                 }
+                                _phrase748 = _phrase748.Replace("{Player}", _cInfo.playerName);
+                                ChatHook.ChatMessage(_cInfoAdmins, LoadConfig.Chat_Response_Color + _phrase748 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
-                    if (!adminOnline)
+                    if (!_adminOnline)
                     {
-
                         if (ConnectionManager.Instance.ClientCount() >= Players_Online)
                         {
-                            StartedVote = true;
                             string _phrase740;
                             if (!Phrases.Dict.TryGetValue(740, out _phrase740))
                             {
@@ -54,6 +48,7 @@ namespace ServerTools
                             _phrase740 = _phrase740.Replace("{CommandPrivate}", ChatHook.Command_Private);
                             _phrase740 = _phrase740.Replace("{Command70}", Command70);
                             ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase740 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                            VoteOpen = true;
                         }
                         else
                         {
@@ -92,7 +87,7 @@ namespace ServerTools
                 {
                     _phrase816 = "You must wait thirty minutes after the server starts before opening a restart vote.";
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase816 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+               ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase816 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -102,14 +97,13 @@ namespace ServerTools
             {
                 if (Restart.Count >= Votes_Needed)
                 {
-                    SdtdConsole.Instance.ExecuteSync(string.Format("stopserver 1"), (ClientInfo)null);
                     string _phrase742;
                     if (!Phrases.Dict.TryGetValue(742, out _phrase742))
                     {
                         _phrase742 = "Players voted yes to a server restart. Shutdown has been initiated.";
                     }
                     ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase742 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("stopserver 1"), (ClientInfo)null);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("st-ss 2"), (ClientInfo)null);
                 }
                 else
                 {
@@ -130,7 +124,7 @@ namespace ServerTools
                 }
                 ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase746 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
-            Restart.Clear();
+            Restart.Clear();;
         }
     }
 }

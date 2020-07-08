@@ -173,13 +173,13 @@ namespace ServerTools
                 {
                     if (DateTime.Now < _dt)
                     {
-                        string _response = LoadConfig.Chat_Response_Color + "Your reserved status expires on {DateTime}.[-]";
+                        string _response = "Your reserved status expires on {DateTime}.[-]";
                         _response = _response.Replace("{DateTime}", _dt.ToString());
                         ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
-                        string _response = LoadConfig.Chat_Response_Color + "Your reserved status has expired on {DateTime}.[-]";
+                        string _response = "Your reserved status has expired on {DateTime}.[-]";
                         _response = _response.Replace("{DateTime}", _dt.ToString());
                         ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -187,7 +187,7 @@ namespace ServerTools
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have not donated. Expiration date unavailable.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You are not on the reservation list. Expiration date unavailable.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -504,7 +504,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlots.FullServer: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlots.FullServer: {0}", e.Message));
             }
             return true;
         }

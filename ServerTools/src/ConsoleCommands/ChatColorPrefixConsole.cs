@@ -40,7 +40,7 @@ namespace ServerTools
         {
             try
             {
-                if (_params.Count != 1 || _params.Count != 2 || _params.Count != 4 || _params.Count != 5 || _params.Count != 8)
+                if (_params.Count != 1 && _params.Count != 2 && _params.Count != 4 && _params.Count != 5 && _params.Count != 8)
                 {
                     SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, 2, 4, 5 or 8, found {0}", _params.Count));
                     return;

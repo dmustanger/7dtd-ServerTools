@@ -17,32 +17,35 @@ namespace ServerTools
                     _track = PersistentContainer.Instance.Track;
                 }
                 List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                if (_cInfoList != null)
+                if (_cInfoList != null && _cInfoList.Count > 0)
                 {
                     for (int i = 0; i < _cInfoList.Count; i++)
                     {
                         ClientInfo _cInfo = _cInfoList[i];
                         if (_cInfo != null && _cInfo.playerId != null)
                         {
-                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                            if (_player != null && _player.IsSpawned())
+                            if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
                             {
-                                string _pos = (int)_player.position.x + "," + (int)_player.position.y + "," + (int)_player.position.z;
-                                string _holdingItem = _player.inventory.holdingItem.Name;
-                                if (!string.IsNullOrEmpty(_player.inventory.holdingItem.Name))
+                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                if (_player != null && _player.IsSpawned())
                                 {
-                                    ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
-                                    if (_itemValue.type != ItemValue.None.type)
+                                    string _pos = (int)_player.position.x + "," + (int)_player.position.y + "," + (int)_player.position.z;
+                                    string _holdingItem = _player.inventory.holdingItem.Name;
+                                    if (!string.IsNullOrEmpty(_player.inventory.holdingItem.Name))
                                     {
-                                        _holdingItem = _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name;
+                                        ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
+                                        if (_itemValue.type != ItemValue.None.type)
+                                        {
+                                            _holdingItem = _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name;
+                                        }
+                                        string[] _newData = { DateTime.Now.ToString(), _pos, _cInfo.playerId, _player.EntityName, _holdingItem };
+                                        _track.Add(_newData);
                                     }
-                                    string[] _newData = { DateTime.Now.ToString(), _pos, _cInfo.playerId, _player.EntityName, _holdingItem };
-                                    _track.Add(_newData);
-                                }
-                                else
-                                {
-                                    string[] _newData = { DateTime.Now.ToString(), _pos, _cInfo.playerId, _player.EntityName, "nothing" };
-                                    _track.Add(_newData);
+                                    else
+                                    {
+                                        string[] _newData = { DateTime.Now.ToString(), _pos, _cInfo.playerId, _player.EntityName, "nothing" };
+                                        _track.Add(_newData);
+                                    }
                                 }
                             }
                         }

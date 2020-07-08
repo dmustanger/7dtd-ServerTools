@@ -537,7 +537,7 @@ namespace ServerTools
                 string _phrase450;
                 if (!Dict.TryGetValue(450, out _phrase450))
                 {
-                    _phrase450 = "Server Shutdown In {Minutes} Minutes.";
+                    _phrase450 = "Server Shutdown In {Minutes} Minute.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"450\" Phrase=\"{0}\" />", _phrase450));
                 string _phrase451;

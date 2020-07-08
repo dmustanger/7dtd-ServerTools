@@ -1,61 +1,45 @@
 ﻿using System.Timers;
 using ServerTools.AntiCheat;
 using ServerTools.Website;
-using System.Threading;
-using System;
 
 namespace ServerTools
 {
     class Timers
     {
-        public static bool timer1Running = false, timer2Running = false, IsRunning = false;
+        public static bool IsRunning = false;
         public static int StopServerMinutes, _eventTime, _shutdown, _shutdownBloodmoonOver;
-        private static int Core = 0, TwoSecondTick, FiveSecondTick, TenSecondTick, SixtySecondTick, _watchList, _nightAlert, 
-            _horde, _lottery, _breakTime, _invalidItems, WeatherVoteTick, _bloodmoon, _playerLogs, _autoSaveWorld, _infoTicker, _restartVote, StopServerSeconds, 
-            _kickVote, MuteVoteTick, _eventInvitation, _eventOpen, _zoneReminder, _tracking, _realWorldTime, _shutdownBloodmoon, _autoBackup;
-        private static Thread TimerThread;
+        private static int CoreCount = 0, TwoSecondTick, FiveSecondTick, TenSecondTick, SixtySecondTick, _watchList, _nightAlert, 
+            _horde, _lottery, _breakTime, _invalidItems, _weatherVote, _bloodmoon, _playerLogs, _autoSaveWorld, _infoTicker, _restartVote,
+            _restartVoteStart, StopServerSeconds, _kickVote, _muteVote, _eventInvitation, _eventOpen, _zoneReminder, _tracking, _realWorldTime, _shutdownBloodmoon, _autoBackup;
+        private static System.Timers.Timer Core = new System.Timers.Timer();
 
-        public static void Load()
+        public static void TimerStart()
         {
-            IsRunning = true;
-            Begin();
-        }
-
-        public static void Unload()
-        {
-            try
+            if (CoreCount < 1)
             {
-                IsRunning = false;
-                Core = 0;
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Timers.Unload: {0}", e.Message));
+                CoreCount++;
+                IsRunning = true;
+                Core.Interval = 1000;
+                Core.Start();
+                Core.Elapsed += new ElapsedEventHandler(Tick);
             }
         }
 
-        private static void Begin()
+        public static void TimerStop()
         {
-            if (Core == 0)
-            {
-                TimerThread = new Thread(new ThreadStart(CoreTimer));
-                TimerThread.IsBackground = true;
-                Core = 1;
-                TimerThread.Start();
-            }
+            CoreCount = 0;
+            IsRunning = false;
+            Core.Stop();
+            Core.Close();
         }
 
-        private static void CoreTimer()
+        private static void Tick(object sender, ElapsedEventArgs e)
         {
-            while (IsRunning)
-            {
-                TwoSecondTick++;
-                FiveSecondTick++;
-                TenSecondTick++;
-                SixtySecondTick++;
-                Exec();
-                Thread.Sleep(1000);
-            }
+            TwoSecondTick++;
+            FiveSecondTick++;
+            TenSecondTick++;
+            SixtySecondTick++;
+            Exec();
         }
 
         public static void SingleUseTimer(int _delay, string _playerId, string _commands)
@@ -137,7 +121,7 @@ namespace ServerTools
 
         public static void ShutdownFailsafe()
         {
-            System.Timers.Timer _shutdownFailsafe = new System.Timers.Timer(30000);
+            System.Timers.Timer _shutdownFailsafe = new System.Timers.Timer(60000);
             _shutdownFailsafe.AutoReset = false;
             _shutdownFailsafe.Start();
             _shutdownFailsafe.Elapsed += (sender, e) =>
@@ -564,10 +548,10 @@ namespace ServerTools
                 }
                 if (WeatherVote.IsEnabled && WeatherVote.VoteOpen)
                 {
-                    WeatherVoteTick++;
-                    if (WeatherVoteTick >= 60)
+                    _weatherVote++;
+                    if (_weatherVote >= 60)
                     {
-                        WeatherVoteTick = 0;
+                        _weatherVote = 0;
                         WeatherVote.VoteOpen = false;
                         WeatherVote.ProcessWeatherVote();
                     }
@@ -584,10 +568,10 @@ namespace ServerTools
                 }
                 if (MuteVote.IsEnabled && MuteVote.VoteOpen)
                 {
-                    MuteVoteTick++;
-                    if (MuteVoteTick >= 60)
+                    _muteVote++;
+                    if (_muteVote >= 60)
                     {
-                        MuteVoteTick = 0;
+                        _muteVote = 0;
                         MuteVote.VoteOpen = false;
                         MuteVote.ProcessMuteVote();
                     }
@@ -783,7 +767,7 @@ namespace ServerTools
                     if (_infoTicker >= InfoTicker.Delay * 60)
                     {
                         _infoTicker = 0;
-                        InfoTicker.StatusCheck();
+                        InfoTicker.Exec();
                     }
                 }
                 else
@@ -827,15 +811,15 @@ namespace ServerTools
                 }
                 if (RestartVote.Startup)
                 {
-                    _restartVote++;
-                    if (_restartVote >= 1800)
+                    _restartVoteStart++;
+                    if (_restartVoteStart >= 1800)
                     {
                         RestartVote.Startup = false;
                     }
                 }
                 else
                 {
-                    _restartVote = 0;
+                    _restartVoteStart = 0;
                 }
                 if (Zones.IsEnabled & Zones.Reminder.Count > 0)
                 {

@@ -24,7 +24,7 @@ namespace ServerTools
             string _phrase450;
             if (!Phrases.Dict.TryGetValue(450, out _phrase450))
             {
-                _phrase450 = "Server Shutdown In {Minutes} Minutes.";
+                _phrase450 = "Server Shutdown In {Minutes} Minute.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", Delay.ToString());
             Alert(_phrase450, Shutdown.Alert_Count);
@@ -35,7 +35,7 @@ namespace ServerTools
             string _phrase450;
             if (!Phrases.Dict.TryGetValue(450, out _phrase450))
             {
-                _phrase450 = "Server Shutdown In {Minutes} Minutes.";
+                _phrase450 = "Server Shutdown In {Minutes} Minute.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", _newCount.ToString());
             Alert(_phrase450, Shutdown.Alert_Count);
@@ -52,7 +52,7 @@ namespace ServerTools
             string _phrase450;
             if (!Phrases.Dict.TryGetValue(450, out _phrase450))
             {
-                _phrase450 = "Server Shutdown In {Minutes} Minutes.";
+                _phrase450 = "Server Shutdown In {Minutes} Minute.";
             }
             _phrase450 = _phrase450.Replace("{Minutes}", "1");
             Alert(_phrase451, 1);
@@ -67,9 +67,7 @@ namespace ServerTools
         public static void Stop()
         {
             Log.Out("[SERVERTOOLS] Running shutdown.");
-            Timers.Unload();
-            Timers.ShutdownFailsafe();
-            SdtdConsole.Instance.ExecuteSync("shutdown", (ClientInfo)null);
+            SdtdConsole.Instance.ExecuteSync("st-sd", (ClientInfo)null);
         }
 
         public static void Kick30()

@@ -11,6 +11,10 @@ namespace ServerTools
         {
             Confirm.Exec();
             PatchTools.ApplyPatches();
+            if (!Timers.IsRunning)
+            {
+                Timers.TimerStart();
+            }
             if (!LoadTriggers.IsRunning)
             {
                 LoadTriggers.Load();
@@ -23,10 +27,6 @@ namespace ServerTools
             {
                 ClanManager.Clans.Clear();
                 ClanManager.ClanMember.Clear();
-            }
-            if (!Timers.IsRunning)
-            {
-                Timers.Load();
             }
             if (!InfoTicker.IsEnabled && InfoTicker.IsRunning)
             {

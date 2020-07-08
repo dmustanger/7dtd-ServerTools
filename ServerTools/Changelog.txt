@@ -1,5 +1,15 @@
 ﻿CHANGELOG
 
+19.0.2
+Built using Alpha 19 experimental assets
+Functioning with 19 experimental. Untested with other versions
+
+Fixed High_Ping_Kicker not functioning. (Thanks Z1NC)
+Fixed Shutdown not running the proper command
+Fixed Restart_Vote completing immediately
+Fixed Restart_Vote not running the proper command
+Fixed console command st-ChatColorPrefix response of param count
+
 19.0.1
 Built using Alpha 19 experimental assets
 Functioning with 19 experimental. Untested with other versions

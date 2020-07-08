@@ -37,12 +37,12 @@ namespace ServerTools
                         Shutdown.IsEnabled = false;
                         LoadConfig.WriteXml();
                         StopServer.CountingDown = false;
-                        SdtdConsole.Instance.Output(string.Format("Auto shutdown has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("Shutdown has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Auto shutdown is already off"));
+                        SdtdConsole.Instance.Output(string.Format("Shutdown is already off"));
                         return;
                     }
                 }
@@ -52,12 +52,12 @@ namespace ServerTools
                     {
                         Shutdown.IsEnabled = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Auto shutdown has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("Shutdown has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Auto shutdown is already on"));
+                        SdtdConsole.Instance.Output(string.Format("Shutdown is already on"));
                         return;
                     }
                 }
@@ -68,7 +68,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AutoShutdownConsole.Execute: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ShutdownConsole.Execute: {0}", e.Message));
             }
         }
     }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Xml;
 
 namespace ServerTools
@@ -19,22 +18,16 @@ namespace ServerTools
 
         public static void Load()
         {
-            if (IsEnabled && !IsRunning)
-            {
-                LoadXml();
-                InitFileWatcher();
-            }
+            LoadXml();
+            InitFileWatcher();
         }
 
         public static void Unload()
         {
-            if (!IsEnabled && IsRunning)
-            {
-                Dict.Clear();
-                MsgList.Clear();
-                FileWatcher.Dispose();
-                IsRunning = false;
-            }
+            Dict.Clear();
+            MsgList.Clear();
+            FileWatcher.Dispose();
+            IsRunning = false;
         }
 
         private static void LoadXml()
@@ -68,13 +61,13 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Messages' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'Info_Ticker' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
                         if (!_line.HasAttribute("Message"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Message entry because of missing a Message attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Info_Ticker entry because of missing Message attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         string _message = _line.GetAttribute("Message");
@@ -84,7 +77,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Message entry because this message already exists: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Info_Ticker entry because this message already exists: {0}", subChild.OuterXml));
                             continue;
                         }
                     }
@@ -92,9 +85,9 @@ namespace ServerTools
             }
             if (Dict.Count == 0)
             {
-                Log.Warning("-----------------------------------------------------------------------------------");
-                Log.Warning("[SERVERTOOLS] Ignoring infoticker because no messages from your file could be added");
-                Log.Warning("-----------------------------------------------------------------------------------");
+                Log.Warning("------------------------------------------------------------------------------");
+                Log.Warning("[SERVERTOOLS] Ignoring Info_Ticker because no messages were found on your list");
+                Log.Warning("------------------------------------------------------------------------------");
             }
             else
             {
@@ -110,7 +103,7 @@ namespace ServerTools
             }
             else
             {
-                Log.Warning("[SERVERTOOLS] Ignoring infoticker because no messages from your file could be added");
+                Log.Warning("[SERVERTOOLS] Ignoring Info_Ticker because no messages were found on your list");
             }
         }
 
@@ -164,7 +157,7 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void StatusCheck()
+        public static void Exec()
         {
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
@@ -173,42 +166,48 @@ namespace ServerTools
                     MsgList.RandomizeList();
                     string _message = MsgList[0];
                     List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                    for (int i = 0; i < _cInfoList.Count; i++)
+                    if (_cInfoList != null && _cInfoList.Count > 0)
                     {
-                        ClientInfo _cInfo = _cInfoList[i];
-                        if (_cInfo != null)
+                        for (int i = 0; i < _cInfoList.Count; i++)
                         {
-                            if (!ExemptionList.Contains(_cInfo.playerId))
+                            ClientInfo _cInfo = _cInfoList[i];
+                            if (_cInfo != null)
                             {
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                if (!ExemptionList.Contains(_cInfo.playerId))
+                                {
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
                             }
                         }
-                    }
-                    MsgList.RemoveAt(0);
-                    if (MsgList.Count == 0)
-                    {
-                        BuildList();
+                        MsgList.RemoveAt(0);
+                        if (MsgList.Count == 0)
+                        {
+                            BuildList();
+                        }
                     }
                 }
                 else
                 {
                     string _message = MsgList[0];
                     List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-                    for (int i = 0; i < _cInfoList.Count; i++)
+                    if (_cInfoList != null && _cInfoList.Count > 0)
                     {
-                        ClientInfo _cInfo = _cInfoList[i];
-                        if (_cInfo != null)
+                        for (int i = 0; i < _cInfoList.Count; i++)
                         {
-                            if (!ExemptionList.Contains(_cInfo.playerId))
+                            ClientInfo _cInfo = _cInfoList[i];
+                            if (_cInfo != null)
                             {
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                if (!ExemptionList.Contains(_cInfo.playerId))
+                                {
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
                             }
                         }
-                    }
-                    MsgList.RemoveAt(0);
-                    if (MsgList.Count == 0)
-                    {
-                        BuildList();
+                        MsgList.RemoveAt(0);
+                        if (MsgList.Count == 0)
+                        {
+                            BuildList();
+                        }
                     }
                 }
             }

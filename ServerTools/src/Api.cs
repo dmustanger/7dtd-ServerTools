@@ -44,6 +44,8 @@ namespace ServerTools
         private static void GameShutdown()
         {
             StateManager.Shutdown();
+            Timers.TimerStop();
+            Timers.ShutdownFailsafe();
             StopServer.ShuttingDown = true;
         }
 
