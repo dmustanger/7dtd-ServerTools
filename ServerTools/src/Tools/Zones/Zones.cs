@@ -406,40 +406,6 @@ namespace ServerTools
                     }
                 }
             }
-            if (Lobby.IsEnabled && Lobby.LobbyPlayers.Contains(_cInfo.entityId) && !Lobby.InsideLobby(_player.position.x, _player.position.z))
-            {
-                Lobby.LobbyPlayers.Remove(_cInfo.entityId);
-                if (Lobby.Return)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = "";
-                    PersistentContainer.Instance.Save();
-                    string _phrase556;
-                    if (!Phrases.Dict.TryGetValue(556, out _phrase556))
-                    {
-                        _phrase556 = "You have left the lobby space. {PrivateCommand}{Command53} command is no longer available.";
-                        _phrase556 = _phrase556.Replace("{PrivateCommand}", ChatHook.Command_Private);
-                        _phrase556 = _phrase556.Replace("{Command53}", ChatHook.Command_Private);
-                    }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase556 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-            }
-            if (Market.IsEnabled && Market.MarketPlayers.Contains(_cInfo.entityId) && !Market.InsideMarket(_player.position.x, _player.position.z))
-            {
-                Market.MarketPlayers.Remove(_cInfo.entityId);
-                if (Market.Return)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = "";
-                    PersistentContainer.Instance.Save();
-                    string _phrase564;
-                    if (!Phrases.Dict.TryGetValue(564, out _phrase564))
-                    {
-                        _phrase564 = "You have left the market space. {PrivateCommand}{Command51} command is no longer available.";
-                        _phrase564 = _phrase564.Replace("{PrivateCommand}", ChatHook.Command_Private);
-                        _phrase564 = _phrase564.Replace("{Command51}", ChatHook.Command_Private);
-                    }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase564 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-            }
         }
 
         public static void ReturnToPosition(ClientInfo _cInfo)

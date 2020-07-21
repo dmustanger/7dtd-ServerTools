@@ -9,8 +9,9 @@ namespace ServerTools
 
         public override string GetDescription()
         {
-            return "[ServerTools] - Gives a item directly to a player's inventory. Drops to the ground if inventory and bag is full.";
+            return "[ServerTools] - Gives a item directly to a player's inventory. Drops to the ground if inventory is full.";
         }
+
         public override string GetHelp()
         {
             return "Usage:\n" +
@@ -20,10 +21,12 @@ namespace ServerTools
                 "2. Gives all players the item(s) to their inventory unless full. Drops to the ground when full.\n" +
                 "*Note Item(s) with no quality require using 1*\n";
         }
+
         public override string[] GetCommands()
         {
             return new string[] { "st-GiveItem", "gi", "st-gi" };
         }
+
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {
             try

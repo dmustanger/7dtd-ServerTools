@@ -12,7 +12,6 @@ namespace ServerTools.AntiCheat
         public static string filepath = string.Format("{0}/Logs/DamageLogs/{1}", API.ConfigPath, file);
         private static string _detectionFile = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         public static string _detectionFilepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _detectionFile);
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static bool ProcessPlayerDamage(EntityAlive __instance, DamageResponse _dmResponse)
         {
@@ -42,8 +41,7 @@ namespace ServerTools.AntiCheat
                                             sw.Flush();
                                             sw.Close();
                                         }
-                                        GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
-                                        if (_dmResponse.Strength >= Entity_Damage_Limit && Admin.PermissionLevel > Admin_Level)
+                                        if (_dmResponse.Strength >= Entity_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Admin_Level)
                                         {
                                             string _message = "[FF0000]{PlayerName} has been banned for using damage manipulation.";
                                             _message = _message.Replace("{PlayerName}", _cInfo.playerName);
@@ -60,18 +58,19 @@ namespace ServerTools.AntiCheat
                                         }
                                     }
                                 }
-                            }
-                            if (Zones.IsEnabled)
-                            {
-                                if (Zones.ZonePvE.Contains(__instance.entityId) || Zones.ZonePvE.Contains(_cInfo.entityId))
+                                if (Zones.IsEnabled)
+                                {
+                                    if (Zones.ZonePvE.Contains(__instance.entityId) || Zones.ZonePvE.Contains(_cInfo.entityId))
+                                    {
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Do not attack players inside a pve zone or while standing in one!" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        return false;
+                                    }
+                                }
+                                if (Lobby.IsEnabled && Lobby.PvE && Lobby.LobbyPlayers.Contains(__instance.entityId) || Market.IsEnabled && Market.PvE && Market.MarketPlayers.Contains(__instance.entityId))
                                 {
                                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Do not attack players inside a pve zone or while standing in one!" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     return false;
                                 }
-                            }
-                            if (Lobby.IsEnabled && Lobby.PvE && Lobby.LobbyPlayers.Contains(__instance.entityId) || Market.IsEnabled && Market.PvE && Market.MarketPlayers.Contains(__instance.entityId))
-                            {
-                                return false;
                             }
                         }
                     }
@@ -89,7 +88,7 @@ namespace ServerTools.AntiCheat
             try
             {
                 World _world = __instance.World;
-                if (__instance != null && _world != null && _blocksToChange != null && !string.IsNullOrEmpty(_persistentPlayerId) && _blocksToChange != null)
+                if (__instance != null && _blocksToChange != null && !string.IsNullOrEmpty(_persistentPlayerId) && _blocksToChange != null)
                 {
                     for (int i = 0; i < _blocksToChange.Count; i++)
                     {
@@ -210,8 +209,7 @@ namespace ServerTools.AntiCheat
                 EntityPlayer _player = PersistentOperations.GetEntityPlayer(_persistentPlayerId);
                 if (_player != null)
                 {
-                    GameManager.Instance.adminTools.GetAdmins().TryGetValue(_persistentPlayerId, out AdminToolsClientInfo Admin);
-                    if (Admin.PermissionLevel > Admin_Level)
+                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(_persistentPlayerId) > Admin_Level)
                     {
                         if (Damage_Detector)
                         {

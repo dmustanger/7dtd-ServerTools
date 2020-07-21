@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
@@ -12,13 +11,8 @@ namespace ServerTools
         public static bool Invalid_Name = false;
         private const string file = "BadWords.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static SortedDictionary<string, string> dict = new SortedDictionary<string, string>();
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-
-        public static List<string> List
-        {
-            get { return new List<string>(dict.Keys); }
-        }
+        public static List<string> Words = new List<string>();
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
@@ -31,8 +25,8 @@ namespace ServerTools
 
         public static void Unload()
         {
-            dict.Clear();
-            fileWatcher.Dispose();
+            Words.Clear();
+            FileWatcher.Dispose();
             IsRunning = false;
         }
 
@@ -57,7 +51,7 @@ namespace ServerTools
             {
                 if (childNode.Name == "BadWords")
                 {
-                    dict.Clear();
+                    Words.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -66,20 +60,20 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'BadWords' section: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'BadWords.xml' section: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
                         if (!_line.HasAttribute("Word"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring BadWord entry because of missing a Word attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bad_Word_Filter entry because of missing a Word attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         string _word = _line.GetAttribute("Word");
                         _word = _word.ToLower();
-                        if (!dict.ContainsKey(_word))
+                        if (!Words.Contains(_word))
                         {
-                            dict.Add(_word, null);
+                            Words.Add(_word);
                         }
                     }
                 }
@@ -88,17 +82,17 @@ namespace ServerTools
 
         private static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
+            FileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<BadWordFilter>");
                 sw.WriteLine("    <BadWords>");
-                if (dict.Count > 0)
+                if (Words.Count > 0)
                 {
-                    foreach (string _word in List)
+                    for (int i = 0; i < Words.Count; i++)
                     {
-                        sw.WriteLine(string.Format("        <Bad Word=\"{0}\" />", _word));
+                        sw.WriteLine(string.Format("        <Bad Word=\"{0}\" />", Words[i]));
                     }
                 }
                 else
@@ -117,16 +111,15 @@ namespace ServerTools
                 sw.Flush();
                 sw.Close();
             }
-
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 

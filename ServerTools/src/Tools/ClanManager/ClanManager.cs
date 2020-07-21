@@ -9,6 +9,7 @@ namespace ServerTools
         public static bool IsEnabled = false;
         public static string Command33 = "clan add", Command34 = "clan del", Command35 = "clan invite", Command36 = "clan accept", Command37 = "clan decline", Command38 = "clan remove", Command39 = "clan promote",
             Command40 = "clan demote", Command41 = "clan leave", Command42 = "clan commands", Command43 = "clan chat", Command44 = "clan rename", Command45 = "clan request", Command124 = "cc", Command125 = "clan list";
+        public static int Max_Name_Length = 6;
         public static string Private_Chat_Color = "[00FF00]";
         public static List<string> ClanMember = new List<string>();
         public static Dictionary<string, string> Clans = new Dictionary<string, string>();
@@ -81,9 +82,11 @@ namespace ServerTools
         {
             try
             {
-                if (_clanName.Length < 2 || _clanName.Length > 6)
+                if (_clanName.Length < 2 || _clanName.Length > Max_Name_Length)
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "The clan name is too short or too long. It must be 2 - 6 characters." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    string _message = "The clan name is too short or too long. It must be 2 to {MaxLength} characters.";
+                    _message = _message.Replace("{MaxLength}", Max_Name_Length.ToString());
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
@@ -131,8 +134,9 @@ namespace ServerTools
                                     string _phrase129;
                                     if (!Phrases.Dict.TryGetValue(129, out _phrase129))
                                     {
-                                        _phrase129 = "The clan name must be 2 - 6 characters.";
+                                        _phrase129 = "The clan name must be 2 to {MaxLength} characters.";
                                     }
+                                    _phrase129 = _phrase129.Replace("{MaxLength}", Max_Name_Length.ToString());
                                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase129 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 else

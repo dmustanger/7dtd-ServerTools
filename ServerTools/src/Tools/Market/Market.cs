@@ -238,11 +238,41 @@ namespace ServerTools
                         }
                         ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase555 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
+                    else
+                    {
+                        string _phrase564;
+                        if (!Phrases.Dict.TryGetValue(564, out _phrase564))
+                        {
+                            _phrase564 = "You are outside the market and can no longer return to your position.";
+                        }
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase564 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
                 }
             }
             else
             {
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have no saved return point.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+        }
+
+        public static void MarketCheck(ClientInfo _cInfo, EntityAlive _player)
+        {
+            if (Market.IsEnabled && Market.MarketPlayers.Contains(_cInfo.entityId) && !Market.InsideMarket(_player.position.x, _player.position.z))
+            {
+                Market.MarketPlayers.Remove(_cInfo.entityId);
+                if (Market.Return)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = "";
+                    PersistentContainer.Instance.Save();
+                    string _phrase564;
+                    if (!Phrases.Dict.TryGetValue(564, out _phrase564))
+                    {
+                        _phrase564 = "You have left the market space. {PrivateCommand}{Command51} command is no longer available.";
+                        _phrase564 = _phrase564.Replace("{PrivateCommand}", ChatHook.Command_Private);
+                        _phrase564 = _phrase564.Replace("{Command51}", Market.Command51);
+                    }
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase564 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
             }
         }
 

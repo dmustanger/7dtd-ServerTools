@@ -1,5 +1,23 @@
 ﻿CHANGELOG
 
+19.0.4
+Built using Alpha 19 experimental assets
+Functioning with 19 experimental. Untested with other versions
+
+Added option Player_Distance to Battle_Loggers
+Added option Delay_Between_Uses to Scout_Player
+Added console commands to edit BadWords.xml for Bad_Word_Filter
+Fixed multiple admin permission levels not working
+Fixed response when leaving the lobby and market
+Fixed Bloodmoon_Warrior reward payout 
+Fixed console command st-ChatColorPrefix response of param count
+Fixed Chat_Flood_Protection not functioning as intended
+Fixed chat color and prefix applications. Multiple colors supported
+Recommend https://www.w3schools.com/colors/colors_groups.asp
+Changed Shop response on purchase to utilize secondary name
+Updated console command Donor to match changes in the Chat_Color_Prefix
+Disabled Battle_Loggers tool. Under construction
+
 19.0.3
 Built using Alpha 19 experimental assets
 Functioning with 19 experimental. Untested with other versions

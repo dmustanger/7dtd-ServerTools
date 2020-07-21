@@ -166,8 +166,7 @@ namespace ServerTools.AntiCheat
             {
                 if (_cInfo != null)
                 {
-                    GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
-                    if (Admin.PermissionLevel > Admin_Level)
+                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Admin_Level)
                     {
                         for (int i = 0; i < _playerDataFile.inventory.Length; i++)
                         {
@@ -307,7 +306,7 @@ namespace ServerTools.AntiCheat
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in InventoryCheck.CheckInv: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in InventoryCheck.CheckInv: {0}", e.Message));
             }
         }
 
@@ -424,8 +423,7 @@ namespace ServerTools.AntiCheat
                             if (tile.GetTileEntityType().ToString().Equals("SecureLoot"))
                             {
                                 TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
-                                GameManager.Instance.adminTools.GetAdmins().TryGetValue(SecureLoot.GetOwner(), out AdminToolsClientInfo Admin);
-                                if (Admin.PermissionLevel > Admin_Level)
+                                if (GameManager.Instance.adminTools.GetUserPermissionLevel(SecureLoot.GetOwner()) > Admin_Level)
                                 {
                                     ItemStack[] items = SecureLoot.items;
                                     int slotNumber = 0;

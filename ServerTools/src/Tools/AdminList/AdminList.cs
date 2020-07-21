@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace ServerTools
 {
@@ -19,13 +18,11 @@ namespace ServerTools
             for (int i = 0; i < ClientInfoList.Count; i++)
             {
                 ClientInfo _cInfoAdmins = ClientInfoList[i];
-                GameManager.Instance.adminTools.IsAdmin(_cInfoAdmins);
-                GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
-                if (Admin.PermissionLevel <= Admin_Level)
+                if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= Admin_Level)
                 {
                     Admins.Add(_cInfoAdmins.playerName);
                 }
-                if (Admin.PermissionLevel > Admin_Level & Admin.PermissionLevel <= Mod_Level)
+                if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Admin_Level && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= Mod_Level)
                 {
                     Mods.Add(_cInfoAdmins.playerName);
                 }

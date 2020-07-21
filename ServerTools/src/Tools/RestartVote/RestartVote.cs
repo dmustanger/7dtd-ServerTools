@@ -22,8 +22,7 @@ namespace ServerTools
                         ClientInfo _cInfoAdmins = ClientInfoList[i];
                         if (_cInfo != _cInfoAdmins)
                         {
-                            GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
-                            if (Admin.PermissionLevel <= Admin_Level)
+                            if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= Admin_Level)
                             {
                                 _adminOnline = true;
                                 string _phrase748;

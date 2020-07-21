@@ -10,9 +10,9 @@ namespace ServerTools
         public static bool IsEnabled = false, IsRunning = false;
         private const string file = "ChatColorPrefix.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        public static Dictionary<string, string[]> dict = new Dictionary<string, string[]>();
-        public static Dictionary<string, DateTime> dict1 = new Dictionary<string, DateTime>();
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        public static Dictionary<string, string[]> Dict = new Dictionary<string, string[]>();
+        public static Dictionary<string, DateTime> Dict1 = new Dictionary<string, DateTime>();
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
@@ -27,9 +27,9 @@ namespace ServerTools
         {
             if (!IsEnabled && IsRunning)
             {
-                dict.Clear();
-                dict1.Clear();
-                fileWatcher.Dispose();
+                Dict.Clear();
+                Dict1.Clear();
+                FileWatcher.Dispose();
                 IsRunning = false;
             }
         }
@@ -55,8 +55,8 @@ namespace ServerTools
             {
                 if (childNode.Name == "ColorPrefix")
                 {
-                    dict.Clear();
-                    dict1.Clear();
+                    Dict.Clear();
+                    Dict1.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -65,48 +65,48 @@ namespace ServerTools
                         }
                         if (subChild.NodeType != XmlNodeType.Element)
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'ColorPrefix' from ChatColorPrefix.xml: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Unexpected XML node found in 'ChatColorPrefix' from ChatColorPrefix.xml: {0}", subChild.OuterXml));
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
                         if (!_line.HasAttribute("SteamId"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of missing SteamId attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColorPrefix entry because of missing SteamId attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("Name"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of missing Name attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColorPrefix entry because of missing Name attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("Group"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of missing Group attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColorPrefix entry because of missing Group attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("Prefix"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of missing Prefix attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColorPrefix entry because of missing Prefix attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("NameColor"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of missing NameColor attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColorPrefix entry because of missing NameColor attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("PrefixColor"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of missing PrefixColor attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColorPrefix entry because of missing PrefixColor attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("Expires"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of missing Expires attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColorPrefix entry because of missing Expires attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!DateTime.TryParse(_line.GetAttribute("Expires"), out DateTime _dt))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of invalid (date) value for 'Expires' attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColorPrefix entry because of invalid (date) value for 'Expires' attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
                             continue;
                         }
                         string _steamId = _line.GetAttribute("SteamId");
@@ -125,7 +125,7 @@ namespace ServerTools
                         }
                         if ((!_nameColor.Contains("[") || !_nameColor.Contains("]")) && _nameColor != "")
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of missing [] for Name Color attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColorPrefix entry because of missing [] for Name Color attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (_prefixColor == "**")
@@ -134,14 +134,14 @@ namespace ServerTools
                         }
                         if ((!_prefixColor.Contains("[") || !_prefixColor.Contains("]")) && _prefixColor != "")
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ColorPrefix entry because of missing [] for Prefix Color attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ChatColorPrefix entry because of missing [] for Prefix Color attribute from ChatColorPrefix.xml: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!dict.ContainsKey(_steamId))
+                        if (!Dict.ContainsKey(_steamId))
                         {
                             string[] _c = new string[] { _name, _group, _prefix, _nameColor, _prefixColor };
-                            dict.Add(_steamId, _c);
-                            dict1.Add(_steamId, _dt);
+                            Dict.Add(_steamId, _c);
+                            Dict1.Add(_steamId, _dt);
                         }
                     }
                 }
@@ -150,18 +150,18 @@ namespace ServerTools
 
         public static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
+            FileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<ColorPrefixes>");
                 sw.WriteLine("    <ColorPrefix>");
-                if (dict.Count > 0)
+                if (Dict.Count > 0)
                 {
-                    foreach (KeyValuePair<string, string[]> kvp in dict)
+                    foreach (KeyValuePair<string, string[]> kvp in Dict)
                     {
                         DateTime _dt;
-                        dict1.TryGetValue(kvp.Key, out _dt);
+                        Dict1.TryGetValue(kvp.Key, out _dt);
                         sw.WriteLine(string.Format("        <Player SteamId=\"{0}\" Name=\"{1}\" Group=\"{2}\" Prefix=\"{3}\" NameColor=\"{4}\" PrefixColor=\"{5}\" Expires=\"{6}\" />", kvp.Key, kvp.Value[0], kvp.Value[1], kvp.Value[2], kvp.Value[3], kvp.Value[4], _dt));
                     }
                 }
@@ -183,15 +183,15 @@ namespace ServerTools
                 sw.Flush();
                 sw.Close();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 

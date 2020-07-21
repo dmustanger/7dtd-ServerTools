@@ -187,7 +187,7 @@ namespace ServerTools
             string _phrase1;
             if (!Phrases.Dict.TryGetValue(1, out _phrase1))
             {
-                _phrase1 = "Auto Kicking {PlayerName} for high ping. ({PlayerPing}) Maxping is {MaxPing}.";
+                _phrase1 = "Auto Kicking {PlayerName} for high ping of {PlayerPing}. Maxping is {MaxPing}.";
             }
             _phrase1 = _phrase1.Replace("{PlayerName}", _cInfo.playerName);
             _phrase1 = _phrase1.Replace("{PlayerPing}", _cInfo.ping.ToString());
@@ -196,7 +196,7 @@ namespace ServerTools
             string _phrase2;
             if (!Phrases.Dict.TryGetValue(2, out _phrase2))
             {
-                _phrase2 = "Auto Kicked: Ping too high. ({PlayerPing}) Max ping is {MaxPing}.";
+                _phrase2 = "Auto Kicked: Ping is too high at {PlayerPing}. Max ping is {MaxPing}.";
             }
             _phrase2 = _phrase2.Replace("{PlayerPing}", _cInfo.ping.ToString());
             _phrase2 = _phrase2.Replace("{MaxPing}", Max_Ping.ToString());

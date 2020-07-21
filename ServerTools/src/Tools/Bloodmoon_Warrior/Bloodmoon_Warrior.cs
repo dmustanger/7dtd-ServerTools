@@ -107,23 +107,22 @@ namespace ServerTools
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior entry because of missing maxQuality attribute: {0}", subChild.OuterXml));
                         }
-                        int _minCount = 1, _maxCount = 1, _minQuality = 1, _maxQuality = 1;
-                        if (!int.TryParse(_line.GetAttribute("MinCount"), out _minCount))
+                        if (!int.TryParse(_line.GetAttribute("MinCount"), out int _minCount))
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior entry because of invalid (non-numeric) value for 'minCount' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("MaxCount"), out _maxCount))
+                        if (!int.TryParse(_line.GetAttribute("MaxCount"), out int _maxCount))
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior entry because of invalid (non-numeric) value for 'maxCount' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("MinQuality"), out _minQuality))
+                        if (!int.TryParse(_line.GetAttribute("MinQuality"), out int _minQuality))
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior entry because of invalid (non-numeric) value for 'minQuality' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("MaxQuality"), out _maxQuality))
+                        if (!int.TryParse(_line.GetAttribute("MaxQuality"), out int _maxQuality))
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Ignoring BloodmoonWarrior entry because of invalid (non-numeric) value for 'maxQuality' attribute: {0}", subChild.OuterXml));
                             continue;
@@ -238,14 +237,17 @@ namespace ServerTools
                                 ClientInfo _cInfo = _cInfoList[i];
                                 if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId > 0)
                                 {
-                                    EntityAlive _player = (EntityAlive)PersistentOperations.GetEntity(_cInfo.entityId);
-                                    if (_player != null && _player.IsSpawned() && _player.IsAlive() && _player.Died > 0 && _player.Progression.GetLevel() >= 10 && random.Next(0, 11) < 6)
+                                    if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
                                     {
-                                        WarriorList.Add(_cInfo.entityId);
-                                        KilledZombies.Add(_cInfo.entityId, 0);
-                                        string _response = "Hades has called upon you. Survive this night and kill {ZombieCount} zombies to be rewarded by the king of the underworld.";
-                                        _response = _response.Replace("{ZombieCount}", Zombie_Kills.ToString());
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        EntityAlive _player = (EntityAlive)PersistentOperations.GetEntity(_cInfo.entityId);
+                                        if (_player != null && _player.IsSpawned() && _player.IsAlive() && _player.Died > 0 && _player.Progression.GetLevel() >= 10 && random.Next(1, 11) < 6)
+                                        {
+                                            WarriorList.Add(_cInfo.entityId);
+                                            KilledZombies.Add(_cInfo.entityId, 0);
+                                            string _response = "Hades has called upon you. Survive this night and kill {ZombieCount} zombies to be rewarded by the king of the underworld.";
+                                            _response = _response.Replace("{ZombieCount}", Zombie_Kills.ToString());
+                                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        }
                                     }
                                 }
                             }
@@ -272,33 +274,31 @@ namespace ServerTools
                 for (int i = 0; i < _warriors.Count; i++)
                 {
                     int _warrior = _warriors[i];
-                    EntityAlive _player = GameManager.Instance.World.Players.dict[_warrior];
-                    if (_player != null && _player.IsAlive())
+                    if (GameManager.Instance.World.Players.dict.ContainsKey(_warrior))
                     {
-                        int _killedZ;
-                        KilledZombies.TryGetValue(_warrior, out _killedZ);
-                        if (_killedZ >= Zombie_Kills)
+                        EntityAlive _player = (EntityAlive)PersistentOperations.GetEntity(_warrior);
+                        if (_player != null && _player.IsAlive())
                         {
-                            ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_warrior);
-                            if (_cInfo != null)
+                            int _killedZ;
+                            KilledZombies.TryGetValue(_warrior, out _killedZ);
+                            if (_killedZ >= Zombie_Kills)
                             {
-                                int _deathCount = _player.Died - 1;
-                                _player.Died = _deathCount;
-                                _player.bPlayerStatsChanged = true;
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(_player));
-                                WarriorList.Remove(_warrior);
-                                KilledZombies.Remove(_warrior);
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have survived and been rewarded by hades himself. Your death count was reduced by one" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                RandomItem(_cInfo);
+                                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(_warrior);
+                                if (_cInfo != null)
+                                {
+                                    int _deathCount = _player.Died - 1;
+                                    _player.Died = _deathCount;
+                                    _player.bPlayerStatsChanged = true;
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(_player));
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have survived and been rewarded by hades himself. Your death count was reduced by one" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    RandomItem(_cInfo);
+                                }
                             }
                         }
                     }
-                    if (WarriorList.Contains(_warrior))
-                    {
-                        WarriorList.Remove(_warrior);
-                        KilledZombies.Remove(_warrior);
-                    }
                 }
+                WarriorList.Clear();
+                KilledZombies.Clear();
             }
             catch (Exception e)
             {
@@ -341,7 +341,7 @@ namespace ServerTools
                     });
                     world.SpawnEntityInWorld(entityItem);
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
                     string _message = "Received {ItemCount} {ItemName} from Hades.";
                     _message = _message.Replace("{ItemCount}", _count.ToString());
                     string _name;

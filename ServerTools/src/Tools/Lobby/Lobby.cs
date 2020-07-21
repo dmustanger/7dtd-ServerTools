@@ -253,7 +253,7 @@ namespace ServerTools
                         string _phrase556;
                         if (!Phrases.Dict.TryGetValue(556, out _phrase556))
                         {
-                            _phrase556 = "You are outside the lobby. Get inside it and try again.";
+                            _phrase556 = "You are outside the lobby and can no longer return to your position.";
                         }
                         ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase556 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -262,6 +262,27 @@ namespace ServerTools
             else
             {
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + "You have no saved return point[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+        }
+
+        public static void LobbyCheck(ClientInfo _cInfo, EntityAlive _player)
+        {
+            if (Lobby.IsEnabled && Lobby.LobbyPlayers.Contains(_cInfo.entityId) && !Lobby.InsideLobby(_player.position.x, _player.position.z))
+            {
+                Lobby.LobbyPlayers.Remove(_cInfo.entityId);
+                if (Lobby.Return)
+                {
+                    PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = "";
+                    PersistentContainer.Instance.Save();
+                    string _phrase556;
+                    if (!Phrases.Dict.TryGetValue(556, out _phrase556))
+                    {
+                        _phrase556 = "You have left the lobby space. {PrivateCommand}{Command53} command is no longer available.";
+                        _phrase556 = _phrase556.Replace("{PrivateCommand}", ChatHook.Command_Private);
+                        _phrase556 = _phrase556.Replace("{Command53}", Lobby.Command53);
+                    }
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase556 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                }
             }
         }
 

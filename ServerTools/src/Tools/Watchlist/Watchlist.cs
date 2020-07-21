@@ -138,8 +138,7 @@ namespace ServerTools
                 {
                     foreach (var _cInfo1 in _cInfoList)
                     {
-                        GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
-                        if (Admin.PermissionLevel <= Admin_Level)
+                        if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= Admin_Level)
                         {
                             string _phrase350;
                             if (!Phrases.Dict.TryGetValue(350, out _phrase350))

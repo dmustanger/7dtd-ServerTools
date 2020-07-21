@@ -124,6 +124,29 @@ namespace ServerTools
                         harmony.Patch(original, new HarmonyMethod(prefix), null, null);
                     }
                 }
+                //original = typeof(World).GetMethod("IsWithinTraderArea");
+                //if (original == null)
+                //{
+                //    Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.IsWithinTraderArea method was not found"));
+                //}
+                //else
+                //{
+                //    var info = harmony.GetPatchInfo(original);
+                //    if (info != null)
+                //    {
+                //        Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.IsWithinTraderArea method is already modified by another mod"));
+                //    }
+                //    else
+                //    {
+                //        var prefix = typeof(Injections).GetMethod("IsWithinTraderArea_Prefix");
+                //        if (prefix == null)
+                //        {
+                //            Log.Out(string.Format("[SERVERTOOLS] Injection failed: IsWithinTraderArea.prefix"));
+                //            return;
+                //        }
+                //        harmony.Patch(original, new HarmonyMethod(prefix), null, null);
+                //    }
+                //}
             }
             catch (Exception e)
             {

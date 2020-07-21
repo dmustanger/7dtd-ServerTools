@@ -397,10 +397,13 @@ namespace ServerTools
                         _phrase7 = "Received {ItemCount} {ItemName} from gimme.";
                     }
                     _phrase7 = _phrase7.Replace("{ItemCount}", _count.ToString());
-                    string _name;
-                    if (Dict1.TryGetValue(_randomItem, out _name))
+                    if (Dict1.TryGetValue(_randomItem, out string _name) && _name != "")
                     {
                         _phrase7 = _phrase7.Replace("{ItemName}", _name);
+                    }
+                    else
+                    {
+                        _phrase7 = _phrase7.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
                     }
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase7 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     if (Wallet.IsEnabled && Command_Cost >= 1)

@@ -31,18 +31,26 @@ namespace ServerTools
                                 {
                                     if (!_player.IsDead())
                                     {
-                                        if (Zones.IsEnabled && _player.IsSpawned() && _player.IsAlive())
+                                        if (_player.IsSpawned() && _player.IsAlive())
                                         {
-                                            Zones.ZoneCheck(_cInfo, _player);
+                                            if (Zones.IsEnabled)
+                                            {
+                                                Zones.ZoneCheck(_cInfo, _player);
+                                            }
+                                            if (Lobby.IsEnabled)
+                                            {
+                                                Lobby.LobbyCheck(_cInfo, _player);
+                                            }
+                                            if (Market.IsEnabled)
+                                            {
+                                                Market.MarketCheck(_cInfo, _player);
+                                            }
                                         }
                                     }
-                                    else
+                                    else if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.WarriorList.Contains(_cInfo.entityId))
                                     {
-                                        if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.WarriorList.Contains(_cInfo.entityId))
-                                        {
-                                            BloodmoonWarrior.WarriorList.Remove(_cInfo.entityId);
-                                            BloodmoonWarrior.KilledZombies.Remove(_cInfo.entityId);
-                                        }
+                                        BloodmoonWarrior.WarriorList.Remove(_cInfo.entityId);
+                                        BloodmoonWarrior.KilledZombies.Remove(_cInfo.entityId);
                                     }
                                 }
                             }

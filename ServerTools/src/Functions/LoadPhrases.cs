@@ -110,13 +110,13 @@ namespace ServerTools
                 string _phrase1;
                 if (!Dict.TryGetValue(1, out _phrase1))
                 {
-                    _phrase1 = "Auto Kicking {PlayerName} for high ping. ({PlayerPing}) Maxping is {MaxPing}.";
+                    _phrase1 = "Auto Kicking {PlayerName} for high ping of {PlayerPing}. Maxping is {MaxPing}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"1\" Phrase=\"{0}\" />", _phrase1));
                 string _phrase2;
                 if (!Dict.TryGetValue(2, out _phrase2))
                 {
-                    _phrase2 = "Auto Kicked: Ping too high. ({PlayerPing}) Max ping is {MaxPing}.";
+                    _phrase2 = "Auto Kicked: Ping is too high at {PlayerPing}. Max ping is {MaxPing}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"2\" Phrase=\"{0}\" />", _phrase2));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -759,7 +759,7 @@ namespace ServerTools
                 string _phrase556;
                 if (!Dict.TryGetValue(556, out _phrase556))
                 {
-                    _phrase556 = "You have left the lobby space. {PrivateCommand}{Command53} command is no longer available.";
+                    _phrase556 = "You are outside the lobby and can no longer return to your position.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"556\" Phrase=\"{0}\" />", _phrase556));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -792,7 +792,7 @@ namespace ServerTools
                 string _phrase564;
                 if (!Dict.TryGetValue(564, out _phrase564))
                 {
-                    _phrase564 = "You have left the market space. {PrivateCommand}{Command51} command is no longer available.";
+                    _phrase564 = "You are outside the market and can no longer return to your position.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"564\" Phrase=\"{0}\" />", _phrase564));
                 string _phrase565;
@@ -1781,7 +1781,7 @@ namespace ServerTools
                 string _phrase970;
                 if (!Dict.TryGetValue(970, out _phrase970))
                 {
-                    _phrase970 = "You have sent too many messages in too short a time. Your chat function is locked temporarily.";
+                    _phrase970 = "You have sent too many messages in one minute. Your chat function is locked temporarily.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"970\" Phrase=\"{0}\" />", _phrase970));
                 string _phrase971;

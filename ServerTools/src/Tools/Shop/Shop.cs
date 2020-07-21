@@ -468,7 +468,7 @@ namespace ServerTools
                         if (_currentCoins >= _newAmount)
                         {
                             int _newCount = _integerValues[0] * _count;
-                            ShopPurchase(_cInfo, _stringValues[0], _newCount, _integerValues[1], _newAmount, _currentCoins);
+                            ShopPurchase(_cInfo, _stringValues[0], _stringValues[2], _newCount, _integerValues[1], _newAmount, _currentCoins);
                         }
                         else
                         {
@@ -490,18 +490,18 @@ namespace ServerTools
             }
         }
 
-        public static void ShopPurchase(ClientInfo _cInfo, string _itemName, int _count, int _quality, int _price, int currentCoins)
+        public static void ShopPurchase(ClientInfo _cInfo, string _itemName, string _secondaryName, int _count, int _quality, int _price, int currentCoins)
         {
             World world = GameManager.Instance.World;
-            ItemValue itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, false, null, 1);
-            int _maxAllowed = itemValue.ItemClass.Stacknumber.Value;
+            ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, false, null, 1);
+            int _maxAllowed = _itemValue.ItemClass.Stacknumber.Value;
             if (_count <= _maxAllowed)
             {
                 var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
                 {
                     entityClass = EntityClass.FromString("item"),
                     id = EntityFactory.nextEntityID++,
-                    itemStack = new ItemStack(itemValue, _count),
+                    itemStack = new ItemStack(_itemValue, _count),
                     pos = world.Players.dict[_cInfo.entityId].position,
                     rot = new Vector3(20f, 0f, 20f),
                     lifetime = 60f,
@@ -511,10 +511,17 @@ namespace ServerTools
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _price);
-                Log.Out(string.Format("Sold {0} to {1}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name, _cInfo.playerName));
+                Log.Out(string.Format("Sold {0} to {1}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
                 string _message = "{Count} {Item} was purchased through the shop. If your bag is full, check the ground.";
                 _message = _message.Replace("{Count}", _count.ToString());
-                _message = _message.Replace("{Item}", itemValue.ItemClass.GetLocalizedItemName() ?? itemValue.ItemClass.Name);
+                if (_secondaryName != "")
+                {
+                    _message = _message.Replace("{Item}", _secondaryName);
+                }
+                else
+                {
+                    _message = _message.Replace("{Item}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                }
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else

@@ -61,8 +61,7 @@ public static class Injections
                 ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(_playerId);
                 if (_cInfo != null)
                 {
-                    GameManager.Instance.adminTools.GetAdmins().TryGetValue(_cInfo.playerId, out AdminToolsClientInfo Admin);
-                    if (Admin.PermissionLevel > ProcessDamage.Admin_Level)
+                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > ProcessDamage.Admin_Level)
                     {
                         return ProtectedSpaces.AllowExplosion(_worldPos);
                     }
@@ -72,6 +71,24 @@ public static class Injections
         catch (Exception e)
         {
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ExplosionServer_Prefix: {0}", e.Message));
+        }
+        return true;
+    }
+
+    public static bool IsWithinTraderArea_Prefix(World __instance, Vector3i _worldBlockPos, ref bool __result)
+    {
+        try
+        {
+            if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_worldBlockPos))
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Inside protected space. Altering result for Location: {0}, {1}, {2}", _worldBlockPos.x, _worldBlockPos.y, _worldBlockPos.z));
+                __result = true;
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.IsWithinTraderArea_Prefix: {0}", e.Message));
         }
         return true;
     }

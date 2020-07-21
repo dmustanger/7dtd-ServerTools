@@ -95,14 +95,14 @@ namespace ServerTools
             };
         }
 
-        public static void BattleLogTool(string _id)
+        public static void BattleLogTool(string _id, string _ip)
         {
             System.Timers.Timer _exitTimer = new System.Timers.Timer(2000);
             _exitTimer.AutoReset = false;
             _exitTimer.Start();
             _exitTimer.Elapsed += (sender, e) =>
             {
-                Init5(sender, e, _id);
+                Init5(sender, e, _id, _ip);
                 _exitTimer.Close();
             };
         }
@@ -922,9 +922,9 @@ namespace ServerTools
             Hardcore.KickPlayer(_cInfo);
         }
 
-        private static void Init5(object sender, ElapsedEventArgs e, string _id)
+        private static void Init5(object sender, ElapsedEventArgs e, string _id, string _ip)
         {
-            BattleLogger.ScanLog(_id);
+            BattleLogger.ScanLog(_id, _ip);
         }
 
         private static void Init6(object sender, ElapsedEventArgs e, string _id)

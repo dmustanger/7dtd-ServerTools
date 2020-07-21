@@ -12,7 +12,7 @@ namespace ServerTools
         public static Dictionary<int, string[]> Vectors = new Dictionary<int, string[]>();
         private const string file = "ProtectedSpaces.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
-        private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
+        private static FileSystemWatcher FileWatcher = new FileSystemWatcher(API.ConfigPath, file);
 
         public static void Load()
         {
@@ -27,7 +27,7 @@ namespace ServerTools
         {
             if (!IsEnabled && IsRunning)
             {
-                fileWatcher.Dispose();
+                FileWatcher.Dispose();
                 IsRunning = false;
                 UnloadProtection();
             }
@@ -176,7 +176,7 @@ namespace ServerTools
 
         public static void UpdateXml()
         {
-            fileWatcher.EnableRaisingEvents = false;
+            FileWatcher.EnableRaisingEvents = false;
             using (StreamWriter sw = new StreamWriter(filePath))
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -193,23 +193,23 @@ namespace ServerTools
                 else
                 {
                     sw.WriteLine("        <!-- <Space XMin=\"-30\" ZMin=\"-20\" XMax=\"10\" ZMax=\"50\" /> -->");
-                    sw.WriteLine("        <!-- <space XMin=\"-800\" ZMin=\"75\" XMax=\"-300\" ZMax=\"100\" /> -->");
-                    sw.WriteLine("        <!-- <space XMin=\"-50\" ZMin=\"-600\" XMax=\"-5\" ZMax=\"-550\" /> -->");
+                    sw.WriteLine("        <!-- <Space XMin=\"-800\" ZMin=\"75\" XMax=\"-300\" ZMax=\"100\" /> -->");
+                    sw.WriteLine("        <!-- <Space XMin=\"-50\" ZMin=\"-600\" XMax=\"-5\" ZMax=\"-550\" /> -->");
                 }
                 sw.WriteLine("    </Spaces>");
                 sw.WriteLine("</Protected>");
                 sw.Flush();
                 sw.Close();
             }
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.EnableRaisingEvents = true;
         }
 
         private static void InitFileWatcher()
         {
-            fileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
-            fileWatcher.EnableRaisingEvents = true;
+            FileWatcher.Changed += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Created += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.Deleted += new FileSystemEventHandler(OnFileChanged);
+            FileWatcher.EnableRaisingEvents = true;
             IsRunning = true;
         }
 

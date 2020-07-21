@@ -8,7 +8,7 @@ namespace ServerTools
 {
     public class LoadConfig
     {
-        public const string version = "19.0.3";
+        public const string version = "19.0.4";
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
         private const string configFile = "ServerToolsConfig.xml";
@@ -453,6 +453,16 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers entry because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("Player_Distance"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers entry because of missing 'Player_Distance' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Player_Distance"), out BattleLogger.Player_Distance))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers entry because of invalid (non-numeric) value for 'Player_Distance' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                             case "Block_Logger":
                                 if (!_line.HasAttribute("Enable"))
@@ -736,6 +746,16 @@ namespace ServerTools
                                 if (!bool.TryParse(_line.GetAttribute("Enable"), out ClanManager.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clan_Manager entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Max_Name_Length"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clan_Manager entry because of missing 'Max_Name_Length' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Max_Name_Length"), out ClanManager.Max_Name_Length))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Clan_Manager entry because of invalid (non-numeric) value for 'Max_Name_Length' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Private_Chat_Color"))
@@ -2433,6 +2453,16 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Scout_Player entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("Delay_Between_Uses"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Scout_Player entry because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out ScoutPlayer.Delay_Between_Uses))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Scout_Player entry because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                             case "Shop":
                                 if (!_line.HasAttribute("Enable"))
@@ -3290,7 +3320,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Save_World\" Enable=\"{0}\" Delay_Between_Saves=\"{1}\" />", AutoSaveWorld.IsEnabled, AutoSaveWorld.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bad_Word_Filter\" Enable=\"{0}\" Invalid_Name=\"{1}\" />", Badwords.IsEnabled, Badwords.Invalid_Name));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bank\" Enable=\"{0}\" Inside_Claim=\"{1}\" Ingame_Coin=\"{2}\" Deposit_Fee_Percent=\"{3}\" Player_Transfers=\"{4}\" />", Bank.IsEnabled, Bank.Inside_Claim, Bank.Ingame_Coin, Bank.Deposit_Fee_Percent, Bank.Player_Transfers));
-                sw.WriteLine(string.Format("        <Tool Name=\"Battle_Loggers\" Enable=\"{0}\" All=\"{1}\" Belt=\"{2}\" Bag=\"{3}\" Equipment=\"{4}\" Admin_Level=\"{5}\" />", BattleLogger.IsEnabled, BattleLogger.All, BattleLogger.Belt, BattleLogger.Bag, BattleLogger.Equipment, BattleLogger.Admin_Level));
+                sw.WriteLine(string.Format("        <Tool Name=\"Battle_Loggers\" Enable=\"{0}\" Player_Distance=\"{1}\" All=\"{2}\" Belt=\"{3}\" Bag=\"{4}\" Equipment=\"{5}\" Admin_Level=\"{6}\" />", BattleLogger.IsEnabled, BattleLogger.Player_Distance, BattleLogger.All, BattleLogger.Belt, BattleLogger.Bag, BattleLogger.Equipment, BattleLogger.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Block_Logger\" Enable=\"{0}\" />", BlockLogger.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Show_On_Respawn=\"{1}\" Auto_Show=\"{2}\" Delay=\"{3}\" />", Bloodmoon.IsEnabled, Bloodmoon.Show_On_Respawn, Bloodmoon.Auto_Show, Bloodmoon.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon_Warrior\" Enable=\"{0}\" Zombie_Kills=\"{1}\" />", BloodmoonWarrior.IsEnabled, BloodmoonWarrior.Zombie_Kills));
@@ -3301,7 +3331,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response_Extended\" Friend_Chat_Color=\"{0}\" Party_Chat_Color=\"{1}\" />", ChatHook.Friend_Chat_Color, ChatHook.Party_Chat_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Flood_Protection\" Enable=\"{0}\" Max_Length=\"{1}\" Messages_Per_Min=\"{2}\" Wait_Time=\"{3}\" />", ChatHook.ChatFlood, ChatHook.Max_Length, ChatHook.Messages_Per_Min, ChatHook.Wait_Time));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Logger\" Enable=\"{0}\" />", ChatLog.IsEnabled));
-                sw.WriteLine(string.Format("        <Tool Name=\"Clan_Manager\" Enable=\"{0}\" Private_Chat_Color=\"{1}\" />", ClanManager.IsEnabled, ClanManager.Private_Chat_Color));
+                sw.WriteLine(string.Format("        <Tool Name=\"Clan_Manager\" Enable=\"{0}\" Max_Name_Length=\"{1}\" Private_Chat_Color=\"{2}\" />", ClanManager.IsEnabled, ClanManager.Max_Name_Length, ClanManager.Private_Chat_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Command_Log\" Enable=\"{0}\" />", CommandLog.IsEnabled));
                 //sw.WriteLine(string.Format("        <Tool Name=\"Country_Ban\" Enable=\"{0}\" Countries_Not_Allowed=\"CN,IL\" />", CountryBan.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Credentials\" Enable=\"{0}\" No_Family_Share=\"{1}\" No_Bad_Id=\"{2}\" No_Internal=\"{3}\" Admin_Level=\"{4}\" />", CredentialCheck.IsEnabled, CredentialCheck.Family_Share, CredentialCheck.Bad_Id, CredentialCheck.No_Internal, CredentialCheck.Admin_Level));
@@ -3355,7 +3385,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Report\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Admin_Level=\"{2}\" />", Report.IsEnabled, Report.Delay, Report.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Reserved_Slots\" Enable=\"{0}\" Session_Time=\"{1}\" Admin_Level=\"{2}\" Reduced_Delay=\"{3}\" />", ReservedSlots.IsEnabled, ReservedSlots.Session_Time, ReservedSlots.Admin_Level, ReservedSlots.Reduced_Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Restart_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" Admin_Level=\"{3}\" />", RestartVote.IsEnabled, RestartVote.Players_Online, RestartVote.Votes_Needed, RestartVote.Admin_Level));
-                sw.WriteLine(string.Format("        <Tool Name=\"Scout_Player\" Enable=\"{0}\" />", ScoutPlayer.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Scout_Player\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" />", ScoutPlayer.IsEnabled, ScoutPlayer.Delay_Between_Uses));
                 sw.WriteLine(string.Format("        <Tool Name=\"Shop\" Enable=\"{0}\" Inside_Market=\"{1}\" Inside_Traders=\"{2}\" />", Shop.IsEnabled, Shop.Inside_Market, Shop.Inside_Traders));
                 sw.WriteLine(string.Format("        <Tool Name=\"Shutdown\" Enable=\"{0}\" Countdown_Timer=\"{1}\" Time_Before_Shutdown=\"{2}\" Alert_On_Login=\"{3}\" Alert_Count=\"{4}\"  />", Shutdown.IsEnabled, Shutdown.Countdown_Timer, Shutdown.Delay, Shutdown.Alert_On_Login, Shutdown.Alert_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Spectator_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" />", PlayerChecks.SpectatorEnabled, PlayerChecks.Spectator_Admin_Level));
