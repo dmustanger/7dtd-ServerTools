@@ -14,16 +14,16 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. ser <x> <y> <z> <spawn radius> @ [<list of entities>]\n" +
-                "  2. ser <x> <z> <spawn radius> @ [<list of entities>]>\n" +
-                "  3. ser <SteamId/EntityId/PlayerName> <spawn radius> @ [<list of entities>]\n" +
+                "  1. ser <x> <y> <z> <spawn radius> @ <list of entities>\n" +
+                "  2. ser <x> <z> <spawn radius> @ <list of entities>\n" +
+                "  3. ser <SteamId/EntityId/PlayerName> <spawn radius> @ <list of entities>\n" +
                 "1. Spawn one or more entity with in a radius of the specified coordinates. Enter the x y z coordinates, radius and entity id of the entity to spawn\n" +
                 "2. Spawn one or more entity with in a radius of the specified coordinates. Enter the x z coordinates, radius and entity id of the entity to spawn\n" +
                 "3. Spawn one or more entity with in a radius of the specified player. Enter the steam id, player name or entity id of the player. Enter the radius and entity id to spawn\n" +
-                "*Note*     Type spawnentity or se in the console to see all the available entity types and their Id\n" +
-                "*Example*   ser -55 -1 1000 30 @ 2 18 18 20 21 71\n" +
+                "*Note*     Type st-SpawnEntityRadius or ser in the console to see all the available entity types and their id\n" +
+                "*Example*   st-SpawnEntityRadius -55 -1 1000 30 @ 2 18 18 20 21 71\n" +
                 "*Example*   ser -55 1000 30 @ 61 62 63 63\n" +
-                "*Example*   ser 76561191234567890 30 @ 61 62 63 63\n";
+                "*Example*   st-ser 76561191234567890 30 @ 61 62 63 63\n";
         }
 
         public override string[] GetCommands()

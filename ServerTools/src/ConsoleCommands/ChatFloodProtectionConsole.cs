@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. ChatFloodProtection off\n" +
-                   "  2. ChatFloodProtection on\n" +
+                   "  1. cfp off\n" +
+                   "  2. cfp on\n" +
                    "1. Turn off chat flood protection\n" +
                    "2. Turn on chat flood protection\n";
         }

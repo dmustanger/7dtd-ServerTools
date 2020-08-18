@@ -13,11 +13,11 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. reservedslots off\n" +
-                   "  2. reservedslots on\n" +
-                   "  3. reservedslots add <steamId/entityId> <playerName> <days to expire>\n" +
-                   "  4. reservedslots remove <steamId/entityId>\n" +
-                   "  5. reservedslots list\n" +
+                   "  1. rs off\n" +
+                   "  2. rs on\n" +
+                   "  3. rs add <steamId/entityId> <playerName> <days to expire>\n" +
+                   "  4. rs remove <steamId/entityId>\n" +
+                   "  5. rs list\n" +
                    "1. Turn off reserved slots\n" +
                    "2. Turn on reserved slots\n" +
                    "3. Adds a steamID to the Reserved Slots list\n" +

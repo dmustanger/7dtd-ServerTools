@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using ServerTools.AntiCheat;
 
@@ -39,6 +38,7 @@ namespace ServerTools
         {
             LoadProcess.Load(1);
             Confirm.Exec();
+            Timers.NewWorldCheck();
         }
 
         private static void GameShutdown()
@@ -212,10 +212,6 @@ namespace ServerTools
                                             }
                                         }
                                     }
-                                    if (Zones.IsEnabled)
-                                    {
-                                        Zones.Check(_cInfo, _cInfo2);
-                                    }
                                     if (Bounties.IsEnabled)
                                     {
                                         Bounties.PlayerKilled(_player, _player2, _cInfo, _cInfo2);
@@ -294,18 +290,6 @@ namespace ServerTools
                         FriendTeleport.Dict.Remove(_cInfo.entityId);
                         FriendTeleport.Dict1.Remove(_cInfo.entityId);
                     }
-                    if (Zones.ZoneExit.ContainsKey(_cInfo.entityId))
-                    {
-                        Zones.ZoneExit.Remove(_cInfo.entityId);
-                    }
-                    if (Zones.Forgive.ContainsKey(_cInfo.entityId))
-                    {
-                        Zones.Forgive.Remove(_cInfo.entityId);
-                    }
-                    if (Zones.Victim.ContainsKey(_cInfo.entityId))
-                    {
-                        Zones.Victim.Remove(_cInfo.entityId);
-                    }
                     if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
                     {
                         FriendTeleport.Dict.Remove(_cInfo.entityId);
@@ -342,17 +326,41 @@ namespace ServerTools
                     {
                         PersistentOperations.Session.Remove(_cInfo.playerId);
                     }
+                    if (PersistentOperations.PvEViolations.ContainsKey(_cInfo.entityId))
+                    {
+                        PersistentOperations.PvEViolations.Remove(_cInfo.entityId);
+                    }
                     if (Bank.TransferId.ContainsKey(_cInfo.playerId))
                     {
                         Bank.TransferId.Remove(_cInfo.playerId);
+                    }
+                    if (Zones.ZoneExit.ContainsKey(_cInfo.entityId))
+                    {
+                        Zones.ZoneExit.Remove(_cInfo.entityId);
+                    }
+                    if (Zones.Forgive.ContainsKey(_cInfo.entityId))
+                    {
+                        Zones.Forgive.Remove(_cInfo.entityId);
+                    }
+                    if (Zones.Victim.ContainsKey(_cInfo.entityId))
+                    {
+                        Zones.Victim.Remove(_cInfo.entityId);
                     }
                     if (Zones.Reminder.ContainsKey(_cInfo.entityId))
                     {
                         Zones.Reminder.Remove(_cInfo.entityId);
                     }
-                    if (BloodmoonWarrior.WarriorList.Contains(_cInfo.entityId))
+                    if (Zones.ReminderMsg.ContainsKey(_cInfo.entityId))
                     {
-                        BloodmoonWarrior.WarriorList.Remove(_cInfo.entityId);
+                        Zones.ReminderMsg.Remove(_cInfo.entityId);
+                    }
+                    if (Zones.ZonePvE.Contains(_cInfo.entityId))
+                    {
+                        Zones.ZonePvE.Remove(_cInfo.entityId);
+                    }
+                    if (BloodmoonWarrior.WarriorList.Contains(_cInfo.playerId))
+                    {
+                        BloodmoonWarrior.WarriorList.Remove(_cInfo.playerId);
                     }
                 }
             }
@@ -368,22 +376,28 @@ namespace ServerTools
             {
                 if (_entity1 != null && _entity2 != null && !_entity1.IsClientControlled() && _entity2.IsClientControlled())
                 {
-                    if (Wallet.IsEnabled && Wallet.Zombie_Kills > 0)
+                    ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(_entity2.entityId);
+                    if (_cInfo != null)
                     {
-                        string _tags = _entity1.EntityClass.Tags.ToString();
-                        if (_tags.Contains("zombie") || (_tags.Contains("hostile") && _tags.Contains("animal")))
+                        if (Wallet.IsEnabled && Wallet.Zombie_Kills > 0)
                         {
-                            ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_entity2.entityId);
-                            if (_cInfo != null)
+                            string _tags = _entity1.EntityClass.Tags.ToString();
+                            if (_tags.Contains("zombie") || (_tags.Contains("hostile") && _tags.Contains("animal")))
                             {
                                 Wallet.AddCoinsToWallet(_cInfo.playerId, Wallet.Zombie_Kills);
                             }
                         }
-                    }
-                    if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.BloodmoonStarted && BloodmoonWarrior.WarriorList.Contains(_entity2.entityId))
-                    {
-                        BloodmoonWarrior.KilledZombies.TryGetValue(_entity2.entityId, out int _killedZ);
-                        BloodmoonWarrior.KilledZombies[_entity2.entityId] = _killedZ + 1;
+                        if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.BloodmoonStarted && BloodmoonWarrior.WarriorList.Contains(_cInfo.playerId))
+                        {
+                            if (BloodmoonWarrior.KilledZombies.TryGetValue(_cInfo.playerId, out int _killedZ))
+                            {
+                                BloodmoonWarrior.KilledZombies[_cInfo.playerId] = _killedZ + 1;
+                            }
+                            else
+                            {
+                                BloodmoonWarrior.KilledZombies.Add(_cInfo.playerId, 1);
+                            }
+                        }
                     }
                 }
             }

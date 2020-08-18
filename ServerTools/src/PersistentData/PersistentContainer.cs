@@ -12,6 +12,7 @@ namespace ServerTools
         private static PersistentContainer instance;
         private PersistentPlayers players;
 
+        private Dictionary<int, int> auctionPrices;
         private Dictionary<int, List<int>> clientMuteList;
         private DateTime lastWeather;
         private string[] pollData;
@@ -81,6 +82,18 @@ namespace ServerTools
                 }
             }
             return false;
+        }
+
+        public Dictionary<int, int> AuctionPrices
+        {
+            get
+            {
+                return auctionPrices;
+            }
+            set
+            {
+                auctionPrices = value;
+            }
         }
 
         public Dictionary<int, List<int>> ClientMuteList

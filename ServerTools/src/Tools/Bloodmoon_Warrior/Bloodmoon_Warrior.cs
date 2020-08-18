@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Xml;
 using UnityEngine;
 
@@ -8,10 +9,10 @@ namespace ServerTools
 {
     class BloodmoonWarrior
     {
-        public static bool IsEnabled = false, IsRunning = false, BloodmoonStarted = false;
-        public static int Zombie_Kills = 10;
-        public static List<int> WarriorList = new List<int>();
-        public static Dictionary<int, int> KilledZombies = new Dictionary<int, int>();
+        public static bool IsEnabled = false, IsRunning = false, BloodmoonStarted = false, Reduce_Death_Count = false;
+        public static int Zombie_Kills = 10, Chance = 50;
+        public static List<string> WarriorList = new List<string>();
+        public static Dictionary<string, int> KilledZombies = new Dictionary<string, int>();
         private const string file = "BloodmoonWarrior.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static Dictionary<string, int[]> Dict = new Dictionary<string, int[]>();
@@ -235,18 +236,19 @@ namespace ServerTools
                             for (int i = 0; i < _cInfoList.Count; i++)
                             {
                                 ClientInfo _cInfo = _cInfoList[i];
-                                if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId > 0)
+                                if (_cInfo != null)
                                 {
                                     if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
                                     {
-                                        EntityAlive _player = (EntityAlive)PersistentOperations.GetEntity(_cInfo.entityId);
-                                        if (_player != null && _player.IsSpawned() && _player.IsAlive() && _player.Died > 0 && _player.Progression.GetLevel() >= 10 && random.Next(1, 11) < 6)
+                                        EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                                        if (_player != null && _player.IsSpawned() && _player.IsAlive() && _player.Died > 0 && _player.Progression.GetLevel() >= 10 && random.Next(0, 100) < Chance)
                                         {
-                                            WarriorList.Add(_cInfo.entityId);
-                                            KilledZombies.Add(_cInfo.entityId, 0);
+                                            WarriorList.Add(_cInfo.playerId);
+                                            KilledZombies.Add(_cInfo.playerId, 0);
                                             string _response = "Hades has called upon you. Survive this night and kill {ZombieCount} zombies to be rewarded by the king of the underworld.";
                                             _response = _response.Replace("{ZombieCount}", Zombie_Kills.ToString());
                                             ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                            Thread.Sleep(TimeSpan.FromMilliseconds(30));
                                         }
                                     }
                                 }
@@ -270,29 +272,32 @@ namespace ServerTools
         {
             try
             {
-                List<int> _warriors = WarriorList;
+                List<string> _warriors = WarriorList;
                 for (int i = 0; i < _warriors.Count; i++)
                 {
-                    int _warrior = _warriors[i];
-                    if (GameManager.Instance.World.Players.dict.ContainsKey(_warrior))
+                    string _warrior = _warriors[i];
+                    EntityPlayer _player = PersistentOperations.GetEntityPlayer(_warrior);
+                    if (_player != null && _player.IsAlive())
                     {
-                        EntityAlive _player = (EntityAlive)PersistentOperations.GetEntity(_warrior);
-                        if (_player != null && _player.IsAlive())
+                        KilledZombies.TryGetValue(_warrior, out int _killedZ);
+                        if (_killedZ >= Zombie_Kills)
                         {
-                            int _killedZ;
-                            KilledZombies.TryGetValue(_warrior, out _killedZ);
-                            if (_killedZ >= Zombie_Kills)
+                            ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_warrior);
+                            if (_cInfo != null)
                             {
-                                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(_warrior);
-                                if (_cInfo != null)
+                                if (Reduce_Death_Count)
                                 {
                                     int _deathCount = _player.Died - 1;
                                     _player.Died = _deathCount;
                                     _player.bPlayerStatsChanged = true;
                                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(_player));
                                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have survived and been rewarded by hades himself. Your death count was reduced by one" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    RandomItem(_cInfo);
                                 }
+                                else
+                                {
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have survived and been rewarded by hades himself." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                                RandomItem(_cInfo);
                             }
                         }
                     }

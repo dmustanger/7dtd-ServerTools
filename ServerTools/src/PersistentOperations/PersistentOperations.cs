@@ -9,7 +9,9 @@ namespace ServerTools
     {
         private static bool IsRunning = false;
         public static int MaxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
+        public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10;
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
+        public static Dictionary<int, int> PvEViolations = new Dictionary<int, int>();
 
         public static void PlayerCheck()
         {
@@ -47,10 +49,10 @@ namespace ServerTools
                                             }
                                         }
                                     }
-                                    else if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.WarriorList.Contains(_cInfo.entityId))
+                                    else if (BloodmoonWarrior.IsEnabled && BloodmoonWarrior.WarriorList.Contains(_cInfo.playerId))
                                     {
-                                        BloodmoonWarrior.WarriorList.Remove(_cInfo.entityId);
-                                        BloodmoonWarrior.KilledZombies.Remove(_cInfo.entityId);
+                                        BloodmoonWarrior.WarriorList.Remove(_cInfo.playerId);
+                                        BloodmoonWarrior.KilledZombies.Remove(_cInfo.playerId);
                                     }
                                 }
                             }

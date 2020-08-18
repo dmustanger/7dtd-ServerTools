@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ServerTools
 {
     class AuctionConsole : ConsoleCmdAbstract
     {
+        private static string file = string.Format("Auction_{0}.txt", DateTime.Today.ToString("M-d-yyyy")), filepath = string.Format("{0}/Logs/AuctionLogs/{1}", API.ConfigPath, file);
+
         public override string GetDescription()
         {
             return "[ServerTools] - Enable or disable auction. Cancel, clear or list the auction items.";
@@ -21,7 +24,7 @@ namespace ServerTools
                    "1. Turn off the auction\n" +
                    "2. Turn on the auction\n" +
                    "3. Cancel the auction Id and return it to the owner\n" +
-                   "4. Clear the auction Id from the list\n" +
+                   "4. Clear the auction Id from the list. It will not return to the owner\n" +
                    "5. Show the auction list\n";
         }
 
@@ -81,55 +84,81 @@ namespace ServerTools
                     {
                         if (AuctionBox.AuctionItems.ContainsKey(_id))
                         {
-                            ClientInfo _cInfo = ConnectionManager.Instance.Clients.ForEntityId(_id);
-                            if (_cInfo != null)
+                            AuctionBox.AuctionItems.TryGetValue(_id, out string _playerId);
+                            if (PersistentContainer.Instance.Players[_playerId].Auction != null && PersistentContainer.Instance.Players[_playerId].Auction.Count > 0)
                             {
-                                string _auctionName = PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemName;
-                                int _auctionCount = PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemCount;
-                                int _auctionQuality = PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemQuality;
-                                int _auctionPrice = PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemPrice;
-                                ItemClass _class = ItemClass.GetItemClass(_auctionName, false);
-                                Block _block = Block.GetBlockByName(_auctionName, false);
-                                if (_class == null && _block == null)
+                                if (PersistentContainer.Instance.Players[_playerId].Auction.ContainsKey(_id))
                                 {
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Could not complete the auction cancel. Unable to find item {0} in the item.xml list. Contact an administrator.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    Log.Out(string.Format("Could not complete the auction cancel. Unable to find item {0} in the item.xml list", _auctionName));
-                                    return;
+                                    if (PersistentContainer.Instance.Players[_playerId].Auction.TryGetValue(_id, out ItemDataSerializable _itemData))
+                                    {
+                                        ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_playerId);
+                                        if (_cInfo != null)
+                                        {
+                                            ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_itemData.name, false).type, false);
+                                            if (_itemValue != null)
+                                            {
+                                                _itemValue.UseTimes = _itemData.useTimes;
+                                                _itemValue.Quality = _itemData.quality;
+                                                World world = GameManager.Instance.World;
+                                                var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                                                {
+                                                    entityClass = EntityClass.FromString("item"),
+                                                    id = EntityFactory.nextEntityID++,
+                                                    itemStack = new ItemStack(_itemValue, _itemData.count),
+                                                    pos = world.Players.dict[_cInfo.entityId].position,
+                                                    rot = new UnityEngine.Vector3(20f, 0f, 20f),
+                                                    lifetime = 60f,
+                                                    belongsPlayerId = _cInfo.entityId
+                                                });
+                                                world.SpawnEntityInWorld(entityItem);
+                                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                                                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                                                AuctionBox.AuctionItems.Remove(_id);
+                                                PersistentContainer.Instance.Players[_playerId].Auction.Remove(_id);
+                                                PersistentContainer.Instance.AuctionPrices.Remove(_id);
+                                                PersistentContainer.Instance.Save();
+                                                using (StreamWriter sw = new StreamWriter(filepath, true))
+                                                {
+                                                    sw.WriteLine(string.Format("{0}: {1} {2} had their auction entry # {3} cancelled via console by {4}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _id, _senderInfo.RemoteClientInfo.playerId));
+                                                    sw.WriteLine();
+                                                    sw.Flush();
+                                                    sw.Close();
+                                                }
+                                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Your auction item has returned to you.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                            }
+                                            else
+                                            {
+                                                AuctionBox.AuctionItems.Remove(_id);
+                                                PersistentContainer.Instance.Players[_playerId].Auction.Remove(_id);
+                                                PersistentContainer.Instance.AuctionPrices.Remove(_id);
+                                                PersistentContainer.Instance.Save();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (PersistentContainer.Instance.Players[_playerId].AuctionReturn != null && PersistentContainer.Instance.Players[_playerId].AuctionReturn.Count > 0)
+                                            {
+                                                PersistentContainer.Instance.Players[_playerId].AuctionReturn.Add(_id, _itemData);
+                                            }
+                                            else
+                                            {
+                                                Dictionary<int, ItemDataSerializable> _auctionReturn = new Dictionary<int, ItemDataSerializable>();
+                                                _auctionReturn.Add(_id, _itemData);
+                                                PersistentContainer.Instance.Players[_playerId].AuctionReturn = _auctionReturn;
+                                            }
+                                            AuctionBox.AuctionItems.Remove(_id);
+                                            PersistentContainer.Instance.Players[_playerId].Auction.Remove(_id);
+                                            PersistentContainer.Instance.AuctionPrices.Remove(_id);
+                                            PersistentContainer.Instance.Save();
+                                        }
+                                        SdtdConsole.Instance.Output(string.Format("Id {0} has been removed from the auction list", _id));
+                                    }
                                 }
-                                ItemValue itemValue = new ItemValue(ItemClass.GetItem(_auctionName).type, _auctionQuality, _auctionQuality, false, null, 1);
-                                World world = GameManager.Instance.World;
-                                var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                                {
-                                    entityClass = EntityClass.FromString("item"),
-                                    id = EntityFactory.nextEntityID++,
-                                    itemStack = new ItemStack(itemValue, _auctionCount),
-                                    pos = world.Players.dict[_cInfo.entityId].position,
-                                    rot = new UnityEngine.Vector3(20f, 0f, 20f),
-                                    lifetime = 60f,
-                                    belongsPlayerId = _cInfo.entityId
-                                });
-                                world.SpawnEntityInWorld(entityItem);
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                AuctionBox.AuctionItems.Remove(_id);
-                                PersistentContainer.Instance.Players[_cInfo.playerId].AuctionId = 0;
-                                PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemName = "";
-                                PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemCount = 0;
-                                PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemQuality = 0;
-                                PersistentContainer.Instance.Players[_cInfo.playerId].AuctionItemPrice = 0;
-                                PersistentContainer.Instance.Players[_cInfo.playerId].AuctionCancelTime = DateTime.Now;
-                                PersistentContainer.Instance.Save();
-                            }
-                            else
-                            {
-                                AuctionBox.AuctionItems.Remove(_id);
-                                PersistentContainer.Instance.Players[_cInfo.playerId].AuctionReturn = true;
-                                PersistentContainer.Instance.Save();
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Auction does not contain id {0}", _id));
+                            SdtdConsole.Instance.Output("Could not find this id listed in the auction. Unable to cancel.[-]");
                         }
                     }
                     else
@@ -144,12 +173,21 @@ namespace ServerTools
                     {
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
                     }
-                    int _id;
-                    if (int.TryParse(_params[1], out _id))
+                    if (int.TryParse(_params[1], out int _id))
                     {
                         if (AuctionBox.AuctionItems.ContainsKey(_id))
                         {
+                            AuctionBox.AuctionItems.TryGetValue(_id, out string _playerId);
                             AuctionBox.AuctionItems.Remove(_id);
+                            if (PersistentContainer.Instance.Players[_playerId].Auction != null && PersistentContainer.Instance.Players[_playerId].Auction.Count > 0)
+                            {
+                                PersistentContainer.Instance.Players[_playerId].Auction.Remove(_id);
+                            }
+                            if (PersistentContainer.Instance.AuctionPrices != null && PersistentContainer.Instance.AuctionPrices.Count > 0)
+                            {
+                                PersistentContainer.Instance.AuctionPrices.Remove(_id);
+                            }
+                            PersistentContainer.Instance.Save();
                             SdtdConsole.Instance.Output(string.Format("Id {0} has been removed from the auction", _id));
                         }
                         else
@@ -170,45 +208,37 @@ namespace ServerTools
                         SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
-                    bool _auctionItemsFound = false;
-                    List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
-                    for (int i = 0; i < playerlist.Count; i++)
+                    if (AuctionBox.AuctionItems.Count > 0)
                     {
-                        string _steamId = playerlist[i];
-                        int _auctionId = PersistentContainer.Instance.Players[_steamId].AuctionId;
-                        if (_auctionId > 0 && AuctionBox.AuctionItems.ContainsKey(_auctionId))
+                        if (PersistentContainer.Instance.Players.SteamIDs.Count > 0)
                         {
-                            _auctionItemsFound = true;
-                            int _auctionCount = PersistentContainer.Instance.Players[_steamId].AuctionItemCount;
-                            string _auctionName = PersistentContainer.Instance.Players[_steamId].AuctionItemName;
-                            int _auctionQuality = PersistentContainer.Instance.Players[_steamId].AuctionItemQuality;
-                            int _auctionPrice = PersistentContainer.Instance.Players[_steamId].AuctionItemPrice;
-                            if (_auctionQuality > 1)
+                            List<string> playerlist = PersistentContainer.Instance.Players.SteamIDs;
+                            Dictionary<int, int> _auctionPrices = PersistentContainer.Instance.AuctionPrices;
+                            for (int i = 0; i < playerlist.Count; i++)
                             {
-                                string _message = "# {Id}: {Count} {Item} at {Quality} quality, for {Price} {Name}";
-                                _message = _message.Replace("{Id}", _auctionId.ToString());
-                                _message = _message.Replace("{Count}", _auctionCount.ToString());
-                                _message = _message.Replace("{Item}", _auctionName);
-                                _message = _message.Replace("{Quality}", _auctionQuality.ToString());
-                                _message = _message.Replace("{Price}", _auctionPrice.ToString());
-                                _message = _message.Replace("{Name}", Wallet.Coin_Name);
-                                SdtdConsole.Instance.Output(_message);
-                            }
-                            else
-                            {
-                                string _message = "# {Id}: {Count} {Item} for {Price} {Name}";
-                                _message = _message.Replace("{Id}", _auctionId.ToString());
-                                _message = _message.Replace("{Count}", _auctionCount.ToString());
-                                _message = _message.Replace("{Item}", _auctionName);
-                                _message = _message.Replace("{Price}", _auctionPrice.ToString());
-                                _message = _message.Replace("{Name}", Wallet.Coin_Name);
-                                SdtdConsole.Instance.Output(_message);
+                                string _steamId = playerlist[i];
+                                if (PersistentContainer.Instance.Players[_steamId].Auction != null && PersistentContainer.Instance.Players[_steamId].Auction.Count > 0)
+                                {
+                                    foreach (var _auctionItem in PersistentContainer.Instance.Players[_steamId].Auction)
+                                    {
+                                        _auctionPrices.TryGetValue(_auctionItem.Key, out int _price);
+                                        string _message = "# {Id}: {Count} {Item} at {Quality} quality, {Durability} durability for {Price} {Name}";
+                                        _message = _message.Replace("{Id}", _auctionItem.Key.ToString());
+                                        _message = _message.Replace("{Count}", _auctionItem.Value.count.ToString());
+                                        _message = _message.Replace("{Item}", _auctionItem.Value.name);
+                                        _message = _message.Replace("{Quality}", _auctionItem.Value.quality.ToString());
+                                        _message = _message.Replace("{Durability}", (100 - _auctionItem.Value.useTimes).ToString());
+                                        _message = _message.Replace("{Price}", _price.ToString());
+                                        _message = _message.Replace("{Name}", Wallet.Coin_Name);
+                                        SdtdConsole.Instance.Output(_message);
+                                    }
+                                }
                             }
                         }
                     }
-                    if (!_auctionItemsFound)
+                    else
                     {
-                        SdtdConsole.Instance.Output("No items are currently for sale");
+                        SdtdConsole.Instance.Output("No items are listed in the auction");
                     }
                 }
                 else
@@ -218,7 +248,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in AuctionConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in AuctionConsole.Execute: {0}", e.Message));
             }
         }
     }

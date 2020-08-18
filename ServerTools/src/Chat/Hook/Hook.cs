@@ -145,7 +145,7 @@ namespace ServerTools
                                 }
                             }
                         }
-                        if (Message_Color_Enabled && Message_Color.StartsWith("[") && Message_Color.EndsWith("]"))
+                        if (Message_Color_Enabled && !_message.Contains("[******]") && Message_Color.StartsWith("[") && Message_Color.EndsWith("]"))
                         {
                             if (Message_Color.Contains(","))
                             {
@@ -164,35 +164,35 @@ namespace ServerTools
                                 _message = _message.Insert(0, Message_Color);
                             }
                         }
-                        if (ChatColorPrefix.IsEnabled && ChatColorPrefix.Dict.ContainsKey(_cInfo.playerId))
+                        if (!_mainName.Contains("[******]"))
                         {
-                            ChatColorPrefix.Dict1.TryGetValue(_cInfo.playerId, out DateTime _dt);
-                            if (DateTime.Now < _dt)
+                            if (ChatColorPrefix.IsEnabled && ChatColorPrefix.Dict.ContainsKey(_cInfo.playerId))
                             {
-                                ChatColorPrefix.Dict.TryGetValue(_cInfo.playerId, out string[] _colorPrefix);
-                                if (ClanManager.IsEnabled && ClanManager.ClanMember.Contains(_cInfo.playerId))
+                                ChatColorPrefix.Dict1.TryGetValue(_cInfo.playerId, out DateTime _dt);
+                                if (DateTime.Now < _dt)
                                 {
-                                    string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
-                                    PrepMessage(_cInfo, _message, _senderId, _mainName, _clanName, _colorPrefix[3], _colorPrefix[4], _type, _recipientEntityIds);
+                                    ChatColorPrefix.Dict.TryGetValue(_cInfo.playerId, out string[] _colorPrefix);
+                                    if (ClanManager.IsEnabled && ClanManager.ClanMember.Contains(_cInfo.playerId))
+                                    {
+                                        string _clanName = PersistentContainer.Instance.Players[_cInfo.playerId].ClanName;
+                                        PrepMessage(_cInfo, _message, _senderId, _mainName, _clanName, _colorPrefix[3], _colorPrefix[4], _type, _recipientEntityIds);
+                                    }
+                                    else
+                                    {
+                                        PrepMessage(_cInfo, _message, _senderId, _mainName, _colorPrefix[2], _colorPrefix[3], _colorPrefix[4], _type, _recipientEntityIds);
+                                    }
+                                    return false;
                                 }
                                 else
                                 {
-                                    PrepMessage(_cInfo, _message, _senderId, _mainName, _colorPrefix[2], _colorPrefix[3], _colorPrefix[4], _type, _recipientEntityIds);
+                                    ChatColorPrefix.Dict.Remove(_cInfo.playerId);
+                                    ChatColorPrefix.Dict1.Remove(_cInfo.playerId);
+                                    ChatColorPrefix.UpdateXml();
+                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Your chat color prefix time has expired.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    return false;
                                 }
-                                return false;
                             }
-                            else
-                            {
-                                ChatColorPrefix.Dict.Remove(_cInfo.playerId);
-                                ChatColorPrefix.Dict1.Remove(_cInfo.playerId);
-                                ChatColorPrefix.UpdateXml();
-                                ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Your chat color prefix time has expired.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                return false;
-                            }
-                        }
-                        if (ClanManager.IsEnabled)
-                        {
-                            if (ClanManager.ClanMember.Contains(_cInfo.playerId))
+                            if (ClanManager.IsEnabled && ClanManager.ClanMember.Contains(_cInfo.playerId))
                             {
                                 if (!string.IsNullOrEmpty(PersistentContainer.Instance.Players[_cInfo.playerId].ClanName))
                                 {
@@ -208,24 +208,24 @@ namespace ServerTools
                                     return false;
                                 }
                             }
-                        }
-                        if (Normal_Player_Color_Prefix && (Normal_Player_Name_Color != "" || Normal_Player_Prefix_Color != ""))
-                        {
-                            PrepMessage(_cInfo, _message, _senderId, _mainName, Normal_Player_Prefix, Normal_Player_Name_Color, Normal_Player_Prefix_Color, _type, _recipientEntityIds);
-                            return false;
+                            if (Normal_Player_Color_Prefix && (Normal_Player_Name_Color != "" || Normal_Player_Prefix_Color != ""))
+                            {
+                                PrepMessage(_cInfo, _message, _senderId, _mainName, Normal_Player_Prefix, Normal_Player_Name_Color, Normal_Player_Prefix_Color, _type, _recipientEntityIds);
+                                return false;
+                            }
                         }
                     }
                     if (_message.StartsWith(Command_Private) || _message.StartsWith(Command_Public))
                     {
-                        if (CommandLog.IsEnabled)
+                        if (ChatCommandLog.IsEnabled)
                         {
-                            CommandLog.Exec(_message, _mainName);
+                            ChatCommandLog.Exec(_message, _cInfo);
                         }
                         if (_message.StartsWith(Command_Public))
                         {
                             _message = _message.Replace(Command_Public, "");
                         }
-                        if (_message.StartsWith(Command_Private))
+                        else if (_message.StartsWith(Command_Private))
                         {
                             _message = _message.Replace(Command_Private, "");
                         }
@@ -1066,16 +1066,10 @@ namespace ServerTools
                             AuctionBox.AuctionList(_cInfo);
                             return false;
                         }
-                        if (AuctionBox.IsEnabled && _message.ToLower() == AuctionBox.Command72)
+                        if (AuctionBox.IsEnabled && _message.ToLower().StartsWith(AuctionBox.Command72 + " "))
                         {
-                            if (Wallet.IsEnabled)
-                            {
-                                AuctionBox.CancelAuction(_cInfo);
-                            }
-                            else
-                            {
-                                ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Can not run command. Wallet is not enabled" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            }
+                            _message = _message.ToLower().Replace(AuctionBox.Command72 + " ", "");
+                            AuctionBox.CancelAuction(_cInfo, _message);
                             return false;
                         }
                         if (AuctionBox.IsEnabled && _message.ToLower().StartsWith(AuctionBox.Command73 + " "))
@@ -1121,7 +1115,7 @@ namespace ServerTools
                                     if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Admin_Level)
                                     {
                                         _message = _message.ToLower().Replace(AuctionBox.Command74 + " ", "");
-                                        AuctionBox.Delay(_cInfo, _message);
+                                        AuctionBox.CheckBox(_cInfo, _message);
                                     }
                                     else
                                     {
@@ -1131,7 +1125,7 @@ namespace ServerTools
                                 else
                                 {
                                     _message = _message.ToLower().Replace(AuctionBox.Command74 + " ", "");
-                                    AuctionBox.Delay(_cInfo, _message);
+                                    AuctionBox.CheckBox(_cInfo, _message);
                                 }
                             }
                             else
@@ -1649,17 +1643,17 @@ namespace ServerTools
                         }
                         else
                         {
-                            GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, _senderId, _message, _name, false, _recipientEntityIds);
+                            GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, -1, _message, _name, false, _recipientEntityIds);
                         }
                     }
                     else
                     {
-                        GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, _senderId, _message, _name, false, _recipientEntityIds);
+                        GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, -1, _message, _name, false, _recipientEntityIds);
                     }
                 }
                 else
                 {
-                    GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, _senderId, _message, _name, false, _recipientEntityIds);
+                    GameManager.Instance.ChatMessageServer(_cInfo, EChatType.Global, -1, _message, _name, false, _recipientEntityIds);
                 }
             }
             else if (_type == EChatType.Friends)
@@ -1676,7 +1670,7 @@ namespace ServerTools
                         ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromEntityId(_recipient);
                         if (_cInfo2 != null)
                         {
-                            _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChat>().Setup(EChatType.Whisper, -1, _message, _name, false, null));
+                            _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChat>().Setup(EChatType.Whisper, _senderId, _message, _name, false, null));
                         }
                     }
                 }
@@ -1695,7 +1689,7 @@ namespace ServerTools
                         ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromEntityId(_recipient);
                         if (_cInfo2 != null)
                         {
-                            _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChat>().Setup(EChatType.Whisper, -1, _message, _name, false, null));
+                            _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChat>().Setup(EChatType.Whisper, _senderId, _message, _name, false, null));
                         }
                     }
                 }

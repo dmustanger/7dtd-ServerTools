@@ -449,7 +449,7 @@ namespace ServerTools
                 });
                 world.SpawnEntityInWorld(entityItem);
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
             }
         }
 

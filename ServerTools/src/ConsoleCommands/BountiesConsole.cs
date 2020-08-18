@@ -12,11 +12,11 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Bounties off\n" +
-                   "  2. Bounties on\n" +
-                   "  3. Bounties edit {SteamId/EntityId/PlayerName} {Value}\n" +
-                   "  4. Bounties remove {SteamId/EntityId/PlayerName}\n" +
-                   "  5. Bounties list\n" +
+                   "  1. bounty off\n" +
+                   "  2. bounty on\n" +
+                   "  3. bounty edit {SteamId/EntityId/PlayerName} {Value}\n" +
+                   "  4. bounty remove {SteamId/EntityId/PlayerName}\n" +
+                   "  5. bounty list\n" +
                    "1. Turn off bounties\n" +
                    "2. Turn on bounties\n" +
                    "3. Edit the bounty of a player\n" +
@@ -25,7 +25,7 @@ namespace ServerTools
         }
         public override string[] GetCommands()
         {
-            return new string[] { "st-Bounties", "bounty", "st-bounty" };
+            return new string[] { "st-Bounty", "bounty", "st-bounty" };
         }
         public override void Execute(List<string> _params, CommandSenderInfo _senderInfo)
         {

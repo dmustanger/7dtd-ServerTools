@@ -75,21 +75,33 @@ public static class Injections
         return true;
     }
 
-    public static bool IsWithinTraderArea_Prefix(World __instance, Vector3i _worldBlockPos, ref bool __result)
+    public static void ServerConsoleCommand_Postfix(ConnectionManager __instance, ClientInfo _cInfo, string _cmd)
     {
         try
         {
-            if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_worldBlockPos))
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Inside protected space. Altering result for Location: {0}, {1}, {2}", _worldBlockPos.x, _worldBlockPos.y, _worldBlockPos.z));
-                __result = true;
-                return false;
-            }
+            ConsoleCommandLog.Exec(_cInfo, _cmd);
         }
         catch (Exception e)
         {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.IsWithinTraderArea_Prefix: {0}", e.Message));
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ServerConsoleCommand_Postfix: {0}", e.Message));
         }
-        return true;
     }
+
+    //public static bool IsWithinTraderArea_Prefix(World __instance, Vector3i _worldBlockPos, ref bool __result)
+    //{
+    //    try
+    //    {
+    //        if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_worldBlockPos))
+    //        {
+    //            Log.Out(string.Format("[SERVERTOOLS] Inside protected space. Altering result for Location: {0}, {1}, {2}", _worldBlockPos.x, _worldBlockPos.y, _worldBlockPos.z));
+    //            __result = true;
+    //            return false;
+    //        }
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        Log.Out(string.Format("[SERVERTOOLS] Error in Injections.IsWithinTraderArea_Prefix: {0}", e.Message));
+    //    }
+    //    return true;
+    //}
 }

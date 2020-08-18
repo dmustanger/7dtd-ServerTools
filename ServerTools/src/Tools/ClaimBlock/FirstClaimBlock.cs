@@ -33,7 +33,7 @@ namespace ServerTools
                 });
                 world.SpawnEntityInWorld(entityItem);
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Claim block has been added to your inventory or if inventory is full, it dropped at your feet.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 PersistentContainer.Instance.Players[_cInfo.playerId].FirstClaimBlock = true;
                 PersistentContainer.Instance.Save();

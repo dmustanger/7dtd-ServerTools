@@ -180,19 +180,7 @@ namespace ServerTools
                         _phrase552 = _phrase552.Replace("{Command53}", Command53);
                         ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase552 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    string[] _cords = { };
-                    if (Lobby.Lobby_Position.Contains(","))
-                    {
-                        if (Lobby.Lobby_Position.Contains(" "))
-                        {
-                            Lobby.Lobby_Position.Replace(" ", "");
-                        }
-                        _cords = Lobby.Lobby_Position.Split(',').ToArray();
-                    }
-                    else if (Lobby.Lobby_Position.Contains(" "))
-                    {
-                        _cords = Lobby.Lobby_Position.Split(' ').ToArray();
-                    }
+                    string[] _cords = Lobby.Lobby_Position.Split(',').ToArray();
                     string _phrase553;
                     if (!Phrases.Dict.TryGetValue(553, out _phrase553))
                     {
@@ -250,18 +238,14 @@ namespace ServerTools
                     }
                     else
                     {
-                        string _phrase556;
-                        if (!Phrases.Dict.TryGetValue(556, out _phrase556))
-                        {
-                            _phrase556 = "You are outside the lobby and can no longer return to your position.";
-                        }
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase556 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        LobbyPlayers.Remove(_cInfo.entityId);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have no return point saved[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _cInfo.playerName + "You have no saved return point[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have no return point saved[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -277,9 +261,9 @@ namespace ServerTools
                     string _phrase556;
                     if (!Phrases.Dict.TryGetValue(556, out _phrase556))
                     {
-                        _phrase556 = "You have left the lobby space. {PrivateCommand}{Command53} command is no longer available.";
-                        _phrase556 = _phrase556.Replace("{PrivateCommand}", ChatHook.Command_Private);
-                        _phrase556 = _phrase556.Replace("{Command53}", Lobby.Command53);
+                        _phrase556 = "You have left the lobby space. {CommandPrivate}{Command53} command is no longer available.";
+                        _phrase556 = _phrase556.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                        _phrase556 = _phrase556.Replace("{Command53}", Command53);
                     }
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase556 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }

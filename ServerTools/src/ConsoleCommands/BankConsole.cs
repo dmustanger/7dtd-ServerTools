@@ -13,8 +13,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Bank off\n" +
-                   "  2. Bank on\n" +
+                   "  1. bank off\n" +
+                   "  2. bank on\n" +
                    "1. Turn off the bank\n" +
                    "2. Turn on the bank\n";
         }

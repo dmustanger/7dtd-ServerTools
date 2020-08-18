@@ -12,8 +12,8 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Bloodmoon off\n" +
-                   "  2. Bloodmoon on\n" +
+                   "  1. bm off\n" +
+                   "  2. bm on\n" +
                    "1. Turn off the bloodmoon alert\n" +
                    "2. Turn on the bloodmoon alert\n";
         }

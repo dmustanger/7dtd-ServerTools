@@ -67,12 +67,12 @@ namespace ServerTools.AntiCheat
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("itemName"))
+                        if (!_line.HasAttribute("Name"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Item entry because of missing 'itemName' attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Item entry because of missing 'Name' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        string _item = _line.GetAttribute("itemName");
+                        string _item = _line.GetAttribute("Name");
                         ItemClass _class;
                         Block _block;
                         int _id;
@@ -112,27 +112,27 @@ namespace ServerTools.AntiCheat
                 {
                     foreach (string _item in dict)
                     {
-                        sw.WriteLine(string.Format("        <item itemName=\"{0}\" />", _item));
+                        sw.WriteLine(string.Format("        <Item Name=\"{0}\" />", _item));
                     }
                 }
                 else
                 {
-                    sw.WriteLine(string.Format("        <item itemName=\"air\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrOrePotassiumNitrate\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrOreIron\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrOreLead\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrBedrock\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrDesertGround\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrIce\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrFertileDirt\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrFertileGrass\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrOreSilver\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrOreCoal\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrainFiller\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrOreGold\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrDestroyedWoodDebris\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrOreOilDeposit\" />"));
-                    sw.WriteLine(string.Format("        <item itemName=\"terrOreDiamond\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"air\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"terrOrePotassiumNitrate\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"terrOreIron\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"terrOreLead\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"terrBedrock\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"terrDesertGround\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"terrIce\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"terrFertileDirt\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"terrFertileGrass\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"terrOreSilver\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"terrOreCoal\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"terrainFiller\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"terrOreGold\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"terrDestroyedWoodDebris\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"terrOreOilDeposit\" />"));
+                    sw.WriteLine(string.Format("        <Item Name=\"terrOreDiamond\" />"));
                 }
                 sw.WriteLine("    </Items>");
                 sw.WriteLine("</InvalidItems>");
@@ -315,12 +315,12 @@ namespace ServerTools.AntiCheat
             string _phrase3;
             if (!Phrases.Dict.TryGetValue(3, out _phrase3))
             {
-                _phrase3 = " you have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
+                _phrase3 = "You have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
             }
             _phrase3 = _phrase3.Replace("{ItemName}", _name);
             _phrase3 = _phrase3.Replace("{ItemCount}", _count.ToString());
             _phrase3 = _phrase3.Replace("{MaxPerStack}", _maxAllowed.ToString());
-            ChatHook.ChatMessage(_cInfo, "[FF0000]" + _cInfo.playerName + _phrase3 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase3 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
                 sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, with invalid stack: {2} {3}. Warned the player.", _cInfo.playerName, _cInfo.playerId, _name, _count));
@@ -332,7 +332,7 @@ namespace ServerTools.AntiCheat
 
         private static void Ban(ClientInfo _cInfo, string _name)
         {
-            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Invalid Item {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
+            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Automatic detecton: Invalid Item {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
             string _phrase4;
             if (!Phrases.Dict.TryGetValue(4, out _phrase4))
             {
@@ -393,7 +393,7 @@ namespace ServerTools.AntiCheat
             _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
             _phrase5 = _phrase5.Replace("{ItemName}", _name);
             ChatHook.ChatMessage(_cInfo, "[FF0000]" + _phrase5 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-            SdtdConsole.Instance.ExecuteSync(string.Format("ban {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
+            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
             using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
                 sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, with invalid item: {2}. Kicked the player.", _cInfo.playerName, _cInfo.playerId, _name));
@@ -408,44 +408,44 @@ namespace ServerTools.AntiCheat
         {
             try
             {
-                LinkedList<Chunk> chunkArray = new LinkedList<Chunk>();
-                DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
-                ChunkClusterList chunklist = GameManager.Instance.World.ChunkClusters;
-                for (int i = 0; i < chunklist.Count; i++)
+                LinkedList<Chunk> _chunkArray = new LinkedList<Chunk>();
+                DictionaryList<Vector3i, TileEntity> _tiles = new DictionaryList<Vector3i, TileEntity>();
+                ChunkClusterList _chunklist = GameManager.Instance.World.ChunkClusters;
+                for (int i = 0; i < _chunklist.Count; i++)
                 {
-                    ChunkCluster chunk = chunklist[i];
-                    chunkArray = chunk.GetChunkArray();
-                    foreach (Chunk _c in chunkArray)
+                    ChunkCluster _chunk = _chunklist[i];
+                    _chunkArray = _chunk.GetChunkArray();
+                    foreach (Chunk _c in _chunkArray)
                     {
-                        tiles = _c.GetTileEntities();
-                        foreach (TileEntity tile in tiles.dict.Values)
+                        _tiles = _c.GetTileEntities();
+                        foreach (TileEntity _tile in _tiles.dict.Values)
                         {
-                            if (tile.GetTileEntityType().ToString().Equals("SecureLoot"))
+                            if (_tile.GetTileEntityType().ToString().Equals("SecureLoot"))
                             {
-                                TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
+                                TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)_tile;
                                 if (GameManager.Instance.adminTools.GetUserPermissionLevel(SecureLoot.GetOwner()) > Admin_Level)
                                 {
-                                    ItemStack[] items = SecureLoot.items;
+                                    ItemStack[] _items = SecureLoot.items;
                                     int slotNumber = 0;
-                                    foreach (ItemStack item in items)
+                                    foreach (ItemStack _item in _items)
                                     {
-                                        if (!item.IsEmpty())
+                                        if (!_item.IsEmpty())
                                         {
-                                            string _itemName = ItemClass.list[item.itemValue.type].Name;
+                                            string _itemName = ItemClass.list[_item.itemValue.type].Name;
                                             if (dict.Contains(_itemName))
                                             {
-                                                int _count = item.count;
                                                 ItemStack itemStack = new ItemStack();
                                                 SecureLoot.UpdateSlot(slotNumber, itemStack.Clone());
+                                                _tile.SetModified();
                                                 Vector3i _chestPos = SecureLoot.localChunkPos;
                                                 using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                 {
-                                                    sw.WriteLine("[SERVERTOOLS] Removed {0} {1}, from a secure loot located at {2} {3} {4}, owned by {5}", item.count, _itemName, _chestPos.x, _chestPos.y, _chestPos.z, SecureLoot.GetOwner());
+                                                    sw.WriteLine("[SERVERTOOLS] Removed {0} {1}, from a secure loot located at {2} {3} {4}, owned by {5}", _item.count, _itemName, _chestPos.x, _chestPos.y, _chestPos.z, SecureLoot.GetOwner());
                                                     sw.WriteLine();
                                                     sw.Flush();
                                                     sw.Close();
                                                 }
-                                                Log.Out(string.Format("[SERVERTOOLS] Removed {0} {1}, from a secure loot located at {2} {3} {4}, owned by {5}", item.count, _itemName, _chestPos.x, _chestPos.y, _chestPos.z, SecureLoot.GetOwner()));
+                                                Log.Out(string.Format("[SERVERTOOLS] Removed {0} {1}, from a secure loot located at {2} {3} {4}, owned by {5}", _item.count, _itemName, _chestPos.x, _chestPos.y, _chestPos.z, SecureLoot.GetOwner()));
                                             }
                                         }
                                         slotNumber++;

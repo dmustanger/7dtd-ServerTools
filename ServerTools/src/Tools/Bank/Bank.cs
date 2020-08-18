@@ -12,8 +12,6 @@ namespace ServerTools
         public static string Ingame_Coin = "casinoCoin", Command94 = "bank", Command95 = "deposit", Command96 = "withdraw", Command97 = "wallet deposit", Command98 = "wallet withdraw", Command99 = "transfer";
         public static int Deposit_Fee_Percent = 5;
         public static Dictionary<string, int> TransferId = new Dictionary<string, int>();
-        private static DictionaryList<Vector3i, TileEntity> tiles = new DictionaryList<Vector3i, TileEntity>();
-        private static LinkedList<Chunk> chunkArray = new LinkedList<Chunk>();
         private static string file = string.Format("Bank_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string filepath = string.Format("{0}/Logs/BankLogs/{1}", API.ConfigPath, file);
         private static System.Random random = new System.Random();
@@ -69,18 +67,47 @@ namespace ServerTools
             else
             {
                 AddId(_cInfo);
+                CurrentBankAndId(_cInfo);
             }
         }
 
         public static void AddId(ClientInfo _cInfo)
         {
-            int _rndId = random.Next(1000, 5001);
-            TransferId.Add(_cInfo.playerId, _rndId);
-            int _bank = PersistentContainer.Instance.Players[_cInfo.playerId].Bank;
-            string _message = "Your bank account is worth {Value}. Transfer Id is {Id}.";
-            _message = _message.Replace("{Value}", _bank.ToString());
-            _message = _message.Replace("{Id}", _rndId.ToString());
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            int _tranferId = GenerateTransferId();
+            if (_tranferId > 0)
+            {
+                TransferId.Add(_cInfo.playerId, _tranferId);
+            }
+        }
+
+        private static int GenerateTransferId()
+        {
+            int _id = random.Next(1000, 5001);
+            if (TransferId.ContainsValue(_id))
+            {
+                _id = random.Next(1000, 5001);
+                if (TransferId.ContainsValue(_id))
+                {
+                    _id = random.Next(1000, 5001);
+                    if (TransferId.ContainsValue(_id))
+                    {
+                        _id = random.Next(1000, 5001);
+                        return 0;
+                    }
+                    else
+                    {
+                        return _id;
+                    }
+                }
+                else
+                {
+                    return _id;
+                }
+            }
+            else
+            {
+                return _id;
+            }
         }
 
         public static void CheckLocation(ClientInfo _cInfo, string _amount, int _exec)
@@ -122,60 +149,73 @@ namespace ServerTools
 
         public static void ChestToBankDeposit(ClientInfo _cInfo, string _amount)
         {
-            ItemValue _itemValue = ItemClass.GetItem(Ingame_Coin, false);
-            if (CoinCheck(_cInfo, _itemValue))
+            if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
             {
-                int _value;
-                if (int.TryParse(_amount, out _value))
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                if (_player != null)
                 {
-                    _itemValue = new ItemValue(ItemClass.GetItem(Ingame_Coin).type, 1, 1, false, null, 1);
-                    int _currencyToRemove = _value;
-                    int _currencyRemoved = 0;
-                    ChunkClusterList chunklist = GameManager.Instance.World.ChunkClusters;
-                    for (int i = 0; i < chunklist.Count; i++)
+                    ItemValue _itemValue = new ItemValue(ItemClass.GetItem(Ingame_Coin).type, 1, 1, false, null, 1);
+                    if (_itemValue != null)
                     {
-                        if (_currencyToRemove > 0)
+                        int _coinId = _itemValue.GetItemOrBlockId();
+                        if (int.TryParse(_amount, out int _value))
                         {
-                            ChunkCluster chunk = chunklist[i];
-                            chunkArray = chunk.GetChunkArray();
-                            foreach (Chunk _c in chunkArray)
+                            if (_value > 0)
                             {
-                                tiles = _c.GetTileEntities();
-                                foreach (TileEntity tile in tiles.dict.Values)
+                                int _currencyToRemove = _value;
+                                int _currencyRemoved = 0;
+                                LinkedList<Chunk> _chunkArray = new LinkedList<Chunk>();
+                                DictionaryList<Vector3i, TileEntity> _tiles = new DictionaryList<Vector3i, TileEntity>();
+                                ChunkClusterList _chunklist = GameManager.Instance.World.ChunkClusters;
+                                for (int i = 0; i < _chunklist.Count; i++)
                                 {
-                                    TileEntityType type = tile.GetTileEntityType();
-                                    if (type.ToString().Equals("SecureLoot"))
+                                    ChunkCluster _chunk = _chunklist[i];
+                                    _chunkArray = _chunk.GetChunkArray();
+                                    foreach (Chunk _c in _chunkArray)
                                     {
-                                        TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)tile;
-                                        if (SecureLoot.IsUserAllowed(_cInfo.playerId) && !SecureLoot.IsUserAccessing())
+                                        _tiles = _c.GetTileEntities();
+                                        foreach (TileEntity _tile in _tiles.dict.Values)
                                         {
-                                            Vector3i vec3i = SecureLoot.ToWorldPos();
-                                            EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                                            if ((vec3i.x - _player.position.x) * (vec3i.x - _player.position.x) + (vec3i.z - _player.position.z) * (vec3i.z - _player.position.z) <= 2.5 * 2.5)
+                                            TileEntityType type = _tile.GetTileEntityType();
+                                            if (type.ToString().Equals("SecureLoot"))
                                             {
-                                                ItemStack[] _items = SecureLoot.items;
-                                                for (int j = 0; j < _items.Length; j++)
+                                                TileEntitySecureLootContainer SecureLoot = (TileEntitySecureLootContainer)_tile;
+                                                if (SecureLoot.IsUserAllowed(_cInfo.playerId) && !SecureLoot.IsUserAccessing())
                                                 {
-                                                    if (_currencyToRemove > 0)
+                                                    Vector3i vec3i = SecureLoot.ToWorldPos();
+                                                    if ((vec3i.x - _player.position.x) * (vec3i.x - _player.position.x) + (vec3i.z - _player.position.z) * (vec3i.z - _player.position.z) <= 3 * 3)
                                                     {
-                                                        if (!_items[j].IsEmpty() && _items[j].itemValue.GetItemOrBlockId() == _itemValue.GetItemOrBlockId())
+                                                        if (vec3i.y >= (int)_player.position.y - 3 && vec3i.y <= (int)_player.position.y + 3)
                                                         {
-                                                            if (_items[j].count <= _currencyToRemove)
+                                                            ItemStack[] _items = SecureLoot.items;
+                                                            if (_items != null && _items.Length > 0)
                                                             {
-                                                                int _newCount = _currencyToRemove - _items[j].count;
-                                                                int _newCount2 = _currencyRemoved + _items[j].count;
-                                                                _currencyToRemove = _newCount;
-                                                                _currencyRemoved = _newCount2;
-                                                                _items[j] = ItemStack.Empty.Clone();
-                                                            }
-                                                            else
-                                                            {
-                                                                int _newCount = _currencyRemoved + _currencyToRemove;
-                                                                int _newStackCount = _items[j].count - _currencyToRemove;
-                                                                _currencyToRemove = 0;
-                                                                _currencyRemoved = _newCount;
-                                                                _items[j] = new ItemStack(_itemValue, _newStackCount);
-                                                                break;
+                                                                for (int j = 0; j < _items.Length; j++)
+                                                                {
+                                                                    if (_currencyToRemove > 0)
+                                                                    {
+                                                                        if (!_items[j].IsEmpty() && _items[j].itemValue.GetItemOrBlockId() == _coinId)
+                                                                        {
+                                                                            if (_items[j].count <= _currencyToRemove)
+                                                                            {
+                                                                                int _newCount = _currencyToRemove - _items[j].count;
+                                                                                int _newCount2 = _currencyRemoved + _items[j].count;
+                                                                                _currencyToRemove = _newCount;
+                                                                                _currencyRemoved = _newCount2;
+                                                                                _items[j] = ItemStack.Empty.Clone();
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                int _newCount = _currencyRemoved + _currencyToRemove;
+                                                                                int _newStackCount = _items[j].count - _currencyToRemove;
+                                                                                _currencyToRemove = 0;
+                                                                                _currencyRemoved = _newCount;
+                                                                                _items[j] = new ItemStack(_itemValue, _newStackCount);
+                                                                            }
+                                                                            _tile.SetModified();
+                                                                        }
+                                                                    }
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -184,147 +224,149 @@ namespace ServerTools
                                         }
                                     }
                                 }
+                                if (_currencyRemoved > 0)
+                                {
+                                    if (Deposit_Fee_Percent > 0)
+                                    {
+                                        float _fee = _currencyRemoved * ((float)Deposit_Fee_Percent / 100);
+                                        int _adjustedDeposit = _currencyRemoved - (int)_fee;
+                                        AddCoinsToBank(_cInfo.playerId, _adjustedDeposit);
+                                        string _message = "Deposited {Value} {Name} from the secure loot to your bank account. " + "{Percent}" + "% deposit fee was applied.";
+                                        _message = _message.Replace("{Value}", _adjustedDeposit.ToString());
+                                        _message = _message.Replace("{Name}", Ingame_Coin);
+                                        _message = _message.Replace("{Percent}", Deposit_Fee_Percent.ToString());
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        using (StreamWriter sw = new StreamWriter(filepath, true))
+                                        {
+                                            sw.WriteLine(string.Format("{0}: {1} {2} has added {3} to their bank account from a secure loot.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _adjustedDeposit));
+                                            sw.WriteLine();
+                                            sw.Flush();
+                                            sw.Close();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        AddCoinsToBank(_cInfo.playerId, _currencyRemoved);
+                                        string _message = "Deposited {Value} {Name} from the secure loot to your bank account.";
+                                        _message = _message.Replace("{Value}", _currencyRemoved.ToString());
+                                        _message = _message.Replace("{Name}", Ingame_Coin);
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        using (StreamWriter sw = new StreamWriter(filepath, true))
+                                        {
+                                            sw.WriteLine(string.Format("{0}: {1} {2} has added {3} to their bank account from a secure loot.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _currencyRemoved));
+                                            sw.WriteLine();
+                                            sw.Flush();
+                                            sw.Close();
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    string _message = "Could not find any {CoinName} in a near by secure loot.";
+                                    _message = _message.Replace("{CoinName}", Ingame_Coin);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
                             }
-                        }
-                    }
-                    if (_currencyRemoved > 0)
-                    {
-                        if (Deposit_Fee_Percent > 0)
-                        {
-                            int _depositFeePercent = Deposit_Fee_Percent / 100;
-                            int _depositFee = (int)_currencyRemoved * _depositFeePercent;
-                            int _adjustedDeposit = _currencyRemoved - _depositFee;
-                            AddCoinsToBank(_cInfo.playerId, _adjustedDeposit);
-                            string _message = "Deposited {Value} {Name} from the secure loot to your bank account. " + " {Percent}" + "% fee was applied.";
-                            _message = _message.Replace("{Value}", _value.ToString());
-                            _message = _message.Replace("{Name}", Ingame_Coin);
-                            _message = _message.Replace("{Percent}", Deposit_Fee_Percent.ToString());
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            using (StreamWriter sw = new StreamWriter(filepath, true))
+                            else
                             {
-                                sw.WriteLine(string.Format("{0}: {1} has added {2} to their bank account from a secure loot.", DateTime.Now, _cInfo.playerName, _currencyRemoved));
-                                sw.WriteLine();
-                                sw.Flush();
-                                sw.Close();
-                            }
-                            using (StreamWriter sw = new StreamWriter(filepath, true))
-                            {
-                                sw.WriteLine(string.Format("{0}: {1} has added {2} to their bank account from a secure loot.", DateTime.Now, _cInfo.playerName, _adjustedDeposit));
-                                sw.WriteLine();
-                                sw.Flush();
-                                sw.Close();
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You input an invalid integer. Type " + ChatHook.Command_Private + Command95 + " #[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                         else
                         {
-                            AddCoinsToBank(_cInfo.playerId, _currencyRemoved);
-                            string _message = "Removed {Total} {Name} and deposited it to your bank. ";
-                            _message = _message.Replace("{Total}", _currencyRemoved.ToString());
-                            _message = _message.Replace("{Name}", Ingame_Coin);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                            using (StreamWriter sw = new StreamWriter(filepath, true))
-                            {
-                                sw.WriteLine(string.Format("{0}: {1} has added {2} to their bank account from a secure loot.", DateTime.Now, _cInfo.playerName, _currencyRemoved));
-                                sw.WriteLine();
-                                sw.Flush();
-                                sw.Close();
-                            }
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You input an invalid integer. Type " + ChatHook.Command_Private + Command95 + " #[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
                     {
-                        string _message = "Could not find any {Name} in a near by secure loot.";
-                        _message = _message.Replace("{Name}", Ingame_Coin);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "The bank coin is not setup correctly, contact the server Admin.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        Log.Out(string.Format("[SERVERTOOLS] Bank operation failed. Unable to find item {0}. Check the default game currency from your items.xml", Ingame_Coin));
                     }
-                }
-                else
-                {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You input an invalid integer. Type " + ChatHook.Command_Private + Command95 + " #.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
 
         public static void BankToPlayerWithdraw(ClientInfo _cInfo, string _amount)
         {
-            ItemValue _itemValue = ItemClass.GetItem(Ingame_Coin, false);
-            if (CoinCheck(_cInfo, _itemValue))
+            if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
             {
-                int _value;
-                if (int.TryParse(_amount, out _value))
+                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                if (_player != null && _player.IsSpawned())
                 {
-                    int _bank = GetCurrentBank(_cInfo.playerId);
-                    if (_bank >= _value)
+                    ItemValue _itemValue = ItemClass.GetItem(Ingame_Coin, false);
+                    if (_itemValue != null)
                     {
-                        int _maxAllowed = _itemValue.ItemClass.Stacknumber.Value;
-                        if (_value <= _maxAllowed)
+                        int _value;
+                        if (int.TryParse(_amount, out _value))
                         {
-                            EntityAlive _player = GameManager.Instance.World.Players.dict[_cInfo.entityId] as EntityAlive;
-                            ItemStack itemStack = new ItemStack(_itemValue, _value);
-                            if (_player.IsSpawned() && _player.bag.CanTakeItem(itemStack))
+                            int _bank = GetCurrentBank(_cInfo.playerId);
+                            if (_bank >= _value)
                             {
-                                var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                                int _maxAllowed = _itemValue.ItemClass.Stacknumber.Value;
+                                if (_value <= _maxAllowed)
                                 {
-                                    entityClass = EntityClass.FromString("item"),
-                                    id = EntityFactory.nextEntityID++,
-                                    itemStack = itemStack,
-                                    pos = _player.position,
-                                    rot = new Vector3(20f, 0f, 20f),
-                                    lifetime = 60f,
-                                    belongsPlayerId = _cInfo.entityId
-                                });
-                                GameManager.Instance.World.SpawnEntityInWorld(entityItem);
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                                GameManager.Instance.World.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
-                                SubtractCoinsFromBank(_cInfo.playerId, _value);
-                                string _message = "You have received the {Name} in your bag.";
-                                _message = _message.Replace("{Name}", Ingame_Coin);
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                using (StreamWriter sw = new StreamWriter(filepath, true))
+                                    ItemStack itemStack = new ItemStack(_itemValue, _value);
+                                    if (itemStack != null)
+                                    {
+                                        if (_player.bag.CanTakeItem(itemStack))
+                                        {
+                                            string _message = "Your bag can not take all of the {Name}. Check on the ground by your feet.";
+                                            _message = _message.Replace("{Name}", Ingame_Coin);
+                                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        }
+                                        else
+                                        {
+                                            string _message = "You have received the {Name} in your bag.";
+                                            _message = _message.Replace("{Name}", Ingame_Coin);
+                                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        }
+                                        SubtractCoinsFromBank(_cInfo.playerId, _value);
+                                        using (StreamWriter sw = new StreamWriter(filepath, true))
+                                        {
+                                            sw.WriteLine(string.Format("{0}: {1} has removed {2} from their bank account as {3}.", DateTime.Now, _cInfo.playerName, _value, Ingame_Coin));
+                                            sw.WriteLine();
+                                            sw.Flush();
+                                            sw.Close();
+                                        }
+                                        var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
+                                        {
+                                            entityClass = EntityClass.FromString("item"),
+                                            id = EntityFactory.nextEntityID++,
+                                            itemStack = itemStack,
+                                            pos = _player.position,
+                                            rot = new Vector3(20f, 0f, 20f),
+                                            lifetime = 60f,
+                                            belongsPlayerId = _cInfo.entityId
+                                        });
+                                        GameManager.Instance.World.SpawnEntityInWorld(entityItem);
+                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                                        GameManager.Instance.World.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                                    }
+                                }
+                                else
                                 {
-                                    sw.WriteLine(string.Format("{0}: {1} has removed {2} from their bank account as {3}.", DateTime.Now, _cInfo.playerName, _value, Ingame_Coin));
-                                    sw.WriteLine();
-                                    sw.Flush();
-                                    sw.Close();
+                                    string _message = "You can only withdraw a full stack at a time. The maximum stack size is {Max}.";
+                                    _message = _message.Replace("{Max}", _maxAllowed.ToString());
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             else
                             {
-                                var entityItem = (EntityItem)EntityFactory.CreateEntity(new EntityCreationData
-                                {
-                                    entityClass = EntityClass.FromString("item"),
-                                    id = EntityFactory.nextEntityID++,
-                                    itemStack = itemStack,
-                                    pos = _player.position,
-                                    rot = new Vector3(20f, 0f, 20f),
-                                    lifetime = 60f,
-                                    belongsPlayerId = _cInfo.entityId
-                                });
-                                GameManager.Instance.World.SpawnEntityInWorld(entityItem);
-                                SubtractCoinsFromBank(_cInfo.playerId, _value);
-                                string _message = "Your bag could not take all of the {Name}. Dropped the stack on the ground by your feet.";
-                                _message = _message.Replace("{Name}", Ingame_Coin);
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                string _message = "Your bank account does not have enough to withdraw that value. Bank account is currently {Total}";
+                                _message = _message.Replace("{Total}", _bank.ToString());
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
-                            
                         }
                         else
                         {
-                            string _message = "You can only withdraw a full stack at a time. The maximum stack size is {Max}.";
-                            _message = _message.Replace("{Max}", _maxAllowed.ToString());
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You input an invalid integer. Type " + ChatHook.Command_Private + Command96 + " #.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
                     {
-                        string _message = "Your bank account does not have enough to withdraw that value. Bank account is currently {Total}";
-                        _message = _message.Replace("{Total}", _bank.ToString());
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "The bank coin is not setup correctly, contact the server Admin.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        Log.Out(string.Format("[SERVERTOOLS] Bank operation failed. Unable to find item {0}. Check the default game currency from your items.xml", Ingame_Coin));
                     }
-                }
-                else
-                {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You input an invalid integer. Type " + ChatHook.Command_Private + Command96 + " #.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -484,17 +526,6 @@ namespace ServerTools
             {
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You input an invalid transfer. Type " + ChatHook.Command_Private + Command99 + " Id #. Get the Id from the player you are transferring to.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
-        }
-
-        public static bool CoinCheck(ClientInfo _cInfo, ItemValue _itemValue)
-        {
-            if (_itemValue.type == ItemValue.None.type)
-            {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "The bank coin is not setup correctly, contact the server Admin.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                Log.Out(string.Format("[SERVERTOOLS] Unable to find item {0}", Ingame_Coin));
-                return false;
-            }
-            return true;
         }
     }
 }

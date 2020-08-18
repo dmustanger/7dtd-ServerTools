@@ -59,19 +59,22 @@
     <Compile Include="src\ConsoleCommands\WebsiteConsole.cs" />
     <Compile Include="src\Harmony\PatchTools.cs" />
     <Compile Include="src\Harmony\Injections.cs" />
+    <Compile Include="src\Serialize\ItemStackSerializable.cs" />
     <Compile Include="src\Tools\AutoBackup\AutoBackup.cs" />
     <Compile Include="src\Tools\Bank\Bank.cs" />
     <Compile Include="src\Tools\Block_Logger\BlockLogger.cs" />
     <Compile Include="src\Tools\Bloodmoon_Warrior\Bloodmoon_Warrior.cs" />
     <Compile Include="src\Tools\BreakTime\BreakTime.cs" />
+    <Compile Include="src\Tools\ConsoleCommandLog\Console_Command_Log.cs" />
     <Compile Include="src\Tools\Market\Market.cs" />
     <Compile Include="src\Tools\OutputLog\Confirm.cs" />
     <Compile Include="src\Tools\Poll\Poll.cs" />
     <Compile Include="src\Tools\ProtectedSpaces\ProtectedSpaces.cs" />
+    <Compile Include="src\Tools\NewWorld\NewWorld.cs" />
     <Compile Include="src\Tools\Session\Session.cs" />
     <Compile Include="src\Tools\ChatColorPrefix\ChatColorPrefix.cs" />
     <Compile Include="src\Tools\ScoutPlayer\ScoutPlayer.cs" />
-    <Compile Include="src\Chat\CommandLog\CommandLog.cs" />
+    <Compile Include="src\Chat\ChatCommandLog\ChatCommandLog.cs" />
     <Compile Include="src\ConsoleCommands\AdminChatCommandConsole.cs" />
     <Compile Include="src\ConsoleCommands\AutoBackupConsole.cs" />
     <Compile Include="src\ConsoleCommands\BanPlayerConsole.cs" />
@@ -208,7 +211,6 @@
     <Compile Include="src\Tools\Wallet\Wallet.cs" />
     <Compile Include="src\ConsoleCommands\%40AdminConsole.cs" />
     <Compile Include="src\ConsoleCommands\FamilyShareConsole.cs" />
-    <Compile Include="src\ConsoleCommands\GiveBlockConsole.cs" />
     <Compile Include="src\ConsoleCommands\GiveItemConsole.cs" />
     <Compile Include="src\ConsoleCommands\GiveStartingItemsConsole.cs" />
     <Compile Include="src\ConsoleCommands\LobbyConsole.cs" />
@@ -258,9 +260,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lib.Harmony.1.2.0.1\lib\net45\0Harmony.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="0Harmony, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lib.Harmony.2.0.2\lib\net45\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\7dtd-binaries\Assembly-CSharp.dll</HintPath>

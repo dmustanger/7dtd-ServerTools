@@ -8,7 +8,7 @@ namespace ServerTools
 {
     public class LoadConfig
     {
-        public const string version = "19.0.4";
+        public const string version = "19.0.5";
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
         private const string configFile = "ServerToolsConfig.xml";
@@ -65,7 +65,7 @@ namespace ServerTools
                         }
                         else if (_line.GetAttribute("Version") != version)
                         {
-                            Log.Out("[SERVERTOOLS] Detected version update");
+                            Log.Out("[SERVERTOOLS] Detected updated version of ServerTools");
                             string _version = _line.GetAttribute("Version");
                             string[] _files = Directory.GetFiles(API.ConfigPath, "*.xml");
                             if (!Directory.Exists(API.ConfigPath + "/XMLBackups"))
@@ -205,26 +205,6 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Delay_Between_Uses"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out AuctionBox.Delay_Between_Uses))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Cancel_Time"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry because of missing 'Cancel_Time' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!int.TryParse(_line.GetAttribute("Cancel_Time"), out AuctionBox.Cancel_Time))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry because of invalid (non-numeric) value for 'Cancel_Time' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
                                 if (!_line.HasAttribute("No_Admins"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry because of missing 'No_Admins' attribute: {0}", subChild.OuterXml));
@@ -243,6 +223,26 @@ namespace ServerTools
                                 if (!int.TryParse(_line.GetAttribute("Admin_Level"), out AuctionBox.Admin_Level))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Total_Items"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry because of missing 'Total_Items' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Total_Items"), out AuctionBox.Total_Items))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry because of invalid (non-numeric) value for 'Total_Items' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Tax"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry because of missing 'Tax' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Tax"), out AuctionBox.Tax))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Auction entry because of invalid (non-numeric) value for 'Tax' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -539,6 +539,26 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon_Warrior entry because of invalid (non-numeric) value for 'Zombie_Kills' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("Chance"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon_Warrior entry because of missing 'Chance' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Chance"), out BloodmoonWarrior.Chance))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon_Warrior entry because of invalid (non-numeric) value for 'Chance' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Reduce_Death_Count"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon_Warrior entry because of missing 'Reduce_Death_Count' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Reduce_Death_Count"), out BloodmoonWarrior.Reduce_Death_Count))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Bloodmoon_Warrior entry because of invalid (True/False) value for 'Reduce_Death_Count' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                             case "Bounties":
                                 if (!_line.HasAttribute("Enable"))
@@ -622,6 +642,18 @@ namespace ServerTools
                                 if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatColorPrefix.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Color_Prefix entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
+                            case "Chat_Command_Log":
+                                if (!_line.HasAttribute("Enable"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Log entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ChatCommandLog.IsEnabled))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Chat_Command_Log entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -768,15 +800,15 @@ namespace ServerTools
                                     ClanManager.Private_Chat_Color = _line.GetAttribute("Private_Chat_Color");
                                 }
                                 break;
-                            case "Command_Log":
+                            case "Console_Command_Log":
                                 if (!_line.HasAttribute("Enable"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Command_Log entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Console_Command_Log entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out CommandLog.IsEnabled))
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out ConsoleCommandLog.IsEnabled))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Command_Log entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Console_Command_Log entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -1595,6 +1627,16 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("Show_Level"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry because of missing 'Show_Level' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!bool.TryParse(_line.GetAttribute("Show_Level"), out KillNotice.Show_Level))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Kill_Notice entry because of invalid (True/False) value for 'Show_Level' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 break;
                             case "Lobby":
                                 if (!_line.HasAttribute("Enable"))
@@ -1731,7 +1773,7 @@ namespace ServerTools
                                 }
                                 if (!int.TryParse(_line.GetAttribute("Days_Before_Log_Delete"), out LoadProcess.Days_Before_Log_Delete))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Logs entry because of invalid (True/False) value for 'Days_Before_Log_Delete' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Logs entry because of invalid (non-numeric) value for 'Days_Before_Log_Delete' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -2279,6 +2321,48 @@ namespace ServerTools
                                 if (!bool.TryParse(_line.GetAttribute("Enable"), out ProtectedSpaces.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Protected_Spaces entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
+                            case "PvE_Violations":
+                                if (!_line.HasAttribute("Jail"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry because of missing 'Jail' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Jail"), out PersistentOperations.Jail_Violation))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry because of invalid (True/False) value for 'Jail' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Kill"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry because of missing 'Kill' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Kill"), out PersistentOperations.Kill_Violation))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry because of invalid (True/False) value for 'Kill' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Kick"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry because of missing 'Kick' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Kick"), out PersistentOperations.Kick_Violation))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry because of invalid (True/False) value for 'Kick' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!_line.HasAttribute("Ban"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry because of missing 'Ban' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Ban"), out PersistentOperations.Ban_Violation))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring PvE_Violations entry because of invalid (True/False) value for 'Ban' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -3221,46 +3305,6 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Kill_Enabled"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing 'Kill_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Kill_Enabled"), out Zones.Kill_Enabled))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of invalid (True/False) value for 'Kill_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Jail_Enabled"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing 'Jail_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Jail_Enabled"), out Zones.Jail_Enabled))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of invalid (True/False) value for 'Jail_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Kick_Enabled"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing 'Kick_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Kick_Enabled"), out Zones.Kick_Enabled))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of invalid (True/False) value for 'Kick_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!_line.HasAttribute("Ban_Enabled"))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing 'Ban_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
-                                if (!bool.TryParse(_line.GetAttribute("Ban_Enabled"), out Zones.Ban_Enabled))
-                                {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of invalid (True/False) value for 'Ban_Enabled' attribute: {0}", subChild.OuterXml));
-                                    continue;
-                                }
                                 if (!_line.HasAttribute("Zone_Message"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing 'Zone_Message' attribute: {0}", subChild.OuterXml));
@@ -3271,8 +3315,6 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of invalid (True/False) value for 'Zone_Message' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                break;
-                            case "Zones_Extended":
                                 if (!_line.HasAttribute("Reminder_Notice_Delay"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing 'Reminder_Notice_Delay' attribute: {0}", subChild.OuterXml));
@@ -3315,7 +3357,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Admin_List\" Enable=\"{0}\" Admin_Level=\"{1}\" Moderator_Level=\"{2}\" />", AdminList.IsEnabled, AdminList.Admin_Level, AdminList.Mod_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Animal_Tracking\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Minimum_Spawn_Radius=\"{2}\" Maximum_Spawn_Radius=\"{3}\" Entity_Id=\"{4}\" Command_Cost=\"{5}\" />", Animals.IsEnabled, Animals.Delay_Between_Uses, Animals.Minimum_Spawn_Radius, Animals.Maximum_Spawn_Radius, Animals.Animal_List, Animals.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Announce_Invalid_Item_Stack\" Enable=\"{0}\" />", InvalidItems.Announce_Invalid_Stack));
-                sw.WriteLine(string.Format("        <Tool Name=\"Auction\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Cancel_Time=\"{2}\" No_Admins=\"{3}\" Admin_Level=\"{4}\" />", AuctionBox.IsEnabled, AuctionBox.Delay_Between_Uses, AuctionBox.Cancel_Time, AuctionBox.No_Admins, AuctionBox.Admin_Level));
+                sw.WriteLine(string.Format("        <Tool Name=\"Auction\" Enable=\"{0}\" No_Admins=\"{1}\" Admin_Level=\"{2}\" Total_Items=\"{3}\" Tax=\"{4}\" />", AuctionBox.IsEnabled, AuctionBox.No_Admins, AuctionBox.Admin_Level, AuctionBox.Total_Items, AuctionBox.Tax));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Backup\" Enable=\"{0}\" Delay_Between_Saves=\"{1}\" Destination=\"{2}\" Compression_Level=\"{3}\" Backup_Count=\"{4}\" />", AutoBackup.IsEnabled, AutoBackup.Delay, AutoBackup.Destination, AutoBackup.Compression_Level, AutoBackup.Backup_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Save_World\" Enable=\"{0}\" Delay_Between_Saves=\"{1}\" />", AutoSaveWorld.IsEnabled, AutoSaveWorld.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bad_Word_Filter\" Enable=\"{0}\" Invalid_Name=\"{1}\" />", Badwords.IsEnabled, Badwords.Invalid_Name));
@@ -3323,16 +3365,17 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Battle_Loggers\" Enable=\"{0}\" Player_Distance=\"{1}\" All=\"{2}\" Belt=\"{3}\" Bag=\"{4}\" Equipment=\"{5}\" Admin_Level=\"{6}\" />", BattleLogger.IsEnabled, BattleLogger.Player_Distance, BattleLogger.All, BattleLogger.Belt, BattleLogger.Bag, BattleLogger.Equipment, BattleLogger.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Block_Logger\" Enable=\"{0}\" />", BlockLogger.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Show_On_Respawn=\"{1}\" Auto_Show=\"{2}\" Delay=\"{3}\" />", Bloodmoon.IsEnabled, Bloodmoon.Show_On_Respawn, Bloodmoon.Auto_Show, Bloodmoon.Delay));
-                sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon_Warrior\" Enable=\"{0}\" Zombie_Kills=\"{1}\" />", BloodmoonWarrior.IsEnabled, BloodmoonWarrior.Zombie_Kills));
+                sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon_Warrior\" Enable=\"{0}\" Zombie_Kills=\"{1}\" Chance=\"{2}\" Reduce_Death_Count=\"{3}\" />", BloodmoonWarrior.IsEnabled, BloodmoonWarrior.Zombie_Kills, BloodmoonWarrior.Chance, BloodmoonWarrior.Reduce_Death_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bounties\" Enable=\"{0}\" Minimum_Bounty=\"{1}\" Kill_Streak=\"{2}\" Bonus=\"{3}\" />", Bounties.IsEnabled, Bounties.Minimum_Bounty, Bounties.Kill_Streak, Bounties.Bonus));
                 sw.WriteLine(string.Format("        <Tool Name=\"Break_Reminder\" Enable=\"{0}\" Break_Time=\"{1}\" Break_Message=\"{2}\" />", BreakTime.IsEnabled, BreakTime.Break_Time, BreakTime.Break_Message));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Color_Prefix\" Enable=\"{0}\" />", ChatColorPrefix.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Log\" Enable=\"{0}\" />", ChatCommandLog.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response\" Server_Response_Name=\"{0}\" Main_Color=\"{1}\" Chat_Command_Private=\"{2}\" Chat_Command_Public=\"{3}\" />", Server_Response_Name, Chat_Response_Color, ChatHook.Command_Private, ChatHook.Command_Public));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Command_Response_Extended\" Friend_Chat_Color=\"{0}\" Party_Chat_Color=\"{1}\" />", ChatHook.Friend_Chat_Color, ChatHook.Party_Chat_Color));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Flood_Protection\" Enable=\"{0}\" Max_Length=\"{1}\" Messages_Per_Min=\"{2}\" Wait_Time=\"{3}\" />", ChatHook.ChatFlood, ChatHook.Max_Length, ChatHook.Messages_Per_Min, ChatHook.Wait_Time));
                 sw.WriteLine(string.Format("        <Tool Name=\"Chat_Logger\" Enable=\"{0}\" />", ChatLog.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Clan_Manager\" Enable=\"{0}\" Max_Name_Length=\"{1}\" Private_Chat_Color=\"{2}\" />", ClanManager.IsEnabled, ClanManager.Max_Name_Length, ClanManager.Private_Chat_Color));
-                sw.WriteLine(string.Format("        <Tool Name=\"Command_Log\" Enable=\"{0}\" />", CommandLog.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Console_Command_Log\" Enable=\"{0}\" />", ConsoleCommandLog.IsEnabled));
                 //sw.WriteLine(string.Format("        <Tool Name=\"Country_Ban\" Enable=\"{0}\" Countries_Not_Allowed=\"CN,IL\" />", CountryBan.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Credentials\" Enable=\"{0}\" No_Family_Share=\"{1}\" No_Bad_Id=\"{2}\" No_Internal=\"{3}\" Admin_Level=\"{4}\" />", CredentialCheck.IsEnabled, CredentialCheck.Family_Share, CredentialCheck.Bad_Id, CredentialCheck.No_Internal, CredentialCheck.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Custom_Commands\" Enable=\"{0}\" />", CustomCommands.IsEnabled));
@@ -3357,7 +3400,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Invalid_Item_Kicker\" Enable=\"{0}\" Ban=\"{1}\" Admin_Level=\"{2}\" Check_Storage=\"{3}\" />", InvalidItems.IsEnabled, InvalidItems.Ban_Player, InvalidItems.Admin_Level, InvalidItems.Check_Storage));
                 sw.WriteLine(string.Format("        <Tool Name=\"Jail\" Enable=\"{0}\" Jail_Size=\"{1}\" Jail_Position=\"{2}\" Jail_Shock=\"{3}\" />", Jail.IsEnabled, Jail.Jail_Size, Jail.Jail_Position, Jail.Jail_Shock));
                 sw.WriteLine(string.Format("        <Tool Name=\"Kick_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", KickVote.IsEnabled, KickVote.Players_Online, KickVote.Votes_Needed));
-                sw.WriteLine(string.Format("        <Tool Name=\"Kill_Notice\" Enable=\"{0}\" />", KillNotice.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"Kill_Notice\" Enable=\"{0}\" Show_Level=\"{1}\" />", KillNotice.IsEnabled, KillNotice.Show_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Lobby\" Enable=\"{0}\" Return=\"{1}\" Delay_Between_Uses=\"{2}\" Lobby_Size=\"{3}\" Lobby_Position=\"{4}\" Donor_Only=\"{5}\" />", Lobby.IsEnabled, Lobby.Return, Lobby.Delay_Between_Uses, Lobby.Lobby_Size, Lobby.Lobby_Position, Lobby.Donor_Only));
                 sw.WriteLine(string.Format("        <Tool Name=\"Lobby_Extended\" Command_Cost=\"{0}\" Player_Check=\"{1}\" Zombie_Check=\"{2}\" PvE=\"{3}\" />", Lobby.Command_Cost, Lobby.Player_Check, Lobby.Zombie_Check, Lobby.PvE));
                 sw.WriteLine(string.Format("        <Tool Name=\"Location\" Enable=\"{0}\" />", Loc.IsEnabled));
@@ -3381,6 +3424,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Prayer\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Command_Cost=\"{2}\" />", Prayer.IsEnabled, Prayer.Delay_Between_Uses, Prayer.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Private_Message\" Enable=\"{0}\" />", Whisper.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Protected_Spaces\" Enable=\"{0}\" />", ProtectedSpaces.IsEnabled));
+                sw.WriteLine(string.Format("        <Tool Name=\"PvE_Violations\" Jail=\"{0}\" Kill=\"{1}\" Kick=\"{2}\" Ban=\"{3}\" />", PersistentOperations.Jail_Violation, PersistentOperations.Kill_Violation, PersistentOperations.Kick_Violation, PersistentOperations.Ban_Violation));
                 sw.WriteLine(string.Format("        <Tool Name=\"Real_World_Time\" Enable=\"{0}\" Delay=\"{1}\" Time_Zone=\"{2}\" Adjustment=\"{3}\" />", RealWorldTime.IsEnabled, RealWorldTime.Delay, RealWorldTime.Time_Zone, RealWorldTime.Adjustment));
                 sw.WriteLine(string.Format("        <Tool Name=\"Report\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Admin_Level=\"{2}\" />", Report.IsEnabled, Report.Delay, Report.Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Reserved_Slots\" Enable=\"{0}\" Session_Time=\"{1}\" Admin_Level=\"{2}\" Reduced_Delay=\"{3}\" />", ReservedSlots.IsEnabled, ReservedSlots.Session_Time, ReservedSlots.Admin_Level, ReservedSlots.Reduced_Delay));
@@ -3407,8 +3451,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Weather_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", WeatherVote.IsEnabled, WeatherVote.Players_Online, WeatherVote.Votes_Needed));
                 sw.WriteLine(string.Format("        <Tool Name=\"Website\" Enable=\"{0}\" />", WebsiteServer.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"World_Radius\" Enable=\"{0}\" Normal_Player=\"{1}\" Reserved=\"{2}\" Admin_Level=\"{3}\" />", WorldRadius.IsEnabled, WorldRadius.Normal_Player, WorldRadius.Reserved, WorldRadius.Admin_Level));
-                sw.WriteLine(string.Format("        <Tool Name=\"Zones\" Enable=\"{0}\" Kill_Enabled=\"{1}\" Jail_Enabled=\"{2}\" Kick_Enabled=\"{3}\" Ban_Enabled=\"{4}\" Zone_Message=\"{5}\" />", Zones.IsEnabled, Zones.Kill_Enabled, Zones.Jail_Enabled, Zones.Kick_Enabled, Zones.Ban_Enabled, Zones.Zone_Message));
-                sw.WriteLine(string.Format("        <Tool Name=\"Zones_Extended\" Reminder_Notice_Delay=\"{0}\" Set_Home=\"{1}\" />", Zones.Reminder_Delay, Zones.Set_Home));
+                sw.WriteLine(string.Format("        <Tool Name=\"Zones\" Enable=\"{0}\" Zone_Message=\"{1}\" Reminder_Notice_Delay=\"{2}\" Set_Home=\"{3}\"  />", Zones.IsEnabled, Zones.Zone_Message, Zones.Reminder_Delay, Zones.Set_Home));
                 sw.WriteLine("    </Tools>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();

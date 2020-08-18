@@ -168,7 +168,7 @@ namespace ServerTools
                         _phrase561 = "You can go back by typing {CommandPrivate}{Command51} when you are ready to leave the market.";
                     }
                     _phrase561 = _phrase561.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                    _phrase561 = _phrase561.Replace("{Command51}", Market.Command51);
+                    _phrase561 = _phrase561.Replace("{Command51}", Command51);
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase561 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 string[] _cords = { };
@@ -243,7 +243,9 @@ namespace ServerTools
                         string _phrase564;
                         if (!Phrases.Dict.TryGetValue(564, out _phrase564))
                         {
-                            _phrase564 = "You are outside the market and can no longer return to your position.";
+                            _phrase564 = "You have left the market space. {CommandPrivate}{Command51} command is no longer available.";
+                            _phrase564 = _phrase564.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                            _phrase564 = _phrase564.Replace("{Command51}", Command51);
                         }
                         ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase564 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
@@ -267,9 +269,9 @@ namespace ServerTools
                     string _phrase564;
                     if (!Phrases.Dict.TryGetValue(564, out _phrase564))
                     {
-                        _phrase564 = "You have left the market space. {PrivateCommand}{Command51} command is no longer available.";
-                        _phrase564 = _phrase564.Replace("{PrivateCommand}", ChatHook.Command_Private);
-                        _phrase564 = _phrase564.Replace("{Command51}", Market.Command51);
+                        _phrase564 = "You have left the market space. {CommandPrivate}{Command51} command is no longer available.";
+                        _phrase564 = _phrase564.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                        _phrase564 = _phrase564.Replace("{Command51}", Command51);
                     }
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase564 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }

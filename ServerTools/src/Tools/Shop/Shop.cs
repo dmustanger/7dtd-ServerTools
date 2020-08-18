@@ -509,7 +509,7 @@ namespace ServerTools
                 });
                 world.SpawnEntityInWorld(entityItem);
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Killed);
+                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _price);
                 Log.Out(string.Format("Sold {0} to {1}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
                 string _message = "{Count} {Item} was purchased through the shop. If your bag is full, check the ground.";

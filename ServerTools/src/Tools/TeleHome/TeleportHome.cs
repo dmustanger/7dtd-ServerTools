@@ -168,11 +168,10 @@ namespace ServerTools
 
         private static void TeleHome1(ClientInfo _cInfo, string _pos)
         {
-            int x, y, z;
             string[] _cords = _pos.Split(',');
-            int.TryParse(_cords[0], out x);
-            int.TryParse(_cords[1], out y);
-            int.TryParse(_cords[2], out z);
+            int.TryParse(_cords[0], out int x);
+            int.TryParse(_cords[1], out int y);
+            int.TryParse(_cords[2], out int z);
             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
             if (Wallet.IsEnabled && Command_Cost >= 1)
             {

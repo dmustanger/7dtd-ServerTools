@@ -87,14 +87,10 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Custom Commands entry because of missing a Hidden attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        bool _boolTest = false;
                         if (!_line.HasAttribute("Permission"))
                         {
-                            if (!bool.TryParse(_line.GetAttribute("Permission"), out _boolTest))
-                            {
-                                Log.Warning(string.Format("[SERVERTOOLS] Ignoring Custom Commands entry because of invalid (True/False) value for 'Permission' attribute: {0}", subChild.OuterXml));
-                                continue;
-                            }
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Custom Commands entry because of invalid (True/False) value for 'Permission' attribute: {0}", subChild.OuterXml));
+                            continue;
                         }
                         int _delay = 0;
                         if (_line.HasAttribute("DelayBetweenUses"))
@@ -396,7 +392,7 @@ namespace ServerTools
             if (AuctionBox.IsEnabled)
             {
                 _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, AuctionBox.Command71);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, AuctionBox.Command72);
+                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, AuctionBox.Command72);
                 _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, AuctionBox.Command73);
                 _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, AuctionBox.Command74);
                 if (_commands.Length >= 100)

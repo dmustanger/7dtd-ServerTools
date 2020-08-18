@@ -4,17 +4,12 @@ using System.Collections.Generic;
 namespace ServerTools
 {
     [Serializable]
+
     public class PersistentPlayer
     {
         private readonly string steamId;
-        private DateTime auctionCancelTime;
-        private int auctionId;
-        private int auctionItemCount;
-        private string auctionItemName;
-        private int auctionItemPrice;
-        private int auctionItemQuality;
-        private bool auctionReturn;
-        private DateTime auctionSellDate;
+        private Dictionary<int, ItemDataSerializable> auction;
+        private Dictionary<int, ItemDataSerializable> auctionReturn;
         private int bank;
         private int bikeId;
         private int bounty;
@@ -101,84 +96,25 @@ namespace ServerTools
         private int sessionTime;
         private bool startingItems;
         private int totalTimePlayed;
+        private List<ItemValue> vault;
         private int voteWeekCount;
         private Dictionary<string, string> waypoints;
         private string wP;
         private DateTime zoneDeathTime;
 
-        public DateTime AuctionCancelTime
+        public Dictionary<int, ItemDataSerializable> Auction
         {
             get
             {
-                return auctionCancelTime;
+                return auction;
             }
             set
             {
-                auctionCancelTime = value;
+                auction = value;
             }
         }
 
-        public int AuctionId
-        {
-            get
-            {
-                return auctionId;
-            }
-            set
-            {
-                auctionId = value;
-            }
-        }
-
-        public int AuctionItemCount
-        {
-            get
-            {
-                return auctionItemCount;
-            }
-            set
-            {
-                auctionItemCount = value;
-            }
-        }
-
-        public string AuctionItemName
-        {
-            get
-            {
-                return auctionItemName;
-            }
-            set
-            {
-                auctionItemName = value;
-            }
-        }
-
-        public int AuctionItemPrice
-        {
-            get
-            {
-                return auctionItemPrice;
-            }
-            set
-            {
-                auctionItemPrice = value;
-            }
-        }
-
-        public int AuctionItemQuality
-        {
-            get
-            {
-                return auctionItemQuality;
-            }
-            set
-            {
-                auctionItemQuality = value;
-            }
-        }
-
-        public bool AuctionReturn
+        public Dictionary<int, ItemDataSerializable> AuctionReturn
         {
             get
             {
@@ -187,18 +123,6 @@ namespace ServerTools
             set
             {
                 auctionReturn = value;
-            }
-        }
-
-        public DateTime AuctionSellDate
-        {
-            get
-            {
-                return auctionSellDate;
-            }
-            set
-            {
-                auctionSellDate = value;
             }
         }
 
@@ -1207,6 +1131,18 @@ namespace ServerTools
             set
             {
                 totalTimePlayed = value;
+            }
+        }
+
+        public List<ItemValue> Vault
+        {
+            get
+            {
+                return vault;
+            }
+            set
+            {
+                vault = value;
             }
         }
 

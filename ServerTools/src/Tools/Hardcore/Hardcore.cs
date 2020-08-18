@@ -51,9 +51,7 @@ namespace ServerTools
                 string[] _newStats = { _cInfo.playerName, _newSession.ToString(), _player.KilledPlayers.ToString(), _player.KilledZombies.ToString(), Max_Deaths + _extraLives.ToString(), _player.Score.ToString() };
                 if (PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats != null && PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats.Count > 0)
                 {
-                    List<string[]> SavedStats = PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats;
-                    SavedStats.Add(_newStats);
-                    PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats = SavedStats;
+                    PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats.Add(_newStats);
                 }
                 else
                 {
@@ -61,14 +59,8 @@ namespace ServerTools
                     SavedStats.Add(_newStats);
                     PersistentContainer.Instance.Players[_cInfo.playerId].HardcoreSavedStats = SavedStats;
                 }
-                _p.AuctionCancelTime = new DateTime();
-                _p.AuctionId = 0;
-                _p.AuctionItemCount = 0;
-                _p.AuctionItemName = "";
-                _p.AuctionItemPrice = 0;
-                _p.AuctionItemQuality = 0;
-                _p.AuctionReturn = false;
-                _p.AuctionSellDate = new DateTime();
+                _p.Auction = new Dictionary<int, ItemDataSerializable>();
+                _p.AuctionReturn = new Dictionary<int, ItemDataSerializable>();
                 _p.Bank = 0;
                 _p.BikeId = 0;
                 _p.Bounty = 0;
@@ -382,14 +374,8 @@ namespace ServerTools
                 PersistentPlayer p = PersistentContainer.Instance.Players[_cInfo.playerId];
                 if (p != null)
                 {
-                    p.AuctionCancelTime = new DateTime();
-                    p.AuctionId = 0;
-                    p.AuctionItemCount = 0;
-                    p.AuctionItemName = "";
-                    p.AuctionItemPrice = 0;
-                    p.AuctionItemQuality = 0;
-                    p.AuctionReturn = false;
-                    p.AuctionSellDate = new DateTime();
+                    p.Auction = new Dictionary<int, ItemDataSerializable>();
+                    p.AuctionReturn = new Dictionary<int, ItemDataSerializable>();
                     p.Bank = 0;
                     p.BikeId = 0;
                     p.Bounty = 0;

@@ -131,14 +131,8 @@ namespace ServerTools
                 PersistentPlayer p = PersistentContainer.Instance.Players[_id];
                 if (p != null)
                 {
-                    p.AuctionCancelTime = new DateTime();
-                    p.AuctionId = 0;
-                    p.AuctionItemCount = 0;
-                    p.AuctionItemName = "";
-                    p.AuctionItemPrice = 0;
-                    p.AuctionItemQuality = 0;
-                    p.AuctionReturn = false;
-                    p.AuctionSellDate = new DateTime();
+                    p.Auction = new Dictionary<int, ItemDataSerializable>();
+                    p.AuctionReturn = new Dictionary<int, ItemDataSerializable>();
                     p.Bank = 0;
                     p.BikeId = 0;
                     p.Bounty = 0;

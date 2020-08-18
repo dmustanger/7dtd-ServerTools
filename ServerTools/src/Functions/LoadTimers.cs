@@ -131,6 +131,18 @@ namespace ServerTools
             };
         }
 
+        public static void NewWorldCheck()
+        {
+            System.Timers.Timer _worldchange = new System.Timers.Timer(30000);
+            _worldchange.AutoReset = false;
+            _worldchange.Start();
+            _worldchange.Elapsed += (sender, e) =>
+            {
+                NewWorld.Exec();
+                _worldchange.Close();
+            };
+        }
+
         public static void LogAlert()
         {
             Log.Out("-------------------------------");
@@ -288,6 +300,10 @@ namespace ServerTools
             {
                 Log.Out("Break time enabled");
             }
+            if (ChatCommandLog.IsEnabled)
+            {
+                Log.Out("Chat command log enabled");
+            }
             if (ChatHook.ChatFlood)
             {
                 Log.Out("Chat flood protection enabled");
@@ -300,9 +316,9 @@ namespace ServerTools
             {
                 Log.Out("Clan manager enabled");
             }
-            if (CommandLog.IsEnabled)
+            if (ConsoleCommandLog.IsEnabled)
             {
-                Log.Out("Command log enabled");
+                Log.Out("Console command log enabled");
             }
             if (CustomCommands.IsEnabled)
             {

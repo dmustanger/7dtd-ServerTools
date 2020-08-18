@@ -759,7 +759,7 @@ namespace ServerTools
                 string _phrase556;
                 if (!Dict.TryGetValue(556, out _phrase556))
                 {
-                    _phrase556 = "You are outside the lobby and can no longer return to your position.";
+                    _phrase556 = "You have left the lobby and can no longer return to your position.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"556\" Phrase=\"{0}\" />", _phrase556));
                 sw.WriteLine("        <!-- ******************************************************** -->");
@@ -792,7 +792,7 @@ namespace ServerTools
                 string _phrase564;
                 if (!Dict.TryGetValue(564, out _phrase564))
                 {
-                    _phrase564 = "You are outside the market and can no longer return to your position.";
+                    _phrase564 = "You have left the market space. {CommandPrivate}{Command51} command is no longer available.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"564\" Phrase=\"{0}\" />", _phrase564));
                 string _phrase565;
@@ -1554,15 +1554,6 @@ namespace ServerTools
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"828\" Phrase=\"{0}\" />", _phrase828));
                 sw.WriteLine("        <!-- ******************************************************** -->");
-                sw.WriteLine("        <!-- *********************** Auction ************************ -->");
-                sw.WriteLine("        <!-- ******************************************************** -->");
-                string _phrase900;
-                if (!Dict.TryGetValue(900, out _phrase900))
-                {
-                    _phrase900 = "You can only use {CommandPrivate}{Command74} {DelayBetweenUses} minutes after a sale. Time remaining: {TimeRemaining}.";
-                }
-                sw.WriteLine(string.Format("        <Phrase id=\"900\" Phrase=\"{0}\" />", _phrase900));
-                sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ************************ Bounty ************************ -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 string _phrase910;
@@ -1598,6 +1589,12 @@ namespace ServerTools
                     _phrase915 = "{PlayerName} has killed {Victim} with {Item}.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"915\" Phrase=\"{0}\" />", _phrase915));
+                string _phrase916;
+                if (!Dict.TryGetValue(916, out _phrase916))
+                {
+                    _phrase916 = "{PlayerName} ({KillerLevel}) has killed {Victim} ({VictimLevel}) with {Item}.";
+                }
+                sw.WriteLine(string.Format("        <Phrase id=\"916\" Phrase=\"{0}\" />", _phrase916));
                 sw.WriteLine("        <!-- ******************************************************** -->");
                 sw.WriteLine("        <!-- ************************ Stuck ************************* -->");
                 sw.WriteLine("        <!-- ******************************************************** -->");

@@ -13,13 +13,13 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. ChatColorPrefix off\n" +
-                "  2. ChatColorPrefix on\n" +
-                "  3. ChatColorPrefix add <steamId/entityId/playerName> <name> <group> <prefix> <nameColor> <prefixColor> <daysToExpire>\n" +
-                "  4. ChatColorPrefix add <steamId/entityId/playerName> <name> <group> <daysToExpire>\n" +
-                "  5. ChatColorPrefix add <steamId/entityId/playerName> <name> <group>\n" +
-                "  6. ChatColorPrefix remove <steamId/playerName/group>\n" +
-                "  7. ChatColorPrefix list\n" +
+                "  1. ccp off\n" +
+                "  2. ccp on\n" +
+                "  3. ccp add <steamId/entityId/playerName> <name> <group> <prefix> <nameColor> <prefixColor> <daysToExpire>\n" +
+                "  4. ccp add <steamId/entityId/playerName> <name> <group> <daysToExpire>\n" +
+                "  5. ccp add <steamId/entityId/playerName> <name> <group>\n" +
+                "  6. ccp remove <steamId/playerName/group>\n" +
+                "  7. ccp list\n" +
                 "1. Turn off chat color prefix\n" +
                 "2. Turn on chat color prefix\n" +
                 "3. Adds a steam Id to a new group with custom prefix and colors on the chat color prefix list\n" +

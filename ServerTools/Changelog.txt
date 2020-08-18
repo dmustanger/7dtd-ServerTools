@@ -1,5 +1,43 @@
 ﻿CHANGELOG
 
+19.0.5
+Built using Alpha 19 experimental assets
+Functioning with 19 experimental. Untested with other versions
+
+Added check for a map change. Automatically deletes ServerTools player data 
+if a new map is detected
+Added option to Auction called Tax. Controls the fee applied on sold item
+Added option to Bloodmoon_Warrior called Reduce_Death_Count. Controls if
+players will have their death count reduced as part of the reward
+Added PvE_Violations to config. Sets the number of violations allowed before
+triggering the penalties
+Added Console_Command_Log. Records id, ip address, name of console command user
+Added phrase 916
+Added option Player_Level to Kill_Notice
+Added Chance option to Bloodmoon_Warrior. Controls chance to be selected
+Added durability variable to console command give item
+Fixed distance check for Auction and Bank tools
+Fixed duping method with Auction and Bank process
+Fixed response for Lobby and Market
+Fixed Bank deposits not withdrawing the deposit fee
+Fixed Log cleanup stuck at 5 days
+Fixed Invalid_Items running the wrong command to kick players
+Changed Zones, Lobby and Market tools to trigger penalties based on 
+PvE_Violations
+Changed KillNotice.xml to utilize items.xml when created
+Changed tool name Command_Log to Chat_Command_Log
+Changed folder name CommandLogs to ChatCommandLogs
+Updated Auction function to save direct item value data
+Updated Auction to allow multiple items for auction. Limits added via options
+Updated Harmony injection to version 2.0
+Updated all xml files to use proper capitalization for element entries
+Removed Auction options called Delay_Between_Uses and Cancel_Time
+Removed phrase 900
+Removed multiple Zones options
+Removed Zones_Extended from config
+*3rd party mods using earlier versions of Harmony will not be compatible with 
+ServerTools*
+
 19.0.4
 Built using Alpha 19 experimental assets
 Functioning with 19 experimental. Untested with other versions

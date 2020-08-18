@@ -14,7 +14,7 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                "  1. BikeList" +
+                "  1. bl" +
                 "1. Shows a list of each bike, entity id, location and player riding the bike if applicable\n";
         }
 
