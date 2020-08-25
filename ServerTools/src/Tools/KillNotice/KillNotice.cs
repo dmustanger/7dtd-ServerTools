@@ -161,7 +161,7 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void Notice(ClientInfo _cInfo, ClientInfo _cInfo2, string _holdingItem)
+        public static void Exec(ClientInfo _cInfo, ClientInfo _cInfo2, string _holdingItem)
         {
             if (dict.ContainsKey(_holdingItem))
             {

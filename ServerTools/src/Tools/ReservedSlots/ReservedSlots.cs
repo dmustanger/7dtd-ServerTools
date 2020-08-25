@@ -200,312 +200,164 @@ namespace ServerTools
             return false;
         }
 
-        public static bool FullServer(string _playerId, string _playerName, string _compatibilityVersion)
+        public static void FullServer(ClientInfo _cInfo)
         {
             try
             {
-                ulong _num;
-                if (!Steam.Masterserver.Server.GameServerInitialized || !GameManager.Instance.gameStateManager.IsGameStarted() || 
-                    GameStats.GetInt(EnumGameStats.GameState) == 2 || string.IsNullOrEmpty(_playerName) ||
-                    string.IsNullOrEmpty(_playerId) || string.IsNullOrEmpty(_playerId) || !ulong.TryParse(_playerId, out _num) || 
-                    !string.Equals(Constants.cCompatibilityVersion, _compatibilityVersion, StringComparison.Ordinal))
-                {
-                    return true;
-                }
-                List<ClientInfo> list = PersistentOperations.ClientList();
-                for (int i = 0; i < list.Count; i++)
-                {
-                    ClientInfo clientInfo = list[i];
-                    if (clientInfo != null && clientInfo.playerId == _playerId)
-                    {
-                        return true;
-                    }
-                }
+                List<ClientInfo> _reservedKicks = new List<ClientInfo>();
+                List<ClientInfo> _normalKicks = new List<ClientInfo>();
                 ClientInfo _cInfoClientToKick = null;
-                if (ReservedSlots.AdminCheck(_playerId))
+                List<ClientInfo> _clientList = PersistentOperations.ClientList();
+                if (ReservedSlots.AdminCheck(_cInfo.playerId))//admin is joining
                 {
-                    ClientInfo _cInfoReservedToKick = null;
-                    int _clientSession = int.MinValue;
-                    int _reservedSession = int.MinValue;
-                    List<string> _sessionList = new List<string>(PersistentOperations.Session.Keys);
-                    if (_sessionList == null)
+                    if (_clientList != null && _clientList.Count > 0)
                     {
-                        return true;
-                    }
-                    for (int i = 0; i < _sessionList.Count; i++)
-                    {
-                        string _player = _sessionList[i];
-                        ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_player);
-                        if (_cInfo2 != null && _playerId != _cInfo2.playerId)
+                        for (int i = 0; i < _clientList.Count; i++)
                         {
-                            if (ReservedSlots.AdminCheck(_cInfo2.playerId))
+                            ClientInfo _cInfo2 = _clientList[i];
+                            if (_cInfo2 != null && _cInfo2.playerId != _cInfo.playerId)
                             {
-                                continue;
-                            }
-                            else if (ReservedSlots.ReservedCheck(_cInfo2.playerId))
-                            {
-                                DateTime _dateTime;
-                                if (PersistentOperations.Session.TryGetValue(_cInfo2.playerId, out _dateTime))
+                                if (!ReservedSlots.AdminCheck(_cInfo2.playerId))//not admin
                                 {
-                                    TimeSpan varTime = DateTime.Now - _dateTime;
-                                    double fractionalMinutes = varTime.TotalMinutes;
-                                    int _timepassed = (int)fractionalMinutes;
-                                    if (_timepassed > _reservedSession)
+                                    if (ReservedSlots.ReservedCheck(_cInfo2.playerId))//reserved player
                                     {
-                                        _reservedSession = _timepassed;
-                                        _cInfoReservedToKick = _cInfo2;
+                                        if (Session_Time > 0)//session time not set
+                                        {
+                                            if (PersistentOperations.Session.TryGetValue(_cInfo2.playerId, out DateTime _dateTime))
+                                            {
+                                                TimeSpan varTime = DateTime.Now - _dateTime;
+                                                double fractionalMinutes = varTime.TotalMinutes;
+                                                int _timepassed = (int)fractionalMinutes;
+                                                if (_timepassed >= Session_Time)
+                                                {
+                                                    _reservedKicks.Add(_cInfo2);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            _reservedKicks.Add(_cInfo2);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (Session_Time > 0)//session time not set
+                                        {
+                                            DateTime _dateTime;
+                                            if (PersistentOperations.Session.TryGetValue(_cInfo2.playerId, out _dateTime))
+                                            {
+                                                TimeSpan varTime = DateTime.Now - _dateTime;
+                                                double fractionalMinutes = varTime.TotalMinutes;
+                                                int _timepassed = (int)fractionalMinutes;
+                                                if (_timepassed > Session_Time)
+                                                {
+                                                    _normalKicks.Add(_cInfo2);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            _normalKicks.Add(_cInfo2);
+                                        }
                                     }
                                 }
                             }
-                            else
-                            {
-                                DateTime _dateTime;
-                                if (PersistentOperations.Session.TryGetValue(_cInfo2.playerId, out _dateTime))
-                                {
-                                    TimeSpan varTime = DateTime.Now - _dateTime;
-                                    double fractionalMinutes = varTime.TotalMinutes;
-                                    int _timepassed = (int)fractionalMinutes;
-                                    if (_timepassed > _clientSession)
-                                    {
-                                        _clientSession = _timepassed;
-                                        _cInfoClientToKick = _cInfo2;
-                                    }
-                                }
-                            }
                         }
-                    }
-                    if (_cInfoClientToKick != null)
-                    {
-                        API.PlayerDisconnected(_cInfoClientToKick, true);
-                        string _phrase20;
-                        if (!Phrases.Dict.TryGetValue(20, out _phrase20))
-                        {
-                            _phrase20 = "{ServerResponseName}- The server is full. You were kicked by the reservation system to open a slot";
-                        }
-                        _phrase20 = _phrase20.Replace("{ServerResponseName}", LoadConfig.Server_Response_Name);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfoClientToKick.playerId, _phrase20), (ClientInfo)null);
-                        EntityPlayer entityPlayer = (EntityPlayer)GameManager.Instance.World.GetEntity(_cInfoClientToKick.entityId);
-                        if (entityPlayer != null)
-                        {
-                            if (_cInfoClientToKick.entityId != -1)
-                            {
-                                Log.Out("Player {0} disconnected after {1} minutes", new object[]
-                            {
-                                GameUtils.SafeStringFormat(entityPlayer.EntityName),
-                                ((Time.timeSinceLevelLoad - entityPlayer.CreationTimeSinceLevelLoad) / 60f).ToCultureInvariantString("0.0")});
-                            }
-                            entityPlayer.OnEntityUnload();
-                        }
-                        GC.Collect();
-                        MemoryPools.Cleanup();
-                        PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfoClientToKick.playerId);
-                        if (persistentPlayerData != null)
-                        {
-                            persistentPlayerData.LastLogin = DateTime.Now;
-                            persistentPlayerData.EntityId = -1;
-                        }
-                        PersistentOperations.SavePersistentPlayerDataXML();
-                        GameManager.Instance.World.aiDirector.RemoveEntity(entityPlayer);
-                        GameManager.Instance.World.RemoveEntity(entityPlayer.entityId, EnumRemoveEntityReason.Unloaded);
-                        ConnectionManager.Instance.Clients.Remove(_cInfoClientToKick);
-                        return true;
-                    }
-                    else if (_cInfoReservedToKick != null)
-                    {
-                        API.PlayerDisconnected(_cInfoReservedToKick, true);
-                        string _phrase20;
-                        if (!Phrases.Dict.TryGetValue(20, out _phrase20))
-                        {
-                            _phrase20 = "{ServerResponseName}- The server is full. You were kicked by the reservation system to open a slot";
-                        }
-                        _phrase20 = _phrase20.Replace("{ServerResponseName}", LoadConfig.Server_Response_Name);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfoReservedToKick.playerId, _phrase20), (ClientInfo)null);
-                        EntityPlayer entityPlayer = (EntityPlayer)GameManager.Instance.World.GetEntity(_cInfoReservedToKick.entityId);
-                        if (entityPlayer != null)
-                        {
-                            if (_cInfoReservedToKick.entityId != -1)
-                            {
-                                Log.Out("Player {0} disconnected after {1} minutes", new object[]
-                            {
-                                GameUtils.SafeStringFormat(entityPlayer.EntityName),
-                                ((Time.timeSinceLevelLoad - entityPlayer.CreationTimeSinceLevelLoad) / 60f).ToCultureInvariantString("0.0")});
-                            }
-                            entityPlayer.OnEntityUnload();
-                        }
-                        GC.Collect();
-                        MemoryPools.Cleanup();
-                        PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfoReservedToKick.playerId);
-                        if (persistentPlayerData != null)
-                        {
-                            persistentPlayerData.LastLogin = DateTime.Now;
-                            persistentPlayerData.EntityId = -1;
-                        }
-                        PersistentOperations.SavePersistentPlayerDataXML();
-                        GameManager.Instance.World.aiDirector.RemoveEntity(entityPlayer);
-                        GameManager.Instance.World.RemoveEntity(entityPlayer.entityId, EnumRemoveEntityReason.Unloaded);
-                        ConnectionManager.Instance.Clients.Remove(_cInfoReservedToKick);
-                        return true;
                     }
                 }
-                else if (ReservedSlots.ReservedCheck(_playerId))
+                else if (ReservedSlots.ReservedCheck(_cInfo.playerId))//reserved player is joining
                 {
-                    int _clientSession = int.MinValue;
-                    List<string> _sessionList = new List<string>(PersistentOperations.Session.Keys);
-                    if (_sessionList == null)
+                    if (_clientList != null && _clientList.Count > 0)
                     {
-                        return true;
-                    }
-                    for (int i = 0; i < _sessionList.Count; i++)
-                    {
-                        string _player = _sessionList[i];
-                        ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_player);
-                        if (_cInfo2 != null && _playerId != _cInfo2.playerId)
+                        for (int i = 0; i < _clientList.Count; i++)
                         {
-                            if (ReservedSlots.AdminCheck(_cInfo2.playerId))
+                            ClientInfo _cInfo2 = _clientList[i];
+                            if (_cInfo2 != null && _cInfo2.playerId != _cInfo.playerId)
                             {
-                                continue;
-                            }
-                            else if (ReservedSlots.ReservedCheck(_cInfo2.playerId))
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                DateTime _dateTime;
-                                if (PersistentOperations.Session.TryGetValue(_cInfo2.playerId, out _dateTime))
+                                if (!ReservedSlots.AdminCheck(_cInfo2.playerId) && !ReservedSlots.ReservedCheck(_cInfo2.playerId))
                                 {
-                                    TimeSpan varTime = DateTime.Now - _dateTime;
-                                    double fractionalMinutes = varTime.TotalMinutes;
-                                    int _timepassed = (int)fractionalMinutes;
-                                    if (_timepassed > _clientSession)
+                                    if (Session_Time > 0)
                                     {
-                                        _clientSession = _timepassed;
-                                        _cInfoClientToKick = _cInfo2;
+                                        if (PersistentOperations.Session.TryGetValue(_cInfo2.playerId, out DateTime _dateTime))
+                                        {
+                                            TimeSpan varTime = DateTime.Now - _dateTime;
+                                            double fractionalMinutes = varTime.TotalMinutes;
+                                            int _timepassed = (int)fractionalMinutes;
+                                            if (_timepassed > Session_Time)
+                                            {
+                                                _normalKicks.Add(_cInfo2);
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        _normalKicks.Add(_cInfo2);
                                     }
                                 }
                             }
                         }
-                    }
-                    if (_cInfoClientToKick != null)
-                    {
-                        API.PlayerDisconnected(_cInfoClientToKick, true);
-                        string _phrase20;
-                        if (!Phrases.Dict.TryGetValue(20, out _phrase20))
-                        {
-                            _phrase20 = "{ServerResponseName}- The server is full. You were kicked by the reservation system to open a slot";
-                        }
-                        _phrase20 = _phrase20.Replace("{ServerResponseName}", LoadConfig.Server_Response_Name);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfoClientToKick.playerId, _phrase20), (ClientInfo)null);
-                        EntityPlayer entityPlayer = (EntityPlayer)GameManager.Instance.World.GetEntity(_cInfoClientToKick.entityId);
-                        if (entityPlayer != null)
-                        {
-                            if (_cInfoClientToKick.entityId != -1)
-                            {
-                                Log.Out("Player {0} disconnected after {1} minutes", new object[]
-                            {
-                                GameUtils.SafeStringFormat(entityPlayer.EntityName),
-                                ((Time.timeSinceLevelLoad - entityPlayer.CreationTimeSinceLevelLoad) / 60f).ToCultureInvariantString("0.0")});
-                            }
-                            entityPlayer.OnEntityUnload();
-                        }
-                        GC.Collect();
-                        MemoryPools.Cleanup();
-                        PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfoClientToKick.playerId);
-                        if (persistentPlayerData != null)
-                        {
-                            persistentPlayerData.LastLogin = DateTime.Now;
-                            persistentPlayerData.EntityId = -1;
-                        }
-                        PersistentOperations.SavePersistentPlayerDataXML();
-                        GameManager.Instance.World.aiDirector.RemoveEntity(entityPlayer);
-                        GameManager.Instance.World.RemoveEntity(entityPlayer.entityId, EnumRemoveEntityReason.Unloaded);
-                        ConnectionManager.Instance.Clients.Remove(_cInfoClientToKick);
-                        return true;
                     }
                 }
-                else if (ReservedSlots.Session_Time > 0)
+                else//regular player is joining
                 {
-                    int _session = int.MinValue;
-                    List<string> _sessionList = new List<string>(PersistentOperations.Session.Keys);
-                    if (_sessionList == null)
+                    if (_clientList != null && _clientList.Count > 0)
                     {
-                        return true;
-                    }
-                    for (int i = 0; i < _sessionList.Count; i++)
-                    {
-                        string _player = _sessionList[i];
-                        ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_player);
-                        if (_cInfo2 != null && _playerId != _cInfo2.playerId)
+                        for (int i = 0; i < _clientList.Count; i++)
                         {
-                            if (ReservedSlots.AdminCheck(_cInfo2.playerId))
+                            ClientInfo _cInfo2 = _clientList[i];
+                            if (_cInfo2 != null && _cInfo2.playerId != _cInfo.playerId)
                             {
-                                continue;
-                            }
-                            else if (ReservedSlots.ReservedCheck(_cInfo2.playerId))
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                DateTime _dateTime;
-                                if (PersistentOperations.Session.TryGetValue(_cInfo2.playerId, out _dateTime))
+                                if (!ReservedSlots.AdminCheck(_cInfo2.playerId) && !ReservedSlots.ReservedCheck(_cInfo2.playerId))
                                 {
-                                    TimeSpan varTime = DateTime.Now - _dateTime;
-                                    double fractionalMinutes = varTime.TotalMinutes;
-                                    int _timepassed = (int)fractionalMinutes;
-                                    if (_timepassed >= ReservedSlots.Session_Time && _timepassed > _session)
+                                    if (Session_Time > 0)
                                     {
-                                        _session = _timepassed;
-                                        _cInfoClientToKick = _cInfo2;
+                                        if (PersistentOperations.Session.TryGetValue(_cInfo2.playerId, out DateTime _dateTime))
+                                        {
+                                            TimeSpan varTime = DateTime.Now - _dateTime;
+                                            double fractionalMinutes = varTime.TotalMinutes;
+                                            int _timepassed = (int)fractionalMinutes;
+                                            if (_timepassed >= Session_Time)
+                                            {
+                                                _normalKicks.Add(_cInfo2);
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                    if (_session > int.MinValue)
+                }
+                if (_normalKicks != null && _normalKicks.Count > 0)
+                {
+                    _normalKicks.RandomizeList();
+                    _cInfoClientToKick = _normalKicks[0];
+                    if (Session_Time > 0)
                     {
                         ReservedSlots.Kicked.Add(_cInfoClientToKick.playerId, DateTime.Now);
-                        API.PlayerDisconnected(_cInfoClientToKick, true);
-                        string _phrase20;
-                        if (!Phrases.Dict.TryGetValue(20, out _phrase20))
-                        {
-                            _phrase20 = "{ServerResponseName}- The server is full. You were kicked by the reservation system to open a slot";
-                        }
-                        _phrase20 = _phrase20.Replace("{ServerResponseName}", LoadConfig.Server_Response_Name);
-                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfoClientToKick.playerId, _phrase20), (ClientInfo)null);
-                        EntityPlayer entityPlayer = (EntityPlayer)GameManager.Instance.World.GetEntity(_cInfoClientToKick.entityId);
-                        if (entityPlayer != null)
-                        {
-                            if (_cInfoClientToKick.entityId != -1)
-                            {
-                                Log.Out("Player {0} disconnected after {1} minutes", new object[]
-                            {
-                                GameUtils.SafeStringFormat(entityPlayer.EntityName),
-                                ((Time.timeSinceLevelLoad - entityPlayer.CreationTimeSinceLevelLoad) / 60f).ToCultureInvariantString("0.0")});
-                            }
-                            entityPlayer.OnEntityUnload();
-                        }
-                        GC.Collect();
-                        MemoryPools.Cleanup();
-                        PersistentPlayerData persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfoClientToKick.playerId);
-                        if (persistentPlayerData != null)
-                        {
-                            persistentPlayerData.LastLogin = DateTime.Now;
-                            persistentPlayerData.EntityId = -1;
-                        }
-                        PersistentOperations.SavePersistentPlayerDataXML();
-                        GameManager.Instance.World.aiDirector.RemoveEntity(entityPlayer);
-                        GameManager.Instance.World.RemoveEntity(entityPlayer.entityId, EnumRemoveEntityReason.Unloaded);
-                        ConnectionManager.Instance.Clients.Remove(_cInfoClientToKick);
-                        return true;
                     }
+                    string _phrase20;
+                    if (!Phrases.Dict.TryGetValue(20, out _phrase20))
+                    {
+                        _phrase20 = "{ServerResponseName}- The server is full. You were kicked by the reservation system to open a slot";
+                    }
+                    _phrase20 = _phrase20.Replace("{ServerResponseName}", LoadConfig.Server_Response_Name);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfoClientToKick.playerId, _phrase20), null);
+                }
+                else if (_reservedKicks != null && _reservedKicks.Count > 0)
+                {
+                    string _phrase20;
+                    if (!Phrases.Dict.TryGetValue(20, out _phrase20))
+                    {
+                        _phrase20 = "{ServerResponseName}- The server is full. You were kicked by the reservation system to open a slot for an admin";
+                    }
+                    _phrase20 = _phrase20.Replace("{ServerResponseName}", LoadConfig.Server_Response_Name);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfoClientToKick.playerId, _phrase20), null);
                 }
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlots.FullServer: {0}", e.Message));
             }
-            return true;
         }
     }
 }

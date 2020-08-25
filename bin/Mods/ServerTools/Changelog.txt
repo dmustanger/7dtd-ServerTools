@@ -1,5 +1,25 @@
 ﻿CHANGELOG
 
+19.0.6
+Built using Alpha 19 stable assets
+Functioning with 19 stable. Untested with other versions
+
+Added option Command_cost to Scout_Player
+Added Battle_Logger tool. Players must log out using /exit. If they do not and
+are too close to another player, they are penalized based on the options. A
+chest is created where they left filled with the items they dropped
+Added console command st-DeletePlayerData. Deletes all player data
+Added Country_Ban tool. Put ISO country codes of countries you want to block
+Fixed claim check in the Bank tool
+Fixed injection process causing improperly processed data
+Fixed Invalid_Item_Stack triggering when Invalid_Items was enabled
+Changed Announce_Invalid_Item_Stack to Invalid_Item_Stack
+Changed Invalid_Item_Kicker to Invalid_Items
+Changed injection process to attempt overlap of 3rd party injections
+Updated Reserved_Slots for better functionality and randomized kick process
+Removed automatic map change detection that wiped player data
+Removed Under_Water tool
+
 19.0.5
 Built using Alpha 19 experimental assets
 Functioning with 19 experimental. Untested with other versions

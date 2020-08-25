@@ -1517,7 +1517,7 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (BattleLogger.IsEnabled && (_message.ToLower() == BattleLogger.Command131 || _message.ToLower() == BattleLogger.Command132) && BattleLogger.Players.ContainsKey(_cInfo.playerId))
+                        if (BattleLogger.IsEnabled && (_message.ToLower() == BattleLogger.Command131 || _message.ToLower() == BattleLogger.Command132) && BattleLogger.Exit.Contains(_cInfo.playerId))
                         {
                             Timers.BattleLogPlayerExit(_cInfo.playerId);
                             ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Please wait 15 seconds for disconnection and do not move" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);

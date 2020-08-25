@@ -53,7 +53,7 @@ namespace ServerTools
             XmlNode _XmlNode = xmlDoc.DocumentElement;
             foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
-                if (childNode.Name == "triggers")
+                if (childNode.Name == "Triggers")
                 {
                     Dict.Clear();
                     TriggerList.Clear();
@@ -69,30 +69,30 @@ namespace ServerTools
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("number"))
+                        if (!_line.HasAttribute("Number"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Event Triggers entry because of missing number attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Event Triggers entry because of missing Number attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!int.TryParse(_line.GetAttribute("number"), out int _number))
+                        if (!int.TryParse(_line.GetAttribute("Number"), out int _Number))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Event Triggers because of invalid (non-numeric) value for 'number' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Event Triggers because of invalid (non-numeric) value for 'Number' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("default"))
+                        if (!_line.HasAttribute("Default"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Event Triggers entry because of missing default attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Event Triggers entry because of missing Default attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("replacement"))
+                        if (!_line.HasAttribute("Replacement"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Event Triggers entry because of missing replacement attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Event Triggers entry because of missing Replacement attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        string[] _c = { _line.GetAttribute("default"), _line.GetAttribute("replacement") };
-                        if (!Dict.ContainsKey(_number))
+                        string[] _c = { _line.GetAttribute("Default"), _line.GetAttribute("Replacement") };
+                        if (!Dict.ContainsKey(_Number))
                         {
-                            Dict.Add(_number, _c);
+                            Dict.Add(_Number, _c);
                             TriggerList.Add(_c[1]);
                         }
                     }
@@ -107,150 +107,150 @@ namespace ServerTools
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Event>");
-                sw.WriteLine("    <triggers>");
+                sw.WriteLine("    <Triggers>");
                 if (Dict.Count > 0)
                 {
                     foreach (KeyValuePair<int, string[]> kvp in Dict)
                     {
-                        sw.WriteLine(string.Format("        <trigger number=\"{0}\" default=\"{1}\" replacement=\"{2}\" />", kvp.Key, kvp.Value[0], kvp.Value[1]));
+                        sw.WriteLine(string.Format("        <Trigger Number=\"{0}\" Default=\"{1}\" Replacement=\"{2}\" />", kvp.Key, kvp.Value[0], kvp.Value[1]));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <trigger number=\"1\" default=\"sethome\" replacement=\"sethome\" />");
-                    sw.WriteLine("        <trigger number=\"2\" default=\"home\" replacement=\"home\" />");
-                    sw.WriteLine("        <trigger number=\"3\" default=\"fhome\" replacement=\"fhome\" />");
-                    sw.WriteLine("        <trigger number=\"4\" default=\"delhome\" replacement=\"delhome\" />");
-                    sw.WriteLine("        <trigger number=\"5\" default=\"sethome2\" replacement=\"sethome2\" />");
-                    sw.WriteLine("        <trigger number=\"6\" default=\"home2\" replacement=\"home2\" />");
-                    sw.WriteLine("        <trigger number=\"7\" default=\"fhome2\" replacement=\"fhome2\" />");
-                    sw.WriteLine("        <trigger number=\"8\" default=\"delhome2\" replacement=\"delhome2\" />");
-                    sw.WriteLine("        <trigger number=\"9\" default=\"go\" replacement=\"go\" />");
-                    sw.WriteLine("        <trigger number=\"10\" default=\"go way\" replacement=\"go way\" />");
-                    sw.WriteLine("        <trigger number=\"11\" default=\"top3\" replacement=\"top3\" />");
-                    sw.WriteLine("        <trigger number=\"12\" default=\"score\" replacement=\"score\" />");
-                    sw.WriteLine("        <trigger number=\"13\" default=\"mute\" replacement=\"mute\" />");
-                    sw.WriteLine("        <trigger number=\"14\" default=\"unmute\" replacement=\"unmute\" />");
-                    sw.WriteLine("        <trigger number=\"15\" default=\"commands\" replacement=\"commands\" />");
-                    sw.WriteLine("        <trigger number=\"16\" default=\"day7\" replacement=\"day7\" />");
-                    sw.WriteLine("        <trigger number=\"17\" default=\"day\" replacement=\"day\" />");
-                    sw.WriteLine("        <trigger number=\"18\" default=\"bloodmoon\" replacement=\"bloodmoon\" />");
-                    sw.WriteLine("        <trigger number=\"19\" default=\"bm\" replacement=\"bm\" />");
-                    sw.WriteLine("        <trigger number=\"20\" default=\"killme\" replacement=\"killme\" />");
-                    sw.WriteLine("        <trigger number=\"21\" default=\"wrist\" replacement=\"wrist\" />");
-                    sw.WriteLine("        <trigger number=\"22\" default=\"hang\" replacement=\"hang\" />");
-                    sw.WriteLine("        <trigger number=\"23\" default=\"suicide\" replacement=\"suicide\" />");
-                    sw.WriteLine("        <trigger number=\"24\" default=\"gimme\" replacement=\"gimme\" />");
-                    sw.WriteLine("        <trigger number=\"25\" default=\"gimmie\" replacement=\"gimmie\" />");
-                    sw.WriteLine("        <trigger number=\"26\" default=\"set jail\" replacement=\"set jail\" />");
-                    sw.WriteLine("        <trigger number=\"27\" default=\"jail\" replacement=\"jail\" />");
-                    sw.WriteLine("        <trigger number=\"28\" default=\"unjail\" replacement=\"unjail\" />");
-                    sw.WriteLine("        <trigger number=\"29\" default=\"setspawn\" replacement=\"setspawn\" />");
-                    sw.WriteLine("        <trigger number=\"30\" default=\"trackanimal\" replacement=\"trackanimal\" />");
-                    sw.WriteLine("        <trigger number=\"31\" default=\"track\" replacement=\"track\" />");
-                    sw.WriteLine("        <trigger number=\"32\" default=\"claim\" replacement=\"claim\" />");
-                    sw.WriteLine("        <trigger number=\"33\" default=\"clan add\" replacement=\"clan add\" />");
-                    sw.WriteLine("        <trigger number=\"34\" default=\"clan del\" replacement=\"clan del\" />");
-                    sw.WriteLine("        <trigger number=\"35\" default=\"clan invite\" replacement=\"clan invite\" />");
-                    sw.WriteLine("        <trigger number=\"36\" default=\"clan accept\" replacement=\"clan accept\" />");
-                    sw.WriteLine("        <trigger number=\"37\" default=\"clan decline\" replacement=\"clan decline\" />");
-                    sw.WriteLine("        <trigger number=\"38\" default=\"clan remove\" replacement=\"clan remove\" />");
-                    sw.WriteLine("        <trigger number=\"39\" default=\"clan promote\" replacement=\"clan promote\" />");
-                    sw.WriteLine("        <trigger number=\"40\" default=\"clan demote\" replacement=\"clan demote\" />");
-                    sw.WriteLine("        <trigger number=\"41\" default=\"clan leave\" replacement=\"clan leave\" />");
-                    sw.WriteLine("        <trigger number=\"42\" default=\"clan commands\" replacement=\"clan commands\" />");
-                    sw.WriteLine("        <trigger number=\"43\" default=\"clan chat\" replacement=\"clan chat\" />");
-                    sw.WriteLine("        <trigger number=\"44\" default=\"clan rename\" replacement=\"clan rename\" />");
-                    sw.WriteLine("        <trigger number=\"45\" default=\"clan request\" replacement=\"clan request\" />");
-                    sw.WriteLine("        <trigger number=\"46\" default=\"reward\" replacement=\"reward\" />");
-                    sw.WriteLine("        <trigger number=\"47\" default=\"shutdown\" replacement=\"shutdown\" />");
-                    sw.WriteLine("        <trigger number=\"48\" default=\"adminlist\" replacement=\"adminlist\" />");
-                    sw.WriteLine("        <trigger number=\"49\" default=\"travel\" replacement=\"travel\" />");
-                    sw.WriteLine("        <trigger number=\"50\" default=\"return\" replacement=\"return\" />");
-                    sw.WriteLine("        <trigger number=\"51\" default=\"marketback\" replacement=\"marketback\" />");
-                    sw.WriteLine("        <trigger number=\"52\" default=\"mback\" replacement=\"mback\" />");
-                    sw.WriteLine("        <trigger number=\"53\" default=\"lobbyback\" replacement=\"lobbyback\" />");
-                    sw.WriteLine("        <trigger number=\"54\" default=\"lback\" replacement=\"lback\" />");
-                    sw.WriteLine("        <trigger number=\"55\" default=\"forgive\" replacement=\"forgive\" />");
-                    sw.WriteLine("        <trigger number=\"56\" default=\"wallet\" replacement=\"wallet\" />");
-                    sw.WriteLine("        <trigger number=\"57\" default=\"shop\" replacement=\"shop\" />");
-                    sw.WriteLine("        <trigger number=\"58\" default=\"shop buy\" replacement=\"shop buy\" />");
-                    sw.WriteLine("        <trigger number=\"59\" default=\"friend\" replacement=\"friend\" />");
-                    sw.WriteLine("        <trigger number=\"60\" default=\"accept\" replacement=\"accept\" />");
-                    sw.WriteLine("        <trigger number=\"61\" default=\"died\" replacement=\"died\" />");
-                    sw.WriteLine("        <trigger number=\"62\" default=\"weathervote\" replacement=\"weathervote\" />");
-                    sw.WriteLine("        <trigger number=\"63\" default=\"sun\" replacement=\"sun\" />");
-                    sw.WriteLine("        <trigger number=\"64\" default=\"rain\" replacement=\"rain\" />");
-                    sw.WriteLine("        <trigger number=\"65\" default=\"snow\" replacement=\"snow\" />");
-                    sw.WriteLine("        <trigger number=\"66\" default=\"restartvote\" replacement=\"restartvote\" />");
-                    sw.WriteLine("        <trigger number=\"67\" default=\"mutevote\" replacement=\"mutevote\" />");
-                    sw.WriteLine("        <trigger number=\"68\" default=\"kickvote\" replacement=\"kickvote\" />");
-                    sw.WriteLine("        <trigger number=\"69\" default=\"reserved\" replacement=\"reserved\" />");
-                    sw.WriteLine("        <trigger number=\"70\" default=\"yes\" replacement=\"yes\" />");
-                    sw.WriteLine("        <trigger number=\"71\" default=\"auction\" replacement=\"auction\" />");
-                    sw.WriteLine("        <trigger number=\"72\" default=\"auction cancel\" replacement=\"auction cancel\" />");
-                    sw.WriteLine("        <trigger number=\"73\" default=\"auction buy\" replacement=\"auction buy\" />");
-                    sw.WriteLine("        <trigger number=\"74\" default=\"auction sell\" replacement=\"auction sell\" />");
-                    sw.WriteLine("        <trigger number=\"75\" default=\"fps\" replacement=\"fps\" />");
-                    sw.WriteLine("        <trigger number=\"76\" default=\"loc\" replacement=\"loc\" />");
-                    sw.WriteLine("        <trigger number=\"77\" default=\"bike\" replacement=\"bike\" />");
-                    sw.WriteLine("        <trigger number=\"78\" default=\"minibike\" replacement=\"minibike\" />");
-                    sw.WriteLine("        <trigger number=\"79\" default=\"motorbike\" replacement=\"motorbike\" />");
-                    sw.WriteLine("        <trigger number=\"80\" default=\"jeep\" replacement=\"jeep\" />");
-                    sw.WriteLine("        <trigger number=\"81\" default=\"gyro\" replacement=\"gyro\" />");
-                    sw.WriteLine("        <trigger number=\"82\" default=\"report\" replacement=\"report\" />");
-                    sw.WriteLine("        <trigger number=\"83\" default=\"bounty\" replacement=\"bounty\" />");
-                    sw.WriteLine("        <trigger number=\"84\" default=\"lottery\" replacement=\"lottery\" />");
-                    sw.WriteLine("        <trigger number=\"85\" default=\"lottery enter\" replacement=\"lottery enter\" />");
-                    sw.WriteLine("        <trigger number=\"86\" default=\"ready\" replacement=\"ready\" />");
-                    sw.WriteLine("        <trigger number=\"87\" default=\"setlobby\" replacement=\"setlobby\" />");
-                    sw.WriteLine("        <trigger number=\"88\" default=\"lobby\" replacement=\"lobby\" />");
-                    sw.WriteLine("        <trigger number=\"89\" default=\"playerlist\" replacement=\"playerlist\" />");
-                    sw.WriteLine("        <trigger number=\"90\" default=\"stuck\" replacement=\"stuck\" />");
-                    sw.WriteLine("        <trigger number=\"91\" default=\"pollyes\" replacement=\"pollyes\" />");
-                    sw.WriteLine("        <trigger number=\"92\" default=\"pollno\" replacement=\"pollno\" />");
-                    sw.WriteLine("        <trigger number=\"93\" default=\"poll\" replacement=\"poll\" />");
-                    sw.WriteLine("        <trigger number=\"94\" default=\"bank\" replacement=\"bank\" />");
-                    sw.WriteLine("        <trigger number=\"95\" default=\"deposit\" replacement=\"deposit\" />");
-                    sw.WriteLine("        <trigger number=\"96\" default=\"withdraw\" replacement=\"withdraw\" />");
-                    sw.WriteLine("        <trigger number=\"97\" default=\"wallet deposit\" replacement=\"wallet deposit\" />");
-                    sw.WriteLine("        <trigger number=\"98\" default=\"wallet withdraw\" replacement=\"wallet withdraw\" />");
-                    sw.WriteLine("        <trigger number=\"99\" default=\"transfer\" replacement=\"transfer\" />");
-                    sw.WriteLine("        <trigger number=\"100\" default=\"join\" replacement=\"event\" />");
-                    sw.WriteLine("        <trigger number=\"101\" default=\"buy life\" replacement=\"buy life\" />");
-                    sw.WriteLine("        <trigger number=\"102\" default=\"setmarket\" replacement=\"setmarket\" />");
-                    sw.WriteLine("        <trigger number=\"103\" default=\"market\" replacement=\"market\" />");
-                    sw.WriteLine("        <trigger number=\"104\" default=\"infoticker\" replacement=\"infoticker\" />");
-                    sw.WriteLine("        <trigger number=\"105\" default=\"session\" replacement=\"session\" />");
-                    sw.WriteLine("        <trigger number=\"106\" default=\"waypoint\" replacement=\"waypoint\" />");
-                    sw.WriteLine("        <trigger number=\"107\" default=\"way\" replacement=\"way\" />");
-                    sw.WriteLine("        <trigger number=\"108\" default=\"wp\" replacement=\"wp\" />");
-                    sw.WriteLine("        <trigger number=\"109\" default=\"fwaypoint\" replacement=\"fwaypoint\" />");
-                    sw.WriteLine("        <trigger number=\"110\" default=\"fway\" replacement=\"fway\" />");
-                    sw.WriteLine("        <trigger number=\"111\" default=\"fwp\" replacement=\"fwp\" />");
-                    sw.WriteLine("        <trigger number=\"112\" default=\"waypoint save\" replacement=\"waypoint save\" />");
-                    sw.WriteLine("        <trigger number=\"113\" default=\"way save\" replacement=\"way save\" />");
-                    sw.WriteLine("        <trigger number=\"114\" default=\"ws\" replacement=\"ws\" />");
-                    sw.WriteLine("        <trigger number=\"115\" default=\"waypoint del\" replacement=\"waypoint del\" />");
-                    sw.WriteLine("        <trigger number=\"116\" default=\"way del\" replacement=\"way del\" />");
-                    sw.WriteLine("        <trigger number=\"117\" default=\"wd\" replacement=\"wd\" />");
-                    sw.WriteLine("        <trigger number=\"118\" default=\"admin\" replacement=\"admin\" />");
-                    sw.WriteLine("        <trigger number=\"119\" default=\"mutelist\" replacement=\"mutelist\" />");
-                    sw.WriteLine("        <trigger number=\"120\" default=\"pmessage\" replacement=\"pmessage\" />");
-                    sw.WriteLine("        <trigger number=\"121\" default=\"pm\" replacement=\"pm\" />");
-                    sw.WriteLine("        <trigger number=\"122\" default=\"rmessage\" replacement=\"rmessage\" />");
-                    sw.WriteLine("        <trigger number=\"123\" default=\"rm\" replacement=\"rm\" />");
-                    sw.WriteLine("        <trigger number=\"124\" default=\"cc\" replacement=\"cc\" />");
-                    sw.WriteLine("        <trigger number=\"125\" default=\"clanlist\" replacement=\"clanlist\" />");
-                    sw.WriteLine("        <trigger number=\"126\" default=\"pray\" replacement=\"pray\" />");
-                    sw.WriteLine("        <trigger number=\"127\" default=\"hardcore\" replacement=\"hardcore\" />");
-                    sw.WriteLine("        <trigger number=\"128\" default=\"hardcore on\" replacement=\"hardcore on\" />");
-                    sw.WriteLine("        <trigger number=\"129\" default=\"scoutplayer\" replacement=\"scoutplayer\" />");
-                    sw.WriteLine("        <trigger number=\"130\" default=\"scout\" replacement=\"scout\" />");
-                    sw.WriteLine("        <trigger number=\"131\" default=\"exit\" replacement=\"exit\" />");
-                    sw.WriteLine("        <trigger number=\"132\" default=\"quit\" replacement=\"quit\" />");
+                    sw.WriteLine("        <Trigger Number=\"1\" Default=\"sethome\" Replacement=\"sethome\" />");
+                    sw.WriteLine("        <Trigger Number=\"2\" Default=\"home\" Replacement=\"home\" />");
+                    sw.WriteLine("        <Trigger Number=\"3\" Default=\"fhome\" Replacement=\"fhome\" />");
+                    sw.WriteLine("        <Trigger Number=\"4\" Default=\"delhome\" Replacement=\"delhome\" />");
+                    sw.WriteLine("        <Trigger Number=\"5\" Default=\"sethome2\" Replacement=\"sethome2\" />");
+                    sw.WriteLine("        <Trigger Number=\"6\" Default=\"home2\" Replacement=\"home2\" />");
+                    sw.WriteLine("        <Trigger Number=\"7\" Default=\"fhome2\" Replacement=\"fhome2\" />");
+                    sw.WriteLine("        <Trigger Number=\"8\" Default=\"delhome2\" Replacement=\"delhome2\" />");
+                    sw.WriteLine("        <Trigger Number=\"9\" Default=\"go\" Replacement=\"go\" />");
+                    sw.WriteLine("        <Trigger Number=\"10\" Default=\"go way\" Replacement=\"go way\" />");
+                    sw.WriteLine("        <Trigger Number=\"11\" Default=\"top3\" Replacement=\"top3\" />");
+                    sw.WriteLine("        <Trigger Number=\"12\" Default=\"score\" Replacement=\"score\" />");
+                    sw.WriteLine("        <Trigger Number=\"13\" Default=\"mute\" Replacement=\"mute\" />");
+                    sw.WriteLine("        <Trigger Number=\"14\" Default=\"unmute\" Replacement=\"unmute\" />");
+                    sw.WriteLine("        <Trigger Number=\"15\" Default=\"commands\" Replacement=\"commands\" />");
+                    sw.WriteLine("        <Trigger Number=\"16\" Default=\"day7\" Replacement=\"day7\" />");
+                    sw.WriteLine("        <Trigger Number=\"17\" Default=\"day\" Replacement=\"day\" />");
+                    sw.WriteLine("        <Trigger Number=\"18\" Default=\"bloodmoon\" Replacement=\"bloodmoon\" />");
+                    sw.WriteLine("        <Trigger Number=\"19\" Default=\"bm\" Replacement=\"bm\" />");
+                    sw.WriteLine("        <Trigger Number=\"20\" Default=\"killme\" Replacement=\"killme\" />");
+                    sw.WriteLine("        <Trigger Number=\"21\" Default=\"wrist\" Replacement=\"wrist\" />");
+                    sw.WriteLine("        <Trigger Number=\"22\" Default=\"hang\" Replacement=\"hang\" />");
+                    sw.WriteLine("        <Trigger Number=\"23\" Default=\"suicide\" Replacement=\"suicide\" />");
+                    sw.WriteLine("        <Trigger Number=\"24\" Default=\"gimme\" Replacement=\"gimme\" />");
+                    sw.WriteLine("        <Trigger Number=\"25\" Default=\"gimmie\" Replacement=\"gimmie\" />");
+                    sw.WriteLine("        <Trigger Number=\"26\" Default=\"set jail\" Replacement=\"set jail\" />");
+                    sw.WriteLine("        <Trigger Number=\"27\" Default=\"jail\" Replacement=\"jail\" />");
+                    sw.WriteLine("        <Trigger Number=\"28\" Default=\"unjail\" Replacement=\"unjail\" />");
+                    sw.WriteLine("        <Trigger Number=\"29\" Default=\"setspawn\" Replacement=\"setspawn\" />");
+                    sw.WriteLine("        <Trigger Number=\"30\" Default=\"trackanimal\" Replacement=\"trackanimal\" />");
+                    sw.WriteLine("        <Trigger Number=\"31\" Default=\"track\" Replacement=\"track\" />");
+                    sw.WriteLine("        <Trigger Number=\"32\" Default=\"claim\" Replacement=\"claim\" />");
+                    sw.WriteLine("        <Trigger Number=\"33\" Default=\"clan add\" Replacement=\"clan add\" />");
+                    sw.WriteLine("        <Trigger Number=\"34\" Default=\"clan del\" Replacement=\"clan del\" />");
+                    sw.WriteLine("        <Trigger Number=\"35\" Default=\"clan invite\" Replacement=\"clan invite\" />");
+                    sw.WriteLine("        <Trigger Number=\"36\" Default=\"clan accept\" Replacement=\"clan accept\" />");
+                    sw.WriteLine("        <Trigger Number=\"37\" Default=\"clan decline\" Replacement=\"clan decline\" />");
+                    sw.WriteLine("        <Trigger Number=\"38\" Default=\"clan remove\" Replacement=\"clan remove\" />");
+                    sw.WriteLine("        <Trigger Number=\"39\" Default=\"clan promote\" Replacement=\"clan promote\" />");
+                    sw.WriteLine("        <Trigger Number=\"40\" Default=\"clan demote\" Replacement=\"clan demote\" />");
+                    sw.WriteLine("        <Trigger Number=\"41\" Default=\"clan leave\" Replacement=\"clan leave\" />");
+                    sw.WriteLine("        <Trigger Number=\"42\" Default=\"clan commands\" Replacement=\"clan commands\" />");
+                    sw.WriteLine("        <Trigger Number=\"43\" Default=\"clan chat\" Replacement=\"clan chat\" />");
+                    sw.WriteLine("        <Trigger Number=\"44\" Default=\"clan rename\" Replacement=\"clan rename\" />");
+                    sw.WriteLine("        <Trigger Number=\"45\" Default=\"clan request\" Replacement=\"clan request\" />");
+                    sw.WriteLine("        <Trigger Number=\"46\" Default=\"reward\" Replacement=\"reward\" />");
+                    sw.WriteLine("        <Trigger Number=\"47\" Default=\"shutdown\" Replacement=\"shutdown\" />");
+                    sw.WriteLine("        <Trigger Number=\"48\" Default=\"adminlist\" Replacement=\"adminlist\" />");
+                    sw.WriteLine("        <Trigger Number=\"49\" Default=\"travel\" Replacement=\"travel\" />");
+                    sw.WriteLine("        <Trigger Number=\"50\" Default=\"return\" Replacement=\"return\" />");
+                    sw.WriteLine("        <Trigger Number=\"51\" Default=\"marketback\" Replacement=\"marketback\" />");
+                    sw.WriteLine("        <Trigger Number=\"52\" Default=\"mback\" Replacement=\"mback\" />");
+                    sw.WriteLine("        <Trigger Number=\"53\" Default=\"lobbyback\" Replacement=\"lobbyback\" />");
+                    sw.WriteLine("        <Trigger Number=\"54\" Default=\"lback\" Replacement=\"lback\" />");
+                    sw.WriteLine("        <Trigger Number=\"55\" Default=\"forgive\" Replacement=\"forgive\" />");
+                    sw.WriteLine("        <Trigger Number=\"56\" Default=\"wallet\" Replacement=\"wallet\" />");
+                    sw.WriteLine("        <Trigger Number=\"57\" Default=\"shop\" Replacement=\"shop\" />");
+                    sw.WriteLine("        <Trigger Number=\"58\" Default=\"shop buy\" Replacement=\"shop buy\" />");
+                    sw.WriteLine("        <Trigger Number=\"59\" Default=\"friend\" Replacement=\"friend\" />");
+                    sw.WriteLine("        <Trigger Number=\"60\" Default=\"accept\" Replacement=\"accept\" />");
+                    sw.WriteLine("        <Trigger Number=\"61\" Default=\"died\" Replacement=\"died\" />");
+                    sw.WriteLine("        <Trigger Number=\"62\" Default=\"weathervote\" Replacement=\"weathervote\" />");
+                    sw.WriteLine("        <Trigger Number=\"63\" Default=\"sun\" Replacement=\"sun\" />");
+                    sw.WriteLine("        <Trigger Number=\"64\" Default=\"rain\" Replacement=\"rain\" />");
+                    sw.WriteLine("        <Trigger Number=\"65\" Default=\"snow\" Replacement=\"snow\" />");
+                    sw.WriteLine("        <Trigger Number=\"66\" Default=\"restartvote\" Replacement=\"restartvote\" />");
+                    sw.WriteLine("        <Trigger Number=\"67\" Default=\"mutevote\" Replacement=\"mutevote\" />");
+                    sw.WriteLine("        <Trigger Number=\"68\" Default=\"kickvote\" Replacement=\"kickvote\" />");
+                    sw.WriteLine("        <Trigger Number=\"69\" Default=\"reserved\" Replacement=\"reserved\" />");
+                    sw.WriteLine("        <Trigger Number=\"70\" Default=\"yes\" Replacement=\"yes\" />");
+                    sw.WriteLine("        <Trigger Number=\"71\" Default=\"auction\" Replacement=\"auction\" />");
+                    sw.WriteLine("        <Trigger Number=\"72\" Default=\"auction cancel\" Replacement=\"auction cancel\" />");
+                    sw.WriteLine("        <Trigger Number=\"73\" Default=\"auction buy\" Replacement=\"auction buy\" />");
+                    sw.WriteLine("        <Trigger Number=\"74\" Default=\"auction sell\" Replacement=\"auction sell\" />");
+                    sw.WriteLine("        <Trigger Number=\"75\" Default=\"fps\" Replacement=\"fps\" />");
+                    sw.WriteLine("        <Trigger Number=\"76\" Default=\"loc\" Replacement=\"loc\" />");
+                    sw.WriteLine("        <Trigger Number=\"77\" Default=\"bike\" Replacement=\"bike\" />");
+                    sw.WriteLine("        <Trigger Number=\"78\" Default=\"minibike\" Replacement=\"minibike\" />");
+                    sw.WriteLine("        <Trigger Number=\"79\" Default=\"motorbike\" Replacement=\"motorbike\" />");
+                    sw.WriteLine("        <Trigger Number=\"80\" Default=\"jeep\" Replacement=\"jeep\" />");
+                    sw.WriteLine("        <Trigger Number=\"81\" Default=\"gyro\" Replacement=\"gyro\" />");
+                    sw.WriteLine("        <Trigger Number=\"82\" Default=\"report\" Replacement=\"report\" />");
+                    sw.WriteLine("        <Trigger Number=\"83\" Default=\"bounty\" Replacement=\"bounty\" />");
+                    sw.WriteLine("        <Trigger Number=\"84\" Default=\"lottery\" Replacement=\"lottery\" />");
+                    sw.WriteLine("        <Trigger Number=\"85\" Default=\"lottery enter\" Replacement=\"lottery enter\" />");
+                    sw.WriteLine("        <Trigger Number=\"86\" Default=\"ready\" Replacement=\"ready\" />");
+                    sw.WriteLine("        <Trigger Number=\"87\" Default=\"setlobby\" Replacement=\"setlobby\" />");
+                    sw.WriteLine("        <Trigger Number=\"88\" Default=\"lobby\" Replacement=\"lobby\" />");
+                    sw.WriteLine("        <Trigger Number=\"89\" Default=\"playerlist\" Replacement=\"playerlist\" />");
+                    sw.WriteLine("        <Trigger Number=\"90\" Default=\"stuck\" Replacement=\"stuck\" />");
+                    sw.WriteLine("        <Trigger Number=\"91\" Default=\"pollyes\" Replacement=\"pollyes\" />");
+                    sw.WriteLine("        <Trigger Number=\"92\" Default=\"pollno\" Replacement=\"pollno\" />");
+                    sw.WriteLine("        <Trigger Number=\"93\" Default=\"poll\" Replacement=\"poll\" />");
+                    sw.WriteLine("        <Trigger Number=\"94\" Default=\"bank\" Replacement=\"bank\" />");
+                    sw.WriteLine("        <Trigger Number=\"95\" Default=\"deposit\" Replacement=\"deposit\" />");
+                    sw.WriteLine("        <Trigger Number=\"96\" Default=\"withdraw\" Replacement=\"withdraw\" />");
+                    sw.WriteLine("        <Trigger Number=\"97\" Default=\"wallet deposit\" Replacement=\"wallet deposit\" />");
+                    sw.WriteLine("        <Trigger Number=\"98\" Default=\"wallet withdraw\" Replacement=\"wallet withdraw\" />");
+                    sw.WriteLine("        <Trigger Number=\"99\" Default=\"transfer\" Replacement=\"transfer\" />");
+                    sw.WriteLine("        <Trigger Number=\"100\" Default=\"join\" Replacement=\"event\" />");
+                    sw.WriteLine("        <Trigger Number=\"101\" Default=\"buy life\" Replacement=\"buy life\" />");
+                    sw.WriteLine("        <Trigger Number=\"102\" Default=\"setmarket\" Replacement=\"setmarket\" />");
+                    sw.WriteLine("        <Trigger Number=\"103\" Default=\"market\" Replacement=\"market\" />");
+                    sw.WriteLine("        <Trigger Number=\"104\" Default=\"infoticker\" Replacement=\"infoticker\" />");
+                    sw.WriteLine("        <Trigger Number=\"105\" Default=\"session\" Replacement=\"session\" />");
+                    sw.WriteLine("        <Trigger Number=\"106\" Default=\"waypoint\" Replacement=\"waypoint\" />");
+                    sw.WriteLine("        <Trigger Number=\"107\" Default=\"way\" Replacement=\"way\" />");
+                    sw.WriteLine("        <Trigger Number=\"108\" Default=\"wp\" Replacement=\"wp\" />");
+                    sw.WriteLine("        <Trigger Number=\"109\" Default=\"fwaypoint\" Replacement=\"fwaypoint\" />");
+                    sw.WriteLine("        <Trigger Number=\"110\" Default=\"fway\" Replacement=\"fway\" />");
+                    sw.WriteLine("        <Trigger Number=\"111\" Default=\"fwp\" Replacement=\"fwp\" />");
+                    sw.WriteLine("        <Trigger Number=\"112\" Default=\"waypoint save\" Replacement=\"waypoint save\" />");
+                    sw.WriteLine("        <Trigger Number=\"113\" Default=\"way save\" Replacement=\"way save\" />");
+                    sw.WriteLine("        <Trigger Number=\"114\" Default=\"ws\" Replacement=\"ws\" />");
+                    sw.WriteLine("        <Trigger Number=\"115\" Default=\"waypoint del\" Replacement=\"waypoint del\" />");
+                    sw.WriteLine("        <Trigger Number=\"116\" Default=\"way del\" Replacement=\"way del\" />");
+                    sw.WriteLine("        <Trigger Number=\"117\" Default=\"wd\" Replacement=\"wd\" />");
+                    sw.WriteLine("        <Trigger Number=\"118\" Default=\"admin\" Replacement=\"admin\" />");
+                    sw.WriteLine("        <Trigger Number=\"119\" Default=\"mutelist\" Replacement=\"mutelist\" />");
+                    sw.WriteLine("        <Trigger Number=\"120\" Default=\"pmessage\" Replacement=\"pmessage\" />");
+                    sw.WriteLine("        <Trigger Number=\"121\" Default=\"pm\" Replacement=\"pm\" />");
+                    sw.WriteLine("        <Trigger Number=\"122\" Default=\"rmessage\" Replacement=\"rmessage\" />");
+                    sw.WriteLine("        <Trigger Number=\"123\" Default=\"rm\" Replacement=\"rm\" />");
+                    sw.WriteLine("        <Trigger Number=\"124\" Default=\"cc\" Replacement=\"cc\" />");
+                    sw.WriteLine("        <Trigger Number=\"125\" Default=\"clanlist\" Replacement=\"clanlist\" />");
+                    sw.WriteLine("        <Trigger Number=\"126\" Default=\"pray\" Replacement=\"pray\" />");
+                    sw.WriteLine("        <Trigger Number=\"127\" Default=\"hardcore\" Replacement=\"hardcore\" />");
+                    sw.WriteLine("        <Trigger Number=\"128\" Default=\"hardcore on\" Replacement=\"hardcore on\" />");
+                    sw.WriteLine("        <Trigger Number=\"129\" Default=\"scoutplayer\" Replacement=\"scoutplayer\" />");
+                    sw.WriteLine("        <Trigger Number=\"130\" Default=\"scout\" Replacement=\"scout\" />");
+                    sw.WriteLine("        <Trigger Number=\"131\" Default=\"exit\" Replacement=\"exit\" />");
+                    sw.WriteLine("        <Trigger Number=\"132\" Default=\"quit\" Replacement=\"quit\" />");
                 }
-                sw.WriteLine("    </triggers>");
+                sw.WriteLine("    </Triggers>");
                 sw.WriteLine("</Event>");
                 sw.Flush();
                 sw.Close();

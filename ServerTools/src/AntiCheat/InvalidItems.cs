@@ -7,7 +7,7 @@ namespace ServerTools.AntiCheat
 {
     public class InvalidItems
     {
-        public static bool IsEnabled = false, IsRunning = false, Announce_Invalid_Stack = false, Ban_Player = false, Check_Storage = false;
+        public static bool IsEnabled = false, IsRunning = false, Invalid_Stack = false, Ban_Player = false, Check_Storage = false;
         public static int Admin_Level = 0, Days_Before_Log_Delete = 5;
         private static string file = "InvalidItems.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -175,11 +175,14 @@ namespace ServerTools.AntiCheat
                             int _count = _playerDataFile.inventory[i].count;
                             if (_count > 0 && _itemValue != null && !_itemValue.Equals(ItemValue.None))
                             {
-                                int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
                                 string _name = ItemClass.list[_itemValue.type].Name;
-                                if (_count > _maxAllowed)
+                                if (Invalid_Stack)
                                 {
-                                    MaxStack(_cInfo, _name, _count, _maxAllowed);
+                                    int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
+                                    if (_count > _maxAllowed)
+                                    {
+                                        MaxStack(_cInfo, _name, _count, _maxAllowed);
+                                    }
                                 }
                                 if (IsEnabled && dict.Contains(_name))
                                 {
@@ -220,11 +223,14 @@ namespace ServerTools.AntiCheat
                             int _count = _playerDataFile.bag[i].count;
                             if (_count > 0 && _itemValue != null && !_itemValue.Equals(ItemValue.None))
                             {
-                                int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
                                 string _name = ItemClass.list[_itemValue.type].Name;
-                                if (_count > _maxAllowed)
+                                if (Invalid_Stack)
                                 {
-                                    MaxStack(_cInfo, _name, _count, _maxAllowed);
+                                    int _maxAllowed = ItemClass.list[_itemValue.type].Stacknumber.Value;
+                                    if (_count > _maxAllowed)
+                                    {
+                                        MaxStack(_cInfo, _name, _count, _maxAllowed);
+                                    }
                                 }
                                 if (IsEnabled && dict.Contains(_name))
                                 {
@@ -258,42 +264,44 @@ namespace ServerTools.AntiCheat
                                 }
                             }
                         }
-                        for (int i = 0; i < _playerDataFile.equipment.GetSlotCount(); i++)
+                        if (IsEnabled)
                         {
-                            ItemValue _item = _playerDataFile.equipment.GetSlotItem(i);
-                            if (_item != null && !_item.Equals(ItemValue.None))
+                            for (int i = 0; i < _playerDataFile.equipment.GetSlotCount(); i++)
                             {
-                                int _maxAllowed = ItemClass.list[_item.type].Stacknumber.Value;
-                                string _name = ItemClass.list[_item.type].Name;
-                                if (IsEnabled && dict.Contains(_name))
+                                ItemValue _itemValue = _playerDataFile.equipment.GetSlotItem(i);
+                                if (_itemValue != null && !_itemValue.Equals(ItemValue.None))
                                 {
-                                    if (Ban_Player)
+                                    string _name = ItemClass.list[_itemValue.type].Name;
+                                    if (dict.Contains(_name))
                                     {
-                                        Ban(_cInfo, _name);
-                                    }
-                                    else
-                                    {
-                                        if (Flags.ContainsKey(_cInfo.entityId))
+                                        if (Ban_Player)
                                         {
-                                            int _value;
-                                            if (Flags.TryGetValue(_cInfo.entityId, out _value))
-                                            {
-                                                if (_value == 2)
-                                                {
-                                                    Flag3(_cInfo, _name);
-                                                }
-                                                else
-                                                {
-                                                    Flag2(_cInfo, _name);
-                                                }
-                                            }
+                                            Ban(_cInfo, _name);
                                         }
                                         else
                                         {
-                                            Flag1(_cInfo, _name);
+                                            if (Flags.ContainsKey(_cInfo.entityId))
+                                            {
+                                                int _value;
+                                                if (Flags.TryGetValue(_cInfo.entityId, out _value))
+                                                {
+                                                    if (_value == 2)
+                                                    {
+                                                        Flag3(_cInfo, _name);
+                                                    }
+                                                    else
+                                                    {
+                                                        Flag2(_cInfo, _name);
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Flag1(_cInfo, _name);
+                                            }
                                         }
+                                        return;
                                     }
-                                    return;
                                 }
                             }
                         }

@@ -95,27 +95,27 @@ namespace ServerTools
             };
         }
 
-        public static void BattleLogTool(string _id, string _ip)
+        public static void BattleLogPlayerExit(string _id)
         {
-            System.Timers.Timer _exitTimer = new System.Timers.Timer(2000);
+            System.Timers.Timer _exitTimer = new System.Timers.Timer(15000);
             _exitTimer.AutoReset = false;
             _exitTimer.Start();
             _exitTimer.Elapsed += (sender, e) =>
             {
-                Init5(sender, e, _id, _ip);
+                Init5(sender, e, _id);
                 _exitTimer.Close();
             };
         }
 
-        public static void BattleLogPlayerExit(string _id)
+        public static void BattleLogDelay(ClientInfo _cInfo, string _ip)
         {
-            System.Timers.Timer _playerExitTimer = new System.Timers.Timer(15000);
-            _playerExitTimer.AutoReset = false;
-            _playerExitTimer.Start();
-            _playerExitTimer.Elapsed += (sender, e) =>
+            System.Timers.Timer _exitDelay = new System.Timers.Timer(2500);
+            _exitDelay.AutoReset = false;
+            _exitDelay.Start();
+            _exitDelay.Elapsed += (sender, e) =>
             {
-                Init6(sender, e, _id);
-                _playerExitTimer.Close();
+                Init6(sender, e, _cInfo, _ip);
+                _exitDelay.Close();
             };
         }
 
@@ -128,18 +128,6 @@ namespace ServerTools
             {
                 StopServer.FailSafe(sender, e);
                 _shutdownFailsafe.Close();
-            };
-        }
-
-        public static void NewWorldCheck()
-        {
-            System.Timers.Timer _worldchange = new System.Timers.Timer(30000);
-            _worldchange.AutoReset = false;
-            _worldchange.Start();
-            _worldchange.Elapsed += (sender, e) =>
-            {
-                NewWorld.Exec();
-                _worldchange.Close();
             };
         }
 
@@ -319,6 +307,10 @@ namespace ServerTools
             if (ConsoleCommandLog.IsEnabled)
             {
                 Log.Out("Console command log enabled");
+            }
+            if (CountryBan.IsEnabled)
+            {
+                Log.Out("Country ban enabled");
             }
             if (CustomCommands.IsEnabled)
             {
@@ -938,14 +930,14 @@ namespace ServerTools
             Hardcore.KickPlayer(_cInfo);
         }
 
-        private static void Init5(object sender, ElapsedEventArgs e, string _id, string _ip)
-        {
-            BattleLogger.ScanLog(_id, _ip);
-        }
-
-        private static void Init6(object sender, ElapsedEventArgs e, string _id)
+        private static void Init5(object sender, ElapsedEventArgs e, string _id)
         {
             BattleLogger.PlayerExit(_id);
+        }
+
+        private static void Init6(object sender, ElapsedEventArgs e, ClientInfo _cInfo, string _ip)
+        {
+            BattleLogger.BattleLog(_cInfo, _ip);
         }
     }
 }

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using UnityEngine;
 
 namespace ServerTools
 {
@@ -11,140 +8,104 @@ namespace ServerTools
         public static bool IsEnabled = false, Drop = false, Remove = false, All = false, Belt = false, Bag = false, Equipment = false;
         public static string Command131 = "exit", Command132 = "quit";
         public static int Admin_Level = 0, Player_Distance = 200;
-        public static Dictionary<string, string> Players = new Dictionary<string, string>();
+        public static Dictionary<string, DateTime> DisconnectedIp = new Dictionary<string, DateTime>();
+        public static List<string> Exit = new List<string>();
 
-        public static void ScanLog(string _id, string _ip)
+        public static void BattleLog(ClientInfo _cInfo, string _ip)
         {
             try
             {
-                string _dateTime1 = DateTime.Now.AddSeconds(-2).ToString("yyyy-MM-ddTHH:mm:ss"), _dateTime2 = DateTime.Now.AddSeconds(-3).ToString("yyyy-MM-ddTHH:mm:ss"),
-                    _dateTime3 = DateTime.Now.AddSeconds(-4).ToString("yyyy-MM-ddTHH:mm:ss"), _dateTime4 = DateTime.Now.AddSeconds(-5).ToString("yyyy-MM-ddTHH:mm:ss"),
-                    _dateTime5 = DateTime.Now.AddSeconds(-6).ToString("yyyy-MM-ddTHH:mm:ss");
-                using (FileStream fs = new FileStream(Confirm.LogName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                if (DisconnectedIp != null && DisconnectedIp.Count > 0)
                 {
-                    using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
+                    if (DisconnectedIp.ContainsKey(_ip))
                     {
-                        string _line = sr.ReadToEnd();
-                        if (_line != null)
+                        if (DisconnectedIp.TryGetValue(_ip, out DateTime _dateTime))
                         {
-                            if (_line.ToLower().Contains("client disconnect") && _line.ToLower().Contains("disconnectpeercalled") && _line.Contains(_ip) && (_line.Contains(_dateTime1) || _line.Contains(_dateTime2) || _line.Contains(_dateTime3) || _line.Contains(_dateTime4) || _line.Contains(_dateTime5)))
+                            TimeSpan varTime = DateTime.Now - _dateTime;
+                            double fractionalSeconds = varTime.TotalSeconds;
+                            int _timepassed = (int)fractionalSeconds;
+                            if (_timepassed <= 5)
                             {
-                                Penalty(_id);
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            return;
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BattleLogger.ScanLog: {0}", e.Message));
-            }
-        }
-
-        public static void BattleLog(ClientInfo _cInfo)
-        {
-            try
-            {
-                PersistentPlayerData _ppd = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo.playerId);
-                PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_cInfo.playerId);
-                if (_ppd != null && _pdf != null)
-                {
-                    if (_ppd.ACL != null && _ppd.ACL.Count > 0)// has friends
-                    {
-                        List<EntityPlayer> _players = PersistentOperations.PlayerList();
-                        if (_players != null && _players.Count > 0)
-                        {
-                            for (int i = 0; i < _players.Count; i++)
-                            {
-                                EntityPlayer _player = _players[i];
-                                if (_player != null && _player.entityId != _cInfo.entityId && _player.IsAlive() && _player.IsSpawned())// player is alive
+                                PersistentPlayerData _ppd = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo.playerId);
+                                PlayerDataFile _pdf = PersistentOperations.GetPlayerDataFileFromSteamId(_cInfo.playerId);
+                                List<EntityPlayer> _players = PersistentOperations.PlayerList();
+                                if (_ppd != null && _pdf != null && _players != null && _players.Count > 0)
                                 {
-                                    PersistentPlayerData _ppd2 = PersistentOperations.GetPersistentPlayerDataFromEntityId(_player.entityId);
-                                    if (_ppd2 != null && _ppd2.ACL.Count > 0)// player has friends
+                                    if (_ppd.ACL != null && _ppd.ACL.Count > 0)// has friends
                                     {
-                                        if (!_ppd.ACL.Contains(_ppd2.PlayerId) || !_ppd2.ACL.Contains(_ppd.PlayerId))// not a friend
+                                        for (int i = 0; i < _players.Count; i++)
                                         {
-                                            if (Player_Distance > 0)// distance check
+                                            EntityPlayer _player = _players[i];
+                                            if (_player != null && _player.entityId != _cInfo.entityId && _player.IsAlive() && _player.IsSpawned())// player is alive and spawned
                                             {
-                                                if ((_pdf.ecd.pos.x - _player.position.x) * (_pdf.ecd.pos.x - _player.position.x) + (_pdf.ecd.pos.z - _player.position.z) * (_pdf.ecd.pos.z - _player.position.z) <= Player_Distance * Player_Distance)
+                                                PersistentPlayerData _ppd2 = PersistentOperations.GetPersistentPlayerDataFromEntityId(_player.entityId);
+                                                if (_ppd2 != null && _ppd2.ACL.Count > 0)// player has friends
                                                 {
-                                                    Players.TryGetValue(_cInfo.playerId, out string _ip);
-                                                    Players.Remove(_cInfo.playerId);
-                                                    Timers.BattleLogTool(_cInfo.playerId, _ip);
+                                                    if (!_ppd.ACL.Contains(_ppd2.PlayerId) || !_ppd2.ACL.Contains(_ppd.PlayerId))// not a friend
+                                                    {
+                                                        if (Player_Distance > 0)// distance check
+                                                        {
+                                                            if ((_pdf.ecd.pos - _player.position).magnitude <= Player_Distance)
+                                                            {
+                                                                Penalty(_pdf, _cInfo);
+                                                                return;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            Penalty(_pdf, _cInfo);
+                                                            return;
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (Player_Distance > 0)// distance check
+                                                    {
+                                                        if ((_pdf.ecd.pos - _player.position).magnitude <= Player_Distance)
+                                                        {
+                                                            Penalty(_pdf, _cInfo);
+                                                            return;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        Penalty(_pdf, _cInfo);
+                                                        return;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else //no friends
+                                    {
+                                        for (int i = 0; i < _players.Count; i++)
+                                        {
+                                            EntityPlayer _player = _players[i];
+                                            if (_player != null && _player.entityId != _cInfo.entityId && _player.IsAlive() && _player.IsSpawned())
+                                            {
+                                                if (Player_Distance > 0)// distance check
+                                                {
+                                                    if ((_pdf.ecd.pos - _player.position).magnitude <= Player_Distance)
+                                                    {
+                                                        Penalty(_pdf, _cInfo);
+                                                        return;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    Penalty(_pdf, _cInfo);
                                                     return;
                                                 }
                                             }
-                                            else
-                                            {
-                                                Players.TryGetValue(_cInfo.playerId, out string _ip);
-                                                Players.Remove(_cInfo.playerId);
-                                                Timers.BattleLogTool(_cInfo.playerId, _ip);
-                                                return;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Player_Distance > 0)// distance check
-                                        {
-                                            if ((_pdf.ecd.pos.x - _player.position.x) * (_pdf.ecd.pos.x - _player.position.x) + (_pdf.ecd.pos.z - _player.position.z) * (_pdf.ecd.pos.z - _player.position.z) <= Player_Distance * Player_Distance)
-                                            {
-                                                Players.TryGetValue(_cInfo.playerId, out string _ip);
-                                                Players.Remove(_cInfo.playerId);
-                                                Timers.BattleLogTool(_cInfo.playerId, _ip);
-                                                return;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            Players.TryGetValue(_cInfo.playerId, out string _ip);
-                                            Players.Remove(_cInfo.playerId);
-                                            Timers.BattleLogTool(_cInfo.playerId, _ip);
-                                            return;
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                    else //no friends
-                    {
-                        List<EntityPlayer> _players = PersistentOperations.PlayerList();
-                        if (_players != null && _players.Count > 0)
-                        {
-                            for (int i = 0; i < _players.Count; i++)
-                            {
-                                EntityPlayer _player = _players[i];
-                                if (_player != null && _player.entityId != _cInfo.entityId && _player.IsAlive() && _player.IsSpawned())
-                                {
-                                    if (Player_Distance > 0)
-                                    {
-                                        if ((_pdf.ecd.pos.x - _player.position.x) * (_pdf.ecd.pos.x - _player.position.x) + (_pdf.ecd.pos.z - _player.position.z) * (_pdf.ecd.pos.z - _player.position.z) <= Player_Distance * Player_Distance)
-                                        {
-                                            Players.TryGetValue(_cInfo.playerId, out string _ip);
-                                            Players.Remove(_cInfo.playerId);
-                                            Timers.BattleLogTool(_cInfo.playerId, _ip);
-                                            return;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Players.TryGetValue(_cInfo.playerId, out string _ip);
-                                        Players.Remove(_cInfo.playerId);
-                                        Timers.BattleLogTool(_cInfo.playerId, _ip);
-                                        return;
-                                    }
-                                }
-                            }
-                        }
+                        DisconnectedIp.Remove(_ip);
                     }
                 }
-                Players.Remove(_cInfo.playerId);
             }
             catch (Exception e)
             {
@@ -152,71 +113,66 @@ namespace ServerTools
             }
         }
 
-        private static void Penalty(string _id)
+        private static void Penalty(PlayerDataFile _pdf, ClientInfo _cInfo)
         {
             try
             {
-                Log.Out(string.Format("[SERVERTOOLS] Penalty Starting"));
-                PlayerDataFile _playerDataFile = PersistentOperations.GetPlayerDataFileFromSteamId(_id);
-                if (_playerDataFile != null)
+                Chunk chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos((int)_pdf.ecd.pos.x, (int)_pdf.ecd.pos.y, (int)_pdf.ecd.pos.z);
+                if (chunk != null)
                 {
-                    PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
-                    if (_persistentPlayerData != null)
+                    BlockValue _blockValue = Block.GetBlockValue("cntStorageChest");
+                    if (_blockValue.Block != null)
                     {
-                        EntityBackpack entityBackpack = EntityFactory.CreateEntity("Backpack".GetHashCode(), _playerDataFile.ecd.pos + Vector3.up * 2f) as EntityBackpack;
-                        TileEntityLootContainer tileEntityLootContainer = new TileEntityLootContainer(null);
-                        tileEntityLootContainer.SetUserAccessing(true);
-                        tileEntityLootContainer.SetEmpty();
-                        tileEntityLootContainer.lootListIndex = entityBackpack.GetLootList();
-                        tileEntityLootContainer.SetContainerSize(LootContainer.lootList[entityBackpack.GetLootList()].size, true);
-                        if (All || Bag)
+                        Vector3i _pos = new Vector3i((int)_pdf.ecd.pos.x, (int)_pdf.ecd.pos.y, (int)_pdf.ecd.pos.z);
+                        GameManager.Instance.World.SetBlockRPC(chunk.ClrIdx, _pos, _blockValue);
+                        TileEntityLootContainer tileEntityLootContainer = GameManager.Instance.World.GetTileEntity(chunk.ClrIdx, _pos) as TileEntityLootContainer;
+                        if (tileEntityLootContainer != null)
                         {
-                            for (int i = 0; i < _playerDataFile.bag.Length; i++)
+                            if (All || Bag)
                             {
-                                if (!_playerDataFile.bag[i].IsEmpty())
+                                for (int i = 0; i < _pdf.bag.Length; i++)
                                 {
-                                    tileEntityLootContainer.AddItem(_playerDataFile.bag[i]);
-                                    _playerDataFile.bag[i] = ItemStack.Empty.Clone();
+                                    if (!_pdf.bag[i].IsEmpty())
+                                    {
+                                        tileEntityLootContainer.AddItem(_pdf.bag[i]);
+                                        _pdf.bag[i] = ItemStack.Empty.Clone();
+                                    }
                                 }
                             }
-                        }
-                        if (All || Belt)
-                        {
-                            for (int i = 0; i < _playerDataFile.inventory.Length; i++)
+                            if (All || Belt)
                             {
-                                if (!_playerDataFile.inventory[i].IsEmpty())
+                                for (int i = 0; i < _pdf.inventory.Length; i++)
                                 {
-                                    tileEntityLootContainer.AddItem(_playerDataFile.inventory[i]);
-                                    _playerDataFile.inventory[i] = ItemStack.Empty.Clone();
+                                    if (!_pdf.inventory[i].IsEmpty())
+                                    {
+                                        tileEntityLootContainer.AddItem(_pdf.inventory[i]);
+                                        _pdf.inventory[i] = ItemStack.Empty.Clone();
+                                    }
                                 }
                             }
-                        }
-                        if (All || Equipment)
-                        {
-                            ItemValue[] _equipmentValues = _playerDataFile.equipment.GetItems();
-                            for (int i = 0; i < _equipmentValues.Length; i++)
+                            if (All || Equipment)
                             {
-                                if (!_equipmentValues[i].IsEmpty())
+                                ItemValue[] _equipmentValues = _pdf.equipment.GetItems();
+                                for (int i = 0; i < _equipmentValues.Length; i++)
                                 {
-                                    tileEntityLootContainer.AddItem(new ItemStack(_equipmentValues[i], 1));
+                                    if (!_equipmentValues[i].IsEmpty())
+                                    {
+                                        ItemStack _itemStack = new ItemStack(_equipmentValues[i], 1);
+                                        tileEntityLootContainer.AddItem(_itemStack);
+                                        _equipmentValues[i].Clear();
+                                    }
                                 }
                             }
-                            if (!_playerDataFile.equipment.HasAnyItems())
+                            if (tileEntityLootContainer.IsEmpty())
                             {
-                                _playerDataFile.equipment = new Equipment();
+                                GameManager.Instance.World.SetBlockRPC(chunk.ClrIdx, _pos, BlockValue.Air);
                             }
+                            else
+                            {
+                                tileEntityLootContainer.SetModified();
+                            }
+                            PersistentOperations.SavePlayerDataFile(_cInfo.playerId, _pdf);
                         }
-                        tileEntityLootContainer.SetUserAccessing(false);
-                        tileEntityLootContainer.SetModified();
-                        entityBackpack.RefPlayerId = _playerDataFile.ecd.clientEntityId;
-                        EntityCreationData entityCreationData = new EntityCreationData(entityBackpack);
-                        entityCreationData.entityName = string.Format(Localization.Get("playersBackpack"), _playerDataFile.ecd.entityName);
-                        entityCreationData.id = -1;
-                        entityCreationData.lootContainer = tileEntityLootContainer;
-                        GameManager.Instance.RequestToSpawnEntityServer(entityCreationData);
-                        entityBackpack.OnEntityUnload();
-                        _playerDataFile.droppedBackpackPosition = new Vector3i(_playerDataFile.ecd.pos);
-                        PersistentOperations.SavePlayerDataFile(_id, _playerDataFile);
                     }
                 }
             }
@@ -238,7 +194,10 @@ namespace ServerTools
                     {
                         PersistentOperations.SavePlayerDataFile(_cInfo.playerId, _playerDataFile);
                     }
-                    Players.Remove(_cInfo.playerId);
+                    if (Exit.Contains(_cInfo.playerId))
+                    {
+                        Exit.Remove(_cInfo.playerId);
+                    }
                     Disconnect(_cInfo);
                 }
             }
@@ -252,7 +211,7 @@ namespace ServerTools
         {
             try
             {
-                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have disconnected. Thank you for playing with us. Come back soon\"", _cInfo.playerId), (ClientInfo)null);
+                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have disconnected. Thank you for playing with us. Come back soon\"", _cInfo.playerId), null);
             }
             catch (Exception e)
             {

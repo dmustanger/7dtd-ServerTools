@@ -23,13 +23,13 @@ public static class Injections
         return true;
     }
 
-    public static bool PlayerLoginRPC_Prefix(GameManager __instance, ClientInfo _cInfo, string _playerName, string _playerId, string _compatibilityVersion)
+    public static bool PlayerLoginRPC_Prefix(ClientInfo _cInfo, string _playerId)
     {
         try
         {
-            if (ReservedSlots.IsEnabled && _playerId != null && _playerId.Length == 17 && ConnectionManager.Instance.ClientCount() > PersistentOperations.MaxPlayers)
+            if (ReservedSlots.IsEnabled && _playerId != null && _playerId.Length == 17 && ConnectionManager.Instance.ClientCount() >= GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount))
             {
-                return ReservedSlots.FullServer(_playerId, _playerName, _compatibilityVersion);
+                ReservedSlots.FullServer(_cInfo);
             }
         }
         catch (Exception e)
@@ -52,7 +52,7 @@ public static class Injections
         return true;
     }
 
-    public static bool ExplosionServer_Prefix(GameManager __instance, Vector3 _worldPos, Vector3i _blockPos, int _playerId)
+    public static bool ExplosionServer_Prefix(Vector3 _worldPos, Vector3i _blockPos, int _playerId)
     {
         try
         {
@@ -75,7 +75,7 @@ public static class Injections
         return true;
     }
 
-    public static void ServerConsoleCommand_Postfix(ConnectionManager __instance, ClientInfo _cInfo, string _cmd)
+    public static void ServerConsoleCommand_Postfix(ClientInfo _cInfo, string _cmd)
     {
         try
         {

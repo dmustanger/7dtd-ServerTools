@@ -8,7 +8,6 @@ namespace ServerTools
     class PersistentOperations
     {
         private static bool IsRunning = false;
-        public static int MaxPlayers = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
         public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10;
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
         public static Dictionary<int, int> PvEViolations = new Dictionary<int, int>();
@@ -647,21 +646,6 @@ namespace ServerTools
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.BedBug: {0}", e.Message));
             }
-        }
-
-        public static void ClaimBug(string _persistentPlayerId)
-        {
-
-        }
-
-        public static void InitLogWatch()
-        {
-            Logger.Main.LogCallbacks += LogAction;
-        }
-
-        private static void LogAction(string msg, string trace, LogType type)
-        {
-            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Default Log Out Detected. msg = {0}, trace = {1}, type = {2}", msg, trace, type.ToString()));
         }
     }
 }

@@ -57,7 +57,7 @@ namespace ServerTools.AntiCheat
             XmlNode _XmlNode = xmlDoc.DocumentElement;
             foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
-                if (childNode.Name == "duplicates")
+                if (childNode.Name == "Duplicates")
                 {
                     dict.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
@@ -72,12 +72,12 @@ namespace ServerTools.AntiCheat
                             continue;
                         }
                         XmlElement _line = (XmlElement)subChild;
-                        if (!_line.HasAttribute("name"))
+                        if (!_line.HasAttribute("Name"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring duplicates entry because of missing name attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring duplicates entry because of missing Name attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        string _name = _line.GetAttribute("name");
+                        string _name = _line.GetAttribute("Name");
                         if (!dict.Contains(_name))
                         {
                             dict.Add(_name);
@@ -99,24 +99,24 @@ namespace ServerTools.AntiCheat
             {
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<DuplicateItems>");
-                sw.WriteLine("    <duplicates>");
+                sw.WriteLine("    <Duplicates>");
                 if (dict.Count > 0)
                 {
                     for (int i = 0; i < dict.Count; i++)
                     {
                         string _name = dict[i];
-                        sw.WriteLine(string.Format("        <duplicate name=\"{0}\" />", _name));
+                        sw.WriteLine(string.Format("        <Duplicate Name=\"{0}\" />", _name));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <duplicate name=\"sand\" />");
-                    sw.WriteLine("        <duplicate name=\"dirt\" />");
-                    sw.WriteLine("        <duplicate name=\"rockSmall\" />");
-                    sw.WriteLine("        <duplicate name=\"yuccaFibers\" />");
-                    sw.WriteLine("        <duplicate name=\"stoneAxe\" />");
+                    sw.WriteLine("        <Duplicate Name=\"sand\" />");
+                    sw.WriteLine("        <Duplicate Name=\"dirt\" />");
+                    sw.WriteLine("        <Duplicate Name=\"rockSmall\" />");
+                    sw.WriteLine("        <Duplicate Name=\"yuccaFibers\" />");
+                    sw.WriteLine("        <Duplicate Name=\"stoneAxe\" />");
                 }
-                sw.WriteLine("    </duplicates>");
+                sw.WriteLine("    </Duplicates>");
                 sw.WriteLine("</DuplicateItems>");
                 sw.Flush();
                 sw.Close();

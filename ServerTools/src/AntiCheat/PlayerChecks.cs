@@ -147,34 +147,6 @@ namespace ServerTools.AntiCheat
                                             }
                                         }
                                     }
-                                    if (WaterEnabled && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > 0)
-                                    {
-                                        if (_player.IsSpawned() && _player.IsAlive() && !_player.IsStuck && _player.AttachedToEntity == null)
-                                        {
-                                            int x = (int)_player.position.x;
-                                            int y = (int)_player.position.y;
-                                            int z = (int)_player.position.z;
-                                            if (WaterCheck(_cInfo, _player, x, y, z))
-                                            {
-                                                if (WaterFlag.Contains(_cInfo.entityId))
-                                                {
-                                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, -1, z), null, false));
-                                                    WaterFlag.Remove(_cInfo.entityId);
-                                                }
-                                                else
-                                                {
-                                                    WaterFlag.Add(_cInfo.entityId);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                if (WaterFlag.Contains(_cInfo.entityId))
-                                                {
-                                                    WaterFlag.Remove(_cInfo.entityId);
-                                                }
-                                            }
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -216,26 +188,6 @@ namespace ServerTools.AntiCheat
                     {
                         BlockValue block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
                         if (block.Block.shape.ToString() != "Terrain")
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-
-        public static bool WaterCheck(ClientInfo _cInfo, EntityPlayer _player, int x, int y, int z)
-        {
-            for (int i = x - 1; i <= (x + 1); i++)
-            {
-                for (int j = z - 1; j <= (z + 1); j++)
-                {
-                    for (int k = y - 0; k <= (y + 2); k++)
-                    {
-                        BlockValue Block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
-                        string _blockName = Block.Block.GetBlockName();
-                        if (_blockName != "waterMoving" || _blockName != "water")
                         {
                             return false;
                         }

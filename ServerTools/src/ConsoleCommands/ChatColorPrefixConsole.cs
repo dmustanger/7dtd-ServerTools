@@ -144,7 +144,7 @@ namespace ServerTools
                         }
                         if ((!_params[6].Contains("[") || !_params[6].Contains("]")) && _params[6] != "**")
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not add id {0} to the chat color prefix list. Name color must be in HTML format, example [FFFFFF] with the brackets included. Found: {1}", _params[1], _params[6]));
+                            SdtdConsole.Instance.Output(string.Format("Can not add id {0} to the chat color prefix list. Prefix color must be in HTML format, example [FFFFFF] with the brackets included. Found: {1}", _params[1], _params[6]));
                             return;
                         }
                         string[] _c = new string[] { _params[2], _params[3], _params[4], _params[5], _params[6] };

@@ -44,18 +44,15 @@ namespace ServerTools
                     Patches info = Harmony.GetPatchInfo(original);
                     if (info != null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: EntityAlive.ProcessDamageResponse method is already modified by another mod"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection warning: EntityAlive.ProcessDamageResponse method is already modified by another mod"));
                     }
-                    else
+                    MethodInfo prefix = typeof(Injections).GetMethod("DamageResponse_Prefix");
+                    if (prefix == null)
                     {
-                        MethodInfo prefix = typeof(Injections).GetMethod("DamageResponse_Prefix");
-                        if (prefix == null)
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: ProcessDamageResponse.prefix"));
-                            return;
-                        }
-                        harmony.Patch(original, new HarmonyMethod(prefix), null, null);
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ProcessDamageResponse.prefix"));
+                        return;
                     }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null, null);
                 }
                 original = typeof(GameManager).GetMethod("PlayerLoginRPC");
                 if (original == null)
@@ -69,16 +66,13 @@ namespace ServerTools
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.PlayerLoginRPC method is already modified by another mod"));
                     }
-                    else
+                    MethodInfo prefix = typeof(Injections).GetMethod("PlayerLoginRPC_Prefix");
+                    if (prefix == null)
                     {
-                        MethodInfo prefix = typeof(Injections).GetMethod("PlayerLoginRPC_Prefix");
-                        if (prefix == null)
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: PlayerLoginRPC.prefix"));
-                            return;
-                        }
-                        harmony.Patch(original, new HarmonyMethod(prefix), null, null);
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: PlayerLoginRPC.prefix"));
+                        return;
                     }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null, null);
                 }
                 original = typeof(GameManager).GetMethod("ChangeBlocks");
                 if (original == null)
@@ -92,16 +86,13 @@ namespace ServerTools
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ChangeBlocks method is already modified by another mod"));
                     }
-                    else
+                    MethodInfo prefix = typeof(Injections).GetMethod("ChangeBlocks_Prefix");
+                    if (prefix == null)
                     {
-                        MethodInfo prefix = typeof(Injections).GetMethod("ChangeBlocks_Prefix");
-                        if (prefix == null)
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChangeBlocks.prefix"));
-                            return;
-                        }
-                        harmony.Patch(original, new HarmonyMethod(prefix), null, null);
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ChangeBlocks.prefix"));
+                        return;
                     }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null, null);
                 }
                 original = typeof(GameManager).GetMethod("ExplosionServer");
                 if (original == null)
@@ -115,16 +106,13 @@ namespace ServerTools
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ExplosionServer method is already modified by another mod"));
                     }
-                    else
+                    MethodInfo prefix = typeof(Injections).GetMethod("ExplosionServer_Prefix");
+                    if (prefix == null)
                     {
-                        MethodInfo prefix = typeof(Injections).GetMethod("ExplosionServer_Prefix");
-                        if (prefix == null)
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: ExplosionServer.prefix"));
-                            return;
-                        }
-                        harmony.Patch(original, new HarmonyMethod(prefix), null, null);
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ExplosionServer.prefix"));
+                        return;
                     }
+                    harmony.Patch(original, new HarmonyMethod(prefix), null, null);
                 }
                 original = typeof(ConnectionManager).GetMethod("ServerConsoleCommand");
                 if (original == null)
@@ -138,16 +126,13 @@ namespace ServerTools
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Injection failed: ConnectionManager.ServerConsoleCommand method is already modified by another mod"));
                     }
-                    else
+                    MethodInfo postfix = typeof(Injections).GetMethod("ServerConsoleCommand_Postfix");
+                    if (postfix == null)
                     {
-                        MethodInfo postfix = typeof(Injections).GetMethod("ServerConsoleCommand_Postfix");
-                        if (postfix == null)
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: ServerConsoleCommand.postfix"));
-                            return;
-                        }
-                        harmony.Patch(original, null, new HarmonyMethod(postfix), null);
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: ServerConsoleCommand.postfix"));
+                        return;
                     }
+                    harmony.Patch(original, null, new HarmonyMethod(postfix), null);
                 }
 
                 //original = typeof(World).GetMethod("IsWithinTraderArea");

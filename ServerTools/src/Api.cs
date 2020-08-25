@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using ServerTools.AntiCheat;
 
@@ -31,19 +32,25 @@ namespace ServerTools
 
         private void GameAwake()
         {
-
+            OutputLog.Exec();
         }
 
         private static void GameStartDone()
         {
-            LoadProcess.Load(1);
-            Confirm.Exec();
-            Timers.NewWorldCheck();
+            try
+            {
+                LoadProcess.Load(1);
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in API.GameStartDone: {0}", e.Message));
+            }
         }
 
         private static void GameShutdown()
         {
             StateManager.Shutdown();
+            OutputLog.Shutdown();
             Timers.TimerStop();
             Timers.ShutdownFailsafe();
             StopServer.ShuttingDown = true;
@@ -53,35 +60,33 @@ namespace ServerTools
         {
             try
             {
-                Log.Out("[SERVERTOOLS] Player detected connecting");
+                Log.Out("[SERVERTOOLS] Player connected");
                 if (StopServer.NoEntry)
                 {
-                    _stringBuild = new StringBuilder("{ServerResponseName}- Server is shutting down. Rejoin when it restarts");
-                    _stringBuild = _stringBuild.Replace("{ServerResponseName}", LoadConfig.Server_Response_Name);
+                    _stringBuild = new StringBuilder("Server is shutting down. Rejoin when it restarts");
                     return false;
                 }
-                if (_cInfo.playerId != null && _cInfo.playerId.Length == 17)
-                {
-                    if (ReservedSlots.IsEnabled && ReservedSlots.Kicked.ContainsKey(_cInfo.playerId))
-                    {
-                        if (ReservedSlots.Kicked.TryGetValue(_cInfo.playerId, out DateTime _dateTime))
-                        {
-                            TimeSpan varTime = DateTime.Now - _dateTime;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
-                            if (_timepassed < 5)
-                            {
-                                _stringBuild = new StringBuilder("{" + LoadConfig.Server_Response_Name + "}" + " You reached the max session time. Come back in a few minutes");
-                                _stringBuild = _stringBuild.Replace("{ServerResponseName}", LoadConfig.Server_Response_Name);
-                                return false;
-                            }
-                            else
-                            {
-                                ReservedSlots.Kicked.Remove(_cInfo.playerId);
-                            }
-                        }
-                    }
-                }
+                //if (_cInfo.playerId != null && _cInfo.playerId.Length == 17)
+                //{
+                //    if (ReservedSlots.IsEnabled && ReservedSlots.Kicked.ContainsKey(_cInfo.playerId))
+                //    {
+                //        if (ReservedSlots.Kicked.TryGetValue(_cInfo.playerId, out DateTime _dateTime))
+                //        {
+                //            TimeSpan varTime = DateTime.Now - _dateTime;
+                //            double fractionalMinutes = varTime.TotalMinutes;
+                //            int _timepassed = (int)fractionalMinutes;
+                //            if (_timepassed < 5)
+                //            {
+                //                _stringBuild = new StringBuilder("You reached the max session time. Come back in a few minutes");
+                //                return false;
+                //            }
+                //            else
+                //            {
+                //                ReservedSlots.Kicked.Remove(_cInfo.playerId);
+                //            }
+                //        }
+                //    }
+                //}
             }
             catch (Exception e)
             {
@@ -103,7 +108,12 @@ namespace ServerTools
                 {
                     if (CredentialCheck.IsEnabled && !CredentialCheck.AccCheck(_cInfo))
                     {
-                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 years \"Auto detection has banned you for false credentials. Contact an admin if this is a mistake\"", _cInfo.playerId), (ClientInfo)null);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 years \"Auto detection has banned you for false credentials. Contact an admin if this is a mistake\"", _cInfo.playerId), null);
+                        return;
+                    }
+                    if (CountryBan.IsEnabled && CountryBan.IsCountryBanned(_cInfo))
+                    {
+                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 1 years \"Auto detection has banned you for country IP region\"", _cInfo.playerId), null);
                         return;
                     }
                     PersistentContainer.Instance.Players[_cInfo.playerId].LastJoined = DateTime.Now;
@@ -140,33 +150,12 @@ namespace ServerTools
                     }
                     else if (_respawnReason == RespawnType.Teleport)
                     {
-                        
+
                     }
-                    //if (BattleLogger.IsEnabled && Confirm.LogFound && !StopServer.CountingDown && !StopServer.ShuttingDown)
-                    //{
-                    //    string _ip = _cInfo.ip;
-                    //    if (_ip.Contains(":"))
-                    //    {
-                    //        _ip = _ip.Split(':').First();
-                    //    }
-                    //    if (!string.IsNullOrEmpty(_ip))
-                    //    {
-                    //        if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > BattleLogger.Admin_Level)
-                    //        {
-                    //            if (!BattleLogger.Players.ContainsKey(_cInfo.playerId))
-                    //            {
-                    //                BattleLogger.Players.Add(_cInfo.playerId, _cInfo.ip);
-                    //            }
-                    //            else if (BattleLogger.Players.TryGetValue(_cInfo.playerId, out string _recordedIp))
-                    //            {
-                    //                if (_recordedIp != _ip)
-                    //                {
-                    //                    BattleLogger.Players[_cInfo.playerId] = _ip;
-                    //                }
-                    //            }
-                    //        }
-                    //    }
-                    //}
+                    if (BattleLogger.IsEnabled && !BattleLogger.Exit.Contains(_cInfo.playerId) && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > BattleLogger.Admin_Level)
+                    {
+                        BattleLogger.Exit.Add(_cInfo.playerId);
+                    }
                 }
             }
             catch (Exception e)
@@ -207,7 +196,7 @@ namespace ServerTools
                                             if (_itemValue.type != ItemValue.None.type)
                                             {
                                                 _holdingItem = _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName();
-                                                KillNotice.Notice(_cInfo, _cInfo2, _holdingItem);
+                                                KillNotice.Exec(_cInfo, _cInfo2, _holdingItem);
                                                 _notice = true;
                                             }
                                         }
@@ -258,7 +247,7 @@ namespace ServerTools
                     {
                         HighPingKicker.Exec(_cInfo);
                     }
-                    if (InvalidItems.IsEnabled || InvalidItems.Announce_Invalid_Stack)
+                    if (InvalidItems.IsEnabled || InvalidItems.Invalid_Stack)
                     {
                         InvalidItems.CheckInv(_cInfo, _playerDataFile);
                     }
@@ -278,89 +267,109 @@ namespace ServerTools
         {
             try
             {
-                Log.Out("[SERVERTOOLS] Player detected disconnecting");
-                if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId != -1)
+                if (_cInfo != null)
                 {
-                    if (BattleLogger.IsEnabled && Confirm.LogFound && BattleLogger.Players.ContainsKey(_cInfo.playerId) && !_bShutdown && !StopServer.CountingDown && !StopServer.ShuttingDown)
+                    if (_bShutdown)
                     {
-                        BattleLogger.BattleLog(_cInfo);
+                        Log.Out("[SERVERTOOLS] Server shutdown, player disconnected.");
                     }
-                    if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
+                    else if (BattleLogger.IsEnabled && BattleLogger.Exit.Contains(_cInfo.playerId))
                     {
-                        FriendTeleport.Dict.Remove(_cInfo.entityId);
-                        FriendTeleport.Dict1.Remove(_cInfo.entityId);
-                    }
-                    if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
-                    {
-                        FriendTeleport.Dict.Remove(_cInfo.entityId);
-                    }
-                    if (FriendTeleport.Dict1.ContainsKey(_cInfo.entityId))
-                    {
-                        FriendTeleport.Dict1.Remove(_cInfo.entityId);
-                    }
-                    if (Travel.Flag.Contains(_cInfo.entityId))
-                    {
-                        Travel.Flag.Remove(_cInfo.entityId);
-                    }
-                    if (Wallet.IsEnabled && Wallet.Session_Bonus > 0)
-                    {
-                        if (PersistentOperations.Session.TryGetValue(_cInfo.playerId, out DateTime _time))
+                        string _ip = _cInfo.ip;
+                        if (_ip.Contains(":"))
                         {
-                            TimeSpan varTime = DateTime.Now - _time;
-                            double fractionalMinutes = varTime.TotalMinutes;
-                            int _timepassed = (int)fractionalMinutes;
-                            if (_timepassed > 60)
-                            {
-                                int _sessionBonus = _timepassed / 60 * Wallet.Session_Bonus;
-                                if (_sessionBonus > 0)
-                                {
-                                    Wallet.AddCoinsToWallet(_cInfo.playerId, _sessionBonus);
-                                }
-                            }
-                            int _timePlayed = PersistentContainer.Instance.Players[_cInfo.playerId].TotalTimePlayed;
-                            PersistentContainer.Instance.Players[_cInfo.playerId].TotalTimePlayed = _timePlayed + _timepassed;
-                            PersistentContainer.Instance.Save();
+                            _ip = _ip.Split(':').First();
                         }
+                        Timers.BattleLogDelay(_cInfo, _ip);
+                        Log.Out("[SERVERTOOLS] Player disconnected");
                     }
-                    if (PersistentOperations.Session.ContainsKey(_cInfo.playerId))
+                    else
                     {
-                        PersistentOperations.Session.Remove(_cInfo.playerId);
+                        Log.Out("[SERVERTOOLS] Player disconnected");
                     }
-                    if (PersistentOperations.PvEViolations.ContainsKey(_cInfo.entityId))
+                    if (!string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId != -1)
                     {
-                        PersistentOperations.PvEViolations.Remove(_cInfo.entityId);
-                    }
-                    if (Bank.TransferId.ContainsKey(_cInfo.playerId))
-                    {
-                        Bank.TransferId.Remove(_cInfo.playerId);
-                    }
-                    if (Zones.ZoneExit.ContainsKey(_cInfo.entityId))
-                    {
-                        Zones.ZoneExit.Remove(_cInfo.entityId);
-                    }
-                    if (Zones.Forgive.ContainsKey(_cInfo.entityId))
-                    {
-                        Zones.Forgive.Remove(_cInfo.entityId);
-                    }
-                    if (Zones.Victim.ContainsKey(_cInfo.entityId))
-                    {
-                        Zones.Victim.Remove(_cInfo.entityId);
-                    }
-                    if (Zones.Reminder.ContainsKey(_cInfo.entityId))
-                    {
-                        Zones.Reminder.Remove(_cInfo.entityId);
-                    }
-                    if (Zones.ReminderMsg.ContainsKey(_cInfo.entityId))
-                    {
-                        Zones.ReminderMsg.Remove(_cInfo.entityId);
-                    }
-                    if (Zones.ZonePvE.Contains(_cInfo.entityId))
-                    {
-                        Zones.ZonePvE.Remove(_cInfo.entityId);
-                    }
-                    if (BloodmoonWarrior.WarriorList.Contains(_cInfo.playerId))
-                    {
-                        BloodmoonWarrior.WarriorList.Remove(_cInfo.playerId);
+                        if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
+                        {
+                            FriendTeleport.Dict.Remove(_cInfo.entityId);
+                            FriendTeleport.Dict1.Remove(_cInfo.entityId);
+                        }
+                        if (FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
+                        {
+                            FriendTeleport.Dict.Remove(_cInfo.entityId);
+                        }
+                        if (FriendTeleport.Dict1.ContainsKey(_cInfo.entityId))
+                        {
+                            FriendTeleport.Dict1.Remove(_cInfo.entityId);
+                        }
+                        if (Travel.Flag.Contains(_cInfo.entityId))
+                        {
+                            Travel.Flag.Remove(_cInfo.entityId);
+                        }
+                        if (Wallet.IsEnabled && Wallet.Session_Bonus > 0)
+                        {
+                            if (PersistentOperations.Session.TryGetValue(_cInfo.playerId, out DateTime _time))
+                            {
+                                TimeSpan varTime = DateTime.Now - _time;
+                                double fractionalMinutes = varTime.TotalMinutes;
+                                int _timepassed = (int)fractionalMinutes;
+                                if (_timepassed > 60)
+                                {
+                                    int _sessionBonus = _timepassed / 60 * Wallet.Session_Bonus;
+                                    if (_sessionBonus > 0)
+                                    {
+                                        Wallet.AddCoinsToWallet(_cInfo.playerId, _sessionBonus);
+                                    }
+                                }
+                                int _timePlayed = PersistentContainer.Instance.Players[_cInfo.playerId].TotalTimePlayed;
+                                PersistentContainer.Instance.Players[_cInfo.playerId].TotalTimePlayed = _timePlayed + _timepassed;
+                                PersistentContainer.Instance.Save();
+                            }
+                        }
+                        if (PersistentOperations.Session.ContainsKey(_cInfo.playerId))
+                        {
+                            PersistentOperations.Session.Remove(_cInfo.playerId);
+                        }
+                        if (PersistentOperations.PvEViolations.ContainsKey(_cInfo.entityId))
+                        {
+                            PersistentOperations.PvEViolations.Remove(_cInfo.entityId);
+                        }
+                        if (Bank.TransferId.ContainsKey(_cInfo.playerId))
+                        {
+                            Bank.TransferId.Remove(_cInfo.playerId);
+                        }
+                        if (Zones.ZoneExit.ContainsKey(_cInfo.entityId))
+                        {
+                            Zones.ZoneExit.Remove(_cInfo.entityId);
+                        }
+                        if (Zones.Forgive.ContainsKey(_cInfo.entityId))
+                        {
+                            Zones.Forgive.Remove(_cInfo.entityId);
+                        }
+                        if (Zones.Victim.ContainsKey(_cInfo.entityId))
+                        {
+                            Zones.Victim.Remove(_cInfo.entityId);
+                        }
+                        if (Zones.Reminder.ContainsKey(_cInfo.entityId))
+                        {
+                            Zones.Reminder.Remove(_cInfo.entityId);
+                        }
+                        if (Zones.ReminderMsg.ContainsKey(_cInfo.entityId))
+                        {
+                            Zones.ReminderMsg.Remove(_cInfo.entityId);
+                        }
+                        if (Zones.ZonePvE.Contains(_cInfo.entityId))
+                        {
+                            Zones.ZonePvE.Remove(_cInfo.entityId);
+                        }
+                        if (BloodmoonWarrior.WarriorList.Contains(_cInfo.playerId))
+                        {
+                            BloodmoonWarrior.WarriorList.Remove(_cInfo.playerId);
+                        }
+                        if (BattleLogger.Exit.Contains(_cInfo.playerId))
+                        {
+                            BattleLogger.Exit.Remove(_cInfo.playerId);
+                        }
                     }
                 }
             }

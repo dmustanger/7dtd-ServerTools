@@ -165,17 +165,12 @@ namespace ServerTools.AntiCheat
                                 if (_newBlockInfo.blockValue.Block is BlockSleepingBag)//placed a sleeping bag
                                 {
                                     PersistentOperations.BedBug(_persistentPlayerId);
-                                    if (BlockLogger.IsEnabled)
-                                    {
-                                        BlockLogger.Log(_persistentPlayerId, _newBlockInfo);
-                                    }
                                 }
-                                else if (BlockLogger.IsEnabled && _newBlockInfo.blockValue.Block is BlockLandClaim)//placed a land claim
+                                else if (_newBlockInfo.blockValue.Block is BlockLandClaim)//placed a land claim
                                 {
-                                    PersistentOperations.ClaimBug(_persistentPlayerId);
-                                    BlockLogger.Log(_persistentPlayerId, _newBlockInfo);
+                                    
                                 }
-                                else if (BlockLogger.IsEnabled)//placed block
+                                if (BlockLogger.IsEnabled)//placed block
                                 {
                                     BlockLogger.Log(_persistentPlayerId, _newBlockInfo);
                                 }

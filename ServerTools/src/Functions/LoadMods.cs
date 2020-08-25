@@ -9,7 +9,6 @@ namespace ServerTools
 
         public static void Load()
         {
-            Confirm.Exec();
             PatchTools.ApplyPatches();
             if (!Timers.IsRunning)
             {

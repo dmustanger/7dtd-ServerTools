@@ -45,6 +45,7 @@
     <Compile Include="src\AntiCheat\DupeLog.cs" />
     <Compile Include="src\AntiCheat\ProcessDamage.cs" />
     <Compile Include="src\AntiCheat\PlayerChecks.cs" />
+    <Compile Include="src\ConsoleCommands\DeletePlayerData.cs" />
     <Compile Include="src\ConsoleCommands\FlyingConsole.cs" />
     <Compile Include="src\ConsoleCommands\GodmodeDetectorConsole.cs" />
     <Compile Include="src\ConsoleCommands\MessageColorConsole.cs" />
@@ -67,10 +68,10 @@
     <Compile Include="src\Tools\BreakTime\BreakTime.cs" />
     <Compile Include="src\Tools\ConsoleCommandLog\Console_Command_Log.cs" />
     <Compile Include="src\Tools\Market\Market.cs" />
-    <Compile Include="src\Tools\OutputLog\Confirm.cs" />
+    <Compile Include="src\Tools\OutputLog\OutputLog.cs" />
     <Compile Include="src\Tools\Poll\Poll.cs" />
     <Compile Include="src\Tools\ProtectedSpaces\ProtectedSpaces.cs" />
-    <Compile Include="src\Tools\NewWorld\NewWorld.cs" />
+    <Compile Include="src\Tools\DeletePlayerData\DeletePlayerData.cs" />
     <Compile Include="src\Tools\Session\Session.cs" />
     <Compile Include="src\Tools\ChatColorPrefix\ChatColorPrefix.cs" />
     <Compile Include="src\Tools\ScoutPlayer\ScoutPlayer.cs" />
@@ -282,6 +283,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Web" />
     <Reference Include="System.XML, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />

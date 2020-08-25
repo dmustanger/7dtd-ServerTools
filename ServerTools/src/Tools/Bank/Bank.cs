@@ -114,19 +114,19 @@ namespace ServerTools
         {
             if (Inside_Claim)
             {
-                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
-                Vector3 _position = _player.GetPosition();
-                int x = (int)_position.x;
-                int y = (int)_position.y;
-                int z = (int)_position.z;
-                Vector3i _vec3i = new Vector3i(x, y, z);
-                PersistentPlayerList _persistentPlayerList = GameManager.Instance.GetPersistentPlayerList();
-                PersistentPlayerData _persistentPlayerData = _persistentPlayerList.GetPlayerDataFromEntityID(_player.entityId);
-                EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_vec3i, _persistentPlayerData);
-                if (_owner != EnumLandClaimOwner.Self || _owner != EnumLandClaimOwner.Ally)
+                if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You can not use this command here. Stand in your own or a friend's claimed space.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    return;
+                    EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                    if (_player != null)
+                    {
+                        Vector3 _position = _player.GetPosition();
+                        Vector3i _vec3i = new Vector3i((int)_position.x, (int)_position.y, (int)_position.z);
+                        if (!PersistentOperations.ClaimedByAllyOrSelf(_cInfo.playerId, _vec3i))
+                        {
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You can not use this command here. Stand in your own or a friend's claimed space.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            return;
+                        }
+                    }
                 }
             }
             if (_exec == 1)
