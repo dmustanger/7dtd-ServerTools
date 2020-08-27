@@ -741,7 +741,7 @@ namespace ServerTools
                 string _phrase553;
                 if (!Dict.TryGetValue(553, out _phrase553))
                 {
-                    _phrase553 = "You have been sent to the lobby.";
+                    _phrase553 = "Sent you to the lobby.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"553\" Phrase=\"{0}\" />", _phrase553));
                 string _phrase554;

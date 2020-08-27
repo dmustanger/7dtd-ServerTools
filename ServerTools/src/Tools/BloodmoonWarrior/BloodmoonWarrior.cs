@@ -279,36 +279,38 @@ namespace ServerTools
                     EntityPlayer _player = PersistentOperations.GetEntityPlayer(_warrior);
                     if (_player != null && _player.IsAlive())
                     {
-                        KilledZombies.TryGetValue(_warrior, out int _killedZ);
-                        if (_killedZ >= Zombie_Kills)
+                        if (KilledZombies.TryGetValue(_warrior, out int _killedZ))
                         {
-                            ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_warrior);
-                            if (_cInfo != null)
+                            if (_killedZ >= Zombie_Kills)
                             {
-                                if (Reduce_Death_Count)
+                                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_warrior);
+                                if (_cInfo != null)
                                 {
-                                    int _deathCount = _player.Died - 1;
-                                    _player.Died = _deathCount;
-                                    _player.bPlayerStatsChanged = true;
-                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(_player));
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have survived and been rewarded by hades himself. Your death count was reduced by one" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    RandomItem(_cInfo);
+                                    if (Reduce_Death_Count)
+                                    {
+                                        int _deathCount = _player.Died - 1;
+                                        _player.Died = _deathCount;
+                                        _player.bPlayerStatsChanged = true;
+                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(_player));
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have survived and been rewarded by hades himself. Your death count was reduced by one" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    }
+                                    else
+                                    {
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have survived and been rewarded by hades himself." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    }
                                 }
-                                else
-                                {
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have survived and been rewarded by hades himself." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                }
-                                RandomItem(_cInfo);
                             }
                         }
                     }
                 }
-                WarriorList.Clear();
-                KilledZombies.Clear();
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in BloodmoonWarrior.RewardWarriors: {0}", e.Message));
             }
+            WarriorList.Clear();
+            KilledZombies.Clear();
         }
 
         private static void RandomItem(ClientInfo _cInfo)

@@ -142,7 +142,7 @@ namespace ServerTools
 
         private static void LobbyTele(ClientInfo _cInfo)
         {
-            if (Lobby.Lobby_Position != "0,0,0" || Lobby.Lobby_Position != "0 0 0" || Lobby.Lobby_Position != "")
+            if (Lobby.Lobby_Position != "0,0,0" && Lobby.Lobby_Position != "0 0 0" && Lobby.Lobby_Position != "")
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                 if (_player != null)
@@ -181,22 +181,28 @@ namespace ServerTools
                         ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase552 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     string[] _cords = Lobby.Lobby_Position.Split(',').ToArray();
-                    string _phrase553;
-                    if (!Phrases.Dict.TryGetValue(553, out _phrase553))
+                    if (int.TryParse(_cords[0], out int _x))
                     {
-                        _phrase553 = "Sending you to the lobby.";
+                        if (int.TryParse(_cords[1], out int _y))
+                        {
+                            if (int.TryParse(_cords[2], out int _z))
+                            {
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+                                if (Wallet.IsEnabled && Command_Cost >= 1)
+                                {
+                                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                                }
+                                PersistentContainer.Instance.Players[_cInfo.playerId].LastLobby = DateTime.Now;
+                                PersistentContainer.Instance.Save();
+                                string _phrase553;
+                                if (!Phrases.Dict.TryGetValue(553, out _phrase553))
+                                {
+                                    _phrase553 = "Sent you to the lobby.";
+                                }
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase553 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            }
+                        }
                     }
-                    int.TryParse(_cords[0], out x);
-                    int.TryParse(_cords[1], out y);
-                    int.TryParse(_cords[2], out z);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase553 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                    if (Wallet.IsEnabled && Command_Cost >= 1)
-                    {
-                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
-                    }
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LastLobby = DateTime.Now;
-                    PersistentContainer.Instance.Save();
                 }
             }
             else

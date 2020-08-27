@@ -1517,10 +1517,23 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (BattleLogger.IsEnabled && (_message.ToLower() == BattleLogger.Command131 || _message.ToLower() == BattleLogger.Command132) && BattleLogger.Exit.Contains(_cInfo.playerId))
+                        if (BattleLogger.IsEnabled && (_message.ToLower() == BattleLogger.Command131 || _message.ToLower() == BattleLogger.Command132))
                         {
-                            Timers.BattleLogPlayerExit(_cInfo.playerId);
-                            ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Please wait 15 seconds for disconnection and do not move" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+
+                            if (BattleLogger.Exit.Contains(_cInfo.playerId) && !BattleLogger.ExitPos.ContainsKey(_cInfo.playerId))
+                            {
+                                EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                                if (_player != null)
+                                {
+                                    BattleLogger.ExitPos.Add(_cInfo.playerId, _player.position);
+                                    Timers.BattleLogPlayerExit(_cInfo.playerId);
+                                    ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Please wait 15 seconds for disconnection and do not move" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
+                            }
+                            else if(GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= BattleLogger.Admin_Level)
+                            {
+                                BattleLogger.Disconnect(_cInfo);
+                            }
                             return false;
                         }
                     }

@@ -44,6 +44,7 @@ namespace ServerTools
         public static void StartShutdown3()
         {
             NoEntry = true;
+            BattleLogger.Exit.Clear();
             string _phrase451;
             if (!Phrases.Dict.TryGetValue(451, out _phrase451))
             {

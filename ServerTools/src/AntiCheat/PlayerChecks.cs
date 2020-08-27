@@ -79,6 +79,8 @@ namespace ServerTools.AntiCheat
                                         if (_player.IsSpawned() && _player.IsAlive() && !_player.IsStuck && _player.AttachedToEntity == null)
                                         {
 
+
+
                                             if ((!_player.onGround && AirCheck(_player.position.x, _player.position.y, _player.position.z)) || GroundCheck(_player.position.x, _player.position.y, _player.position.z))
                                             {
                                                 if (OldY.ContainsKey(_cInfo.entityId))

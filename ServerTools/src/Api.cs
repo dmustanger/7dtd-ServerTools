@@ -302,10 +302,6 @@ namespace ServerTools
                         {
                             FriendTeleport.Dict1.Remove(_cInfo.entityId);
                         }
-                        if (Travel.Flag.Contains(_cInfo.entityId))
-                        {
-                            Travel.Flag.Remove(_cInfo.entityId);
-                        }
                         if (Wallet.IsEnabled && Wallet.Session_Bonus > 0)
                         {
                             if (PersistentOperations.Session.TryGetValue(_cInfo.playerId, out DateTime _time))
@@ -369,6 +365,10 @@ namespace ServerTools
                         if (BattleLogger.Exit.Contains(_cInfo.playerId))
                         {
                             BattleLogger.Exit.Remove(_cInfo.playerId);
+                        }
+                        if (BattleLogger.ExitPos.ContainsKey(_cInfo.playerId))
+                        {
+                            BattleLogger.ExitPos.Remove(_cInfo.playerId);
                         }
                     }
                 }

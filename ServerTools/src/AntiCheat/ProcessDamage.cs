@@ -151,6 +151,7 @@ namespace ServerTools.AntiCheat
         {
             try
             {
+                Log.Out(string.Format("[SERVERTOOLS] Test ProcessBlockDamage: {0}, {1}", _persistentPlayerId, _blocksToChange[0].blockValue.Block.GetBlockName()));
                 World _world = __instance.World;
                 if (__instance != null && _blocksToChange != null && !string.IsNullOrEmpty(_persistentPlayerId) && _blocksToChange != null)
                 {
@@ -174,6 +175,7 @@ namespace ServerTools.AntiCheat
                                 {
                                     BlockLogger.Log(_persistentPlayerId, _newBlockInfo);
                                 }
+                                return true;
                             }
                             if (ProcessDamage.Damage_Detector)
                             {
@@ -201,7 +203,7 @@ namespace ServerTools.AntiCheat
                                             }
                                         }
                                     }
-                                    if (!_blockValue.Block.CanPickup)//old block can not be picked up
+                                    if (!_blockValue.Block.CanPickup && !PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, _newBlockInfo.pos))//old block can not be picked up and unclaimed space
                                     {
                                         int _total = _blockValue.Block.MaxDamage - _blockValue.damage;
                                         if (_total >= Block_Damage_Limit && BlockPenalty(_total, _persistentPlayerId))
@@ -228,7 +230,7 @@ namespace ServerTools.AntiCheat
                                             }
                                         }
                                     }
-                                    if (_blockValue.damage == _newBlockInfo.blockValue.damage || _newBlockInfo.blockValue.damage == 0)//protected block replaced
+                                    if (_blockValue.damage == _newBlockInfo.blockValue.damage || _newBlockInfo.blockValue.damage == 0)//block replaced
                                     {
                                         return true;
                                     }

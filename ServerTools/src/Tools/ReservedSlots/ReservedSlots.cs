@@ -221,44 +221,11 @@ namespace ServerTools
                                 {
                                     if (ReservedSlots.ReservedCheck(_cInfo2.playerId))//reserved player
                                     {
-                                        if (Session_Time > 0)//session time not set
-                                        {
-                                            if (PersistentOperations.Session.TryGetValue(_cInfo2.playerId, out DateTime _dateTime))
-                                            {
-                                                TimeSpan varTime = DateTime.Now - _dateTime;
-                                                double fractionalMinutes = varTime.TotalMinutes;
-                                                int _timepassed = (int)fractionalMinutes;
-                                                if (_timepassed >= Session_Time)
-                                                {
-                                                    _reservedKicks.Add(_cInfo2);
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            _reservedKicks.Add(_cInfo2);
-                                        }
+                                        _reservedKicks.Add(_cInfo2);
                                     }
                                     else
                                     {
-                                        if (Session_Time > 0)//session time not set
-                                        {
-                                            DateTime _dateTime;
-                                            if (PersistentOperations.Session.TryGetValue(_cInfo2.playerId, out _dateTime))
-                                            {
-                                                TimeSpan varTime = DateTime.Now - _dateTime;
-                                                double fractionalMinutes = varTime.TotalMinutes;
-                                                int _timepassed = (int)fractionalMinutes;
-                                                if (_timepassed > Session_Time)
-                                                {
-                                                    _normalKicks.Add(_cInfo2);
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            _normalKicks.Add(_cInfo2);
-                                        }
+                                        _normalKicks.Add(_cInfo2);
                                     }
                                 }
                             }
@@ -276,23 +243,7 @@ namespace ServerTools
                             {
                                 if (!ReservedSlots.AdminCheck(_cInfo2.playerId) && !ReservedSlots.ReservedCheck(_cInfo2.playerId))
                                 {
-                                    if (Session_Time > 0)
-                                    {
-                                        if (PersistentOperations.Session.TryGetValue(_cInfo2.playerId, out DateTime _dateTime))
-                                        {
-                                            TimeSpan varTime = DateTime.Now - _dateTime;
-                                            double fractionalMinutes = varTime.TotalMinutes;
-                                            int _timepassed = (int)fractionalMinutes;
-                                            if (_timepassed > Session_Time)
-                                            {
-                                                _normalKicks.Add(_cInfo2);
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        _normalKicks.Add(_cInfo2);
-                                    }
+                                    _normalKicks.Add(_cInfo2);
                                 }
                             }
                         }

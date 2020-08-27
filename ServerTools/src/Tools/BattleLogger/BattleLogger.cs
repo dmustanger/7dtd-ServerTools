@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ServerTools
 {
@@ -9,6 +10,7 @@ namespace ServerTools
         public static string Command131 = "exit", Command132 = "quit";
         public static int Admin_Level = 0, Player_Distance = 200;
         public static Dictionary<string, DateTime> DisconnectedIp = new Dictionary<string, DateTime>();
+        public static Dictionary<string, Vector3> ExitPos = new Dictionary<string, Vector3>();
         public static List<string> Exit = new List<string>();
 
         public static void BattleLog(ClientInfo _cInfo, string _ip)
@@ -189,6 +191,22 @@ namespace ServerTools
                 ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_id);
                 if (_cInfo != null)
                 {
+                    if (GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
+                    {
+                        EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
+                        if (_player != null)
+                        {
+                            if (ExitPos.TryGetValue(_cInfo.playerId, out Vector3 _pos))
+                            {
+                                ExitPos.Remove(_cInfo.playerId);
+                                if (_player.position != _pos)
+                                {
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You moved and need to restart your countdown." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    return;
+                                }
+                            }
+                        }
+                    }
                     PlayerDataFile _playerDataFile = PersistentOperations.GetPlayerDataFileFromSteamId(_cInfo.playerId);
                     if (_playerDataFile != null)
                     {
@@ -197,6 +215,10 @@ namespace ServerTools
                     if (Exit.Contains(_cInfo.playerId))
                     {
                         Exit.Remove(_cInfo.playerId);
+                    }
+                    if (ExitPos.ContainsKey(_cInfo.playerId))
+                    {
+                        ExitPos.Remove(_cInfo.playerId);
                     }
                     Disconnect(_cInfo);
                 }

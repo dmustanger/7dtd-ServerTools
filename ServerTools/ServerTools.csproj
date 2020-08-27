@@ -63,8 +63,8 @@
     <Compile Include="src\Serialize\ItemStackSerializable.cs" />
     <Compile Include="src\Tools\AutoBackup\AutoBackup.cs" />
     <Compile Include="src\Tools\Bank\Bank.cs" />
-    <Compile Include="src\Tools\Block_Logger\BlockLogger.cs" />
-    <Compile Include="src\Tools\Bloodmoon_Warrior\Bloodmoon_Warrior.cs" />
+    <Compile Include="src\Tools\BlockLogger\BlockLogger.cs" />
+    <Compile Include="src\Tools\BloodmoonWarrior\BloodmoonWarrior.cs" />
     <Compile Include="src\Tools\BreakTime\BreakTime.cs" />
     <Compile Include="src\Tools\ConsoleCommandLog\Console_Command_Log.cs" />
     <Compile Include="src\Tools\Market\Market.cs" />

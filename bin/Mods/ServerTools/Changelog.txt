@@ -1,5 +1,20 @@
 ﻿CHANGELOG
 
+19.0.7
+Built using Alpha 19 stable assets
+Functioning with 19 stable. Untested with other versions
+
+Fixed Reserved_Slots not forcing a space for an Admin with session time set
+Fixed false positives in the Damage_detection from picking up blocks
+Changed Battle_Logger to not trigger during the last minute of countdown to
+shutdown, allowing players to leave without using /exit
+Changed Battle_Logger to check position of player, forcing them to stand still
+when they use the /exit command
+Changed Battle_Logger allowing admins to use /exit to leave immediately
+Changed phrase 553
+Changed Travel tool for improved performance
+Removed forced harmony injection overlap with 3rd party mods
+
 19.0.6
 Built using Alpha 19 stable assets
 Functioning with 19 stable. Untested with other versions
