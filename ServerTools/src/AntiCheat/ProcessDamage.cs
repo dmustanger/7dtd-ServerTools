@@ -151,7 +151,6 @@ namespace ServerTools.AntiCheat
         {
             try
             {
-                Log.Out(string.Format("[SERVERTOOLS] Test ProcessBlockDamage: {0}, {1}", _persistentPlayerId, _blocksToChange[0].blockValue.Block.GetBlockName()));
                 World _world = __instance.World;
                 if (__instance != null && _blocksToChange != null && !string.IsNullOrEmpty(_persistentPlayerId) && _blocksToChange != null)
                 {
