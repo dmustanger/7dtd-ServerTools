@@ -296,6 +296,8 @@ namespace ServerTools
                 }
                 else if (_reservedKicks != null && _reservedKicks.Count > 0)
                 {
+                    _reservedKicks.RandomizeList();
+                    _cInfoClientToKick = _reservedKicks[0];
                     string _phrase20;
                     if (!Phrases.Dict.TryGetValue(20, out _phrase20))
                     {
