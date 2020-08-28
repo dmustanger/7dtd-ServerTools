@@ -254,12 +254,12 @@ namespace ServerTools
                     _commands = "";
                 }
             }
-            if (TeleportHome.IsEnabled)
+            if (Home.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, TeleportHome.Command1);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, TeleportHome.Command2);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, TeleportHome.Command3);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, TeleportHome.Command4);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Home.Command1);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Home.Command2);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Home.Command3);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Home.Command4);
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -357,12 +357,12 @@ namespace ServerTools
                     _commands = "";
                 }
             }
-            if (TeleportHome.IsEnabled & TeleportHome.Set_Home2_Enabled)
+            if (Home.IsEnabled & Home.Home2_Enabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, TeleportHome.Command5);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, TeleportHome.Command6);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, TeleportHome.Command7);
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, TeleportHome.Command8);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Home.Command5);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Home.Command6);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Home.Command7);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Home.Command8);
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);

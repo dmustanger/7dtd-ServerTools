@@ -1,5 +1,16 @@
 ﻿CHANGELOG
 
+19.0.8
+Built using Alpha 19 stable assets
+Functioning with 19 stable. Untested with other versions
+
+Fixed Invalid_Items in config
+Fixed Reserved_Slots process. Raises max player count allowing the player to 
+join a full server and then lowers it. Still kicks a player to open a slot
+Changed Home options Set_Home2_Enabled to Home2_Enabled and 
+Set_Home2_Reserved_Only to Home2_Reserved_Only
+Updated HowToSetup.xml
+
 19.0.7
 Built using Alpha 19 stable assets
 Functioning with 19 stable. Untested with other versions

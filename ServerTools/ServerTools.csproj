@@ -194,7 +194,7 @@
     <Compile Include="src\Tools\MuteVote\MuteVote.cs" />
     <Compile Include="src\Tools\Report\Report.cs" />
     <Compile Include="src\Tools\RestartVote\RestartVote.cs" />
-    <Compile Include="src\Tools\TeleHome\TeleportHome.cs" />
+    <Compile Include="src\Tools\Home\Home.cs" />
     <Compile Include="src\Tools\Travel\Travel.cs" />
     <Compile Include="src\Tools\WeatherVote\WeatherVote.cs" />
     <Compile Include="src\Tools\LoginNotice\LoginNotice.cs" />

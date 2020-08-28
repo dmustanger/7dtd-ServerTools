@@ -224,7 +224,7 @@ namespace ServerTools
                 string _phrase20;
                 if (!Dict.TryGetValue(20, out _phrase20))
                 {
-                    _phrase20 = "{ServerResponseName}- The server is full. You were kicked by the reservation system to open a slot.";
+                    _phrase20 = "{ServerResponseName} - The server is full. You were kicked by the reservation system to open a slot.";
                 }
                 sw.WriteLine(string.Format("        <Phrase id=\"20\" Phrase=\"{0}\" />", _phrase20));
                 //21 available

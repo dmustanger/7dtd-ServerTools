@@ -200,50 +200,50 @@ namespace ServerTools
             return false;
         }
 
-        public static void FullServer(ClientInfo _cInfo)
+        public static bool FullServer(string _playerId)
         {
             try
             {
-                List<ClientInfo> _reservedKicks = new List<ClientInfo>();
-                List<ClientInfo> _normalKicks = new List<ClientInfo>();
-                ClientInfo _cInfoClientToKick = null;
+                List<string> _reservedKicks = new List<string>();
+                List<string> _normalKicks = new List<string>();
+                string _clientToKick = null;
                 List<ClientInfo> _clientList = PersistentOperations.ClientList();
-                if (ReservedSlots.AdminCheck(_cInfo.playerId))//admin is joining
+                if (AdminCheck(_playerId))//admin is joining
                 {
                     if (_clientList != null && _clientList.Count > 0)
                     {
                         for (int i = 0; i < _clientList.Count; i++)
                         {
                             ClientInfo _cInfo2 = _clientList[i];
-                            if (_cInfo2 != null && _cInfo2.playerId != _cInfo.playerId)
+                            if (_cInfo2 != null && !string.IsNullOrEmpty(_cInfo2.playerId) && _cInfo2.playerId != _playerId)
                             {
-                                if (!ReservedSlots.AdminCheck(_cInfo2.playerId))//not admin
+                                if (!AdminCheck(_cInfo2.playerId))//not admin
                                 {
-                                    if (ReservedSlots.ReservedCheck(_cInfo2.playerId))//reserved player
+                                    if (ReservedCheck(_cInfo2.playerId))//reserved player
                                     {
-                                        _reservedKicks.Add(_cInfo2);
+                                        _reservedKicks.Add(_cInfo2.playerId);
                                     }
                                     else
                                     {
-                                        _normalKicks.Add(_cInfo2);
+                                        _normalKicks.Add(_cInfo2.playerId);
                                     }
                                 }
                             }
                         }
                     }
                 }
-                else if (ReservedSlots.ReservedCheck(_cInfo.playerId))//reserved player is joining
+                else if (ReservedCheck(_playerId))//reserved player is joining
                 {
                     if (_clientList != null && _clientList.Count > 0)
                     {
                         for (int i = 0; i < _clientList.Count; i++)
                         {
                             ClientInfo _cInfo2 = _clientList[i];
-                            if (_cInfo2 != null && _cInfo2.playerId != _cInfo.playerId)
+                            if (_cInfo2 != null && !string.IsNullOrEmpty(_cInfo2.playerId) && _cInfo2.playerId != _playerId)
                             {
-                                if (!ReservedSlots.AdminCheck(_cInfo2.playerId) && !ReservedSlots.ReservedCheck(_cInfo2.playerId))
+                                if (!AdminCheck(_cInfo2.playerId) && !ReservedCheck(_cInfo2.playerId))
                                 {
-                                    _normalKicks.Add(_cInfo2);
+                                    _normalKicks.Add(_cInfo2.playerId);
                                 }
                             }
                         }
@@ -256,9 +256,9 @@ namespace ServerTools
                         for (int i = 0; i < _clientList.Count; i++)
                         {
                             ClientInfo _cInfo2 = _clientList[i];
-                            if (_cInfo2 != null && _cInfo2.playerId != _cInfo.playerId)
+                            if (_cInfo2 != null && !string.IsNullOrEmpty(_cInfo2.playerId) && _cInfo2.playerId != _playerId)
                             {
-                                if (!ReservedSlots.AdminCheck(_cInfo2.playerId) && !ReservedSlots.ReservedCheck(_cInfo2.playerId))
+                                if (!AdminCheck(_cInfo2.playerId) && !ReservedCheck(_cInfo2.playerId))
                                 {
                                     if (Session_Time > 0)
                                     {
@@ -269,7 +269,7 @@ namespace ServerTools
                                             int _timepassed = (int)fractionalMinutes;
                                             if (_timepassed >= Session_Time)
                                             {
-                                                _normalKicks.Add(_cInfo2);
+                                                _normalKicks.Add(_cInfo2.playerId);
                                             }
                                         }
                                     }
@@ -281,36 +281,39 @@ namespace ServerTools
                 if (_normalKicks != null && _normalKicks.Count > 0)
                 {
                     _normalKicks.RandomizeList();
-                    _cInfoClientToKick = _normalKicks[0];
+                    _clientToKick = _normalKicks[0];
                     if (Session_Time > 0)
                     {
-                        ReservedSlots.Kicked.Add(_cInfoClientToKick.playerId, DateTime.Now);
+                        Kicked.Add(_clientToKick, DateTime.Now);
                     }
                     string _phrase20;
                     if (!Phrases.Dict.TryGetValue(20, out _phrase20))
                     {
-                        _phrase20 = "{ServerResponseName}- The server is full. You were kicked by the reservation system to open a slot";
+                        _phrase20 = "{ServerResponseName} - The server is full. You were kicked by the reservation system to open a slot";
                     }
                     _phrase20 = _phrase20.Replace("{ServerResponseName}", LoadConfig.Server_Response_Name);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfoClientToKick.playerId, _phrase20), null);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _clientToKick, _phrase20), null);
+                    return true;
                 }
                 else if (_reservedKicks != null && _reservedKicks.Count > 0)
                 {
                     _reservedKicks.RandomizeList();
-                    _cInfoClientToKick = _reservedKicks[0];
+                    _clientToKick = _reservedKicks[0];
                     string _phrase20;
                     if (!Phrases.Dict.TryGetValue(20, out _phrase20))
                     {
-                        _phrase20 = "{ServerResponseName}- The server is full. You were kicked by the reservation system to open a slot for an admin";
+                        _phrase20 = "{ServerResponseName} - The server is full. You were kicked by the reservation system to open a slot";
                     }
                     _phrase20 = _phrase20.Replace("{ServerResponseName}", LoadConfig.Server_Response_Name);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfoClientToKick.playerId, _phrase20), null);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _clientToKick, _phrase20), null);
+                    return true;
                 }
             }
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in ReservedSlots.FullServer: {0}", e.Message));
             }
+            return false;
         }
     }
 }

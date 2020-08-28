@@ -8,7 +8,7 @@ namespace ServerTools
 {
     public class LoadConfig
     {
-        public const string version = "19.0.7";
+        public const string version = "19.0.8";
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
         private const string configFile = "ServerToolsConfig.xml";
@@ -1349,29 +1349,29 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home entry because of missing 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Enable"), out TeleportHome.IsEnabled))
+                                if (!bool.TryParse(_line.GetAttribute("Enable"), out Home.IsEnabled))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Set_Home2_Enabled"))
+                                if (!_line.HasAttribute("Home2_Enabled"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home entry because of missing 'Set_Home2_Enabled' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home entry because of missing 'Home2_Enabled' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Set_Home2_Enabled"), out TeleportHome.Set_Home2_Enabled))
+                                if (!bool.TryParse(_line.GetAttribute("Home2_Enabled"), out Home.Home2_Enabled))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home entry because of invalid (True/False) value for 'Set_Home2_Enabled' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home entry because of invalid (True/False) value for 'Home2_Enabled' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Set_Home2_Reserved_Only"))
+                                if (!_line.HasAttribute("Home2_Reserved_Only"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home entry because of missing 'Set_Home2_Reserved_Only' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home entry because of missing 'Home2_Reserved_Only' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Set_Home2_Reserved_Only"), out TeleportHome.Set_Home2_Reserved_Only))
+                                if (!bool.TryParse(_line.GetAttribute("Home2_Reserved_Only"), out Home.Home2_Reserved_Only))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Set_Home entry because of invalid (True/False) value for 'Set_Home2_Reserved_Only' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Set_Home entry because of invalid (True/False) value for 'Home2_Reserved_Only' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!_line.HasAttribute("Home2_Delay"))
@@ -1379,7 +1379,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home entry because of missing 'Home2_Delay' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Home2_Delay"), out TeleportHome.Home2_Delay))
+                                if (!bool.TryParse(_line.GetAttribute("Home2_Delay"), out Home.Home2_Delay))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home entry because of invalid (True/False) value for 'Home2_Delay' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -1389,7 +1389,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home entry because of missing 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out TeleportHome.Delay_Between_Uses))
+                                if (!int.TryParse(_line.GetAttribute("Delay_Between_Uses"), out Home.Delay_Between_Uses))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home entry because of invalid (non-numeric) value for 'Delay_Between_Uses' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -1399,7 +1399,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home entry because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out TeleportHome.Command_Cost))
+                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out Home.Command_Cost))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home entry because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -1411,7 +1411,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home_Extended entry because of missing 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Player_Check"), out TeleportHome.Player_Check))
+                                if (!bool.TryParse(_line.GetAttribute("Player_Check"), out Home.Player_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home_Extended entry because of invalid (True/False) value for 'Player_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -1421,7 +1421,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home_Extended entry because of missing 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Zombie_Check"), out TeleportHome.Zombie_Check))
+                                if (!bool.TryParse(_line.GetAttribute("Zombie_Check"), out Home.Zombie_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home_Extended entry because of invalid (non-numeric) value for 'Zombie_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -1431,7 +1431,7 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home_Extended entry because of missing 'Vehicle_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!bool.TryParse(_line.GetAttribute("Vehicle_Check"), out TeleportHome.Vehicle_Check))
+                                if (!bool.TryParse(_line.GetAttribute("Vehicle_Check"), out Home.Vehicle_Check))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Home_Extended entry because of invalid (non-numeric) value for 'Vehicle_Check' attribute: {0}", subChild.OuterXml));
                                     continue;
@@ -3336,11 +3336,11 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Tool Name=\"Godmode_Detector\" Enable=\"{0}\" Admin_Level=\"{1}\" />", PlayerChecks.GodEnabled, PlayerChecks.Godmode_Admin_Level));
                 sw.WriteLine(string.Format("        <Tool Name=\"Hardcore\" Enable=\"{0}\" Optional=\"{1}\" Max_Deaths=\"{2}\" Max_Extra_Lives=\"{3}\" Life_Price=\"{4}\" />", Hardcore.IsEnabled, Hardcore.Optional, Hardcore.Max_Deaths, Hardcore.Max_Extra_Lives, Hardcore.Life_Price));
                 sw.WriteLine(string.Format("        <Tool Name=\"High_Ping_Kicker\" Enable=\"{0}\" Max_Ping=\"{1}\" Flags=\"{2}\" />", HighPingKicker.IsEnabled, HighPingKicker.Max_Ping, HighPingKicker.Flags));
-                sw.WriteLine(string.Format("        <Tool Name=\"Home\" Enable=\"{0}\" Set_Home2_Enabled=\"{1}\" Set_Home2_Reserved_Only=\"{2}\" Home2_Delay=\"{3}\" Delay_Between_Uses=\"{4}\" Command_Cost=\"{5}\" />", TeleportHome.IsEnabled, TeleportHome.Set_Home2_Enabled, TeleportHome.Set_Home2_Reserved_Only, TeleportHome.Home2_Delay, TeleportHome.Delay_Between_Uses, TeleportHome.Command_Cost));
-                sw.WriteLine(string.Format("        <Tool Name=\"Home_Extended\" Player_Check=\"{0}\" Zombie_Check=\"{1}\" Vehicle_Check=\"{2}\" />", TeleportHome.Player_Check, TeleportHome.Zombie_Check, TeleportHome.Vehicle_Check));
+                sw.WriteLine(string.Format("        <Tool Name=\"Home\" Enable=\"{0}\" Home2_Enabled=\"{1}\" Home2_Reserved_Only=\"{2}\" Home2_Delay=\"{3}\" Delay_Between_Uses=\"{4}\" Command_Cost=\"{5}\" />", Home.IsEnabled, Home.Home2_Enabled, Home.Home2_Reserved_Only, Home.Home2_Delay, Home.Delay_Between_Uses, Home.Command_Cost));
+                sw.WriteLine(string.Format("        <Tool Name=\"Home_Extended\" Player_Check=\"{0}\" Zombie_Check=\"{1}\" Vehicle_Check=\"{2}\" />", Home.Player_Check, Home.Zombie_Check, Home.Vehicle_Check));
                 sw.WriteLine(string.Format("        <Tool Name=\"Hordes\" Enable=\"{0}\" />", Hordes.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Info_Ticker\" Enable=\"{0}\" Delay_Between_Messages=\"{1}\" Random=\"{2}\" />", InfoTicker.IsEnabled, InfoTicker.Delay, InfoTicker.Random));
-                sw.WriteLine(string.Format("        <Tool Name=\"Invalid_Item\" Enable=\"{0}\" Ban=\"{1}\" Admin_Level=\"{2}\" Check_Storage=\"{3}\" />", InvalidItems.IsEnabled, InvalidItems.Ban_Player, InvalidItems.Admin_Level, InvalidItems.Check_Storage));
+                sw.WriteLine(string.Format("        <Tool Name=\"Invalid_Items\" Enable=\"{0}\" Ban=\"{1}\" Admin_Level=\"{2}\" Check_Storage=\"{3}\" />", InvalidItems.IsEnabled, InvalidItems.Ban_Player, InvalidItems.Admin_Level, InvalidItems.Check_Storage));
                 sw.WriteLine(string.Format("        <Tool Name=\"Invalid_Item_Stack\" Enable=\"{0}\" />", InvalidItems.Invalid_Stack));
                 sw.WriteLine(string.Format("        <Tool Name=\"Jail\" Enable=\"{0}\" Jail_Size=\"{1}\" Jail_Position=\"{2}\" Jail_Shock=\"{3}\" />", Jail.IsEnabled, Jail.Jail_Size, Jail.Jail_Position, Jail.Jail_Shock));
                 sw.WriteLine(string.Format("        <Tool Name=\"Kick_Vote\" Enable=\"{0}\" Players_Online=\"{1}\" Votes_Needed=\"{2}\" />", KickVote.IsEnabled, KickVote.Players_Online, KickVote.Votes_Needed));

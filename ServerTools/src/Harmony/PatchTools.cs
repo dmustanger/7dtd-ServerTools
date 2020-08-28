@@ -78,7 +78,13 @@ namespace ServerTools
                             Log.Out(string.Format("[SERVERTOOLS] Injection failed: PlayerLoginRPC.prefix"));
                             return;
                         }
-                        harmony.Patch(original, new HarmonyMethod(prefix), null, null);
+                        MethodInfo postfix = typeof(Injections).GetMethod("PlayerLoginRPC_Postfix");
+                        if (postfix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: PlayerLoginRPC.postfix"));
+                            return;
+                        }
+                        harmony.Patch(original, new HarmonyMethod(prefix), new HarmonyMethod(postfix), null);
                     }
                 }
                 original = typeof(GameManager).GetMethod("ExplosionServer");

@@ -285,39 +285,39 @@ namespace ServerTools
                 {
                     if (kvp.Key == 1)
                     {
-                        TeleportHome.Command1 = kvp.Value[1];
+                        Home.Command1 = kvp.Value[1];
                     }
                     else if (kvp.Key == 2)
                     {
-                        TeleportHome.Command2 = kvp.Value[1];
+                        Home.Command2 = kvp.Value[1];
                     }
                     else if (kvp.Key == 3)
                     {
-                        TeleportHome.Command3 = kvp.Value[1];
+                        Home.Command3 = kvp.Value[1];
                     }
                     else if (kvp.Key == 4)
                     {
-                        TeleportHome.Command4 = kvp.Value[1];
+                        Home.Command4 = kvp.Value[1];
                     }
                     else if (kvp.Key == 5)
                     {
-                        TeleportHome.Command5 = kvp.Value[1];
+                        Home.Command5 = kvp.Value[1];
                     }
                     else if (kvp.Key == 6)
                     {
-                        TeleportHome.Command6 = kvp.Value[1];
+                        Home.Command6 = kvp.Value[1];
                     }
                     else if (kvp.Key == 7)
                     {
-                        TeleportHome.Command7 = kvp.Value[1];
+                        Home.Command7 = kvp.Value[1];
                     }
                     else if (kvp.Key == 8)
                     {
-                        TeleportHome.Command8 = kvp.Value[1];
+                        Home.Command8 = kvp.Value[1];
                     }
                     else if (kvp.Key == 9)
                     {
-                        TeleportHome.Command9 = kvp.Value[1];
+                        Home.Command9 = kvp.Value[1];
                     }
                     else if (kvp.Key == 10)
                     {

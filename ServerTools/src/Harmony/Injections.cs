@@ -23,20 +23,41 @@ public static class Injections
         return true;
     }
 
-    public static bool PlayerLoginRPC_Prefix(ClientInfo _cInfo, string _playerId)
+    public static void PlayerLoginRPC_Prefix(string _playerId, out bool __state)
     {
+        __state = false;
         try
         {
-            if (ReservedSlots.IsEnabled && _playerId != null && _playerId.Length == 17 && ConnectionManager.Instance.ClientCount() >= GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount))
+            int _maxCount = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
+            if (ReservedSlots.IsEnabled && _playerId != null && _playerId.Length == 17 && ConnectionManager.Instance.ClientCount() > _maxCount)
             {
-                ReservedSlots.FullServer(_cInfo);
+                if (ReservedSlots.FullServer(_playerId))
+                {
+                    GamePrefs.Set(EnumGamePrefs.ServerMaxPlayerCount, _maxCount + 1);
+                    __state = true;
+                }
             }
         }
         catch (Exception e)
         {
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.PlayerLoginRPC_Prefix: {0}", e.Message));
         }
-        return true;
+    }
+
+    public static void PlayerLoginRPC_Postfix(bool __state)
+    {
+        try
+        {
+            if (__state)
+            {
+                int _maxCount = GamePrefs.GetInt(EnumGamePrefs.ServerMaxPlayerCount);
+                GamePrefs.Set(EnumGamePrefs.ServerMaxPlayerCount, _maxCount - 1);
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.PlayerLoginRPC_Postfix: {0}", e.Message));
+        }
     }
 
     public static bool ChangeBlocks_Prefix(GameManager __instance, string persistentPlayerId, List<BlockChangeInfo> _blocksToChange)
@@ -52,7 +73,7 @@ public static class Injections
         return true;
     }
 
-    public static bool ExplosionServer_Prefix(Vector3 _worldPos, Vector3i _blockPos, int _playerId)
+    public static bool ExplosionServer_Prefix(Vector3 _worldPos, int _playerId)
     {
         try
         {

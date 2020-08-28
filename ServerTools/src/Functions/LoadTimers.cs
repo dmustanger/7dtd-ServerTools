@@ -440,7 +440,7 @@ namespace ServerTools
             {
                 Log.Out("Shutdown enabled");
             }
-            if (TeleportHome.IsEnabled)
+            if (Home.IsEnabled)
             {
                 Log.Out("Set home enabled");
             }

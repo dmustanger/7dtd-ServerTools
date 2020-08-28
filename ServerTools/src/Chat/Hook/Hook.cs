@@ -229,13 +229,13 @@ namespace ServerTools
                         {
                             _message = _message.Replace(Command_Private, "");
                         }
-                        if (TeleportHome.IsEnabled && _message.ToLower() == TeleportHome.Command1)
+                        if (Home.IsEnabled && _message.ToLower() == Home.Command1)
                         {
                             if (Zones.IsEnabled && !Zones.Set_Home)
                             {
                                 if (!Zones.ZoneExit.ContainsKey(_cInfo.entityId))
                                 {
-                                    TeleportHome.SetHome1(_cInfo);
+                                    Home.SetHome1(_cInfo);
                                 }
                                 else
                                 {
@@ -244,31 +244,31 @@ namespace ServerTools
                             }
                             else
                             {
-                                TeleportHome.SetHome1(_cInfo);
+                                Home.SetHome1(_cInfo);
                             }
                             return false;
                         }
-                        if (TeleportHome.IsEnabled && _message.ToLower() == TeleportHome.Command2)
+                        if (Home.IsEnabled && _message.ToLower() == Home.Command2)
                         {
 
-                            TeleportHome.Exec1(_cInfo);
+                            Home.Exec1(_cInfo);
                             return false;
                         }
-                        if (TeleportHome.IsEnabled && _message.ToLower() == TeleportHome.Command3)
+                        if (Home.IsEnabled && _message.ToLower() == Home.Command3)
                         {
 
-                            TeleportHome.FExec1(_cInfo);
+                            Home.FExec1(_cInfo);
                             return false;
                         }
-                        if (TeleportHome.IsEnabled && _message.ToLower() == TeleportHome.Command4)
+                        if (Home.IsEnabled && _message.ToLower() == Home.Command4)
                         {
 
-                            TeleportHome.DelHome1(_cInfo);
+                            Home.DelHome1(_cInfo);
                             return false;
                         }
-                        if (TeleportHome.Set_Home2_Enabled && _message.ToLower() == TeleportHome.Command5)
+                        if (Home.Home2_Enabled && _message.ToLower() == Home.Command5)
                         {
-                            if (TeleportHome.Set_Home2_Reserved_Only && ReservedSlots.IsEnabled)
+                            if (Home.Home2_Reserved_Only && ReservedSlots.IsEnabled)
                             {
                                 if (!Zones.Set_Home)
                                 {
@@ -280,7 +280,7 @@ namespace ServerTools
                                             if (DateTime.Now < _dt)
                                             {
 
-                                                TeleportHome.SetHome2(_cInfo);
+                                                Home.SetHome2(_cInfo);
                                             }
                                             else
                                             {
@@ -304,7 +304,7 @@ namespace ServerTools
                                         ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                                         if (DateTime.Now < _dt)
                                         {
-                                            TeleportHome.SetHome2(_cInfo);
+                                            Home.SetHome2(_cInfo);
                                         }
                                         else
                                         {
@@ -317,13 +317,13 @@ namespace ServerTools
                                     }
                                 }
                             }
-                            else if (!TeleportHome.Set_Home2_Reserved_Only)
+                            else if (!Home.Home2_Reserved_Only)
                             {
                                 if (!Zones.Set_Home)
                                 {
                                     if (!Zones.ZoneExit.ContainsKey(_cInfo.entityId))
                                     {
-                                        TeleportHome.SetHome2(_cInfo);
+                                        Home.SetHome2(_cInfo);
                                     }
                                     else
                                     {
@@ -332,21 +332,21 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    TeleportHome.SetHome2(_cInfo);
+                                    Home.SetHome2(_cInfo);
                                 }
                             }
                             return false;
                         }
-                        if (TeleportHome.Set_Home2_Enabled && _message.ToLower() == TeleportHome.Command6)
+                        if (Home.Home2_Enabled && _message.ToLower() == Home.Command6)
                         {
-                            if (TeleportHome.Set_Home2_Reserved_Only && ReservedSlots.IsEnabled)
+                            if (Home.Home2_Reserved_Only && ReservedSlots.IsEnabled)
                             {
                                 if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
                                     ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                                     if (DateTime.Now < _dt)
                                     {
-                                        TeleportHome.Exec2(_cInfo);
+                                        Home.Exec2(_cInfo);
                                     }
                                     else
                                     {
@@ -358,9 +358,9 @@ namespace ServerTools
                                     ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You are not on the reserved list, please donate or contact an admin.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
-                            else if (!TeleportHome.Set_Home2_Reserved_Only)
+                            else if (!Home.Home2_Reserved_Only)
                             {
-                                TeleportHome.Exec2(_cInfo);
+                                Home.Exec2(_cInfo);
                             }
                             else
                             {
@@ -368,16 +368,16 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (TeleportHome.Set_Home2_Enabled && _message.ToLower() == TeleportHome.Command7)
+                        if (Home.Home2_Enabled && _message.ToLower() == Home.Command7)
                         {
-                            if (TeleportHome.Set_Home2_Reserved_Only && ReservedSlots.IsEnabled)
+                            if (Home.Home2_Reserved_Only && ReservedSlots.IsEnabled)
                             {
                                 if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
                                     ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                                     if (DateTime.Now < _dt)
                                     {
-                                        TeleportHome.FExec2(_cInfo);
+                                        Home.FExec2(_cInfo);
                                     }
                                     else
                                     {
@@ -389,9 +389,9 @@ namespace ServerTools
                                     ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You are not on the reserved list, please donate or contact an admin.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
-                            else if (!TeleportHome.Set_Home2_Reserved_Only)
+                            else if (!Home.Home2_Reserved_Only)
                             {
-                                TeleportHome.FExec2(_cInfo);
+                                Home.FExec2(_cInfo);
                             }
                             else
                             {
@@ -399,16 +399,16 @@ namespace ServerTools
                             }
                             return false;
                         }
-                        if (TeleportHome.Set_Home2_Enabled && _message.ToLower() == TeleportHome.Command8)
+                        if (Home.Home2_Enabled && _message.ToLower() == Home.Command8)
                         {
-                            if (TeleportHome.Set_Home2_Reserved_Only && ReservedSlots.IsEnabled)
+                            if (Home.Home2_Reserved_Only && ReservedSlots.IsEnabled)
                             {
                                 if (ReservedSlots.Dict.ContainsKey(_cInfo.playerId))
                                 {
                                     ReservedSlots.Dict.TryGetValue(_cInfo.playerId, out DateTime _dt);
                                     if (DateTime.Now < _dt)
                                     {
-                                        TeleportHome.DelHome2(_cInfo);
+                                        Home.DelHome2(_cInfo);
                                     }
                                     else
                                     {
@@ -420,17 +420,17 @@ namespace ServerTools
                                     ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You are not on the reserved list, please donate or contact an admin.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
-                            else if (!TeleportHome.Set_Home2_Reserved_Only)
+                            else if (!Home.Home2_Reserved_Only)
                             {
-                                TeleportHome.DelHome2(_cInfo);
+                                Home.DelHome2(_cInfo);
                             }
                             return false;
                         }
-                        if (TeleportHome.IsEnabled && _message.ToLower() == TeleportHome.Command9)
+                        if (Home.IsEnabled && _message.ToLower() == Home.Command9)
                         {
-                            if (TeleportHome.Invite.ContainsKey(_cInfo.entityId))
+                            if (Home.Invite.ContainsKey(_cInfo.entityId))
                             {
-                                TeleportHome.FriendHome(_cInfo);
+                                Home.FriendHome(_cInfo);
                                 return false;
                             }
                         }

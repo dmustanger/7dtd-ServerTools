@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace ServerTools
 {
-    public class TeleportHome
+    public class Home
     {
-        public static bool IsEnabled = false, Set_Home2_Enabled = false, Set_Home2_Reserved_Only = false, Home2_Delay = false, Player_Check = false, 
+        public static bool IsEnabled = false, Home2_Enabled = false, Home2_Reserved_Only = false, Home2_Delay = false, Player_Check = false, 
             Zombie_Check = false, Vehicle_Check = false, Return = false;
         public static int Delay_Between_Uses = 60, Command_Cost = 0;
         public static string Command1 = "sethome", Command2 = "home", Command3 = "fhome", Command4 = "delhome", Command5 = "sethome2", 
