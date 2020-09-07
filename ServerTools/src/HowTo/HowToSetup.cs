@@ -624,7 +624,7 @@ namespace ServerTools
                 sw.WriteLine("Set a numeric value set of x, y, z position for Jail_Position");
                 sw.WriteLine("Set True or False for Jail_Shock");
                 sw.WriteLine();
-                sw.WriteLine("Enables the jail system for naughty players. This muct be enabled to utilize other tools that send a player to jail.");
+                sw.WriteLine("Enables the jail system for naughty players. This must be enabled to utilize other tools that send a player to jail.");
                 sw.WriteLine("Jail_Size controls how far a player can stray from the jail before it teleports them back to the Jail_Position.");
                 sw.WriteLine("Jail_Position controls where a jailed player is sent to. This is the x, y, z position.");
                 sw.WriteLine("Jail shock will apply the shock buff to them if they try to leave the prison area.");
