@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ServerTools
 {
@@ -17,20 +16,19 @@ namespace ServerTools
             {
                 _time = DateTime.Now.AddHours(Adjustment);
             }
-            string _phrase765;
-            if (!Phrases.Dict.TryGetValue(765, out _phrase765))
-            {
-                _phrase765 = "The real world time is {Time} {TimeZone}.";
-            }
-            _phrase765 = _phrase765.Replace("{Time}", _time.ToShortTimeString());
-            _phrase765 = _phrase765.Replace("{TimeZone}", Time_Zone);
+            Phrases.Dict.TryGetValue(823, out string _phrase823);
+            _phrase823 = _phrase823.Replace("{Time}", _time.ToShortTimeString());
+            _phrase823 = _phrase823.Replace("{TimeZone}", Time_Zone);
             List<ClientInfo> _cInfoList = PersistentOperations.ClientList();
-            for (int i = 0; i < _cInfoList.Count; i++)
+            if (_cInfoList != null && _cInfoList.Count > 0)
             {
-                ClientInfo _cInfo = _cInfoList[i];
-                if (_cInfo != null)
+                for (int i = 0; i < _cInfoList.Count; i++)
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase765 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ClientInfo _cInfo = _cInfoList[i];
+                    if (_cInfo != null)
+                    {
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase823 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
                 }
             }
         }

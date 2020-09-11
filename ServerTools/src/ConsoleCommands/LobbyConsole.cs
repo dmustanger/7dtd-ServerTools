@@ -33,7 +33,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -42,12 +42,12 @@ namespace ServerTools
                     {
                         Lobby.IsEnabled = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Lobby has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Lobby has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Lobby is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Lobby is already off"));
                         return;
                     }
                 }
@@ -57,16 +57,16 @@ namespace ServerTools
                     {
                         Lobby.IsEnabled = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Lobby has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Lobby has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Lobby is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Lobby is already on"));
                         return;
                     }
                 }
-                else if (_params[0] == ("set"))
+                else if (_params[0] == "set")
                 {
                     ClientInfo _cInfo = _senderInfo.RemoteClientInfo;
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
@@ -83,12 +83,12 @@ namespace ServerTools
                     }
                     _phrase551 = _phrase551.Replace("{PlayerName}", _cInfo.playerName);
                     _phrase551 = _phrase551.Replace("{LobbyPosition}", _lposition);
-                    SdtdConsole.Instance.Output(string.Format("{0}", _phrase551));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0}", _phrase551));
                     LoadConfig.WriteXml();
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)

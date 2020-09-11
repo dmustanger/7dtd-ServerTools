@@ -565,19 +565,19 @@ namespace ServerTools
                     }
                     else if (kvp.Key == 71)
                     {
-                        AuctionBox.Command71 = kvp.Value[1];
+                        Auction.Command71 = kvp.Value[1];
                     }
                     else if (kvp.Key == 72)
                     {
-                        AuctionBox.Command72 = kvp.Value[1];
+                        Auction.Command72 = kvp.Value[1];
                     }
                     else if (kvp.Key == 73)
                     {
-                        AuctionBox.Command73 = kvp.Value[1];
+                        Auction.Command73 = kvp.Value[1];
                     }
                     else if (kvp.Key == 74)
                     {
-                        AuctionBox.Command74 = kvp.Value[1];
+                        Auction.Command74 = kvp.Value[1];
                     }
                     else if (kvp.Key == 75)
                     {

@@ -13,12 +13,8 @@ namespace ServerTools
         {
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_cmd, _cInfo))
             {
-                string _phrase107;
-                if (!Phrases.Dict.TryGetValue(107, out _phrase107))
-                {
-                    _phrase107 = "You do not have permissions to use this command.";
-                }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase107 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(217, out string _phrase217);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase217 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -29,14 +25,10 @@ namespace ServerTools
                 int z = (int)_position.z;
                 string _sposition = x + "," + y + "," + z;
                 New_Spawn_Tele_Position = _sposition;
-                string _phrase525;
-                if (!Phrases.Dict.TryGetValue(525, out _phrase525))
-                {
-                    _phrase525 = "You have set the New Spawn position as {NewSpawnTelePosition}.";
-                }
-                _phrase525 = _phrase525.Replace("{NewSpawnTelePosition}", New_Spawn_Tele_Position);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase525 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 LoadConfig.WriteXml();
+                Phrases.Dict.TryGetValue(211, out string _phrase211);
+                _phrase211 = _phrase211.Replace("{Position}", New_Spawn_Tele_Position);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase211 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -58,30 +50,15 @@ namespace ServerTools
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                 PersistentContainer.Instance.Players[_cInfo.playerId].NewSpawn = true;
                 PersistentContainer.Instance.Save();
-                if (!Return)
+                Phrases.Dict.TryGetValue(212, out string _phrase212);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase212 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                if (Return)
                 {
-                    string _phrase526;
-                    if (!Phrases.Dict.TryGetValue(526, out _phrase526))
-                    {
-                        _phrase526 = "You have been teleported to the new spawn location.";
-                    }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase526 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue(213, out string _phrase213);
+                    _phrase213 = _phrase213.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase213 = _phrase213.Replace("{Command86}", Command86);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase213 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
-                else
-                {
-                    string _phrase527;
-                    if (!Phrases.Dict.TryGetValue(527, out _phrase527))
-                    {
-                        _phrase527 = "Type {CommandPrivate}{Command86} when you are prepared to leave. You will teleport back to your spawn location.";
-                    }
-                    _phrase527 = _phrase527.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                    _phrase527 = _phrase527.Replace("{Command86}", Command86);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase527 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-            }
-            else
-            {
-                Log.Out(string.Format("[SERVERTOOLS] New spawn position was already set for player {0} with steam id {1}.", _cInfo.playerName, _cInfo.playerId));
             }
         }
 
@@ -112,33 +89,21 @@ namespace ServerTools
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
                     PersistentContainer.Instance.Players[_cInfo.playerId].NewSpawnPosition = "";
                     PersistentContainer.Instance.Save();
-                    string _phrase530;
-                    if (!Phrases.Dict.TryGetValue(530, out _phrase530))
-                    {
-                        _phrase530 = "You have been sent back to your original spawn location. Good luck.";
-                    }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase530 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue(216, out string _phrase216);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase216 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 else
                 {
-                    string _phrase529;
-                    if (!Phrases.Dict.TryGetValue(529, out _phrase529))
-                    {
-                        _phrase529 = "You have left the new player area. Return to it before using {CommandPrivate}{Command86}.";
-                    }
-                    _phrase529 = _phrase529.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                    _phrase529 = _phrase529.Replace("{Command86}", Command86);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase529 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue(215, out string _phrase215);
+                    _phrase215 = _phrase215.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase215 = _phrase215.Replace("{Command86}", Command86);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase215 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
-                string _phrase528;
-                if (!Phrases.Dict.TryGetValue(528, out _phrase528))
-                {
-                    _phrase528 = "You have no saved return point or you have used it.";
-                }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase528 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(214, out string _phrase214);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase214 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

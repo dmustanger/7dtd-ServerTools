@@ -10,7 +10,7 @@ namespace ServerTools
         public static int StopServerMinutes, _eventTime, _shutdown, _shutdownBloodmoonOver;
         private static int CoreCount = 0, TwoSecondTick, FiveSecondTick, TenSecondTick, SixtySecondTick, _watchList, _nightAlert, 
             _horde, _lottery, _breakTime, _invalidItems, _weatherVote, _bloodmoon, _playerLogs, _autoSaveWorld, _infoTicker, _restartVote,
-            _restartVoteStart, StopServerSeconds, _kickVote, _muteVote, _eventInvitation, _eventOpen, _zoneReminder, _tracking, _realWorldTime, _shutdownBloodmoon, _autoBackup;
+            _restartVoteCycle, StopServerSeconds, _kickVote, _muteVote, _eventInvitation, _eventOpen, _zoneReminder, _tracking, _realWorldTime, _shutdownBloodmoon, _autoBackup;
         private static System.Timers.Timer Core = new System.Timers.Timer();
 
         public static void TimerStart()
@@ -116,6 +116,18 @@ namespace ServerTools
             {
                 Init6(sender, e, _cInfo, _ip);
                 _exitDelay.Close();
+            };
+        }
+
+        public static void SaveDelay()
+        {
+            System.Timers.Timer _saveDelay = new System.Timers.Timer(500);
+            _saveDelay.AutoReset = false;
+            _saveDelay.Start();
+            _saveDelay.Elapsed += (sender, e) =>
+            {
+                PersistentContainer.Instance.Save();
+                _saveDelay.Close();
             };
         }
 
@@ -248,7 +260,7 @@ namespace ServerTools
             {
                 Log.Out("Animal tracking enabled");
             }
-            if (AuctionBox.IsEnabled)
+            if (Auction.IsEnabled)
             {
                 Log.Out("Auction enabled");
             }
@@ -817,17 +829,17 @@ namespace ServerTools
                 {
                     _eventOpen = 0;
                 }
-                if (RestartVote.Startup)
+                if (RestartVote.Cycle)
                 {
-                    _restartVoteStart++;
-                    if (_restartVoteStart >= 1800)
+                    _restartVoteCycle++;
+                    if (_restartVoteCycle >= 1800)
                     {
-                        RestartVote.Startup = false;
+                        RestartVote.Cycle = false;
                     }
                 }
                 else
                 {
-                    _restartVoteStart = 0;
+                    _restartVoteCycle = 0;
                 }
                 if (Zones.IsEnabled & Zones.Reminder.Count > 0)
                 {

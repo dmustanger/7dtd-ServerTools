@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -11,6 +12,7 @@ namespace ServerTools
         private static string filepath = string.Format("{0}/ServerTools.bin", API.ConfigPath);
         private static PersistentContainer instance;
         private PersistentPlayers players;
+        private bool Saving = false;
 
         private Dictionary<int, int> auctionPrices;
         private Dictionary<int, List<int>> clientMuteList;
@@ -56,10 +58,26 @@ namespace ServerTools
 
         public void Save()
         {
-            Stream stream = File.Open(filepath, FileMode.Create);
-            BinaryFormatter bFormatter = new BinaryFormatter();
-            bFormatter.Serialize(stream, this);
-            stream.Close();
+            try
+            {
+                if (!Saving)
+                {
+                    Saving = true;
+                    Stream stream = File.Open(filepath, FileMode.Create, FileAccess.ReadWrite);
+                    BinaryFormatter bFormatter = new BinaryFormatter();
+                    bFormatter.Serialize(stream, this);
+                    stream.Close();
+                }
+                else
+                {
+                    Timers.SaveDelay();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Exception in PersistentContainer.Save: {0}", e.Message));
+            }
+            Saving = false;
         }
 
         public bool Load()
@@ -69,7 +87,7 @@ namespace ServerTools
                 try
                 {
                     PersistentContainer obj;
-                    Stream stream = File.Open(filepath, FileMode.Open);
+                    Stream stream = File.Open(filepath, FileMode.Open, FileAccess.Read);
                     BinaryFormatter bFormatter = new BinaryFormatter();
                     obj = (PersistentContainer)bFormatter.Deserialize(stream);
                     stream.Close();

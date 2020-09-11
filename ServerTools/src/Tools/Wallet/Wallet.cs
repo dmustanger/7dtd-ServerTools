@@ -10,10 +10,10 @@ namespace ServerTools
         public static void CurrentValue(ClientInfo _cInfo)
         {
             int _currentCoins = GetCurrentCoins(_cInfo.playerId);
-            string _message = "Your wallet contains: {Value} {Name}.";
-            _message = _message.Replace("{Value}", _currentCoins.ToString());
-            _message = _message.Replace("{Name}", Wallet.Coin_Name);
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue(861, out string _phrase861);
+            _phrase861 = _phrase861.Replace("{Value}", _currentCoins.ToString());
+            _phrase861 = _phrase861.Replace("{CoinName}", Wallet.Coin_Name);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase861 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static int GetCurrentCoins(string _steamid)

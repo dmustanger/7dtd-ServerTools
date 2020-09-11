@@ -235,12 +235,8 @@ namespace ServerTools
                     }
                     Log.Out(string.Format("[SERVERTOOLS] {0} with steam id {1} received their starting items", _cInfo.playerName, _cInfo.playerId));
                     SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0} with steam id {1} received their starting items", _cInfo.playerName, _cInfo.playerId));
-                    string _phrase806;
-                    if (!Phrases.Dict.TryGetValue(806, out _phrase806))
-                    {
-                        _phrase806 = "You have received the starting items. Check your inventory. If full, check the ground.";
-                    }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase806 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue(841, out string _phrase841);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase841 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

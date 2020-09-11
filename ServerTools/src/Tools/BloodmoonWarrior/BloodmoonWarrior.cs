@@ -245,10 +245,9 @@ namespace ServerTools
                                         {
                                             WarriorList.Add(_cInfo.playerId);
                                             KilledZombies.Add(_cInfo.playerId, 0);
-                                            string _response = "Hades has called upon you. Survive this night and kill {ZombieCount} zombies to be rewarded by the king of the underworld.";
-                                            _response = _response.Replace("{ZombieCount}", Zombie_Kills.ToString());
-                                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                            Thread.Sleep(TimeSpan.FromMilliseconds(30));
+                                            Phrases.Dict.TryGetValue(691, out string _phrase691);
+                                            _phrase691 = _phrase691.Replace("{Count}", Zombie_Kills.ToString());
+                                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase691 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                     }
                                 }
@@ -293,11 +292,13 @@ namespace ServerTools
                                         _player.Died = _deathCount;
                                         _player.bPlayerStatsChanged = true;
                                         _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackagePlayerStats>().Setup(_player));
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have survived and been rewarded by hades himself. Your death count was reduced by one" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        Phrases.Dict.TryGetValue(692, out string _phrase692);
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase692 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                     else
                                     {
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have survived and been rewarded by hades himself." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        Phrases.Dict.TryGetValue(693, out string _phrase693);
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase693 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     }
                                 }
                             }
@@ -349,12 +350,6 @@ namespace ServerTools
                     world.SpawnEntityInWorld(entityItem);
                     _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                     world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                    string _message = "Received {ItemCount} {ItemName} from Hades.";
-                    _message = _message.Replace("{ItemCount}", _count.ToString());
-                    string _name;
-                    Dict1.TryGetValue(_randomItem, out _name);
-                    _message = _message.Replace("{ItemName}", _name);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)

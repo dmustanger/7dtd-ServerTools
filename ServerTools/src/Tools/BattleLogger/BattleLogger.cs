@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Drop = false, Remove = false, All = false, Belt = false, Bag = false, Equipment = false;
         public static string Command131 = "exit", Command132 = "quit";
-        public static int Admin_Level = 0, Player_Distance = 200;
+        public static int Admin_Level = 0, Player_Distance = 100;
         public static Dictionary<string, DateTime> DisconnectedIp = new Dictionary<string, DateTime>();
         public static Dictionary<string, Vector3> ExitPos = new Dictionary<string, Vector3>();
         public static List<string> Exit = new List<string>();
@@ -201,7 +201,8 @@ namespace ServerTools
                                 ExitPos.Remove(_cInfo.playerId);
                                 if (_player.position != _pos)
                                 {
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You moved and need to restart your countdown." + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue(671, out string _phrase671);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase671 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     return;
                                 }
                             }
@@ -233,7 +234,9 @@ namespace ServerTools
         {
             try
             {
-                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"You have disconnected. Thank you for playing with us. Come back soon\"", _cInfo.playerId), null);
+                Phrases.Dict.TryGetValue(673, out string _phrase673);
+                _phrase673 = _phrase673.Replace("{PlayerName}", _cInfo.playerName);
+                SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase673), null);
             }
             catch (Exception e)
             {
@@ -243,7 +246,10 @@ namespace ServerTools
 
         public static void AlertPlayer(ClientInfo _cInfo)
         {
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You must type " + ChatHook.Command_Private + BattleLogger.Command131 + " to leave the game while near a hostile player. Do not worry about an internet drop out or server shutdown.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue(672, out string _phrase672);
+            _phrase672 = _phrase672.Replace("{CommandPrivate}", ChatHook.Command_Private);
+            _phrase672 = _phrase672.Replace("{Command131}", Command131);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase672 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
     }
 }

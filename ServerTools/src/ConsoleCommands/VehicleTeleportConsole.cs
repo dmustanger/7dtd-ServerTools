@@ -37,7 +37,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -46,12 +46,12 @@ namespace ServerTools
                     {
                         VehicleTeleport.IsEnabled = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Vehicle_Teleport has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Vehicle_Teleport is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport is already off"));
                         return;
                     }
                 }
@@ -61,12 +61,12 @@ namespace ServerTools
                     {
                         VehicleTeleport.IsEnabled = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Vehicle_Teleport has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Vehicle_Teleport is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport is already on"));
                         return;
                     }
                 }
@@ -76,14 +76,14 @@ namespace ServerTools
                     {
                         VehicleTeleport.Bike = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Vehicle_Teleport bike has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport bike has been set to off"));
                         return;
                     }
                     else
                     {
                         VehicleTeleport.Bike = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Vehicle_Teleport bike has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport bike has been set to on"));
                         return;
                     }
                 }
@@ -93,14 +93,14 @@ namespace ServerTools
                     {
                         VehicleTeleport.Mini_Bike = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Vehicle_Teleport minibike has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport minibike has been set to off"));
                         return;
                     }
                     else
                     {
                         VehicleTeleport.Mini_Bike = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Vehicle_Teleport minibike has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport minibike has been set to on"));
                         return;
                     }
                 }
@@ -110,14 +110,14 @@ namespace ServerTools
                     {
                         VehicleTeleport.Motor_Bike = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Vehicle_Teleport minibike has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport minibike has been set to off"));
                         return;
                     }
                     else
                     {
                         VehicleTeleport.Motor_Bike = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Vehicle_Teleport minibike has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport minibike has been set to on"));
                         return;
                     }
                 }
@@ -127,14 +127,14 @@ namespace ServerTools
                     {
                         VehicleTeleport.Jeep = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Vehicle_Teleport jeep has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport jeep has been set to off"));
                         return;
                     }
                     else
                     {
                         VehicleTeleport.Jeep = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Vehicle_Teleport jeep has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport jeep has been set to on"));
                         return;
                     }
                 }
@@ -144,20 +144,20 @@ namespace ServerTools
                     {
                         VehicleTeleport.Gyro = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Vehicle_Teleport gyro has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Vehicle teleport gyro has been set to off"));
                         return;
                     }
                     else
                     {
                         VehicleTeleport.Gyro = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Vehicle_Teleport gyro has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("Vehicle teleport gyro has been set to on"));
                         return;
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)

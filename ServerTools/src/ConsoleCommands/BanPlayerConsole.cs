@@ -30,7 +30,7 @@ namespace ServerTools
             {
                 if (_params.Count < 3 || _params.Count > 4)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 3 or 4, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3 or 4, found {0}", _params.Count));
                     return;
                 }
                 if (_params.Count == 3)
@@ -51,12 +51,12 @@ namespace ServerTools
                                 }
                             }
                             SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} {1} {2}", _cInfo.playerId, _params[1], _params[2]), (ClientInfo)null);
-                            SdtdConsole.Instance.Output(string.Format("Id {0} has been banned. Their claims have been removed.", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id {0} has been banned. Their claims have been removed.", _params[0]));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Unable to ban id {0}. The player data for id can not be found.", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to ban id {0}. The player data for id can not be found.", _params[0]));
                             return;
                         }
                     }
@@ -75,18 +75,18 @@ namespace ServerTools
                                 }
                             }
                             SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} {1} {2}", _cInfo.playerId, _params[1], _params[2]), (ClientInfo)null);
-                            SdtdConsole.Instance.Output(string.Format("Id {0} has been banned. Their claims have been removed.", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id {0} has been banned. Their claims have been removed.", _params[0]));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Unable to ban id {0}.  The player data for id can not be found.", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to ban id {0}.  The player data for id can not be found.", _params[0]));
                             return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Unable to ban id {0}. If the player is offline, use their steam id to ban them", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to ban id {0}. If the player is offline, use their steam id to ban them", _params[0]));
                         return;
                     }
                 }
@@ -108,12 +108,12 @@ namespace ServerTools
                                 }
                             }
                             SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} {1} {2} {3}", _cInfo.playerId, _params[1], _params[2], _params[3]), (ClientInfo)null);
-                            SdtdConsole.Instance.Output(string.Format("Id {0} has been banned. Their claims have been removed.", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id {0} has been banned. Their claims have been removed.", _params[0]));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Unable to ban id {0}. The player data for id can not be found.", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to ban id {0}. The player data for id can not be found.", _params[0]));
                             return;
                         }
                     }
@@ -132,29 +132,29 @@ namespace ServerTools
                                 }
                             }
                             SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} {1} {2} {3}", _cInfo.playerId, _params[1], _params[2], _params[3]), (ClientInfo)null);
-                            SdtdConsole.Instance.Output(string.Format("Id {0} has been banned. Their claims have been removed.", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id {0} has been banned. Their claims have been removed.", _params[0]));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Unable to ban id {0}. The player data for id can not be found.", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to ban id {0}. The player data for id can not be found.", _params[0]));
                             return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Unable to ban id {0}. If the player is offline, use their steam id to ban them", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to ban id {0}. If the player is offline, use their steam id to ban them", _params[0]));
                         return;
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in BanPlayer.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in BanPlayer.Execute: {0}", e.Message));
             }
         }
     }

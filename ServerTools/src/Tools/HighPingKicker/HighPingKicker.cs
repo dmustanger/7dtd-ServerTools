@@ -136,7 +136,7 @@ namespace ServerTools
 
         public static void Exec(ClientInfo _cInfo)
         {
-            if (Dict.ContainsKey(_cInfo.playerId) || !GameManager.Instance.adminTools.IsAdmin(_cInfo))
+            if (Dict.ContainsKey(_cInfo.playerId) || GameManager.Instance.adminTools.IsAdmin(_cInfo))
             {
                 return;
             }
@@ -184,22 +184,15 @@ namespace ServerTools
 
         private static void KickPlayer(ClientInfo _cInfo)
         {
-            string _phrase1;
-            if (!Phrases.Dict.TryGetValue(1, out _phrase1))
-            {
-                _phrase1 = "Auto Kicking {PlayerName} for high ping of {PlayerPing}. Maxping is {MaxPing}.";
-            }
+            Phrases.Dict.TryGetValue(1, out string _phrase1);
             _phrase1 = _phrase1.Replace("{PlayerName}", _cInfo.playerName);
             _phrase1 = _phrase1.Replace("{PlayerPing}", _cInfo.ping.ToString());
             _phrase1 = _phrase1.Replace("{MaxPing}", Max_Ping.ToString());
             ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-            string _phrase2;
-            if (!Phrases.Dict.TryGetValue(2, out _phrase2))
-            {
-                _phrase2 = "Auto Kicked: Ping is too high at {PlayerPing}. Max ping is {MaxPing}.";
-            }
+            Phrases.Dict.TryGetValue(2, out string _phrase2);
             _phrase2 = _phrase2.Replace("{PlayerPing}", _cInfo.ping.ToString());
             _phrase2 = _phrase2.Replace("{MaxPing}", Max_Ping.ToString());
+            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase2 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             SdtdConsole.Instance.ExecuteSync(string.Format("Kick {0} \"{1}\"", _cInfo.entityId, _phrase2), (ClientInfo)null);
             Log.Out(string.Format("[SERVERTOOLS] {0}", _phrase1));
         }

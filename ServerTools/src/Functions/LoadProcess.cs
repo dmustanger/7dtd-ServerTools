@@ -360,24 +360,29 @@ namespace ServerTools
             }
             else if (_state == 9)
             {
-                RestartVote.Startup = true;
+                PersistentOperations.EntityIdList();
                 Load(10);
             }
             else if (_state == 10)
             {
-                Track.Cleanup();
+                RestartVote.Cycle = true;
                 Load(11);
             }
             else if (_state == 11)
             {
-                CountryBan.FileCheck();
+                Track.Cleanup();
                 Load(12);
             }
             else if (_state == 12)
             {
+                CountryBan.FileCheck();
+                Load(13);
+            }
+            else if (_state == 13)
+            {
                 Timers.LogAlert();
                 Timers.LoadAlert();
-            }   
+            }
         }
     }
 }

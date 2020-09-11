@@ -389,12 +389,12 @@ namespace ServerTools
                     _commands = "";
                 }
             }
-            if (AuctionBox.IsEnabled)
+            if (Auction.IsEnabled)
             {
-                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, AuctionBox.Command71);
-                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, AuctionBox.Command72);
-                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, AuctionBox.Command73);
-                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, AuctionBox.Command74);
+                _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Auction.Command71);
+                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Auction.Command72);
+                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Auction.Command73);
+                _commands = string.Format("{0} {1}{2} #", _commands, ChatHook.Command_Private, Auction.Command74);
                 if (_commands.Length >= 100)
                 {
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
@@ -691,7 +691,7 @@ namespace ServerTools
         {
             if (Dict.Count > 0)
             {
-                string _commands = "Custom commands:";
+                string _commands = "";
                 foreach (KeyValuePair<string, string[]> kvp in Dict)
                 {
                     string _h = kvp.Value[1];
@@ -705,12 +705,12 @@ namespace ServerTools
                             if (_commands.Length >= 100)
                             {
                                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                _commands = "Custom commands:";
+                                _commands = "";
                             }
                         }
                     }
                 }
-                if (_commands != "Custom commands:")
+                if (_commands.Length >= 0)
                 {
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
@@ -719,7 +719,7 @@ namespace ServerTools
 
         public static void AdminCommandList(ClientInfo _cInfo)
         {
-            string _commands = "Admin commands:";
+            string _commands = "";
             if (AdminChat.IsEnabled)
             {
                 _commands = string.Format("{0} @" + AdminChat.Command118, _commands);
@@ -728,134 +728,77 @@ namespace ServerTools
             {
                 _commands = string.Format("{0} {1}{2}", _commands, ChatHook.Command_Private, Jail.Command27);
             }
-            if (_commands != "Admin commands:")
+            if (_commands.Length >= 0)
             {
                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _commands, -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        public static string GetChatCommandsAdmin(ClientInfo _cInfo)
-        {
-            string _commandsAdmin = string.Format("{0}Admin commands are:", LoadConfig.Chat_Response_Color);
-            if (AdminChat.IsEnabled && GameManager.Instance.adminTools.IsAdmin(_cInfo))
-            {
-                if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= ChatHook.Mod_Level)
-                {
-                    if (AdminChat.IsEnabled)
-                    {
-                        _commandsAdmin = string.Format("{0} @" + AdminChat.Command118, _commandsAdmin);
-                    }
-                    if (Jail.IsEnabled)
-                    {
-                        _commandsAdmin = string.Format("{0} {1}{2}", _commandsAdmin, ChatHook.Command_Private, Jail.Command27);
-                    }
-                }
-            }
-            return _commandsAdmin;
-        }
-
         public static void Exec(ClientInfo _cInfo, string _message)
         {
-            string[] _c;
-            if (Dict.TryGetValue(_message, out _c))
+            if (Dict.TryGetValue(_message, out string[] _c))
             {
-                int[] _c1;
-                if (Dict1.TryGetValue(_message, out _c1))
+                if (Dict1.TryGetValue(_message, out int[] _c1))
                 {
-                    if (_c1[0] > 20 || _c1[1] <= 0)
+                    if (bool.TryParse(_c[2], out bool _permission))
                     {
-                        Permission(_cInfo, _message, _c, _c1);
-                    }
-                    else
-                    {
-                        DateTime _lastUse = DateTime.Now;
-                        if (_c1[0] == 1)
+                        if (_permission)
                         {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand1;
+                            if (Permission(_cInfo, _message))
+                            {
+                                if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays != null && PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.ContainsKey(_c1[0]))
+                                {
+                                    DateTime _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays[_c1[0]];
+                                    Delay(_cInfo, _message, _c1, _lastUse);
+                                }
+                                else
+                                {
+                                    Delay(_cInfo, _message, _c1, DateTime.MinValue);
+                                }
+                            }
                         }
-                        else if (_c1[0] == 2)
+                        else
                         {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand2;
+                            if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays != null && PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.ContainsKey(_c1[0]))
+                            {
+                                DateTime _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays[_c1[0]];
+                                Delay(_cInfo, _message, _c1, _lastUse);
+                            }
+                            else
+                            {
+                                Delay(_cInfo, _message, _c1, DateTime.MinValue);
+                            }
                         }
-                        else if (_c1[0] == 3)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand3;
-                        }
-                        else if (_c1[0] == 4)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand4;
-                        }
-                        else if (_c1[0] == 5)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand5;
-                        }
-                        else if (_c1[0] == 6)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand6;
-                        }
-                        else if (_c1[0] == 7)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand7;
-                        }
-                        else if (_c1[0] == 8)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand8;
-                        }
-                        else if (_c1[0] == 9)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand9;
-                        }
-                        else if (_c1[0] == 10)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand10;
-                        }
-                        else if (_c1[0] == 11)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand11;
-                        }
-                        else if (_c1[0] == 12)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand12;
-                        }
-                        else if (_c1[0] == 13)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand13;
-                        }
-                        else if (_c1[0] == 14)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand14;
-                        }
-                        else if (_c1[0] == 15)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand15;
-                        }
-                        else if (_c1[0] == 16)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand16;
-                        }
-                        else if (_c1[0] == 17)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand17;
-                        }
-                        else if (_c1[0] == 18)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand18;
-                        }
-                        else if (_c1[0] == 19)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand19;
-                        }
-                        else if (_c1[0] == 20)
-                        {
-                            _lastUse = PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand20;
-                        }
-                        Delay(_cInfo, _message, _c, _c1, _lastUse);
                     }
                 }
             }
         }
 
-        public static void Delay(ClientInfo _cInfo, string _message, string[] _c, int[] _c1, DateTime _lastUse)
+        private static bool Permission(ClientInfo _cInfo, string _message)
+        {
+            try
+            {
+                string[] _command = { _message };
+                if (GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo))
+                {
+                    return true;
+                }
+                else
+                {
+                    Phrases.Dict.TryGetValue(332, out string _phrase332);
+                    _phrase332 = _phrase332.Replace("{Command}", _message);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase332 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommands.Permission: {0}", e.Message));
+            }
+            return false;
+        }
+
+        private static void Delay(ClientInfo _cInfo, string _message, int[] _c1, DateTime _lastUse)
         {
             TimeSpan varTime = DateTime.Now - _lastUse;
             double fractionalMinutes = varTime.TotalMinutes;
@@ -869,19 +812,19 @@ namespace ServerTools
                     if (DateTime.Now < _dt)
                     {
                         int _newDelay = _c1[1] / 2;
-                        TimePass(_cInfo, _message, _timePassed, _newDelay, _c, _c1);
+                        TimePass(_cInfo, _message, _timePassed, _newDelay, _c1);
                         return;
                     }
                 }
             }
-            TimePass(_cInfo, _message, _timePassed, _c1[1], _c, _c1);
+            TimePass(_cInfo, _message, _timePassed, _c1[1], _c1);
         }
 
-        public static void TimePass(ClientInfo _cInfo, string _message, int _timePassed, int _delay, string[] _c, int[] _c1)
+        private static void TimePass(ClientInfo _cInfo, string _message, int _timePassed, int _delay, int[] _c1)
         {
             if (_timePassed >= _delay)
             {
-                Permission(_cInfo, _message, _c, _c1);
+                CommandCost(_cInfo, _message, _c1);
             }
             else
             {
@@ -890,162 +833,75 @@ namespace ServerTools
             }
         }
 
-
-        public static void Response(ClientInfo _cInfo, string _message, int _timeLeft, int _newDelay)
-        {
-            string _phrase616;
-            if (!Phrases.Dict.TryGetValue(616, out _phrase616))
-            {
-                _phrase616 = "You can only use {CommandPrivate}{Command15} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-            }
-            _phrase616 = _phrase616.Replace("{CommandPrivate}", ChatHook.Command_Private);
-            _phrase616 = _phrase616.Replace("{Command15}", Command15);
-            _phrase616 = _phrase616.Replace("{DelayBetweenUses}", _newDelay.ToString());
-            _phrase616 = _phrase616.Replace("{TimeRemaining}", _timeLeft.ToString());
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase616 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-        }
-
-        public static void Permission(ClientInfo _cInfo, string _message, string[] _c, int[] _c1)
-        {
-            if (_c[2].ToLower() == "true")
-            {
-                string[] _command = { _message };
-                if (GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo))
-                {
-                    CommandCost(_cInfo, _message, _c1);
-                }
-                else
-                {
-                    string _phrase827;
-                    if (!Phrases.Dict.TryGetValue(827, out _phrase827))
-                    {
-                        _phrase827 = "You do not have permission to use {Command}.";
-                    }
-                    _phrase827 = _phrase827.Replace("{Command}", _message);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase827 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-            }
-            else
-            {
-                CommandCost(_cInfo, _message, _c1);
-            }
-        }
-
-        public static void CommandCost(ClientInfo _cInfo, string _message, int[] _c1)
-        {
-            if (Wallet.IsEnabled && _c1[2] > 0)
-            {
-                int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
-                if (_currentCoins >= _c1[2])
-                {
-                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _c1[2]);
-                    CommandDelay(_cInfo, _message, _c1);
-                }
-                else
-                {
-                    string _phrase814;
-                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                    {
-                        _phrase814 = "You do not have enough {WalletCoinName} in your wallet to run this command.";
-                    }
-                    _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
-            }
-            else
-            {
-                CommandDelay(_cInfo, _message, _c1);
-            }
-        }
-
-        public static void CommandDelay(ClientInfo _cInfo, string _message, int[] _c1)
+        private static void Response(ClientInfo _cInfo, string _message, int _timeLeft, int _newDelay)
         {
             try
             {
-                if (_c1[0] < 21 && _c1[1] > 0)
+                Phrases.Dict.TryGetValue(331, out string _phrase331);
+                _phrase331 = _phrase331.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase331 = _phrase331.Replace("{CommandCustom}", _message);
+                _phrase331 = _phrase331.Replace("{DelayBetweenUses}", _newDelay.ToString());
+                _phrase331 = _phrase331.Replace("{TimeRemaining}", _timeLeft.ToString());
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase331 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.Response: {0}", e.Message));
+            }
+        }
+
+        private static void CommandCost(ClientInfo _cInfo, string _message, int[] _c1)
+        {
+            try
+            {
+                if (Wallet.IsEnabled && _c1[2] > 0)
                 {
-                    if (_c1[0] == 1)
+                    int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
+                    if (_currentCoins >= _c1[2])
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand1 = DateTime.Now;
+                        Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _c1[2]);
+                        CommandDelay(_cInfo, _message, _c1);
                     }
-                    else if (_c1[0] == 2)
+                    else
                     {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand2 = DateTime.Now;
+                        Phrases.Dict.TryGetValue(333, out string _phrase333);
+                        _phrase333 = _phrase333.Replace("{CoinName}", Wallet.Coin_Name);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase333 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    else if (_c1[0] == 3)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand3 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 4)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand4 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 5)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand5 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 6)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand6 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 7)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand7 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 8)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand8 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 9)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand9 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 10)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand10 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 11)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand11 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 12)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand12 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 13)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand13 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 14)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand14 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 15)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand15 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 16)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand16 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 17)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand17 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 18)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand18 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 19)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand19 = DateTime.Now;
-                    }
-                    else if (_c1[0] == 20)
-                    {
-                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommand20 = DateTime.Now;
-                    }
-                    PersistentContainer.Instance.Save();
                 }
+                else
+                {
+                    CommandDelay(_cInfo, _message, _c1);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.CommandCost: {0}", e.Message));
+            }
+        }
+
+        private static void CommandDelay(ClientInfo _cInfo, string _message, int[] _c1)
+        {
+            try
+            {
+                if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays != null && PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.Count > 0)
+                {
+                    if (PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.ContainsKey(_c1[0]))
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays[_c1[0]] = DateTime.Now;
+                    }
+                    else
+                    {
+                        PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays.Add(_c1[0], DateTime.Now);
+                    }
+                }
+                else
+                {
+                    Dictionary<int, DateTime> _delays = new Dictionary<int, DateTime>();
+                    _delays.Add(_c1[0], DateTime.Now);
+                    PersistentContainer.Instance.Players[_cInfo.playerId].CustomCommandDelays = _delays;
+                }
+                PersistentContainer.Instance.Save();
                 string[] _r;
                 if (Dict.TryGetValue(_message, out _r))
                 {
@@ -1086,7 +942,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.CommandDelay: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.CommandDelay: {0}", e.Message));
             }
         }
 
@@ -1134,7 +990,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.DelayedCommand: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.DelayedCommand: {0}", e.Message));
             }
         }
 
@@ -1162,9 +1018,9 @@ namespace ServerTools
                     else if (_command.StartsWith("tele ") || _command.StartsWith("tp ") || _command.StartsWith("teleportplayer "))
                     {
                         SdtdConsole.Instance.ExecuteSync(_command, null);
-                        if (Zones.IsEnabled && Zones.ZoneExit.ContainsKey(_cInfo.entityId))
+                        if (Zones.IsEnabled && Zones.ZoneInfo.ContainsKey(_cInfo.entityId))
                         {
-                            Zones.ZoneExit.Remove(_cInfo.entityId);
+                            Zones.ZoneInfo.Remove(_cInfo.entityId);
                         }
                     }
                     else
@@ -1175,7 +1031,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.CommandExec: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in CustomCommand.CommandExec: {0}", e.Message));
             }
         }
     }

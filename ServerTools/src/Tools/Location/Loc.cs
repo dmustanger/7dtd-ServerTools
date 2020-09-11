@@ -16,32 +16,25 @@ namespace ServerTools
             int _x = (int)_position.x;
             int _y = (int)_position.y;
             int _z = (int)_position.z;
-            string _exit = "";
-            if (Zones.IsEnabled && Zones.ZoneExit.ContainsKey(_cInfo.entityId))
+            if (Zones.IsEnabled && Zones.ZoneInfo.ContainsKey(_cInfo.entityId))
             {
-                Zones.ZoneExit.TryGetValue(_cInfo.entityId, out _exit);
-                if (_exit != "")
+                Zones.ZoneInfo.TryGetValue(_cInfo.entityId, out string[] _info);
+                if (_info[0] != "")
                 {
-                    string _phrase761;
-                    if (!Phrases.Dict.TryGetValue(761, out _phrase761))
-                    {
-                        _phrase761 = "Your current position is X  {X}, Y  {Y}, Z  {Z}. You are inside a zone.";
-                    }
-                    _phrase761 = _phrase761.Replace("{X}", _x.ToString());
-                    _phrase761 = _phrase761.Replace("{Y}", _y.ToString());
-                    _phrase761 = _phrase761.Replace("{Z}", _z.ToString());
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase761 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue(461, out string _phrase461);
+                    _phrase461 = _phrase461.Replace("{X}", _x.ToString());
+                    _phrase461 = _phrase461.Replace("{Y}", _y.ToString());
+                    _phrase461 = _phrase461.Replace("{Z}", _z.ToString());
+                    _phrase461 = _phrase461.Replace("{Name}", _z.ToString());
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase461 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    return;
                 }
             }
-            string _phrase760;
-            if (!Phrases.Dict.TryGetValue(760, out _phrase760))
-            {
-                _phrase760 = "Your current position is X  {X}, Y  {Y}, Z  {Z}.";
-            }
-            _phrase760 = _phrase760.Replace("{X}", _x.ToString());
-            _phrase760 = _phrase760.Replace("{Y}", _y.ToString());
-            _phrase760 = _phrase760.Replace("{Z}", _z.ToString());
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase760 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue(462, out string _phrase462);
+            _phrase462 = _phrase462.Replace("{X}", _x.ToString());
+            _phrase462 = _phrase462.Replace("{Y}", _y.ToString());
+            _phrase462 = _phrase462.Replace("{Z}", _z.ToString());
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase462 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
     }
 }

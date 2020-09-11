@@ -79,13 +79,8 @@ namespace ServerTools.AntiCheat
                     _vec3z = (int)_player.position.z + 6;
                 }
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_vec3x, -1, _vec3z), null, false));
-                string _phrase790;
-                if (!Phrases.Dict.TryGetValue(790, out _phrase790))
-                {
-                    _phrase790 = "You have reached the world border.";
-                }
-                _phrase790 = _phrase790.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase790 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(1021, out string _phrase1021);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase1021 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -111,13 +106,8 @@ namespace ServerTools.AntiCheat
                     _vec3z = (int)_player.position.z + 6;
                 }
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_vec3x, -1, _vec3z), null, false));
-                string _phrase790;
-                if (!Phrases.Dict.TryGetValue(790, out _phrase790))
-                {
-                    _phrase790 = "You have reached the world border.";
-                }
-                _phrase790 = _phrase790.Replace("{PlayerName}", _cInfo.playerName);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase790 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(1021, out string _phrase1021);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase1021 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

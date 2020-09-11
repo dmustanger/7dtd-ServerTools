@@ -35,7 +35,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}.", _params.Count));
                         return;
                     }
                     ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_params[1]);
@@ -43,11 +43,11 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.Players[_cInfo.playerId].CountryBanImmune = true;
                         PersistentContainer.Instance.Save();
-                        SdtdConsole.Instance.Output(string.Format("Added Id {0} to the Country Ban Immunity list.", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added Id {0} to the Country Ban Immunity list.", _params[1]));
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not add Id: Invalid Id {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id: Invalid Id {0}", _params[1]));
                         return;
                     }
                 }
@@ -55,7 +55,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
                     ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_params[1]);
@@ -63,11 +63,11 @@ namespace ServerTools
                     {
                         PersistentContainer.Instance.Players[_cInfo.playerId].CountryBanImmune = false;
                         PersistentContainer.Instance.Save();
-                        SdtdConsole.Instance.Output(string.Format("Removed Id {0} from the Country Ban Immunity list.", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed Id {0} from the Country Ban Immunity list.", _params[1]));
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not remove Id: Invalid Id {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not remove Id: Invalid Id {0}", _params[1]));
                         return;
                     }
                 }
@@ -75,11 +75,11 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}.", _params.Count));
                         return;
                     }
                     List<string> _persistentPlayers = PersistentContainer.Instance.Players.SteamIDs;
-                    SdtdConsole.Instance.Output(string.Format("Country Ban Immune List:"));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Country Ban Immune List:"));
                     for (int i = 0; i < _persistentPlayers.Count; i++)
                     {
                         string _persistentPlayer = _persistentPlayers[i];
@@ -96,7 +96,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in CountryBanImmunityConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in CountryBanImmunityConsole.Execute: {0}", e.Message));
             }
         }
     }

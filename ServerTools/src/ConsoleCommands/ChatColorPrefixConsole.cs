@@ -42,7 +42,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1 && _params.Count != 2 && _params.Count != 4 && _params.Count != 5 && _params.Count != 8)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, 2, 4, 5 or 8, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, 2, 4, 5 or 8, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -51,12 +51,12 @@ namespace ServerTools
                     {
                         ChatColorPrefix.IsEnabled = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Chat color prefix has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Chat color prefix has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Chat color prefix is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Chat color prefix is already off"));
                         return;
                     }
                 }
@@ -66,12 +66,12 @@ namespace ServerTools
                     {
                         ChatColorPrefix.IsEnabled = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Chat color prefix has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Chat color prefix has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Chat color prefix is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Chat color prefix is already on"));
                         return;
                     }
                 }
@@ -79,7 +79,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 4 && _params.Count != 5 && _params.Count != 8)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 4, 5 or 8, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 4, 5 or 8, found {0}", _params.Count));
                         return;
                     }
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
@@ -90,7 +90,7 @@ namespace ServerTools
                             _cInfo = PersistentOperations.GetClientInfoFromSteamId(_params[1]);
                             if (_cInfo == null)
                             {
-                                SdtdConsole.Instance.Output(string.Format("Can not find player data attached to {0}", _params[1]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not find player data attached to {0}", _params[1]));
                                 return;
                             }
                         }
@@ -101,13 +101,13 @@ namespace ServerTools
                                 _cInfo = PersistentOperations.GetClientInfoFromEntityId(_entId);
                                 if (_cInfo == null)
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("Can not find player data attached to {0}", _params[1]));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not find player data attached to {0}", _params[1]));
                                     return;
                                 }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("Can not find player data attached to {0}", _params[1]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not find player data attached to {0}", _params[1]));
                                 return;
                             }
                         }
@@ -118,14 +118,14 @@ namespace ServerTools
                         {
                             if (group.Value[1] == _params[3])
                             {
-                                SdtdConsole.Instance.Output(string.Format("Can not add id {0} to the chat color prefix list. Group {1} already exists on the list. Create a new entry or add them to this group", _cInfo.playerId, _params[3]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add id {0} to the chat color prefix list. Group {1} already exists on the list. Create a new entry or add them to this group", _cInfo.playerId, _params[3]));
                                 return;
                             }
                         }
                         double _daysToExpire;
                         if (!double.TryParse(_params[7], out _daysToExpire))
                         {
-                            SdtdConsole.Instance.Output(string.Format("Invalid days to expire: {0}", _params[7]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid days to expire: {0}", _params[7]));
                             return;
                         }
                         DateTime _expireDate;
@@ -139,12 +139,12 @@ namespace ServerTools
                         }
                         if ((!_params[5].Contains("[") || !_params[5].Contains("]")) && _params[5] != "**")
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not add id {0} to the chat color prefix list. Name color must be in HTML format, example [FFFFFF] with the brackets included. Found: {1}", _params[1], _params[5]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add id {0} to the chat color prefix list. Name color must be in HTML format, example [FFFFFF] with the brackets included. Found: {1}", _params[1], _params[5]));
                             return;
                         }
                         if ((!_params[6].Contains("[") || !_params[6].Contains("]")) && _params[6] != "**")
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not add id {0} to the chat color prefix list. Prefix color must be in HTML format, example [FFFFFF] with the brackets included. Found: {1}", _params[1], _params[6]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add id {0} to the chat color prefix list. Prefix color must be in HTML format, example [FFFFFF] with the brackets included. Found: {1}", _params[1], _params[6]));
                             return;
                         }
                         string[] _c = new string[] { _params[2], _params[3], _params[4], _params[5], _params[6] };
@@ -152,13 +152,13 @@ namespace ServerTools
                         {
                             ChatColorPrefix.Dict[_cInfo.playerId] = _c;
                             ChatColorPrefix.Dict1[_cInfo.playerId] = _expireDate;
-                            SdtdConsole.Instance.Output(string.Format("Updated id {0} with the name of {1} to the group {2} using prefix {3}, name color {4} and prefix color {5} that expires {6} to the chat color prefix list.", _cInfo.playerId, _params[2], _params[3], _params[4], _params[5], _params[6], _expireDate.ToString()));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Updated id {0} with the name of {1} to the group {2} using prefix {3}, name color {4} and prefix color {5} that expires {6} to the chat color prefix list.", _cInfo.playerId, _params[2], _params[3], _params[4], _params[5], _params[6], _expireDate.ToString()));
                         }
                         else
                         {
                             ChatColorPrefix.Dict.Add(_cInfo.playerId, _c);
                             ChatColorPrefix.Dict1.Add(_cInfo.playerId, _expireDate);
-                            SdtdConsole.Instance.Output(string.Format("Added id {0} with the name of {1} to the group {2} using prefix {3}, name color {4} and prefix color {5} that expires {6} to the chat color prefix list.", _cInfo.playerId, _params[2], _params[3], _params[4], _params[5], _params[6], _expireDate.ToString()));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added id {0} with the name of {1} to the group {2} using prefix {3}, name color {4} and prefix color {5} that expires {6} to the chat color prefix list.", _cInfo.playerId, _params[2], _params[3], _params[4], _params[5], _params[6], _expireDate.ToString()));
                         }
                         ChatColorPrefix.UpdateXml();
                         return;
@@ -172,7 +172,7 @@ namespace ServerTools
                                 double _daysToExpire2;
                                 if (!double.TryParse(_params[4], out _daysToExpire2))
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("Invalid days to expire: {0}", _params[4]));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid days to expire: {0}", _params[4]));
                                     return;
                                 }
                                 DateTime _expireDate2;
@@ -189,19 +189,19 @@ namespace ServerTools
                                 {
                                     ChatColorPrefix.Dict[_cInfo.playerId] = _c;
                                     ChatColorPrefix.Dict1[_cInfo.playerId] = _expireDate2;
-                                    SdtdConsole.Instance.Output(string.Format("Updated id {0} with the name of {1} to the group {2} using prefix {3}, name color {4} and prefix color {5} that expires {6} to the chat color prefix list.", _cInfo.playerId, _params[2], group.Value[1], group.Value[2], group.Value[3], group.Value[4], _expireDate2.ToString()));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Updated id {0} with the name of {1} to the group {2} using prefix {3}, name color {4} and prefix color {5} that expires {6} to the chat color prefix list.", _cInfo.playerId, _params[2], group.Value[1], group.Value[2], group.Value[3], group.Value[4], _expireDate2.ToString()));
                                 }
                                 else
                                 {
                                     ChatColorPrefix.Dict.Add(_cInfo.playerId, _c);
                                     ChatColorPrefix.Dict1.Add(_cInfo.playerId, _expireDate2);
-                                    SdtdConsole.Instance.Output(string.Format("Added id {0} with the name of {1} to the group {2} using prefix {3}, name color {4} and prefix color {5} that expires {6} to the chat color prefix list.", _cInfo.playerId, _params[2], group.Value[1], group.Value[2], group.Value[3], group.Value[4], _expireDate2.ToString()));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added id {0} with the name of {1} to the group {2} using prefix {3}, name color {4} and prefix color {5} that expires {6} to the chat color prefix list.", _cInfo.playerId, _params[2], group.Value[1], group.Value[2], group.Value[3], group.Value[4], _expireDate2.ToString()));
                                 }
                                 ChatColorPrefix.UpdateXml();
                                 return;
                             }
                         }
-                        SdtdConsole.Instance.Output(string.Format("No group with the name {0} was found.", _params[3]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No group with the name {0} was found.", _params[3]));
                         return;
                     }
                     else if (_params.Count == 4)
@@ -214,12 +214,12 @@ namespace ServerTools
                                 ChatColorPrefix.Dict1.TryGetValue(group.Key, out DateTime _dt);
                                 ChatColorPrefix.Dict.Add(_cInfo.playerId, _c);
                                 ChatColorPrefix.Dict1.Add(_cInfo.playerId, _dt);
-                                SdtdConsole.Instance.Output(string.Format("Added Id {0} with the name of {1} to the group {2} using prefix {3} name color {4} and prefix color {5} that expires {6} to the chat color prefix list.", _cInfo.playerId, _params[2], _params[3], group.Value[2], group.Value[3], group.Value[4], _dt.ToString()));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added Id {0} with the name of {1} to the group {2} using prefix {3} name color {4} and prefix color {5} that expires {6} to the chat color prefix list.", _cInfo.playerId, _params[2], _params[3], group.Value[2], group.Value[3], group.Value[4], _dt.ToString()));
                                 ChatColorPrefix.UpdateXml();
                                 return;
                             }
                         }
-                        SdtdConsole.Instance.Output(string.Format("No group with the name {0} was found.", _params[3]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No group with the name {0} was found.", _params[3]));
                         return;
                     }
                 }
@@ -227,7 +227,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}.", _params.Count));
                         return;
                     }
                     foreach (var group in ChatColorPrefix.Dict)
@@ -236,23 +236,23 @@ namespace ServerTools
                         {
                             ChatColorPrefix.Dict.Remove(group.Key);
                             ChatColorPrefix.Dict1.Remove(group.Key);
-                            SdtdConsole.Instance.Output(string.Format("Removed {0} named {1} with group {2} from the chat color prefix list.", group.Key, group.Value[0], _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed {0} named {1} with group {2} from the chat color prefix list.", group.Key, group.Value[0], _params[1]));
                         }
                         if (group.Key == _params[1])
                         {
                             ChatColorPrefix.Dict.Remove(group.Key);
                             ChatColorPrefix.Dict1.Remove(group.Key);
-                            SdtdConsole.Instance.Output(string.Format("Removed {0} named {1} with group {2} from the chat color prefix list.", _params[1], group.Value[0], group.Value[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed {0} named {1} with group {2} from the chat color prefix list.", _params[1], group.Value[0], group.Value[1]));
                         }
                         if (group.Value[0] == _params[1])
                         {
                             ChatColorPrefix.Dict.Remove(group.Key);
                             ChatColorPrefix.Dict1.Remove(group.Key);
-                            SdtdConsole.Instance.Output(string.Format("Removed {0} named {1} with group {2} from the chat color prefix list.", group.Key, _params[1], group.Value[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed {0} named {1} with group {2} from the chat color prefix list.", group.Key, _params[1], group.Value[1]));
                         }
                         ChatColorPrefix.UpdateXml();
                     }
-                    SdtdConsole.Instance.Output(string.Format("Completed removing id and groups matching {0} from the chat color prefix list.", _params[1]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Completed removing id and groups matching {0} from the chat color prefix list.", _params[1]));
                 }
                 else if (_params[0].ToLower().Equals("list"))
                 {
@@ -268,12 +268,12 @@ namespace ServerTools
                         }
                         DateTime _dt;
                         ChatColorPrefix.Dict1.TryGetValue(group.Key, out _dt);
-                        SdtdConsole.Instance.Output(string.Format("Id {0} named {1} with group {2} prefix {3} color {4} expires {5}.", group.Key, group.Value[0], group.Value[1], group.Value[2], group.Value[3], _dt));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id {0} named {1} with group {2} prefix {3} color {4} expires {5}.", group.Key, group.Value[0], group.Value[1], group.Value[2], group.Value[3], _dt));
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)

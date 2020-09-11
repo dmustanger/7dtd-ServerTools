@@ -27,7 +27,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -36,12 +36,12 @@ namespace ServerTools
                     {
                         ChatHook.Message_Color_Enabled = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Message color has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Message color has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Message color is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Message color is already off"));
                         return;
                     }
                 }
@@ -51,23 +51,23 @@ namespace ServerTools
                     {
                         ChatHook.Message_Color_Enabled = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Message_Color has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Message color has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Message_Color is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Message color is already on"));
                         return;
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in MotdConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in MessageColorConsole.Execute: {0}", e.Message));
             }
         }
     }

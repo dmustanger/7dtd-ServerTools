@@ -27,7 +27,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -36,12 +36,12 @@ namespace ServerTools
                     {
                         InfoTicker.IsEnabled = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("InfoTicker has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] InfoTicker has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("InfoTicker is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] InfoTicker is already off"));
                         return;
                     }
                 }
@@ -51,12 +51,12 @@ namespace ServerTools
                     {
                         InfoTicker.IsEnabled = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("InfoTicker has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] InfoTicker has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("InfoTicker is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] InfoTicker is already on"));
                         return;
                     }
                 }
@@ -67,7 +67,7 @@ namespace ServerTools
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in InfoTickerConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in InfoTickerConsole.Execute: {0}", e.Message));
             }
         }
     }

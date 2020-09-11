@@ -58,62 +58,40 @@ namespace ServerTools
                     }
                 }
             }
-            string _phrase300, _phrase301, _phrase302, _phrase303, _phrase304, _phrase305, _phrase306;
-            if (!Phrases.Dict.TryGetValue(300, out _phrase300))
-            {
-                _phrase300 = "Server FPS: {Fps}";
-            }
-            if (!Phrases.Dict.TryGetValue(301, out _phrase301))
-            {
-                _phrase301 = "Next horde night is in {DaysUntilHorde} days";
-            }
-            if (!Phrases.Dict.TryGetValue(302, out _phrase302))
-            {
-                _phrase302 = "Total Players:{Players} Total Zombies:{Zombies} Total Animals:{Animals}";
-            }
-            if (!Phrases.Dict.TryGetValue(303, out _phrase303))
-            {
-                _phrase303 = "Bicycles:{Bicycles} Minibikes:{Minibikes} Motorcycles:{Motorcycles} 4x4:{4x4} Gyros:{Gyros}";
-            }
-            if (!Phrases.Dict.TryGetValue(304, out _phrase304))
-            {
-                _phrase304 = "Total Supply Crates:{SupplyCrates}";
-            }
-            if (!Phrases.Dict.TryGetValue(305, out _phrase305))
-            {
-                _phrase305 = "The horde is here!";
-            }
-            if (!Phrases.Dict.TryGetValue(306, out _phrase306))
-            {
-                _phrase306 = "Next horde night is today";
-            }
-            _phrase300 = _phrase300.Replace("{Fps}", _fps);
-            _phrase301 = _phrase301.Replace("{DaysUntilHorde}", _daysRemaining.ToString());
-            _phrase302 = _phrase302.Replace("{Players}", _playerCount.ToString());
-            _phrase302 = _phrase302.Replace("{Zombies}", _zombies.ToString());
-            _phrase302 = _phrase302.Replace("{Animals}", _animals.ToString());
-            _phrase303 = _phrase303.Replace("{Bicycles}", _bicycles.ToString());
-            _phrase303 = _phrase303.Replace("{Minibikes}", _miniBikes.ToString());
-            _phrase303 = _phrase303.Replace("{Motorcycles}", _motorcycles.ToString());
-            _phrase303 = _phrase303.Replace("{4x4}", _4x4.ToString());
-            _phrase303 = _phrase303.Replace("{Gyros}", _gyros.ToString());
-            _phrase304 = _phrase304.Replace("{SupplyCrates}", _supplyCrates.ToString());
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase300 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue(481, out string _phrase481);
+            _phrase481 = _phrase481.Replace("{Value}", _fps);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase481 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             if (_daysRemaining == 0 && !SkyManager.BloodMoon())
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase306 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(487, out string _phrase487);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase487 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else if (SkyManager.BloodMoon())
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(486, out string _phrase486);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase486 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase301 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(482, out string _phrase482);
+                _phrase482 = _phrase482.Replace("{Value}", _daysRemaining.ToString());
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase482 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase302 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase303 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase304 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue(483, out string _phrase483);
+            _phrase483 = _phrase483.Replace("{Players}", _playerCount.ToString());
+            _phrase483 = _phrase483.Replace("{Zombies}", _zombies.ToString());
+            _phrase483 = _phrase483.Replace("{Animals}", _animals.ToString());
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase483 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue(484, out string _phrase484);
+            _phrase484 = _phrase484.Replace("{Bicycles}", _bicycles.ToString());
+            _phrase484 = _phrase484.Replace("{Minibikes}", _miniBikes.ToString());
+            _phrase484 = _phrase484.Replace("{Motorcycles}", _motorcycles.ToString());
+            _phrase484 = _phrase484.Replace("{4x4}", _4x4.ToString());
+            _phrase484 = _phrase484.Replace("{Gyros}", _gyros.ToString());
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase484 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue(485, out string _phrase485);
+            _phrase485 = _phrase485.Replace("{Value}", _supplyCrates.ToString());
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase485 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static int DaysRemaining(int _daysUntilHorde)

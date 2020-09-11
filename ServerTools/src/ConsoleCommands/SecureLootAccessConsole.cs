@@ -28,7 +28,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
                 if (!string.IsNullOrEmpty(_senderInfo.RemoteClientInfo.playerId))
@@ -60,7 +60,7 @@ namespace ServerTools
                         }
                     }
                 }
-                SdtdConsole.Instance.Output(string.Format("Loot access set for {0}", _senderInfo.RemoteClientInfo.playerId));
+                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Loot access set for {0}", _senderInfo.RemoteClientInfo.playerId));
             }
             catch (Exception e)
             {

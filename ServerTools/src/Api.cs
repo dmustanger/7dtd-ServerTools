@@ -66,27 +66,6 @@ namespace ServerTools
                     _stringBuild = new StringBuilder("Server is shutting down. Rejoin when it restarts");
                     return false;
                 }
-                //if (_cInfo.playerId != null && _cInfo.playerId.Length == 17)
-                //{
-                //    if (ReservedSlots.IsEnabled && ReservedSlots.Kicked.ContainsKey(_cInfo.playerId))
-                //    {
-                //        if (ReservedSlots.Kicked.TryGetValue(_cInfo.playerId, out DateTime _dateTime))
-                //        {
-                //            TimeSpan varTime = DateTime.Now - _dateTime;
-                //            double fractionalMinutes = varTime.TotalMinutes;
-                //            int _timepassed = (int)fractionalMinutes;
-                //            if (_timepassed < 5)
-                //            {
-                //                _stringBuild = new StringBuilder("You reached the max session time. Come back in a few minutes");
-                //                return false;
-                //            }
-                //            else
-                //            {
-                //                ReservedSlots.Kicked.Remove(_cInfo.playerId);
-                //            }
-                //        }
-                //    }
-                //}
             }
             catch (Exception e)
             {
@@ -173,33 +152,23 @@ namespace ServerTools
         {
             try
             {
-                if (_type == EnumGameMessages.EntityWasKilled && _cInfo != null)
+                if (_type == EnumGameMessages.EntityWasKilled && _cInfo != null && GameManager.Instance.World.Players.dict.ContainsKey(_cInfo.entityId))
                 {
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                     if (_player != null)
                     {
                         bool _notice = false;
-                        if (!string.IsNullOrEmpty(_secondaryName) && _mainName != _secondaryName)
+                        if (!string.IsNullOrEmpty(_secondaryName) && !string.IsNullOrEmpty(_mainName) && _mainName != _secondaryName)
                         {
                             ClientInfo _cInfo2 = ConsoleHelper.ParseParamIdOrName(_secondaryName);
-                            if (_cInfo2 != null)
+                            if (_cInfo2 != null && GameManager.Instance.World.Players.dict.ContainsKey(_cInfo2.entityId))
                             {
                                 EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
                                 if (_player2 != null)
                                 {
-                                    if (KillNotice.IsEnabled && _player2.IsAlive())
+                                    if (KillNotice.IsEnabled)
                                     {
-                                        string _holdingItem = _player2.inventory.holdingItem.Name;
-                                        if (!string.IsNullOrEmpty(_holdingItem))
-                                        {
-                                            ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
-                                            if (_itemValue.type != ItemValue.None.type)
-                                            {
-                                                _holdingItem = _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName();
-                                                KillNotice.Exec(_cInfo, _cInfo2, _holdingItem);
-                                                _notice = true;
-                                            }
-                                        }
+                                        _notice = true;
                                     }
                                     if (Bounties.IsEnabled)
                                     {
@@ -334,9 +303,9 @@ namespace ServerTools
                         {
                             Bank.TransferId.Remove(_cInfo.playerId);
                         }
-                        if (Zones.ZoneExit.ContainsKey(_cInfo.entityId))
+                        if (Zones.ZoneInfo.ContainsKey(_cInfo.entityId))
                         {
-                            Zones.ZoneExit.Remove(_cInfo.entityId);
+                            Zones.ZoneInfo.Remove(_cInfo.entityId);
                         }
                         if (Zones.Forgive.ContainsKey(_cInfo.entityId))
                         {

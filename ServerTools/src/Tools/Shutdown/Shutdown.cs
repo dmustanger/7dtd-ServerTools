@@ -74,27 +74,26 @@ namespace ServerTools
                                 }
                                 string TimeLeft;
                                 TimeLeft = string.Format("{0:00} H : {1:00} M", _time / 60, _time % 60);
-                                string _phrase730;
-                                if (!Phrases.Dict.TryGetValue(730, out _phrase730))
-                                {
-                                    _phrase730 = "The next auto shutdown is in [FF8000]{TimeLeft}.";
-                                }
-                                _phrase730 = _phrase730.Replace("{TimeLeft}", TimeLeft);
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase730 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue(421, out string _phrase421);
+                                _phrase421 = _phrase421.Replace("{TimeLeft}", TimeLeft);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase421 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                             else
                             {
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "The server has already started the shutdown process.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue(422, out string _phrase422);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase422 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                         else
                         {
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "A bloodmoon is currently active. The server is set to shutdown after it finishes.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue(423, out string _phrase423);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase423 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else
                     {
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "A event is currently active. The server is set to shutdown after it finishes.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue(424, out string _phrase424);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase424 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }

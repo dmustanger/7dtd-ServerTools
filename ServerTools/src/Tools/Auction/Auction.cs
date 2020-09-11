@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace ServerTools
 {
-    class AuctionBox
+    class Auction
     {
         public static bool IsEnabled = false, IsRunning = false, No_Admins = false;
         public static int Admin_Level = 0, Total_Items = 1, Tax;
@@ -103,6 +103,7 @@ namespace ServerTools
                                                                             PersistentContainer.Instance.AuctionPrices = _auctionPrices;
                                                                         }
                                                                         PersistentContainer.Instance.Save();
+                                                                        _tile.SetModified();
                                                                         using (StreamWriter sw = new StreamWriter(filepath, true))
                                                                         {
                                                                             sw.WriteLine(string.Format("{0}: {1} {2} has added {3} {4}, {5} quality, {6} percent durability for {7} {8}.", DateTime.Now, _cInfo.playerId, _cInfo.playerName, _item.count, _item.itemValue.ItemClass.GetItemName(), _item.itemValue.Quality, _item.itemValue.UseTimes / _item.itemValue.MaxUseTimes * 100, _price, Wallet.Coin_Name));
@@ -110,10 +111,9 @@ namespace ServerTools
                                                                             sw.Flush();
                                                                             sw.Close();
                                                                         }
-                                                                        string _message = "Your auction item {Name} has been removed from the secure loot and added to the auction.";
-                                                                        _message = _message.Replace("{Name}", _item.itemValue.ItemClass.GetLocalizedItemName() ?? _item.itemValue.ItemClass.GetItemName());
-                                                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                                                        _tile.SetModified();
+                                                                        Phrases.Dict.TryGetValue(621, out string _phrase621);
+                                                                        _phrase621 = _phrase621.Replace("{Name}", _item.itemValue.ItemClass.GetLocalizedItemName() ?? _item.itemValue.ItemClass.GetItemName());
+                                                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase621 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                                                         return;
                                                                     }
                                                                 }
@@ -127,20 +127,22 @@ namespace ServerTools
                                 }
                                 else
                                 {
-                                    string _message = "You have the max auction items already listed. Wait for one to sell or cancel it with {CommandPrivate}{Command72} #.";
-                                    _message = _message.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                                    _message = _message.Replace("{Command72}", Command72);
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue(622, out string _phrase622);
+                                    _phrase622 = _phrase622.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase622 = _phrase622.Replace("{Command72}", Command72);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase622 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             else
                             {
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You need to input a price greater than zero. This is not a transfer system.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue(623, out string _phrase623);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase623 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                         else
                         {
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Your sell price must be an integer and greater than zero.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue(624, out string _phrase624);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase624 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
@@ -176,15 +178,15 @@ namespace ServerTools
                                         {
                                             if (_auctionPrices.TryGetValue(_item.Key, out int _price))
                                             {
-                                                string _message = "# {Id}: {Count} {Item} at {Quality} quality, {Durability} percent durability for {Price} {Coin}";
-                                                _message = _message.Replace("{Id}", _item.Key.ToString());
-                                                _message = _message.Replace("{Count}", _item.Value.count.ToString());
-                                                _message = _message.Replace("{Item}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName());
-                                                _message = _message.Replace("{Quality}", _item.Value.quality.ToString());
-                                                _message = _message.Replace("{Durability}", (_item.Value.useTimes / _itemValue.MaxUseTimes * 100).ToString());
-                                                _message = _message.Replace("{Price}", _price.ToString());
-                                                _message = _message.Replace("{Coin}", Wallet.Coin_Name);
-                                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                                Phrases.Dict.TryGetValue(625, out string _phrase625);
+                                                _phrase625 = _phrase625.Replace("{Id}", _item.Key.ToString());
+                                                _phrase625 = _phrase625.Replace("{Count}", _item.Value.count.ToString());
+                                                _phrase625 = _phrase625.Replace("{Item}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName());
+                                                _phrase625 = _phrase625.Replace("{Quality}", _item.Value.quality.ToString());
+                                                _phrase625 = _phrase625.Replace("{Durability}", (_item.Value.useTimes / _itemValue.MaxUseTimes * 100).ToString());
+                                                _phrase625 = _phrase625.Replace("{Price}", _price.ToString());
+                                                _phrase625 = _phrase625.Replace("{Coin}", Wallet.Coin_Name);
+                                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase625 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                             }
                                         }
                                     }
@@ -195,7 +197,8 @@ namespace ServerTools
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "No items are currently for sale.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue(626, out string _phrase626);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase626 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             catch (Exception e)
@@ -224,16 +227,19 @@ namespace ServerTools
                     else
                     {
                         int _missing = _price - _currentCoins;
-                        string _message = "You can not make this purchase. You need {Value} more {Name}.";
-                        _message = _message.Replace("{Value}", _missing.ToString());
-                        _message = _message.Replace("{Name}", Wallet.Coin_Name);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue(627, out string _phrase627);
+                        _phrase627 = _phrase627.Replace("{Value}", _missing.ToString());
+                        _phrase627 = _phrase627.Replace("{Name}", Wallet.Coin_Name);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase627 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "This # could not be found. Please check the auction list by typing " + ChatHook.Command_Private + Command71 + ".[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(628, out string _phrase628);
+                _phrase628 = _phrase628.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase628 = _phrase628.Replace("{Command71}", Command71);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase628 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -279,16 +285,17 @@ namespace ServerTools
                             sw.Flush();
                             sw.Close();
                         }
-                        string _message = "You have purchased {Count} {ItemName} from the auction for {Value} {CoinName}.";
-                        _message = _message.Replace("{Count}", _itemData.count.ToString());
-                        _message = _message.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName());
-                        _message = _message.Replace("{Value}", _price.ToString());
-                        _message = _message.Replace("{CoinName}", Wallet.Coin_Name);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue(629, out string _phrase629);
+                        _phrase629 = _phrase629.Replace("{Count}", _itemData.count.ToString());
+                        _phrase629 = _phrase629.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName());
+                        _phrase629 = _phrase629.Replace("{Value}", _price.ToString());
+                        _phrase629 = _phrase629.Replace("{CoinName}", Wallet.Coin_Name);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase629 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_steamId);
                         if (_cInfo2 != null)
                         {
-                            ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + "Your auction item was purchased and the value placed in your wallet.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue(630, out string _phrase630);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase630 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
@@ -335,14 +342,16 @@ namespace ServerTools
                                     sw.Flush();
                                     sw.Close();
                                 }
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Your auction item has returned to you.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue(631, out string _phrase631);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase631 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
                 }
                 else
                 {
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Could not find this id listed in the auction. Unable to cancel.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue(632, out string _phrase632);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase632 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }

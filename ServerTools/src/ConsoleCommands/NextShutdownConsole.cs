@@ -47,7 +47,7 @@ namespace ServerTools
                                 {
                                     _time = 0;
                                 }
-                                string _message = string.Format("The next shutdown is in {0:00} H : {1:00} M", _time / 60, _time % 60);
+                                string _message = string.Format("[SERVERTOOLS] The next shutdown is in {0:00} H : {1:00} M", _time / 60, _time % 60);
                                 SdtdConsole.Instance.Output(_message);
                                 return;
                             }
@@ -58,19 +58,19 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output("The server is set to shutdown after the event is over.");
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] The server is set to shutdown after the event is over.");
                             return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("The server is set to shutdown after the bloodmoon is over.");
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] The server is set to shutdown after the bloodmoon is over.");
                         return;
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output("Shutdown is not enabled.");
+                    SdtdConsole.Instance.Output("[SERVERTOOLS] Shutdown is not enabled.");
                     return;
                 }
             }

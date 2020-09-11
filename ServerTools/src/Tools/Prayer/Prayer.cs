@@ -201,12 +201,12 @@ namespace ServerTools
             else
             {
                 int _timeleft = _delay - _timepassed;
-                string _response = "You can only use {CommandPrivate}{Command126} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                _response = _response.Replace("{DelayBetweenUses}", _delay.ToString());
-                _response = _response.Replace("{TimeRemaining}", _timeleft.ToString());
-                _response = _response.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                _response = _response.Replace("{Command126}", Command126);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(821, out string _phrase821);
+                _phrase821 = _phrase821.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase821 = _phrase821.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase821 = _phrase821.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase821 = _phrase821.Replace("{Command126}", Command126);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase821 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -220,13 +220,9 @@ namespace ServerTools
                 }
                 else
                 {
-                    string _phrase814;
-                    if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                    {
-                        _phrase814 = "You do not have enough {Currency} in your wallet to run this command.";
-                    }
-                    _phrase814 = _phrase814.Replace("{Currency}", TraderInfo.CurrencyItem);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue(822, out string _phrase822);
+                    _phrase822 = _phrase822.Replace("{CoinName}", TraderInfo.CurrencyItem);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase822 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else

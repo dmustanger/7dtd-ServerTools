@@ -29,7 +29,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
                 if (_params.Count == 1)
@@ -42,25 +42,25 @@ namespace ServerTools
                         if ((int)_player2.position.y < 13)
                         {
                             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player2.position.x, 0, (int)_player2.position.z), null, false));
-                            SdtdConsole.Instance.Output(string.Format("Teleport successful"));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Teleport successful"));
                             return;
                         }
                         else
                         {
                             _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player2.position.x, (int)_player2.position.y - 10, (int)_player2.position.z), null, false));
-                            SdtdConsole.Instance.Output(string.Format("Teleport successful"));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Teleport successful"));
                             return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Player id {0} not found.", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player id {0} not found", _params[0]));
                         return;
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}.", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                     return;
                 }
             }

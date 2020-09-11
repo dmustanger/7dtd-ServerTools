@@ -7,7 +7,8 @@ namespace ServerTools.AntiCheat
     class PlayerStats
     {
         public static bool IsEnabled = false, Kick_Enabled = false, Ban_Enabled = false;
-        public static int Admin_Level = 0, Days_Before_Log_Delete = 5, Max_Speed = 28;
+        public static int Admin_Level = 0, Days_Before_Log_Delete = 5, Max_Speed = 28, Health = 255, Stamina = 255;
+        public static double Jump_Strength = 1.5, Height = 1.8;
         private static string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         private static string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
 
@@ -41,106 +42,135 @@ namespace ServerTools.AntiCheat
                                             {
                                                 using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                 {
-                                                    sw.WriteLine(string.Format("{0} {1} steamId {2} was detected with an illegal health value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_Health));
+                                                    sw.WriteLine(string.Format("{0} \"{1}\" Steam id {2} was detected with an illegal health value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_Health));
                                                     sw.WriteLine();
                                                     sw.Flush();
                                                     sw.Close();
                                                 }
-                                                Log.Warning("Detected player {0} steamId {1} with health @ {2}. 250 is maximum", _cInfo.playerName, _cInfo.playerId, p_Health);
+                                                Log.Warning("Detected player \"{0}\" Steam id {1} with health @ {2}. 250 is maximum", _cInfo.playerName, _cInfo.playerId, p_Health);
                                                 if (Kick_Enabled)
                                                 {
-
-                                                    ChatHook.ChatMessage(null, "[FF0000]" + _cInfo.playerName + " was detected and kicked for illegal player stat health" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat health\"", _cInfo.playerId), (ClientInfo)null);
+                                                    Phrases.Dict.TryGetValue(991, out string _phrase991);
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase991), null);
+                                                    Phrases.Dict.TryGetValue(992, out string _phrase992);
+                                                    _phrase992 = _phrase992.Replace("{PlayerName}", _cInfo.playerName);
+                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase992 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                 }
                                                 if (Ban_Enabled)
                                                 {
-                                                    ChatHook.ChatMessage(null, "[FF0000]" + _cInfo.playerName + " was detected and banned for illegal player stat health" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat health\"", _cInfo.playerId), (ClientInfo)null);
+                                                    Phrases.Dict.TryGetValue(993, out string _phrase993);
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase993), null);
+                                                    Phrases.Dict.TryGetValue(994, out string _phrase994);
+                                                    _phrase994 = _phrase994.Replace("{PlayerName}", _cInfo.playerName);
+                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase994 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                 }
                                             }
                                             if (p_Stamina > 250)
                                             {
                                                 using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                 {
-                                                    sw.WriteLine(string.Format("{0} {1} steamId {2} was detected with an illegal stamina value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_Stamina));
+                                                    sw.WriteLine(string.Format("{0} \"{1}\" Steam id {2} was detected with an illegal stamina value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_Stamina));
                                                     sw.WriteLine();
                                                     sw.Flush();
                                                     sw.Close();
                                                 }
-                                                Log.Warning("Detected player {0} steamId {1} with stamina @ {2}. 250 is maximum", _cInfo.playerName, _cInfo.playerId, p_Stamina);
+                                                Log.Warning("Detected player \"{0}\" Steam id {1} with stamina @ {2}. 250 is maximum", _cInfo.playerName, _cInfo.playerId, p_Stamina);
                                                 if (Kick_Enabled)
                                                 {
-                                                    ChatHook.ChatMessage(null, "[FF0000]" + _cInfo.playerName + " was detected and kicked for illegal player stat stamina" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat stamina\"", _cInfo.playerId), (ClientInfo)null);
+                                                    Phrases.Dict.TryGetValue(995, out string _phrase995);
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase995), null);
+                                                    Phrases.Dict.TryGetValue(996, out string _phrase996);
+                                                    _phrase996 = _phrase996.Replace("{PlayerName}", _cInfo.playerName);
+                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase996 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                 }
                                                 if (Ban_Enabled)
                                                 {
-                                                    ChatHook.ChatMessage(null, "[FF0000]" + _cInfo.playerName + " was detected and banned for illegal player stat stamina" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat stamina\"", _cInfo.playerId), (ClientInfo)null);
+                                                    Phrases.Dict.TryGetValue(997, out string _phrase997);
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban {0} \"{1}\"", _cInfo.playerId, _phrase997), null);
+                                                    Phrases.Dict.TryGetValue(998, out string _phrase998);
+                                                    _phrase998 = _phrase998.Replace("{PlayerName}", _cInfo.playerName);
+                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase998 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                 }
                                             }
                                             if (p_jumpStrength >= 1.5)
                                             {
                                                 using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                 {
-                                                    sw.WriteLine(string.Format("{0} {1} steamId {2} was detected with an illegal jump strength value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_jumpStrength));
+                                                    sw.WriteLine(string.Format("{0} \"{1}\" Steam id {2} was detected with an illegal jump strength value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_jumpStrength));
                                                     sw.WriteLine();
                                                     sw.Flush();
                                                     sw.Close();
                                                 }
-                                                Log.Warning("Detected player {0} steamId {1} at jump strength {2}. 1.1 is default", _cInfo.playerName, _cInfo.playerId, p_jumpStrength);
+                                                Log.Warning("Detected player \"{0}\" Steam id {1} at jump strength {2}.", _cInfo.playerName, _cInfo.playerId, p_jumpStrength);
                                                 if (Kick_Enabled)
                                                 {
-                                                    ChatHook.ChatMessage(null, "[FF0000]" + _cInfo.playerName + " was detected and kicked for illegal player jump ability" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat jump\"", _cInfo.playerId), (ClientInfo)null);
+                                                    Phrases.Dict.TryGetValue(999, out string _phrase999);
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase999), null);
+                                                    Phrases.Dict.TryGetValue(1000, out string _phrase1000);
+                                                    _phrase1000 = _phrase1000.Replace("{PlayerName}", _cInfo.playerName);
+                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1000 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                 }
                                                 if (Ban_Enabled)
                                                 {
-                                                    ChatHook.ChatMessage(null, "[FF0000]" + _cInfo.playerName + " was detected and banned for illegal player jump ability" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat jump\"", _cInfo.playerId), (ClientInfo)null);
+                                                    Phrases.Dict.TryGetValue(1001, out string _phrase1001);
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban {0} \"{1}\"", _cInfo.playerId, _phrase1001), null);
+                                                    Phrases.Dict.TryGetValue(1002, out string _phrase1002);
+                                                    _phrase1002 = _phrase1002.Replace("{PlayerName}", _cInfo.playerName);
+                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1002 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                 }
                                             }
                                             if (p_height > 1.8 || p_height < 1.7)
                                             {
                                                 using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                 {
-                                                    sw.WriteLine(string.Format("{0} {1} steamId {2} was detected with an illegal player height value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_height));
+                                                    sw.WriteLine(string.Format("{0} \"{1}\" Steam id {2} was detected with an illegal player height value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_height));
                                                     sw.WriteLine();
                                                     sw.Flush();
                                                     sw.Close();
                                                 }
-                                                Log.Warning("Detected player {0} steamId {1} with player height @ {2}", _cInfo.playerName, _cInfo.playerId, p_height);
+                                                Log.Warning("Detected player \"{0}\" Steam id {1} with player height @ {2}", _cInfo.playerName, _cInfo.playerId, p_height);
                                                 if (Kick_Enabled)
                                                 {
-                                                    ChatHook.ChatMessage(null, "[FF0000]" + _cInfo.playerName + " was detected and kicked for illegal player height" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat height\"", _cInfo.playerId), (ClientInfo)null);
+                                                    Phrases.Dict.TryGetValue(1003, out string _phrase1003);
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase1003), null);
+                                                    Phrases.Dict.TryGetValue(1004, out string _phrase1004);
+                                                    _phrase1004 = _phrase1004.Replace("{PlayerName}", _cInfo.playerName);
+                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1004 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                 }
                                                 if (Ban_Enabled)
                                                 {
-                                                    ChatHook.ChatMessage(null, "[FF0000]" + _cInfo.playerName + " was detected and banned for illegal player height" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat height\"", _cInfo.playerId), (ClientInfo)null);
+                                                    Phrases.Dict.TryGetValue(1005, out string _phrase1005);
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban {0} \"{1}\"", _cInfo.playerId, _phrase1005), null);
+                                                    Phrases.Dict.TryGetValue(1006, out string _phrase1006);
+                                                    _phrase1006 = _phrase1006.Replace("{PlayerName}", _cInfo.playerName);
+                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1006 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                 }
                                             }
                                             if (p_speedForward > Max_Speed)
                                             {
                                                 using (StreamWriter sw = new StreamWriter(_filepath, true))
                                                 {
-                                                    sw.WriteLine(string.Format("{0} {1} steamId {2} was detected with an illegal run speed value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_speedForward));
+                                                    sw.WriteLine(string.Format("{0} \"{1}\" Steam id {2} was detected with an illegal run speed value: {3}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, p_speedForward));
                                                     sw.WriteLine();
                                                     sw.Flush();
                                                     sw.Close();
                                                 }
-                                                Log.Warning("Detected player {0} steamId {1} speed hacking", _cInfo.playerName, _cInfo.playerId);
+                                                Log.Warning("Detected player \"{0}\" Steam id {1} was detected with an illegal run speed", _cInfo.playerName, _cInfo.playerId);
                                                 if (Kick_Enabled)
                                                 {
-                                                    ChatHook.ChatMessage(null, "[FF0000]" + _cInfo.playerName + " was detected and kicked for illegal player speed" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for illegal player stat speed\"", _cInfo.playerId), (ClientInfo)null);
+                                                    Phrases.Dict.TryGetValue(1007, out string _phrase1007);
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase1007), null);
+                                                    Phrases.Dict.TryGetValue(1008, out string _phrase1008);
+                                                    _phrase1008 = _phrase1008.Replace("{PlayerName}", _cInfo.playerName);
+                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1008 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                 }
                                                 if (Ban_Enabled)
                                                 {
-                                                    ChatHook.ChatMessage(null, "[FF0000]" + _cInfo.playerName + " was detected and banned for illegal player speed" + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for illegal player stat speed\"", _cInfo.playerId), (ClientInfo)null);
+                                                    Phrases.Dict.TryGetValue(1009, out string _phrase1009);
+                                                    SdtdConsole.Instance.ExecuteSync(string.Format("ban {0} \"{1}\"", _cInfo.playerId, _phrase1009), null);
+                                                    Phrases.Dict.TryGetValue(1010, out string _phrase1010);
+                                                    _phrase1010 = _phrase1010.Replace("{PlayerName}", _cInfo.playerName);
+                                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1010 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                 }
                                             }
                                         }

@@ -10,7 +10,7 @@ namespace ServerTools
         private static List<string> Admins = new List<string>();
         private static List<string> Mods = new List<string>();
 
-        public static void List(ClientInfo _cInfo, string _playerName)
+        public static void List(ClientInfo _cInfo)
         {
             Admins.Clear();
             Mods.Clear();
@@ -27,25 +27,17 @@ namespace ServerTools
                     Mods.Add(_cInfoAdmins.playerName);
                 }
             }
-            Response(_cInfo, _playerName);
+            Response(_cInfo);
         }
 
-        public static void Response(ClientInfo _cInfo, string _playerName)
+        public static void Response(ClientInfo _cInfo)
         {
             string _adminList = string.Join(", ", Admins.ToArray());
             string _modList = string.Join(", ", Mods.ToArray());
-            string _phrase725;
-            if (!Phrases.Dict.TryGetValue(725, out _phrase725))
-            {
-                _phrase725 = "Server admins in game: [FF8000]";
-            }
-            string _phrase726;
-            if (!Phrases.Dict.TryGetValue(726, out _phrase726))
-            {
-                _phrase726 = "Server moderators in game: [FF8000]";
-            }
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase725 + _adminList + ".[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase726 + _modList + ".[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue(411, out string _phrase1);
+            Phrases.Dict.TryGetValue(412, out string _phrase2);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase1 + _adminList + ".[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase2 + _modList + ".[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
     }
 }

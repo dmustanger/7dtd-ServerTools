@@ -28,24 +28,24 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
                 int _entityId = int.MinValue;
                 if (!int.TryParse(_params[0], out _entityId))
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid entityId: {0}", _entityId));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid entityId: {0}", _entityId));
                     return;
                 }
                 else
                 {
                     GameManager.Instance.World.RemoveEntity(_entityId, EnumRemoveEntityReason.Despawned);
-                    SdtdConsole.Instance.Output(string.Format("Removed entity {0} ", _entityId));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed entity {0} ", _entityId));
                 }    
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in EntityRemoveConsole.Run: {0}.", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in EntityRemoveConsole.Run: {0}.", e.Message));
             }
         }
     }

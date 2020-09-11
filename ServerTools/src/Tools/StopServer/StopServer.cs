@@ -21,43 +21,27 @@ namespace ServerTools
                 Delay = 1;
             }
             Timers.StopServerMinutes = Delay;
-            string _phrase450;
-            if (!Phrases.Dict.TryGetValue(450, out _phrase450))
-            {
-                _phrase450 = "Server Shutdown In {Minutes} Minute.";
-            }
-            _phrase450 = _phrase450.Replace("{Minutes}", Delay.ToString());
-            Alert(_phrase450, Shutdown.Alert_Count);
+            Phrases.Dict.TryGetValue(170, out string _phrase170);
+            _phrase170 = _phrase170.Replace("{Value}", Delay.ToString());
+            Alert(_phrase170, Shutdown.Alert_Count);
         }
 
         public static void StartShutdown2(int _newCount)
         {
-            string _phrase450;
-            if (!Phrases.Dict.TryGetValue(450, out _phrase450))
-            {
-                _phrase450 = "Server Shutdown In {Minutes} Minute.";
-            }
-            _phrase450 = _phrase450.Replace("{Minutes}", _newCount.ToString());
-            Alert(_phrase450, Shutdown.Alert_Count);
+            Phrases.Dict.TryGetValue(170, out string _phrase170);
+            _phrase170 = _phrase170.Replace("{Value}", Delay.ToString());
+            Alert(_phrase170, Shutdown.Alert_Count);
         }
 
         public static void StartShutdown3()
         {
             NoEntry = true;
             BattleLogger.Exit.Clear();
-            string _phrase451;
-            if (!Phrases.Dict.TryGetValue(451, out _phrase451))
-            {
-                _phrase451 = "Saving World Now. Do not exchange items from inventory or build.";
-            }
-            string _phrase450;
-            if (!Phrases.Dict.TryGetValue(450, out _phrase450))
-            {
-                _phrase450 = "Server Shutdown In {Minutes} Minute.";
-            }
-            _phrase450 = _phrase450.Replace("{Minutes}", "1");
-            Alert(_phrase451, 1);
-            Alert(_phrase450, 1);
+            Phrases.Dict.TryGetValue(171, out string _phrase171);
+            Alert(_phrase171, 1);
+            Phrases.Dict.TryGetValue(170, out string _phrase170);
+            _phrase170 = _phrase170.Replace("{Value}", Delay.ToString());
+            Alert(_phrase170, 1);
             SdtdConsole.Instance.ExecuteSync("saveworld", null);
             if (VehicleManager.Instance != null)
             {
@@ -73,13 +57,9 @@ namespace ServerTools
 
         public static void Kick30()
         {
-            string _phrase453;
-            if (!Phrases.Dict.TryGetValue(453, out _phrase453))
-            {
-                _phrase453 = "Shutdown is in 30 seconds. Please come back after the server restarts.";
-            }
-            SdtdConsole.Instance.ExecuteSync(string.Format("kickall \"{0}\"", _phrase453), null);
             PersistentContainer.Instance.Save();
+            Phrases.Dict.TryGetValue(172, out string _phrase172);
+            SdtdConsole.Instance.ExecuteSync(string.Format("kickall \"{0}\"", _phrase172), null);
         }
 
         public static void Alert(string _message, int _count)

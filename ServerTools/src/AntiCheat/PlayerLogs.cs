@@ -45,7 +45,7 @@ namespace ServerTools.AntiCheat
                                     string _ip = _cInfo.ip;
                                     using (StreamWriter sw = new StreamWriter(Filepath, true))
                                     {
-                                        sw.WriteLine(string.Format("{0}:  {1} SteamId {2}. IP Address {3} at Position: {4} X {5} Y {6} Z in RegionFile: r.{7}.{8}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, _ip, x, y, z, region_x, region_z));
+                                        sw.WriteLine(string.Format("{0}: \"{1}\" SteamId {2}. IP Address {3} at Position: {4} X {5} Y {6} Z in RegionFile: r.{7}.{8}", DateTime.Now, _cInfo.playerName, _cInfo.playerId, _ip, x, y, z, region_x, region_z));
                                         sw.WriteLine();
                                         sw.Flush();
                                         sw.Close();
@@ -97,7 +97,7 @@ namespace ServerTools.AntiCheat
                                 {
                                     using (StreamWriter sw = new StreamWriter(Filepath, true))
                                     {
-                                        sw.WriteLine(string.Format("{0}:  {1} SteamId {2}. Player has not spawned", DateTime.Now, _cInfo.playerName, _cInfo.playerId));
+                                        sw.WriteLine(string.Format("{0}: \"{1}\" SteamId {2}. Player has not spawned", DateTime.Now, _cInfo.playerName, _cInfo.playerId));
                                         sw.WriteLine();
                                         sw.WriteLine("----------------");
                                         sw.WriteLine();
@@ -109,7 +109,7 @@ namespace ServerTools.AntiCheat
                                 {
                                     using (StreamWriter sw = new StreamWriter(Filepath, true))
                                     {
-                                        sw.WriteLine(string.Format("{0}:  {1} SteamId {2}. Player is currently dead", DateTime.Now, _cInfo.playerName, _cInfo.playerId));
+                                        sw.WriteLine(string.Format("{0}: \"{1}\" SteamId {2}. Player is currently dead", DateTime.Now, _cInfo.playerName, _cInfo.playerId));
                                         sw.WriteLine();
                                         sw.WriteLine("----------------");
                                         sw.WriteLine();

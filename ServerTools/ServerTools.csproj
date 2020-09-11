@@ -96,7 +96,7 @@
     <Compile Include="src\ConsoleCommands\StuckConsole.cs" />
     <Compile Include="src\ConsoleCommands\StartingItemsConsole.cs" />
     <Compile Include="src\ConsoleCommands\ShopConsole.cs" />
-    <Compile Include="src\ConsoleCommands\SetHomeConsole.cs" />
+    <Compile Include="src\ConsoleCommands\HomeConsole.cs" />
     <Compile Include="src\ConsoleCommands\RestartVoteConsole.cs" />
     <Compile Include="src\ConsoleCommands\ReportConsole.cs" />
     <Compile Include="src\ConsoleCommands\RealWorldTimeConsole.cs" />
@@ -169,7 +169,7 @@
     <Compile Include="src\Tools\Tracking\Tracking.cs" />
     <Compile Include="src\Tools\Zones\Zones.cs" />
     <Compile Include="src\API.cs" />
-    <Compile Include="src\Tools\AuctionBox\AuctionBox.cs" />
+    <Compile Include="src\Tools\Auction\Auction.cs" />
     <Compile Include="src\Tools\Shutdown\Shutdown.cs" />
     <Compile Include="src\Tools\AutoSaveWorld\AutoSaveWorld.cs" />
     <Compile Include="src\Tools\Bounties\Bounties.cs" />
@@ -199,14 +199,14 @@
     <Compile Include="src\Tools\WeatherVote\WeatherVote.cs" />
     <Compile Include="src\Tools\LoginNotice\LoginNotice.cs" />
     <Compile Include="src\Tools\Lottery\Lottery.cs" />
-    <Compile Include="src\Tools\NightTimeAlert\NightTimeAlert.cs" />
+    <Compile Include="src\Tools\NightAlert\NightAlert.cs" />
     <Compile Include="src\Tools\RealWorldTime\RealWorldTime.cs" />
     <Compile Include="src\Tools\Whisper\Whisper.cs" />
     <Compile Include="src\Chat\Hook\Hook.cs" />
     <Compile Include="src\Tools\InfoTicker\InfoTicker.cs" />
     <Compile Include="src\Chat\ChatLog\ChatLog.cs" />
     <Compile Include="src\Tools\MOTD\Motd.cs" />
-    <Compile Include="src\Tools\ClaimBlock\FirstClaimBlock.cs" />
+    <Compile Include="src\Tools\FirstClaimBlock\FirstClaimBlock.cs" />
     <Compile Include="src\Tools\ClanManager\ClanManager.cs" />
     <Compile Include="src\Tools\Shop\Shop.cs" />
     <Compile Include="src\Tools\Wallet\Wallet.cs" />
@@ -234,7 +234,7 @@
     <Compile Include="src\Tools\HighPingKicker\HighPingKicker.cs" />
     <Compile Include="src\ConsoleCommands\EntityRemoveConsole.cs" />
     <Compile Include="src\Tools\Hordes\Hordes.cs" />
-    <Compile Include="src\HowTo\HowToSetup.cs" />
+    <Compile Include="src\HowToSetup\HowToSetup.cs" />
     <Compile Include="src\Tools\Lobby\Lobby.cs" />
     <Compile Include="src\Tools\KillNotice\KillNotice.cs" />
     <Compile Include="src\Tools\NewPlayer\NewPlayer.cs" />

@@ -7,7 +7,7 @@ namespace ServerTools
         public static bool IsEnabled = false;
         public static string Command32 = "claim";
 
-        public static void firstClaim(ClientInfo _cInfo)
+        public static void FirstClaim(ClientInfo _cInfo)
         {
             bool _firstClaim = PersistentContainer.Instance.Players[_cInfo.playerId].FirstClaimBlock;
             if (!_firstClaim)
@@ -34,13 +34,15 @@ namespace ServerTools
                 world.SpawnEntityInWorld(entityItem);
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Claim block has been added to your inventory or if inventory is full, it dropped at your feet.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 PersistentContainer.Instance.Players[_cInfo.playerId].FirstClaimBlock = true;
                 PersistentContainer.Instance.Save();
+                Phrases.Dict.TryGetValue(701, out string _phrase701);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase701 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have already received your first claim block. Contact an administrator if you require help.[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(702, out string _phrase702);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase702 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

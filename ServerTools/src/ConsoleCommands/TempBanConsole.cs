@@ -31,12 +31,12 @@ namespace ServerTools
             {
                 if (_params.Count < 1 || _params.Count > 2)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 or 2, found {0}.", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].Length < 1 || _params.Count > 17)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Can not ban Id: Invalid Id {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not ban Id: Invalid Id {0}", _params[0]));
                     return;
                 }
                 int _time;
@@ -61,12 +61,12 @@ namespace ServerTools
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not ban Id: {0}. The Id belongs to an Admin.", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not ban Id: {0}. The Id belongs to an Admin", _params[1]));
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Player with Id {0} does not exist.", _cInfo.entityId));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with Id {0} does not exist", _cInfo.entityId));
                 }
             }
             catch (Exception e)

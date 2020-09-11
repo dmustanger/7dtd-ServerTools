@@ -33,7 +33,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1 && _params.Count > 3)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 to 3, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -42,12 +42,12 @@ namespace ServerTools
                     {
                         Bounties.IsEnabled = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Bounties has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bounties has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Bounties is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bounties is already off"));
                         return;
                     }
                 }
@@ -57,12 +57,12 @@ namespace ServerTools
                     {
                         Bounties.IsEnabled = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Bounties has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bounties has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Bounties is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Bounties is already on"));
                         return;
                     }
                 }
@@ -70,13 +70,13 @@ namespace ServerTools
                 {
                     if (_params.Count != 3)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 3, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found {0}", _params.Count));
                         return;
                     }
                     int _value;
                     if (!int.TryParse(_params[2], out _value))
                     {
-                        SdtdConsole.Instance.Output(string.Format("Must input a valid interger: {0}", _params[2]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Must input a valid interger: {0}", _params[2]));
                         return;
                     }
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
@@ -86,10 +86,10 @@ namespace ServerTools
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("No player found online with id or name: {0}. Checking steam id", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No player found online with id or name: {0}. Checking steam id", _params[1]));
                         if (_params[1].Length != 17)
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not edit: Invalid steam id {0}", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not edit: Invalid steam id {0}", _params[1]));
                             return;
                         }
                         Bounties.ConsoleEdit(_params[1], _value);
@@ -99,7 +99,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
                     ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[1]);
@@ -109,10 +109,10 @@ namespace ServerTools
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("No player found online with id or name: {0}. Checking steam id", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No player found online with id or name: {0}. Checking steam id", _params[1]));
                         if (_params[1].Length != 17)
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not remove: Invalid steam id {0}", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not remove: Invalid steam id {0}", _params[1]));
                             return;
                         }
                         Bounties.ConsoleRemoveBounty(_params[1]);
@@ -122,14 +122,14 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     Bounties.ConsoleBountyList();
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)

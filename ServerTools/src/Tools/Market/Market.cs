@@ -17,12 +17,8 @@ namespace ServerTools
             string[] _command = { Market.Command102 };
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo))
             {
-                string _phrase107;
-                if (!Phrases.Dict.TryGetValue(107, out _phrase107))
-                {
-                    _phrase107 = "You do not have permissions to use this command.";
-                }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase107 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(257, out string _phrase257);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase257 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -33,14 +29,10 @@ namespace ServerTools
                 int z = (int)_position.z;
                 string _mposition = x + "," + y + "," + z;
                 Market_Position = _mposition;
-                string _phrase565;
-                if (!Phrases.Dict.TryGetValue(565, out _phrase565))
-                {
-                    _phrase565 = "You have set the market position as {MarketPosition}.";
-                }
-                _phrase565 = _phrase565.Replace("{MarketPosition}", Market_Position);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase565 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 LoadConfig.WriteXml();
+                Phrases.Dict.TryGetValue(257, out string _phrase257);
+                _phrase257 = _phrase257.Replace("{MarketPosition}", Market_Position);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase257 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -48,7 +40,8 @@ namespace ServerTools
         {
             if (Donor_Only && ReservedSlots.IsEnabled && !ReservedSlots.ReservedCheck(_cInfo.playerId))
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "This command is locked to donors only" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(258, out string _phrase258);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase258 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 return;
             }
             if (Delay_Between_Uses < 1)
@@ -102,16 +95,12 @@ namespace ServerTools
             else
             {
                 int _timeleft = _delay - _timepassed;
-                string _phrase560;
-                if (!Phrases.Dict.TryGetValue(560, out _phrase560))
-                {
-                    _phrase560 = "You can only use {CommandPrivate}{Command103} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                }
-                _phrase560 = _phrase560.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase560 = _phrase560.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase560 = _phrase560.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                _phrase560 = _phrase560.Replace("{Command103}", Market.Command103);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase560 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(258, out string _phrase251);
+                _phrase251 = _phrase251.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase251 = _phrase251.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase251 = _phrase251.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase251 = _phrase251.Replace("{Command103}", Market.Command103);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase251 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -123,13 +112,9 @@ namespace ServerTools
             }
             else
             {
-                string _phrase814;
-                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                {
-                    _phrase814 = "You do not have enough {WalletCoinName} in your wallet to run this command.";
-                }
-                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(259, out string _phrase259);
+                _phrase259 = _phrase259.Replace("{CoinName}", Wallet.Coin_Name);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase259 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -162,14 +147,10 @@ namespace ServerTools
                     string _mposition = x + "," + y + "," + z;
                     MarketPlayers.Add(_cInfo.entityId);
                     PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = _mposition;
-                    string _phrase561;
-                    if (!Phrases.Dict.TryGetValue(561, out _phrase561))
-                    {
-                        _phrase561 = "You can go back by typing {CommandPrivate}{Command51} when you are ready to leave the market.";
-                    }
-                    _phrase561 = _phrase561.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                    _phrase561 = _phrase561.Replace("{Command51}", Command51);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase561 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue(252, out string _phrase252);
+                    _phrase252 = _phrase252.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase252 = _phrase252.Replace("{Command51}", Command51);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase252 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
                 string[] _cords = { };
                 if (Market.Market_Position.Contains(","))
@@ -188,12 +169,6 @@ namespace ServerTools
                 int.TryParse(_cords[1], out y);
                 int.TryParse(_cords[2], out z);
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                string _phrase562;
-                if (!Phrases.Dict.TryGetValue(562, out _phrase562))
-                {
-                    _phrase562 = "Sent you to the market.";
-                }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase562 + "[-]",-1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
                     Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
@@ -203,12 +178,8 @@ namespace ServerTools
             }
             else
             {
-                string _phrase563;
-                if (!Phrases.Dict.TryGetValue(563, out _phrase563))
-                {
-                    _phrase563 = "The market position is not set.";
-                }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase563 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(254, out string _phrase254);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase254 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -231,29 +202,20 @@ namespace ServerTools
                         MarketPlayers.Remove(_cInfo.entityId);
                         PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = "";
                         PersistentContainer.Instance.Save();
-                        string _phrase555;
-                        if (!Phrases.Dict.TryGetValue(555, out _phrase555))
-                        {
-                            _phrase555 = "Sent you back to your saved location.";
-                        }
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase555 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
-                        string _phrase564;
-                        if (!Phrases.Dict.TryGetValue(564, out _phrase564))
-                        {
-                            _phrase564 = "You have left the market space. {CommandPrivate}{Command51} command is no longer available.";
-                            _phrase564 = _phrase564.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                            _phrase564 = _phrase564.Replace("{Command51}", Command51);
-                        }
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase564 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue(255, out string _phrase255);
+                        _phrase255 = _phrase255.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                        _phrase255 = _phrase255.Replace("{Command51}", Command51);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase255 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have no saved return point.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(253, out string _phrase253);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase253 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -266,14 +228,10 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].MarketReturnPos = "";
                     PersistentContainer.Instance.Save();
-                    string _phrase564;
-                    if (!Phrases.Dict.TryGetValue(564, out _phrase564))
-                    {
-                        _phrase564 = "You have left the market space. {CommandPrivate}{Command51} command is no longer available.";
-                        _phrase564 = _phrase564.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                        _phrase564 = _phrase564.Replace("{Command51}", Command51);
-                    }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase564 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue(255, out string _phrase255);
+                    _phrase255 = _phrase255.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase255 = _phrase255.Replace("{Command51}", Command51);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase255 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }

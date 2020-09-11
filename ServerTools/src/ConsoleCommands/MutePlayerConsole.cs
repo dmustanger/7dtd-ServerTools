@@ -35,19 +35,19 @@ namespace ServerTools
                 {
                     if (_params.Count < 1 || _params.Count > 3)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 to 3, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found {0}.", _params.Count));
                         return;
                     }
                     if (_params[0].ToLower().Equals("add"))
                     {
                         if (_params.Count < 2 || _params.Count > 3)
                         {
-                            SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2 or 3, found {0}.", _params.Count));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 or 3, found {0}.", _params.Count));
                             return;
                         }
                         if (_params[1].Length < 1 || _params[1].Length > 17)
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not add Id: Invalid Id {0}.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id: Invalid Id {0}.", _params[1]));
                             return;
                         }
                         int _muteTime = 60;
@@ -62,7 +62,7 @@ namespace ServerTools
                         {
                             if (Mute.Mutes.Contains(_cInfo.playerId))
                             {
-                                SdtdConsole.Instance.Output(string.Format("Steam Id {0}, player name {1} is already muted.", _cInfo.playerId, _cInfo.playerName));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Steam Id {0}, player name {1} is already muted.", _cInfo.playerId, _cInfo.playerName));
                                 return;
                             }
                             else
@@ -74,7 +74,7 @@ namespace ServerTools
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteName = _cInfo.playerName;
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteDate = DateTime.Now;
                                     PersistentContainer.Instance.Save();
-                                    SdtdConsole.Instance.Output(string.Format("Steam Id {0}, player name {1} has been muted indefinitely.", _cInfo.playerId, _cInfo.playerName));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Steam Id {0}, player name {1} has been muted indefinitely.", _cInfo.playerId, _cInfo.playerName));
                                     return;
                                 }
                                 else
@@ -84,14 +84,14 @@ namespace ServerTools
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteName = _cInfo.playerName;
                                     PersistentContainer.Instance.Players[_cInfo.playerId].MuteDate = DateTime.Now;
                                     PersistentContainer.Instance.Save();
-                                    SdtdConsole.Instance.Output(string.Format("Steam Id {0}, player name {1} has been muted for {2} minutes.", _cInfo.playerId, _cInfo.playerName, _muteTime));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Steam Id {0}, player name {1} has been muted for {2} minutes.", _cInfo.playerId, _cInfo.playerName, _muteTime));
                                     return;
                                 }
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Player with Id {0} can not be found.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with Id {0} can not be found.", _params[1]));
                             return;
                         }
                     }
@@ -99,12 +99,12 @@ namespace ServerTools
                     {
                         if (_params.Count != 2)
                         {
-                            SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}.", _params.Count));
                             return;
                         }
                         if (_params[1].Length != 17)
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not add Id: Invalid Id {0}.", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add Id: Invalid Id {0}.", _params[1]));
                             return;
                         }
                         string _id = _params[1];
@@ -118,12 +118,12 @@ namespace ServerTools
                             Mute.Mutes.Remove(_id);
                             PersistentContainer.Instance.Players[_cInfo.playerId].MuteTime = 0;
                             PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output(string.Format("Steam Id {0} has been unmuted.", _id));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Steam Id {0} has been unmuted.", _id));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Steam Id {0} is not muted.", _id));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Steam Id {0} is not muted.", _id));
                             return;
                         }
                     }
@@ -131,12 +131,12 @@ namespace ServerTools
                     {
                         if (_params.Count != 1)
                         {
-                            SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}.", _params.Count));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}.", _params.Count));
                             return;
                         }
                         if (Mute.Mutes.Count == 0)
                         {
-                            SdtdConsole.Instance.Output(string.Format("No players are muted."));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No players are muted."));
                             return;
                         }
                         else
@@ -153,18 +153,18 @@ namespace ServerTools
                                     double fractionalMinutes = varTime.TotalMinutes;
                                     int _timepassed = (int)fractionalMinutes;
                                     int _timeleft = _muteTime - _timepassed;
-                                    SdtdConsole.Instance.Output(string.Format("Muted player: steam Id {0} named {1} for {2} more minutes.", _id, _muteName, _timeleft));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Muted player: steam Id {0} named {1} for {2} more minutes.", _id, _muteName, _timeleft));
                                 }
                                 else if (_muteTime == -1)
                                 {
-                                    SdtdConsole.Instance.Output(string.Format("Muted player: steam Id {0} named {1} forever.", _id, _muteName));
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Muted player: steam Id {0} named {1} forever.", _id, _muteName));
                                 }
                             }
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                         return;
                     }
                 }
@@ -175,7 +175,7 @@ namespace ServerTools
             }
             else
             {
-                SdtdConsole.Instance.Output("Mute is not enabled.");
+                SdtdConsole.Instance.Output("[SERVERTOOLS] Mute is not enabled.");
                 return;
             }
         }

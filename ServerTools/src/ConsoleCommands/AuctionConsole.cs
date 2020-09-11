@@ -39,36 +39,36 @@ namespace ServerTools
             {
                 if (_params.Count < 1 && _params.Count > 2)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
                 {
-                    if (AuctionBox.IsEnabled)
+                    if (Auction.IsEnabled)
                     {
-                        AuctionBox.IsEnabled = false;
+                        Auction.IsEnabled = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Auction has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auction has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Auction is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auction is already off"));
                         return;
                     }
                 }
                 else if (_params[0].ToLower().Equals("on"))
                 {
-                    if (!AuctionBox.IsEnabled)
+                    if (!Auction.IsEnabled)
                     {
-                        AuctionBox.IsEnabled = true;
+                        Auction.IsEnabled = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Auction has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auction has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Auction is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auction is already on"));
                         return;
                     }
                 }
@@ -76,15 +76,15 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
                     int _id;
                     if (int.TryParse(_params[1], out _id))
                     {
-                        if (AuctionBox.AuctionItems.ContainsKey(_id))
+                        if (Auction.AuctionItems.ContainsKey(_id))
                         {
-                            AuctionBox.AuctionItems.TryGetValue(_id, out string _playerId);
+                            Auction.AuctionItems.TryGetValue(_id, out string _playerId);
                             if (PersistentContainer.Instance.Players[_playerId].Auction != null && PersistentContainer.Instance.Players[_playerId].Auction.Count > 0)
                             {
                                 if (PersistentContainer.Instance.Players[_playerId].Auction.ContainsKey(_id))
@@ -113,7 +113,7 @@ namespace ServerTools
                                                 world.SpawnEntityInWorld(entityItem);
                                                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                                                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                                                AuctionBox.AuctionItems.Remove(_id);
+                                                Auction.AuctionItems.Remove(_id);
                                                 PersistentContainer.Instance.Players[_playerId].Auction.Remove(_id);
                                                 PersistentContainer.Instance.AuctionPrices.Remove(_id);
                                                 PersistentContainer.Instance.Save();
@@ -128,7 +128,7 @@ namespace ServerTools
                                             }
                                             else
                                             {
-                                                AuctionBox.AuctionItems.Remove(_id);
+                                                Auction.AuctionItems.Remove(_id);
                                                 PersistentContainer.Instance.Players[_playerId].Auction.Remove(_id);
                                                 PersistentContainer.Instance.AuctionPrices.Remove(_id);
                                                 PersistentContainer.Instance.Save();
@@ -146,24 +146,24 @@ namespace ServerTools
                                                 _auctionReturn.Add(_id, _itemData);
                                                 PersistentContainer.Instance.Players[_playerId].AuctionReturn = _auctionReturn;
                                             }
-                                            AuctionBox.AuctionItems.Remove(_id);
+                                            Auction.AuctionItems.Remove(_id);
                                             PersistentContainer.Instance.Players[_playerId].Auction.Remove(_id);
                                             PersistentContainer.Instance.AuctionPrices.Remove(_id);
                                             PersistentContainer.Instance.Save();
                                         }
-                                        SdtdConsole.Instance.Output(string.Format("Id {0} has been removed from the auction list", _id));
+                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id {0} has been removed from the auction list", _id));
                                     }
                                 }
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output("Could not find this id listed in the auction. Unable to cancel.[-]");
+                            SdtdConsole.Instance.Output("[SERVERTOOLS] Could not find this id listed in the auction. Unable to cancel.[-]");
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Invalid integer {0}", _id));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer {0}", _id));
                     }
                     return;
                 }
@@ -171,14 +171,14 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                     }
                     if (int.TryParse(_params[1], out int _id))
                     {
-                        if (AuctionBox.AuctionItems.ContainsKey(_id))
+                        if (Auction.AuctionItems.ContainsKey(_id))
                         {
-                            AuctionBox.AuctionItems.TryGetValue(_id, out string _playerId);
-                            AuctionBox.AuctionItems.Remove(_id);
+                            Auction.AuctionItems.TryGetValue(_id, out string _playerId);
+                            Auction.AuctionItems.Remove(_id);
                             if (PersistentContainer.Instance.Players[_playerId].Auction != null && PersistentContainer.Instance.Players[_playerId].Auction.Count > 0)
                             {
                                 PersistentContainer.Instance.Players[_playerId].Auction.Remove(_id);
@@ -188,16 +188,16 @@ namespace ServerTools
                                 PersistentContainer.Instance.AuctionPrices.Remove(_id);
                             }
                             PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output(string.Format("Id {0} has been removed from the auction", _id));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Id {0} has been removed from the auction", _id));
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Auction does not contain id {0}", _id));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Auction does not contain id {0}", _id));
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Invalid integer {0}", _id));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid integer {0}", _id));
                     }
                     return;
                 }
@@ -205,10 +205,10 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
-                    if (AuctionBox.AuctionItems.Count > 0)
+                    if (Auction.AuctionItems.Count > 0)
                     {
                         if (PersistentContainer.Instance.Players.SteamIDs.Count > 0)
                         {
@@ -238,12 +238,12 @@ namespace ServerTools
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output("No items are listed in the auction");
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] No items are listed in the auction");
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)

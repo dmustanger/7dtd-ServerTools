@@ -16,7 +16,6 @@ namespace ServerTools
         private static SortedDictionary<int, int[]> dict1 = new SortedDictionary<int, int[]>();
         public static List<string> categories = new List<string>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
-        private static bool updateConfig = false;
 
         public static void Load()
         {
@@ -85,10 +84,6 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing Name attribute: {0}", subChild.OuterXml));
                             continue;
                         }
-                        if (!_line.HasAttribute("SecondaryName"))
-                        {
-                            updateConfig = true;
-                        }
                         if (!_line.HasAttribute("Count"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Shop entry because of missing Count attribute: {0}", subChild.OuterXml));
@@ -126,7 +121,7 @@ namespace ServerTools
                         }
                         if (!int.TryParse(_line.GetAttribute("Price"), out int _price))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop  entry because of invalid (non-numeric) value for 'Price' attribute: {0}", subChild.OuterXml));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop entry because of invalid (non-numeric) value for 'Price' attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         string _name = _line.GetAttribute("Name");
@@ -139,21 +134,10 @@ namespace ServerTools
                         {
                             _secondaryname = _name;
                         }
-                        ItemClass _class;
-                        Block _block;
-                        if (int.TryParse(_name, out int _id))
+                        ItemValue _itemValue = ItemClass.GetItem(_name, true);
+                        if (_itemValue.type == ItemValue.None.type)
                         {
-                            _class = ItemClass.GetForId(_id);
-                            _block = Block.GetBlockByName(_name, false);
-                        }
-                        else
-                        {
-                            _class = ItemClass.GetItemClass(_name, false);
-                            _block = Block.GetBlockByName(_name, false);
-                        }
-                        if (_class == null && _block == null)
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Shop entry skipped. Item not found: {0}", _name));
+                            Log.Out(string.Format("[SERVERTOOLS] Ignoring Shop entry because item could not be found: {0}", _name));
                             continue;
                         }
                         string _category = _line.GetAttribute("Category").ToLower();
@@ -178,11 +162,6 @@ namespace ServerTools
                         }
                     }
                 }
-            }
-            if (updateConfig)
-            {
-                updateConfig = false;
-                UpdateXml();
             }
         }
 
@@ -266,12 +245,8 @@ namespace ServerTools
                         }
                         else
                         {
-                            string _phrase821;
-                            if (!Phrases.Dict.TryGetValue(821, out _phrase821))
-                            {
-                                _phrase821 = "You are not inside a market or trader area. Find one and use this command again.";
-                            }
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase821 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue(349, out string _phrase349);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase349 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else if (Inside_Market && !Inside_Traders)
@@ -287,12 +262,8 @@ namespace ServerTools
                         }
                         else
                         {
-                            string _phrase564;
-                            if (!Phrases.Dict.TryGetValue(564, out _phrase564))
-                            {
-                                _phrase564 = "You are outside the market. Get inside it and try again.";
-                            }
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase564 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue(350, out string _phrase350);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase350 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else if (!Inside_Market && Inside_Traders)
@@ -305,12 +276,8 @@ namespace ServerTools
                         }
                         else
                         {
-                            string _phrase619;
-                            if (!Phrases.Dict.TryGetValue(619, out _phrase619))
-                            {
-                                _phrase619 = "You are not inside a trader area. Find a trader and use this command again.";
-                            }
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase619 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue(343, out string _phrase343);
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase343 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                     else if (!Inside_Market && !Inside_Traders)
@@ -321,12 +288,8 @@ namespace ServerTools
             }
             else
             {
-                string _phrase624;
-                if (!Phrases.Dict.TryGetValue(624, out _phrase624))
-                {
-                    _phrase624 = "The shop does not contain any items. Contact an administrator";
-                }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase624 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(348, out string _phrase348);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase348 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -340,19 +303,16 @@ namespace ServerTools
             {
                 ShowCategory(_cInfo, _categoryOrItem);
             }
-            else
+            else if (int.TryParse(_categoryOrItem, out int _id))
             {
-                Walletcheck(_cInfo, _categoryOrItem, _count);
+                Walletcheck(_cInfo, _id, _count);
             }
         }
 
         public static void ListCategories(ClientInfo _cInfo)
         {
-            string _phrase617;
-            if (!Phrases.Dict.TryGetValue(617, out _phrase617))
-            {
-                _phrase617 = "The shop categories are:";
-            }
+            Phrases.Dict.TryGetValue(341, out string _phrase341);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase341 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             string _categories = "";
             if (categories.Count > 1)
             {
@@ -362,16 +322,11 @@ namespace ServerTools
             {
                 _categories = categories[0];
             }
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase617 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _categories + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-            string _phrase618;
-            if (!Phrases.Dict.TryGetValue(618, out _phrase618))
-            {
-                _phrase618 = "Type {CommandPrivate}{Command57} 'category' to view that list.";
-            }
-            _phrase618 = _phrase618.Replace("{CommandPrivate}", ChatHook.Command_Private);
-            _phrase618 = _phrase618.Replace("{Command57}", Command57);
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase618 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue(342, out string _phrase342);
+            _phrase342 = _phrase342.Replace("{CommandPrivate}", ChatHook.Command_Private);
+            _phrase342 = _phrase342.Replace("{Command57}", Command57);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase342 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void ShowCategory(ClientInfo _cInfo, string _category)
@@ -392,25 +347,25 @@ namespace ServerTools
                                 if (_dict1Values[1] > 1)
                                 {
                                     _count++;
-                                    string _message = "# {Id}: {Count} {Item} {Quality} quality for {Price} {Name}[-]";
-                                    _message = _message.Replace("{Id}", i.ToString());
-                                    _message = _message.Replace("{Count}", _dict1Values[0].ToString());
-                                    _message = _message.Replace("{Item}", _dictValues[1]);
-                                    _message = _message.Replace("{Quality}", _dict1Values[1].ToString());
-                                    _message = _message.Replace("{Price}", _dict1Values[2].ToString());
-                                    _message = _message.Replace("{Name}", Wallet.Coin_Name);
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue(351, out string _phrase351);
+                                    _phrase351 = _phrase351.Replace("{Id}", i.ToString());
+                                    _phrase351 = _phrase351.Replace("{Count}", _dict1Values[0].ToString());
+                                    _phrase351 = _phrase351.Replace("{Item}", _dictValues[1]);
+                                    _phrase351 = _phrase351.Replace("{Quality}", _dict1Values[1].ToString());
+                                    _phrase351 = _phrase351.Replace("{Price}", _dict1Values[2].ToString());
+                                    _phrase351 = _phrase351.Replace("{Name}", Wallet.Coin_Name);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase351 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                                 else
                                 {
                                     _count++;
-                                    string _message = "# {Id}: {Count} {Item} for {Price} {Name}[-]";
-                                    _message = _message.Replace("{Id}", i.ToString());
-                                    _message = _message.Replace("{Count}", _dict1Values[0].ToString());
-                                    _message = _message.Replace("{Item}", _dictValues[1]);
-                                    _message = _message.Replace("{Price}", _dict1Values[2].ToString());
-                                    _message = _message.Replace("{Name}", Wallet.Coin_Name);
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue(352, out string _phrase352);
+                                    _phrase352 = _phrase352.Replace("{Id}", i.ToString());
+                                    _phrase352 = _phrase352.Replace("{Count}", _dict1Values[0].ToString());
+                                    _phrase352 = _phrase352.Replace("{Item}", _dictValues[1]);
+                                    _phrase352 = _phrase352.Replace("{Price}", _dict1Values[2].ToString());
+                                    _phrase352 = _phrase352.Replace("{Name}", Wallet.Coin_Name);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase352 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                         }
@@ -418,82 +373,57 @@ namespace ServerTools
                 }
                 if (_count != 0)
                 {
-                    string _phrase823;
-                    if (!Phrases.Dict.TryGetValue(823, out _phrase823))
-                    {
-                        _phrase823 = "Type {CommandPrivate}{Command58} # to purchase the shop item. You can add how many times you want to buy it with {CommandPrivate}{Command58} # #";
-                    }
-                    _phrase823 = _phrase823.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                    _phrase823 = _phrase823.Replace("{Command58}", Command58);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase823 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue(353, out string _phrase353);
+                    _phrase353 = _phrase353.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase353 = _phrase353.Replace("{Command58}", Command58);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase353 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
             else
             {
-                string _phrase822;
-                if (!Phrases.Dict.TryGetValue(822, out _phrase822))
-                {
-                    _phrase822 = "This category is missing. Check {CommandPrivate}{Command57}.";
-                }
-                _phrase822 = _phrase822.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                _phrase822 = _phrase822.Replace("{Command57}", Command57);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase822 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(354, out string _phrase354);
+                _phrase354 = _phrase354.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase354 = _phrase354.Replace("{Command57}", Command57);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase354 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        public static void Walletcheck(ClientInfo _cInfo, string _item, int _count)
+        public static void Walletcheck(ClientInfo _cInfo, int _item, int _count)
         {
-            int _id;
-            if (!int.TryParse(_item, out _id))
+            if (dict.ContainsKey(_item))
             {
-                string _phrase620;
-                if (!Phrases.Dict.TryGetValue(620, out _phrase620))
+                if (dict.TryGetValue(_item, out string[] _stringValues))
                 {
-                    _phrase620 = "The item or amount # you are trying to buy is not an integer. Please input {CommandPrivate}{Command58} 1 2 for example.";
-                }
-                _phrase620 = _phrase620.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                _phrase620 = _phrase620.Replace("{Command58}", Command58);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase620 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-            }
-            else if (dict.ContainsKey(_id))
-            {
-                string[] _stringValues;
-                if (dict.TryGetValue(_id, out _stringValues))
-                {
-                    int[] _integerValues;
-                    if (dict1.TryGetValue(_id, out _integerValues))
+                    if (dict1.TryGetValue(_item, out int[] _integerValues))
                     {
                         int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
                         int _newAmount = _integerValues[2] * _count;
                         if (_currentCoins >= _newAmount)
                         {
                             int _newCount = _integerValues[0] * _count;
-                            ShopPurchase(_cInfo, _stringValues[0], _stringValues[2], _newCount, _integerValues[1], _newAmount, _currentCoins);
+                            ShopPurchase(_cInfo, _stringValues[0], _stringValues[1], _newCount, _integerValues[1], _newAmount);
                         }
                         else
                         {
-                            string _phrase621;
-                            if (!Phrases.Dict.TryGetValue(621, out _phrase621))
-                            {
-                                _phrase621 = "You do not have enough {Name}. Your wallet balance is {Value}.";
-                            }
-                            _phrase621 = _phrase621.Replace("{Name}", Wallet.Coin_Name);
-                            _phrase621 = _phrase621.Replace("{Value}", _currentCoins.ToString());
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase621 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                            Phrases.Dict.TryGetValue(345, out string _phrase345);
+                            _phrase345 = _phrase345.Replace("{CoinName}", Wallet.Coin_Name);
+                            _phrase345 = _phrase345.Replace("{Value}", _currentCoins.ToString());
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase345 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Item not found for shop purchase" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(355, out string _phrase355);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase355 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
-        public static void ShopPurchase(ClientInfo _cInfo, string _itemName, string _secondaryName, int _count, int _quality, int _price, int currentCoins)
+        public static void ShopPurchase(ClientInfo _cInfo, string _itemName, string _secondaryName, int _count, int _quality, int _price)
         {
             World world = GameManager.Instance.World;
-            ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, false, null, 1);
+            ItemValue _itemValue = new ItemValue(ItemClass.GetItem(_itemName).type, _quality, _quality, false, null);
             int _maxAllowed = _itemValue.ItemClass.Stacknumber.Value;
             if (_count <= _maxAllowed)
             {
@@ -511,24 +441,24 @@ namespace ServerTools
                 _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
                 world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
                 Wallet.SubtractCoinsFromWallet(_cInfo.playerId, _price);
-                Log.Out(string.Format("Sold {0} to {1}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
-                string _message = "{Count} {Item} was purchased through the shop. If your bag is full, check the ground.";
-                _message = _message.Replace("{Count}", _count.ToString());
+                Log.Out(string.Format("Sold {0} to {1} {2} through the shop", _itemValue.ItemClass.Name, _cInfo.playerId, _cInfo.playerName));
+                Phrases.Dict.TryGetValue(356, out string _phrase356);
+                _phrase356 = _phrase356.Replace("{Count}", _count.ToString());
                 if (_secondaryName != "")
                 {
-                    _message = _message.Replace("{Item}", _secondaryName);
+                    _phrase356 = _phrase356.Replace("{Item}", _secondaryName);
                 }
                 else
                 {
-                    _message = _message.Replace("{Item}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                    _phrase356 = _phrase356.Replace("{Item}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName());
                 }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase356 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                string _message = "You can only purchase a full stack worth at a time. The maximum stack size for this is {Max}.";
-                _message = _message.Replace("{Max}", _maxAllowed.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(357, out string _phrase357);
+                _phrase357 = _phrase357.Replace("{Value}", _maxAllowed.ToString());
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase357 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

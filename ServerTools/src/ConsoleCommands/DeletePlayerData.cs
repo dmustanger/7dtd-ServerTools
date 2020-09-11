@@ -27,7 +27,7 @@ namespace ServerTools
             try
             {
                 DeletePlayerData.Exec();
-                SdtdConsole.Instance.Output(string.Format("Player data has been deleted"));
+                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player data has been deleted"));
             }
             catch (Exception e)
             {

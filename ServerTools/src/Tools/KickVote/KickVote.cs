@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ServerTools
 {
@@ -12,76 +13,83 @@ namespace ServerTools
 
         public static void Vote(ClientInfo _cInfo, string _player)
         {
-            if (!VoteOpen)
+            try
             {
-                int _playerCount = ConnectionManager.Instance.ClientCount();
-                if (_playerCount >= Players_Online)
+                if (!VoteOpen)
                 {
-                    int _entityId;
-                    if (int.TryParse(_player, out _entityId))
+                    int _playerCount = ConnectionManager.Instance.ClientCount();
+                    if (_playerCount >= Players_Online)
                     {
-                        ClientInfo _playerInfo = ConnectionManager.Instance.Clients.ForEntityId(_entityId);
-                        if (_playerInfo != null)
+                        int _entityId;
+                        if (int.TryParse(_player, out _entityId))
                         {
-                            _playerKick = _playerInfo;
-                            string _phrase955;
-                            if (!Phrases.Dict.TryGetValue(955, out _phrase955))
+                            ClientInfo _playerInfo = ConnectionManager.Instance.Clients.ForEntityId(_entityId);
+                            if (_playerInfo != null)
                             {
-                                _phrase955 = "A vote to kick {PlayerName} has begun and will close in 60 seconds.";
+                                if (_playerInfo.playerId != _cInfo.playerId)
+                                {
+                                    _playerKick = _playerInfo;
+                                    VoteOpen = true;
+                                    Phrases.Dict.TryGetValue(711, out string _phrase711);
+                                    _phrase711 = _phrase711.Replace("{PlayerName}", _playerInfo.playerName);
+                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase711 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                    Phrases.Dict.TryGetValue(715, out string _phrase715);
+                                    _phrase715 = _phrase715.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                                    _phrase715 = _phrase715.Replace("{Command70}", RestartVote.Command70);
+                                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase715 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                }
+                                else
+                                {
+                                    Phrases.Dict.TryGetValue(716, out string _phrase716);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase716 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                }
                             }
-                            _phrase955 = _phrase955.Replace("{PlayerName}", _playerInfo.playerName);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase955 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            string _phrase776;
-                            if (!Phrases.Dict.TryGetValue(776, out _phrase776))
+                            else
                             {
-                                _phrase776 = "Type {CommandPrivate}{Command70} to cast your vote.";
+                                Phrases.Dict.TryGetValue(712, out string _phrase712);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase712 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
-                            _phrase776 = _phrase776.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                            _phrase776 = _phrase776.Replace("{Command70}", RestartVote.Command70);
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase776 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                            VoteOpen = true;
-                        }
-                        else
-                        {
-                            string _phrase956;
-                            if (!Phrases.Dict.TryGetValue(956, out _phrase956))
-                            {
-                                _phrase956 = "This player id was not found.";
-                            }
-                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase956 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         }
                     }
-                }
-                else
-                {
-                    string _phrase957;
-                    if (!Phrases.Dict.TryGetValue(957, out _phrase957))
+                    else
                     {
-                        _phrase957 = "Not enough players are online to start a vote to kick.";
+                        Phrases.Dict.TryGetValue(713, out string _phrase713);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase713 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase957 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in KickVote.Vote: {0}", e.Message));
             }
         }
 
         public static void ProcessKickVote()
         {
-            if (Kick.Count > 0)
+            try
             {
-                if (Kick.Count >= Votes_Needed)
+                if (Kick.Count > 0)
                 {
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"The players have kicked you from the game\"", _playerKick.entityId), (ClientInfo)null);
+                    if (Kick.Count >= Votes_Needed)
+                    {
+                        Phrases.Dict.TryGetValue(720, out string _phrase720);
+                        SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _playerKick.entityId, _phrase720), null);
+                    }
+                    else
+                    {
+                        Phrases.Dict.TryGetValue(717, out string _phrase717);
+                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase717 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    }
                 }
                 else
                 {
-                    string _message = "Players voted to kick but not enough votes were cast.";
-                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    Phrases.Dict.TryGetValue(718, out string _phrase718);
+                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase718 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
             }
-            else
+            catch (Exception e)
             {
-                string _message = "No votes were cast to kick the player";
-                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                Log.Out(string.Format("[SERVERTOOLS] Error in KickVote.ProcessKickVote: {0}", e.Message));
             }
             Kick.Clear();
             VoteOpen = false;
@@ -89,38 +97,36 @@ namespace ServerTools
 
         public static void List(ClientInfo _cInfo)
         {
-            bool _otherUser = false;
-            List<ClientInfo> ClientInfoList = PersistentOperations.ClientList();
-            for (int i = 0; i < ClientInfoList.Count; i++)
+            try
             {
-                ClientInfo _cInfo2 = ClientInfoList[i];
-                if (_cInfo2 != _cInfo)
+                List<ClientInfo> ClientInfoList = PersistentOperations.ClientList();
+                if (ClientInfoList != null && ClientInfoList.Count > 1)
                 {
-                    _otherUser = true;
-                    string _phrase958;
-                    if (!Phrases.Dict.TryGetValue(958, out _phrase958))
+                    for (int i = 0; i < ClientInfoList.Count; i++)
                     {
-                        _phrase958 = "PlayerName = {PlayerName}, # = {Id}.";
+                        ClientInfo _cInfo2 = ClientInfoList[i];
+                        if (_cInfo2 != _cInfo)
+                        {
+                            Phrases.Dict.TryGetValue(714, out string _phrase714);
+                            _phrase714 = _phrase714.Replace("{PlayerName}", _cInfo2.playerName);
+                            _phrase714 = _phrase714.Replace("{Id}", _cInfo2.entityId.ToString());
+                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase714 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        }
                     }
-                    _phrase958 = _phrase958.Replace("{PlayerName}", _cInfo2.playerName);
-                    _phrase958 = _phrase958.Replace("{Id}", _cInfo2.entityId.ToString());
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase958 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue(719, out string _phrase719);
+                    _phrase719 = _phrase719.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                    _phrase719 = _phrase719.Replace("{Command68}", Command68);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase719 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
-            }
-            if (_otherUser)
-            {
-                string _phrase959;
-                if (!Phrases.Dict.TryGetValue(959, out _phrase959))
+                else
                 {
-                    _phrase959 = "Type {CommandPrivate}{Command68} # to start a vote to kick that player.";
+                    Phrases.Dict.TryGetValue(721, out string _phrase721);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase721 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
-                _phrase959 = _phrase959.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                _phrase959 = _phrase959.Replace("{Command68}", Command68);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase959 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
-            else
+            catch (Exception e)
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "No other users were found online" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Log.Out(string.Format("[SERVERTOOLS] Error in KickVote.List: {0}", e.Message));
             }
         }
     }

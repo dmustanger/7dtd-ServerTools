@@ -49,19 +49,15 @@ namespace ServerTools
             else
             {
                 int _timeleft = _delay - _timepassed;
-                string _phrase8;
-                if (!Phrases.Dict.TryGetValue(8, out _phrase8))
-                {
-                    _phrase8 = "You can only use {CommandPrivate}killme, {CommandPrivate}{Command21}, {CommandPrivate}{Command22}, or {CommandPrivate}{Command23} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                }
-                _phrase8 = _phrase8.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase8 = _phrase8.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase8 = _phrase8.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                _phrase8 = _phrase8.Replace("{Command20}", Command20);
-                _phrase8 = _phrase8.Replace("{Command21}", Command21);
-                _phrase8 = _phrase8.Replace("{Command22}", Command22);
-                _phrase8 = _phrase8.Replace("{Command23}", Command23);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase8 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(31, out string _phrase31);
+                _phrase31 = _phrase31.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase31 = _phrase31.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase31 = _phrase31.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase31 = _phrase31.Replace("{Command20}", Command20);
+                _phrase31 = _phrase31.Replace("{Command21}", Command21);
+                _phrase31 = _phrase31.Replace("{Command22}", Command22);
+                _phrase31 = _phrase31.Replace("{Command23}", Command23);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase31 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -85,12 +81,8 @@ namespace ServerTools
                             {
                                 if (!_player.IsFriendsWith(_player2))
                                 {
-                                    string _phrase819;
-                                    if (!Phrases.Dict.TryGetValue(819, out _phrase819))
-                                    {
-                                        _phrase819 = "You are too close to a player that is not a friend. Command unavailable.";
-                                    }
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase819 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    Phrases.Dict.TryGetValue(32, out string _phrase32);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase32 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     return;
                                 }
                             }
@@ -112,12 +104,8 @@ namespace ServerTools
                             Vector3 _pos2 = _entity.GetPosition();
                             if (((int)_player.position.x - (int)_pos2.x) * ((int)_player.position.x - (int)_pos2.x) + ((int)_player.position.z - (int)_pos2.z) * ((int)_player.position.z - (int)_pos2.z) <= 10 * 10)
                             {
-                                string _phrase820;
-                                if (!Phrases.Dict.TryGetValue(820, out _phrase820))
-                                {
-                                    _phrase820 = "You are too close to a zombie. Command unavailable.";
-                                }
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase820 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue(33, out string _phrase33);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase33 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 return;
                             }
                         }

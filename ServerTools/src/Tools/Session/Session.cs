@@ -17,14 +17,10 @@ namespace ServerTools
                 int _timepassed = (int)fractionalMinutes;
                 int _sessionTime = PersistentContainer.Instance.Players[_cInfo.playerId].SessionTime;
                 _sessionTime = _sessionTime + _timepassed;
-                string _phrase570;
-                if (!Phrases.Dict.TryGetValue(570, out _phrase570))
-                {
-                    _phrase570 = "Your current session is at {TimePassed} minutes. Your total session time is at {TotalTimePassed} minutes.";
-                }
-                _phrase570 = _phrase570.Replace("{TimePassed}", _timepassed.ToString());
-                _phrase570 = _phrase570.Replace("{TotalTimePassed}", _sessionTime.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase570 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(791, out string _phrase791);
+                _phrase791 = _phrase791.Replace("{TimePassed}", _timepassed.ToString());
+                _phrase791 = _phrase791.Replace("{TotalTimePassed}", _sessionTime.ToString());
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase791 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

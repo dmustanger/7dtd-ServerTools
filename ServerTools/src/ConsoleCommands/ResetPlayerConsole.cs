@@ -27,7 +27,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
                 ClientInfo _cInfo = ConsoleHelper.ParseParamIdOrName(_params[0]);
@@ -58,13 +58,13 @@ namespace ServerTools
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Player id {0} is not a valid integer", _params[0]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player id {0} is not a valid integer", _params[0]));
                         return;
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Player id {0} is not a valid length. Offline players require using their 17 digit steam id", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player id {0} is not a valid length. Offline players require using their 17 digit steam id", _params[0]));
                     return;
                 }
             }
@@ -103,7 +103,7 @@ namespace ServerTools
                 string _filepath1 = string.Format("{0}/Player/{1}.ttp", GameUtils.GetSaveGameDir(), _id);
                 if (!File.Exists(_filepath))
                 {
-                    SdtdConsole.Instance.Output(string.Format("Could not find file {0}.map", _id));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Could not find file {0}.map", _id));
                 }
                 else
                 {
@@ -111,7 +111,7 @@ namespace ServerTools
                 }
                 if (!File.Exists(_filepath1))
                 {
-                    SdtdConsole.Instance.Output(string.Format("Could not find file {0}.ttp", _id));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Could not find file {0}.ttp", _id));
                 }
                 else
                 {
@@ -143,26 +143,7 @@ namespace ServerTools
                     p.ClanOwner = false;
                     p.ClanRequestToJoin = new Dictionary<string, string>();
                     p.CountryBanImmune = false;
-                    p.CustomCommand1 = new DateTime();
-                    p.CustomCommand2 = new DateTime();
-                    p.CustomCommand3 = new DateTime();
-                    p.CustomCommand4 = new DateTime();
-                    p.CustomCommand5 = new DateTime();
-                    p.CustomCommand6 = new DateTime();
-                    p.CustomCommand7 = new DateTime();
-                    p.CustomCommand8 = new DateTime();
-                    p.CustomCommand9 = new DateTime();
-                    p.CustomCommand10 = new DateTime();
-                    p.CustomCommand11 = new DateTime();
-                    p.CustomCommand12 = new DateTime();
-                    p.CustomCommand13 = new DateTime();
-                    p.CustomCommand14 = new DateTime();
-                    p.CustomCommand15 = new DateTime();
-                    p.CustomCommand16 = new DateTime();
-                    p.CustomCommand17 = new DateTime();
-                    p.CustomCommand18 = new DateTime();
-                    p.CustomCommand19 = new DateTime();
-                    p.CustomCommand20 = new DateTime();
+                    p.CustomCommandDelays = new Dictionary<int, DateTime>();
                     p.FirstClaimBlock = false;
                     p.GyroId = 0;
                     p.HardcoreEnabled = false;

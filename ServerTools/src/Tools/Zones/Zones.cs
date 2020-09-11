@@ -15,7 +15,7 @@ namespace ServerTools
         public static Dictionary<int, string> ReminderMsg = new Dictionary<int, string>();
         public static Dictionary<int, string> Victim = new Dictionary<int, string>();
         public static Dictionary<int, int> Forgive = new Dictionary<int, int>();
-        public static Dictionary<int, string> ZoneExit = new Dictionary<int, string>();
+        public static Dictionary<int, string[]> ZoneInfo = new Dictionary<int, string[]>();
         public static List<int> ZonePvE = new List<int>();
         public static List<string[]> Box1 = new List<string[]>();
         public static List<bool[]> Box2 = new List<bool[]>();
@@ -44,7 +44,7 @@ namespace ServerTools
                 Box2.Clear();
                 ReminderMsg.Clear();
                 Reminder.Clear();
-                ZoneExit.Clear();
+                ZoneInfo.Clear();
                 ZonePvE.Clear();
                 fileWatcher.Dispose();
                 IsRunning = false;
@@ -77,7 +77,7 @@ namespace ServerTools
                     Box2.Clear();
                     ReminderMsg.Clear();
                     Reminder.Clear();
-                    ZoneExit.Clear();
+                    ZoneInfo.Clear();
                     ZonePvE.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
@@ -101,6 +101,16 @@ namespace ServerTools
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing Corner2 attribute: {0}", subChild.OuterXml));
                             continue;
                         }
+                        if (!_line.HasAttribute("Circle"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing Circle attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
+                        if (!_line.HasAttribute("Name"))
+                        {
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing Name attribute: {0}", subChild.OuterXml));
+                            continue;
+                        }
                         if (!_line.HasAttribute("EntryMessage"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing EntryMessage attribute: {0}", subChild.OuterXml));
@@ -119,11 +129,6 @@ namespace ServerTools
                         if (!_line.HasAttribute("ReminderNotice"))
                         {
                             Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing ReminderNotice attribute: {0}", subChild.OuterXml));
-                            continue;
-                        }
-                        if (!_line.HasAttribute("Circle"))
-                        {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because of missing Circle attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("PvE"))
@@ -168,7 +173,7 @@ namespace ServerTools
                                 Log.Warning(string.Format("[SERVERTOOLS] Ignoring Zones entry because improper True/False for Protected attribute: {0}.", subChild.OuterXml));
                                 continue;
                             }
-                            string[] box1 = { _line.GetAttribute("Corner1"), _line.GetAttribute("Corner2"), _line.GetAttribute("EntryMessage"), _line.GetAttribute("ExitMessage"),
+                            string[] box1 = { _line.GetAttribute("Corner1"), _line.GetAttribute("Corner2"), _line.GetAttribute("Name"), _line.GetAttribute("EntryMessage"), _line.GetAttribute("ExitMessage"),
                             _line.GetAttribute("Response"), _line.GetAttribute("ReminderNotice") };
                             bool[] box2 = { _result1, _result2, _result3, _result4 };
                             if (!Box1.Contains(box1))
@@ -210,15 +215,15 @@ namespace ServerTools
                     {
                         string[] _box1 = Box1[i];
                         bool[] _box2 = Box2[i];
-                        sw.WriteLine(string.Format("        <Zone Corner1=\"{0}\" Corner2=\"{1}\" Circle=\"{2}\" EntryMessage=\"{3}\" ExitMessage=\"{4}\" Response=\"{5}\" ReminderNotice=\"{6}\" PvE=\"{7}\" NoZombie=\"{8}\" Protected=\"{9}\" />", _box1[0], _box1[1], _box2[0], _box1[2], _box1[3], _box1[4], _box1[5], _box2[1], _box2[2], _box2[3]));
+                        sw.WriteLine(string.Format("        <Zone Corner1=\"{0}\" Corner2=\"{1}\" Circle=\"{2}\" Name=\"{3}\" EntryMessage=\"{4}\" ExitMessage=\"{5}\" Response=\"{6}\" ReminderNotice=\"{7}\" PvE=\"{8}\" NoZombie=\"{9}\" Protected=\"{10}\" />", _box1[0], _box1[1], _box1[2], _box2[0], _box1[3], _box1[4], _box1[5], _box1[6], _box2[1], _box2[2], _box2[3]));
                     }
                 }
                 else
                 {
-                    sw.WriteLine("        <!-- <Zone Corner1=\"-8000,0,8000\" Corner2=\"8000,200,0\" Circle=\"false\" EntryMessage=\"You are entering the Northern side\" ExitMessage=\"You have exited the Northern Side\" Response=\"\" ReminderNotice=\"You are still in the North\" PvE=\"false\" NoZombie=\"false\" Protected=\"false\" /> -->");
-                    sw.WriteLine("        <!-- <Zone Corner1=\"-8000,0,-1\" Corner2=\"8000,200,-8000\" Circle=\"false\" EntryMessage=\"You are entering the Southern side\" ExitMessage=\"You have exited the Southern Side\" Response=\"whisper {PlayerName} you have entered the south side ^ ser {EntityId} 40 @ 4\" ReminderNotice=\"You are still in the South\" PvE=\"false\" NoZombie=\"false\" Protected=\"false\" /> -->");
-                    sw.WriteLine("        <!-- <Zone Corner1=\"-100,0,-90\" Corner2=\"40\" Circle=\"true\" EntryMessage=\"You have entered the Market\" ExitMessage=\"You have exited the Market\" Response=\"whisper {PlayerName} you have entered the market\" ReminderNotice=\"\" PvE=\"true\" NoZombie=\"true\" Protected=\"true\" /> -->");
-                    sw.WriteLine("        <!-- <Zone Corner1=\"0,0,0\" Corner2=\"25,105,25\" Circle=\"false\" EntryMessage=\"You have entered the Lobby\" ExitMessage=\"You have exited the Lobby\" Response=\"global {PlayerName} has entered the lobby\" ReminderNotice=\"You have been in the lobby for a long time...\" PvE=\"true\" NoZombie=\"true\" Protected=\"true\" /> -->");
+                    sw.WriteLine("        <!-- <Zone Corner1=\"-8000,0,8000\" Corner2=\"8000,200,0\" Name=\"North\" Circle=\"false\" EntryMessage=\"You are entering the Northern side\" ExitMessage=\"You have exited the Northern Side\" Response=\"\" ReminderNotice=\"You are still in the North\" PvE=\"false\" NoZombie=\"false\" Protected=\"false\" /> -->");
+                    sw.WriteLine("        <!-- <Zone Corner1=\"-8000,0,-1\" Corner2=\"8000,200,-8000\" Name=\"South\" Circle=\"false\" EntryMessage=\"You are entering the Southern side\" ExitMessage=\"You have exited the Southern Side\" Response=\"whisper {PlayerName} you have entered the south side ^ ser {EntityId} 40 @ 4\" ReminderNotice=\"You are still in the South\" PvE=\"false\" NoZombie=\"false\" Protected=\"false\" /> -->");
+                    sw.WriteLine("        <!-- <Zone Corner1=\"-100,0,-90\" Corner2=\"40\" Name=\"Market\" Circle=\"true\" EntryMessage=\"You have entered the Market\" ExitMessage=\"You have exited the Market\" Response=\"whisper {PlayerName} you have entered the market\" ReminderNotice=\"\" PvE=\"true\" NoZombie=\"true\" Protected=\"true\" /> -->");
+                    sw.WriteLine("        <!-- <Zone Corner1=\"0,0,0\" Corner2=\"25,105,25\" Name=\"Lobby\" Circle=\"false\" EntryMessage=\"You have entered the Lobby\" ExitMessage=\"You have exited the Lobby\" Response=\"global {PlayerName} has entered the lobby\" ReminderNotice=\"You have been in the lobby for a long time...\" PvE=\"true\" NoZombie=\"true\" Protected=\"true\" /> -->");
                 }
                 sw.WriteLine("    </Zone>");
                 sw.WriteLine("</Zones>");
@@ -256,24 +261,23 @@ namespace ServerTools
                     bool[] _box2 = Box2[i];
                     if (BoxCheck(_box1, _player.position.x, _player.position.y, _player.position.z, _box2))
                     {
-                        if (ZoneExit.ContainsKey(_player.entityId))
+                        if (ZoneInfo.ContainsKey(_player.entityId))
                         {
-                            string _exitMsg;
-                            if (ZoneExit.TryGetValue(_player.entityId, out _exitMsg))
+                            if (ZoneInfo.TryGetValue(_player.entityId, out string[] _info))
                             {
-                                if (_exitMsg != _box1[3])
+                                if (_info[1] != _box1[4])
                                 {
                                     if (Zone_Message)
                                     {
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _box1[2] + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _box1[3] + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                     }
-                                    if (_box1[4] != "")
+                                    if (_box1[5] != "")
                                     {
-                                        Response(_cInfo, _box1[4]);
+                                        Response(_cInfo, _box1[5]);
                                     }
-                                    ZoneExit[_player.entityId] = _box1[3];
+                                    ZoneInfo[_player.entityId][1] = _box1[4];
                                     Reminder[_player.entityId] = DateTime.Now;
-                                    ReminderMsg[_player.entityId] = _box1[5];
+                                    ReminderMsg[_player.entityId] = _box1[6];
                                 }
                             }
                         }
@@ -281,15 +285,15 @@ namespace ServerTools
                         {
                             if (Zone_Message)
                             {
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _box1[2] + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _box1[3] + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
-                            if (_box1[4] != "")
+                            if (_box1[5] != "")
                             {
-                                Response(_cInfo, _box1[4]);
+                                Response(_cInfo, _box1[5]);
                             }
-                            ZoneExit.Add(_player.entityId, _box1[3]);
+                            ZoneInfo.Add(_player.entityId, new string[] { _box1[2], _box1[4]});
                             Reminder.Add(_player.entityId, DateTime.Now);
-                            ReminderMsg.Add(_player.entityId, _box1[5]);
+                            ReminderMsg.Add(_player.entityId, _box1[6]);
                         }
                         if (_box2[1])
                         {
@@ -305,20 +309,19 @@ namespace ServerTools
                         return;
                     }
                 }
-                if (ZoneExit.ContainsKey(_player.entityId))
+                if (ZoneInfo.ContainsKey(_player.entityId))
                 {
                     if (Zone_Message)
                     {
-                        string _msg;
-                        if (ZoneExit.TryGetValue(_player.entityId, out _msg))
+                        if (ZoneInfo.TryGetValue(_player.entityId, out string[] _msg))
                         {
-                            if (_msg != "")
+                            if (_msg[1] != "")
                             {
                                 ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _msg + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
-                    ZoneExit.Remove(_player.entityId);
+                    ZoneInfo.Remove(_player.entityId);
                     Reminder.Remove(_player.entityId);
                     ReminderMsg.Remove(_player.entityId);
                     if (ZonePvE.Contains(_player.entityId))
@@ -369,17 +372,13 @@ namespace ServerTools
             }
             else
             {
-                string _phrase811;
-                if (!Phrases.Dict.TryGetValue(606, out _phrase811))
-                {
-                    _phrase811 = "You can only use {CommandPrivate}{Command50} for {Time} minutes after being killed in a pve zone. Time has expired.";
-                }
-                _phrase811 = _phrase811.Replace("{PlayerName}", _cInfo.playerName);
-                _phrase811 = _phrase811.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                _phrase811 = _phrase811.Replace("{Command50}", Zones.Command50);
-                _phrase811 = _phrase811.Replace("{Time}", _timeAllowed.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase811 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 Victim.Remove(_cInfo.entityId);
+                Phrases.Dict.TryGetValue(321, out string _phrase321);
+                _phrase321 = _phrase321.Replace("{PlayerName}", _cInfo.playerName);
+                _phrase321 = _phrase321.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase321 = _phrase321.Replace("{Command50}", Zones.Command50);
+                _phrase321 = _phrase321.Replace("{Time}", _timeAllowed.ToString());
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase321 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -689,7 +688,7 @@ namespace ServerTools
                             ReminderMsg.TryGetValue(_cInfo.entityId, out _msg);
                             if (_msg != "")
                             {
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _msg + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _msg + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 Reminder[_cInfo.entityId] = DateTime.Now;
                             }
                         }

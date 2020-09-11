@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ServerTools
 {
-    class SetHomeConsole : ConsoleCmdAbstract
+    class HomeConsole : ConsoleCmdAbstract
     {
         public override string GetDescription()
         {
@@ -29,7 +29,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1 || _params.Count > 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -38,12 +38,12 @@ namespace ServerTools
                     {
                         Home.IsEnabled = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Set home has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Home has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Set home is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Home is already off"));
                         return;
                     }
                 }
@@ -53,12 +53,12 @@ namespace ServerTools
                     {
                         Home.IsEnabled = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Set home has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Home has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Set home is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Home is already on"));
                         return;
                     }
                 }
@@ -66,12 +66,12 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}.", _params.Count));
                         return;
                     }
                     if (_params[1].Length < 1 || _params[1].Length > 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not reset Id: Invalid Id {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not reset Id: Invalid Id {0}", _params[1]));
                         return;
                     }
                     PersistentPlayer p = PersistentContainer.Instance.Players[_params[1]];
@@ -80,21 +80,21 @@ namespace ServerTools
                         PersistentContainer.Instance.Players[_params[1]].LastHome1 = DateTime.Now.AddYears(-1);
                         PersistentContainer.Instance.Players[_params[1]].LastHome2 = DateTime.Now.AddYears(-1);
                         PersistentContainer.Instance.Save();
-                        SdtdConsole.Instance.Output(string.Format("Home delay reset for {0}.", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Home delay reset for {0}.", _params[1]));
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Player with id {0} does not have a Home delay to reset.", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with id {0} does not have a Home delay to reset.", _params[1]));
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in SetHomeConsole.Execute: {0}", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in HomeConsole.Execute: {0}", e.Message));
             }
         }
     }

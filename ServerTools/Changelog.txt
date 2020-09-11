@@ -1,5 +1,28 @@
 ﻿CHANGELOG
 
+19.0.9
+Built using Alpha 19 stable assets
+Functioning with 19 stable. Untested with other versions
+
+Added option Length to Report. Controls the length a report may be in chars
+Added option to Kill_Notice called Show_Damage
+Added multiple options to Player_Stats in the config
+Added [SERVERTOOLS] handle to console command responses
+Added small delay to save system if already in process
+Added missing phrases to the phrase file
+Fixed High_Ping_Kicker not triggering properly
+Fixed Shop purchase response not giving the item name
+Fixed multiple logs getting an error from players with {} in their name
+Changed phrase system and corresponding id numbers
+Changed Kill_Notice process to improve response time and allow Show_Damage
+Changed Custom_Commands. No longer limited to first 20 for delays
+Changed Player_Stat_Check to Player_Stats in the config
+Changed phrase system. Now relies on the xml file
+Changed Flying_Detector for more accuracy and improved performance
+Changed default Battle_Logger Player_Distance to 100
+Updated HowToSetup.xml
+*You must rebuild your phrase file. Delete your old one to do this*
+
 19.0.8
 Built using Alpha 19 stable assets
 Functioning with 19 stable. Untested with other versions

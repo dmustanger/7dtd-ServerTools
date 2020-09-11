@@ -207,9 +207,9 @@ namespace ServerTools
             {
                 ClanManager.ClanList();
             }
-            if (AuctionBox.IsEnabled)
+            if (Auction.IsEnabled)
             {
-                AuctionBox.AuctionList();
+                Auction.AuctionList();
             }
             if (Mute.IsEnabled)
             {

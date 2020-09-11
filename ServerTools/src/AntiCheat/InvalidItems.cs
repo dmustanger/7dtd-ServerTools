@@ -320,96 +320,78 @@ namespace ServerTools.AntiCheat
 
         private static void MaxStack(ClientInfo _cInfo, string _name, int _count, int _maxAllowed)
         {
-            string _phrase3;
-            if (!Phrases.Dict.TryGetValue(3, out _phrase3))
-            {
-                _phrase3 = "You have a invalid item stack: {ItemName} {ItemCount}. Max per stack: {MaxPerStack}.";
-            }
-            _phrase3 = _phrase3.Replace("{ItemName}", _name);
-            _phrase3 = _phrase3.Replace("{ItemCount}", _count.ToString());
-            _phrase3 = _phrase3.Replace("{MaxPerStack}", _maxAllowed.ToString());
-            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase3 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
-                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, with invalid stack: {2} {3}. Warned the player.", _cInfo.playerName, _cInfo.playerId, _name, _count));
+                sw.WriteLine(string.Format("Detected \"{0}\", Steam Id {1}, with invalid stack: {2} {3}. Warned the player.", _cInfo.playerName, _cInfo.playerId, _name, _count));
                 sw.WriteLine();
                 sw.Flush();
                 sw.Close();
             }
+            Phrases.Dict.TryGetValue(11, out string _phrase11);
+            _phrase11 = _phrase11.Replace("{ItemName}", _name);
+            _phrase11 = _phrase11.Replace("{ItemCount}", _count.ToString());
+            _phrase11 = _phrase11.Replace("{MaxPerStack}", _maxAllowed.ToString());
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase11 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         private static void Ban(ClientInfo _cInfo, string _name)
         {
-            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Automatic detecton: Invalid Item {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
-            string _phrase4;
-            if (!Phrases.Dict.TryGetValue(4, out _phrase4))
-            {
-                _phrase4 = "Cheat Detected: Auto banned {PlayerName} for having a invalid item: {ItemName}.";
-            }
-            _phrase4 = _phrase4.Replace("{PlayerName}", _cInfo.playerName);
-            _phrase4 = _phrase4.Replace("{ItemName}", _name);
-            ChatHook.ChatMessage(_cInfo, "[FF0000]" + _phrase4 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
+            Phrases.Dict.TryGetValue(14, out string _phrase14);
+            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.entityId, _phrase14), null);
+            Phrases.Dict.TryGetValue(12, out string _phrase12);
+            _phrase12 = _phrase12.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase12 = _phrase12.Replace("{ItemName}", _name);
+            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase12 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
         }
 
         private static void Flag1(ClientInfo _cInfo, string _name)
         {
             Flags.Add(_cInfo.entityId, 1);
-            string _phrase800;
-            if (!Phrases.Dict.TryGetValue(800, out _phrase800))
-            {
-                _phrase800 = "Cheat Detected: {PlayerName} you are holding a invalid item: {ItemName}. You have 30 seconds to drop it.";
-            }
-            _phrase800 = _phrase800.Replace("{PlayerName}", _cInfo.playerName);
-            _phrase800 = _phrase800.Replace("{ItemName}", _name);
-            ChatHook.ChatMessage(_cInfo, "[FF0000]" + _phrase800 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
-                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, with invalid item: {2}. Warning was given to drop it.", _cInfo.playerName, _cInfo.playerId, _name));
+                sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, with invalid item: {2}. Warning was given to drop it.", _cInfo.playerName, _cInfo.playerId, _name));
                 sw.WriteLine();
                 sw.Flush();
                 sw.Close();
             }
+            Phrases.Dict.TryGetValue(15, out string _phrase15);
+            _phrase15 = _phrase15.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase15 = _phrase15.Replace("{ItemName}", _name);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase15 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         private static void Flag2(ClientInfo _cInfo, string _name)
         {
             Flags[_cInfo.entityId] = 2;
-            string _phrase799;
-            if (!Phrases.Dict.TryGetValue(799, out _phrase799))
-            {
-                _phrase799 = "Cheat Detected: {PlayerName} you are holding a invalid item: {ItemName}. Final warning, drop it!";
-            }
-            _phrase799 = _phrase799.Replace("{PlayerName}", _cInfo.playerName);
-            _phrase799 = _phrase799.Replace("{ItemName}", _name);
-            ChatHook.ChatMessage(_cInfo, "[FF0000]" + _phrase799 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
             using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
-                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, with invalid item: {2}. Warning was given to drop it.", _cInfo.playerName, _cInfo.playerId, _name));
+                sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, with invalid item: {2}. Final warning was given to drop it.", _cInfo.playerName, _cInfo.playerId, _name));
                 sw.WriteLine();
                 sw.Flush();
                 sw.Close();
             }
+            Phrases.Dict.TryGetValue(16, out string _phrase16);
+            _phrase16 = _phrase16.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase16 = _phrase16.Replace("{ItemName}", _name);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase16 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         private static void Flag3(ClientInfo _cInfo, string _name)
         {
-            string _phrase5;
-            if (!Phrases.Dict.TryGetValue(5, out _phrase5))
-            {
-                _phrase5 = "Cheat Detected: Auto kicked {PlayerName} for having a invalid item: {ItemName}.";
-            }
-            _phrase5 = _phrase5.Replace("{PlayerName}", _cInfo.playerName);
-            _phrase5 = _phrase5.Replace("{ItemName}", _name);
-            ChatHook.ChatMessage(_cInfo, "[FF0000]" + _phrase5 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Global, null);
-            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Invalid Item: {1}\"", _cInfo.entityId, _name), (ClientInfo)null);
+            Phrases.Dict.TryGetValue(14, out string _phrase14);
+            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.entityId, _phrase14), null);
             using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
-                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, with invalid item: {2}. Kicked the player.", _cInfo.playerName, _cInfo.playerId, _name));
+                sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, with invalid item: {2}. Kicked the player.", _cInfo.playerName, _cInfo.playerId, _name));
                 sw.WriteLine();
                 sw.Flush();
                 sw.Close();
             }
             Flags.Remove(_cInfo.entityId);
+            Phrases.Dict.TryGetValue(13, out string _phrase13);
+            _phrase13 = _phrase13.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase13 = _phrase13.Replace("{ItemName}", _name);
+            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase13 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
         }
 
         public static void CheckStorage()
@@ -466,7 +448,7 @@ namespace ServerTools.AntiCheat
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in InventoryCheck.ChestCheck: {0}.", e.Message));
+                Log.Out(string.Format("[SERVERTOOLS] Error in InventoryCheck.ChestCheck: {0}", e.Message));
             }
         }
     }

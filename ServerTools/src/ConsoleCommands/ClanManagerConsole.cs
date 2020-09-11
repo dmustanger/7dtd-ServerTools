@@ -35,7 +35,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1 && _params.Count > 2)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 or 2, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -44,12 +44,12 @@ namespace ServerTools
                     {
                         ClanManager.IsEnabled = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Clan manager has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Clan manager has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Clan manager is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Clan manager is already off"));
                         return;
                     }
                 }
@@ -59,12 +59,12 @@ namespace ServerTools
                     {
                         ClanManager.IsEnabled = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Clan manager has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Clan manager has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Clan manager is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Clan manager is already on"));
                         return;
                     }
                 }
@@ -72,12 +72,12 @@ namespace ServerTools
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     if (ClanManager.Clans.Count > 0)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Clan List:"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Clan List:"));
                         foreach (KeyValuePair<string, string> i in ClanManager.Clans)
                         {
                             string _playerName = PersistentContainer.Instance.Players[i.Key].PlayerName;
@@ -93,7 +93,7 @@ namespace ServerTools
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("No clans were found"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] No clans were found"));
                     }
                     return;
                 }
@@ -101,7 +101,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
                     int _steamId;
@@ -126,17 +126,17 @@ namespace ServerTools
                                             p.ClanOfficer = false;
                                             p.ClanName = "";
                                             ClanManager.ClanMember.Remove(_id);
-                                            SdtdConsole.Instance.Output(string.Format("Deleted {0} with id {1} from the clan system", p.PlayerName, _id));
+                                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Deleted {0} with id {1} from the clan system", p.PlayerName, _id));
                                             ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_id);
                                             if (_cInfo2 != null)
                                             {
                                                 string _phrase121;
                                                 if (!Phrases.Dict.TryGetValue(121, out _phrase121))
                                                 {
-                                                    _phrase121 = " you have been removed from the clan {ClanName}.";
+                                                    _phrase121 = "You have been removed from the clan {ClanName}.";
                                                 }
                                                 _phrase121 = _phrase121.Replace("{ClanName}", _clanName);
-                                                ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + LoadConfig.Chat_Response_Color + _phrase121 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                                ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _phrase121 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                             }
                                         }
                                         else if (p.ClanInvite != null && p.ClanInvite == _clanName)
@@ -149,11 +149,11 @@ namespace ServerTools
                             PersistentContainer.Instance.Players[_params[1]].ClanOfficer = false;
                             PersistentContainer.Instance.Players[_params[1]].ClanName = "";
                             PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output(string.Format("Deleted {0} with id {1} from the clan system", _playerName, _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Deleted {0} with id {1} from the clan system", _playerName, _params[1]));
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("{0} was not found in the clan system", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0} was not found in the clan system", _params[1]));
                             
                         }
                     }
@@ -181,17 +181,12 @@ namespace ServerTools
                                         p.ClanOfficer = false;
                                         p.ClanRequestToJoin = null;
                                         ClanManager.ClanMember.Remove(_id);
-                                        SdtdConsole.Instance.Output(string.Format("Deleted {0} with id {1} from the clan system", p.PlayerName, _id));
+                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Deleted {0} with id {1} from the clan system", p.PlayerName, _id));
                                         ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForPlayerId(_id);
                                         if (_cInfo2 != null)
                                         {
-                                            string _phrase121;
-                                            if (!Phrases.Dict.TryGetValue(121, out _phrase121))
-                                            {
-                                                _phrase121 = " you have been removed from the clan {ClanName}.";
-                                            }
-                                            _phrase121 = _phrase121.Replace("{ClanName}", _params[0]);
-                                            ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _cInfo2.playerName + LoadConfig.Chat_Response_Color + _phrase121 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                            Phrases.Dict.TryGetValue(91, out string _phrase91);
+                                            ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _phrase91 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                     }
                                     else if (p.ClanInvite != null && p.ClanInvite == _params[1])
@@ -203,7 +198,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("{0} was not found in the clan system", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] {0} was not found in the clan system", _params[1]));
 
                         }
                     }
@@ -211,12 +206,12 @@ namespace ServerTools
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in ClanManagerConsole.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in ClanManagerConsole.Execute: {0}", e.Message));
             }
         }
     }

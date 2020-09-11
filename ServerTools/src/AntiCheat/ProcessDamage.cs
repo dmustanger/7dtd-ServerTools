@@ -12,6 +12,7 @@ namespace ServerTools.AntiCheat
         public static string filepath = string.Format("{0}/Logs/DamageLogs/{1}", API.ConfigPath, file);
         private static string _detectionFile = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         public static string _detectionFilepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _detectionFile);
+        public static Dictionary<int, int> KillDamage = new Dictionary<int, int>();
 
         public static bool ProcessPlayerDamage(EntityAlive __instance, DamageResponse _dmResponse)
         {
@@ -20,79 +21,78 @@ namespace ServerTools.AntiCheat
                 if (__instance != null && __instance is EntityPlayer && _dmResponse.Source != null)
                 {
                     int _sourceId = _dmResponse.Source.getEntityId();
-                    if (_sourceId > 0)
+                    if (_sourceId > 0 && __instance.entityId != _sourceId)
                     {
-                        ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(_sourceId);
-                        if (_cInfo != null)
+                        ClientInfo _cInfo2 = PersistentOperations.GetClientInfoFromEntityId(_sourceId);
+                        if (_cInfo2 != null)
                         {
-                            EntityPlayer _player2 = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                            EntityPlayer _player2 = PersistentOperations.GetEntityPlayer(_cInfo2.playerId);
                             if (_player2 != null)
                             {
-                                if (Damage_Detector)
+                                EntityPlayer _player1 = (EntityPlayer)__instance;
+                                ItemValue _itemValue = ItemClass.GetItem(_player2.inventory.holdingItem.Name, true);
+                                if (_itemValue != null)
                                 {
-                                    ItemValue _itemValue = ItemClass.GetItem(_player2.inventory.holdingItem.Name, true);
-                                    if (_itemValue != null)
+                                    if (Damage_Detector)
                                     {
                                         int _distance = (int)_player2.GetDistance(__instance);
                                         using (StreamWriter sw = new StreamWriter(filepath, true))
                                         {
-                                            sw.WriteLine(string.Format("{0}: {1} {2} hit {3} with entity id {4} using {5} for {6} damage @ {7}. Distance: {8}", DateTime.Now, _cInfo.playerId, _cInfo.playerName, __instance.EntityName, __instance.entityId, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _dmResponse.Strength, __instance.position, _distance));
+                                            sw.WriteLine(string.Format("{0}: {1} \"{2}\" hit \"{3}\" with entity id {4} using {5} for {6} damage @ {7}. Distance: {8}", DateTime.Now, _cInfo2.playerId, _cInfo2.playerName, __instance.EntityName, __instance.entityId, _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.GetItemName(), _dmResponse.Strength, __instance.position, _distance));
                                             sw.WriteLine();
                                             sw.Flush();
                                             sw.Close();
                                         }
-                                        if (_dmResponse.Strength >= Entity_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Admin_Level)
+                                        if (_dmResponse.Strength >= Entity_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo2) > Admin_Level)
                                         {
-                                            string _message = "[FF0000]{PlayerName} has been banned for using damage manipulation.";
-                                            _message = _message.Replace("{PlayerName}", _cInfo.playerName);
-                                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for using damage manipulation. Damage recorded: {1}\"", _cInfo.playerId, _dmResponse.Strength), (ClientInfo)null);
+                                            Phrases.Dict.TryGetValue(952, out string _phrase952);
+                                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1} {2}\"", _cInfo2.playerId, _phrase952, _dmResponse.Strength), null);
                                             using (StreamWriter sw = new StreamWriter(_detectionFilepath, true))
                                             {
-                                                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, using damage manipulation @ {2}. Damage recorded: {3}", _cInfo.playerName, _cInfo.playerId, __instance.position, _dmResponse.Strength));
+                                                sw.WriteLine(string.Format("Detected \"{0}\" Steam Id {1}, exceeded damage limit @ {2}. Damage: {3}", _cInfo2.playerName, _cInfo2.playerId, __instance.position, _dmResponse.Strength));
                                                 sw.WriteLine();
                                                 sw.Flush();
                                                 sw.Close();
                                             }
+                                            Phrases.Dict.TryGetValue(951, out string _phrase951);
+                                            _phrase951 = _phrase951.Replace("{PlayerName}", _cInfo2.playerName);
+                                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase951 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                             return false;
                                         }
                                     }
                                 }
                                 if (Zones.IsEnabled)
                                 {
-                                    if (Zones.ZonePvE.Contains(__instance.entityId) || Zones.ZonePvE.Contains(_cInfo.entityId))
+                                    if (Zones.ZonePvE.Contains(__instance.entityId) || Zones.ZonePvE.Contains(_cInfo2.entityId))
                                     {
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Do not attack players inside a pve zone or while standing in one!" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                        EntityPlayer _player1 = (EntityPlayer)__instance;
-                                        if (_player1 != null)
+                                        Phrases.Dict.TryGetValue(323, out string _phrase323);
+                                        ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _phrase323 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                        if (!_player1.IsFriendsWith(_player2))
                                         {
-                                            if (!_player1.IsFriendsWith(_player2))
+                                            if (PersistentOperations.PvEViolations.ContainsKey(_cInfo2.entityId))
                                             {
-                                                if (PersistentOperations.PvEViolations.ContainsKey(_cInfo.entityId))
+                                                PersistentOperations.PvEViolations.TryGetValue(_cInfo2.entityId, out int _flags);
+                                                _flags++;
+                                                if (PersistentOperations.Jail_Violation > 0 && _flags >= PersistentOperations.Jail_Violation)
                                                 {
-                                                    PersistentOperations.PvEViolations.TryGetValue(_cInfo.entityId, out int _flags);
-                                                    _flags++;
-                                                    if (PersistentOperations.Jail_Violation > 0 && _flags >= PersistentOperations.Jail_Violation)
-                                                    {
-                                                        Jail(_cInfo, __instance);
-                                                    }
-                                                    if (PersistentOperations.Kill_Violation > 0 && _flags >= PersistentOperations.Kill_Violation)
-                                                    {
-                                                        Kill(_cInfo);
-                                                    }
-                                                    if (PersistentOperations.Kick_Violation > 0 && _flags >= PersistentOperations.Kick_Violation)
-                                                    {
-                                                        Kick(_cInfo);
-                                                    }
-                                                    if (PersistentOperations.Ban_Violation > 0 && _flags >= PersistentOperations.Ban_Violation)
-                                                    {
-                                                        Ban(_cInfo);
-                                                    }
+                                                    Jail(_cInfo2, __instance);
                                                 }
-                                                else
+                                                if (PersistentOperations.Kill_Violation > 0 && _flags >= PersistentOperations.Kill_Violation)
                                                 {
-                                                    PersistentOperations.PvEViolations.Add(_cInfo.entityId, 1);
+                                                    Kill(_cInfo2);
                                                 }
+                                                if (PersistentOperations.Kick_Violation > 0 && _flags >= PersistentOperations.Kick_Violation)
+                                                {
+                                                    Kick(_cInfo2);
+                                                }
+                                                if (PersistentOperations.Ban_Violation > 0 && _flags >= PersistentOperations.Ban_Violation)
+                                                {
+                                                    Ban(_cInfo2);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                PersistentOperations.PvEViolations.Add(_cInfo2.entityId, 1);
                                             }
                                         }
                                         return false;
@@ -100,40 +100,45 @@ namespace ServerTools.AntiCheat
                                 }
                                 if (Lobby.IsEnabled && Lobby.PvE && Lobby.LobbyPlayers.Contains(__instance.entityId) || Market.IsEnabled && Market.PvE && Market.MarketPlayers.Contains(__instance.entityId))
                                 {
-                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "Do not attack players inside the lobby or market!" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    EntityPlayer _player1 = (EntityPlayer)__instance;
-                                    if (_player1 != null)
+                                    Phrases.Dict.TryGetValue(260, out string _phrase260);
+                                    ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _phrase260 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                    if (!_player1.IsFriendsWith(_player2))
                                     {
-                                        if (!_player1.IsFriendsWith(_player2))
+                                        if (PersistentOperations.PvEViolations.ContainsKey(_cInfo2.entityId))
                                         {
-                                            if (PersistentOperations.PvEViolations.ContainsKey(_cInfo.entityId))
+                                            PersistentOperations.PvEViolations.TryGetValue(_cInfo2.entityId, out int _violations);
+                                            _violations++;
+                                            if (PersistentOperations.Jail_Violation > 0 && _violations >= PersistentOperations.Jail_Violation)
                                             {
-                                                PersistentOperations.PvEViolations.TryGetValue(_cInfo.entityId, out int _violations);
-                                                _violations++;
-                                                if (PersistentOperations.Jail_Violation > 0 && _violations >= PersistentOperations.Jail_Violation)
-                                                {
-                                                    Jail(_cInfo, __instance);
-                                                }
-                                                if (PersistentOperations.Kill_Violation > 0 && _violations >= PersistentOperations.Kill_Violation)
-                                                {
-                                                    Kill(_cInfo);
-                                                }
-                                                if (PersistentOperations.Kick_Violation > 0 && _violations >= PersistentOperations.Kick_Violation)
-                                                {
-                                                    Kick(_cInfo);
-                                                }
-                                                else if (PersistentOperations.Ban_Violation > 0 && _violations >= PersistentOperations.Ban_Violation)
-                                                {
-                                                    Ban(_cInfo);
-                                                }
+                                                Jail(_cInfo2, __instance);
                                             }
-                                            else
+                                            if (PersistentOperations.Kill_Violation > 0 && _violations >= PersistentOperations.Kill_Violation)
                                             {
-                                                PersistentOperations.PvEViolations.Add(_cInfo.entityId, 1);
+                                                Kill(_cInfo2);
                                             }
+                                            if (PersistentOperations.Kick_Violation > 0 && _violations >= PersistentOperations.Kick_Violation)
+                                            {
+                                                Kick(_cInfo2);
+                                            }
+                                            else if (PersistentOperations.Ban_Violation > 0 && _violations >= PersistentOperations.Ban_Violation)
+                                            {
+                                                Ban(_cInfo2);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            PersistentOperations.PvEViolations.Add(_cInfo2.entityId, 1);
                                         }
                                     }
                                     return false;
+                                }
+                                if (KillNotice.IsEnabled && _dmResponse.Strength >= __instance.Health)
+                                {
+                                    ClientInfo _cInfo1 = PersistentOperations.GetClientInfoFromEntityId(__instance.entityId);
+                                    if (_cInfo1 != null)
+                                    {
+                                        KillNotice.Exec(_cInfo1, _player1, _cInfo2, _player2, _itemValue.ItemClass.GetItemName(), _dmResponse.Strength);
+                                    }
                                 }
                             }
                         }
@@ -273,20 +278,21 @@ namespace ServerTools.AntiCheat
                     {
                         if (Damage_Detector)
                         {
-                            string _message = "[FF0000]{PlayerName} has been banned for using damage manipulation.";
-                            _message = _message.Replace("{PlayerName}", _player.EntityName);
                             ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_persistentPlayerId);
                             if (_cInfo != null)
                             {
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for using a damage manipulator. Damage recorded: {1}\"", _persistentPlayerId, _total.ToString()), null);
+                                Phrases.Dict.TryGetValue(952, out string _phrase952);
+                                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1} {2}\"", _cInfo.playerId, _phrase952, _total.ToString()), null);
                                 using (StreamWriter sw = new StreamWriter(_detectionFilepath, true))
                                 {
-                                    sw.WriteLine(string.Format("Detected {0} with steam id {1} using a damage manipulator @ position {2}. Damage recorded: {3}", _player.EntityName, _persistentPlayerId, _player.position, _total));
+                                    sw.WriteLine(string.Format("Detected \"{0}\" Steam id {1} exceeding the damage limit @ position {2}. Damage: {3}", _cInfo.playerName, _persistentPlayerId, _player.position, _total));
                                     sw.WriteLine();
                                     sw.Flush();
                                     sw.Close();
                                 }
+                                Phrases.Dict.TryGetValue(951, out string _phrase951);
+                                _phrase951 = _phrase951.Replace("{PlayerName}", _cInfo.playerName);
+                                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase951 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                             }
                             return true;
                         }
@@ -306,9 +312,6 @@ namespace ServerTools.AntiCheat
 
         private static void Jail(ClientInfo _cInfoKiller, EntityAlive _cInfoVictim)
         {
-            string _message = "[FF0000]{PlayerName} has been jailed for attempted murder in a pve zone.";
-            _message = _message.Replace("{PlayerName}", _cInfoKiller.playerName);
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             SdtdConsole.Instance.ExecuteSync(string.Format("jail add {0} 120", _cInfoKiller.playerId), null);
             if (!Zones.Forgive.ContainsKey(_cInfoVictim.entityId))
             {
@@ -318,30 +321,35 @@ namespace ServerTools.AntiCheat
             {
                 Zones.Forgive[_cInfoVictim.entityId] = _cInfoKiller.entityId;
             }
+            Phrases.Dict.TryGetValue(204, out string _phrase204);
+            _phrase204 = _phrase204.Replace("{PlayerName}", _cInfoKiller.playerName);
+            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase204 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
         }
 
         private static void Kill(ClientInfo _cInfo)
         {
-            string _message = "[FF0000]{PlayerName} has been executed for attempted murder in a pve zone.";
-            _message = _message.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             SdtdConsole.Instance.ExecuteSync(string.Format("kill {0}", _cInfo.playerId), null);
+            Phrases.Dict.TryGetValue(324, out string _phrase324);
+            _phrase324 = _phrase324.Replace("{PlayerName}", _cInfo.playerName);
+            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase324 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
         }
 
         private static void Kick(ClientInfo _cInfo)
         {
-            string _message = "[FF0000]{PlayerName} has been kicked for attempted murder in a pve zone.";
-            _message = _message.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"Auto detection has kicked you for murder in a pve zone\"", _cInfo.playerId), null);
+            Phrases.Dict.TryGetValue(326, out string _phrase326);
+            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase326), null);
+            Phrases.Dict.TryGetValue(325, out string _phrase325);
+            _phrase325 = _phrase325.Replace("{PlayerName}", _cInfo.playerName);
+            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase325 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
         }
 
         private static void Ban(ClientInfo _cInfo)
         {
-            string _message = "[FF0000]{PlayerName} has been banned for attempted murder in a pve zone.";
-            _message = _message.Replace("{PlayerName}", _cInfo.playerName);
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for murder in a pve zone\"", _cInfo.playerId), null);
+            Phrases.Dict.TryGetValue(328, out string _phrase328);
+            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase328), null);
+            Phrases.Dict.TryGetValue(327, out string _phrase327);
+            _phrase327 = _phrase327.Replace("{PlayerName}", _cInfo.playerName);
+            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase327 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 
 namespace ServerTools.AntiCheat
 {
@@ -11,7 +10,6 @@ namespace ServerTools.AntiCheat
         public static int Flying_Admin_Level = 0, Godmode_Admin_Level, Spectator_Admin_Level, Flying_Flags = 4;
         private static Dictionary<int, int> Flag = new Dictionary<int, int>();
         private static Dictionary<int, float> OldY = new Dictionary<int, float>();
-        private static List<int> WaterFlag = new List<int>();
 
         public static void Exec()
         {
@@ -34,21 +32,21 @@ namespace ServerTools.AntiCheat
                                     {
                                         if (_player.IsSpectator)
                                         {
+                                            Phrases.Dict.TryGetValue(962, out string _phrase962);
+                                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase962), null);
                                             string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
                                             string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
                                             using (StreamWriter sw = new StreamWriter(_filepath, true))
                                             {
-                                                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, using spectator mode @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                sw.WriteLine(string.Format("Detected \"{0}\", Steam id {1}, using spectator mode @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                 sw.WriteLine();
                                                 sw.Flush();
                                                 sw.Close();
                                             }
                                             Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, using spectator mode @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
-                                            ChatHook.ChatMessage(null, "[FF0000]" + "Cheater! " + _cInfo.playerName + " detected using spectator mode!" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for spectator mode\"", _cInfo.playerId), null);
-                                            string _message = "[FF0000]{PlayerName} has been banned for spectator mode.";
-                                            _message = _message.Replace("{PlayerName}", _cInfo.playerName);
-                                            ChatHook.ChatMessage(null, _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                            Phrases.Dict.TryGetValue(961, out string _phrase961);
+                                            _phrase961 = _phrase961.Replace("{PlayerName}", _cInfo.playerName);
+                                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase961 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                             continue;
                                         }
                                     }
@@ -56,21 +54,21 @@ namespace ServerTools.AntiCheat
                                     {
                                         if (_player.Buffs.HasBuff("god"))
                                         {
-                                            ChatHook.ChatMessage(null, "[FF0000]" + "Cheater! " + _cInfo.playerName + " detected using god mode!" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for god mode\"", _cInfo.playerId), null);
+                                            Phrases.Dict.TryGetValue(972, out string _phrase972);
+                                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase972), null);
                                             string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
                                             string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
                                             using (StreamWriter sw = new StreamWriter(_filepath, true))
                                             {
-                                                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, using god mode @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
+                                                sw.WriteLine(string.Format("Detected {0}, Steam Id {1}, using godmode @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z));
                                                 sw.WriteLine();
                                                 sw.Flush();
                                                 sw.Close();
                                             }
-                                            Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, using god mode @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
-                                            string _message = "[FF0000]{PlayerName} has been banned for god mode.";
-                                            _message = _message.Replace("{PlayerName}", _cInfo.playerName);
-                                            ChatHook.ChatMessage(null, _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                            Log.Warning("[SERVERTOOLS] Detected \"{0}\", Steam id {1}, using godmode @ {2} {3} {4}.", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
+                                            Phrases.Dict.TryGetValue(971, out string _phrase971);
+                                            _phrase971 = _phrase971.Replace("{PlayerName}", _cInfo.playerName);
+                                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase971 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                             continue;
                                         }
                                     }
@@ -78,10 +76,7 @@ namespace ServerTools.AntiCheat
                                     {
                                         if (_player.IsSpawned() && _player.IsAlive() && !_player.IsStuck && _player.AttachedToEntity == null)
                                         {
-
-
-
-                                            if ((!_player.onGround && AirCheck(_player.position.x, _player.position.y, _player.position.z)) || GroundCheck(_player.position.x, _player.position.y, _player.position.z))
+                                            if (AirCheck(_player.position.x, _player.position.y, _player.position.z) || GroundCheck(_player.position.x, _player.position.y, _player.position.z))
                                             {
                                                 if (OldY.ContainsKey(_cInfo.entityId))
                                                 {
@@ -100,11 +95,14 @@ namespace ServerTools.AntiCheat
                                                 {
                                                     OldY.Add(_cInfo.entityId, _player.position.y);
                                                 }
-                                                if (Flag.TryGetValue(_cInfo.entityId, out int _flags))
+                                                if (Flag.ContainsKey(_cInfo.entityId))
                                                 {
+                                                    Flag.TryGetValue(_cInfo.entityId, out int _flags);
                                                     if (_flags + 1 >= Flying_Flags)
                                                     {
                                                         Flag.Remove(_cInfo.entityId);
+                                                        Phrases.Dict.TryGetValue(982, out string _phrase982);
+                                                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1}\"", _cInfo.playerId, _phrase982), null);
                                                         string _file = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
                                                         string _filepath = string.Format("{0}/Logs/DetectionLogs/{1}", API.ConfigPath, _file);
                                                         using (StreamWriter sw = new StreamWriter(_filepath, true))
@@ -114,12 +112,10 @@ namespace ServerTools.AntiCheat
                                                             sw.Flush();
                                                             sw.Close();
                                                         }
-                                                        ChatHook.ChatMessage(null, "[FF0000]" + "Cheater! Player " + _cInfo.playerName + " detected flying!" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                         Log.Warning("[SERVERTOOLS] Detected {0}, Steam Id {1}, flying @ {2} {3} {4}. Steam Id has been banned", _cInfo.playerName, _cInfo.playerId, (int)_player.position.x, (int)_player.position.y, (int)_player.position.z);
-                                                        SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"Auto detection has banned you for flying\"", _cInfo.playerId), null);
-                                                        string _message = "[FF0000]{PlayerName} has been banned for flying.";
-                                                        _message = _message.Replace("{PlayerName}", _cInfo.playerName);
-                                                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _message + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                                        Phrases.Dict.TryGetValue(981, out string _phrase981);
+                                                        _phrase981 = _phrase981.Replace("{PlayerName}", _cInfo.playerName);
+                                                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase981 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                                                         continue;
                                                     }
                                                     else
@@ -163,11 +159,11 @@ namespace ServerTools.AntiCheat
 
         private static bool AirCheck(float x, float y, float z)
         {
-            for (float k = y - 2.8f; k <= (y + 1.5f); k++)
+            for (float k = y - 2.5f; k <= (y + 2f); k++)
             {
-                for (float i = x - 1f; i <= (x + 1f); i++)
+                for (float i = x - 1.5f; i <= (x + 1.5f); i++)
                 {
-                    for (float j = z - 1f; j <= (z + 1f); j++)
+                    for (float j = z - 1.5f; j <= (z + 1.5f); j++)
                     {
                         BlockValue Block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
                         if (Block.type != BlockValue.Air.type)
@@ -182,14 +178,14 @@ namespace ServerTools.AntiCheat
 
         private static bool GroundCheck(float x, float y, float z)
         {
-            for (float k = y - 1f; k <= (y + 1.5f); k++)
+            for (float k = y - 1f; k <= (y + 2f); k++)
             {
-                for (float i = x - 1f; i <= (x + 1f); i++)
+                for (float i = x - 1.5f; i <= (x + 1.5f); i++)
                 {
-                    for (float j = z - 1f; j <= (z + 1f); j++)
+                    for (float j = z - 1.5f; j <= (z + 1.5f); j++)
                     {
-                        BlockValue block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
-                        if (block.Block.shape.ToString() != "Terrain")
+                        BlockValue _block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
+                        if (!_block.Block.IsCollideMovement || _block.Block.isMultiBlock || _block.Block.IsTerrainDecoration || _block.Block.IsDecoration)
                         {
                             return false;
                         }

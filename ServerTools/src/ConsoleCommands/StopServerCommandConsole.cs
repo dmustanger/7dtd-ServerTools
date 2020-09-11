@@ -31,14 +31,14 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0] == "cancel")
                 {
                     if (!StopServer.CountingDown)
                     {
-                        SdtdConsole.Instance.Output("Stopserver is not running");
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Stopserver is not running");
                     }
                     else
                     {
@@ -49,20 +49,20 @@ namespace ServerTools
                         {
                             Timers._shutdown = 0;
                         }
-                        SdtdConsole.Instance.Output("Stopserver has been cancelled");
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] Stopserver has been cancelled");
                     }
                 }
                 else
                 {
                     if (StopServer.CountingDown)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Server is already set to shutdown"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Server is already set to shutdown"));
                     }
                     else
                     {
                         if (!int.TryParse(_params[0], out StopServer.Delay))
                         {
-                            SdtdConsole.Instance.Output(string.Format("Invalid time specified: {0}", _params[0]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid time specified: {0}", _params[0]));
                         }
                         else
                         {

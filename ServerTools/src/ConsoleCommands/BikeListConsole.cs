@@ -50,14 +50,14 @@ namespace ServerTools
                                 {
                                     if (_attachedPlayer.entityId == _cInfo.entityId)
                                     {
-                                        SdtdConsole.Instance.Output(string.Format("#{0}: Id {1}, Located at x {2}  y {3} z {4}, Player {5} is riding this bike.", i, _entity.entityId, x, y, z, _cInfo.playerName));
+                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, Located at x {2}  y {3} z {4}, Player {5} is riding this bike.", i, _entity.entityId, x, y, z, _cInfo.playerName));
                                     }
                                 }
                             }
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("#{0}: Id {1}, Located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] #{0}: Id {1}, Located at x {2}  y {3} z {4}", i, _entity.entityId, x, y, z));
                         }
                     }
                 }

@@ -205,16 +205,12 @@ namespace ServerTools
             else
             {
                 int _timeleft = _delay - _timepassed;
-                string _phrase605;
-                if (!Phrases.Dict.TryGetValue(605, out _phrase605))
-                {
-                    _phrase605 = "You can only use {CommandPrivate}{Command49} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                }
-                _phrase605 = _phrase605.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase605 = _phrase605.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase605 = _phrase605.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                _phrase605 = _phrase605.Replace("{Command49}", Command49);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase605 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(313, out string _phrase313);
+                _phrase313 = _phrase313.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase313 = _phrase313.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase313 = _phrase313.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase313 = _phrase313.Replace("{Command49}", Command49);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase313 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -226,13 +222,9 @@ namespace ServerTools
             }
             else
             {
-                string _phrase814;
-                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                {
-                    _phrase814 = "You do not have enough {WalletCoinName} in your wallet to run this command.";
-                }
-                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(314, out string _phrase314);
+                _phrase314 = _phrase314.Replace("{CoinName}", Wallet.Coin_Name);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase314 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -650,22 +642,14 @@ namespace ServerTools
                                 }
                                 PersistentContainer.Instance.Players[_cInfo.playerId].LastTravel = DateTime.Now;
                                 PersistentContainer.Instance.Save();
-                                string _phrase603;
-                                if (!Phrases.Dict.TryGetValue(603, out _phrase603))
-                                {
-                                    _phrase603 = "You have traveled to {Destination}.";
-                                }
-                                _phrase603 = _phrase603.Replace("{Destination}", kvpCorners.Key);
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase603 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                Phrases.Dict.TryGetValue(311, out string _phrase311);
+                                _phrase311 = _phrase311.Replace("{Destination}", kvpCorners.Key);
+                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase311 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 return;
                             }
                         }
-                        string _phrase604;
-                        if (!Phrases.Dict.TryGetValue(604, out _phrase604))
-                        {
-                            _phrase604 = "You are not in a travel location.";
-                        }
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase604 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue(312, out string _phrase312);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase312 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                         return;
                     }
                 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace ServerTools
 {
@@ -8,25 +7,27 @@ namespace ServerTools
         public static bool IsEnabled = false;
         public static string Command89 = "playerlist";
 
-        public static void Exec(ClientInfo _cInfo, string _playerName)
+        public static void Exec(ClientInfo _cInfo)
         {
-            bool _found = false;
             List<ClientInfo> ClientInfoList = PersistentOperations.ClientList();
-            for (int i = 0; i < ClientInfoList.Count; i++)
+            if (ClientInfoList != null && ClientInfoList.Count > 0)
             {
-                ClientInfo _cInfo1 = ClientInfoList[i];
-                if (_cInfo.entityId != _cInfo1.entityId)
+                for (int i = 0; i < ClientInfoList.Count; i++)
                 {
-                    _found = true;
-                    string _response = "Player = {PlayerName}, Id = {EntityId}[-]";
-                    _response = _response.Replace("{PlayerName}", _cInfo1.playerName);
-                    _response = _response.Replace("{EntityId}", _cInfo1.entityId.ToString());
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response, _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    ClientInfo _cInfo1 = ClientInfoList[i];
+                    if (_cInfo.entityId != _cInfo1.entityId)
+                    {
+                        Phrases.Dict.TryGetValue(811, out string _phrase811);
+                        _phrase811 = _phrase811.Replace("{PlayerName}", _cInfo1.playerName);
+                        _phrase811 = _phrase811.Replace("{EntityId}", _cInfo1.entityId.ToString());
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase811 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    }
                 }
             }
-            if (!_found)
+            else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "No other players found", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(812, out string _phrase812);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase812 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
     }

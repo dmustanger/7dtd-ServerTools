@@ -17,12 +17,8 @@ namespace ServerTools
             string[] _command = { Command87 };
             if (!GameManager.Instance.adminTools.CommandAllowedFor(_command, _cInfo))
             {
-                string _phrase107;
-                if (!Phrases.Dict.TryGetValue(107, out _phrase107))
-                {
-                    _phrase107 = "You do not have permissions to use this command.";
-                }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase107 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(248, out string _phrase248);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase248 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
@@ -35,14 +31,10 @@ namespace ServerTools
                     int z = (int)_position.z;
                     string _lposition = x + "," + y + "," + z;
                     Lobby_Position = _lposition;
-                    string _phrase551;
-                    if (!Phrases.Dict.TryGetValue(551, out _phrase551))
-                    {
-                        _phrase551 = "You have set the lobby position as {LobbyPosition}.";
-                    }
-                    _phrase551 = _phrase551.Replace("{LobbyPosition}", Lobby_Position);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase551 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     LoadConfig.WriteXml();
+                    Phrases.Dict.TryGetValue(242, out string _phrase242);
+                    _phrase242 = _phrase242.Replace("{LobbyPosition}", Lobby_Position);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase242 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }
@@ -51,7 +43,8 @@ namespace ServerTools
         {
             if (Donor_Only && ReservedSlots.IsEnabled && !ReservedSlots.ReservedCheck(_cInfo.playerId))
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "This command is locked to donors only" + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(249, out string _phrase249);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase249 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 return;
             }
             if (Delay_Between_Uses < 1)
@@ -109,16 +102,12 @@ namespace ServerTools
             else
             {
                 int _timeleft = _delay - _timepassed;
-                string _phrase550;
-                if (!Phrases.Dict.TryGetValue(550, out _phrase550))
-                {
-                    _phrase550 = "You can only use {CommandPrivate}{Command88} once every {DelayBetweenUses} minutes. Time remaining: {TimeRemaining} minutes.";
-                }
-                _phrase550 = _phrase550.Replace("{DelayBetweenUses}", _delay.ToString());
-                _phrase550 = _phrase550.Replace("{TimeRemaining}", _timeleft.ToString());
-                _phrase550 = _phrase550.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                _phrase550 = _phrase550.Replace("{Command88}", Command88);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase550 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(241, out string _phrase241);
+                _phrase241 = _phrase241.Replace("{DelayBetweenUses}", _delay.ToString());
+                _phrase241 = _phrase241.Replace("{TimeRemaining}", _timeleft.ToString());
+                _phrase241 = _phrase241.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                _phrase241 = _phrase241.Replace("{Command88}", Command88);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase241 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -130,13 +119,9 @@ namespace ServerTools
             }
             else
             {
-                string _phrase814;
-                if (!Phrases.Dict.TryGetValue(814, out _phrase814))
-                {
-                    _phrase814 = "You do not have enough {WalletCoinName} in your wallet to run this command.";
-                }
-                _phrase814 = _phrase814.Replace("{WalletCoinName}", Wallet.Coin_Name);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase814 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(244, out string _phrase244);
+                _phrase244 = _phrase244.Replace("{CoinName}", Wallet.Coin_Name);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase244 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -171,14 +156,10 @@ namespace ServerTools
                         string _pposition = x + "," + y + "," + z;
                         LobbyPlayers.Add(_cInfo.entityId);
                         PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = _pposition;
-                        string _phrase552;
-                        if (!Phrases.Dict.TryGetValue(552, out _phrase552))
-                        {
-                            _phrase552 = "You can go back by typing {CommandPrivate}{Command53} when you are ready to leave the lobby.";
-                        }
-                        _phrase552 = _phrase552.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                        _phrase552 = _phrase552.Replace("{Command53}", Command53);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase552 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue(243, out string _phrase243);
+                        _phrase243 = _phrase243.Replace("{CommandPrivate}", ChatHook.Command_Private);
+                        _phrase243 = _phrase243.Replace("{Command53}", Command53);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase243 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     string[] _cords = Lobby.Lobby_Position.Split(',').ToArray();
                     if (int.TryParse(_cords[0], out int _x))
@@ -194,12 +175,6 @@ namespace ServerTools
                                 }
                                 PersistentContainer.Instance.Players[_cInfo.playerId].LastLobby = DateTime.Now;
                                 PersistentContainer.Instance.Save();
-                                string _phrase553;
-                                if (!Phrases.Dict.TryGetValue(553, out _phrase553))
-                                {
-                                    _phrase553 = "Sent you to the lobby.";
-                                }
-                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase553 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }
@@ -207,12 +182,8 @@ namespace ServerTools
             }
             else
             {
-                string _phrase554;
-                if (!Phrases.Dict.TryGetValue(554, out _phrase554))
-                {
-                    _phrase554 = "The lobby position is not set.";
-                }
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase554 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(245, out string _phrase245);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase245 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -235,23 +206,19 @@ namespace ServerTools
                         LobbyPlayers.Remove(_cInfo.entityId);
                         PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = "";
                         PersistentContainer.Instance.Save();
-                        string _phrase555;
-                        if (!Phrases.Dict.TryGetValue(555, out _phrase555))
-                        {
-                            _phrase555 = "Sent you back to your saved location.";
-                        }
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase555 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
                         LobbyPlayers.Remove(_cInfo.entityId);
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have no return point saved[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue(246, out string _phrase246);
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase246 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You have no return point saved[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(246, out string _phrase246);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase246 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -264,14 +231,8 @@ namespace ServerTools
                 {
                     PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = "";
                     PersistentContainer.Instance.Save();
-                    string _phrase556;
-                    if (!Phrases.Dict.TryGetValue(556, out _phrase556))
-                    {
-                        _phrase556 = "You have left the lobby space. {CommandPrivate}{Command53} command is no longer available.";
-                        _phrase556 = _phrase556.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                        _phrase556 = _phrase556.Replace("{Command53}", Command53);
-                    }
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase556 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                    Phrases.Dict.TryGetValue(247, out string _phrase247);
+                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase247 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }
         }

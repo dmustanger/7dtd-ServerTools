@@ -168,26 +168,26 @@ namespace ServerTools
         {
             if (Dict.ContainsKey(_cInfo.playerId))
             {
-                DateTime _dt;
-                if (Dict.TryGetValue(_cInfo.playerId, out _dt))
+                if (Dict.TryGetValue(_cInfo.playerId, out DateTime _dt))
                 {
                     if (DateTime.Now < _dt)
                     {
-                        string _response = "Your reserved status expires on {DateTime}.[-]";
-                        _response = _response.Replace("{DateTime}", _dt.ToString());
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue(64, out string _phrase64);
+                        _phrase64 = _phrase64.Replace("{DateTime}", _dt.ToString());
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase64 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                     else
                     {
-                        string _response = "Your reserved status has expired on {DateTime}.[-]";
-                        _response = _response.Replace("{DateTime}", _dt.ToString());
-                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _response + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        Phrases.Dict.TryGetValue(65, out string _phrase65);
+                        _phrase65 = _phrase65.Replace("{DateTime}", _dt.ToString());
+                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase65 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                     }
                 }
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + "You are not on the reservation list. Expiration date unavailable.[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(66, out string _phrase66);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase66 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -286,26 +286,16 @@ namespace ServerTools
                     {
                         Kicked.Add(_clientToKick, DateTime.Now);
                     }
-                    string _phrase20;
-                    if (!Phrases.Dict.TryGetValue(20, out _phrase20))
-                    {
-                        _phrase20 = "{ServerResponseName} - The server is full. You were kicked by the reservation system to open a slot";
-                    }
-                    _phrase20 = _phrase20.Replace("{ServerResponseName}", LoadConfig.Server_Response_Name);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _clientToKick, _phrase20), null);
+                    Phrases.Dict.TryGetValue(61, out string _phrase61);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _clientToKick, _phrase61), null);
                     return true;
                 }
                 else if (_reservedKicks != null && _reservedKicks.Count > 0)
                 {
                     _reservedKicks.RandomizeList();
                     _clientToKick = _reservedKicks[0];
-                    string _phrase20;
-                    if (!Phrases.Dict.TryGetValue(20, out _phrase20))
-                    {
-                        _phrase20 = "{ServerResponseName} - The server is full. You were kicked by the reservation system to open a slot";
-                    }
-                    _phrase20 = _phrase20.Replace("{ServerResponseName}", LoadConfig.Server_Response_Name);
-                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _clientToKick, _phrase20), null);
+                    Phrases.Dict.TryGetValue(61, out string _phrase61);
+                    SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _clientToKick, _phrase61), null);
                     return true;
                 }
             }

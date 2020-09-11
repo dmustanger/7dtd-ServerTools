@@ -11,33 +11,21 @@ namespace ServerTools
         public static void Exec(ClientInfo _cInfo)
         {
             int _daysRemaining = Day7.DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()));
-            string _phrase301;
-            string _phrase305;
-            string _phrase306;
-            if (!Phrases.Dict.TryGetValue(301, out _phrase301))
-            {
-                _phrase301 = "Next horde night is in {DaysUntilHorde} days";
-            }
-            if (!Phrases.Dict.TryGetValue(305, out _phrase305))
-            {
-                _phrase305 = "The horde is here!";
-            }
-            if (!Phrases.Dict.TryGetValue(306, out _phrase306))
-            {
-                _phrase306 = "Next horde night is today";
-            }
-            _phrase301 = _phrase301.Replace("{DaysUntilHorde}", _daysRemaining.ToString());
             if (_daysRemaining == 0 && !SkyManager.BloodMoon())
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase306 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(682, out string _phrase682);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase682 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else if (SkyManager.BloodMoon())
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(683, out string _phrase683);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase683 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
             else
             {
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase301 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Phrases.Dict.TryGetValue(681, out string _phrase681);
+                _phrase681 = _phrase681.Replace("{Value}", _daysRemaining.ToString());
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase681 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 
@@ -46,33 +34,21 @@ namespace ServerTools
             if (ConnectionManager.Instance.ClientCount() > 0)
             {
                 int _daysRemaining = Day7.DaysRemaining(GameUtils.WorldTimeToDays(GameManager.Instance.World.GetWorldTime()));
-                string _phrase301;
-                string _phrase305;
-                string _phrase306;
-                if (!Phrases.Dict.TryGetValue(301, out _phrase301))
-                {
-                    _phrase301 = "Next horde night is in {DaysUntilHorde} days";
-                }
-                if (!Phrases.Dict.TryGetValue(305, out _phrase305))
-                {
-                    _phrase305 = "The horde is here!";
-                }
-                if (!Phrases.Dict.TryGetValue(306, out _phrase306))
-                {
-                    _phrase306 = "Next horde night is today";
-                }
-                _phrase301 = _phrase301.Replace("{DaysUntilHorde}", _daysRemaining.ToString());
                 if (_daysRemaining == 0 && !SkyManager.BloodMoon())
                 {
-                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase306 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    Phrases.Dict.TryGetValue(682, out string _phrase682);
+                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase682 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 else if (SkyManager.BloodMoon())
                 {
-                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase305 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    Phrases.Dict.TryGetValue(683, out string _phrase683);
+                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase683 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
                 else
                 {
-                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase301 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    Phrases.Dict.TryGetValue(681, out string _phrase681);
+                    _phrase681 = _phrase681.Replace("{Value}", _daysRemaining.ToString());
+                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase681 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                 }
             }
         }

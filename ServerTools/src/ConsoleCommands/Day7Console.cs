@@ -27,7 +27,7 @@ namespace ServerTools
             {
                 if (_params.Count != 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -36,12 +36,12 @@ namespace ServerTools
                     {
                         Day7.IsEnabled = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Day7 has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Day7 has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Day7 is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Day7 is already off"));
                         return;
                     }
                 }
@@ -51,23 +51,23 @@ namespace ServerTools
                     {
                         Day7.IsEnabled = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Day7 has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Day7 has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Day7 is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Day7 is already on"));
                         return;
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
             {
-                Log.Out(string.Format("[SERVERTOOLS] Error in Day7Console.Execute: {0}", e));
+                Log.Out(string.Format("[SERVERTOOLS] Error in Day7Console.Execute: {0}", e.Message));
             }
         }
     }

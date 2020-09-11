@@ -11,6 +11,7 @@ namespace ServerTools
         public static int Jail_Violation = 4, Kill_Violation = 6, Kick_Violation = 8, Ban_Violation = 10;
         public static Dictionary<string, DateTime> Session = new Dictionary<string, DateTime>();
         public static Dictionary<int, int> PvEViolations = new Dictionary<int, int>();
+        public static Dictionary<int, int> EntityId = new Dictionary<int, int>();
 
         public static void PlayerCheck()
         {
@@ -645,6 +646,22 @@ namespace ServerTools
             catch (Exception e)
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in PersistentOperations.BedBug: {0}", e.Message));
+            }
+        }
+
+        public static void EntityIdList()
+        {
+            if (EntityClass.list.Dict != null && EntityClass.list.Dict.Count > 0)
+            {
+                int _count = 1;
+                foreach (KeyValuePair<int, EntityClass> _entityClass in EntityClass.list.Dict)
+                {
+                    if (_entityClass.Value.bAllowUserInstantiate)
+                    {
+                        EntityId.Add(_count, _entityClass.Key);
+                        _count++;
+                    }
+                }
             }
         }
     }

@@ -36,7 +36,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 to 3, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -45,12 +45,12 @@ namespace ServerTools
                     {
                         Watchlist.IsEnabled = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Watch list has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Watch list has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Watch list is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Watch list is already off"));
                         return;
                     }
                 }
@@ -60,12 +60,12 @@ namespace ServerTools
                     {
                         Watchlist.IsEnabled = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Watch list has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Watch list has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Watch list is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Watch list is already on"));
                         return;
                     }
                 }
@@ -73,23 +73,23 @@ namespace ServerTools
                 {
                     if (_params.Count != 3)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 3, found {0}.", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 3, found {0}.", _params.Count));
                         return;
                     }
                     if (_params[1].Length != 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not add SteamId: Invalid SteamId {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add SteamId: Invalid SteamId {0}", _params[1]));
                         return;
                     }
                     if (Watchlist.Dict.ContainsKey(_params[1]))
                     {
-                        SdtdConsole.Instance.Output(string.Format("Can not add SteamId. {0} is already in the Watchlist.", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add SteamId. {0} is already in the Watchlist.", _params[1]));
                         return;
                     }
                     if (_params.Count == 3)
                     {
                         Watchlist.Dict.Add(_params[1], _params[2]);
-                        SdtdConsole.Instance.Output(string.Format("Added SteamId {0} with the reason {1} the Watchlist.", _params[1], _params[2]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added SteamId {0} with the reason {1} the Watchlist.", _params[1], _params[2]));
                     }
                     Watchlist.UpdateXml();
                 }
@@ -97,28 +97,28 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2, found {0}", _params.Count));
                         return;
                     }
                     if (!Watchlist.Dict.ContainsKey(_params[1]))
                     {
-                        SdtdConsole.Instance.Output(string.Format("SteamId {0} was not found", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] SteamId {0} was not found", _params[1]));
                         return;
                     }
                     Watchlist.Dict.Remove(_params[1]);
-                    SdtdConsole.Instance.Output(string.Format("Removed SteamId {0} from the Watchlist", _params[1]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed SteamId {0} from the Watchlist", _params[1]));
                     Watchlist.UpdateXml();
                 }
                 else if (_params[0].ToLower().Equals("list"))
                 {
                     if (_params.Count != 1)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1, found {0}", _params.Count));
                         return;
                     }
                     if (Watchlist.Dict.Count < 1)
                     {
-                        SdtdConsole.Instance.Output("There are no steamIds on the Watchlist");
+                        SdtdConsole.Instance.Output("[SERVERTOOLS] There are no steamIds on the Watchlist");
                         return;
                     }
                     foreach (KeyValuePair<string, string> _key in Watchlist.Dict)
@@ -129,7 +129,7 @@ namespace ServerTools
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)

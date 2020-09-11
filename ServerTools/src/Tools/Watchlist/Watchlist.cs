@@ -140,17 +140,12 @@ namespace ServerTools
                     {
                         if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) <= Admin_Level)
                         {
-                            string _phrase350;
-                            if (!Phrases.Dict.TryGetValue(350, out _phrase350))
+                            Phrases.Dict.TryGetValue(140, out string _phrase140);
+                            if (Dict.TryGetValue(_cInfo.playerId, out string _reason))
                             {
-                                _phrase350 = "Player {PlayerName} is on the watchlist for {Reason}.";
-                            }
-                            string _reason = null;
-                            if (Dict.TryGetValue(_cInfo.playerId, out _reason))
-                            {
-                                _phrase350 = _phrase350.Replace("{PlayerName}", _cInfo.playerName);
-                                _phrase350 = _phrase350.Replace("{Reason}", _reason);
-                                ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _phrase350 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                                _phrase140 = _phrase140.Replace("{PlayerName}", _cInfo.playerName);
+                                _phrase140 = _phrase140.Replace("{Reason}", _reason);
+                                ChatHook.ChatMessage(_cInfo1, LoadConfig.Chat_Response_Color + _phrase140 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                             }
                         }
                     }

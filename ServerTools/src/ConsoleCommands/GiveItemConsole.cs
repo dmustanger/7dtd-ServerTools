@@ -44,17 +44,17 @@ namespace ServerTools
             {
                 if (_params.Count < 2 && _params.Count > 5)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 2 to 5, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 2 to 5, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].Length < 3 || _params[0].Length > 17)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Can not give item: Invalid id {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not give item: Invalid id {0}", _params[0]));
                     return;
                 }
                 if (_params[1].Length < 1)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Can not give item: Invalid name {0}", _params[1]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not give item: Invalid name {0}", _params[1]));
                     return;
                 }
                 else
@@ -114,36 +114,18 @@ namespace ServerTools
                                                 belongsPlayerId = _cInfo.entityId
                                             });
                                             world.SpawnEntityInWorld(entityItem);
-                                            SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
-                                            if (_player.bag.CanTakeItem(new ItemStack(_itemValue, _itemCount)) || _player.inventory.CanTakeItem(new ItemStack(_itemValue, _itemCount)))
-                                            {
-                                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                                                world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                                                string _phrase804;
-                                                if (!Phrases.Dict.TryGetValue(804, out _phrase804))
-                                                {
-                                                    _phrase804 = "{Count} {ItemName} was sent to your inventory. If your bag is full, check the ground.";
-                                                }
-                                                _phrase804 = _phrase804.Replace("{Count}", _itemCount.ToString());
-                                                _phrase804 = _phrase804.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
-                                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase804 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                            }
-                                            else
-                                            {
-                                                string _phrase828;
-                                                if (!Phrases.Dict.TryGetValue(828, out _phrase828))
-                                                {
-                                                    _phrase828 = "{Count} {ItemName} was sent to you but your bag is full. Check the ground.";
-                                                }
-                                                _phrase828 = _phrase828.Replace("{Count}", _itemCount.ToString());
-                                                _phrase828 = _phrase828.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
-                                                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase828 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                            }
+                                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Gave {0} to {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
+                                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                                            world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                                            Phrases.Dict.TryGetValue(901, out string _phrase901);
+                                            _phrase901 = _phrase901.Replace("{Value}", _itemCount.ToString());
+                                            _phrase901 = _phrase901.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                                            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase901 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                         }
                                     }
                                     else
                                     {
-                                        SdtdConsole.Instance.Output(string.Format("Player with steamd Id {0} has not spawned. Unable to give item", _cInfo.playerId));
+                                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd Id {0} has not spawned. Unable to give item", _cInfo.playerId));
                                     }
                                 }
                             }
@@ -167,42 +149,24 @@ namespace ServerTools
                                         belongsPlayerId = _cInfo.entityId
                                     });
                                     world.SpawnEntityInWorld(entityItem);
-                                    SdtdConsole.Instance.Output(string.Format("Gave {0} to {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
-                                    if (_player.bag.CanTakeItem(new ItemStack(_itemValue, _itemCount)) || _player.inventory.CanTakeItem(new ItemStack(_itemValue, _itemCount)))
-                                    {
-                                        _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
-                                        world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
-                                        string _phrase804;
-                                        if (!Phrases.Dict.TryGetValue(804, out _phrase804))
-                                        {
-                                            _phrase804 = "{Count} {ItemName} was sent to your inventory.";
-                                        }
-                                        _phrase804 = _phrase804.Replace("{Count}", _itemCount.ToString());
-                                        _phrase804 = _phrase804.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase804 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
-                                    else
-                                    {
-                                        string _phrase828;
-                                        if (!Phrases.Dict.TryGetValue(828, out _phrase828))
-                                        {
-                                            _phrase828 = "{Count} {ItemName} was sent to you but your bag is full. Check the ground.";
-                                        }
-                                        _phrase828 = _phrase828.Replace("{Count}", _itemCount.ToString());
-                                        _phrase828 = _phrase828.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
-                                        ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase828 + "[-]", _cInfo.entityId, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                                    }
+                                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Gave {0} to {1}.", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name, _cInfo.playerName));
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageEntityCollect>().Setup(entityItem.entityId, _cInfo.entityId));
+                                    world.RemoveEntity(entityItem.entityId, EnumRemoveEntityReason.Despawned);
+                                    Phrases.Dict.TryGetValue(901, out string _phrase901);
+                                    _phrase901 = _phrase901.Replace("{Value}", _itemCount.ToString());
+                                    _phrase901 = _phrase901.Replace("{ItemName}", _itemValue.ItemClass.GetLocalizedItemName() ?? _itemValue.ItemClass.Name);
+                                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase901 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }
                             }
                             else
                             {
-                                SdtdConsole.Instance.Output(string.Format("Player with steamd id {0} is not logged on or loaded in yet", _params[0]));
+                                SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Player with steamd id {0} is not logged on or loaded in yet", _params[0]));
                             }
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Unable to find item {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Unable to find item {0}", _params[1]));
                         return;
                     }
                 }

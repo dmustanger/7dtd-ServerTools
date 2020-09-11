@@ -49,7 +49,7 @@ namespace ServerTools
             {
                 if (_params.Count < 1 || _params.Count > 3)
                 {
-                    SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, expected 1 to 3, found {0}", _params.Count));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, expected 1 to 3, found {0}", _params.Count));
                     return;
                 }
                 if (_params[0].ToLower().Equals("off"))
@@ -58,12 +58,12 @@ namespace ServerTools
                     {
                         WebsiteServer.IsEnabled = false;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Website has been set to off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Website has been set to off"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Website is already off"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Website is already off"));
                         return;
                     }
                 }
@@ -73,12 +73,12 @@ namespace ServerTools
                     {
                         WebsiteServer.IsEnabled = true;
                         LoadConfig.WriteXml();
-                        SdtdConsole.Instance.Output(string.Format("Website has been set to on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Website has been set to on"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Website is already on"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Website is already on"));
                         return;
                     }
                 }
@@ -86,12 +86,12 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, 2, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 2, found {0}", _params.Count));
                         return;
                     }
                     else if (_params[1].Length != 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Client id must be 17 characters in length, found {0}", _params[1].Length));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Client id must be 17 characters in length, found {0}", _params[1].Length));
                         return;
                     }
                     else
@@ -114,12 +114,12 @@ namespace ServerTools
                             }
                             PersistentContainer.Instance.Players[_params[1]].WP = _password;
                             PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output(string.Format("Added {0} to the website client list. Their password is {1}", _params[1], _password));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Added {0} to the website client list. Their password is {1}", _params[1], _password));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not add this id. Client is already on the list or banned"));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add this id. Client is already on the list or banned"));
                             return;
                         }
                     }
@@ -128,12 +128,12 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, 2, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 2, found {0}", _params.Count));
                         return;
                     }
                     else if (_params[1].Length != 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Client id must be 17 characters in length, found {0}", _params[1].Length));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Client id must be 17 characters in length, found {0}", _params[1].Length));
                         return;
                     }
                     else
@@ -149,12 +149,12 @@ namespace ServerTools
                             }
                             PersistentContainer.Instance.Players[_params[1]].WP = "";
                             PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output(string.Format("Removed {0} from the website client list", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Removed {0} from the website client list", _params[1]));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not remove this id. Client is not on the list"));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not remove this id. Client is not on the list"));
                             return;
                         }
                     }
@@ -163,12 +163,12 @@ namespace ServerTools
                 {
                     if (_params.Count != 2)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, 2, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 2, found {0}", _params.Count));
                         return;
                     }
                     else if (_params[1].Length != 17)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Client id must be 17 characters in length, found {0}", _params[1].Length));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Client id must be 17 characters in length, found {0}", _params[1].Length));
                         return;
                     }
                     else
@@ -183,11 +183,11 @@ namespace ServerTools
                                 PersistentContainer.Instance.WebsiteTimeoutList = _timeouts;
                                 PersistentContainer.Instance.Save();
                             }
-                            SdtdConsole.Instance.Output(string.Format("IP {0} has been removed from the time out list", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] IP {0} has been removed from the time out list", _params[1]));
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("IP {0} not found on the time out list", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] IP {0} not found on the time out list", _params[1]));
                         }
                         if (WebsiteServer.Clients.Contains(_params[1]))
                         {
@@ -203,12 +203,12 @@ namespace ServerTools
                             string _password = WebsiteServer.SetPassword();
                             PersistentContainer.Instance.Players[_params[1]].WP = _password;
                             PersistentContainer.Instance.Save();
-                            SdtdConsole.Instance.Output(string.Format("Client {0} has been reset. Their password is {1}", _params[1], _password));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Client {0} has been reset. Their password is {1}", _params[1], _password));
                             return;
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Client {0} was not found on the list", _params[1]));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Client {0} was not found on the list", _params[1]));
                             return;
                         }
                     }
@@ -217,7 +217,7 @@ namespace ServerTools
                 {
                     if (_params.Count != 3)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, 3, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 3, found {0}", _params.Count));
                         return;
                     }
                     else if (_params[1].ToLower() == "add")
@@ -241,7 +241,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not add IP {0}. It is already on the ban list", _ip));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add IP {0}. It is already on the ban list", _ip));
                             return;
                         }
                     }
@@ -266,20 +266,20 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not remove IP {0}. It is not on the ban list", _ip));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not remove IP {0}. It is not on the ban list", _ip));
                             return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[1]));
                     }
                 }
                 else if (_params[0].ToLower().Equals("timeout"))
                 {
                     if (_params.Count != 3)
                     {
-                        SdtdConsole.Instance.Output(string.Format("Wrong number of arguments, 3, found {0}", _params.Count));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Wrong number of arguments, 3, found {0}", _params.Count));
                         return;
                     }
                     else if (_params[1].ToLower() == "add")
@@ -303,7 +303,7 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not add IP {0}. It is already on the timeout list", _ip));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not add IP {0}. It is already on the timeout list", _ip));
                             return;
                         }
                     }
@@ -328,13 +328,13 @@ namespace ServerTools
                         }
                         else
                         {
-                            SdtdConsole.Instance.Output(string.Format("Can not remove IP {0}. It is not on the timeout list", _ip));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Can not remove IP {0}. It is not on the timeout list", _ip));
                             return;
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[1]));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[1]));
                     }
                 }
                 else if (_params[0].ToLower().Equals("restart"))
@@ -348,12 +348,12 @@ namespace ServerTools
                         WebsiteServer.LoginAttempts.Clear();
                         WebsiteServer.TimeOut.Clear();
                         WebsiteServer.IsEnabled = true;
-                        SdtdConsole.Instance.Output(string.Format("Website server has been cleared and restarted. All users must relog"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Website server has been cleared and restarted. All users must relog"));
                         return;
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("Website is not enabled, unable to restart it"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Website is not enabled, unable to restart it"));
                         return;
                     }
                 }
@@ -364,29 +364,29 @@ namespace ServerTools
                         for (int i = 0; i < WebsiteServer.Clients.Count; i++)
                         {
                             string _client = WebsiteServer.Clients[i];
-                            SdtdConsole.Instance.Output(string.Format("Client id = {0}", _client));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Client id = {0}", _client));
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("There are no clients on the website list"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] There are no clients on the website list"));
                     }
                     if (WebsiteServer.BannedIP.Count > 0)
                     {
                         for (int i = 0; i < WebsiteServer.BannedIP.Count; i++)
                         {
                             string _bannedIp = WebsiteServer.BannedIP[i];
-                            SdtdConsole.Instance.Output(string.Format("Banned IP = {0}", _bannedIp));
+                            SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Banned IP = {0}", _bannedIp));
                         }
                     }
                     else
                     {
-                        SdtdConsole.Instance.Output(string.Format("There are no banned ip address"));
+                        SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] There are no banned ip address"));
                     }
                 }
                 else
                 {
-                    SdtdConsole.Instance.Output(string.Format("Invalid argument {0}", _params[0]));
+                    SdtdConsole.Instance.Output(string.Format("[SERVERTOOLS] Invalid argument {0}", _params[0]));
                 }
             }
             catch (Exception e)
