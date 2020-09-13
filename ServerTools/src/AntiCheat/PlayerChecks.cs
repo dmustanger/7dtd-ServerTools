@@ -185,7 +185,10 @@ namespace ServerTools.AntiCheat
                     for (float j = z - 1.5f; j <= (z + 1.5f); j++)
                     {
                         BlockValue _block = GameManager.Instance.World.GetBlock(new Vector3i(i, k, j));
-                        if (!_block.Block.IsCollideMovement || _block.Block.isMultiBlock || _block.Block.IsTerrainDecoration || _block.Block.IsDecoration)
+                        string _name = _block.Block.GetBlockName().ToLower();
+                        if (_block.type == BlockValue.Air.type || _block.Block.isMultiBlock || _block.Block.IsTerrainDecoration || _block.Block.IsDecoration
+                            || _name.Contains("ladder") || _name.Contains("trellis")
+                            || _name.Contains("arch") || _name.ToLower().Contains("ramp"))
                         {
                             return false;
                         }

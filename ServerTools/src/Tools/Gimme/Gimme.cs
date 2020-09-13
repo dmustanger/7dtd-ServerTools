@@ -318,7 +318,7 @@ namespace ServerTools
                 else
                 {
                     Phrases.Dict.TryGetValue(23, out string _phrase23);
-                    _phrase23 = _phrase23.Replace("{Currency}", TraderInfo.CurrencyItem);
+                    _phrase23 = _phrase23.Replace("{CoinName}", Wallet.Coin_Name);
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase23 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }

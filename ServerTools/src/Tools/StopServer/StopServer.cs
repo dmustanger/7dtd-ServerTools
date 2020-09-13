@@ -29,7 +29,7 @@ namespace ServerTools
         public static void StartShutdown2(int _newCount)
         {
             Phrases.Dict.TryGetValue(170, out string _phrase170);
-            _phrase170 = _phrase170.Replace("{Value}", Delay.ToString());
+            _phrase170 = _phrase170.Replace("{Value}", _newCount.ToString());
             Alert(_phrase170, Shutdown.Alert_Count);
         }
 
@@ -40,7 +40,7 @@ namespace ServerTools
             Phrases.Dict.TryGetValue(171, out string _phrase171);
             Alert(_phrase171, 1);
             Phrases.Dict.TryGetValue(170, out string _phrase170);
-            _phrase170 = _phrase170.Replace("{Value}", Delay.ToString());
+            _phrase170 = _phrase170.Replace("{Value}", 1.ToString());
             Alert(_phrase170, 1);
             SdtdConsole.Instance.ExecuteSync("saveworld", null);
             if (VehicleManager.Instance != null)

@@ -82,7 +82,7 @@ namespace ServerTools
                 else
                 {
                     Phrases.Dict.TryGetValue(832, out string _phrase832);
-                    _phrase832 = _phrase832.Replace("{Currency}", TraderInfo.CurrencyItem);
+                    _phrase832 = _phrase832.Replace("{CoinName}", Wallet.Coin_Name);
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase832 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
             }

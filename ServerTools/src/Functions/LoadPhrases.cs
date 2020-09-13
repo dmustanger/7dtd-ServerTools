@@ -217,7 +217,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Phrase Id=\"22\" Phrase=\"{0}\" />", _phrase22));
                 if (!Dict.TryGetValue(23, out string _phrase23))
                 {
-                    _phrase23 = "You do not have enough {Currency} in your wallet to run this command.";
+                    _phrase23 = "You do not have enough {CoinName} in your wallet to run this command.";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"23\" Phrase=\"{0}\" />", _phrase23));
                 if (!Dict.TryGetValue(24, out string _phrase24))
@@ -4299,7 +4299,7 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Phrase Id=\"831\" Phrase=\"{0}\" />", _phrase831));
                 if (!Dict.TryGetValue(832, out string _phrase832))
                 {
-                    _phrase832 = "You do not have enough {Currency} in your wallet to run this command.";
+                    _phrase832 = "You do not have enough {CoinName} in your wallet to run this command.";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"832\" Phrase=\"{0}\" />", _phrase832));
                 if (!Dict.TryGetValue(833, out string _phrase833))

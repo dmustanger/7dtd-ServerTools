@@ -1,5 +1,16 @@
 ﻿CHANGELOG
 
+19.0.10
+Built using Alpha 19 stable assets
+Functioning with 19 stable. Untested with other versions
+
+Fixed Flight_Detector getting false positives from ladders or trellis
+Fixed various phrases
+Fixed Kill_Notice spam
+Fixed Bounty error
+Changed Damage_Detector to ignore damage of 1
+Updated Damage_Detector to detect damage against zombies and animals
+
 19.0.9
 Built using Alpha 19 stable assets
 Functioning with 19 stable. Untested with other versions

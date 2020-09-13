@@ -157,7 +157,10 @@ namespace ServerTools
                     EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                     if (_player != null)
                     {
-                        bool _notice = false;
+                        if (DeathSpot.IsEnabled)
+                        {
+                            DeathSpot.PlayerKilled(_player);
+                        }
                         if (!string.IsNullOrEmpty(_secondaryName) && !string.IsNullOrEmpty(_mainName) && _mainName != _secondaryName)
                         {
                             ClientInfo _cInfo2 = ConsoleHelper.ParseParamIdOrName(_secondaryName);
@@ -166,10 +169,6 @@ namespace ServerTools
                                 EntityPlayer _player2 = GameManager.Instance.World.Players.dict[_cInfo2.entityId];
                                 if (_player2 != null)
                                 {
-                                    if (KillNotice.IsEnabled)
-                                    {
-                                        _notice = true;
-                                    }
                                     if (Bounties.IsEnabled)
                                     {
                                         Bounties.PlayerKilled(_player, _player2, _cInfo, _cInfo2);
@@ -185,16 +184,22 @@ namespace ServerTools
                                             Wallet.SubtractCoinsFromWallet(_cInfo2.playerId, Wallet.Player_Kills);
                                         }
                                     }
+                                    if (KillNotice.IsEnabled && _player2.IsAlive())
+                                    {
+                                        string _holdingItem = _player2.inventory.holdingItem.Name;
+                                        if (!string.IsNullOrEmpty(_holdingItem))
+                                        {
+                                            ItemValue _itemValue = ItemClass.GetItem(_holdingItem, true);
+                                            if (_itemValue.type != ItemValue.None.type)
+                                            {
+                                                _holdingItem = _itemValue.ItemClass.GetItemName();
+                                                KillNotice.Exec(_cInfo, _player, _cInfo2, _player2, _holdingItem);
+                                                return false;
+                                            }
+                                        }
+                                    }
                                 }
                             }
-                        }
-                        if (DeathSpot.IsEnabled)
-                        {
-                            DeathSpot.PlayerKilled(_player);
-                        }
-                        if (_notice)
-                        {
-                            return false;
                         }
                     }
                 }
@@ -338,6 +343,10 @@ namespace ServerTools
                         if (BattleLogger.ExitPos.ContainsKey(_cInfo.playerId))
                         {
                             BattleLogger.ExitPos.Remove(_cInfo.playerId);
+                        }
+                        if (KillNotice.Damage.ContainsKey(_cInfo.entityId))
+                        {
+                            KillNotice.Damage.Remove(_cInfo.entityId);
                         }
                     }
                 }

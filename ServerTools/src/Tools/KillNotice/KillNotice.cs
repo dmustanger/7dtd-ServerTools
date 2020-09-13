@@ -10,6 +10,7 @@ namespace ServerTools
         private const string file = "KillNotice.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static Dictionary<string, string> dict = new Dictionary<string, string>();
+        public static Dictionary<int, int> Damage = new Dictionary<int, int>();
         private static FileSystemWatcher fileWatcher = new FileSystemWatcher(API.ConfigPath, file);
         private static bool updateConfig = false;
 
@@ -161,56 +162,60 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void Exec(ClientInfo _cInfo, EntityPlayer _victim, ClientInfo _cInfo2, EntityPlayer _killer, string _holdingItem, int _damage)
+        public static void Exec(ClientInfo _cInfo, EntityPlayer _victim, ClientInfo _cInfo2, EntityPlayer _killer, string _holdingItem)
         {
-            string _newName = _holdingItem;
-            dict.TryGetValue(_holdingItem, out _newName);
+            string _item = _holdingItem;
+            if (dict.ContainsKey(_holdingItem))
+            {
+                dict.TryGetValue(_holdingItem, out _item);
+            }
             if (Show_Level)
             {
-                if (_killer != null && _victim != null)
+                if (Show_Damage)
                 {
-                    if (Show_Damage)
+                    if (Damage.ContainsKey(_victim.entityId))
                     {
+                        Damage.TryGetValue(_victim.entityId, out int _damage);
                         Phrases.Dict.TryGetValue(543, out string _phrase543);
                         _phrase543 = _phrase543.Replace("{Name1}", _cInfo2.playerName);
                         _phrase543 = _phrase543.Replace("{Level1}", _killer.Progression.Level.ToString());
                         _phrase543 = _phrase543.Replace("{Name2}", _cInfo.playerName);
                         _phrase543 = _phrase543.Replace("{Level2}", _victim.Progression.Level.ToString());
-                        _phrase543 = _phrase543.Replace("{Item}", _newName);
+                        _phrase543 = _phrase543.Replace("{Item}", _item);
                         _phrase543 = _phrase543.Replace("{Damage}", _damage.ToString());
                         ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase543 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                    }
-                    else
-                    {
-                        Phrases.Dict.TryGetValue(542, out string _phrase542);
-                        _phrase542 = _phrase542.Replace("{Name1}", _cInfo2.playerName);
-                        _phrase542 = _phrase542.Replace("{Level1}", _killer.Progression.Level.ToString());
-                        _phrase542 = _phrase542.Replace("{Name2}", _cInfo.playerName);
-                        _phrase542 = _phrase542.Replace("{Level2}", _victim.Progression.Level.ToString());
-                        _phrase542 = _phrase542.Replace("{Item}", _newName);
-                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase542 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        return;
                     }
                 }
+                Phrases.Dict.TryGetValue(542, out string _phrase542);
+                _phrase542 = _phrase542.Replace("{Name1}", _cInfo2.playerName);
+                _phrase542 = _phrase542.Replace("{Level1}", _killer.Progression.Level.ToString());
+                _phrase542 = _phrase542.Replace("{Name2}", _cInfo.playerName);
+                _phrase542 = _phrase542.Replace("{Level2}", _victim.Progression.Level.ToString());
+                _phrase542 = _phrase542.Replace("{Item}", _item);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase542 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
             else
             {
                 if (Show_Damage)
                 {
-                    Phrases.Dict.TryGetValue(541, out string _phrase541);
-                    _phrase541 = _phrase541.Replace("{Name1}", _cInfo2.playerName);
-                    _phrase541 = _phrase541.Replace("{Name2}", _cInfo.playerName);
-                    _phrase541 = _phrase541.Replace("{Item}", _newName);
-                    _phrase541 = _phrase541.Replace("{Damage}", _damage.ToString());
-                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase541 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                    if (Damage.ContainsKey(_victim.entityId))
+                    {
+                        Damage.TryGetValue(_victim.entityId, out int _damage);
+                        Phrases.Dict.TryGetValue(541, out string _phrase541);
+                        _phrase541 = _phrase541.Replace("{Name1}", _cInfo2.playerName);
+                        _phrase541 = _phrase541.Replace("{Name2}", _cInfo.playerName);
+                        _phrase541 = _phrase541.Replace("{Item}", _item);
+                        _phrase541 = _phrase541.Replace("{Damage}", _damage.ToString());
+                        ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase541 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                        return;
+                    }
                 }
-                else
-                {
-                    Phrases.Dict.TryGetValue(544, out string _phrase544);
-                    _phrase544 = _phrase544.Replace("{Name1}", _cInfo2.playerName);
-                    _phrase544 = _phrase544.Replace("{Name2}", _cInfo.playerName);
-                    _phrase544 = _phrase544.Replace("{Item}", _newName);
-                    ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase544 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
-                }
+                Phrases.Dict.TryGetValue(544, out string _phrase544);
+                _phrase544 = _phrase544.Replace("{Name1}", _cInfo2.playerName);
+                _phrase544 = _phrase544.Replace("{Name2}", _cInfo.playerName);
+                _phrase544 = _phrase544.Replace("{Item}", _item);
+                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase544 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             }
         }
     }
