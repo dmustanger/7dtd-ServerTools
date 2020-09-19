@@ -1,5 +1,18 @@
 ﻿CHANGELOG
 
+19.0.11
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Fixed Zone.xml examples
+Fixed console command to create a Zone
+Fixed Zones process for handling the exit message
+Changed teleportation process to allow Market and Lobby return command
+Updated protection system. Removing a protected space or zone will now
+remove the block protection if done via console. If you remove the entry from
+xml on a live server, you will need to turn off/on the tool to reset protection
+*Protection does not work on a circular zone currently*
+
 19.0.10
 Built using Alpha 19 stable assets
 Functioning with 19 stable. Untested with other versions

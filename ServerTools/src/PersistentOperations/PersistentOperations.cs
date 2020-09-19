@@ -28,22 +28,22 @@ namespace ServerTools
                             ClientInfo _cInfo = _cInfoList[i];
                             if (_cInfo != null && !string.IsNullOrEmpty(_cInfo.playerId) && _cInfo.entityId > 0)
                             {
-                                EntityAlive _player = PersistentOperations.GetPlayerAlive(_cInfo.playerId);
+                                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
                                 if (_player != null)
                                 {
                                     if (!_player.IsDead())
                                     {
-                                        if (_player.IsSpawned() && _player.IsAlive())
+                                        if (_player.IsSpawned() && _player.IsAlive() && !Teleportation.Teleporting.Contains(_cInfo.entityId))
                                         {
                                             if (Zones.IsEnabled)
                                             {
                                                 Zones.ZoneCheck(_cInfo, _player);
                                             }
-                                            if (Lobby.IsEnabled)
+                                            if (Lobby.IsEnabled && Lobby.LobbyPlayers.Contains(_cInfo.entityId))
                                             {
                                                 Lobby.LobbyCheck(_cInfo, _player);
                                             }
-                                            if (Market.IsEnabled)
+                                            if (Market.IsEnabled && Market.MarketPlayers.Contains(_cInfo.entityId))
                                             {
                                                 Market.MarketCheck(_cInfo, _player);
                                             }
@@ -296,7 +296,7 @@ namespace ServerTools
         {
             if (_cInfo != null)
             {
-                PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_cInfo.playerId);
+                PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_cInfo.playerId);
                 if (_persistentPlayerData != null && _persistentPlayerData.LPBlocks != null && _persistentPlayerData.LPBlocks.Count > 0)
                 {
                     int _x, _y, _z;
@@ -317,7 +317,7 @@ namespace ServerTools
 
         public static void RemoveAllClaims(string _playerId)
         {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_playerId);
+            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
             if (_persistentPlayerData != null)
             {
                 List<Vector3i> landProtectionBlocks = _persistentPlayerData.LPBlocks;
@@ -347,7 +347,7 @@ namespace ServerTools
 
         public static void RemoveOneClaim(string _playerId, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_playerId);
+            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
             if (_persistentPlayerData != null)
             {
                 World world = GameManager.Instance.World;
@@ -384,7 +384,7 @@ namespace ServerTools
             PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_playerId);
             if (_persistentPlayerData != null)
             {
-                PersistentPlayerList _persistentPlayerList = PersistentOperations.GetPersistentPlayerList();
+                PersistentPlayerList _persistentPlayerList = GetPersistentPlayerList();
                 foreach (KeyValuePair<string, PersistentPlayerData> _persistentPlayerData2 in _persistentPlayerList.Players)
                 {
                     if (_persistentPlayerData2.Key != _persistentPlayerData.PlayerId)
@@ -425,7 +425,7 @@ namespace ServerTools
 
         public static bool ClaimedBySelf(string _id, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
+            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_id);
             if (_persistentPlayerData != null)
             {
                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
@@ -439,7 +439,7 @@ namespace ServerTools
 
         public static bool ClaimedByAlly(string _id, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
+            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_id);
             if (_persistentPlayerData != null)
             {
                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
@@ -453,7 +453,7 @@ namespace ServerTools
 
         public static bool ClaimedByNone(string _id, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
+            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_id);
             if (_persistentPlayerData != null)
             {
                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
@@ -467,7 +467,7 @@ namespace ServerTools
 
         public static bool ClaimedByAllyOrSelf(string _id, Vector3i _position)
         {
-            PersistentPlayerData _persistentPlayerData = PersistentOperations.GetPersistentPlayerDataFromSteamId(_id);
+            PersistentPlayerData _persistentPlayerData = GetPersistentPlayerDataFromSteamId(_id);
             if (_persistentPlayerData != null)
             {
                 EnumLandClaimOwner _owner = GameManager.Instance.World.GetLandClaimOwner(_position, _persistentPlayerData);
@@ -482,7 +482,7 @@ namespace ServerTools
         public static List<EntityPlayer> PlayersWithin100Blocks(int _x, int _z)
         {
             List<EntityPlayer> _players = new List<EntityPlayer>();
-            List<EntityPlayer> _playerList = PersistentOperations.PlayerList();
+            List<EntityPlayer> _playerList = PlayerList();
             for (int i = 0; i < _playerList.Count; i++)
             {
                 EntityPlayer _player = _playerList[i];
@@ -504,7 +504,7 @@ namespace ServerTools
         public static List<EntityPlayer> PlayersWithin200Blocks(int _x, int _z)
         {
             List<EntityPlayer> _players = new List<EntityPlayer>();
-            List<EntityPlayer> _playerList = PersistentOperations.PlayerList();
+            List<EntityPlayer> _playerList = PlayerList();
             for (int i = 0; i < _playerList.Count; i++)
             {
                 EntityPlayer _player = _playerList[i];
@@ -526,7 +526,7 @@ namespace ServerTools
         public static List<ClientInfo> ClientsWithin200Blocks(int _x, int _z)
         {
             List<ClientInfo> _clients = new List<ClientInfo>();
-            List<ClientInfo> _clientList = PersistentOperations.ClientList();
+            List<ClientInfo> _clientList = ClientList();
             for (int i = 0; i < _clientList.Count; i++)
             {
                 ClientInfo _cInfo = _clientList[i];
@@ -554,7 +554,7 @@ namespace ServerTools
             try
             {
                 List<Chunk> _chunkList = new List<Chunk>();
-                EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
+                EntityPlayer _player = GetEntityPlayer(_cInfo.playerId);
                 if (_player != null)
                 {
                     Vector3 _position = _player.position;
@@ -583,7 +583,7 @@ namespace ServerTools
                     for (int k = 0; k < _chunkList.Count; k++)
                     {
                         Chunk _chunk = _chunkList[k];
-                        List<ClientInfo> _clientList = PersistentOperations.ClientList();
+                        List<ClientInfo> _clientList = ClientList();
                         if (_clientList != null && _clientList.Count > 0)
                         {
                             for (int l = 0; l < _clientList.Count; l++)

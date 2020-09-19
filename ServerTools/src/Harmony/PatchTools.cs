@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using System;
 using System.Reflection;
-using UnityEngine;
 
 namespace ServerTools
 {
@@ -87,30 +86,6 @@ namespace ServerTools
                         harmony.Patch(original, new HarmonyMethod(prefix), new HarmonyMethod(postfix), null);
                     }
                 }
-                original = typeof(GameManager).GetMethod("ExplosionServer");
-                if (original == null)
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ExplosionServer method was not found"));
-                }
-                else
-                {
-                    Patches info = Harmony.GetPatchInfo(original);
-                    if (info != null)
-                    {
-                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: GameManager.ExplosionServer method is already modified by another mod"));
-                        Log.Out(string.Format("[SERVERTOOLS] Injection warning: Explosion prevention in protected spaces may not function as intended"));
-                    }
-                    else
-                    {
-                        MethodInfo prefix = typeof(Injections).GetMethod("ExplosionServer_Prefix");
-                        if (prefix == null)
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: ExplosionServer.prefix"));
-                            return;
-                        }
-                        harmony.Patch(original, new HarmonyMethod(prefix), null, null);
-                    }
-                }
                 original = typeof(ConnectionManager).GetMethod("ServerConsoleCommand");
                 if (original == null)
                 {
@@ -159,29 +134,6 @@ namespace ServerTools
                         harmony.Patch(original, new HarmonyMethod(prefix), null, null);
                     }
                 }
-                //original = typeof(World).GetMethod("IsWithinTraderArea");
-                //if (original == null)
-                //{
-                //    Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.IsWithinTraderArea method was not found"));
-                //}
-                //else
-                //{
-                //    var info = harmony.GetPatchInfo(original);
-                //    if (info != null)
-                //    {
-                //        Log.Out(string.Format("[SERVERTOOLS] Injection failed: World.IsWithinTraderArea method is already modified by another mod"));
-                //    }
-                //    else
-                //    {
-                //        var prefix = typeof(Injections).GetMethod("IsWithinTraderArea_Prefix");
-                //        if (prefix == null)
-                //        {
-                //            Log.Out(string.Format("[SERVERTOOLS] Injection failed: IsWithinTraderArea.prefix"));
-                //            return;
-                //        }
-                //        harmony.Patch(original, new HarmonyMethod(prefix), null, null);
-                //    }
-                //}
             }
             catch (Exception e)
             {

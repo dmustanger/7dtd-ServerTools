@@ -8,7 +8,7 @@ namespace ServerTools.AntiCheat
     {
         public static bool GodEnabled = false, FlyEnabled = false, SpectatorEnabled = false, WaterEnabled = false;
         public static int Flying_Admin_Level = 0, Godmode_Admin_Level, Spectator_Admin_Level, Flying_Flags = 4;
-        private static Dictionary<int, int> Flag = new Dictionary<int, int>();
+        public static Dictionary<int, int> Flag = new Dictionary<int, int>();
         private static Dictionary<int, float> OldY = new Dictionary<int, float>();
 
         public static void Exec()
@@ -74,7 +74,7 @@ namespace ServerTools.AntiCheat
                                     }
                                     if (FlyEnabled && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Flying_Admin_Level)
                                     {
-                                        if (_player.IsSpawned() && _player.IsAlive() && !_player.IsStuck && _player.AttachedToEntity == null)
+                                        if (!Teleportation.Teleporting.Contains(_cInfo.entityId) && _player.IsSpawned() && _player.IsAlive() &&!_player.IsStuck && _player.AttachedToEntity == null)
                                         {
                                             if (AirCheck(_player.position.x, _player.position.y, _player.position.z) || GroundCheck(_player.position.x, _player.position.y, _player.position.z))
                                             {

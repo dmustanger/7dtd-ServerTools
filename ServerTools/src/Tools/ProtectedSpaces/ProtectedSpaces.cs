@@ -8,7 +8,7 @@ namespace ServerTools
     class ProtectedSpaces
     {
         public static bool IsEnabled = false, IsRunning = false;
-        public static List<string[]> ProtectedList = new List<string[]>();
+        public static List<string[]> Protected = new List<string[]>();
         public static Dictionary<int, string[]> Vectors = new Dictionary<int, string[]>();
         private const string file = "ProtectedSpaces.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
@@ -49,12 +49,14 @@ namespace ServerTools
                 Log.Error(string.Format("[SERVERTOOLS] Failed loading {0}: {1}", file, e.Message));
                 return;
             }
+            List<string[]> _addProtection = new List<string[]>();
+            List<string[]> _removeProtection = new List<string[]>();
             XmlNode _XmlNode = xmlDoc.DocumentElement;
             foreach (XmlNode childNode in _XmlNode.ChildNodes)
             {
                 if (childNode.Name == "Spaces")
                 {
-                    ProtectedList.Clear();
+                    Protected.Clear();
                     foreach (XmlNode subChild in childNode.ChildNodes)
                     {
                         if (subChild.NodeType == XmlNodeType.Comment)
@@ -69,22 +71,22 @@ namespace ServerTools
                         XmlElement _line = (XmlElement)subChild;
                         if (!_line.HasAttribute("XMin"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of missing XMin attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because of missing XMin attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("ZMin"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of missing ZMin attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because of missing ZMin attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("XMax"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of missing XMax attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because of missing XMax attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!_line.HasAttribute("ZMax"))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of missing ZMax attribute: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because of missing ZMax attribute: {0}", subChild.OuterXml));
                             continue;
                         }
                         string xMin = _line.GetAttribute("XMin");
@@ -94,22 +96,22 @@ namespace ServerTools
                         int _xMin, _zMin, _xMax, _zMax;
                         if (!int.TryParse(xMin, out _xMin))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of invalid _XMin integer: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because of invalid _XMin integer: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!int.TryParse(zMin, out _zMin))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of invalid _ZMin integer: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because of invalid _ZMin integer: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!int.TryParse(xMax, out _xMax))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of invalid _XMax integer: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because of invalid _XMax integer: {0}", subChild.OuterXml));
                             continue;
                         }
                         if (!int.TryParse(zMax, out _zMax))
                         {
-                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring ProtectedSpace entry because of invalid _ZMax integer: {0}", subChild.OuterXml));
+                            Log.Warning(string.Format("[SERVERTOOLS] Ignoring protected space entry because of invalid _ZMax integer: {0}", subChild.OuterXml));
                             continue;
                         }
                         int _xMinAlt = _xMin, _zMinAlt = _zMin, _xMaxAlt = _xMax, _zMaxAlt = _zMax;
@@ -123,55 +125,31 @@ namespace ServerTools
                             _zMinAlt = _zMax;
                             _zMaxAlt = _zMin;
                         }
-                        List<Chunk> _chunkList = new List<Chunk>();
-                        string[] _vector = { _xMinAlt.ToString(), _zMinAlt.ToString(), _xMaxAlt.ToString(), _zMaxAlt.ToString() };
-                        if (!ProtectedList.Contains(_vector))
+                        string[] _vectors = { _xMinAlt.ToString(), _zMinAlt.ToString(), _xMaxAlt.ToString(), _zMaxAlt.ToString() };
+                        if (!Protected.Contains(_vectors))
                         {
-                            ProtectedList.Add(_vector);
-                        }
-                        for (int i = _xMinAlt; i <= _xMaxAlt; i++)
-                        {
-                            for (int j = _zMinAlt; j <= _zMaxAlt; j++)
+                            Protected.Add(_vectors);
+                            if (!_addProtection.Contains(_vectors))
                             {
-                                if (GameManager.Instance.World.IsChunkAreaLoaded(i, 1, j))
-                                {
-                                    Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(i, 1, j);
-                                    if (!_chunkList.Contains(_chunk))
-                                    {
-                                        _chunkList.Add(_chunk);
-                                    }
-                                    Bounds bounds = _chunk.GetAABB();
-                                    int _x = i - (int)bounds.min.x, _z = j - (int)bounds.min.z;
-                                    _chunk.SetTraderArea(_x, _z, true);
-                                }
-                                else
-                                {
-                                    continue;
-                                }
-                            }
-                        }
-                        if (_chunkList.Count > 0)
-                        {
-                            for (int k = 0; k < _chunkList.Count; k++)
-                            {
-                                Chunk _chunk = _chunkList[k];
-                                List<ClientInfo> _clientList = PersistentOperations.ClientList();
-                                if (_clientList != null && _clientList.Count > 0)
-                                {
-                                    for (int l = 0; l < _clientList.Count; l++)
-                                    {
-                                        ClientInfo _cInfo2 = _clientList[l];
-                                        if (_cInfo2 != null)
-                                        {
-                                            _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
-                                        }
-                                    }
-                                }
+                                _addProtection.Add(_vectors);
                             }
                         }
                     }
                 }
             }
+            AddProtection(_addProtection);
+            if (PersistentContainer.Instance.ProtectedSpace != null && PersistentContainer.Instance.ProtectedSpace.Count > 0)
+            {
+                List<string[]> _protectedSpaces = PersistentContainer.Instance.ProtectedSpace;
+                for (int i = 0; i < _protectedSpaces.Count; i++)
+                {
+                    if (!_addProtection.Contains(_protectedSpaces[i]))
+                    {
+                        _removeProtection.Add(_protectedSpaces[i]);
+                    }
+                }
+            }
+            RemoveProtection(_removeProtection);
         }
 
         public static void UpdateXml()
@@ -182,11 +160,11 @@ namespace ServerTools
                 sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 sw.WriteLine("<Protected>");
                 sw.WriteLine("    <Spaces>");
-                if (ProtectedList.Count > 0)
+                if (Protected.Count > 0)
                 {
-                    for (int i = 0; i < ProtectedList.Count; i++)
+                    for (int i = 0; i < Protected.Count; i++)
                     {
-                        string[] _vectors = ProtectedList[i];
+                        string[] _vectors = Protected[i];
                         sw.WriteLine(string.Format("        <Space XMin=\"{0}\" ZMin=\"{1}\" XMax=\"{2}\" ZMax=\"{3}\" />", _vectors[0], _vectors[1], _vectors[2], _vectors[3]));
                     }
                 }
@@ -220,23 +198,6 @@ namespace ServerTools
                 UpdateXml();
             }
             LoadXml();
-        }
-
-        public static bool IsProtectedSpace(Vector3i _position)
-        {
-            if (ProtectedList.Count > 0)
-            {
-                for (int i = 0; i < ProtectedList.Count; i++)
-                {
-                    string[] _vectors = ProtectedList[i];
-                    int _xMin = int.Parse(_vectors[0]), _zMin = int.Parse(_vectors[1]), _xMax = int.Parse(_vectors[2]), _zMax = int.Parse(_vectors[3]);
-                    if (VectorBox(_xMin, _zMin, _xMax, _zMax, _position.x, _position.z))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
         }
 
         public static bool VectorBox(float xMin, float zMin, float xMax, float zMax, float _X, float _Z)
@@ -349,174 +310,39 @@ namespace ServerTools
             return false;
         }
 
-        public static bool AllowExplosion(Vector3 _worldPos)
+        public static void AddProtection(List<string[]> _vectors)
         {
-            if (Zones.IsEnabled)
+            List<string[]> _protected = new List<string[]>();
+            if (PersistentContainer.Instance.ProtectedSpace != null && PersistentContainer.Instance.ProtectedSpace.Count > 0)
             {
-                if (Zones.Protected(new Vector3i(_worldPos)))
-                {
-                    return false;
-                }
-            }
-            if (ProtectedSpaces.IsEnabled)
-            {
-                if (ProtectedSpaces.IsProtectedSpace(new Vector3i(_worldPos)))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public static void Add(string[] _vectors)
-        {
-            int _xMin = int.Parse(_vectors[0]), _zMin = int.Parse(_vectors[1]), _xMax = int.Parse(_vectors[2]), _zMax = int.Parse(_vectors[3]);
-            int _xMinAlt = _xMin, _zMinAlt = _zMin, _xMaxAlt = _xMax, _zMaxAlt = _zMax;
-            if (_xMin > _xMax)
-            {
-                _xMinAlt = _xMax;
-                _xMaxAlt = _xMin;
-            }
-            if (_zMin > _zMax)
-            {
-                _zMinAlt = _zMax;
-                _zMaxAlt = _zMin;
+                _protected = PersistentContainer.Instance.ProtectedSpace;
             }
             List<Chunk> _chunkList = new List<Chunk>();
-            string[] _vectorsAlt = { _xMinAlt.ToString(), _zMinAlt.ToString(), _xMaxAlt.ToString(), _zMaxAlt.ToString() };
-            ProtectedList.Add(_vectorsAlt);
-            for (int i = _xMinAlt; i <= _xMaxAlt; i++)
+            for (int i = 0; i < _vectors.Count; i++)
             {
-                for (int j = _zMinAlt; j <= _zMaxAlt; j++)
+                if (_vectors[i].Length < 4)
                 {
-                    if (GameManager.Instance.World.IsChunkAreaLoaded(i, 1, j))
-                    {
-                        Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(i, 1, j);
-                        if (!_chunkList.Contains(_chunk))
-                        {
-                            _chunkList.Add(_chunk);
-                        }
-                        Bounds bounds = _chunk.GetAABB();
-                        int _x = i - (int)bounds.min.x, _z = j - (int)bounds.min.z;
-                        _chunk.SetTraderArea(_x, _z, true);
-                    }
-                    else
-                    {
-                        continue;
-                    }
+                    continue;
                 }
-            }
-            if (_chunkList.Count > 0)
-            {
-                for (int k = 0; k < _chunkList.Count; k++)
+                int _xMin = int.Parse(_vectors[i][0]), _zMin = int.Parse(_vectors[i][1]), _xMax = int.Parse(_vectors[i][2]), _zMax = int.Parse(_vectors[i][3]);
+                int _xMinFix = _xMin, _zMinFix = _zMin, _xMaxFix = _xMax, _zMaxFix = _zMax;
+                if (_xMin > _xMax)
                 {
-                    Chunk _chunk = _chunkList[k];
-                    List<ClientInfo> _clientList = PersistentOperations.ClientList();
-                    if (_clientList != null && _clientList.Count > 0)
-                    {
-                        for (int l = 0; l < _clientList.Count; l++)
-                        {
-                            ClientInfo _cInfo2 = _clientList[l];
-                            if (_cInfo2 != null)
-                            {
-                                _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
-                            }
-                        }
-                    }
+                    _xMinFix = _xMax;
+                    _xMaxFix = _xMin;
                 }
-            }
-            ProtectedSpaces.UpdateXml();
-        }
-
-        public static void Remove(string[] _vectors)
-        {
-            int _xMin = int.Parse(_vectors[0]), _zMin = int.Parse(_vectors[1]), _xMax = int.Parse(_vectors[2]), _zMax = int.Parse(_vectors[3]);
-            int _xMinAlt = _xMin, _zMinAlt = _zMin, _xMaxAlt = _xMax, _zMaxAlt = _zMax;
-            if (_xMin > _xMax)
-            {
-                _xMinAlt = _xMax;
-                _xMaxAlt = _xMin;
-            }
-            if (_zMin > _zMax)
-            {
-                _zMinAlt = _zMax;
-                _zMaxAlt = _zMin;
-            }
-            List<Chunk> _chunkList = new List<Chunk>();
-            string[] _vectorsAlt = { _xMinAlt.ToString(), _zMinAlt.ToString(), _xMaxAlt.ToString(), _zMaxAlt.ToString() };
-            if (ProtectedList.Contains(_vectorsAlt))
-            {
-                ProtectedList.Remove(_vectorsAlt);
-                for (int i = _xMinAlt; i <= _xMaxAlt; i++)
+                if (_zMin > _zMax)
                 {
-                    for (int j = _zMinAlt; j <= _zMaxAlt; j++)
-                    {
-                        if (GameManager.Instance.World.IsChunkAreaLoaded(i, 1, j))
-                        {
-                            Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(i, 1, j);
-                            if (!_chunkList.Contains(_chunk))
-                            {
-                                _chunkList.Add(_chunk);
-                            }
-                            Bounds bounds = _chunk.GetAABB();
-                            int _x = i - (int)bounds.min.x, _z = j - (int)bounds.min.z;
-                            _chunk.SetTraderArea(_x, _z, false);
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
+                    _zMinFix = _zMax;
+                    _zMaxFix = _zMin;
                 }
-                if (_chunkList.Count > 0)
+                string[] _vectorsAlt = { _xMinFix.ToString(), _zMinFix.ToString(), _xMaxFix.ToString(), _zMaxFix.ToString() };
+                if (!_protected.Contains(_vectorsAlt))
                 {
-                    for (int k = 0; k < _chunkList.Count; k++)
+                    _protected.Add(_vectorsAlt);
+                    for (int j = _xMinFix; j <= _xMaxFix; j++)
                     {
-                        Chunk _chunk = _chunkList[k];
-                        List<ClientInfo> _clientList = PersistentOperations.ClientList();
-                        if (_clientList != null && _clientList.Count > 0)
-                        {
-                            for (int l = 0; l < _clientList.Count; l++)
-                            {
-                                ClientInfo _cInfo2 = _clientList[l];
-                                if (_cInfo2 != null)
-                                {
-                                    _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
-                                }
-                            }
-                        }
-                    }
-                }
-                ProtectedSpaces.UpdateXml();
-            }
-        }
-
-
-
-        public static void UnloadProtection()
-        {
-            List<string[]> _protectedList = ProtectedSpaces.ProtectedList;
-            if (_protectedList.Count > 0)
-            {
-                List<Chunk> _chunkList = new List<Chunk>();
-                for (int i = 0; i < _protectedList.Count; i++)
-                {
-                    string[] _vector = _protectedList[i];
-                    int _xMin = int.Parse(_vector[0]), _zMin = int.Parse(_vector[1]), _xMax = int.Parse(_vector[2]), _zMax = int.Parse(_vector[3]);
-                    int _xMinAlt = _xMin, _zMinAlt = _zMin, _xMaxAlt = _xMax, _zMaxAlt = _zMax;
-                    if (_xMin > _xMax)
-                    {
-                        _xMinAlt = _xMax;
-                        _xMaxAlt = _xMin;
-                    }
-                    if (_zMin > _zMax)
-                    {
-                        _zMinAlt = _zMax;
-                        _zMaxAlt = _zMin;
-                    }
-                    for (int j = _xMinAlt; j <= _xMaxAlt; j++)
-                    {
-                        for (int k = _zMinAlt; k <= _zMaxAlt; k++)
+                        for (int k = _zMinFix; k <= _zMaxFix; k++)
                         {
                             if (GameManager.Instance.World.IsChunkAreaLoaded(j, 1, k))
                             {
@@ -526,35 +352,178 @@ namespace ServerTools
                                     _chunkList.Add(_chunk);
                                 }
                                 Bounds bounds = _chunk.GetAABB();
-                                int _x = i - (int)bounds.min.x, _z = j - (int)bounds.min.z;
+                                int _x = j - (int)bounds.min.x, _z = k - (int)bounds.min.z;
+                                _chunk.SetTraderArea(_x, _z, true);
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                }
+            }
+            if (_chunkList.Count > 0)
+            {
+                for (int i = 0; i < _chunkList.Count; i++)
+                {
+                    Chunk _chunk = _chunkList[i];
+                    List<ClientInfo> _clientList = PersistentOperations.ClientList();
+                    if (_clientList != null && _clientList.Count > 0)
+                    {
+                        for (int j = 0; j < _clientList.Count; j++)
+                        {
+                            ClientInfo _cInfo2 = _clientList[j];
+                            if (_cInfo2 != null)
+                            {
+                                _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+                            }
+                        }
+                    }
+                }
+            }
+            PersistentContainer.Instance.ProtectedSpace = _protected;
+            PersistentContainer.Instance.Save();
+        }
+
+        public static void RemoveProtection(List<string[]> _vectors)
+        {
+            List<string[]> _protected = new List<string[]>();
+            if (PersistentContainer.Instance.ProtectedSpace != null && PersistentContainer.Instance.ProtectedSpace.Count > 0)
+            {
+                _protected = PersistentContainer.Instance.ProtectedSpace;
+            }
+            List<Chunk> _chunkList = new List<Chunk>();
+            for (int i = 0; i < _vectors.Count; i++)
+            {
+                if (_vectors[i].Length < 4)
+                {
+                    continue;
+                }
+                int _xMin = int.Parse(_vectors[i][0]), _zMin = int.Parse(_vectors[i][1]), _xMax = int.Parse(_vectors[i][2]), _zMax = int.Parse(_vectors[i][3]);
+                int _xMinFix = _xMin, _zMinFix = _zMin, _xMaxFix = _xMax, _zMaxFix = _zMax;
+                if (_xMin > _xMax)
+                {
+                    _xMinFix = _xMax;
+                    _xMaxFix = _xMin;
+                }
+                if (_zMin > _zMax)
+                {
+                    _zMinFix = _zMax;
+                    _zMaxFix = _zMin;
+                }
+                string[] _vectorsAlt = { _xMinFix.ToString(), _zMinFix.ToString(), _xMaxFix.ToString(), _zMaxFix.ToString() };
+                if (_protected.Contains(_vectorsAlt))
+                {
+                    _protected.Remove(_vectorsAlt);
+                    for (int j = _xMinFix; j <= _xMaxFix; j++)
+                    {
+                        for (int k = _zMinFix; k <= _zMaxFix; k++)
+                        {
+                            if (GameManager.Instance.World.IsChunkAreaLoaded(j, 1, k))
+                            {
+                                Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(j, 1, k);
+                                if (!_chunkList.Contains(_chunk))
+                                {
+                                    _chunkList.Add(_chunk);
+                                }
+                                Bounds bounds = _chunk.GetAABB();
+                                int _x = j - (int)bounds.min.x, _z = k - (int)bounds.min.z;
                                 _chunk.SetTraderArea(_x, _z, false);
                             }
-                        }
-                    }
-                    _protectedList.Remove(_vector);
-                }
-                ProtectedSpaces.ProtectedList = _protectedList;
-                if (_chunkList.Count > 0)
-                {
-                    for (int l = 0; l < _chunkList.Count; l++)
-                    {
-                        Chunk _chunk = _chunkList[l];
-                        List<ClientInfo> _clientList = PersistentOperations.ClientList();
-                        if (_clientList != null && _clientList.Count > 0)
-                        {
-                            for (int m = 0; m < _clientList.Count; m++)
+                            else
                             {
-                                ClientInfo _cInfo2 = _clientList[m];
-                                if (_cInfo2 != null)
-                                {
-                                    _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
-                                }
+                                continue;
                             }
                         }
                     }
                 }
-                ProtectedSpaces.UpdateXml();
             }
+            if (_chunkList.Count > 0)
+            {
+                for (int i = 0; i < _chunkList.Count; i++)
+                {
+                    Chunk _chunk = _chunkList[i];
+                    List<ClientInfo> _clientList = PersistentOperations.ClientList();
+                    if (_clientList != null && _clientList.Count > 0)
+                    {
+                        for (int j = 0; j < _clientList.Count; j++)
+                        {
+                            ClientInfo _cInfo2 = _clientList[j];
+                            if (_cInfo2 != null)
+                            {
+                                _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+                            }
+                        }
+                    }
+                }
+            }
+            PersistentContainer.Instance.ProtectedSpace = _protected;
+            PersistentContainer.Instance.Save();
+        }
+
+        public static void UnloadProtection()
+        {
+            List<string[]> _protected = new List<string[]>();
+            if (PersistentContainer.Instance.ProtectedSpace != null && PersistentContainer.Instance.ProtectedSpace.Count > 0)
+            {
+                _protected = PersistentContainer.Instance.ProtectedSpace;
+            }
+            List<Chunk> _chunkList = new List<Chunk>();
+            for (int i = 0; i < _protected.Count; i++)
+            {
+                int _xMin = int.Parse(_protected[i][0]), _zMin = int.Parse(_protected[i][1]), _xMax = int.Parse(_protected[i][2]), _zMax = int.Parse(_protected[i][3]);
+                int _xMinFix = _xMin, _zMinFix = _zMin, _xMaxFix = _xMax, _zMaxFix = _zMax;
+                if (_xMin > _xMax)
+                {
+                    _xMinFix = _xMax;
+                    _xMaxFix = _xMin;
+                }
+                if (_zMin > _zMax)
+                {
+                    _zMinFix = _zMax;
+                    _zMaxFix = _zMin;
+                }
+                for (int j = _xMinFix; j <= _xMaxFix; j++)
+                {
+                    for (int k = _zMinFix; k <= _zMaxFix; k++)
+                    {
+                        if (GameManager.Instance.World.IsChunkAreaLoaded(j, 1, k))
+                        {
+                            Chunk _chunk = (Chunk)GameManager.Instance.World.GetChunkFromWorldPos(j, 1, k);
+                            if (!_chunkList.Contains(_chunk))
+                            {
+                                _chunkList.Add(_chunk);
+                            }
+                            Bounds bounds = _chunk.GetAABB();
+                            int _x = j - (int)bounds.min.x, _z = k - (int)bounds.min.z;
+                            _chunk.SetTraderArea(_x, _z, false);
+                        }
+                    }
+                }
+            }
+            if (_chunkList.Count > 0)
+            {
+                for (int i = 0; i < _chunkList.Count; i++)
+                {
+                    Chunk _chunk = _chunkList[i];
+                    List<ClientInfo> _clientList = PersistentOperations.ClientList();
+                    if (_clientList != null && _clientList.Count > 0)
+                    {
+                        for (int j = 0; j < _clientList.Count; j++)
+                        {
+                            ClientInfo _cInfo2 = _clientList[j];
+                            if (_cInfo2 != null)
+                            {
+                                _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageChunk>().Setup(_chunk, true));
+                            }
+                        }
+                    }
+                }
+            }
+            _protected.Clear();
+            PersistentContainer.Instance.ProtectedSpace = _protected;
+            PersistentContainer.Instance.Save();
         }
     }
 }

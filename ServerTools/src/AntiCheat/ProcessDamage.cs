@@ -238,7 +238,7 @@ namespace ServerTools.AntiCheat
                                 }
                                 return true;
                             }
-                            if (ProcessDamage.Damage_Detector)
+                            if (Damage_Detector)
                             {
                                 if (_newBlockInfo.blockValue.type == BlockValue.Air.type)//new block is air
                                 {
@@ -253,13 +253,9 @@ namespace ServerTools.AntiCheat
                                             if (!PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, _newBlockInfo.pos))
                                             {
                                                 int _total = _blockValue.Block.MaxDamage - _blockValue.damage;
-                                                if (_blockValue.Block.MaxDamage - _blockValue.damage >= Block_Damage_Limit && BlockPenalty(_total, _persistentPlayerId))
+                                                if (_blockValue.Block.MaxDamage - _blockValue.damage >= Block_Damage_Limit)
                                                 {
-                                                    if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_newBlockInfo.pos))
-                                                    {
-                                                        _world.SetBlockRPC(_newBlockInfo.clrIdx, _newBlockInfo.pos, _blockValue);
-                                                        return false;
-                                                    }
+                                                    BlockPenalty(_total, _persistentPlayerId);
                                                 }
                                             }
                                         }
@@ -267,13 +263,9 @@ namespace ServerTools.AntiCheat
                                     if (!_blockValue.Block.CanPickup && !PersistentOperations.ClaimedByAllyOrSelf(_persistentPlayerId, _newBlockInfo.pos))//old block can not be picked up and unclaimed space
                                     {
                                         int _total = _blockValue.Block.MaxDamage - _blockValue.damage;
-                                        if (_total >= Block_Damage_Limit && BlockPenalty(_total, _persistentPlayerId))
+                                        if (_total >= Block_Damage_Limit)
                                         {
-                                            if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_newBlockInfo.pos))
-                                            {
-                                                _world.SetBlockRPC(_newBlockInfo.clrIdx, _newBlockInfo.pos, _blockValue);
-                                                return false;
-                                            }
+                                            BlockPenalty(_total, _persistentPlayerId);
                                         }
                                     }
                                 }
@@ -282,13 +274,9 @@ namespace ServerTools.AntiCheat
                                     if (_newBlockInfo.bChangeDamage)//block took damage
                                     {
                                         int _total = _newBlockInfo.blockValue.damage - _blockValue.damage;
-                                        if (_total >= Block_Damage_Limit && BlockPenalty(_total, _persistentPlayerId))
+                                        if (_total >= Block_Damage_Limit)
                                         {
-                                            if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_newBlockInfo.pos) || Zones.IsEnabled && Zones.Protected(_newBlockInfo.pos))
-                                            {
-                                                _world.SetBlockRPC(_newBlockInfo.clrIdx, _newBlockInfo.pos, _blockValue);
-                                                return false;
-                                            }
+                                            BlockPenalty(_total, _persistentPlayerId);
                                         }
                                     }
                                     if (_blockValue.damage == _newBlockInfo.blockValue.damage || _newBlockInfo.blockValue.damage == 0)//block replaced
@@ -303,13 +291,9 @@ namespace ServerTools.AntiCheat
                                         return true;
                                     }
                                     int _total = _blockValue.Block.MaxDamage - _blockValue.damage + _newBlockInfo.blockValue.damage;
-                                    if (_total >= Block_Damage_Limit && BlockPenalty(_total, _persistentPlayerId))
+                                    if (_total >= Block_Damage_Limit)
                                     {
-                                        if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_newBlockInfo.pos))
-                                        {
-                                            _world.SetBlockRPC(_newBlockInfo.clrIdx, _newBlockInfo.pos, _blockValue);
-                                            return false;
-                                        }
+                                        BlockPenalty(_total, _persistentPlayerId);
                                     }
                                 }
                             }
@@ -324,7 +308,7 @@ namespace ServerTools.AntiCheat
             return true;
         }
 
-        private static bool BlockPenalty(int _total, string _persistentPlayerId)
+        private static void BlockPenalty(int _total, string _persistentPlayerId)
         {
             try
             {
@@ -333,30 +317,22 @@ namespace ServerTools.AntiCheat
                 {
                     if (GameManager.Instance.adminTools.GetUserPermissionLevel(_persistentPlayerId) > Admin_Level)
                     {
-                        if (Damage_Detector)
+                        ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_persistentPlayerId);
+                        if (_cInfo != null)
                         {
-                            ClientInfo _cInfo = PersistentOperations.GetClientInfoFromSteamId(_persistentPlayerId);
-                            if (_cInfo != null)
+                            Phrases.Dict.TryGetValue(952, out string _phrase952);
+                            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1} {2}\"", _cInfo.playerId, _phrase952, _total.ToString()), null);
+                            using (StreamWriter sw = new StreamWriter(_detectionFilepath, true))
                             {
-                                Phrases.Dict.TryGetValue(952, out string _phrase952);
-                                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1} {2}\"", _cInfo.playerId, _phrase952, _total.ToString()), null);
-                                using (StreamWriter sw = new StreamWriter(_detectionFilepath, true))
-                                {
-                                    sw.WriteLine(string.Format("Detected \"{0}\" Steam id {1} exceeding the damage limit @ position {2}. Damage: {3}", _cInfo.playerName, _persistentPlayerId, _player.position, _total));
-                                    sw.WriteLine();
-                                    sw.Flush();
-                                    sw.Close();
-                                }
-                                Phrases.Dict.TryGetValue(951, out string _phrase951);
-                                _phrase951 = _phrase951.Replace("{PlayerName}", _cInfo.playerName);
-                                ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase951 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+                                sw.WriteLine(string.Format("Detected \"{0}\" Steam id {1} exceeding the damage limit @ position {2}. Damage: {3}", _cInfo.playerName, _persistentPlayerId, _player.position, _total));
+                                sw.WriteLine();
+                                sw.Flush();
+                                sw.Close();
                             }
-                            return true;
+                            Phrases.Dict.TryGetValue(951, out string _phrase951);
+                            _phrase951 = _phrase951.Replace("{PlayerName}", _cInfo.playerName);
+                            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase951 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
                         }
-                    }
-                    else
-                    {
-                        return true;
                     }
                 }
             }
@@ -364,7 +340,6 @@ namespace ServerTools.AntiCheat
             {
                 Log.Out(string.Format("[SERVERTOOLS] Error in ProcessDamage.ProcessPenalty: {0}", e.Message));
             }
-            return false;
         }
 
         private static void Jail(ClientInfo _cInfoKiller, EntityAlive _cInfoVictim)

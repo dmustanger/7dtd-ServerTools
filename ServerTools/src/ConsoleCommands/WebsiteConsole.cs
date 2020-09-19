@@ -14,17 +14,17 @@ namespace ServerTools
         public override string GetHelp()
         {
             return "Usage:\n" +
-                   "  1. Website off\n" +
-                   "  2. Website on\n" +
-                   "  3. Website add {steamId}\n" +
-                   "  4. Website remove {steamId}\n" +
-                   "  5. Website reset {steamId}\n" +
-                   "  6. Website timeout add {IP}\n" +
-                   "  7. Website timeout remove {IP}\n" +
-                   "  8. Website ban add {IP}\n" +
-                   "  9. Website ban remove {IP}\n" +
-                   "  10. Website restart\n" +
-                   "  11. Website list\n" +
+                   "  1. ws off\n" +
+                   "  2. ws on\n" +
+                   "  3. ws add {steamId}\n" +
+                   "  4. ws remove {steamId}\n" +
+                   "  5. ws reset {steamId}\n" +
+                   "  6. ws timeout add {IP}\n" +
+                   "  7. ws timeout remove {IP}\n" +
+                   "  8. ws ban add {IP}\n" +
+                   "  9. ws ban remove {IP}\n" +
+                   "  10. ws restart\n" +
+                   "  11. ws list\n" +
                    "1. Turn off the website\n" +
                    "2. Turn on the website\n" +
                    "3. Add a client id to the website list\n" +

@@ -146,6 +146,10 @@ namespace ServerTools
                             return;
                         }
                     }
+                    if (!Teleportation.Teleporting.Contains(_cInfo.entityId))
+                    {
+                        Teleportation.Teleporting.Add(_cInfo.entityId);
+                    }
                     int x, y, z;
                     if (Return)
                     {
@@ -224,16 +228,13 @@ namespace ServerTools
 
         public static void LobbyCheck(ClientInfo _cInfo, EntityAlive _player)
         {
-            if (Lobby.IsEnabled && Lobby.LobbyPlayers.Contains(_cInfo.entityId) && !Lobby.InsideLobby(_player.position.x, _player.position.z))
+            if (!Lobby.InsideLobby(_player.position.x, _player.position.z))
             {
                 Lobby.LobbyPlayers.Remove(_cInfo.entityId);
-                if (Lobby.Return)
-                {
-                    PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = "";
-                    PersistentContainer.Instance.Save();
-                    Phrases.Dict.TryGetValue(247, out string _phrase247);
-                    ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase247 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                }
+                PersistentContainer.Instance.Players[_cInfo.playerId].LobbyReturnPos = "";
+                PersistentContainer.Instance.Save();
+                Phrases.Dict.TryGetValue(247, out string _phrase247);
+                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase247 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
             }
         }
 

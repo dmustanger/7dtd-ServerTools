@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -21,6 +20,8 @@ namespace ServerTools
         private Dictionary<string[], string> pollOld;
         private bool pollOpen;
         private Dictionary<string, bool> pollVote;
+        private List<string[]> protectedSpace;
+        private List<string[]> protectedZone;
         private List<string[]> track;
         private Dictionary<string, string[]> websiteAuthorizedList;
         private Dictionary<string, DateTime> websiteAuthorizedTimeList;
@@ -183,6 +184,30 @@ namespace ServerTools
             set
             {
                 pollVote = value;
+            }
+        }
+
+        public List<string[]> ProtectedSpace
+        {
+            get
+            {
+                return protectedSpace;
+            }
+            set
+            {
+                protectedSpace = value;
+            }
+        }
+
+        public List<string[]> ProtectedZone
+        {
+            get
+            {
+                return protectedZone;
+            }
+            set
+            {
+                protectedZone = value;
             }
         }
 

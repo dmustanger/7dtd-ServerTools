@@ -4,6 +4,7 @@ namespace ServerTools
 {
     class Teleportation
     {
+        public static List<int> Teleporting = new List<int>();
 
         public static bool ZCheck(ClientInfo _cInfo, EntityPlayer _player)
         {

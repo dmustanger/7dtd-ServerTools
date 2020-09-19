@@ -137,6 +137,10 @@ namespace ServerTools
                         return;
                     }
                 }
+                if (!Teleportation.Teleporting.Contains(_cInfo.entityId))
+                {
+                    Teleportation.Teleporting.Add(_cInfo.entityId);
+                }
                 int x, y, z;
                 if (Return)
                 {
@@ -152,29 +156,23 @@ namespace ServerTools
                     _phrase252 = _phrase252.Replace("{Command51}", Command51);
                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase252 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                 }
-                string[] _cords = { };
-                if (Market.Market_Position.Contains(","))
+                string[] _cords = Market.Market_Position.Split(',').ToArray();
+                if (int.TryParse(_cords[0], out int _x))
                 {
-                    if (Market.Market_Position.Contains(" "))
+                    if (int.TryParse(_cords[1], out int _y))
                     {
-                        Market.Market_Position.Replace(" ", "");
+                        if (int.TryParse(_cords[2], out int _z))
+                        {
+                            _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
+                            if (Wallet.IsEnabled && Command_Cost >= 1)
+                            {
+                                Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
+                            }
+                            PersistentContainer.Instance.Players[_cInfo.playerId].LastMarket = DateTime.Now;
+                            PersistentContainer.Instance.Save();
+                        }
                     }
-                    _cords = Market.Market_Position.Split(',').ToArray();
                 }
-                else if (Market.Market_Position.Contains(" "))
-                {
-                    _cords = Market.Market_Position.Split(' ').ToArray();
-                }
-                int.TryParse(_cords[0], out x);
-                int.TryParse(_cords[1], out y);
-                int.TryParse(_cords[2], out z);
-                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
-                if (Wallet.IsEnabled && Command_Cost >= 1)
-                {
-                    Wallet.SubtractCoinsFromWallet(_cInfo.playerId, Command_Cost);
-                }
-                PersistentContainer.Instance.Players[_cInfo.playerId].LastMarket = DateTime.Now;
-                PersistentContainer.Instance.Save();
             }
             else
             {
@@ -221,7 +219,7 @@ namespace ServerTools
 
         public static void MarketCheck(ClientInfo _cInfo, EntityAlive _player)
         {
-            if (Market.IsEnabled && Market.MarketPlayers.Contains(_cInfo.entityId) && !Market.InsideMarket(_player.position.x, _player.position.z))
+            if (!Market.InsideMarket(_player.position.x, _player.position.z))
             {
                 Market.MarketPlayers.Remove(_cInfo.entityId);
                 if (Market.Return)

@@ -73,29 +73,6 @@ public static class Injections
         return true;
     }
 
-    public static bool ExplosionServer_Prefix(Vector3 _worldPos, int _playerId)
-    {
-        try
-        {
-            if (_playerId > 0)
-            {
-                ClientInfo _cInfo = PersistentOperations.GetClientInfoFromEntityId(_playerId);
-                if (_cInfo != null)
-                {
-                    if (GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > ProcessDamage.Admin_Level)
-                    {
-                        return ProtectedSpaces.AllowExplosion(_worldPos);
-                    }
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ExplosionServer_Prefix: {0}", e.Message));
-        }
-        return true;
-    }
-
     public static void ServerConsoleCommand_Postfix(ClientInfo _cInfo, string _cmd)
     {
         try
@@ -107,22 +84,4 @@ public static class Injections
             Log.Out(string.Format("[SERVERTOOLS] Error in Injections.ServerConsoleCommand_Postfix: {0}", e.Message));
         }
     }
-
-    //public static bool IsWithinTraderArea_Prefix(World __instance, Vector3i _worldBlockPos, ref bool __result)
-    //{
-    //    try
-    //    {
-    //        if (ProtectedSpaces.IsEnabled && ProtectedSpaces.IsProtectedSpace(_worldBlockPos))
-    //        {
-    //            Log.Out(string.Format("[SERVERTOOLS] Inside protected space. Altering result for Location: {0}, {1}, {2}", _worldBlockPos.x, _worldBlockPos.y, _worldBlockPos.z));
-    //            __result = true;
-    //            return false;
-    //        }
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        Log.Out(string.Format("[SERVERTOOLS] Error in Injections.IsWithinTraderArea_Prefix: {0}", e.Message));
-    //    }
-    //    return true;
-    //}
 }

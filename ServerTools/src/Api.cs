@@ -129,7 +129,10 @@ namespace ServerTools
                     }
                     else if (_respawnReason == RespawnType.Teleport)
                     {
-
+                        if (Teleportation.Teleporting.Contains(_cInfo.entityId))
+                        {
+                            Teleportation.Teleporting.Remove(_cInfo.entityId);
+                        }
                     }
                     if (BattleLogger.IsEnabled && !BattleLogger.Exit.Contains(_cInfo.playerId) && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > BattleLogger.Admin_Level)
                     {
@@ -324,10 +327,6 @@ namespace ServerTools
                         {
                             Zones.Reminder.Remove(_cInfo.entityId);
                         }
-                        if (Zones.ReminderMsg.ContainsKey(_cInfo.entityId))
-                        {
-                            Zones.ReminderMsg.Remove(_cInfo.entityId);
-                        }
                         if (Zones.ZonePvE.Contains(_cInfo.entityId))
                         {
                             Zones.ZonePvE.Remove(_cInfo.entityId);
@@ -347,6 +346,14 @@ namespace ServerTools
                         if (KillNotice.Damage.ContainsKey(_cInfo.entityId))
                         {
                             KillNotice.Damage.Remove(_cInfo.entityId);
+                        }
+                        if (PlayerChecks.Flag.ContainsKey(_cInfo.entityId))
+                        {
+                            PlayerChecks.Flag.Remove(_cInfo.entityId);
+                        }
+                        if (Teleportation.Teleporting.Contains(_cInfo.entityId))
+                        {
+                            Teleportation.Teleporting.Remove(_cInfo.entityId);
                         }
                     }
                 }
