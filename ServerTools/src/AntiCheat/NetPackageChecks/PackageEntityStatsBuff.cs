@@ -12,23 +12,27 @@ namespace ServerTools
             if (__instance.Sender != null)
             {
                 ClientInfo _cInfo = __instance.Sender;
-                EntityAlive _entityAlive = _world.GetEntity(_entityId(__instance)) as EntityAlive;
-                if (_entityAlive != null)
+                EntityAlive _sendingEntity = _world.GetEntity(_cInfo.entityId) as EntityAlive;
+                if (_sendingEntity != null && _sendingEntity.AttachedToEntity == null)
                 {
-                    if (_cInfo.entityId != _entityAlive.entityId)
+                    EntityAlive _entityAlive = _world.GetEntity(_entityId(__instance)) as EntityAlive;
+                    if (_entityAlive != null)
                     {
-                        Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageEntityStatsBuff uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempted modifying their entity id to {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityAlive.entityId));
+                        if (_cInfo.entityId != _entityAlive.entityId)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageEntityStatsBuff uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempted modifying their entity id to {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityAlive.entityId));
+                            Packages.Ban(_cInfo);
+                            Packages.Writer(_cInfo, string.Format("Attempted modifying their entity id to {0}", _entityAlive.entityId));
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageEntityStatsBuff uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempted modifying their entity id to a non existent entity with id {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityId(__instance)));
                         Packages.Ban(_cInfo);
-                        Packages.Writer(_cInfo, string.Format("Attempted modifying their entity id to {0}", _entityAlive.entityId));
+                        Packages.Writer(_cInfo, string.Format("Attempted modifying their entity id to a non existent entity with id {0}", _entityId(__instance)));
                         return false;
                     }
-                }
-                else
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageEntityStatsBuff uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempted modifying their entity id to a non existent entity with id {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityId(__instance)));
-                    Packages.Ban(_cInfo);
-                    Packages.Writer(_cInfo, string.Format("Attempted modifying their entity id to a non existent entity with id {0}", _entityId(__instance)));
-                    return false;
                 }
             }
             return true;

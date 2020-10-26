@@ -20,7 +20,7 @@ namespace ServerTools
                     Packages.Writer(_cInfo, string.Format("Attempted running console command {0} with mismatched entity id {1}", _command(__instance), _entityId(__instance)));
                     return false;
                 }
-                else if (!GameManager.Instance.adminTools.CommandAllowedFor(new string[] { _command(__instance) }, _cInfo))
+                else if (!GameManager.Instance.adminTools.CommandAllowedFor(new string[] { _command(__instance) }, _cInfo) && !_command(__instance).ToLower().Contains("help"))
                 {
                     Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageConsoleCmdServer uploaded by steam id = {0}, owner id = {1} entity id = {2} name = {3}. Attempted running console command {4} without permission", __instance.Sender.playerId, __instance.Sender.ownerId, __instance.Sender.entityId, __instance.Sender.playerName, _command(__instance)));
                     Packages.Ban(_cInfo);

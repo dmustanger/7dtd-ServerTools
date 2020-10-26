@@ -14,19 +14,14 @@ namespace ServerTools
             if (__instance.Sender != null)
             {
                 ClientInfo _cInfo = __instance.Sender;
-                if (_cInfo.entityId != _entityId(__instance))
+                EntityAlive _entityAlive = _world.GetEntity(_entityId(__instance)) as EntityAlive;
+                if (_entityAlive != null && _entityAlive.IsClientControlled())
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageModifyCVar uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempted modifying their entity id to {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityId(__instance)));
-                    Packages.Ban(_cInfo);
-                    Packages.Writer(_cInfo, string.Format("Attempted modifying their entity id to {0}", _entityId(__instance)));
-                    return false;
+                    Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageModifyCVar uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempted modifying entity id {4} cvar named {5} to value {6}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityId(__instance), _cvarName(__instance), _value(__instance)));
+                    //Packages.Ban(_cInfo);
+                    //Packages.Writer(_cInfo, string.Format("Attempted modifying their entity id to {0}", _entityId(__instance)));
+                    //return false;
                 }
-                //if (_cvarName(__instance) == "")
-                //{
-                //    Log.Out(string.Format("[SERVERTOOLS] Detected data NetPackageModifyCVar uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Cvar name {4} to value {5}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _cvarName(__instance), _value(__instance)));
-                //    Packages.Ban(_cInfo);
-                //    return false;
-                //}
             }
             return true;
         }

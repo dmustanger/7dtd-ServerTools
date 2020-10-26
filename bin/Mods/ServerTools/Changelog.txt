@@ -1,11 +1,28 @@
 ﻿CHANGELOG
 
+19.2.1
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Added Net_Package tool to options. Enable to allow auto ban system for users
+caught manipulating net packets
+Added NetPackageBuffs.xml that defines which buffs the Net_Package tool
+checks for on players. Add custom buffs if neccessary
+Fixed false positive in Net_Package tool from using a vehicle
+Fixed false positive in Net_Package tool from console command help
+Fixed injection process to one net package method
+Changed Net_Package tool to kick players running console commands without
+permission
+
 19.2.0
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions
 
 Added net package confirmation to anti cheat system(extremely important!)
 Changed Flight_Detector to skip players that are swimming
+*Huge thank you to all the various crackers, coders, hackers and friends
+that helped work out security flaws for this patch. Could not have done it
+without you*
 
 19.0.11
 Built using Alpha 19 stable assets

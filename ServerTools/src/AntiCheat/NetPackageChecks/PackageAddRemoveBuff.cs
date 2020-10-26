@@ -19,46 +19,11 @@ namespace ServerTools
                     if (!GameManager.Instance.adminTools.IsAdmin(_cInfo))
                     {
                         string _buff = _buffName(__instance).ToLower();
-                        if (_buff.Contains("god"))
+                        if (Packages.Dict.Contains(_buff))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageAddRemoveBuff uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempting to apply or remove 'god' buff without permission to entity id {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityAlive.entityId));
+                            Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageAddRemoveBuff uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempting to apply or remove '{4}' buff without permission to entity id {5}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _buff, _entityAlive.entityId));
                             Packages.Ban(_cInfo);
-                            Packages.Writer(_cInfo, string.Format("Attempting to apply or remove 'god' buff without permission to entity id {0}", _entityAlive.entityId));
-                            return false;
-                        }
-                        else if (_buff.Contains("megadamage"))
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageAddRemoveBuff uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempting to apply or remove 'megadamage' buff without permission to entity id {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityAlive.entityId));
-                            Packages.Ban(_cInfo);
-                            Packages.Writer(_cInfo, string.Format("Attempting to apply or remove 'megadamage' buff without permission to entity id {0}", _entityAlive.entityId));
-                            return false;
-                        }
-                        else if (_buff.Contains("buffme"))
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageAddRemoveBuff uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempting to apply or remove 'buffme' buff without permission to entity id {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityAlive.entityId));
-                            Packages.Ban(_cInfo);
-                            Packages.Writer(_cInfo, string.Format("Attempting to apply or remove 'buffme' buff without permission to entity id {0}", _entityAlive.entityId));
-                            return false;
-                        }
-                        else if (_buff.Contains("nerfme"))
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageAddRemoveBuff uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempting to apply or remove 'nerfme' buff without permission to entity id {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityAlive.entityId));
-                            Packages.Ban(_cInfo);
-                            Packages.Writer(_cInfo, string.Format("Attempting to apply or remove 'nerfme' buff without permission to entity id {0}", _entityAlive.entityId));
-                            return false;
-                        }
-                        else if (_buff.Contains("maxedout"))
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageAddRemoveBuff uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempting to apply or remove 'maxedout' buff without permission to entity id {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityAlive.entityId));
-                            Packages.Ban(_cInfo);
-                            Packages.Writer(_cInfo, string.Format("Attempting to apply or remove 'maxedout' buff without permission to entity id {0}", _entityAlive.entityId));
-                            return false;
-                        }
-                        else if (_buff.Contains("pegasus"))
-                        {
-                            Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageAddRemoveBuff uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempting to apply or remove 'pegasus' buff without permission to entity id {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityAlive.entityId));
-                            Packages.Ban(_cInfo);
-                            Packages.Writer(_cInfo, string.Format("Attempting to apply or remove 'pegasus' buff without permission to entity id {0}", _entityAlive.entityId));
+                            Packages.Writer(_cInfo, string.Format("Attempting to apply or remove '{0}' buff without permission to entity id {1}", _buff, _entityAlive.entityId));
                             return false;
                         }
                     }

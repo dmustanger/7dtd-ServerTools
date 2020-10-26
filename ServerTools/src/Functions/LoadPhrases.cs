@@ -5349,12 +5349,12 @@ namespace ServerTools
                 sw.WriteLine(string.Format("        <Phrase Id=\"1032\" Phrase=\"{0}\" />", _phrase1032));
                 if (!Dict.TryGetValue(1033, out string _phrase1033))
                 {
-                    _phrase1033 = "";
+                    _phrase1033 = "Auto detection has caught you f'ing with the console commands";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"1033\" Phrase=\"{0}\" />", _phrase1033));
                 if (!Dict.TryGetValue(1034, out string _phrase1034))
                 {
-                    _phrase1034 = "";
+                    _phrase1034 = "{PlayerName} has been kicked for f'ing with the console";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"1034\" Phrase=\"{0}\" />", _phrase1034));
                 if (!Dict.TryGetValue(1035, out string _phrase1035))

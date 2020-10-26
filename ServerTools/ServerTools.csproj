@@ -64,6 +64,7 @@
     <Compile Include="src\AntiCheat\NetPackageChecks\PackagePlayerId.cs" />
     <Compile Include="src\AntiCheat\NetPackageChecks\PackagePlayerStats.cs" />
     <Compile Include="src\AntiCheat\NetPackageChecks\PackagePlayerData.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageSetBlock.cs" />
     <Compile Include="src\AntiCheat\NetPackageChecks\PackageWorldTime.cs" />
     <Compile Include="src\AntiCheat\ProcessDamage.cs" />
     <Compile Include="src\AntiCheat\PlayerChecks.cs" />
@@ -316,10 +317,6 @@
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\7dtd-binaries\UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>..\..\7dtd-ServerTools-master-18.2.5\7dtd-binaries\UnityEngine.ImageConversionModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

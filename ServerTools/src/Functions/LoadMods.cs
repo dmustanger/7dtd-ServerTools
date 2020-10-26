@@ -203,6 +203,14 @@ namespace ServerTools
             {
                 ProtectedSpaces.Load();
             }
+            if (Packages.IsRunning && !Packages.IsEnabled)
+            {
+                Packages.Unload();
+            }
+            if (!Packages.IsRunning && Packages.IsEnabled)
+            {
+                Packages.Load();
+            }
             if (ClanManager.IsEnabled)
             {
                 ClanManager.ClanList();

@@ -7,7 +7,7 @@ namespace ServerTools
     {
         static AccessTools.FieldRef<NetPackageMapPosition, int> _entityId = AccessTools.FieldRefAccess<NetPackageMapPosition, int>("entityId");
 
-        public static bool PackageChat_ProcessPackage_Prefix(NetPackageMapPosition __instance, World _world)
+        public static bool PackageMapPosition_ProcessPackage_Prefix(NetPackageMapPosition __instance, World _world)
         {
             if (__instance.Sender != null)
             {
