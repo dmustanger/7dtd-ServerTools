@@ -8,7 +8,7 @@ namespace ServerTools
 {
     public class LoadConfig
     {
-        public const string version = "19.0.11";
+        public const string version = "19.2.0";
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
         private const string configFile = "ServerToolsConfig.xml";

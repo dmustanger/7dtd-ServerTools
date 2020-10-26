@@ -5334,6 +5334,59 @@ namespace ServerTools
                     _phrase1030 = "";
                 }
                 sw.WriteLine(string.Format("        <Phrase Id=\"1030\" Phrase=\"{0}\" />", _phrase1030));
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                sw.WriteLine("        <!-- ********************** NetPackages ********************* -->");
+                sw.WriteLine("        <!-- ******************************************************** -->");
+                if (!Dict.TryGetValue(1031, out string _phrase1031))
+                {
+                    _phrase1031 = "Auto detection has caught you manipulating packet data";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1031\" Phrase=\"{0}\" />", _phrase1031));
+                if (!Dict.TryGetValue(1032, out string _phrase1032))
+                {
+                    _phrase1032 = "{PlayerName} has been banned for manipulating packet data";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1032\" Phrase=\"{0}\" />", _phrase1032));
+                if (!Dict.TryGetValue(1033, out string _phrase1033))
+                {
+                    _phrase1033 = "";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1033\" Phrase=\"{0}\" />", _phrase1033));
+                if (!Dict.TryGetValue(1034, out string _phrase1034))
+                {
+                    _phrase1034 = "";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1034\" Phrase=\"{0}\" />", _phrase1034));
+                if (!Dict.TryGetValue(1035, out string _phrase1035))
+                {
+                    _phrase1035 = "";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1035\" Phrase=\"{0}\" />", _phrase1035));
+                if (!Dict.TryGetValue(1036, out string _phrase1036))
+                {
+                    _phrase1036 = "";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1036\" Phrase=\"{0}\" />", _phrase1036));
+                if (!Dict.TryGetValue(1037, out string _phrase1037))
+                {
+                    _phrase1037 = "";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1037\" Phrase=\"{0}\" />", _phrase1037));
+                if (!Dict.TryGetValue(1038, out string _phrase1038))
+                {
+                    _phrase1038 = "";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1038\" Phrase=\"{0}\" />", _phrase1038));
+                if (!Dict.TryGetValue(1039, out string _phrase1039))
+                {
+                    _phrase1039 = "";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1039\" Phrase=\"{0}\" />", _phrase1039));
+                if (!Dict.TryGetValue(1040, out string _phrase1040))
+                {
+                    _phrase1040 = "";
+                }
+                sw.WriteLine(string.Format("        <Phrase Id=\"1040\" Phrase=\"{0}\" />", _phrase1040));
                 sw.WriteLine("    </Phrases>");
                 sw.WriteLine("</ServerTools>");
                 sw.Flush();

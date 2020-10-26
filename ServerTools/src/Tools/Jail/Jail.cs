@@ -83,24 +83,12 @@ namespace ServerTools
 
         private static void PutPlayerInJail(ClientInfo _cInfo, ClientInfo _PlayertoJail)
         {
-            string[] _cords = { };
-            if (Jail_Position.Contains(","))
-            {
-                if (Jail_Position.Contains(" "))
-                {
-                    Jail_Position.Replace(" ", "");
-                }
-                _cords = Jail_Position.Split(',');
-            }
-            else
-            {
-                _cords = Jail_Position.Split(' ');
-            }
-            int x, y, z;
-            int.TryParse(_cords[0], out x);
-            int.TryParse(_cords[1], out y);
-            int.TryParse(_cords[2], out z);
-            _PlayertoJail.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+            string[] _cords = Jail_Position.Split(',');
+            int _x, _y, _z;
+            int.TryParse(_cords[0], out _x);
+            int.TryParse(_cords[1], out _y);
+            int.TryParse(_cords[2], out _z);
+            _PlayertoJail.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
             Jailed.Add(_PlayertoJail.playerId);
             PersistentContainer.Instance.Players[_PlayertoJail.playerId].JailTime = 60;
             PersistentContainer.Instance.Players[_PlayertoJail.playerId].JailName= _PlayertoJail.playerName;
@@ -162,6 +150,7 @@ namespace ServerTools
                             EntityBedrollPositionList _position = _player.SpawnPoints;
                             if (_position.Count > 0 && (PersistentOperations.ClaimedByAllyOrSelf(_PlayertoUnJail.playerId, _position.GetPos()) || PersistentOperations.ClaimedByNone(_PlayertoUnJail.playerId, _position.GetPos())))
                             {
+
                                 _PlayertoUnJail.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_position[0].x, _position[0].y + 1, _position[0].z), null, false));
                             }
                             else
@@ -208,30 +197,18 @@ namespace ServerTools
                         EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
                         if (_player.Spawned)
                         {
-                            int x, y, z;
-                            string[] _cords = { };
-                            if (Jail_Position.Contains(","))
-                            {
-                                if (Jail_Position.Contains(" "))
-                                {
-                                    Jail_Position.Replace(" ", "");
-                                }
-                                _cords = Jail_Position.Split(',');
-                            }
-                            else
-                            {
-                                _cords = Jail_Position.Split(' ');
-                            }
-                            int.TryParse(_cords[0], out x);
-                            int.TryParse(_cords[1], out y);
-                            int.TryParse(_cords[2], out z);
+                            int _x, _y, _z;
+                            string[] _cords = Jail_Position.Split(',');
+                            int.TryParse(_cords[0], out _x);
+                            int.TryParse(_cords[1], out _y);
+                            int.TryParse(_cords[2], out _z);
                             Vector3 _vector3 = _player.position;
-                            if ((x - _vector3.x) * (x - _vector3.x) + (z - _vector3.z) * (z - _vector3.z) >= Jail_Size * Jail_Size) 
+                            if ((_x - _vector3.x) * (_x - _vector3.x) + (_z - _vector3.z) * (_z - _vector3.z) >= Jail_Size * Jail_Size || _vector3.y > _y + Jail_Size || _vector3.y < _y + Jail_Size) 
                             {
-                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(x, y, z), null, false));
+                                _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3(_x, _y, _z), null, false));
                                 if (Jail_Shock)
                                 {
-                                    _cInfo.SendPackage(new NetPackageConsoleCmdClient().Setup("buff buffShocked", true));
+                                    _cInfo.SendPackage(NetPackageManager.GetPackage<NetPackageConsoleCmdClient>().Setup("buff buffShocked", true));
                                     Phrases.Dict.TryGetValue(198, out string _phrase198);
                                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase198 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }

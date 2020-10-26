@@ -28,7 +28,8 @@ namespace ServerTools.AntiCheat
                                 EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
                                 if (_player != null)
                                 {
-                                    if (SpectatorEnabled && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Spectator_Admin_Level)
+                                    int _userPermissionLevel = GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo);
+                                    if (SpectatorEnabled && _userPermissionLevel > Spectator_Admin_Level)
                                     {
                                         if (_player.IsSpectator)
                                         {
@@ -50,7 +51,7 @@ namespace ServerTools.AntiCheat
                                             continue;
                                         }
                                     }
-                                    if (GodEnabled && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Godmode_Admin_Level)
+                                    if (GodEnabled && _userPermissionLevel > Godmode_Admin_Level)
                                     {
                                         if (_player.Buffs.HasBuff("god"))
                                         {
@@ -72,9 +73,9 @@ namespace ServerTools.AntiCheat
                                             continue;
                                         }
                                     }
-                                    if (FlyEnabled && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo) > Flying_Admin_Level)
+                                    if (FlyEnabled && _userPermissionLevel > Flying_Admin_Level)
                                     {
-                                        if (!Teleportation.Teleporting.Contains(_cInfo.entityId) && _player.IsSpawned() && _player.IsAlive() &&!_player.IsStuck && _player.AttachedToEntity == null)
+                                        if (!Teleportation.Teleporting.Contains(_cInfo.entityId) && _player.IsSpawned() && _player.IsAlive() &&!_player.IsStuck && !_player.isSwimming && _player.AttachedToEntity == null)
                                         {
                                             if (AirCheck(_player.position.x, _player.position.y, _player.position.z) || GroundCheck(_player.position.x, _player.position.y, _player.position.z))
                                             {

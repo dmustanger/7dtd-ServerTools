@@ -43,6 +43,28 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="src\AntiCheat\DupeLog.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\Packages.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageAddRemoveBuff.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageChat.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageChunk.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageChunkRemove.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageChunkRemoveAll.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageConsoleCmdServer.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageDamageEntity.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageEntityRemove.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageEntityStatsBuff.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageGameMessage.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageItemDrop.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageItemReload.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageMapChunks.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageMapPosition.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageModifyCVar.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackagePartyActions.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackagePersistentPlayerState.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackagePlayerId.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackagePlayerStats.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackagePlayerData.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageWorldTime.cs" />
     <Compile Include="src\AntiCheat\ProcessDamage.cs" />
     <Compile Include="src\AntiCheat\PlayerChecks.cs" />
     <Compile Include="src\ConsoleCommands\DeletePlayerData.cs" />
@@ -248,6 +270,7 @@
     <Compile Include="src\Tools\VoteReward\VoteReward.cs" />
     <Compile Include="src\Tools\Watchlist\Watchlist.cs" />
     <Compile Include="src\Tools\Waypoints\Waypoints.cs" />
+    <Compile Include="src\Website\Console.cs" />
     <Compile Include="src\Website\MimeType.cs" />
     <Compile Include="src\Website\WebsiteServer.cs" />
   </ItemGroup>

@@ -1,5 +1,12 @@
 ﻿CHANGELOG
 
+19.2.0
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Added net package confirmation to anti cheat system(extremely important!)
+Changed Flight_Detector to skip players that are swimming
+
 19.0.11
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions
