@@ -1,5 +1,17 @@
 ﻿CHANGELOG
 
+19.2.2
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Fixed false positive in Net_Package tool from party operations
+Fixed Net_Package tool failing to kick players instead of ban
+Changed Net_Package damage detection to a higher limit
+Disabled Net_Package cvar and buff checks until a future version
+Huge thank you to all the various crackers, coders, hackers and friends
+that helped work out security flaws for this patch. Could not have done it
+without you
+
 19.2.1
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions
@@ -13,6 +25,9 @@ Fixed false positive in Net_Package tool from console command help
 Fixed injection process to one net package method
 Changed Net_Package tool to kick players running console commands without
 permission
+*Huge thank you to all the various crackers, coders, hackers and friends
+that helped work out security flaws for this patch. Could not have done it
+without you*
 
 19.2.0
 Built using Alpha 19 stable assets

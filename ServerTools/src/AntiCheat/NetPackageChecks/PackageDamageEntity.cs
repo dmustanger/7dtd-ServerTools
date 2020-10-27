@@ -22,15 +22,15 @@ namespace ServerTools
                     if (_damageType(__instance) == EnumDamageTypes.Suicide && __instance.Sender.entityId != _entityAlive.entityId && !GameManager.Instance.adminTools.CommandAllowedFor(new string[] { "kill" }, _cInfo))
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageDamageEntity uploaded by steam id = {0}, owner id = {1} entity id = {2} name = {3}. Attempted running suicide on entity id {4} without permission", __instance.Sender.playerId, __instance.Sender.ownerId, __instance.Sender.entityId, __instance.Sender.playerName, _targetId(__instance)));
-                        Packages.Ban(_cInfo);
-                        Packages.Writer(_cInfo, string.Format("Attempted running suicide on entity id {0} without permission", _targetId(__instance)));
+                        Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                        Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Attempted running suicide on entity id {0} without permission", _targetId(__instance)));
                         return false;
                     }
-                    else if (_strength(__instance) >= 500 && !GameManager.Instance.adminTools.IsAdmin(_cInfo))
+                    else if (_strength(__instance) >= 3000 && !GameManager.Instance.adminTools.IsAdmin(_cInfo))
                     {
                         Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageDamageEntity uploaded by steam id = {0}, owner id = {1} entity id = {2} name = {3}. Attempted running excessive damage of {4} on entity id {5} and is not an admin", __instance.Sender.playerId, __instance.Sender.ownerId, __instance.Sender.entityId, __instance.Sender.playerName, _strength(__instance), _targetId(__instance)));
-                        Packages.Ban(_cInfo);
-                        Packages.Writer(_cInfo, string.Format("Attempted running excessive damage of {0} on entity id {1} and is not an admin", _strength(__instance), _targetId(__instance)));
+                        Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                        Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Attempted running excessive damage of {0} on entity id {1} and is not an admin", _strength(__instance), _targetId(__instance)));
                         return false;
                     }
                 }

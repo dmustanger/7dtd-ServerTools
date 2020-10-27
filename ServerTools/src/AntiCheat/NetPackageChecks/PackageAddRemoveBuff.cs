@@ -22,8 +22,8 @@ namespace ServerTools
                         if (Packages.Dict.Contains(_buff))
                         {
                             Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageAddRemoveBuff uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempting to apply or remove '{4}' buff without permission to entity id {5}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _buff, _entityAlive.entityId));
-                            Packages.Ban(_cInfo);
-                            Packages.Writer(_cInfo, string.Format("Attempting to apply or remove '{0}' buff without permission to entity id {1}", _buff, _entityAlive.entityId));
+                            Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                            Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Attempting to apply or remove '{0}' buff without permission to entity id {1}", _buff, _entityAlive.entityId));
                             return false;
                         }
                     }

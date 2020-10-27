@@ -102,7 +102,6 @@ namespace ServerTools
                 {
                     sw.WriteLine("        <Buff Name=\"god\" />");
                     sw.WriteLine("        <Buff Name=\"megadamage\" />");
-                    sw.WriteLine("        <Buff Name=\"buffme\" />");
                     sw.WriteLine("        <Buff Name=\"nerfme\" />");
                     sw.WriteLine("        <Buff Name=\"maxedout\" />");
                     sw.WriteLine("        <Buff Name=\"pegasus\" />");
@@ -133,33 +132,33 @@ namespace ServerTools
             LoadXml();
         }
 
-        public static void Kick(ClientInfo _cInfo)
+        public static void Kick(string _playerId, string _playerName)
         {
             Phrases.Dict.TryGetValue(1033, out string _phrase1033);
-            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _cInfo.playerId, _phrase1033), null);
+            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _playerId, _phrase1033), null);
             Phrases.Dict.TryGetValue(1034, out string _phrase1034);
-            _phrase1034 = _phrase1034.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase1034 = _phrase1034.Replace("{PlayerName}", _playerName);
             ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1034 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
         }
 
-        public static void Ban(ClientInfo _cInfo)
+        public static void Ban(string _owner, string _playerId, string _playerName)
         {
             Phrases.Dict.TryGetValue(1031, out string _phrase1031);
-            if (_cInfo.ownerId != _cInfo.playerId)
+            if (_owner != _playerId)
             {
-                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 50 years \"{1}\"", _cInfo.ownerId, _phrase1031), null);
+                SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 50 years \"{1}\"", _owner, _phrase1031), null);
             }
-            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 50 years \"{1}\"", _cInfo.playerId, _phrase1031), null);
+            SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 50 years \"{1}\"", _playerId, _phrase1031), null);
             Phrases.Dict.TryGetValue(1032, out string _phrase1032);
-            _phrase1032 = _phrase1032.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase1032 = _phrase1032.Replace("{PlayerName}", _playerName);
             ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1032 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
         }
 
-        public static void Writer(ClientInfo _cInfo, string _action)
+        public static void Writer(string _owner, string _playerId, string _playerName, string _action)
         {
             using (StreamWriter sw = new StreamWriter(_filepath, true))
             {
-                sw.WriteLine(string.Format("{0}: {1} {2} {3} Net package manipulation: {4}", DateTime.Now, _cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, _action));
+                sw.WriteLine(string.Format("{0}: {1} {2} {3} Net package manipulation: {4}", DateTime.Now, _owner, _playerId, _playerName, _action));
                 sw.WriteLine();
                 sw.Flush();
                 sw.Close();

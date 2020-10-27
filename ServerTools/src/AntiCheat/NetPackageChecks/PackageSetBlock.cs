@@ -16,8 +16,8 @@ namespace ServerTools
                 if (_cInfo.playerId != _persistentPlayerId(__instance))
                 {
                     Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageSetBlock uploaded by steam id = {0}, owner id = {1} entity id = {2} name = {3}. Attempted changing a block with mismatched player id {4}", __instance.Sender.playerId, __instance.Sender.ownerId, __instance.Sender.entityId, __instance.Sender.playerName, _persistentPlayerId(__instance)));
-                    Packages.Ban(_cInfo);
-                    Packages.Writer(_cInfo, string.Format("Attempted changing a block with mismatched player id {0}", _persistentPlayerId(__instance)));
+                    Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                    Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Attempted changing a block with mismatched player id {0}", _persistentPlayerId(__instance)));
                     return false;
                 }
             }

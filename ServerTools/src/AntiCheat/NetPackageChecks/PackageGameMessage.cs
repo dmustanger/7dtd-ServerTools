@@ -15,8 +15,8 @@ namespace ServerTools
                 if (_cInfo.playerName != _mainName(__instance))
                 {
                     Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageGameMessage uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempted modifying their name to {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _mainName(__instance)));
-                    Packages.Ban(_cInfo);
-                    Packages.Writer(_cInfo, string.Format("Attempted modifying their name to {0}", _mainName(__instance)));
+                    Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                    Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Attempted modifying their name to {0}", _mainName(__instance)));
                     return false;
                 }
             }

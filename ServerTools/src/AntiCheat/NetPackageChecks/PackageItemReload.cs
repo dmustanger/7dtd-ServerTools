@@ -15,8 +15,8 @@ namespace ServerTools
                 if (_cInfo.entityId != _entityId(__instance))
                 {
                     Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageItemReload uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempted triggering item reload with mismatched entity id target {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityId(__instance)));
-                    Packages.Ban(_cInfo);
-                    Packages.Writer(_cInfo, string.Format("Attempted triggering item reload with mismatched entity id target {0}", _entityId(__instance)));
+                    Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                    Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Attempted triggering item reload with mismatched entity id target {0}", _entityId(__instance)));
                     return false;
                 }
             }

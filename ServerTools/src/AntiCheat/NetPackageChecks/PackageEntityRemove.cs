@@ -15,8 +15,8 @@ namespace ServerTools
                 if (!GameManager.Instance.adminTools.IsAdmin(_cInfo))
                 {
                     Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageEntityRemove uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempting to remove entity id {4} without permission", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityId(__instance)));
-                    Packages.Ban(_cInfo);
-                    Packages.Writer(_cInfo, string.Format("Attempted to remove entity id {0} without permission", _entityId(__instance)));
+                    Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                    Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Attempted to remove entity id {0} without permission", _entityId(__instance)));
                     return false;
                 }
             }

@@ -12,8 +12,8 @@ namespace ServerTools
                 if (!GameManager.Instance.adminTools.IsAdmin(_cInfo))
                 {
                     Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageChunk uploaded by steam id = {0}, owner id = {1} entity id = {2} name = {3}. Attempted sending chunk data without permission", __instance.Sender.playerId, __instance.Sender.ownerId, __instance.Sender.entityId, __instance.Sender.playerName));
-                    Packages.Ban(_cInfo);
-                    Packages.Writer(_cInfo, string.Format("Attempted sending chunk data without permission"));
+                    Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                    Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Attempted sending chunk data without permission"));
                     return false;
                 }
             }

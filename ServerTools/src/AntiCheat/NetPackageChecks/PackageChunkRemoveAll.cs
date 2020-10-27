@@ -12,8 +12,8 @@ namespace ServerTools
                 if (!GameManager.Instance.adminTools.IsAdmin(_cInfo))
                 {
                     Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageChunkRemoveAll uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempted to remove all chunks without perission", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName));
-                    Packages.Ban(_cInfo);
-                    Packages.Writer(_cInfo, string.Format("Attempted to remove all chunks without perission"));
+                    Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                    Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Attempted to remove all chunks without perission"));
                     return false;
                 }
             }

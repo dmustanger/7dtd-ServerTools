@@ -16,15 +16,15 @@ namespace ServerTools
                 if (_cInfo.entityId != _entityId(__instance))
                 {
                     Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageChat uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Modifying their entity id to {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityId(__instance)));
-                    Packages.Ban(_cInfo);
-                    Packages.Writer(_cInfo, string.Format("Modifying their entity id to {0}", _entityId(__instance)));
+                    Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                    Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Modifying their entity id to {0}", _entityId(__instance)));
                     return false;
                 }
                 if (_cInfo.playerName != _mainName(__instance))
                 {
                     Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageChat uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Modifying their user name to {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _mainName(__instance)));
-                    Packages.Ban(_cInfo);
-                    Packages.Writer(_cInfo, string.Format("Modifying their user name to {0}", _mainName(__instance)));
+                    Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                    Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Modifying their user name to {0}", _mainName(__instance)));
                     return false;
                 }
             }
