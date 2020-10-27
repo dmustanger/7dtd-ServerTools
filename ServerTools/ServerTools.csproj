@@ -43,6 +43,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="src\AntiCheat\DupeLog.cs" />
+    <Compile Include="src\AntiCheat\NetPackageChecks\PackageExplosionClient.cs" />
     <Compile Include="src\AntiCheat\NetPackageChecks\Packages.cs" />
     <Compile Include="src\AntiCheat\NetPackageChecks\PackageAddRemoveBuff.cs" />
     <Compile Include="src\AntiCheat\NetPackageChecks\PackageChat.cs" />

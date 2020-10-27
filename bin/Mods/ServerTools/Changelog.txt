@@ -1,5 +1,16 @@
 ﻿CHANGELOG
 
+19.2.3
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Added NetPackageExplosionClient to Net_Package tool
+Fixed version listed in the ServerToolsConfig
+Disabled part of Net_Package console command checks until a future version
+*Huge thank you to all the various crackers, coders, hackers and friends
+that helped work out security flaws for this patch. Could not have done it
+without you*
+
 19.2.2
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

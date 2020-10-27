@@ -16,6 +16,7 @@ namespace ServerTools
             if (__instance.Sender != null)
             {
                 ClientInfo _cInfo = __instance.Sender;
+                //Log.Out(string.Format("[SERVERTOOLS] NetPackageDamageEntity uploaded by steam id = {0}, owner id = {1} entity id = {2} name = {3}. _targetId = {4} _attackerId {5} _damageSource {6} _damageType {7} _strength {8}", __instance.Sender.playerId, __instance.Sender.ownerId, __instance.Sender.entityId, __instance.Sender.playerName, _targetId(__instance), _attackerId(__instance), _damageSource(__instance), _damageType(__instance), _strength(__instance)));
                 EntityAlive _entityAlive = _world.GetEntity(_targetId(__instance)) as EntityAlive;
                 if (_entityAlive != null)
                 {
