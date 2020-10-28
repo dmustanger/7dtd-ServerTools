@@ -7,7 +7,7 @@ namespace ServerTools.AntiCheat
     public static class ProcessDamage
     {
         public static bool Damage_Detector = false, IsEnabled = false;
-        public static int Admin_Level = 0, Entity_Damage_Limit = 500, Block_Damage_Limit = 3500;
+        public static int Admin_Level = 0, Entity_Damage_Limit = 3000, Block_Damage_Limit = 3500;
         private static string file = string.Format("DamageLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         public static string filepath = string.Format("{0}/Logs/DamageLogs/{1}", API.ConfigPath, file);
         private static string _detectionFile = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
