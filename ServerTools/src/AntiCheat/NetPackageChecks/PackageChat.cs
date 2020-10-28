@@ -10,23 +10,30 @@ namespace ServerTools
 
         public static bool PackageChat_ProcessPackage_Prefix(NetPackageChat __instance, World _world)
         {
-            if (__instance.Sender != null)
+            try
             {
-                ClientInfo _cInfo = __instance.Sender;
-                if (_cInfo.entityId != _entityId(__instance))
+                if (__instance.Sender != null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageChat uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Modifying their entity id to {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityId(__instance)));
-                    Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
-                    Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Modifying their entity id to {0}", _entityId(__instance)));
-                    return false;
+                    ClientInfo _cInfo = __instance.Sender;
+                    if (_cInfo.entityId != _entityId(__instance))
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageChat uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Modifying their entity id to {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityId(__instance)));
+                        Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Modifying their entity id to {0}", _entityId(__instance)));
+                        Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                        return false;
+                    }
+                    if (_cInfo.playerName != _mainName(__instance))
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageChat uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Modifying their user name to {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _mainName(__instance)));
+                        Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Modifying their user name to {0}", _mainName(__instance)));
+                        Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                        return false;
+                    }
                 }
-                if (_cInfo.playerName != _mainName(__instance))
-                {
-                    Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageChat uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Modifying their user name to {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _mainName(__instance)));
-                    Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
-                    Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Modifying their user name to {0}", _mainName(__instance)));
-                    return false;
-                }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in PackagePersistentPlayerState.PackagePersistentPlayerState_ProcessPackage_Prefix: {0}", e.Message));
             }
             return true;
         }

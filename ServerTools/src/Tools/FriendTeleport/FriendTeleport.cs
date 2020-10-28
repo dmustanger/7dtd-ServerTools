@@ -80,12 +80,12 @@ namespace ServerTools
                             if (DateTime.Now < _dt)
                             {
                                 int _delay = Delay_Between_Uses / 2;
-                                Time(_cInfo, _message, _timepassed, _delay);
+                                Time(_cInfo, _friend, _timepassed, _delay);
                                 return;
                             }
                         }
                     }
-                    Time(_cInfo, _message, _timepassed, Delay_Between_Uses);
+                    Time(_cInfo, _friend, _timepassed, Delay_Between_Uses);
                 }
                 else
                 {
@@ -95,17 +95,17 @@ namespace ServerTools
             }
         }
 
-        public static void Time(ClientInfo _cInfo, string _message, int _timepassed, int _delay)
+        public static void Time(ClientInfo _cInfo, ClientInfo _friend, int _timepassed, int _delay)
         {
             if (_timepassed >= _delay)
             {
                 if (Wallet.IsEnabled && Command_Cost >= 1)
                 {
-                    CommandCost(_cInfo, _message);
+                    CommandCost(_cInfo, _friend);
                 }
                 else
                 {
-                    MessageFriend(_cInfo, _message);
+                    MessageFriend(_cInfo, _friend);
                 }
             }
             else
@@ -118,14 +118,14 @@ namespace ServerTools
             }
         }
 
-        public static void CommandCost(ClientInfo _cInfo, string _message)
+        public static void CommandCost(ClientInfo _cInfo, ClientInfo _friend)
         {
             int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
             if (Command_Cost >= 1)
             {
                 if (_currentCoins >= Command_Cost)
                 {
-                    MessageFriend(_cInfo, _message);
+                    MessageFriend(_cInfo, _friend);
                 }
                 else
                 {
@@ -136,49 +136,32 @@ namespace ServerTools
             }
             else
             {
-                MessageFriend(_cInfo, _message);
+                MessageFriend(_cInfo, _friend);
             }
         }
 
-        public static void MessageFriend(ClientInfo _cInfo, string _message)
+        public static void MessageFriend(ClientInfo _cInfo, ClientInfo _friend)
         {
-            if (!int.TryParse(_message, out int _id))
+            if (Dict.ContainsKey(_friend.entityId))
             {
-                Phrases.Dict.TryGetValue(362, out string _phrase362);
-                _phrase362 = _phrase362.Replace("{EntityId}", _id.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase362 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                return;
-            }
-            ClientInfo _cInfo3 = ConnectionManager.Instance.Clients.ForEntityId(_id);
-            if (_cInfo3 != null)
-            {
-                if (Dict.ContainsKey(_cInfo3.entityId))
-                {
-                    Dict.Remove(_cInfo3.entityId);
-                    Dict1.Remove(_cInfo3.entityId);
-                    Dict.Add(_cInfo3.entityId, _cInfo.entityId);
-                    Dict1.Add(_cInfo3.entityId, DateTime.Now);
-                }
-                else
-                {
-                    Dict.Add(_cInfo3.entityId, _cInfo.entityId);
-                    Dict1.Add(_cInfo3.entityId, DateTime.Now);
-                }
-                Phrases.Dict.TryGetValue(363, out string _phrase363);
-                _phrase363 = _phrase363.Replace("{PlayerName}", _cInfo3.playerName);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase363 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
-                Phrases.Dict.TryGetValue(364, out string _phrase364);
-                _phrase364 = _phrase364.Replace("{PlayerName}", _cInfo.playerName);
-                _phrase364 = _phrase364.Replace("{CommandPrivate}", ChatHook.Command_Private);
-                _phrase364 = _phrase364.Replace("{Command60}", Command60);
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase364 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Dict.Remove(_friend.entityId);
+                Dict1.Remove(_friend.entityId);
+                Dict.Add(_friend.entityId, _cInfo.entityId);
+                Dict1.Add(_friend.entityId, DateTime.Now);
             }
             else
             {
-                Phrases.Dict.TryGetValue(365, out string _phrase365);
-                _phrase365 = _phrase365.Replace("{EntityId}", _id.ToString());
-                ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase365 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                Dict.Add(_friend.entityId, _cInfo.entityId);
+                Dict1.Add(_friend.entityId, DateTime.Now);
             }
+            Phrases.Dict.TryGetValue(363, out string _phrase363);
+            _phrase363 = _phrase363.Replace("{PlayerName}", _friend.playerName);
+            ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase363 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+            Phrases.Dict.TryGetValue(364, out string _phrase364);
+            _phrase364 = _phrase364.Replace("{PlayerName}", _cInfo.playerName);
+            _phrase364 = _phrase364.Replace("{CommandPrivate}", ChatHook.Command_Private);
+            _phrase364 = _phrase364.Replace("{Command60}", Command60);
+            ChatHook.ChatMessage(_friend, LoadConfig.Chat_Response_Color + _phrase364 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
         public static void TeleFriend(ClientInfo _cInfo, int _friendToTele)

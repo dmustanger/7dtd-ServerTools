@@ -9,16 +9,23 @@ namespace ServerTools
 
         public static bool PackageGameMessage_ProcessPackage_Prefix(NetPackageGameMessage __instance, World _world)
         {
-            if (__instance.Sender != null)
+            try
             {
-                ClientInfo _cInfo = __instance.Sender;
-                if (_cInfo.playerName != _mainName(__instance))
+                if (__instance.Sender != null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageGameMessage uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempted modifying their name to {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _mainName(__instance)));
-                    Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
-                    Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Attempted modifying their name to {0}", _mainName(__instance)));
-                    return false;
+                    ClientInfo _cInfo = __instance.Sender;
+                    if (_cInfo.playerName != _mainName(__instance))
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageGameMessage uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempted modifying their name to {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _mainName(__instance)));
+                        Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Attempted modifying their name to {0}", _mainName(__instance)));
+                        Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                        return false;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in PackagePersistentPlayerState.PackagePersistentPlayerState_ProcessPackage_Prefix: {0}", e.Message));
             }
             return true;
         }

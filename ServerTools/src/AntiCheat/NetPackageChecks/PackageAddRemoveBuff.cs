@@ -10,24 +10,31 @@ namespace ServerTools
 
         public static bool PackageAddRemoveBuff_ProcessPackage_Prefix(NetPackageAddRemoveBuff __instance, World _world)
         {
-            if (__instance.Sender != null)
+            try
             {
-                ClientInfo _cInfo = __instance.Sender;
-                EntityAlive _entityAlive = _world.GetEntity(_entityId(__instance)) as EntityAlive;
-                if (_entityAlive != null)
+                if (__instance.Sender != null)
                 {
-                    if (!GameManager.Instance.adminTools.IsAdmin(_cInfo))
+                    ClientInfo _cInfo = __instance.Sender;
+                    EntityAlive _entityAlive = _world.GetEntity(_entityId(__instance)) as EntityAlive;
+                    if (_entityAlive != null)
                     {
-                        string _buff = _buffName(__instance).ToLower();
-                        if (Packages.Dict.Contains(_buff))
+                        if (!GameManager.Instance.adminTools.IsAdmin(_cInfo))
                         {
-                            Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageAddRemoveBuff uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempting to apply or remove '{4}' buff without permission to entity id {5}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _buff, _entityAlive.entityId));
-                            Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
-                            Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Attempting to apply or remove '{0}' buff without permission to entity id {1}", _buff, _entityAlive.entityId));
-                            return false;
+                            string _buff = _buffName(__instance).ToLower();
+                            if (Packages.Dict.Contains(_buff))
+                            {
+                                Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageAddRemoveBuff uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempting to apply or remove '{4}' buff without permission to entity id {5}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _buff, _entityAlive.entityId));
+                                Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Attempting to apply or remove '{0}' buff without permission to entity id {1}", _buff, _entityAlive.entityId));
+                                Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                                return false;
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in PackagePersistentPlayerState.PackagePersistentPlayerState_ProcessPackage_Prefix: {0}", e.Message));
             }
             return true;
         }

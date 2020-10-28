@@ -9,16 +9,23 @@ namespace ServerTools
 
         public static bool PackageItemReload_ProcessPackage_Prefix(NetPackageItemReload __instance, World _world)
         {
-            if (__instance.Sender != null)
+            try
             {
-                ClientInfo _cInfo = __instance.Sender;
-                if (_cInfo.entityId != _entityId(__instance))
+                if (__instance.Sender != null)
                 {
-                    Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageItemReload uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempted triggering item reload with mismatched entity id target {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityId(__instance)));
-                    Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
-                    Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Attempted triggering item reload with mismatched entity id target {0}", _entityId(__instance)));
-                    return false;
+                    ClientInfo _cInfo = __instance.Sender;
+                    if (_cInfo.entityId != _entityId(__instance))
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Detected erroneous data NetPackageItemReload uploaded by steam id {0}, owner id {1}, entity id {2} name {3}. Attempted triggering item reload with mismatched entity id target {4}", _cInfo.playerId, _cInfo.ownerId, _cInfo.entityId, _cInfo.playerName, _entityId(__instance)));
+                        Packages.Writer(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName, string.Format("Attempted triggering item reload with mismatched entity id target {0}", _entityId(__instance)));
+                        Packages.Ban(_cInfo.ownerId, _cInfo.playerId, _cInfo.playerName);
+                        return false;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Out(string.Format("[SERVERTOOLS] Error in PackagePersistentPlayerState.PackagePersistentPlayerState_ProcessPackage_Prefix: {0}", e.Message));
             }
             return true;
         }

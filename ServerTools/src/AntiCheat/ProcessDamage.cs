@@ -33,7 +33,7 @@ namespace ServerTools.AntiCheat
                                     EntityPlayer _player2 = PersistentOperations.GetEntityPlayer(_cInfo2.playerId);
                                     if (_player2 != null)
                                     {
-                                        ItemValue _itemValue = ItemClass.GetItem(_player2.inventory.holdingItem.Name, true);
+                                        ItemValue _itemValue = ItemClass.GetItem(_dmResponse.Source.ItemClass.GetItemName(), true);
                                         if (_itemValue != null)
                                         {
                                             if (Damage_Detector)

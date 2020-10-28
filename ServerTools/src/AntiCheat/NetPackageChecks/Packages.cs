@@ -8,6 +8,7 @@ namespace ServerTools
     class Packages
     {
         public static bool IsEnabled = false, IsRunning = false;
+        public static int Max_Damage = 3000;
         private const string file = "NetPackageBuffs.xml";
         private static string filePath = string.Format("{0}/{1}", API.ConfigPath, file);
         private static string _file = string.Format("PacketManipulationLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
@@ -134,24 +135,24 @@ namespace ServerTools
 
         public static void Kick(string _playerId, string _playerName)
         {
-            Phrases.Dict.TryGetValue(1033, out string _phrase1033);
-            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _playerId, _phrase1033), null);
             Phrases.Dict.TryGetValue(1034, out string _phrase1034);
             _phrase1034 = _phrase1034.Replace("{PlayerName}", _playerName);
             ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1034 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
+            Phrases.Dict.TryGetValue(1033, out string _phrase1033);
+            SdtdConsole.Instance.ExecuteSync(string.Format("kick {0} \"{1}\"", _playerId, _phrase1033), null);
         }
 
         public static void Ban(string _owner, string _playerId, string _playerName)
         {
+            Phrases.Dict.TryGetValue(1032, out string _phrase1032);
+            _phrase1032 = _phrase1032.Replace("{PlayerName}", _playerName);
+            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1032 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
             Phrases.Dict.TryGetValue(1031, out string _phrase1031);
             if (_owner != _playerId)
             {
                 SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 50 years \"{1}\"", _owner, _phrase1031), null);
             }
             SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 50 years \"{1}\"", _playerId, _phrase1031), null);
-            Phrases.Dict.TryGetValue(1032, out string _phrase1032);
-            _phrase1032 = _phrase1032.Replace("{PlayerName}", _playerName);
-            ChatHook.ChatMessage(null, LoadConfig.Chat_Response_Color + _phrase1032 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Global, null);
         }
 
         public static void Writer(string _owner, string _playerId, string _playerName, string _action)
