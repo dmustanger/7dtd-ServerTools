@@ -13,7 +13,7 @@ namespace ServerTools
         {
             try
             {
-                if (__instance.Sender != null)
+                if (Packages.IsEnabled && __instance.Sender != null)
                 {
                     ClientInfo _cInfo = __instance.Sender;
                     if (_currentOperation(__instance) == NetPackagePartyActions.PartyActions.SendInvite && _cInfo.entityId != _invitedByEntityID(__instance))

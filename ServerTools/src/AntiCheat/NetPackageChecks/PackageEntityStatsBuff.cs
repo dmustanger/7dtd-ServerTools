@@ -11,7 +11,7 @@ namespace ServerTools
         {
             try
             {
-                if (__instance.Sender != null)
+                if (Packages.IsEnabled && __instance.Sender != null)
                 {
                     ClientInfo _cInfo = __instance.Sender;
                     EntityAlive _sendingEntity = _world.GetEntity(_cInfo.entityId) as EntityAlive;

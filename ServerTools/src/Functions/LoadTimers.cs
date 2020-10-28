@@ -95,9 +95,9 @@ namespace ServerTools
             };
         }
 
-        public static void BattleLogPlayerExit(string _id)
+        public static void BattleLogPlayerExit(string _id, int _time)
         {
-            System.Timers.Timer _exitTimer = new System.Timers.Timer(15000);
+            System.Timers.Timer _exitTimer = new System.Timers.Timer(_time);
             _exitTimer.AutoReset = false;
             _exitTimer.Start();
             _exitTimer.Elapsed += (sender, e) =>

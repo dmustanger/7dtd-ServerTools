@@ -8,7 +8,7 @@ namespace ServerTools
 {
     public class LoadConfig
     {
-        public const string version = "19.2.4";
+        public const string version = "19.2.5";
         public static string Server_Response_Name = "[FFCC00]ServerTools";
         public static string Chat_Response_Color = "[00FF00]";
         private const string configFile = "ServerToolsConfig.xml";
@@ -179,6 +179,18 @@ namespace ServerTools
                                 if (!int.TryParse(_line.GetAttribute("Command_Cost"), out Animals.Command_Cost))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking entry because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                break;
+                            case "Animal_Tracking_Extended":
+                                if (!_line.HasAttribute("Command_Cost"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking_Extended entry because of missing 'Command_Cost' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Command_Cost"), out Animals.Command_Cost))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Animal_Tracking_Extended entry because of invalid (non-numeric) value for 'Command_Cost' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -391,6 +403,16 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers entry because of invalid (True/False) value for 'Enable' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                if (!_line.HasAttribute("Player_Distance"))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers entry because of missing 'Player_Distance' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
+                                if (!int.TryParse(_line.GetAttribute("Player_Distance"), out BattleLogger.Player_Distance))
+                                {
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers entry because of invalid (non-numeric) value for 'Player_Distance' attribute: {0}", subChild.OuterXml));
+                                    continue;
+                                }
                                 if (!_line.HasAttribute("All"))
                                 {
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers entry because of missing 'All' attribute: {0}", subChild.OuterXml));
@@ -431,24 +453,26 @@ namespace ServerTools
                                     Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers entry because of invalid (True/False) value for 'Equipment' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
+                                break;
+                            case "Battle_Loggers_Extended":
                                 if (!_line.HasAttribute("Admin_Level"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers entry because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers_Extended entry because of missing 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 if (!int.TryParse(_line.GetAttribute("Admin_Level"), out BattleLogger.Admin_Level))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers entry because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers_Extended entry because of invalid (non-numeric) value for 'Admin_Level' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!_line.HasAttribute("Player_Distance"))
+                                if (!_line.HasAttribute("Exit_time"))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers entry because of missing 'Player_Distance' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers_Extended entry because of missing 'Exit_time' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
-                                if (!int.TryParse(_line.GetAttribute("Player_Distance"), out BattleLogger.Player_Distance))
+                                if (!int.TryParse(_line.GetAttribute("Exit_time"), out BattleLogger.Exit_Time))
                                 {
-                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers entry because of invalid (non-numeric) value for 'Player_Distance' attribute: {0}", subChild.OuterXml));
+                                    Log.Warning(string.Format("[SERVERTOOLS] Ignoring Battle_Loggers_Extended entry because of invalid (non-numeric) value for 'Exit_time' attribute: {0}", subChild.OuterXml));
                                     continue;
                                 }
                                 break;
@@ -3378,13 +3402,15 @@ namespace ServerTools
                 sw.WriteLine("    <Tools>");
                 sw.WriteLine(string.Format("        <Tool Name=\"Admin_Chat_Commands\" Enable=\"{0}\" />", AdminChat.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Admin_List\" Enable=\"{0}\" Admin_Level=\"{1}\" Moderator_Level=\"{2}\" />", AdminList.IsEnabled, AdminList.Admin_Level, AdminList.Mod_Level));
-                sw.WriteLine(string.Format("        <Tool Name=\"Animal_Tracking\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Minimum_Spawn_Radius=\"{2}\" Maximum_Spawn_Radius=\"{3}\" Entity_Id=\"{4}\" Command_Cost=\"{5}\" />", Animals.IsEnabled, Animals.Delay_Between_Uses, Animals.Minimum_Spawn_Radius, Animals.Maximum_Spawn_Radius, Animals.Animal_List, Animals.Command_Cost));
+                sw.WriteLine(string.Format("        <Tool Name=\"Animal_Tracking\" Enable=\"{0}\" Delay_Between_Uses=\"{1}\" Minimum_Spawn_Radius=\"{2}\" Maximum_Spawn_Radius=\"{3}\" Entity_Id=\"{4}\" />", Animals.IsEnabled, Animals.Delay_Between_Uses, Animals.Minimum_Spawn_Radius, Animals.Maximum_Spawn_Radius, Animals.Animal_List));
+                sw.WriteLine(string.Format("        <Tool Name=\"Animal_Tracking_Extended\" Command_Cost=\"{0}\" />", Animals.Command_Cost));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auction\" Enable=\"{0}\" No_Admins=\"{1}\" Admin_Level=\"{2}\" Total_Items=\"{3}\" Tax=\"{4}\" />", Auction.IsEnabled, Auction.No_Admins, Auction.Admin_Level, Auction.Total_Items, Auction.Tax));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Backup\" Enable=\"{0}\" Delay_Between_Saves=\"{1}\" Destination=\"{2}\" Compression_Level=\"{3}\" Backup_Count=\"{4}\" />", AutoBackup.IsEnabled, AutoBackup.Delay, AutoBackup.Destination, AutoBackup.Compression_Level, AutoBackup.Backup_Count));
                 sw.WriteLine(string.Format("        <Tool Name=\"Auto_Save_World\" Enable=\"{0}\" Delay_Between_Saves=\"{1}\" />", AutoSaveWorld.IsEnabled, AutoSaveWorld.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bad_Word_Filter\" Enable=\"{0}\" Invalid_Name=\"{1}\" />", Badwords.IsEnabled, Badwords.Invalid_Name));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bank\" Enable=\"{0}\" Inside_Claim=\"{1}\" Ingame_Coin=\"{2}\" Deposit_Fee_Percent=\"{3}\" Player_Transfers=\"{4}\" />", Bank.IsEnabled, Bank.Inside_Claim, Bank.Ingame_Coin, Bank.Deposit_Fee_Percent, Bank.Player_Transfers));
-                sw.WriteLine(string.Format("        <Tool Name=\"Battle_Loggers\" Enable=\"{0}\" Player_Distance=\"{1}\" All=\"{2}\" Belt=\"{3}\" Bag=\"{4}\" Equipment=\"{5}\" Admin_Level=\"{6}\" />", BattleLogger.IsEnabled, BattleLogger.Player_Distance, BattleLogger.All, BattleLogger.Belt, BattleLogger.Bag, BattleLogger.Equipment, BattleLogger.Admin_Level));
+                sw.WriteLine(string.Format("        <Tool Name=\"Battle_Loggers\" Enable=\"{0}\" Player_Distance=\"{1}\" All=\"{2}\" Belt=\"{3}\" Bag=\"{4}\" Equipment=\"{5}\"  />", BattleLogger.IsEnabled, BattleLogger.Player_Distance, BattleLogger.All, BattleLogger.Belt, BattleLogger.Bag, BattleLogger.Equipment));
+                sw.WriteLine(string.Format("        <Tool Name=\"Battle_Loggers_Extended\" Admin_Level=\"{0}\" Exit_Time=\"{1}\" />", BattleLogger.Admin_Level, BattleLogger.Exit_Time));
                 sw.WriteLine(string.Format("        <Tool Name=\"Block_Logger\" Enable=\"{0}\" />", BlockLogger.IsEnabled));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon\" Enable=\"{0}\" Show_On_Respawn=\"{1}\" Auto_Show=\"{2}\" Delay=\"{3}\" />", Bloodmoon.IsEnabled, Bloodmoon.Show_On_Respawn, Bloodmoon.Auto_Show, Bloodmoon.Delay));
                 sw.WriteLine(string.Format("        <Tool Name=\"Bloodmoon_Warrior\" Enable=\"{0}\" Zombie_Kills=\"{1}\" Chance=\"{2}\" Reduce_Death_Count=\"{3}\" />", BloodmoonWarrior.IsEnabled, BloodmoonWarrior.Zombie_Kills, BloodmoonWarrior.Chance, BloodmoonWarrior.Reduce_Death_Count));

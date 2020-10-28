@@ -1538,7 +1538,7 @@ namespace ServerTools
                                 if (_player != null)
                                 {
                                     BattleLogger.ExitPos.Add(_cInfo.playerId, _player.position);
-                                    Timers.BattleLogPlayerExit(_cInfo.playerId);
+                                    Timers.BattleLogPlayerExit(_cInfo.playerId, BattleLogger.Exit_Time);
                                     Phrases.Dict.TryGetValue(674, out string _phrase674);
                                     ChatHook.ChatMessage(_cInfo, LoadConfig.Chat_Response_Color + _phrase674 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
                                 }

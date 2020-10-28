@@ -1,5 +1,15 @@
 ﻿CHANGELOG
 
+19.2.5
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Added Animal_Tracking_Extended to config
+Added Battle_Loggers_Extended to config
+Added option Exit_Time to Battle_Loggers tool. Controls log out time
+Fixed Net_Packages IsEnabled not turning the tool on and off properly
+Fixed console command SpawnEntityInRadius not allowing multiple id to spawn
+
 19.2.4
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

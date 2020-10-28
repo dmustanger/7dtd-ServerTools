@@ -8,7 +8,7 @@ namespace ServerTools
     {
         public static bool IsEnabled = false, Drop = false, Remove = false, All = false, Belt = false, Bag = false, Equipment = false;
         public static string Command131 = "exit", Command132 = "quit";
-        public static int Admin_Level = 0, Player_Distance = 100;
+        public static int Admin_Level = 0, Player_Distance = 100, Exit_Time = 15;
         public static Dictionary<string, DateTime> DisconnectedIp = new Dictionary<string, DateTime>();
         public static Dictionary<string, Vector3> ExitPos = new Dictionary<string, Vector3>();
         public static List<string> Exit = new List<string>();

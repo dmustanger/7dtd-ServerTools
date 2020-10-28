@@ -11,7 +11,7 @@ namespace ServerTools
         {
             try
             {
-                if (__instance.Sender != null)
+                if (Packages.IsEnabled && __instance.Sender != null)
                 {
                     ClientInfo _cInfo = __instance.Sender;
                     if (_cInfo.entityId != _entityId(__instance))
