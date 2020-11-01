@@ -156,30 +156,30 @@ namespace ServerTools
                         harmony.Patch(original, new HarmonyMethod(prefix), null);
                     }
                 }
-                //original = typeof(NetPackageEntityStatsBuff).GetMethod("ProcessPackage");
-                //if (original == null)
-                //{
-                //    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityStatsBuff.ProcessPackage method was not found"));
-                //}
-                //else
-                //{
-                //    Patches info = Harmony.GetPatchInfo(original);
-                //    if (info != null)
-                //    {
-                //        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityStatsBuff ProcessPackage method is already modified by another mod"));
-                //        Log.Out(string.Format("[SERVERTOOLS] Injection warning: Anticheat unable to verify erroneous data verification"));
-                //    }
-                //    else
-                //    {
-                //        MethodInfo prefix = typeof(PackageEntityStatsBuff).GetMethod("PackageEntityStatsBuff_ProcessPackage_Prefix");
-                //        if (prefix == null)
-                //        {
-                //            Log.Out(string.Format("[SERVERTOOLS] Injection failed: PackageEntityStatsBuff_ProcessPackage_Prefix"));
-                //            return;
-                //        }
-                //        harmony.Patch(original, new HarmonyMethod(prefix), null);
-                //    }
-                //}
+                original = typeof(NetPackageEntityStatsBuff).GetMethod("ProcessPackage");
+                if (original == null)
+                {
+                    Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityStatsBuff.ProcessPackage method was not found"));
+                }
+                else
+                {
+                    Patches info = Harmony.GetPatchInfo(original);
+                    if (info != null)
+                    {
+                        Log.Out(string.Format("[SERVERTOOLS] Injection failed: NetPackageEntityStatsBuff ProcessPackage method is already modified by another mod"));
+                        Log.Out(string.Format("[SERVERTOOLS] Injection warning: Anticheat unable to verify erroneous data verification"));
+                    }
+                    else
+                    {
+                        MethodInfo prefix = typeof(PackageEntityStatsBuff).GetMethod("PackageEntityStatsBuff_ProcessPackage_Prefix");
+                        if (prefix == null)
+                        {
+                            Log.Out(string.Format("[SERVERTOOLS] Injection failed: PackageEntityStatsBuff_ProcessPackage_Prefix"));
+                            return;
+                        }
+                        harmony.Patch(original, new HarmonyMethod(prefix), null);
+                    }
+                }
                 original = typeof(NetPackagePlayerData).GetMethod("ProcessPackage");
                 if (original == null)
                 {

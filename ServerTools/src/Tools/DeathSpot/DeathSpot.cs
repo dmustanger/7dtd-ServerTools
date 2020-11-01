@@ -7,7 +7,7 @@ namespace ServerTools
     class DeathSpot
     {
         public static bool IsEnabled = false;
-        public static int Delay_Between_Uses = 120, Command_Cost = 0;
+        public static int Time = 2, Delay_Between_Uses = 120, Command_Cost = 0;
         public static string Command61 = "died";
         public static Dictionary<int, DateTime> DeathTime = new Dictionary<int, DateTime>();
         public static Dictionary<int, string> LastDeathPos = new Dictionary<int, string>();
@@ -44,16 +44,16 @@ namespace ServerTools
                         if (DateTime.Now < _dt)
                         {
                             int _newDelay = Delay_Between_Uses / 2;
-                            Time(_cInfo, _timepassed, _newDelay);
+                            Delay(_cInfo, _timepassed, _newDelay);
                             return;
                         }
                     }
                 }
-                Time(_cInfo, _timepassed, Delay_Between_Uses);
+                Delay(_cInfo, _timepassed, Delay_Between_Uses);
             }
         }
 
-        public static void Time(ClientInfo _cInfo, int _timepassed, int _delay)
+        public static void Delay(ClientInfo _cInfo, int _timepassed, int _delay)
         {
             if (_timepassed >= _delay)
             {
@@ -116,7 +116,7 @@ namespace ServerTools
                             }
                         }
                     }
-                    if (_timepassed < 2)
+                    if (_timepassed < Time)
                     {
                         string _value;
                         if (LastDeathPos.TryGetValue(_cInfo.entityId, out _value))

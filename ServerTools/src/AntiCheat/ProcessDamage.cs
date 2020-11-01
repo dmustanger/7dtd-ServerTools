@@ -7,7 +7,7 @@ namespace ServerTools.AntiCheat
     public static class ProcessDamage
     {
         public static bool Damage_Detector = false, IsEnabled = false;
-        public static int Admin_Level = 0, Entity_Damage_Limit = 3000, Block_Damage_Limit = 3500;
+        public static int Admin_Level = 0, Entity_Damage_Limit = 500, Player_Damage_Limit = 3000, Block_Damage_Limit = 3500;
         private static string file = string.Format("DamageLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
         public static string filepath = string.Format("{0}/Logs/DamageLogs/{1}", API.ConfigPath, file);
         private static string _detectionFile = string.Format("DetectionLog_{0}.txt", DateTime.Today.ToString("M-d-yyyy"));
@@ -33,10 +33,10 @@ namespace ServerTools.AntiCheat
                                     EntityPlayer _player2 = PersistentOperations.GetEntityPlayer(_cInfo2.playerId);
                                     if (_player2 != null)
                                     {
-                                        ItemValue _itemValue = ItemClass.GetItem(_dmResponse.Source.ItemClass.GetItemName(), true);
-                                        if (_itemValue != null)
+                                        if (Damage_Detector)
                                         {
-                                            if (Damage_Detector)
+                                            ItemValue _itemValue = ItemClass.GetItem(_dmResponse.Source.ItemClass.GetItemName(), true);
+                                            if (_itemValue != null)
                                             {
                                                 int _distance = (int)_player2.GetDistance(__instance);
                                                 using (StreamWriter sw = new StreamWriter(filepath, true))
@@ -46,7 +46,7 @@ namespace ServerTools.AntiCheat
                                                     sw.Flush();
                                                     sw.Close();
                                                 }
-                                                if (_dmResponse.Strength >= Entity_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo2) > Admin_Level)
+                                                if (_dmResponse.Strength >= Player_Damage_Limit && GameManager.Instance.adminTools.GetUserPermissionLevel(_cInfo2) > Admin_Level)
                                                 {
                                                     Phrases.Dict.TryGetValue(952, out string _phrase952);
                                                     SdtdConsole.Instance.ExecuteSync(string.Format("ban add {0} 5 years \"{1} {2}\"", _cInfo2.playerId, _phrase952, _dmResponse.Strength), null);
@@ -164,7 +164,7 @@ namespace ServerTools.AntiCheat
                                     EntityPlayer _player = PersistentOperations.GetEntityPlayer(_cInfo.playerId);
                                     if (_player != null)
                                     {
-                                        ItemValue _itemValue = ItemClass.GetItem(_player.inventory.holdingItem.Name, true);
+                                        ItemValue _itemValue = ItemClass.GetItem(_dmResponse.Source.ItemClass.GetItemName(), true);
                                         if (_itemValue != null)
                                         {
                                             if (Damage_Detector)

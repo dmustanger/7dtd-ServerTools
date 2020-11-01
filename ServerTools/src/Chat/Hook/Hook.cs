@@ -864,10 +864,8 @@ namespace ServerTools
                         }
                         if (FriendTeleport.IsEnabled && _message.ToLower() == FriendTeleport.Command60 && FriendTeleport.Dict.ContainsKey(_cInfo.entityId))
                         {
-                            int _dictValue;
-                            FriendTeleport.Dict.TryGetValue(_cInfo.entityId, out _dictValue);
-                            DateTime _dict1Value;
-                            FriendTeleport.Dict1.TryGetValue(_cInfo.entityId, out _dict1Value);
+                            FriendTeleport.Dict.TryGetValue(_cInfo.entityId, out int _dictValue);
+                            FriendTeleport.Dict1.TryGetValue(_cInfo.entityId, out DateTime _dict1Value);
                             TimeSpan varTime = DateTime.Now - _dict1Value;
                             double fractionalSeconds = varTime.TotalSeconds;
                             int _timepassed = (int)fractionalSeconds;
@@ -881,7 +879,7 @@ namespace ServerTools
                                     _timepassed = _newTime;
                                 }
                             }
-                            if (_timepassed <= 60)
+                            if (_timepassed <= 120)
                             {
                                 FriendTeleport.TeleFriend(_cInfo, _dictValue);
                                 FriendTeleport.Dict.Remove(_cInfo.entityId);

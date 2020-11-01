@@ -175,7 +175,6 @@
     <Compile Include="src\Tools\Event\Event.cs" />
     <Compile Include="src\Functions\LoadProcess.cs" />
     <Compile Include="src\Functions\LoadTriggers.cs" />
-    <Compile Include="src\NetPackage\RemoveItems\RemoveItems.cs" />
     <Compile Include="src\PersistentOperations\PersistentOperations.cs" />
     <Compile Include="src\PersistentData\PersistentContainer.cs" />
     <Compile Include="src\PersistentData\PersistentPlayer.cs" />

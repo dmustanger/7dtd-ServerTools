@@ -1,5 +1,16 @@
 ﻿CHANGELOG
 
+19.2.6
+Built using Alpha 19 stable assets
+Functioning with 19 stable and experimental. Untested with other versions
+
+Added Player_Damage_Limit option to Damage_Detector tool
+Added option Time to Death_Spot. Controls how long a player can use /died
+Added check to Net_Packages NetPackagePlayerData to prevent false positive
+Fixed warning on start up of missing Animal_Tracking entry
+Fixed Combat_Logger option Exit_Time applying too fast
+Updated Net_Packages tool for better cheat prevention
+
 19.2.5
 Built using Alpha 19 stable assets
 Functioning with 19 stable and experimental. Untested with other versions

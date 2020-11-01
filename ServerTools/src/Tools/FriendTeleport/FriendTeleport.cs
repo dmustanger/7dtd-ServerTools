@@ -80,12 +80,12 @@ namespace ServerTools
                             if (DateTime.Now < _dt)
                             {
                                 int _delay = Delay_Between_Uses / 2;
-                                Time(_cInfo, _friend, _timepassed, _delay);
+                                Delay(_cInfo, _friend, _timepassed, _delay);
                                 return;
                             }
                         }
                     }
-                    Time(_cInfo, _friend, _timepassed, Delay_Between_Uses);
+                    Delay(_cInfo, _friend, _timepassed, Delay_Between_Uses);
                 }
                 else
                 {
@@ -95,7 +95,7 @@ namespace ServerTools
             }
         }
 
-        public static void Time(ClientInfo _cInfo, ClientInfo _friend, int _timepassed, int _delay)
+        public static void Delay(ClientInfo _cInfo, ClientInfo _friend, int _timepassed, int _delay)
         {
             if (_timepassed >= _delay)
             {
@@ -120,10 +120,9 @@ namespace ServerTools
 
         public static void CommandCost(ClientInfo _cInfo, ClientInfo _friend)
         {
-            int _currentCoins = Wallet.GetCurrentCoins(_cInfo.playerId);
             if (Command_Cost >= 1)
             {
-                if (_currentCoins >= Command_Cost)
+                if (Wallet.GetCurrentCoins(_cInfo.playerId) >= Command_Cost)
                 {
                     MessageFriend(_cInfo, _friend);
                 }
@@ -164,9 +163,9 @@ namespace ServerTools
             ChatHook.ChatMessage(_friend, LoadConfig.Chat_Response_Color + _phrase364 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
         }
 
-        public static void TeleFriend(ClientInfo _cInfo, int _friendToTele)
+        public static void TeleFriend(ClientInfo _cInfo, int _invitingFriend)
         {
-            ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_friendToTele);
+            ClientInfo _cInfo2 = ConnectionManager.Instance.Clients.ForEntityId(_invitingFriend);
             if (_cInfo2 != null)
             {
                 EntityPlayer _player = GameManager.Instance.World.Players.dict[_cInfo.entityId];
@@ -175,7 +174,16 @@ namespace ServerTools
                     _cInfo2.SendPackage(NetPackageManager.GetPackage<NetPackageTeleportPlayer>().Setup(new Vector3((int)_player.position.x, (int)_player.position.y, (int)_player.position.z), null, false));
                     if (Wallet.IsEnabled && Command_Cost >= 1)
                     {
-                        Wallet.SubtractCoinsFromWallet(_cInfo2.playerId, Command_Cost);
+                        if (Wallet.GetCurrentCoins(_cInfo2.playerId) >= Command_Cost)
+                        {
+                            Wallet.SubtractCoinsFromWallet(_cInfo2.playerId, Command_Cost);
+                        }
+                        else
+                        {
+                            Phrases.Dict.TryGetValue(370, out string _phrase370);
+                            _phrase370 = _phrase370.Replace("{CoinName}", Wallet.Coin_Name);
+                            ChatHook.ChatMessage(_cInfo2, LoadConfig.Chat_Response_Color + _phrase370 + "[-]", -1, LoadConfig.Server_Response_Name, EChatType.Whisper, null);
+                        }
                     }
                     PersistentContainer.Instance.Players[_cInfo2.playerId].LastFriendTele = DateTime.Now;
                     PersistentContainer.Instance.Save();
