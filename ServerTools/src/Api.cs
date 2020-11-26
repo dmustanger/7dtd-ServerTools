@@ -49,7 +49,7 @@ namespace ServerTools
 
         private static void GameShutdown()
         {
-            StateManager.Shutdown();
+            StateManager.Save();
             OutputLog.Shutdown();
             Timers.TimerStop();
             Timers.ShutdownFailsafe();

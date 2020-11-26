@@ -81,10 +81,6 @@ namespace ServerTools
                     {
                         Directory.CreateDirectory(API.ConfigPath + "/Logs/OutputLogs");
                     }
-                    if (!Directory.Exists(API.ConfigPath + "/Logs/PacketManipulationLogs"))
-                    {
-                        Directory.CreateDirectory(API.ConfigPath + "/Logs/PacketManipulationLogs");
-                    }
                 }
                 catch (XmlException e)
                 {

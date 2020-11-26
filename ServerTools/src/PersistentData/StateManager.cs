@@ -19,18 +19,6 @@ namespace ServerTools
             }
         }
 
-        public static void Shutdown()
-        {
-            try
-            {
-                PersistentContainer.Instance.Save();
-            }
-            catch (Exception e)
-            {
-                Log.Out(string.Format("[SERVERTOOLS] Error in StateManager.Shutdown: {0}", e.Message));
-            }
-        }
-
         public static void Save()
         {
             try
